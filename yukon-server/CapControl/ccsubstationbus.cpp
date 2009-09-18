@@ -2217,7 +2217,7 @@ DOUBLE CtiCCSubstationBus::getSetPoint()
     {
         setPoint = (getPeakTimeFlag()?getPeakPFSetPoint():getOffPeakPFSetPoint());
     }
-    
+
     return setPoint;
 }
 
@@ -3268,11 +3268,11 @@ void CtiCCSubstationBus::figureAndSetTargetVarValue()
 {
     setKVARSolution(calculateKVARSolution(getControlUnits(),getSetPoint(), getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
     if( !stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
-    {    
+    {
         setTargetVarValue( getKVARSolution() + getCurrentVoltLoadPointValue());
     }
     else
-    {    
+    {
         setTargetVarValue( getKVARSolution() + getCurrentVarLoadPointValue());
     }
 }
@@ -3528,7 +3528,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                 else
                 {
                     setCorrectionNeededNoBankAvailFlag(FALSE);
-                
+
                 }
             }
             else
@@ -3538,7 +3538,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPAOName() << endl;
                 }
-            
+
             }
         }
         else if( (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
@@ -5117,7 +5117,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                }
                                if( currentCapBank->getPerformingVerificationFlag() )
                                {
-                               
+
                                    text += "Var: ";
                                    text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                                    text += " - control was not pending, " ;
@@ -5142,7 +5142,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                }
                                else
                                {
-                                   createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, currentFeeder, text, additional, true, 
+                                   createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, currentFeeder, text, additional, true,
                                                               oldValue, newValue, change, getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                                }
                                currentCapBank->setPorterRetFailFlag(FALSE);
@@ -5194,7 +5194,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     return returnBoolean;
 }
 
-void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiCCCapBankPtr capBank, CtiCCFeederPtr feeder, 
+void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiCCCapBankPtr capBank, CtiCCFeederPtr feeder,
                                                     string text, string additional, bool verifyFlag, DOUBLE before, DOUBLE after, DOUBLE change,
                                                     DOUBLE phaseA, DOUBLE phaseB, DOUBLE phaseC)
 {
@@ -5679,7 +5679,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            }
                            if( currentCapBank->getPerformingVerificationFlag() )
                            {
-                           
+
                                text += "Var: ";
                                text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                                text += " - control was not pending, " ;
@@ -5705,7 +5705,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            }
                            else
                            {
-                               createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, currentFeeder, text, additional, true, 
+                               createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, currentFeeder, text, additional, true,
                                                           varValueAbc+varValueBbc+varValueCbc, varAValue+varBValue+varCValue, change,
                                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -7017,7 +7017,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                     returnBoolean = TRUE;
                     break;
                 }
-                
+
             }
         }
         else
@@ -10030,7 +10030,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
         else
         {
             CtiTime lastSendTime = getLastOperationTime();
-            if (getLastOperationTime() < getLastCurrentVarPointUpdateTime())
+            if (getCurrentVarLoadPointId() &&
+                getLastOperationTime() < getLastCurrentVarPointUpdateTime())
             {
                 lastSendTime = getLastCurrentVarPointUpdateTime();
                 setLastOperationTime(currentDateTime);
@@ -10095,181 +10096,106 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
     return *this;
 }
 
-BOOL CtiCCSubstationBus::isDataOldAndFallBackNecessary()
+void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
 {
-    BOOL retVal = FALSE;
+    bool subBusFlag = false;
     CtiTime timeNow = CtiTime();
 
-
-    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
-    {
-        for (LONG i = 0; i < _ccfeeders.size();i++)
-        {
-            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-            if (currentFeeder->isDataOldAndFallBackNecessary(getControlUnits()))
-            {
-                currentFeeder->setLikeDayControlFlag(TRUE);
-                retVal = TRUE;
-
-            }
-            else
-                currentFeeder->setLikeDayControlFlag(FALSE);
-        }
-
-    }
-    else if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
-    {
-        if (getLikeDayControlFlag())
-        {
-            if (getNewPointDataReceivedFlag())
-            {
-                setLikeDayControlFlag(FALSE);
-                for (LONG i = 0; i < _ccfeeders.size();i++)
-                {
-                    CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                    currentFeeder->setLikeDayControlFlag(FALSE);
-                }
-            }
-            else
-            {
-                for (LONG i = 0; i < _ccfeeders.size();i++)
-                {
-                    CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                    if (currentFeeder->getNewPointDataReceivedFlag())
-                    {
-                        setLikeDayControlFlag(FALSE);
-                        break;
-                    }
-                }
-                if (!getLikeDayControlFlag())
-                {
-                    for (LONG i = 0; i < _ccfeeders.size();i++)
-                    {
-                        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                        currentFeeder->setLikeDayControlFlag(FALSE);
-
-                    }
-                }
-
-            }
-        }
-        else
-        {
-
-            if (getLikeDayFallBack() )
-            {
-                 if ( !stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) )
-                 {
-                     if (timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
-                     {
-                          retVal = TRUE;
-                     }
-                     else
-                     {
-
-                         for (LONG i = 0; i < _ccfeeders.size();i++)
-                         {
-                             CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                             if (timeNow > currentFeeder->getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
-                             {
-                                 retVal = TRUE;
-                                 break;
-                             }
-                         }
-                     }
-                 }
-                 else if ( !stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits) )
-                 {
-                     if (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
-                         timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT)
-                     {
-                          retVal = TRUE;
-                     }
-                     else
-                     {
-                         for (LONG i = 0; i < _ccfeeders.size();i++)
-                         {
-                             CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                             if (timeNow > currentFeeder->getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
-                             {
-                                 retVal = TRUE;
-                                 break;
-                             }
-                         }
-                     }
-
-                 }
-                 else //if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) )
-                 {
-                     if (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
-                     {
-                         retVal = TRUE;
-                     }
-                     else
-                     {
-                         for (LONG i = 0; i < _ccfeeders.size();i++)
-                         {
-                             CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                             if (timeNow > currentFeeder->getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
-                             {
-                                 retVal = TRUE;
-                                 break;
-                             }
-                         }
-                     }
-                 }
-            }
-        }
-    }
-    else
+    if (!getDisableFlag())
     {
 
-        if (getLikeDayControlFlag())
+        //This could be moved to happen when teh control strategy is changed instead of running every cycle.
+        if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) ||
+            !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) ||
+            !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
         {
-            if (getNewPointDataReceivedFlag())
+            for (LONG i = 0; i < _ccfeeders.size();i++)
             {
-                setLikeDayControlFlag(FALSE);
-                for (LONG i = 0; i < _ccfeeders.size();i++)
+                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+                if (currentFeeder->getLikeDayControlFlag() !=
+                    currentFeeder->isDataOldAndFallBackNecessary(getControlUnits()))
                 {
-                    CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                    currentFeeder->setLikeDayControlFlag(FALSE);
+                    setBusUpdatedFlag(true);
                 }
+                currentFeeder->setLikeDayControlFlag(false);
             }
+        }
+
+        if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod))
+        {
+            subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
         }
         else
         {
             if (getLikeDayFallBack())
             {
-                if ( !stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) )
+                if (!stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits))
                 {
-                    if (timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
-                        timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+                    if ((getCurrentVarLoadPointId() && getCurrentVoltLoadPointId()) &&
+                        (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
+                         timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT))
                     {
-                         retVal = TRUE;
+                        subBusFlag = true;
+                    }
+
+                    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                    {
+                        subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
                     }
                 }
-                else if ( !stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits) )
+                else if ( !stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits))
                 {
-                     if (timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
-                        timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+                    if ((getCurrentVarLoadPointId() && getCurrentWattLoadPointId()) &&
+                        (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
+                         timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT))
                     {
-                         retVal = TRUE;
+                        subBusFlag = true;
+                    }
+
+                    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                    {
+                        subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
                     }
                 }
-                else //if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) )
+                else
                 {
-                    if (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+                    if ( getCurrentVarLoadPointId() &&
+                         timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT)
                     {
-                        retVal = TRUE;
+                        subBusFlag = true;
+                    }
+
+                    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                    {
+                        subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
                     }
                 }
             }
         }
     }
 
-    return retVal;
+    setLikeDayControlFlag(subBusFlag);
 }
 
+bool CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheckOnFeeders()
+{
+    bool retFlag = false;
+
+    for (LONG i = 0; i < _ccfeeders.size();i++)
+    {
+        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+        bool newFlag;
+        if (currentFeeder->getLikeDayControlFlag() !=
+            (newFlag = currentFeeder->isDataOldAndFallBackNecessary(getControlUnits())))
+        {
+            currentFeeder->setLikeDayControlFlag(newFlag);
+            setBusUpdatedFlag(true);
+        }
+        retFlag |= newFlag;
+    }
+
+    return retFlag;
+}
 
 CtiCCSubstationBus& CtiCCSubstationBus::verifyControlledStatusFlags()
 {
@@ -11001,7 +10927,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _likeDayControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
         _voltReductionFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
         _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y'?TRUE:FALSE);
-        _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?TRUE:FALSE); 
+        _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
 
         if (!_TIME_OF_DAY_VAR_CONF)
         {
@@ -11040,17 +10966,17 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["iwcount"] >> _iWCount;
 
         //current and before var values were stored in the same db column CURRENTVALUE.BEFOREVALUE
-        double hijackedPhaseABeforeAndAfter; 
-        double hijackedPhaseBBeforeAndAfter; 
-        double hijackedPhaseCBeforeAndAfter; 
+        double hijackedPhaseABeforeAndAfter;
+        double hijackedPhaseBBeforeAndAfter;
+        double hijackedPhaseCBeforeAndAfter;
         rdr["phaseavalue"] >> hijackedPhaseABeforeAndAfter;
         rdr["phasebvalue"] >> hijackedPhaseBBeforeAndAfter;
         rdr["phasecvalue"] >> hijackedPhaseCBeforeAndAfter;
-      
-        _phaseAvalue = (INT)hijackedPhaseABeforeAndAfter; 
-        _phaseBvalue = (INT)hijackedPhaseBBeforeAndAfter; 
-        _phaseCvalue = (INT)hijackedPhaseCBeforeAndAfter; 
-      
+
+        _phaseAvalue = (INT)hijackedPhaseABeforeAndAfter;
+        _phaseBvalue = (INT)hijackedPhaseBBeforeAndAfter;
+        _phaseCvalue = (INT)hijackedPhaseCBeforeAndAfter;
+
         _phaseAvalueBeforeControl = (hijackedPhaseABeforeAndAfter - _phaseAvalue)*BEFOREPHASEMULTIPLIER;
         _phaseBvalueBeforeControl = (hijackedPhaseBBeforeAndAfter - _phaseBvalue)*BEFOREPHASEMULTIPLIER;
         _phaseCvalueBeforeControl = (hijackedPhaseCBeforeAndAfter - _phaseCvalue)*BEFOREPHASEMULTIPLIER;

@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  ccsubstationbus.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiCCSubstationBus
                         CtiCCSubstationBus maintains the state and handles
-                        the persistence of strategies for Cap Control.                             
+                        the persistence of strategies for Cap Control.
 
         Initial Date:  8/27/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 
@@ -23,8 +23,8 @@ using boost::shared_ptr;
 #include <rw/vstream.h>
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>  
-#include <list> 
+#include <rw/thr/recursiv.h>
+#include <list>
 #include <vector>
 
 #include "dbaccess.h"
@@ -40,7 +40,7 @@ using boost::shared_ptr;
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 
-enum CtiCCMultiBusState 
+enum CtiCCMultiBusState
 {
     IDLE = 0,
     NEW_MULTI_POINT_DATA_RECEIVED,
@@ -51,7 +51,7 @@ enum CtiCCMultiBusState
     POST_OP_SCAN_PENDING,
     RECORD_ADAPTIVE_VOLTAGE,
 };
-              
+
 class CtiCCSubstationBus : public RWCollectable
 {
 
@@ -142,8 +142,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getAltDualSubId() const;
     DOUBLE getAltSubControlValue() const;
     void getAllAltSubValues(DOUBLE &volt, DOUBLE &var, DOUBLE &watt);
-    LONG getSwitchOverPointId() const;        
-    BOOL getSwitchOverStatus() const;          
+    LONG getSwitchOverPointId() const;
+    BOOL getSwitchOverStatus() const;
     BOOL getDualBusEnable() const;
     LONG getEventSequence() const;
     BOOL getReEnableBusFlag() const;
@@ -158,12 +158,12 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getVoltReductionControlId() const;
     BOOL getSendMoreTimeControlledCommandsFlag() const;
 
-    
+
     const string& getSolution() const;
     DOUBLE getTargetVarValue() const;
     const string& getParentControlUnits() const;
     const string& getParentName() const;
-    LONG getDisplayOrder() const;  
+    LONG getDisplayOrder() const;
     BOOL getIntegrateFlag() const;
     LONG getIntegratePeriod() const;
     BOOL getLikeDayFallBack() const;
@@ -333,9 +333,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void updateIntegrationWPoint(const CtiTime &currentDateTime);
     void clearOutNewPointReceivedFlags();
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime, 
+    CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    CtiCCSubstationBus& checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime, 
+    CtiCCSubstationBus& checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
@@ -400,10 +400,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     BOOL capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
-    void createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiCCCapBankPtr capBank, 
-                                    CtiCCFeederPtr feeder, string text, string additional, bool verifyFlag, 
+    void createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiCCCapBankPtr capBank,
+                                    CtiCCFeederPtr feeder, string text, string additional, bool verifyFlag,
                                     DOUBLE before, DOUBLE after, DOUBLE change, DOUBLE phaseA, DOUBLE phaseB, DOUBLE phaseC);
-    BOOL isDataOldAndFallBackNecessary();
+    void performDataOldAndFallBackNecessaryCheck();
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -477,7 +477,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL   _dualBusEnable;
     LONG   _eventSeq;
     BOOL   _multiMonitorFlag;
-    
+
       LONG _controlinterval;
       LONG _maxconfirmtime;
       LONG _minconfirmpercent;
@@ -529,11 +529,11 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     string _additionalFlags;
     LONG _currentVerificationCapBankId;
-    LONG _currentVerificationFeederId; 
+    LONG _currentVerificationFeederId;
     std::vector <CtiCCFeeder*> _ccfeeders;
     CtiTODC_SVector _todControls;
     int _percentToClose;
-    
+
 
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
@@ -563,7 +563,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     string _parentControlUnits;
     string _parentName;
     LONG _displayOrder;
-    
+
 
     DOUBLE _altSubVoltVal;
     DOUBLE _altSubVarVal;
@@ -589,7 +589,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _phaseAvalueBeforeControl;
     DOUBLE _phaseBvalueBeforeControl;
     DOUBLE _phaseCvalueBeforeControl;
-    
+
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
 
@@ -608,6 +608,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     std::list <long> _pointIds;
     //vector <long> _multipleMonitorPoints;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
+
+    bool performDataOldAndFallBackNecessaryCheckOnFeeders();
 
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
     CtiRegression regression;

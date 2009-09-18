@@ -2471,7 +2471,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, 
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
     }
     else
@@ -2960,12 +2960,12 @@ void CtiCCFeeder::checkForAndReorderFeeder()
     int i=0;
     CtiCCCapBank* currentCapBank = NULL;
     for (i = 0; i < _cccapbanks.size(); i++)
-    {    
+    {
         displayCaps.insert(_cccapbanks[i]);
         closeCaps.insert(_cccapbanks[i]);
         tripCaps.insert(_cccapbanks[i]);
     }
-    
+
     for(i=0;i<displayCaps.size();i++)
     {
         currentCapBank = (CtiCCCapBank*)displayCaps[i];
@@ -3006,17 +3006,17 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
         }
         else
         {
-        
+
             DOUBLE lagLevel = (peakTimeFlag?getPeakLag():getOffPeakLag());
             DOUBLE leadLevel = (peakTimeFlag?getPeakLead():getOffPeakLead());
             DOUBLE setpoint = (lagLevel + leadLevel)/2;
             setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
             if( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) )
-            {    
+            {
                 setTargetVarValue( getKVARSolution() + getCurrentVoltLoadPointValue());
             }
             else
-            {    
+            {
                 setTargetVarValue( getKVARSolution() + getCurrentVarLoadPointValue());
             }
         }
@@ -3705,7 +3705,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                 }
-               
+
             }
             else
             {
@@ -3719,21 +3719,21 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 text += currentCapBank->getControlStatusText();
                 currentCapBank->setControlStatusQuality(CC_Fail);
             }
-            if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
-                (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
+            if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  &&
+                (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail))
             {
                 currentCapBank->setRetryOpenFailedFlag(FALSE);
                 currentCapBank->setRetryCloseFailedFlag(FALSE);
             }
-    
-    
+
+
             if( currentCapBank->getStatusPointId() > 0 )
             {
 
                 CtiCCSubstationBusPtr sub = store->findSubBusByPAObjectID(getParentId());
                 if( sub != NULL )
                 {
-                   sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, false, 
+                   sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, false,
                                                                   varValueBC, currentVarLoadPointValue, change,  varAValue, varBValue, varCValue);
                 }
 
@@ -3748,10 +3748,10 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
             currentCapBank->setControlRecentlySentFlag(FALSE);
             currentCapBank->setIgnoreFlag(FALSE);
             break;
-            
+
         }
     }
-    
+
     if (found == FALSE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3891,7 +3891,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     }
 
                     currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failurePercent));
-                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue, 
+                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue,
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
                     currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc, varValueBbc, varValueCbc,1.0));
@@ -3995,7 +3995,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         currentCapBank->setControlStatusQuality(CC_Normal);
                     }
                     currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failurePercent));
-                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue, 
+                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue,
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
                     currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc, varValueBbc, varValueCbc,1.0) );
@@ -4033,8 +4033,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 
             }
 
-            if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
-                (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
+            if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  &&
+                (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail))
             {
                 currentCapBank->setRetryOpenFailedFlag(FALSE);
                 currentCapBank->setRetryCloseFailedFlag(FALSE);
@@ -4046,12 +4046,12 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 CtiCCSubstationBusPtr sub = store->findSubBusByPAObjectID(getParentId());
                 if( sub != NULL )
                 {
-                   sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, false, 
+                   sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, false,
                                                    varValueAbc+varValueBbc+varValueCbc, varAValue+varBValue+varCValue, changeA+changeB+changeC,
                                                    varAValue, varBValue, varCValue);
                 }
-                
-            }   
+
+            }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4321,7 +4321,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            vResult = TRUE;
                         }
                         text = createControlStatusUpdateText(currentCapBank->getControlStatusText(), getCurrentVarLoadPointValue(),ratio);
-                        
+
                         currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
                         currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
                         currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
@@ -4338,12 +4338,12 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                        text += ", CloseQuestionable";
                        additional = string("Feeder: ");
                        additional += getPAOName();
-        
-        
+
+
                        currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
                        currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
                        currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
-        
+
                        currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                    }
                }
@@ -4362,14 +4362,14 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                    }
 
                }
-               if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
-                    (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
+               if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  &&
+                    (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail))
                 {
                     currentCapBank->setRetryOpenFailedFlag(FALSE);
                     currentCapBank->setRetryCloseFailedFlag(FALSE);
                 }
-        
-        
+
+
                if( currentCapBank->getStatusPointId() > 0 )
                {
                    if (currentCapBank->getPorterRetFailFlag() && currentCapBank->getIgnoreFlag())
@@ -4383,7 +4383,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                        CtiCCSubstationBusPtr sub = store->findSubBusByPAObjectID(getParentId());
                        if( sub != NULL )
                        {
-                          sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, true, 
+                          sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, true,
                                                           getVarValueBeforeControl(), getCurrentVarLoadPointValue(), change,
                                                           varAValue, varBValue, varCValue);
                        }
@@ -4570,7 +4570,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                        vResult = TRUE;
                     }
                     currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failPercent));
-                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue, 
+                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue,
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
                     currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc,varValueBbc,varValueCbc,1.0));
@@ -4703,7 +4703,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                        vResult = TRUE;
                     }
                     currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failPercent));
-                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue, 
+                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatusText(), varAValue,
                                                    varBValue, varCValue, ratioA, ratioB, ratioC);
 
                     currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc,varValueBbc,varValueCbc,1.0));
@@ -4741,10 +4741,10 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                text += " - control was not pending, " ;
                text += currentCapBank->getControlStatusText();
-               
+
            }
-           if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
-               (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
+           if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  &&
+               (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail))
            {
                currentCapBank->setRetryOpenFailedFlag(FALSE);
                currentCapBank->setRetryCloseFailedFlag(FALSE);
@@ -4764,7 +4764,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                    CtiCCSubstationBusPtr sub = store->findSubBusByPAObjectID(getParentId());
                    if( sub != NULL )
                    {
-                      sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, true, 
+                      sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, true,
                                                       varValueAbc+varValueBbc+varValueCbc, varAValue+varBValue+varCValue, changeA+changeB+changeC,
                                                       varAValue, varBValue, varCValue);
                    }
@@ -5443,7 +5443,7 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
                         dout << CtiTime() << " - Last Cap Bank: "<<getLastCapBankControlledDeviceId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                         returnBoolean = false;
                     }
-                   
+
                     break;
                 }
             }
@@ -6166,7 +6166,7 @@ BOOL CtiCCFeeder::getCorrectionNeededNoBankAvailFlag() const
     return _correctionNeededNoBankAvailFlag;
 
 }
-BOOL CtiCCFeeder::getLikeDayControlFlag() const
+bool CtiCCFeeder::getLikeDayControlFlag() const
 {
     return _likeDayControlFlag;
 }
@@ -7950,11 +7950,11 @@ string CtiCCFeeder::createVarText(DOUBLE aValue,FLOAT multiplier)
     return text;
 }
 
-string CtiCCFeeder::createPhaseControlStatusUpdateText(string capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
+string CtiCCFeeder::createPhaseControlStatusUpdateText(string capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue,
                                                   DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC)
 {
     string text = ("");
-    
+
     text = string("Var: ");
     text += CtiNumStr(varAValue, 2).toString();
     text += "/";
@@ -7970,8 +7970,8 @@ string CtiCCFeeder::createPhaseControlStatusUpdateText(string capControlStatus, 
 
     text += "% change), ";
     text += capControlStatus;
-    
-    return text;                       
+
+    return text;
 }
 
 string CtiCCFeeder::createControlStatusUpdateText(string capControlStatus, DOUBLE varAValue, DOUBLE ratioA)
@@ -7983,7 +7983,7 @@ string CtiCCFeeder::createControlStatusUpdateText(string capControlStatus, DOUBL
     text += CtiNumStr(ratioA*100.0, 2).toString();
     text += "% change), ";
     text += capControlStatus;
-    
+
     return text;
 }
 string CtiCCFeeder::createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue)//, LONG decimalPlaces)
@@ -8176,7 +8176,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
     controlid_action_map.clear();
 
     CtiTime lastSendTime = getLastOperationTime();
-    if (getLastOperationTime() < getLastCurrentVarPointUpdateTime())
+    if (getCurrentVarLoadPointId() &&
+        getLastOperationTime() < getLastCurrentVarPointUpdateTime())
     {
         lastSendTime = getLastCurrentVarPointUpdateTime();
         setLastOperationTime(currentDateTime);
@@ -8233,45 +8234,46 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
     return retVal;
 }
 
-BOOL CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
+bool CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
 {
-    BOOL retVal = FALSE;
+    bool retVal = false;
     CtiTime timeNow = CtiTime();
     string feederControlUnits = controlUnits;
+
     //DON'T ADD !... Supposed to be !=none
     if (stringCompareIgnoreCase(_strategyName,"(none)"))
     {
         feederControlUnits = _controlunits;
     }
-    if (getNewPointDataReceivedFlag())
-    {
-        setLikeDayControlFlag(FALSE);
-    }
-    else
+
+    if (!getDisableFlag())
     {
         if (getLikeDayFallBack())
         {
-            if ( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::VoltControlUnits) )
+            if ( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::VoltControlUnits))
             {
-                 if (timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
-                    timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+                 if ((getCurrentVoltLoadPointId() && getCurrentVarLoadPointId()) &&
+                     (timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
+                      timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT))
                 {
-                     retVal = TRUE;
+                     retVal = true;
                 }
             }
-            else if ( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::PF_BY_KVARControlUnits) )
+            else if ( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::PF_BY_KVARControlUnits))
             {
-                 if (timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
-                    timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+                 if ((getCurrentWattLoadPointId() && getCurrentVarLoadPointId()) &&
+                     (timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
+                      timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT))
                 {
-                     retVal = TRUE;
+                     retVal = true;
                 }
             }
-            else //if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) )
+            else
             {
-                if (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+                if (getCurrentVarLoadPointId() &&
+                    timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT)
                 {
-                    retVal = TRUE;
+                    retVal = true;
                 }
             }
         }
