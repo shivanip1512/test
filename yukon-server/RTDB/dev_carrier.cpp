@@ -17,6 +17,8 @@
 
 #include "dev_carrier.h"
 
+using namespace Cti;
+
 CtiDeviceCarrier::CtiDeviceCarrier()
 {
     loadProfile.reset(new CtiTableDeviceLoadProfile());

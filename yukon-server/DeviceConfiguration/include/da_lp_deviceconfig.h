@@ -8,14 +8,13 @@
 #include "da_load_profile.h"
 #include "config_device.h"
 
-using namespace Cti::Config;
 
 namespace Cti {
 
 class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadProfile
 {
     private:
-        CtiConfigDeviceSPtr _deviceConfig;
+        Cti::Config::CtiConfigDeviceSPtr _deviceConfig;
         boost::shared_ptr<DataAccessLoadProfile> _lpTable;
         static const int SecondsPerMinute;
 
@@ -29,7 +28,7 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
         virtual int  getVoltageProfileRate() const;
         virtual bool isChannelValid(int channel) const;
 
-        void setDeviceConfig(CtiConfigDeviceSPtr deviceConfig);
+        void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
         void setLpTable(boost::shared_ptr<DataAccessLoadProfile> table);
 };
 

@@ -46,8 +46,8 @@ private:
 
     bool _precannedTableCurrent;
 
-    boost::shared_ptr<DataAccessLoadProfile> deviceConfigLp;
-    boost::shared_ptr<DataAccessLoadProfile> getDeviceConfigLp(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
+    boost::shared_ptr<Cti::DataAccessLoadProfile> deviceConfigLp;
+    boost::shared_ptr<Cti::DataAccessLoadProfile> getDeviceConfigLp(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
 
     enum ChannelConfiguration
     {
@@ -124,7 +124,7 @@ private:
     long       getLoadProfileInterval( unsigned channel );
     point_info getLoadProfileData    ( unsigned channel, unsigned char *buf, unsigned len );
 
-    virtual boost::shared_ptr<DataAccessLoadProfile> getLoadProfile();
+    virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
 
     long _lastConfigRequest;
 

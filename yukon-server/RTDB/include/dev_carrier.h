@@ -27,8 +27,6 @@
 #include "tbl_dv_mctiedport.h"
 #include "da_load_profile.h"
 
-using namespace Cti;
-
 class IM_EX_DEVDB CtiDeviceCarrier : public CtiDeviceDLCBase
 {
 private:
@@ -48,7 +46,7 @@ public:
 
    CtiDeviceCarrier &operator=(const CtiDeviceCarrier &aRef);
 
-   virtual boost::shared_ptr<DataAccessLoadProfile> getLoadProfile();
+   virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
 
