@@ -37,18 +37,18 @@ RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSubstation::CtiCCSubstation() 
+CtiCCSubstation::CtiCCSubstation()
 {
 }
 
-CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr) 
+CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
     _confirmationStats.setPAOId(_paoid);
 }
 
-CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation) 
+CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
 {
     operator=(substation);
 }
@@ -57,11 +57,11 @@ CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
     Destructor
 ---------------------------------------------------------------------------*/
 CtiCCSubstation::~CtiCCSubstation()
-{  
+{
     _pointIds.clear();
     try
-    {  
-        _subBusIds.clear();   
+    {
+        _subBusIds.clear();
     }
     catch (...)
     {
@@ -120,7 +120,7 @@ void CtiCCSubstation::restoreGuts(RWvistream& istrm)
         >> _voltReductionFlag
         >> _recentlyControlledFlag
         >> _childVoltReductionFlag;
-    
+
 
 }
 
@@ -151,14 +151,26 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
         ostrm << (LONG)*iter;
     }
 
-    ostrm << _pfactor
-        << _estPfactor
+    double pfDisplayValue = _pfactor;
+    double estPfDisplayValue = _estPfactor;
+
+    if (_pfactor > 1)
+    {
+        pfDisplayValue -= 2;
+    }
+    if (_estPfactor > 1)
+    {
+        estPfDisplayValue -= 2;
+    }
+
+    ostrm << pfDisplayValue
+        << estPfDisplayValue
         << _saEnabledFlag
         << _saEnabledId
         << _voltReductionFlag
         << _recentlyControlledFlag
         << _childVoltReductionFlag;
-        
+
 
 }
 
@@ -249,7 +261,7 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
 
     rdr["voltreductionpointid"] >> _voltReductionControlId;
-    
+
     setOvUvDisabledFlag(FALSE);
     setVoltReductionFlag(FALSE);
     setPFactor(0);
@@ -300,8 +312,8 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             addFlags[3] = (_recentlyControlledFlag?'Y':'N');
             addFlags[4] = (_stationUpdatedFlag?'Y':'N');
             addFlags[5] = (_childVoltReductionFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + 
-                                char2string(*(addFlags+2)) + char2string(*(addFlags+3)) + 
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) +
+                                char2string(*(addFlags+2)) + char2string(*(addFlags+3)) +
                                 char2string(*(addFlags+4)) +  char2string(*(addFlags+5)));
             _additionalFlags.append("NNNNNNNNNNNNNN");
 
@@ -388,7 +400,7 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
     }
 }
 void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
-{   
+{
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
@@ -584,7 +596,7 @@ LONG CtiCCSubstation::getSaEnabledId() const
 }
 /*---------------------------------------------------------------------------
     isDirty()
-    
+
     Returns the dirty flag of the area
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstation::isDirty() const
@@ -691,7 +703,7 @@ CtiCCSubstation& CtiCCSubstation::setOvUvDisabledFlag(BOOL flag)
     Sets the VoltReduction flag of the substation
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(BOOL flag)
-{                 
+{
     if (_voltReductionFlag != flag)
     {
         _dirty = TRUE;
@@ -705,7 +717,7 @@ CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(BOOL flag)
     Sets the ChildVoltReduction flag of the substation
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setChildVoltReductionFlag(BOOL flag)
-{                 
+{
     if (_childVoltReductionFlag != flag)
     {
         _stationUpdatedFlag = TRUE;
@@ -788,7 +800,7 @@ CtiCCSubstation& CtiCCSubstation::setPFactor(DOUBLE pfactor)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setEstPFactor(DOUBLE estpfactor)
 {
-    
+
     if (_estPfactor != estpfactor)
     {
         setStationUpdatedFlag(TRUE);
@@ -900,26 +912,26 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
 
 
     busIter = getCCSubIds()->begin();
-    
+
     while (busIter != getCCSubIds()->end() )
     {
         currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
         busIter++;
 
         if (currentSubstationBus != NULL && currentSubstationBus->getVerificationFlag())
-        {          
+        {
             try
             {
                 //reset VerificationFlag
                 capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
-                
+
             }
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
-                    
+
         }
     }
 
