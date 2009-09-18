@@ -6,6 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -26,7 +27,7 @@ public class LoadGroupController {
 
     @RequestMapping("/loadGroup/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
-            LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
+            @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
         
         loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,

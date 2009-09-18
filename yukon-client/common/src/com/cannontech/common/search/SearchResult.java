@@ -23,22 +23,21 @@ public class SearchResult<T> {
         result.setStartIndex(0);
         return result;
     }
-    
-    public SearchResult() {
-    }
-    
+
     /**
      * @param start O-based index from which to start
      * @param count number of items the caller wanted back
      */
-    public void setBounds(int start, int count, int hitCount) {
-        this.hitCount = hitCount;
-        startIndex = start;
-        endIndex = Math.min(startIndex + count,hitCount);
-        previousStartIndex = Math.max(0, startIndex - count);
+    public void setBounds(int startIndex, int count, int hitCount) {
+        this.startIndex = startIndex;
         this.count = count;
-        this.lastStartIndex = (hitCount / count) * count;
-        this.numberOfPages = ((hitCount - 1) / count) + 1;
+        this.hitCount = hitCount;
+
+        numberOfPages = ((hitCount - 1) / count) + 1;
+
+        endIndex = Math.min(startIndex + count, hitCount);
+        previousStartIndex = Math.max(0, startIndex - count);
+        lastStartIndex = (numberOfPages - 1) * count;
     }
 
     public boolean isNextNeeded() {
@@ -123,5 +122,4 @@ public class SearchResult<T> {
     public int getNumberOfPages(){
         return numberOfPages;
     }
-
 }

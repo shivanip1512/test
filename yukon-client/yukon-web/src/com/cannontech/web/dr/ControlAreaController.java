@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -76,8 +77,8 @@ public class ControlAreaController {
 
     @RequestMapping("/controlArea/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
-            ControlAreaListBackingBean backingBean, BindingResult result,
-            SessionStatus status) {
+            @ModelAttribute("backingBean") ControlAreaListBackingBean backingBean,
+            BindingResult result, SessionStatus status) {
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (!StringUtils.isEmpty(backingBean.getName())) {
@@ -109,7 +110,6 @@ public class ControlAreaController {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("controlAreas", searchResult.getResultList());
-        modelMap.addAttribute("backingBean", backingBean);
 
         return "dr/controlArea/list.jsp";
     }
@@ -117,7 +117,7 @@ public class ControlAreaController {
     @RequestMapping("/controlArea/detail")
     public String detail(int controlAreaId, ModelMap modelMap,
             YukonUserContext userContext,
-            ProgramControllerHelper.ProgramListBackingBean backingBean,
+            @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
         ControlArea controlArea = controlAreaService.getControlArea(controlAreaId);
         if (false && !paoAuthorizationService.isAuthorized(userContext.getYukonUser(),

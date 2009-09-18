@@ -20,19 +20,25 @@
     <c:set var="currentPage" value="1"/>
 </c:if>
 
-<table class="pagingArea" width="95%" style="font-size: .75em">
+<table class="pagingArea">
     <tr>
-        <td align="left">Viewing ${searchResult.startIndex + 1}-${searchResult.endIndex} of ${searchResult.hitCount}</td>
-        <td align="right">
+        <td class="viewing">
+            <cti:msg key="yukon.web.modules.dr.paging.viewing"
+                arguments="${searchResult.startIndex + 1},${searchResult.endIndex},${searchResult.hitCount}"/>
+        </td>
 
-            Results per page:
+        <td class="resultsPerPage">
+            <cti:msg key="yukon.web.modules.dr.paging.resultsPerPage"/>
                 <dr:itemsPerPageLink searchResult="${searchResult}" itemsPerPage="10"
                     baseUrl="${baseUrl}"/>&nbsp;
                 <dr:itemsPerPageLink searchResult="${searchResult}" itemsPerPage="25"
                     baseUrl="${baseUrl}"/>&nbsp;
                 <dr:itemsPerPageLink searchResult="${searchResult}" itemsPerPage="50"
                     baseUrl="${baseUrl}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </td>
 
+        <td class="pages">
+            <cti:msg key="yukon.web.modules.dr.paging.page"/>
             <c:if test="${currentPage > 1}">
                 <c:if test="${currentPage - 1 != 1}">
                     <dr:pageNumberLink pageNumber="1" currentPage="${currentPage}"

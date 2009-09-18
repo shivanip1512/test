@@ -12,7 +12,6 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
@@ -78,7 +77,7 @@ public class LoadGroupControllerHelper {
     }
 
     public void filterGroups(ModelMap modelMap, YukonUserContext userContext,
-            @ModelAttribute("filter") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
+            LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status,
             UiFilter<DisplayablePao> detailFilter) {
         // TODO:  validation on backing bean
@@ -119,7 +118,6 @@ public class LoadGroupControllerHelper {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("loadGroups", searchResult.getResultList());
-        modelMap.addAttribute("backingBean", backingBean);
     }
 
     @Autowired

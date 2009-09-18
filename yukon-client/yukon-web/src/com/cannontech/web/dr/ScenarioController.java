@@ -37,7 +37,7 @@ public class ScenarioController {
 
     @RequestMapping("/scenario/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
-            ListBackingBean backingBean, BindingResult result,
+            @ModelAttribute("backingBean") ListBackingBean backingBean, BindingResult result,
             SessionStatus status) {
         // TODO:  validation on backing bean
 
@@ -56,7 +56,6 @@ public class ScenarioController {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("scenarios", searchResult.getResultList());
-        modelMap.addAttribute("backingBean", backingBean);
 
         return "dr/scenario/list.jsp";
     }
@@ -64,7 +63,7 @@ public class ScenarioController {
     @RequestMapping("/scenario/detail")
     public String detail(int scenarioId, ModelMap modelMap,
             YukonUserContext userContext,
-            @ModelAttribute("filter") ProgramListBackingBean backingBean,
+            @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
         DisplayablePao scenario = scenarioService.getScenario(scenarioId);
         if (false && !paoAuthorizationService.isAuthorized(userContext.getYukonUser(),

@@ -151,7 +151,6 @@ public class ProgramControllerHelper {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("programs", searchResult.getResultList());
-        modelMap.addAttribute("backingBean", backingBean);
     }
 
     @Autowired
