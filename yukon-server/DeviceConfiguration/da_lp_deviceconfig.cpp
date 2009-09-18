@@ -4,6 +4,7 @@
 #include "config_data_mct.h"
 
 using namespace Cti;
+using namespace Cti::Config;
 
 const int DeviceConfigurationLoadProfileData::SecondsPerMinute = 60;
 
