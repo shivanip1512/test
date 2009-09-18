@@ -31,9 +31,6 @@ public class TriggerBackingService implements UpdateBackingService {
 
         MessageSource messageSource = messageSourceResolver.getMessageSource(userContext);
         if (datedControlArea == null) {
-            if (displayField.isCssClass()) {
-                return "not_in_control_area";
-            }
             return messageSource.getMessage("yukon.web.modules.dr.fieldNotInLoadManagement",
                                             null,
                                             userContext.getLocale());

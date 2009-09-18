@@ -65,8 +65,4 @@ public enum TriggerDisplayField {
 
     public abstract MessageSourceResolvable getValue(
             LMControlAreaTrigger trigger);
-
-    public boolean isCssClass() {
-        return false;
-    }
 }

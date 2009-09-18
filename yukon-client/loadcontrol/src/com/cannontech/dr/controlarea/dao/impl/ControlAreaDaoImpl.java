@@ -10,38 +10,35 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
 
 public class ControlAreaDaoImpl implements ControlAreaDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcOperations yukonJdbcOperations;
 
-    private final static String singleControlAreaByIdQuery = 
-        "SELECT paObjectId, paoName FROM yukonPAObject " 
-        + "WHERE type = 'LM CONTROL AREA' AND paObjectId = ?";
-
-    private final static String selectAllTriggersQuery =
-        "SELECT deviceId, triggerNumber, triggerType FROM lmControlAreaTrigger "
-        + "ORDER BY deviceId, triggerNumber ";
-    private final static String selectTriggersByControlAreaIdQuery =
-        "SELECT deviceId, triggerNumber, triggerType FROM lmControlAreaTrigger "
-        + "WHERE deviceId = ? "
-        + "ORDER BY triggerNumber ";
-    
-    private final static ParameterizedRowMapper<ControlArea> controlAreaRowMapper =
-        new ParameterizedRowMapper<ControlArea>() {
+    private static class ControlAreaRowMapper implements ParameterizedRowMapper<ControlArea>  {
+        private Map<Integer, List<ControlAreaTrigger>> triggerMap;        
+        ControlAreaRowMapper(Map<Integer, List<ControlAreaTrigger>> triggerMap){
+            this.triggerMap = triggerMap;
+        }
+        
         @Override
         public ControlArea mapRow(ResultSet rs, int rowNum) throws SQLException {
-            PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
+            int controlAreaId = rs.getInt("paObjectId");
+            PaoIdentifier paoId = new PaoIdentifier(controlAreaId,
                                                     PaoType.LM_CONTROL_AREA);
             ControlArea retVal = new ControlArea(paoId, rs.getString("paoName"));
+            retVal.setTriggers(triggerMap.get(controlAreaId));
+            
             return retVal;
-        }};
+        }
+    }
 
     private static class TriggerRowCallbackHandler implements RowCallbackHandler {
         private Map<Integer, List<ControlAreaTrigger>> triggerMap =
@@ -67,31 +64,35 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
 
     @Override
     public ControlArea getControlArea(int controlAreaId) {
-        ControlArea controlArea = simpleJdbcTemplate.queryForObject(singleControlAreaByIdQuery,
-                                                             controlAreaRowMapper,
-                                                             controlAreaId);
-        //get control area triggers, to associate control area/triggers
+        // Retrieve the triggers first
         Map<Integer, List<ControlAreaTrigger>> triggerMap = getControlAreaTriggers(controlAreaId);        
-        controlArea.setTriggers(triggerMap.get(controlAreaId));
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT paObjectId, paoName FROM yukonPAObject");
+        sql.append("WHERE type = 'LM CONTROL AREA' AND paObjectId =").appendArgument(controlAreaId);
+        ControlArea controlArea = yukonJdbcOperations.queryForObject(sql, new ControlAreaRowMapper(triggerMap));
+
         return controlArea;
     }
 
     private Map<Integer, List<ControlAreaTrigger>> getControlAreaTriggers(int controlAreaId) {
         TriggerRowCallbackHandler triggerRowCallbackHandler = new TriggerRowCallbackHandler();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         if (controlAreaId < 0) {
-            simpleJdbcTemplate.getJdbcOperations()
-                              .query(selectAllTriggersQuery, triggerRowCallbackHandler);
+            sql.append("SELECT deviceId, triggerNumber, triggerType FROM lmControlAreaTrigger");
+            sql.append("ORDER BY deviceId, triggerNumber");
+            yukonJdbcOperations.query(sql, triggerRowCallbackHandler);
         } else {
-            simpleJdbcTemplate.getJdbcOperations()
-                              .query(selectTriggersByControlAreaIdQuery,
-                                     new Object[] { controlAreaId },
-                                     triggerRowCallbackHandler);
+            sql.append("SELECT deviceId, triggerNumber, triggerType FROM lmControlAreaTrigger");
+            sql.append("WHERE deviceId =").appendArgument(controlAreaId);
+            sql.append("ORDER BY triggerNumber");
+            yukonJdbcOperations.query(sql, triggerRowCallbackHandler);
         }
         return triggerRowCallbackHandler.getTriggerMap();
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
+        this.yukonJdbcOperations = yukonJdbcOperations;
     }
 }

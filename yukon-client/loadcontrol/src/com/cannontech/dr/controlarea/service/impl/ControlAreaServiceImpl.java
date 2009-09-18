@@ -125,7 +125,9 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
                 SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append("deviceId IN (SELECT paObjectId FROM yukonPAObject WHERE");
+                retVal.append("deviceId IN (SELECT paObjectId FROM yukonPAObject WHERE type = ");
+                retVal.appendArgument(PaoType.LM_CONTROL_AREA.getDbString());
+                retVal.append("AND");
                 retVal.append(wrapped.getWhereClauseFragment());
                 retVal.append(")");
                 return retVal;
@@ -193,8 +195,12 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             triggerFilter = new TriggerFilter(filter);
         }
 
+        // Need to retrieve all triggers as the request is for Control area records;
+        // Control area may have 0 or more triggers; so no easy way to correlate the two
+        // Also, note that TriggerRowMapper caches all the mapped triggers by controlAreaId; 
+        // startIndex, count have little value as the plain returned results are not used
         TriggerRowMapper triggerRowMapper = new TriggerRowMapper();
-        filterService.filter(triggerFilter, null, startIndex, count,
+        filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
 
         Comparator<DisplayablePao> defaultSorter =
