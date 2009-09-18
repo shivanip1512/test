@@ -241,6 +241,7 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_same_day)
 
     lmProgram.getLMProgramControlWindows().push_back(window1);
 
+    /* todays window */
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 1200), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(78000), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79199), no_window);
@@ -250,6 +251,17 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_same_day)
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(82000), window1);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(82001), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(83000), no_window);
+
+    /* tomorrows window */
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 1200 + 86400), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(78000 + 86400), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79199 + 86400), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79200 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79201 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(80000 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(82000 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(82001 + 86400), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(83000 + 86400), no_window);
 }
 
 
@@ -266,6 +278,7 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days)
 
     lmProgram.getLMProgramControlWindows().push_back(window1);
 
+    /* todays window */
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0), window1);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000), window1);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4000), window1);
@@ -274,6 +287,16 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days)
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79199), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79200), window1);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(86399), window1);
+
+    /* tomorrows window */
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4000 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4001 + 86400), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(50000 + 86400), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79199 + 86400), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79200 + 86400), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(86399 + 86400), window1);
 }
 
 
@@ -292,6 +315,7 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days_end_of_month)
 
     CtiDate targetDate(31, 8, 2009);
 
+    /* todays window */
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0, targetDate), window1);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000, targetDate), window1);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4000, targetDate), window1);
@@ -300,6 +324,16 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days_end_of_month)
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79199, targetDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79200, targetDate), window1);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(86399, targetDate), window1);
+
+    /* tomorrows window */
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0 + 86400, targetDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000 + 86400, targetDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4000 + 86400, targetDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4001 + 86400, targetDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(50000 + 86400, targetDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79199 + 86400, targetDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(79200 + 86400, targetDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(86399 + 86400, targetDate), window1);
 }
 
 
@@ -318,6 +352,7 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_spring_2009_dst)
 
     CtiDate dstDate(8, 3, 2009);     // day of dst switch - make sure window didn't get lenghtened to 5am
 
+    /* todays window */
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 3599, dstDate), no_window);
@@ -330,6 +365,20 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_spring_2009_dst)
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18000, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18001, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(20000, dstDate), no_window);
+
+    /* tomorrows window */
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 3599 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 3600 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4000 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 7200 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 7201 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(14400 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(14401 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18000 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18001 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(20000 + 86400, dstDate), no_window);
 }
 
 
@@ -348,6 +397,7 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_fall_2009_dst)
 
     CtiDate dstDate(1, 11, 2009);     // day of dst switch  - make sure window didn't get shortened to 3am
 
+    /* todays window */
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 3599, dstDate), no_window);
@@ -360,6 +410,20 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_fall_2009_dst)
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18000, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18001, dstDate), no_window);
     BOOST_CHECK_EQUAL( lmProgram.getControlWindow(20000, dstDate), no_window);
+
+    /* tomorrows window */
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(    0 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 2000 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 3599 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 3600 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 4000 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 7200 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow( 7201 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(14400 + 86400, dstDate), window1);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(14401 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18000 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(18001 + 86400, dstDate), no_window);
+    BOOST_CHECK_EQUAL( lmProgram.getControlWindow(20000 + 86400, dstDate), no_window);
 }
 
 

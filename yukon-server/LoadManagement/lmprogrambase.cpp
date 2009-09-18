@@ -1193,7 +1193,7 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
     CtiTime currentTime = GetTimeFromOffsetAndDate(secondsFromBeginningOfDay, defaultDate);
 
     CtiTime midnightToday = GetTimeFromOffsetAndDate(0, defaultDate);
-    CtiTime midnightTomorrow = GetTimeFromOffsetAndDate(86400, defaultDate);
+    CtiTime midnightTwoDays = GetTimeFromOffsetAndDate(2 * 86400, defaultDate);
 
     for( LONG i=0;i<_lmprogramcontrolwindows.size();i++ )
     {
@@ -1206,18 +1206,29 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
         {
             if(controlWindowStartTime.date() == controlWindowStopTime.date())   // window entirely on same date
             {
-                if(controlWindowStartTime <= currentTime && currentTime <= controlWindowStopTime)
+                /* We are checking both todays window and tomorrows window */
+                CtiTime controlWindowStartTimeTomorrow = controlWindowStartTime;
+                controlWindowStartTimeTomorrow.addDays(1);
+                CtiTime controlWindowStopTimeTomorrow = controlWindowStopTime;
+                controlWindowStopTimeTomorrow.addDays(1);
+
+                if((controlWindowStartTime <= currentTime && currentTime <= controlWindowStopTime) ||
+                   (controlWindowStartTimeTomorrow <= currentTime && currentTime <= controlWindowStopTimeTomorrow))
                 {
                     return currentControlWindow;
                 }
             }
             else    // window spans the midnight boundary between two days
             {
+                /* We are checking both todays window and tomorrows window */
                 CtiTime controlWindowStopTimeToday = controlWindowStopTime;
                 controlWindowStopTimeToday.addDays(-1);
+                CtiTime controlWindowStartTimeTomorrow = controlWindowStartTime;
+                controlWindowStartTimeTomorrow.addDays(1);
 
                 if((midnightToday <= currentTime && currentTime <= controlWindowStopTimeToday) ||
-                   (controlWindowStartTime <= currentTime && currentTime <= midnightTomorrow))
+                   (controlWindowStartTime <= currentTime && currentTime <= controlWindowStopTime) ||
+                   (controlWindowStartTimeTomorrow <= currentTime && currentTime <= midnightTwoDays))
                 {
                     return currentControlWindow;
                 }
