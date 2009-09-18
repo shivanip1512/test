@@ -393,7 +393,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                         strncat((char*)xfer.getOutBuffer(),getGolayCapcode().c_str(),6);
                     }
                     else
-                        strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8).toString().c_str(),10);
+                        strncat((char*)xfer.getOutBuffer(),_table.getPagerID(),10);
                     strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,300);
                     strncat((char*)xfer.getOutBuffer(),_ETX,10);
 

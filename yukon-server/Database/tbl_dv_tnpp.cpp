@@ -48,8 +48,8 @@ CtiTableDeviceTnpp& CtiTableDeviceTnpp::operator=(const CtiTableDeviceTnpp& aRef
         _dataFormat =         aRef.getPagerDataFormat();
         _channel =            aRef.getChannel();
         _zone =               aRef.getZone();
-        _functionCode =       aRef.getFunctionCode();*/ //FIX_ME JESS
-        _pagerID =            aRef.getPagerID();
+        _functionCode =       aRef.getFunctionCode();
+        _pagerID =            aRef.getPagerID();*/ //FIX_ME JESS
     }
     return *this;
 }
@@ -79,7 +79,7 @@ void CtiTableDeviceTnpp::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 void CtiTableDeviceTnpp::DecodeDatabaseReader(RWDBReader &rdr)
 {
 
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -241,7 +241,7 @@ const char* CtiTableDeviceTnpp::getFunctionCode()
     return _functionCode.c_str();
 }
 
-int CtiTableDeviceTnpp::getPagerID() const
+const char* CtiTableDeviceTnpp::getPagerID()
 {
-    return _pagerID;
+    return _pagerID.c_str();
 }

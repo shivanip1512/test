@@ -50,7 +50,7 @@ protected:
    string            _channel;
    string            _zone;
    string            _functionCode;
-   int                  _pagerID;
+   string            _pagerID;
 private:
 
 public:
@@ -73,7 +73,7 @@ public:
     const char* getChannel();
     const char* getZone();
     const char* getFunctionCode();
-    int getPagerID() const;
+    const char* getPagerID();
 
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
