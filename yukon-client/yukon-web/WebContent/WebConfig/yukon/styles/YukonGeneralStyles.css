@@ -642,3 +642,22 @@ h3.indentedElementHeading + * {
     margin: 0 0 0 12px;
 }
 
+table.pagingArea {
+	font-size: .75em;
+	width: 95%;
+}
+
+table.pagingArea td.viewing {
+    text-align: left;
+    width: 20%;
+}
+
+table.pagingArea td.resultsPerPage {
+	text-align: center;
+    width: 30%;
+}
+
+table.pagingArea td.pages {
+	text-align: right;
+    width: 50%;
+}
