@@ -3,7 +3,11 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="support">
-    <cti:standardMenu menuSelection="database|info"/>
+<cti:standardMenu menuSelection="database|info"/>
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink>Database</cti:crumbLink>
+</cti:breadCrumbs>
 
 
 <h3 class="indentedElementHeading">DB Connection</h3>

@@ -4,6 +4,10 @@
 
 <cti:standardPage module="support">
 <cti:standardMenu menuSelection="other|threadDump"/>
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink>Thread Dump</cti:crumbLink>
+</cti:breadCrumbs>
 
 <c:forEach items="${dump}" var="threadEntry">
 <h3 class="indentedElementHeading">${threadEntry.key.name}</h3>

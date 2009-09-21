@@ -3,7 +3,12 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="support">
-  <cti:standardMenu menuSelection="scheduler|jobs" />
+<cti:standardMenu menuSelection="scheduler|jobs" />
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/spring/support/scheduler/active" title="Jobs"/>
+    <cti:crumbLink>All</cti:crumbLink>
+</cti:breadCrumbs>
 
 <h2>Repeating Jobs</h2>
   <table class="resultsTable">

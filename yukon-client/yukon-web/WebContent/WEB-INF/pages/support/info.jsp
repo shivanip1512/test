@@ -3,7 +3,12 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="support">
-    <cti:standardMenu menuSelection="information"/>
+<cti:standardMenu menuSelection="information"/>
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink>Information</cti:crumbLink>
+</cti:breadCrumbs>
+
 
 <h3 class="indentedElementHeading">Version Details</h3>
 <div>${versionDetails}</div>
