@@ -26,6 +26,8 @@ import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.message.util.Message;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Ordering;
 
@@ -70,7 +72,32 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
     }    
-    
+
+    @Override
+    public void sendShed(int loadGroupId, int durationInSeconds) {
+        // TODO:  Log action
+        Message msg = new LMCommand(LMCommand.SHED_GROUP, loadGroupId,
+                                    durationInSeconds, 0.0);
+        loadControlClientConnection.write(msg);
+    }
+
+    @Override
+    public void sendRestore(int loadGroupId) {
+        // TODO:  Log action
+        Message msg = new LMCommand(LMCommand.RESTORE_GROUP, loadGroupId,
+                                    0, 0.0);
+        loadControlClientConnection.write(msg);
+    }
+
+    @Override
+    public void setEnabled(int loadGroupId, boolean isEnabled) {
+        // TODO:  Log action
+        int loadControlCommand = isEnabled ? LMCommand.ENABLE_GROUP
+                : LMCommand.DISABLE_GROUP;
+        Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);
+        loadControlClientConnection.write(msg);
+    }    
+
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
@@ -110,5 +137,5 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Autowired
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
-    }    
+    }
 }

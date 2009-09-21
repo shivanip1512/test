@@ -8,12 +8,14 @@
 <cti:standardPage module="dr" page="loadGroupDetail" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|loadGroups"/>
 
+    <tags:iframeDialog id="drDialog"/>
+
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
-        	<cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.operationsHome"/>
+            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.operationsHome"/>
         </cti:crumbLink>
         <cti:crumbLink url="/spring/dr/loadGroup/list">
-        	<cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroups"/>
+            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroups"/>
         </cti:crumbLink>
         <cti:crumbLink>
             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroup"
@@ -30,7 +32,7 @@
         <tr>
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.info"/>
-	            <tags:abstractContainer type="box" title="${boxTitle}">
+                <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.state"/>
                         <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
@@ -42,7 +44,7 @@
                         </tags:nameValue>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics"/>
                         <tags:nameValue name="${fieldName}">
-			                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/>
+                            <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/>
                         </tags:nameValue>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.reduction"/>
                         <tags:nameValue name="${fieldName}">
@@ -51,19 +53,25 @@
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity"/>
                         <tags:nameValue name="${fieldName}">
                             <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/>
-                        </tags:nameValue>                        
-                    </tags:nameValueContainer>	            
-            	</tags:abstractContainer>
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                </tags:abstractContainer>
             </td>
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.actions"/>
-            	<tags:abstractContainer type="box" title="${boxTitle}">
-            		<cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/><br>
-            		<cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/><br>
+                <tags:abstractContainer type="box" title="${boxTitle}">
+                    <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
+                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                    </cti:url>
+                    <a href="javascript:void(0)"
+                        onclick="openIFrameDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
+                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
+                    </a><br>
+                    <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/><br>
                     <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/><br>
                     <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/><br>
-    	        </tags:abstractContainer>
+                </tags:abstractContainer>
             </td>
         </tr>
     </table>
@@ -72,19 +80,17 @@
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.parents"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
 
-        <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.programs"/></p>
         <c:if test="${empty parentPrograms}">
             <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms"/></p>
         </c:if>
         <c:if test="${!empty parentPrograms}">
-	        <c:forEach var="parentProgram" items="${parentPrograms}">
+            <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.programs"/></p>
+            <c:forEach var="parentProgram" items="${parentPrograms}">
                 <c:url var="programURL" value="/spring/dr/program/detail">
                     <c:param name="programId" value="${parentProgram.paoIdentifier.paoId}"/>
                 </c:url>
                 <a href="${programURL}"><spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody></a><br>
-	        </c:forEach>
+            </c:forEach>
         </c:if>
-
     </tags:abstractContainer>
-
 </cti:standardPage>

@@ -461,15 +461,9 @@ div.widgetPopup {
 
 .popUpDiv iframe
 {
-	display:none;/*sorry for IE5*/
-	display/**/:block;/*sorry for IE5*/
-	position:absolute;/*must have*/
-	top:0;/*must have*/
-	left:0;/*must have*/
-	z-index:-1;/*must have*/
-	filter:mask();/*must have*/
-	width:3000px;/*must have for any big value*/
-	height:3000px/*must have for any big value*/;
+	width: 100%;
+	height: 100%;
+	border-style: none;
 }
 
 #roundingHelper, #timestampHelper, #valueHelper {
@@ -660,4 +654,9 @@ table.pagingArea td.resultsPerPage {
 table.pagingArea td.pages {
 	text-align: right;
     width: 50%;
+}
+
+div.actionArea {
+	margin-top: 10px;
+	text-align: right;
 }

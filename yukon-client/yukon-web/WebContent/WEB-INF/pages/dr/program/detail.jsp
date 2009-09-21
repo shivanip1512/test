@@ -88,11 +88,11 @@
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.parents"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
 
-        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
         <c:if test="${empty parentControlArea}">
             <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
         </c:if>
         <c:if test="${!empty parentControlArea}">
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
             <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
                 <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
             </c:url>
@@ -100,11 +100,11 @@
         </c:if>
         <br>
 
-        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
         <c:if test="${empty parentScenarios}">
             <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
         </c:if>
         <c:if test="${!empty parentScenarios}">
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
 	        <c:forEach var="parentScenario" items="${parentScenarios}">
                 <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
                     <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>

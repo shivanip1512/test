@@ -348,6 +348,10 @@
     <search action="/spring/dr/search" method="get" fieldname="name"/>
   </module>
 
+  <module name="internal">
+    <skin name="inner"/>
+  </module>
+
   <module name="consumer">
     <skin name="leftSideMenu"/>
    	<links>
