@@ -55,35 +55,35 @@ private:
 
 public:
 
-   CtiTableDeviceTnpp();
+    CtiTableDeviceTnpp();
 
-   CtiTableDeviceTnpp(const CtiTableDeviceTnpp& aRef);
+    CtiTableDeviceTnpp(const CtiTableDeviceTnpp& aRef);
 
-   virtual ~CtiTableDeviceTnpp();
+    virtual ~CtiTableDeviceTnpp();
 
-   CtiTableDeviceTnpp& operator=(const CtiTableDeviceTnpp& aRef);
+    CtiTableDeviceTnpp& operator=(const CtiTableDeviceTnpp& aRef);
 
     LONG getDeviceID() const;
     unsigned short getInertia() const;
     int getDestinationAddress() const; //The tnpp devices address
     int getOriginAddress() const; //The tnpp devices address
-    const char* getIdentifierFormat();
-    const char* getPagerProtocol();
-    const char* getPagerDataFormat();
-    const char* getChannel();
-    const char* getZone();
-    const char* getFunctionCode();
-    const char* getPagerID();
+    string getIdentifierFormat();
+    string getPagerProtocol();
+    string getPagerDataFormat();
+    string getChannel();
+    string getZone();
+    string getFunctionCode();
+    string getPagerID();
 
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-   static string getTableName();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Delete();
+    static string getTableName();
+    virtual RWDBStatus Restore();
+    virtual RWDBStatus Update();
+    virtual RWDBStatus Insert();
+    virtual RWDBStatus Delete();
 };
 #endif // #ifndef __TBL_DV_TAPPAGING_H__

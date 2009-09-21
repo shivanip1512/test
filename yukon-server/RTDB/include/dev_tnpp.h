@@ -115,13 +115,13 @@ private:
    void setCurrentState(StateMachine newCurrentState);
    void setPreviousState(StateMachine newPreviousState);
    string getSerialNumber();
-   const char* getPagerProtocol();
-   const char* getPagerDataFormat();
-   const char* getFunctionCode();
+   string getPagerProtocol();
+   string getPagerDataFormat();
+   string getFunctionCode();
    string getGolayCapcode();
 
    int getExtendedFunctionCapcode(int a);//returns capcode for TNPP
-   const char* getExtendedFunctionCode();//returns actual function code
+   string getExtendedFunctionCode();//returns actual function code
 
    unsigned int crc16( const unsigned char *data, int length );
 

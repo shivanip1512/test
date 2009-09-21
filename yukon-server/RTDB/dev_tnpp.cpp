@@ -368,24 +368,24 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getOriginAddress()).zpad(4).hex().toString().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),getSerialNumber().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),_STX,10);
-                    if((char)*_table.getIdentifierFormat()=='A')
+                    if (_table.getIdentifierFormat().c_str()[0] == 'A')
                     {   //CAP PAGE
-                        strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat(),10);
-                        strncat((char*)xfer.getOutBuffer(),getPagerProtocol(),1);
-                        strncat((char*)xfer.getOutBuffer(),getPagerDataFormat(),10);
-                        strncat((char*)xfer.getOutBuffer(),_table.getChannel(),10);
-                        strncat((char*)xfer.getOutBuffer(),_table.getZone(),10);
+                        strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat().c_str(),10);
+                        strncat((char*)xfer.getOutBuffer(),getPagerProtocol().c_str(),1);
+                        strncat((char*)xfer.getOutBuffer(),getPagerDataFormat().c_str(),10);
+                        strncat((char*)xfer.getOutBuffer(),_table.getChannel().c_str(),10);
+                        strncat((char*)xfer.getOutBuffer(),_table.getZone().c_str(),10);
                     }
-                    else if((char)*_table.getIdentifierFormat()=='B')
+                    else if (_table.getIdentifierFormat().c_str()[0] == 'B')
                     {   //ID PAGE
-                        strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat(),10);
+                        strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat().c_str(),10);
                     }
-                    strncat((char*)xfer.getOutBuffer(),getFunctionCode(),10);
+                    strncat((char*)xfer.getOutBuffer(),getFunctionCode().c_str(),10);
 
                     if(_outMessage.Sequence == TnppPublicProtocolGolay)
                     {
 
-                        if((char)*_table.getIdentifierFormat()=='B')//This really isnt allowed..
+                        if (_table.getIdentifierFormat().c_str()[0] == 'B')//This really isnt allowed..
                         {   //ID PAGE
                             strncat((char*)xfer.getOutBuffer(),_zero_serial,2);
                         }
@@ -393,7 +393,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                         strncat((char*)xfer.getOutBuffer(),getGolayCapcode().c_str(),6);
                     }
                     else
-                        strncat((char*)xfer.getOutBuffer(),_table.getPagerID(),10);
+                        strncat((char*)xfer.getOutBuffer(),_table.getPagerID().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,300);
                     strncat((char*)xfer.getOutBuffer(),_ETX,10);
 
@@ -554,11 +554,11 @@ void CtiDeviceTnppPagingTerminal::resetStates()
     _command = Normal;
 }
 
-const char* CtiDeviceTnppPagingTerminal::getPagerProtocol()
+string CtiDeviceTnppPagingTerminal::getPagerProtocol()
 {
     if(_outMessage.Sequence == TnppPublicProtocolGolay)
     {
-        if(strstr(_table.getPagerProtocol(),_type_golay) == NULL)
+        if(strstr(_table.getPagerProtocol().c_str(),_type_golay) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Golay is not supported by this device, attempting anyway: " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -571,11 +571,11 @@ const char* CtiDeviceTnppPagingTerminal::getPagerProtocol()
     }
 }
 
-const char* CtiDeviceTnppPagingTerminal::getPagerDataFormat()
+string CtiDeviceTnppPagingTerminal::getPagerDataFormat()
 {
     if(_outMessage.Sequence == TnppPublicProtocolGolay)
     {
-        if(strstr(_table.getPagerProtocol(),_type_golay) == NULL)
+        if(strstr(_table.getPagerProtocol().c_str(),_type_golay) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Golay is not supported by this device, attempting anyway: " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -751,7 +751,7 @@ int CtiDeviceTnppPagingTerminal::getExtendedFunctionCapcode(int a)
 *   only functions 1-4 are used, and TNPP code 1 is function code 4, function code
 *   3 is TNPP code 2, and so on...
 ******************************************************************************/
-const char* CtiDeviceTnppPagingTerminal::getFunctionCode()
+string CtiDeviceTnppPagingTerminal::getFunctionCode()
 {
     if(_outMessage.Sequence == TnppPublicProtocolGolay)
     {
@@ -795,7 +795,7 @@ const char* CtiDeviceTnppPagingTerminal::getFunctionCode()
 
 }
 
-const char* CtiDeviceTnppPagingTerminal::getExtendedFunctionCode()
+string CtiDeviceTnppPagingTerminal::getExtendedFunctionCode()
 {
     _outMessage.Buffer.SASt._codeSimple[6] = '\0';
 

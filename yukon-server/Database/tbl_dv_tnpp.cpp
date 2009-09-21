@@ -211,37 +211,37 @@ int CtiTableDeviceTnpp::getOriginAddress() const
     return _originAddress;
 }
 
-const char* CtiTableDeviceTnpp::getIdentifierFormat()
+string CtiTableDeviceTnpp::getIdentifierFormat()
 {
-    return _identifierFormat.c_str();
+    return _identifierFormat;
 }
 
-const char* CtiTableDeviceTnpp::getPagerProtocol()
+string CtiTableDeviceTnpp::getPagerProtocol()
 {
-    return _pagerProtocol.c_str();
+    return _pagerProtocol;
 }
 
-const char* CtiTableDeviceTnpp::getPagerDataFormat()
+string CtiTableDeviceTnpp::getPagerDataFormat()
 {
-    return _dataFormat.c_str();
+    return _dataFormat;
 }
 
-const char* CtiTableDeviceTnpp::getChannel()
+string CtiTableDeviceTnpp::getChannel()
 {
-    return _channel.c_str();
+    return _channel;
 }
 
-const char* CtiTableDeviceTnpp::getZone()
+string CtiTableDeviceTnpp::getZone()
 {
-    return _zone.c_str();
+    return _zone;
 }
 
-const char* CtiTableDeviceTnpp::getFunctionCode()
+string CtiTableDeviceTnpp::getFunctionCode()
 {
-    return _functionCode.c_str();
+    return _functionCode;
 }
 
-const char* CtiTableDeviceTnpp::getPagerID()
+string CtiTableDeviceTnpp::getPagerID()
 {
-    return _pagerID.c_str();
+    return _pagerID;
 }
