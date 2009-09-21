@@ -259,7 +259,23 @@
             <cti:msg key="yukon.common.device.bulk.deviceSelection.selectDevicesByFileTitle" />
         </td>
         
-    </td>
- </tr>
+    </tr>
+ 
+ 	<%-- COMPOSE GROUP --%>
+    <tr>
+    
+        <td>
+            <form id="makeComboGroupForm" action="/spring/group/composedGroup/create" method="post">
+            	<input type="submit" value="Compose Group" style="width:140px;">
+            </form>
+        </td>
+        
+        <td>
+            Select devices from a group composed of multiple groups.
+        </td>
+    
+    </tr>
+ 
+ 
  </table>
    

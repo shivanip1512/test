@@ -7,6 +7,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
@@ -230,5 +231,9 @@ public interface DeviceGroupProvider {
      * @return - A Set of groups under base which contain device
      */
     public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device);
+    
+    public boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent);
+    
+    public Predicate<DeviceGroup> getGroupCanMovePredicate(DeviceGroup groupToMove);
 
 }

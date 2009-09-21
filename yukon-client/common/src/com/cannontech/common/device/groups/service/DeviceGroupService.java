@@ -25,6 +25,15 @@ public interface DeviceGroupService {
     public DeviceGroup resolveGroupName(String groupName) throws NotFoundException;
     
     /**
+     * Attempt to resolve the DeviceGroup for the given name. If the group cannot be found, null is returned.
+     * resolveGroupName() is appropriate for most cases where a group is expected to exist.
+     * This method is shortcut to catching the NotFoundException thrown by resolveGroupName() and returning a null.
+     * @param groupName
+     * @return
+     */
+    public DeviceGroup findGroupName(String groupName);
+    
+    /**
      * Calls resolveGroupName internally on each entry. In addition, child groups
      * of other entries in the set are removed (if the input is '/Meters' and 'Meters/Billing',
      * the result set will only include the meter group for '/Meters').
@@ -93,5 +102,18 @@ public interface DeviceGroupService {
      * @return
      */
     public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> group, String identifier);
+    
+    /**
+     * Performs basic checks to determine if groupToMove is allowed to be relocated to proposedParent.
+     * This method is provided as convenience to users who may want to use it for basic validation.
+     * Use the real DeviceGroupProvider.isGroupCanMoveUnderGroup() to perform full validation that may be implemented by specific providers.
+     * Specific types of DeviceGroupProvider may override isGroupCanMoveUnderGroup to add additional checks. These providers should generally call 
+     * this method (provided by DeviceGroupProviderBase, use a super call) in addition to any custom validation.
+     * super.
+     * @param groupToMove
+     * @param proposedParent
+     * @return
+     */
+    public boolean isBasicGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent);
 
 }

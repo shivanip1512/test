@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,6 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -54,8 +52,6 @@ import com.cannontech.web.reports.JsonReportDataUtils;
  */
 public class BulkController extends BulkControllerBase {
 
-    private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
-    
     private PaoLoadingService paoLoadingService = null;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
@@ -151,36 +147,6 @@ public class BulkController extends BulkControllerBase {
         }
         
         return mav;
-    }
-    
-    // SELECTED DEVICES POPUP TBALE
-    public ModelAndView selectedDevicesTable(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        
-        ModelAndView mav = new ModelAndView("selectedDevicesPopup.jsp");
-        
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        List<SimpleDevice> devicesToLoad = deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED);
-        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
-        
-        List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
-        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
-            
-            Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
-            
-            deviceInfo.put("Device Name", device.getName());
-            deviceInfo.put("Address", device.getAddress());
-            deviceInfo.put("Route", device.getRoute());
-            
-            deviceInfoList.add(deviceInfo);
-        }
-        
-        if (deviceCollection.getDeviceCount() > MAX_SELECTED_DEVICES_DISPLAYED) {
-            mav.addObject("resultsLimitedTo", MAX_SELECTED_DEVICES_DISPLAYED);
-        }
-        mav.addObject("deviceInfoList", deviceInfoList);
-        
-        return mav;
-        
     }
     
     // DEVICE COLLECTION REPORT

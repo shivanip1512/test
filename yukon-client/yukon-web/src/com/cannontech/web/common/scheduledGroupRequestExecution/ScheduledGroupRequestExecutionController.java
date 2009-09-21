@@ -187,27 +187,17 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName);
 		}
 		
-		// device group
-		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName");
-		if (StringUtils.isBlank(deviceGroupName)) {
-			
-		    Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
-			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
-			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
-			return makeErrorMav("No Device Group Selected.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, null);
-		}
-		
 		// edit job
 		int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
 		
 		// schedule / edit
 		if (requestType.equals(CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ)) {
 			
-			return scheduleAttributeRead(request, response, scheduleName, cronExpression, deviceGroupName, editJobId);
+			return scheduleAttributeRead(request, response, scheduleName, cronExpression, editJobId);
 		
 		} else if (requestType.equals(CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND)) {
 		
-			return scheduleCommand(request, response, scheduleName, cronExpression, deviceGroupName, editJobId);
+			return scheduleCommand(request, response, scheduleName, cronExpression, editJobId);
 		
 		} else {
 			throw new IllegalArgumentException("Unsupported requestType: " + requestType);
@@ -215,11 +205,21 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	}
 	
 	// SCHEDULE ATTRIBUTE READ
-	private ModelAndView scheduleAttributeRead(HttpServletRequest request, HttpServletResponse response, String scheduleName, String cronExpression, String deviceGroupName, int editJobId) throws ServletException {
+	private ModelAndView scheduleAttributeRead(HttpServletRequest request, HttpServletResponse response, String scheduleName, String cronExpression, int editJobId) throws ServletException {
 	
 		ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/detail");
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
+		// device group
+        String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName_attr");
+        if (StringUtils.isBlank(deviceGroupName)) {
+            
+            Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
+            String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
+            String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
+            return makeErrorMav("No Device Group Selected.", CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, null);
+        }
+        
 		// attribute
 		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		if (selectedAttributes.size() == 0) {
@@ -240,11 +240,21 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	}
 	
 	// SCHEDULE COMMAND
-	private ModelAndView scheduleCommand(HttpServletRequest request, HttpServletResponse response, String scheduleName, String cronExpression, String deviceGroupName, int editJobId) throws ServletException {
+	private ModelAndView scheduleCommand(HttpServletRequest request, HttpServletResponse response, String scheduleName, String cronExpression, int editJobId) throws ServletException {
 	
 		ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/detail");
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
+		// device group
+        String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName_cmd");
+        if (StringUtils.isBlank(deviceGroupName)) {
+            
+            Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
+            String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
+            String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
+            return makeErrorMav("No Device Group Selected.", CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, null);
+        }
+        
 		// command string
 		String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 		String commandString = ServletRequestUtils.getStringParameter(request, "commandString");

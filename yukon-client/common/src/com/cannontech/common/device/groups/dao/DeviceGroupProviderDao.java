@@ -5,7 +5,6 @@ import java.util.Set;
 
 import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvider;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 
 /**

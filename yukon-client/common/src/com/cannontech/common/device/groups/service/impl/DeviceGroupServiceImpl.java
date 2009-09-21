@@ -135,6 +135,17 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
 
     }
     
+    public DeviceGroup findGroupName(String groupName) {
+        
+        try {
+            return resolveGroupName(groupName);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+    
     public Set<? extends DeviceGroup> resolveGroupNames(Collection<String> groupNames) throws NotFoundException {
         Collection<DeviceGroup> result = new ArrayList<DeviceGroup>(groupNames.size());
         for (String groupName : groupNames) {
@@ -156,6 +167,19 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     
     public DeviceGroup getRootGroup() {
         return deviceGroupDao.getRootGroup();
+    }
+    
+    @Override
+    public boolean isBasicGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
+        
+        if (!groupToMove.isEditable() 
+            || !proposedParent.isModifiable()
+            || groupToMove.isEqualToOrDescendantOf(proposedParent)
+            || proposedParent.equals(groupToMove.getParent())) {
+            return false;
+        }
+        
+        return true;
     }
 
     @Required

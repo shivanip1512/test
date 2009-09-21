@@ -38,9 +38,6 @@
     <entry key="yukon.web.modules.amr.outageMonitorConfig.section.schedule">Schedule Blink Count Read (Optional)</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.name">Name</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.deviceGroup">Device Group</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroup">Select Device Group</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroupChoose">Select</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.selectDeviceGroupCancel">Cancel</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outagesGroup">Outages Group</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.chooseGroup">Select</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.changeGroup">Change</entry>

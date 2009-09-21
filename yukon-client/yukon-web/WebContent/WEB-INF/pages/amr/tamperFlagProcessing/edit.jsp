@@ -11,9 +11,6 @@
 <cti:msg var="nameText" key="yukon.web.modules.amr.tamperFlagEditor.label.name"/>
 <cti:msg var="deviceGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.deviceGroup"/>
 <cti:msg var="tamperFlagGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagGroup"/>
-<cti:msg var="selectDeviceGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.selectDeviceGroup"/>
-<cti:msg var="selectDeviceGroupChooseText" key="yukon.web.modules.amr.tamperFlagEditor.label.selectDeviceGroupChoose"/>
-<cti:msg var="selectDeviceGroupCancelText" key="yukon.web.modules.amr.tamperFlagEditor.label.selectDeviceGroupCancel"/>
 <cti:msg var="chooseGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.chooseGroup"/>
 <cti:msg var="changeGroupText" key="yukon.web.modules.amr.tamperFlagEditor.label.changeGroup"/>
 <cti:msg var="tamperFlagMonitoringText" key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagMonitoring"/>
@@ -46,16 +43,6 @@
     
     <script type="text/javascript">
 
-		function setSelectedGroupName() {
-			if ($('deviceGroupName').value != $('deviceGroup').value) {
-				$('deviceGroupName').value = $('deviceGroup').value;
-				$('deviceGroupNameSpan').innerHTML = $('deviceGroup').value;
-				$('deviceGroupNameForView').value = $('deviceGroup').value;
-				$('selectGroupButton').value = '${changeGroupText}';
-				$('deviceGroupLinkDiv').show();
-			}
-		}
-
 		function tamperFlagMonitorEditor_deleteTamperFlagMonitor(id) {
 
 			var deleteOk = confirm('${deleteConfirmText}');
@@ -64,10 +51,6 @@
 				$('deleteTamperFlagMonitorId').value = id;
 				$('monitorDeleteForm').submit();
 			}
-		}
-
-		function viewDeviceGroup() {
-			$('viewDeviceGroupForm').submit();
 		}
 
 		function rewriteTamperFlagGroupName(textEl) {
@@ -86,10 +69,6 @@
     	<%-- MISC FORMS --%>
 		<form id="monitorDeleteForm" action="/spring/amr/tamperFlagProcessing/delete" method="post">
 			<input type="hidden" id="deleteTamperFlagMonitorId" name="deleteTamperFlagMonitorId" value="">
-		</form>
-		
-		<form id="viewDeviceGroupForm" action="/spring/group/editor/home" method="get">
-			<input type="hidden" id="deviceGroupNameForView" name="groupName" value="${deviceGroupName}">
 		</form>
 		
 		<form id="enableMonitoringForm" action="/spring/amr/tamperFlagProcessing/toggleMonitorEvaluationEnabled" method="post">
@@ -124,38 +103,11 @@
 				<%-- device group --%>
 				<tags:nameValue name="${deviceGroupText}">
 					
-					<span id="deviceGroupLinkDiv" <c:if test="${empty deviceGroupName}">style="display:none;"</c:if>>
-						<a href="javascript:void(0);" onclick="viewDeviceGroup();">
-							<span id="deviceGroupNameSpan">${deviceGroupName}</span>
-						</a>&nbsp;
-					</span>
-					
-					<input type="hidden" id="deviceGroupName" name="deviceGroupName" value="${deviceGroupName}">
-					
-					<c:choose>
-						<c:when test="${not empty deviceGroupName}">
-							<input type="button" id="selectGroupButton" value="${changeGroupText}" onclick="">
-						</c:when>
-						<c:otherwise>
-							<input type="button" id="selectGroupButton" value="${chooseGroupText}" onclick="">
-						</c:otherwise>
-					</c:choose>
-					
 					<cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-		            <ext:nodeValueSelectingPopupTree    fieldId="deviceGroup"
-	                                                    fieldName="deviceGroup"
-	                                                    nodeValueName="groupName"
-	                                                    submitButtonText="${selectDeviceGroupChooseText}"
-	                                                    cancelButtonText="${selectDeviceGroupCancelText}"
-	                                                    submitCallback="setSelectedGroupName();"
-	                                                    
-	                                                    id="selectGroupTree"
-	                                                    treeAttributes="{}"
-	                                                    triggerElement="selectGroupButton"
-	                                                    dataJson="${groupDataJson}"
-	                                                    title="${selectDeviceGroupText}"
-	                                                    width="432"
-	                                                    height="600" />
+					<tags:deviceGroupNameSelector fieldName="deviceGroupName" 
+											  	  fieldValue="${deviceGroupName}" 
+											      dataJson="${groupDataJson}"
+											      linkGroupName="true"/>
 	                                                    
 	            	<img onclick="$('deviceGroupInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 				

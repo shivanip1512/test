@@ -10,8 +10,6 @@
 
     <cti:standardMenu menuSelection="" />
     
-    <cti:includeScript link="/JavaScript/bulkOperations.js"/>
-
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
     

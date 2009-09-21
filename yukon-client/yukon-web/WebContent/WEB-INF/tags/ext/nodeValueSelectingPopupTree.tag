@@ -29,6 +29,7 @@
 
     var selectedNodeId_${id} = null;
     var selectedNode_${id} = null;
+    var saveValue_${id} = '${fieldValue}';
 
     function recordNameValue_${id}(node, event) {
     
@@ -56,6 +57,8 @@
             alert('${noSelectionAlertText}');
             return false;
         }
+
+        saveValue_${id} = $('${fieldId}').value;
         
         closeWindow_${id}();
         
@@ -66,8 +69,8 @@
     
         selectedNodeId_${id} = null;
         selectedNode_${id} = null;
-        
-        $('${fieldId}').value = '';
+
+        $('${fieldId}').value = saveValue_${id};
         
         closeWindow_${id}();
     }

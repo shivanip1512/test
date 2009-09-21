@@ -137,6 +137,10 @@
         <property name="paoDao" ref="paoDao"/>
     </bean>
     
+    <bean id="composedGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ComposedGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+    </bean>
+    
     <bean id="deviceConfigGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.DeviceConfigGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
@@ -159,6 +163,7 @@
                 <entry key="METERS_SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
                 <entry key="METERS_DISABLED" value-ref="disabledGroupProvider"/>
+                <entry key="COMPOSED" value-ref="composedGroupProvider"/>
             </map>
         </property>
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>
@@ -195,6 +200,11 @@
         <property name="deviceGroupService" ref="deviceGroupService"/>
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
+    
+    <bean id="deviceGroupComposedDao" class="com.cannontech.common.device.groups.dao.impl.DeviceGroupComposedDaoImpl"/>
+    <bean id="deviceGroupComposedGroupDao" class="com.cannontech.common.device.groups.dao.impl.DeviceGroupComposedGroupDaoImpl"/>
+    <bean id="deviceGroupComposedGroupRowAndFieldMapper" class="com.cannontech.common.device.groups.dao.impl.DeviceGroupComposedGroupRowAndFieldMapper"/>
+    <bean id="deviceGroupComposedService" class="com.cannontech.common.device.groups.service.impl.DeviceGroupComposedServiceImpl"/>
     
     <bean id="peakReportDao"
         class="com.cannontech.common.device.peakReport.dao.impl.PeakReportDaoImpl">

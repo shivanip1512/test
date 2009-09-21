@@ -37,9 +37,6 @@
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.name">Name</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagGroup">Tamper Flag Group</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.selectDeviceGroup">Select Device Group</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.selectDeviceGroupChoose">Select</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.selectDeviceGroupCancel">Cancel</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.chooseGroup">Select</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.changeGroup">Change</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.tamperFlagMonitoring">Tamper Flag Monitoring</entry>

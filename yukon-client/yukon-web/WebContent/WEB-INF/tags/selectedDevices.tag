@@ -5,8 +5,6 @@
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="deviceCollection" required="true" type="java.lang.Object"%>
 
-<cti:includeScript link="/JavaScript/bulkOperations.js"/>
-
 <%-- I18N TEXT --%>
 <cti:msg var="linkLabel" key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel" />
 

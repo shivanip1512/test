@@ -6,16 +6,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
@@ -31,6 +34,7 @@ import com.cannontech.core.dao.NotFoundException;
 public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     
     private DeviceGroupProviderDao mainDelegator;
+    protected DeviceGroupService deviceGroupService;
     
     public abstract Set<SimpleDevice> getChildDevices(DeviceGroup group);
     
@@ -157,9 +161,33 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
         return false;
     }
     
+    @Override
+    public boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
+        
+        return deviceGroupService.isBasicGroupCanMoveUnderGroup(groupToMove, proposedParent);
+    }
+    
+    @Override
+    public Predicate<DeviceGroup> getGroupCanMovePredicate(final DeviceGroup groupToMove) {
+        
+        Predicate<DeviceGroup> canMoveUnderPredicate = new Predicate<DeviceGroup>(){
+            @Override
+            public boolean evaluate(DeviceGroup deviceGroup) {
+                return deviceGroupService.isBasicGroupCanMoveUnderGroup(groupToMove, deviceGroup);
+            }
+        };
+        
+        return canMoveUnderPredicate;
+    }
+    
     @Required
     public void setMainDelegator(DeviceGroupProviderDao mainDelegator) {
         this.mainDelegator = mainDelegator;
+    }
+    
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
     }
 
 	public DeviceGroupProviderDao getMainDelegator() {

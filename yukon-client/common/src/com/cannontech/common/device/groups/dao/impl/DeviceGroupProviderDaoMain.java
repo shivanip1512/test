@@ -17,6 +17,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CaseInsensitiveMap;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.predicate.Predicate;
 
 /**
  * This class serves as a delegation point between the DeviceGroupProviderDao
@@ -148,6 +149,16 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
 
     public boolean isDeviceInGroup(DeviceGroup group, YukonDevice device) {
         return getProvider(group).isDeviceInGroup(group,device);
+    }
+    
+    @Override
+    public boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
+        return getProvider(groupToMove).isGroupCanMoveUnderGroup(groupToMove, proposedParent);
+    }
+    
+    @Override
+    public Predicate<DeviceGroup> getGroupCanMovePredicate(DeviceGroup groupToMove) {
+        return getProvider(groupToMove).getGroupCanMovePredicate(groupToMove);
     }
     
     @Override

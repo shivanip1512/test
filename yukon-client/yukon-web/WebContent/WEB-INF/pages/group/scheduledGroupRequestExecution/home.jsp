@@ -43,13 +43,6 @@
         
         <%-- JAVASCRIPT --%>
         <script type="text/javascript">
-
-        function setSelectedGroupName(btnName, spanName, deviceGroupNameElName) {
-
-            $(spanName).innerHTML = $(deviceGroupNameElName).value;
-			$(btnName).value = '${changeGroupText}';
-		}
-        
         </script>
         
         <style type="text/css">
@@ -98,34 +91,13 @@
         		 		
         		 		<tags:nameValue name="${groupLabel}">
         		 			
-							<span id="deviceGroupNameSpan_attr">${deviceGroupName}</span>
-					        
-							<c:choose>
-								<c:when test="${not empty deviceGroupName}">
-									<input type="button" id="selectGroupButton_attr" value="${changeGroupText}">
-								</c:when>
-								<c:otherwise>
-									<input type="button" id="selectGroupButton_attr" value="${chooseGroupText}">
-								</c:otherwise>
-							</c:choose>
-					        
-					        <ext:nodeValueSelectingPopupTree    fieldId="deviceGroup_attr"
-				                                                fieldName="deviceGroupName"
-				                                                fieldValue="${deviceGroupName}"
-				                                                nodeValueName="groupName"
-				                                                submitButtonText="${selectDeviceGroupChooseText}"
-				                                                cancelButtonText="${selectDeviceGroupCancelText}"
-				                                                submitCallback="setSelectedGroupName('selectGroupButton_attr', 'deviceGroupNameSpan_attr', 'deviceGroup_attr');"
-				                                                
-				                                                id="selectGroupTree_attr"
-				                                                treeAttributes="{}"
-				                                                triggerElement="selectGroupButton_attr"
-				                                                dataJson="${groupDataJson}"
-				                                                title="${selectDeviceGroupText}"
-				                                                width="432"
-				                                                height="600" 
-				                                                highlightNodePath="${selectedNodePath}"/>
-		                                                
+        		 			<tags:deviceGroupNameSelector fieldName="deviceGroupName_attr" 
+												  	  fieldValue="${deviceGroupName}" 
+												      dataJson="${groupDataJson}"
+												      linkGroupName="true"
+												      showSelectedDevicesIcon="false"/>
+												      
+												      
         		 		</tags:nameValue>
         		 
         			</tags:nameValueContainer>
@@ -179,33 +151,11 @@
         		 		
         		 		<tags:nameValue name="${groupLabel}">
         		 			
-							<span id="deviceGroupNameSpan_cmd">${deviceGroupName}</span>
-					        
-							<c:choose>
-								<c:when test="${not empty deviceGroupName}">
-									<input type="button" id="selectGroupButton_cmd" value="${changeGroupText}">
-								</c:when>
-								<c:otherwise>
-									<input type="button" id="selectGroupButton_cmd" value="${chooseGroupText}">
-								</c:otherwise>
-							</c:choose>
-					        
-					        <ext:nodeValueSelectingPopupTree    fieldId="deviceGroup_cmd"
-				                                                fieldName="deviceGroupName"
-				                                                fieldValue="${deviceGroupName}"
-				                                                nodeValueName="groupName"
-				                                                submitButtonText="${selectDeviceGroupChooseText}"
-				                                                cancelButtonText="${selectDeviceGroupCancelText}"
-				                                                submitCallback="setSelectedGroupName('selectGroupButton_cmd', 'deviceGroupNameSpan_cmd', 'deviceGroup_cmd');"
-				                                                
-				                                                id="selectGroupTree_cmd"
-				                                                treeAttributes="{}"
-				                                                triggerElement="selectGroupButton_cmd"
-				                                                dataJson="${groupDataJson}"
-				                                                title="${selectDeviceGroupText}"
-				                                                width="432"
-				                                                height="600" 
-				                                                highlightNodePath="${selectedNodePath}"/>
+							<tags:deviceGroupNameSelector fieldName="deviceGroupName_cmd" 
+												  	  fieldValue="${deviceGroupName}" 
+												      dataJson="${groupDataJson}"
+												      linkGroupName="true"
+												      showSelectedDevicesIcon="false"/>
 		                                                
         		 		</tags:nameValue>
         		 

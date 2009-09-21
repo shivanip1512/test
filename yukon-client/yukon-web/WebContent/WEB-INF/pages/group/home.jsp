@@ -13,7 +13,6 @@
         <cti:crumbLink title="Device Groups" />
     </cti:breadCrumbs>
     
-    
     <script type="text/javascript">
     
         function showGroupPopup(popupDiv, focusElem){
@@ -43,7 +42,7 @@
         }
         
         function isValidGroupName(name) {
-            if(name == null || name == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
+            if(name == null || name.strip() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
                 return false;
             }
             return true;
@@ -53,7 +52,7 @@
         
             var newName = $F(nameId);
             if(!isValidGroupName(newName)) {
-                alert('Group names may not contain slashes.\n\nPlease enter a new name.');
+                alert('Group names may not be blank or contain slashes.\n\nPlease enter a new name.');
                 $(nameId).focus();
             } else {
                 $(buttonId).disabled = true;
@@ -113,6 +112,7 @@
 
     <h2>Groups Home</h2>
     <br>
+
     <c:if test="${not empty param.errorMessage}">
         <div style="color: red;">
             ${param.errorMessage}
@@ -263,6 +263,21 @@
                     <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.modifyGroupsLabel" /></h4>
                     
+                    <%-- CHANGE COMPOSED GROUPS --%>
+                    <c:if test="${isComposedGroup}">
+                    
+                    	<cti:msg var="editComposedLinkText" key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkText"/>
+                    	<cti:msg var="editComposedLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkTitle"/>
+                    
+                        <cti:url var="editComposedGroupUrl" value="/spring/group/composedGroup/build">
+                            <cti:param name="groupName" value="${group.fullName}" />
+                        </cti:url>
+                        <a title="${editComposedLinkTitle}" href="${editComposedGroupUrl}">
+                            ${editComposedLinkText}
+                        </a>
+                        <br>
+                    </c:if>
+                    
                     <%-- ADD GROUP --%>
                     <c:choose>
                         <c:when test="${group.modifiable}">
@@ -271,29 +286,47 @@
                             <cti:msg var="addSubgroupText" key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupText"/>
                             <cti:msg var="addSubgroupLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupLinkTitle" />
                             <cti:msg var="subgroupNameLabel" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameLabel" />
+                            <cti:msg var="subgroupTypeLabel" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupTypeLabel" />
+                            <cti:msg var="subgroupTypeBasicLabel" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupType.basicLabel" />
+                            <cti:msg var="subgroupTypeComposedLabel" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupType.composedLabel" />
+                            <cti:msg var="subgroupEmptyGroupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.subgroup.emptyGroupTitle" />
+                            <cti:msg var="subgroupComposedGroupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.subgroup.composedGroupTitle" />
+                            
                             <cti:msg var="subgroupNameSaveText" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText" />
                             
                             <a title="${addSubgroupLinkTitle}" onclick="showGroupPopup('${addSubGroupPopupId}', 'childGroupName')" href="javascript:void(0);">
                                 ${addSubgroupText}
                             </a>
                             
-                            <tags:simplePopup id="${addSubGroupPopupId}" title="${addSubgroupText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${addSubGroupPopupId}');">
+                            <tags:simplePopup id="${addSubGroupPopupId}" title="${addSubgroupText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${addSubGroupPopupId}');$('newEmptyGroupDiv').hide();">
                             
                                 <form id="addSubGroupForm" method="post" action="/spring/group/editor/addChild" onsubmit="return changeGroupName();">
-                                
-                                    <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-                                    
-                                    <tags:nameValueContainer>
-                                        <tags:nameValue name="${subgroupNameLabel}">
+                                	
+                                	<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+                                	
+                                	<br>
+                                	<tags:nameValueContainer>
+                                	
+                                        <tags:nameValue name="${subgroupNameLabel}" nameColumnWidth="120px">
                                             <input id="childGroupName" name="childGroupName" type="text" />
                                         </tags:nameValue>
+                                        
+                                        <tags:nameValue name="${subgroupTypeLabel}">
+                                        
+                                        	<select name="subGroupType">
+                                        		<option value="STATIC" title="${subgroupEmptyGroupTitle}">${subgroupTypeBasicLabel}</option>
+                                        		<option value="COMPOSED" title="${subgroupComposedGroupTitle}">${subgroupTypeComposedLabel}</option>
+                                        	</select>
+                                            
+                                        </tags:nameValue>
+                                        
                                     </tags:nameValueContainer>
                                     
                                     <br>
                                     <input id="addSubGroupSaveButton" type="button" value="${subgroupNameSaveText}" 
                                            onclick="checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton', 'addSubGroupWaitImg');">
-                                    <img id="addSubGroupWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
-                                
+                                	<img id="addSubGroupWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                                	
                                 </form>
                                 
                             </tags:simplePopup>

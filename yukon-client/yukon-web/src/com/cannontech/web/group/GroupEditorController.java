@@ -1,8 +1,12 @@
 package com.cannontech.web.group;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,27 +24,31 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
+import com.cannontech.common.device.groups.dao.DeviceGroupComposedDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroupComposed;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
-import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
+import com.cannontech.common.device.groups.service.NotEqualToOrDecendantOfGroupsPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
@@ -57,6 +65,8 @@ public class GroupEditorController extends MultiActionController {
     private CopyDeviceGroupService copyDeviceGroupService = null;
     private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
     private RolePropertyDao rolePropertyDao;
+    private DeviceGroupComposedDao deviceGroupComposedDao;
+    private PaoLoadingService paoLoadingService;
     
     private DeviceCollectionFactory deviceCollectionFactory = null;
 
@@ -65,64 +75,6 @@ public class GroupEditorController extends MultiActionController {
 
     private final int maxToShowImmediately = 10;
     private final int maxGetDevicesSize = 1000;
-    
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-
-    @Required
-    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
-        this.deviceGroupDao = deviceGroupDao;
-    }
-
-    @Required
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-
-    @Required
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Required
-    public void setCopyDeviceGroupService(
-            CopyDeviceGroupService copyDeviceGroupService) {
-        this.copyDeviceGroupService = copyDeviceGroupService;
-    }
-    
-    @Required
-    public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
-        this.groupMetersDao = groupMetersDao;
-    }
-    
-    @Required
-    public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
-        this.deviceCollectionFactory = deviceCollectionFactory;
-    }
-    
-    @Required
-    public void setDeviceGroupCollectionHelper(
-            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-    
-    @Required
-    public void setDeviceCollectionDeviceGroupHelper(
-            DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper) {
-        this.deviceCollectionDeviceGroupHelper = deviceCollectionDeviceGroupHelper;
-    }
-    
-    @Autowired
-    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
-		this.deviceGroupUiService = deviceGroupUiService;
-	}
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
     
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
@@ -160,6 +112,9 @@ public class GroupEditorController extends MultiActionController {
         boolean groupModifiable = group.isModifiable() && group.getParent() != null;
         mav.addObject("groupModifiable", groupModifiable);
         
+        boolean isComposedGroup = group.getType().equals(DeviceGroupType.COMPOSED);
+        mav.addObject("isComposedGroup", isComposedGroup);
+        
         boolean showImmediately = childDeviceCount <= maxToShowImmediately;
         mav.addObject("showImmediately", showImmediately);
         mav.addObject("maxGetDevicesSize", maxGetDevicesSize);
@@ -188,27 +143,13 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
         // MOVE GROUPS TREE JSON
-        final DeviceGroup selectedGroup = group;
-        Predicate<DeviceGroup> moveGroupPredicate = new Predicate<DeviceGroup>(){
-            @Override
-            public boolean evaluate(DeviceGroup deviceGroup) {
-                return !deviceGroup.equals(selectedGroup) 
-                        && !deviceGroup.isDescendantOf(selectedGroup)
-                        && !deviceGroup.equals(selectedGroup.getParent());
-            }
-        };
-        String moveGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, moveGroupPredicate);
+        Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(group);
+        String moveGroupDataJson = makeHierarchyJson(allGroupsGroupHierarchy, canMoveUnderPredicate);
         mav.addObject("moveGroupDataJson", moveGroupDataJson); 
         
         // COPY GROUPS TREE JSON
-        Predicate<DeviceGroup> copyGroupPredicate = new Predicate<DeviceGroup>(){
-            @Override
-            public boolean evaluate(DeviceGroup deviceGroup) {
-                return !deviceGroup.equals(selectedGroup) 
-                        && !deviceGroup.isDescendantOf(selectedGroup);
-            }
-        };
-        String copyGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, copyGroupPredicate);
+        NotEqualToOrDecendantOfGroupsPredicate notEqualToOrDecendantOfGroupsPredicate = new NotEqualToOrDecendantOfGroupsPredicate(group);
+        String copyGroupDataJson = makeHierarchyJson(allGroupsGroupHierarchy, notEqualToOrDecendantOfGroupsPredicate);
         mav.addObject("copyGroupDataJson", copyGroupDataJson); 
         
         // DEVICE COLLECTION
@@ -216,17 +157,11 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("deviceCollection", deviceCollection);
         
         return mav;
-
     }
     
-    private String makeMoveCopyJson(DeviceGroupHierarchy allGroupsGroupHierarchy, Predicate<DeviceGroup> moveOrCopyPredicate) {
+    private String makeHierarchyJson(DeviceGroupHierarchy allGroupsGroupHierarchy, Predicate<DeviceGroup> predicate) {
         
-        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
-        predicates.add(new ModifiableDeviceGroupPredicate());
-        predicates.add(moveOrCopyPredicate);
-        
-        AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
-        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, aggregatePredicate);
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, predicate);
         ExtTreeNode groupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
         
         JSONObject groupJsonObj = new JSONObject(groupRoot.toMap());
@@ -296,50 +231,76 @@ public class GroupEditorController extends MultiActionController {
 
     }
 
-    public ModelAndView addChild(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    public ModelAndView addChild(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView deviceGroupMav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView composedGroupMav = new ModelAndView("redirect:/spring/group/composedGroup/build");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-        mav.addObject("groupName", groupName);
-
+        DeviceGroupType subGroupType = DeviceGroupType.valueOf(ServletRequestUtils.getStringParameter(request, "subGroupType"));
+        
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         if (group.isModifiable()) {
 
-            String childGroupName = ServletRequestUtils.getStringParameter(request,
-                                                                           "childGroupName");
+            String childGroupName = ServletRequestUtils.getStringParameter(request, "childGroupName");
 
             // Make sure a new name was entered and doesn't contain slashes
             childGroupName = childGroupName.trim();
             if (StringUtils.isEmpty(childGroupName) || CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(childGroupName)) {
-                mav.addObject("errorMessage",
-                              "You must enter a Sub Group Name.  Group names may not contain slashes.");
-                return mav;
+                
+                deviceGroupMav.addObject("groupName", groupName);
+                deviceGroupMav.addObject("errorMessage", "You must enter a Sub Group Name.  Group names may not contain slashes.");
+                return deviceGroupMav;
             }
 
             try {
-                StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
-                                              DeviceGroupType.STATIC,
-                                              childGroupName);
                 
+                // PLAIN STATIC GROUP
+                if (subGroupType.equals(DeviceGroupType.STATIC)) {
                 
+                    StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
+                                                  DeviceGroupType.STATIC,
+                                                  childGroupName);
+                    
+                    
+                    
+                    deviceGroupMav.addObject("groupName", newGroup.getFullName());
+                    return deviceGroupMav;
+                    
+                // COMPOSED GROUP
+                } else if (subGroupType.equals(DeviceGroupType.COMPOSED)) {
+                    
+                    StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
+                                                                               DeviceGroupType.COMPOSED,
+                                                                               childGroupName);
+                    
+                    DeviceGroupComposed deviceGroupComposed = new DeviceGroupComposed(newGroup.getId());
+                    deviceGroupComposedDao.saveOrUpdate(deviceGroupComposed);
+                    
+                    composedGroupMav.addObject("groupName", newGroup.getFullName());
+                    return composedGroupMav;
                 
-                mav.addObject("groupName", newGroup.getFullName());
+                } else {
+                    
+                    deviceGroupMav.addObject("groupName", groupName);
+                    deviceGroupMav.addObject("errorMessage", "Invalid sub group type: " + subGroupType.name());
+                    return deviceGroupMav;
+                }
+                
             } catch (DuplicateException e) {
-                mav.addObject("errorMessage", e.getMessage());
-                return mav;
+                deviceGroupMav.addObject("groupName", groupName);
+                deviceGroupMav.addObject("errorMessage", e.getMessage());
+                return deviceGroupMav;
             }
 
         } else {
-            mav.addObject("errorMessage", "Cannot add sub group to " + group.getFullName());
-            return mav;
+            deviceGroupMav.addObject("groupName", groupName);
+            deviceGroupMav.addObject("errorMessage", "Cannot add sub group to " + group.getFullName());
+            return deviceGroupMav;
         }
-
-        return mav;
     }
 
     public ModelAndView addDevice(HttpServletRequest request, HttpServletResponse response)
@@ -489,7 +450,12 @@ public class GroupEditorController extends MultiActionController {
         // Make sure we can move the group
         try {
             
-            if (group.isEditable()) {
+            if (deviceGroupDao.isGroupCanMoveUnderGroup(group, parentGroup)) {
+                
+                
+//            }
+//            
+//            if (group.isEditable()) {
                 group.setParent(parentGroup);
                 deviceGroupEditorDao.updateGroup(group);
     
@@ -619,5 +585,121 @@ public class GroupEditorController extends MultiActionController {
 
         return mav;
 
+    }
+    
+    // SELECTED DEVICES POPUP TBALE
+    public ModelAndView selectedDevicesTableForDeviceCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        int totalDeviceCount = (int)deviceCollection.getDeviceCount();
+        List<SimpleDevice> devicesToLoad = deviceCollection.getDevices(0, maxGetDevicesSize);
+
+        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
+    }
+    
+    public ModelAndView selectedDevicesTableForGroupName(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
+        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        
+        int totalDeviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
+        Set<SimpleDevice> devicesToLoad = deviceGroupService.getDevices(Collections.singletonList(group), maxGetDevicesSize);
+        
+        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
+        
+    }
+    
+    private ModelAndView getSelectedDevicesTableMav(Collection<SimpleDevice> devicesToLoad, int totalDeviceCount) {
+        
+        ModelAndView mav = new ModelAndView("selectedDevicesPopup.jsp");
+        
+        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
+        
+        List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
+        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
+            
+            Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
+            
+            deviceInfo.put("Device Name", device.getName());
+            deviceInfo.put("Address", device.getAddress());
+            deviceInfo.put("Route", device.getRoute());
+            
+            deviceInfoList.add(deviceInfo);
+        }
+        
+        if (totalDeviceCount > maxGetDevicesSize) {
+            mav.addObject("resultsLimitedTo", maxGetDevicesSize);
+        }
+        mav.addObject("deviceInfoList", deviceInfoList);
+        
+        return mav;
+    }
+    
+    @Required
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
+
+    @Required
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
+        this.deviceGroupDao = deviceGroupDao;
+    }
+
+    @Required
+    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
+        this.deviceGroupEditorDao = deviceGroupEditorDao;
+    }
+
+    @Required
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+    
+    @Required
+    public void setCopyDeviceGroupService(
+            CopyDeviceGroupService copyDeviceGroupService) {
+        this.copyDeviceGroupService = copyDeviceGroupService;
+    }
+    
+    @Required
+    public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
+        this.groupMetersDao = groupMetersDao;
+    }
+    
+    @Required
+    public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
+        this.deviceCollectionFactory = deviceCollectionFactory;
+    }
+    
+    @Required
+    public void setDeviceGroupCollectionHelper(
+            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+    }
+    
+    @Required
+    public void setDeviceCollectionDeviceGroupHelper(
+            DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper) {
+        this.deviceCollectionDeviceGroupHelper = deviceCollectionDeviceGroupHelper;
+    }
+    
+    @Autowired
+    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
+        this.deviceGroupUiService = deviceGroupUiService;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setDeviceGroupComposedDao(DeviceGroupComposedDao deviceGroupComposedDao) {
+        this.deviceGroupComposedDao = deviceGroupComposedDao;
+    }
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
     }
 }

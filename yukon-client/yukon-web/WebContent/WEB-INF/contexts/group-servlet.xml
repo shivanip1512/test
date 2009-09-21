@@ -69,4 +69,7 @@
         
     <bean id="ScheduledGroupRequestExecutionResultsController" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionResultsController" />
     
+    <!-- COMPOSED GROUP  -->
+    <bean class="com.cannontech.web.group.ComposedGroupController" />
+    
 </beans>

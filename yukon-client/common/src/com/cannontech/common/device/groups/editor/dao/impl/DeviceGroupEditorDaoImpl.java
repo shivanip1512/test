@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException;
-import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -260,7 +259,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
         try {
-            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), DeviceGroupPermission.EDIT_MOD.toString(), type.name());
+            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), type.getDeviceGroupPermission().toString(), type.name());
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Cannot create group with the same name as an existing group with the same parent.", e);
         }
@@ -269,7 +268,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         result.setId(nextValue);
         result.setName(groupName);
         result.setParent(group);
-        result.setPermission(DeviceGroupPermission.EDIT_MOD);
+        result.setPermission(type.getDeviceGroupPermission());
         result.setType(type);
         return result;
     }
