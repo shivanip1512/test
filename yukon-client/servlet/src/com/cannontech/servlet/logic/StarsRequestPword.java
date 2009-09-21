@@ -64,14 +64,7 @@ public class StarsRequestPword extends RequestPword {
 					LiteStarsCustAccountInformation lCustInfo = null;
 					List<Object> accounts = lsec.searchAccountByAccountNumber(accNum, false, true);
 					
-					search:
-					for(Object object : accounts) {
-					    if(object instanceof Integer) {
-					        Integer accountId = (Integer) object;
-					        lCustInfo = starsCustAccountInformationDao.getById(accountId, lsec.getEnergyCompanyID());
-					        break search;
-					    }
-					}
+					lCustInfo = searchForMatchingAccount(accounts, lsec);
 					
 					if( lCustInfo != null ) {
 						allCustAccts.add( lCustInfo );
@@ -132,6 +125,18 @@ public class StarsRequestPword extends RequestPword {
 		}
 	}
 
+	private LiteStarsCustAccountInformation searchForMatchingAccount(List<Object> accounts, LiteStarsEnergyCompany lsec) {
+	    LiteStarsCustAccountInformation lCustInfo = null;
+	    for(Object object : accounts) {
+            if(object instanceof Integer) {
+                Integer accountId = (Integer) object;
+                lCustInfo = starsCustAccountInformationDao.getById(accountId, lsec.getEnergyCompanyID());
+                return lCustInfo;
+            }
+        }
+	    return null;
+	}
+	
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
 		LiteCustomer liteCust = DaoFactory.getContactDao().getCustomer( lCont_.getContactID() );
 		
