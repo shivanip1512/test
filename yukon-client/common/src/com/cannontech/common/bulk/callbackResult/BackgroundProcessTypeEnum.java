@@ -9,6 +9,7 @@ public enum BackgroundProcessTypeEnum {
     CHANGE_DEVICE_TYPE("Change Device Type", "changeDeviceType"),
     ADD_POINTS("Add Points", "addPoints"),
     REMOVE_POINTS("Remove Points", "removePoints"),
+    UPDATE_POINTS("Update Points", "updatePoints"),
     ASSIGN_CONFIG("Assign Config", "assignConfig"),
     ;
     

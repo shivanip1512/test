@@ -176,9 +176,6 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
             
             @Override
             public void complete() {
-//                if(!phaseDetectData.isReadAfterAll() && StringUtils.isBlank(phaseDetectResult.getErrorMsg())){
-//                    phaseDetectState.setPhaseDetectRead(constrainToPhase);
-//                }
                 if(phaseDetectData.isReadAfterAll() || phaseDetectState.isPhaseDetectComplete()){
                     clearPhaseDetectGroups();
                     proccessReadResults(devices, phaseDetectResult.getPhaseToGroupMap(), user);

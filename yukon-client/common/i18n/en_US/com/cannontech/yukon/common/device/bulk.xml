@@ -420,12 +420,51 @@
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
     
+    <entry key="yukon.common.device.bulk.updatePointsHome.viewDefinitionDetailPopupTitle">View Device Definition</entry>
+    
     <!-- updatePointsHome.jsp -->
     <entry key="yukon.common.device.bulk.updatePointsHome.pageTitle">Update Points</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.header">Choose Points</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noteText"></entry>
-    <entry key="yukon.common.device.bulk.updatePointsHome.viewDefinitionDetailPopupTitle">View Device Definition</entry>
+    
+    <!-- options text -->
+    <entry key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsOptionLabel">Existing Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsOptionDescription">* Masking points may take a longer time to complete when the collection contains many devices.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsFalseOptionText">Mask Points That Do Not Already Exist</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsFalseOptionTooltip">Click this button to mask (disable) selection of points that do not exist on all of the selected devices.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsTrueOptionText">Unmask Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsTrueOptionTooltip">Click this button to unmask (enable) selection of all supported points for each device type; this option will show all points supported even if some selected devices do not have them created.</entry>
+    
+    <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsOptionLabel">Shared Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsFalseOptionText">All Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsFalseOptionTooltip">Show all supported points for each selected device type. When all selected devices are of the same type, "all points" and "shared points" will display the same set of points.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionText">Only Shared Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionTooltip">Show only those points that all selected device types support.</entry>
+    
+    <!-- misc -->
+    <entry key="yukon.common.device.bulk.updatePointsHome.updateButton">Update Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.noPointsSelectedError">No points selected.</entry>
+    
+    <!-- updatePointsResults.jsp -->
+    <entry key="yukon.common.device.bulk.updatePointsResults.pageTitle">Update Points Results</entry>
+    <entry key="yukon.common.device.bulk.updatePointsResults.header">Results Of Update Points Operation</entry>
+    
+    <entry key="yukon.common.device.bulk.updatePointsResults.noteLabel">Note: </entry>
+    <entry key="yukon.common.device.bulk.updatePointsResults.noteText"><![CDATA[
+        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
+    ]]></entry>
+    <entry key="yukon.common.device.bulk.updatePointsResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.updatePointsResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.updatePointsResults.complete">Complete.</entry>
+    
+    <entry key="yukon.common.device.bulk.updatePointsResults.successLabel">Successfully Updated Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsResults.processingExceptionLabel">Failed To Update Points</entry>
+    
+    <entry key="yukon.common.device.bulk.updatePointsResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.common.device.bulk.updatePointsResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
+    
+    <entry key="yukon.common.device.bulk.updatePointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
     <!-- REMOVE POINTS -->
     <!-- ******************************************************************************************************************** -->
