@@ -2,9 +2,7 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,6 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
         
         int deviceId = device.getPaoIdentifier().getPaoId();
         
-        // TODO this could be optimized to only need to run some of the fragments to determine group membership
         DeviceGroupComposed deviceGroupComposed = deviceGroupComposedService.getDeviceGroupComposed(group);
         DeviceGroupComposedCompositionType compositionType = deviceGroupComposed.getDeviceGroupComposedCompositionType();
         
@@ -69,23 +66,22 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
         // TODO Is this a worthwhile optimization? Is it an optimization at all? Is there a better way to optimize the "any" case?
         } else if (compositionType.equals(DeviceGroupComposedCompositionType.UNION)) {
             
-            // gather groups that the device is in
-            Set<DeviceGroup> deviceGroupMemberships = deviceGroupDao.getGroupMembership(device);
-            
-            // gather groups that the composed group is composed of
             List<DeviceGroupComposedGroup> compositionGroups = deviceGroupComposedGroupDao.getComposedGroupsForId(deviceGroupComposed.getDeviceGroupComposedId());
-            Set<DeviceGroup> composedGroupGroups = new HashSet<DeviceGroup>(compositionGroups.size());
             for (DeviceGroupComposedGroup compositionGroup : compositionGroups) {
                 
+                boolean not = compositionGroup.isNot();
                 DeviceGroup searchGroup = compositionGroup.getDeviceGroup();
                 if (searchGroup == null) {
                     log.debug("Composition group does not exist, device cannot be a child, skipping search in this group.");
                     continue;
                 }
+                
+                if ((!not && deviceGroupDao.isDeviceInGroup(searchGroup, device)) || (not && !deviceGroupDao.isDeviceInGroup(searchGroup, device))) {
+                    return true;
+                }
             }
-            
-            // if composedGroupGroups is changed be removing deviceGroupMemberships, then the device must belong to one of the composition groups.
-            return composedGroupGroups.removeAll(deviceGroupMemberships);
+
+            return false;
             
         } else {
             throw new IllegalArgumentException("Unhandled DeviceGroupComposedCompositionType: " + compositionType.name());
@@ -127,8 +123,6 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
         
         return sql;
     }
-    
-    
     
     @Override
     public boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
