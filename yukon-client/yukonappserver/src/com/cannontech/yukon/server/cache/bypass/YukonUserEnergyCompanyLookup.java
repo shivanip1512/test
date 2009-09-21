@@ -7,6 +7,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -14,32 +15,22 @@ public class YukonUserEnergyCompanyLookup {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
-    static String sqlForContact; 
-    static String sqlForAdditionalContact;
-    static String sqlForOperatorLogin;
-    static {
-		sqlForContact = "SELECT EnergyCompanyCustomerList.EnergyCompanyID " +
-			  " FROM EnergyCompanyCustomerList,Customer,Contact " +
-			  " WHERE EnergyCompanyCustomerList.CustomerID=Customer.CustomerID " +
-			  " AND Customer.PrimaryContactID=Contact.ContactID"; 
-			  
-		sqlForAdditionalContact = "SELECT EnergyCompanyCustomerList.EnergyCompanyID " + 
-				  " FROM EnergyCompanyCustomerList,CustomerAdditionalContact,Contact " + 
-				  " WHERE EnergyCompanyCustomerList.CustomerID=CustomerAdditionalContact.CustomerID " +
-				  " AND CustomerAdditionalContact.ContactID=Contact.ContactID ";
-				     					
-		sqlForOperatorLogin = "SELECT EnergyCompanyID FROM EnergyCompanyOperatorLoginList";
-    }
-    
 	public LiteEnergyCompany loadLiteEnergyCompanyByUser(LiteYukonUser liteYukonUser, List<LiteEnergyCompany> allEnergyCompanies) {
 
 		// Load LiteEnergyCompany by (primary) contact
    		try {
-   			String sql = sqlForContact + " AND Contact.LoginId = ?";
-   			int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, liteYukonUser.getUserID());
+   			SqlStatementBuilder sql = new SqlStatementBuilder();
+   			sql.append("SELECT ectam.EnergyCompanyId");
+   			sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca, Customer cu, Contact c");
+   			sql.append("WHERE ectam.AccountId = ca.AccountId");
+   			sql.append("	AND ca.CustomerId = cu.CustomerId");
+   			sql.append("	AND cu.PrimaryContactID = c.ContactID");
+   			sql.append("	AND c.LoginId = ").appendArgument(liteYukonUser.getUserID());
+   			
+   			int energyCompanyId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
 
    			//Load the LiteEnergyCompany object
-   	   		for (LiteEnergyCompany liteEnergyCompany: allEnergyCompanies) {
+   	   		for (LiteEnergyCompany liteEnergyCompany : allEnergyCompanies) {
    				if(liteEnergyCompany.getEnergyCompanyID() == energyCompanyId) {
    					return  liteEnergyCompany;
    				}
@@ -50,11 +41,20 @@ public class YukonUserEnergyCompanyLookup {
 
    		// If by (primary) Contact did not produce a LiteEnergyCompany, load by AdditionalContact
    		try {
-   			String sql = sqlForAdditionalContact + " AND Contact.LoginId = ?";
-   			int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, liteYukonUser.getUserID());
+
+   			SqlStatementBuilder sql = new SqlStatementBuilder();
+   			sql.append("SELECT ectam.EnergyCompanyId");
+   			sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca,");
+   			sql.append("	CustomerAdditionalContact cac, Contact c");
+   			sql.append("WHERE ectam.AccountId = ca.AccountId");
+   			sql.append("	AND ca.CustomerId = cac.CustomerID");
+   			sql.append(" 	AND cac.ContactID = c.ContactID");
+   			sql.append("	AND c.LoginId = ").appendArgument(liteYukonUser.getUserID());
+   			
+   			int energyCompanyId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
 
    			//Load the LiteEnergyCompany object
-   	   		for (LiteEnergyCompany liteEnergyCompany: allEnergyCompanies) {
+   	   		for (LiteEnergyCompany liteEnergyCompany : allEnergyCompanies) {
    				if(liteEnergyCompany.getEnergyCompanyID() == energyCompanyId) {
    					return  liteEnergyCompany;
    				}
@@ -65,11 +65,15 @@ public class YukonUserEnergyCompanyLookup {
 
 		// If by AdditionalContact did not produce a LiteEnergyCompany, load by Operator Login
    		try {
-   			String sql = sqlForOperatorLogin + " WHERE OperatorLoginID = ?";
-   			int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, liteYukonUser.getUserID());
+   			SqlStatementBuilder sql = new SqlStatementBuilder();
+   			sql.append("SELECT EnergyCompanyID");
+   			sql.append("FROM EnergyCompanyOperatorLoginList");
+   			sql.append("	WHERE OperatorLoginID = ").appendArgument(liteYukonUser.getUserID());
+   			
+   			int energyCompanyId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
 
    			//Load the LiteEnergyCompany object
-   	   		for (LiteEnergyCompany liteEnergyCompany: allEnergyCompanies) {
+   	   		for (LiteEnergyCompany liteEnergyCompany : allEnergyCompanies) {
    				if(liteEnergyCompany.getEnergyCompanyID() == energyCompanyId) {
    					return  liteEnergyCompany;
    				}
