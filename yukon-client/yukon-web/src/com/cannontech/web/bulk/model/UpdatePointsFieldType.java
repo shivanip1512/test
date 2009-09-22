@@ -16,12 +16,4 @@ public enum UpdatePointsFieldType {
         return displayValue;
     }
     
-    static public UpdatePointsFieldType getUpdatePointsFieldType(String type) {
-        for (UpdatePointsFieldType value : UpdatePointsFieldType.values()) {
-            if (type.equals(value.displayValue)) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException();
-    }
 }
