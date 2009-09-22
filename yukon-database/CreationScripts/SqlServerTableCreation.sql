@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/22/2009 9:52:57 AM                         */
+/* Created on:     9/22/2009 11:05:17 AM                        */
 /*==============================================================*/
 
 
@@ -4563,7 +4563,7 @@ create table CTIDatabase (
 )
 go
 
-insert into CTIDatabase values('4.2', 'Matt K', '22-Sep-2009', 'Latest Update', 11 );
+/* __YUKON_VERSION__ */
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -13753,18 +13753,6 @@ alter table CommandRequestExecResult
    add constraint FK_ComReqExecResult_ComReqExec foreign key (CommandRequestExecId)
       references CommandRequestExec (CommandRequestExecId)
          on delete cascade
-go
-
-alter table CommandRequestExecResult
-   add constraint FK_ComReqExecResult_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-         on delete set null
-go
-
-alter table CommandRequestExecResult
-   add constraint FK_ComReqExecResult_Route foreign key (RouteId)
-      references Route (RouteID)
-         on delete set null
 go
 
 alter table Contact

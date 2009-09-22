@@ -716,16 +716,6 @@ ALTER TABLE CommandRequestExecResult
       REFERENCES CommandRequestExec (CommandRequestExecId)
       ON DELETE CASCADE;
 
-ALTER TABLE CommandRequestExecResult
-   ADD CONSTRAINT FK_ComReqExecResult_Device FOREIGN KEY (DeviceId)
-      REFERENCES DEVICE (DEVICEID)
-      ON DELETE SET NULL;
-
-ALTER TABLE CommandRequestExecResult
-   ADD CONSTRAINT FK_ComReqExecResult_Route FOREIGN KEY (RouteId)
-      REFERENCES Route (RouteID)
-      ON DELETE SET NULL;
-
 ALTER TABLE ScheduledGrpCommandRequest
    ADD CONSTRAINT FK_SchGrpComReq_ComReqExec FOREIGN KEY (CommandRequestExecId)
       REFERENCES CommandRequestExec (CommandRequestExecId)

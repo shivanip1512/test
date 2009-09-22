@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/22/2009 10:00:31 AM                        */
+/* Created on:     9/22/2009 10:54:35 AM                        */
 /*==============================================================*/
 
 
@@ -2010,7 +2010,7 @@ create table CTIDatabase  (
    constraint PK_CTIDATABASE primary key (Version, Build)
 );
 
-insert into CTIDatabase values('4.2', 'Matt K', '22-Sep-2009', 'Latest Update', 11 );
+/* __YUKON_VERSION__ */
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -10665,16 +10665,6 @@ alter table CommandRequestExecResult
    add constraint FK_ComReqExecResult_ComReqExec foreign key (CommandRequestExecId)
       references CommandRequestExec (CommandRequestExecId)
       on delete cascade;
-
-alter table CommandRequestExecResult
-   add constraint FK_ComReqExecResult_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete set null;
-
-alter table CommandRequestExecResult
-   add constraint FK_ComReqExecResult_Route foreign key (RouteId)
-      references Route (RouteID)
-      on delete set null;
 
 alter table Contact
    add constraint FK_CONTACT_REF_CNT_A_ADDRESS foreign key (AddressID)
