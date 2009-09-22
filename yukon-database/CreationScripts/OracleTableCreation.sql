@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/8/2009 4:40:30 PM                          */
+/* Created on:     9/22/2009 10:00:31 AM                        */
 /*==============================================================*/
 
 
@@ -2010,7 +2010,7 @@ create table CTIDatabase  (
    constraint PK_CTIDATABASE primary key (Version, Build)
 );
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('4.2', 'Matt K', '22-Sep-2009', 'Latest Update', 11 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -2095,7 +2095,7 @@ create table CapControlStrategy  (
    constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
 );
 
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0, 'N'); 
+insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0, 'N', '(none)'); 
 
 /*==============================================================*/
 /* Index: Indx_CapCntrlStrat_name_UNQ                           */

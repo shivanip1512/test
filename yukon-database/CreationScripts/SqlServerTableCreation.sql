@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/8/2009 4:30:45 PM                          */
+/* Created on:     9/22/2009 9:52:57 AM                         */
 /*==============================================================*/
 
 
@@ -4563,7 +4563,7 @@ create table CTIDatabase (
 )
 go
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('4.2', 'Matt K', '22-Sep-2009', 'Latest Update', 11 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -4653,7 +4653,7 @@ create table CapControlStrategy (
 )
 go
 
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0, 'N'); 
+insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0, 'N', '(none)'); 
 
 /*==============================================================*/
 /* Index: Indx_CapCntrlStrat_name_UNQ                           */
