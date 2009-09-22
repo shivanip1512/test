@@ -77,7 +77,7 @@ CtiTime::CtiTime(unsigned hour, unsigned minute, unsigned second) :
   _seconds(maketm(CtiDate::now(), hour, minute, second))
 {}
 
-CtiTime::CtiTime(CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
+CtiTime::CtiTime(const CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
   _seconds(0)
 {
     if(d.isValid()) {

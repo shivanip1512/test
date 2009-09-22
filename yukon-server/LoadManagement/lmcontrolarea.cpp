@@ -177,7 +177,7 @@ LONG CtiLMControlArea::getMinResponseTime() const
 
     Returns the default daily start time
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getDefDailyStartTime(CtiDate &defaultDate) const
+CtiTime CtiLMControlArea::getDefDailyStartTime(const CtiDate &defaultDate) const
 {
     return (_defdailystarttime == -1) ?
         CtiTime::neg_infin :
@@ -189,7 +189,7 @@ CtiTime CtiLMControlArea::getDefDailyStartTime(CtiDate &defaultDate) const
 
     Returns the default daily stop time
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getDefDailyStopTime(CtiDate &defaultDate) const
+CtiTime CtiLMControlArea::getDefDailyStopTime(const CtiDate &defaultDate) const
 {
     return (_defdailystoptime == -1) ?
         CtiTime::neg_infin :
@@ -369,7 +369,7 @@ LONG CtiLMControlArea::getCurrentStopSecondsFromDayBegin() const
     Returns the current daily start time.
     NOTE: This adjusts automatically for DST!
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getCurrentDailyStartTime(CtiDate &defaultDate) const
+CtiTime CtiLMControlArea::getCurrentDailyStartTime(const CtiDate &defaultDate) const
 {
     return (_currentdailystarttime == -1) ?
         CtiTime::neg_infin :
@@ -382,7 +382,7 @@ CtiTime CtiLMControlArea::getCurrentDailyStartTime(CtiDate &defaultDate) const
     Returns the default daily stop time
     NOTE: This adjusts automatically for DST!
 ---------------------------------------------------------------------------*/
-CtiTime CtiLMControlArea::getCurrentDailyStopTime(CtiDate &defaultDate) const
+CtiTime CtiLMControlArea::getCurrentDailyStopTime(const CtiDate &defaultDate) const
 {
     return (_currentdailystoptime == -1) ?
         CtiTime::neg_infin :
@@ -1669,7 +1669,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                     con_checker.checkWeekDays(secondsFrom1901, gEndOfCtiTimeSeconds) &&
                     con_checker.checkMasterActive() &&
                     con_checker.checkControlWindows(secondsFrom1901, gEndOfCtiTimeSeconds) &&
-                    con_checker.checkControlAreaControlWindows(*this, secondsFrom1901, gEndOfCtiTimeSeconds) )
+                    con_checker.checkControlAreaControlWindows(*this, secondsFrom1901, gEndOfCtiTimeSeconds, CtiDate::now()) )
                 {
                     if( getControlAreaState() == CtiLMControlArea::InactiveState )
                     {

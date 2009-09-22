@@ -5,11 +5,13 @@
 #include "yukon.h"
 #include "lmutility.h"
 
+#include <sstream>
+
 /*
 *   This is WALLCLOCK time - an offset of 14400 (+4 hours) is ALWAYS 4am.  This function
 *    ignores any effect of a DST gain or loss of an hour.
 */
-CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, CtiDate &startingDate)
+CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, const CtiDate &startingDate)
 {
     int days = offsetFromMidnight / 86400;
 
@@ -37,5 +39,33 @@ CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, CtiDate &startingDate)
     startTime.addDays(days);
 
     return startTime;
+}
+
+
+string ControlWindowErrorMessage(const CtiTime &windowStartTime,
+                                 const CtiTime &windowStopTime,
+                                 const CtiTime &proposedTime,
+                                 const string &timeType,
+                                 const string &windowType)
+{
+    std::ostringstream   stream;
+
+    stream << "The program cannot run outside of its prescribed control windows.  The proposed "
+            << timeType
+            << " time of "
+            << proposedTime.asString()
+            << " is outside the ";
+        
+    if( !windowType.empty() )
+    {
+        stream << windowType << " ";
+    }
+        
+    stream << "control window that runs from "
+            << windowStartTime.asString()
+            << " to "
+            << windowStopTime.asString();
+            
+    return stream.str();
 }
 

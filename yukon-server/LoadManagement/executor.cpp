@@ -1212,7 +1212,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
             if( controlArea != NULL )
             {
-                passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds());
+                passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds(), CtiDate::now());
             }
 
             if( response != NULL )
@@ -1250,7 +1250,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
             CoerceStartStopTime(program, startTime, stopTime, controlArea);
             if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
-                checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds()) )
+                checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds(), CtiDate::now()) )
             {
                 StartProgram(program, controlArea, startTime, stopTime);
                 controlReason = "Manual Start Command";

@@ -46,7 +46,7 @@ public:
     CtiTime(specialvalues);
     CtiTime(unsigned long s);
     CtiTime(unsigned hour, unsigned minute, unsigned int second=0);
-    CtiTime(CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
+    CtiTime(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     CtiTime(struct tm*);
 
     CtiTime(const CtiTime&);
