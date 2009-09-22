@@ -194,7 +194,7 @@ SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
 szServPath = TomcatPath ^ "\\bin\\";
 TextSubGetValue ( "<TARGETDIR>", targetString, FALSE, FALSE );
-szCmdLine = 'install ' + targetString ^ "\\Runtime"; 
+szCmdLine = "install \"" + targetString ^ "\\Runtime \""; 
 
 //LaunchAppAndWait ( szServPath ^ "service.bat" , szCmdLine, WAIT );
 LaunchAppAndWait ( szServPath ^ "yukonservice.bat" , szCmdLine, WAIT );

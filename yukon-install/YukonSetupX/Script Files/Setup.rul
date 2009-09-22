@@ -116,7 +116,7 @@ Dlg_SetupType:
     //set the system environment variable YUKON_BASE for the good of all
 	szName2 = "YUKON_BASE";         
 	szKey2 = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
-	foundVal = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , '"' + TARGETDIR + '"', -1 );
+	foundVal = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , TARGETDIR, -1 );
 	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
 
 	//make sure that the system will be aware of the presence of the new Java path
