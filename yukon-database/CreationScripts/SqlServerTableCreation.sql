@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/22/2009 11:05:17 AM                        */
+/* Created on:     9/22/2009 5:14:12 PM                         */
 /*==============================================================*/
 
 
@@ -1917,6 +1917,20 @@ if exists (select 1
            where  id = object_id('DeviceDirectCommSettings')
             and   type = 'U')
    drop table DeviceDirectCommSettings
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceGroupComposed')
+            and   type = 'U')
+   drop table DeviceGroupComposed
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceGroupComposedGroup')
+            and   type = 'U')
+   drop table DeviceGroupComposedGroup
 go
 
 if exists (select 1
@@ -6103,6 +6117,29 @@ create table DeviceDirectCommSettings (
    DEVICEID             numeric              not null,
    PORTID               numeric              not null,
    constraint PK_DEVICEDIRECTCOMMSETTINGS primary key (DEVICEID)
+)
+go
+
+/*==============================================================*/
+/* Table: DeviceGroupComposed                                   */
+/*==============================================================*/
+create table DeviceGroupComposed (
+   DeviceGroupComposedId numeric              not null,
+   DeviceGroupId        numeric              not null,
+   CompositionType      varchar(100)         null,
+   constraint PK_DevGroupComp primary key (DeviceGroupComposedId)
+)
+go
+
+/*==============================================================*/
+/* Table: DeviceGroupComposedGroup                              */
+/*==============================================================*/
+create table DeviceGroupComposedGroup (
+   DeviceGroupComposedGroupId numeric              not null,
+   DeviceGroupComposedId numeric              not null,
+   GroupName            varchar(255)         not null,
+   IsNot                char(1)              not null,
+   constraint PK_DevGroupCompGroup primary key (DeviceGroupComposedGroupId)
 )
 go
 
@@ -14139,6 +14176,18 @@ go
 alter table DeviceDirectCommSettings
    add constraint SYS_C0013187 foreign key (PORTID)
       references CommPort (PORTID)
+go
+
+alter table DeviceGroupComposed
+   add constraint FK_DevGroupComp_DevGroup foreign key (DeviceGroupId)
+      references DEVICEGROUP (DeviceGroupId)
+         on delete cascade
+go
+
+alter table DeviceGroupComposedGroup
+   add constraint FK_DevGrpCompGrp_DevGrpComp foreign key (DeviceGroupComposedId)
+      references DeviceGroupComposed (DeviceGroupComposedId)
+         on delete cascade
 go
 
 alter table DeviceMCT400Series

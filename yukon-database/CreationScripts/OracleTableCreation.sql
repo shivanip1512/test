@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/22/2009 10:54:35 AM                        */
+/* Created on:     9/22/2009 5:12:34 PM                         */
 /*==============================================================*/
 
 
@@ -500,6 +500,10 @@ drop table DeviceCBC cascade constraints;
 drop table DeviceCustomerList cascade constraints;
 
 drop table DeviceDirectCommSettings cascade constraints;
+
+drop table DeviceGroupComposed cascade constraints;
+
+drop table DeviceGroupComposedGroup cascade constraints;
 
 drop table DeviceMCT400Series cascade constraints;
 
@@ -3474,6 +3478,27 @@ create table DeviceDirectCommSettings  (
    DEVICEID             NUMBER                          not null,
    PORTID               NUMBER                          not null,
    constraint PK_DEVICEDIRECTCOMMSETTINGS primary key (DEVICEID)
+);
+
+/*==============================================================*/
+/* Table: DeviceGroupComposed                                   */
+/*==============================================================*/
+create table DeviceGroupComposed  (
+   DeviceGroupComposedId NUMBER                          not null,
+   DeviceGroupId        NUMBER                          not null,
+   CompositionType      VARCHAR2(100),
+   constraint PK_DevGroupComp primary key (DeviceGroupComposedId)
+);
+
+/*==============================================================*/
+/* Table: DeviceGroupComposedGroup                              */
+/*==============================================================*/
+create table DeviceGroupComposedGroup  (
+   DeviceGroupComposedGroupId NUMBER                          not null,
+   DeviceGroupComposedId NUMBER                          not null,
+   GroupName            VARCHAR2(255)                   not null,
+   IsNot                CHAR(1)                         not null,
+   constraint PK_DevGroupCompGroup primary key (DeviceGroupComposedGroupId)
 );
 
 /*==============================================================*/
@@ -10975,6 +11000,16 @@ alter table DeviceDirectCommSettings
 alter table DeviceDirectCommSettings
    add constraint SYS_C0013187 foreign key (PORTID)
       references CommPort (PORTID);
+
+alter table DeviceGroupComposed
+   add constraint FK_DevGroupComp_DevGroup foreign key (DeviceGroupId)
+      references DEVICEGROUP (DeviceGroupId)
+      on delete cascade;
+
+alter table DeviceGroupComposedGroup
+   add constraint FK_DevGrpCompGrp_DevGrpComp foreign key (DeviceGroupComposedId)
+      references DeviceGroupComposed (DeviceGroupComposedId)
+      on delete cascade;
 
 alter table DeviceMCT400Series
    add constraint FK_Dev4_DevC foreign key (DeviceID)
