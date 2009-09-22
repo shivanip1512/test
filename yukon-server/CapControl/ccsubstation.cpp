@@ -154,6 +154,7 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
     double pfDisplayValue = _pfactor;
     double estPfDisplayValue = _estPfactor;
 
+    // Modifying the display value of pFactor to represent +100% values as a negative value.
     if (_pfactor > 1)
     {
         pfDisplayValue -= 2;

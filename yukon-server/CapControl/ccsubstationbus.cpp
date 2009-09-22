@@ -10372,6 +10372,8 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
         tempVar  = _currentvarloadpointvalue;
         tempWatt = _currentwattloadpointvalue;
     }
+
+    // Modifying the display value of pFactor to represent +100% values as a negative value.
     if( _powerfactorvalue > 1 )
     {
         temppowerfactorvalue = _powerfactorvalue - 2;
