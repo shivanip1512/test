@@ -280,7 +280,7 @@ function sendWorkOrder() {
                                   <div align="right">Ordered By:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="OrderedBy" size="14" value="<%= liteOrder.getOrderedBy() %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="OrderedBy" size="14" value="<%= StringEscapeUtils.escapeHtml(liteOrder.getOrderedBy()) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
