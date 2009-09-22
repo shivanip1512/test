@@ -100,11 +100,14 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         // create processor
         Processor<YukonDevice> updatePointsProcessor = null;
         if (updateField == UpdatePointsFieldType.ADJUSTED_MULTIPLIER){
-            updatePointsProcessor= updatePointsProcessorFactory.getAdjustMultiplierProcessor(pointTemplatesMap, setValue);
+            Double value = Double.valueOf(setValue);
+            updatePointsProcessor= updatePointsProcessorFactory.getAdjustMultiplierProcessor(pointTemplatesMap, value);
         } else if (updateField == UpdatePointsFieldType.EXPLICIT_MULTIPLIER) {
-            updatePointsProcessor= updatePointsProcessorFactory.getExplicitMultiplierProcessor(pointTemplatesMap, setValue);
+            Double value = Double.valueOf(setValue);
+            updatePointsProcessor= updatePointsProcessorFactory.getExplicitMultiplierProcessor(pointTemplatesMap, value);
         } else if (updateField == UpdatePointsFieldType.DECIMAL_PLACES) {
-            updatePointsProcessor= updatePointsProcessorFactory.getDecimalPlacesProcessor(pointTemplatesMap, setValue);
+            Integer value = Integer.valueOf(setValue);
+            updatePointsProcessor= updatePointsProcessorFactory.getDecimalPlacesProcessor(pointTemplatesMap, value);
         }
         
         // start processor

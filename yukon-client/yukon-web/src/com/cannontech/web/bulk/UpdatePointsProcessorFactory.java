@@ -30,9 +30,7 @@ public class UpdatePointsProcessorFactory {
 
 
     /* Adjust Multiplier Points Processor */
-    public Processor<YukonDevice> getAdjustMultiplierProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final String value) {
-
-        final Double setValue = Double.valueOf(value);                                           
+    public Processor<YukonDevice> getAdjustMultiplierProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final Double setValue) {
 
         SingleProcessor<YukonDevice> updatePointsProcessor = new UpdatePointsProcessorBase(pointTemplatesMap) {
 
@@ -59,9 +57,7 @@ public class UpdatePointsProcessorFactory {
     }
     
     /* Explicit Multiplier Points Processor */
-    public Processor<YukonDevice> getExplicitMultiplierProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final String value) {
-
-        final Double setValue = Double.valueOf(value);                                           
+    public Processor<YukonDevice> getExplicitMultiplierProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final Double setValue) {
 
         SingleProcessor<YukonDevice> updatePointsProcessor = new UpdatePointsProcessorBase(pointTemplatesMap) {
 
@@ -84,9 +80,7 @@ public class UpdatePointsProcessorFactory {
     }
     
     /* Decimal Places Points Processor */
-    public Processor<YukonDevice> getDecimalPlacesProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final String value) {
-
-        final Integer setValue = Integer.valueOf(value);
+    public Processor<YukonDevice> getDecimalPlacesProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final Integer setValue) {
 
         SingleProcessor<YukonDevice> updatePointsProcessor = new UpdatePointsProcessorBase(pointTemplatesMap) {
 
