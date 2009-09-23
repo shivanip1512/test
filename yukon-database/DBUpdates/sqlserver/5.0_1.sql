@@ -42,7 +42,20 @@ ALTER TABLE DeviceGroupComposedGroup
          ON DELETE CASCADE;
 GO
 /* End YUK-7850 */
-   
+
+/* Start YUK-7847 */
+INSERT INTO StateGroup VALUES (-10, 'PhaseStatus', 'Status');
+
+INSERT INTO State VALUES (-10, 0, 'Unknown', 0, 6, 0);
+INSERT INTO State VALUES (-10, 1, 'A', 1, 6, 0);
+INSERT INTO State VALUES (-10, 2, 'B', 10, 6, 0);
+INSERT INTO State VALUES (-10, 3, 'C', 3, 6, 0);
+INSERT INTO State VALUES (-10, 4, 'AB', 4, 6, 0);
+INSERT INTO State VALUES (-10, 5, 'AC', 5, 6, 0);
+INSERT INTO State VALUES (-10, 6, 'BC', 7, 6, 0);
+INSERT INTO State VALUES (-10, 7, 'ABC', 8, 6, 0);
+/* End YUK-7847 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

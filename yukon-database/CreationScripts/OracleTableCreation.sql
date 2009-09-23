@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/22/2009 5:12:34 PM                         */
+/* Created on:     9/23/2009 9:23:34 AM                         */
 /*==============================================================*/
 
 
@@ -7243,6 +7243,14 @@ create table STATE  (
    constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
 );
 
+INSERT INTO State VALUES(-10, 0, 'Unknown', 0, 6, 0);
+INSERT INTO State VALUES(-10, 1, 'A', 1, 6, 0);
+INSERT INTO State VALUES(-10, 2, 'B', 10, 6, 0);
+INSERT INTO State VALUES(-10, 3, 'C', 3, 6, 0);
+INSERT INTO State VALUES(-10, 4, 'AB', 4, 6, 0);
+INSERT INTO State VALUES(-10, 5, 'AC', 5, 6, 0);
+INSERT INTO State VALUES(-10, 6, 'BC', 7, 6, 0);
+INSERT INTO State VALUES(-10, 7, 'ABC', 8, 6, 0);
 INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
@@ -7322,6 +7330,7 @@ create table STATEGROUP  (
    constraint SYS_C0013128 primary key (STATEGROUPID)
 );
 
+INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
 INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES(-8, 'TwoStateActive', 'Status');
 INSERT INTO stategroup VALUES(-7, 'Thread Monitor', 'Status');
