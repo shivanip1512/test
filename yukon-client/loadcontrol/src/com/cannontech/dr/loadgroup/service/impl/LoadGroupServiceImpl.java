@@ -96,7 +96,15 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                 : LMCommand.DISABLE_GROUP;
         Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);
         loadControlClientConnection.write(msg);
-    }    
+    }
+    
+    @Override
+    public boolean isEnabled(int loadGroupId) {
+        DatedObject<LMGroupBase> datedGroup = loadControlClientConnection.getDatedGroup(loadGroupId);
+        LMGroupBase group = datedGroup.getObject();
+        Boolean disableFlag = group.getDisableFlag();
+        return !disableFlag;
+    }
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {

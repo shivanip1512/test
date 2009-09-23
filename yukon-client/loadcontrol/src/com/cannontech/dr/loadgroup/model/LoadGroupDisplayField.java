@@ -27,6 +27,20 @@ public enum LoadGroupDisplayField {
             return new DisplayablePaoComparator(userContext, isDescending);
         }
     },
+    ENABLED {
+        @Override
+        public MessageSourceResolvable getValue(LMDirectGroupBase group) {
+            return YukonMessageSourceResolvable.createDefault("", 
+                                                              String.valueOf(!group.getDisableFlag()));
+        }
+        
+        @Override
+        public Comparator<DisplayablePao> getSorter(
+                                                    ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper,
+                                                    final YukonUserContext userContext, boolean isDescending) {
+            return null;
+        }
+    },
     STATE {
         @Override
         public MessageSourceResolvable getValue(LMDirectGroupBase group) {

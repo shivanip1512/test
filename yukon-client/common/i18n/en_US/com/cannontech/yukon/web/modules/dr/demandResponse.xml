@@ -62,12 +62,27 @@
 <entry key="yukon.web.modules.dr.loadGroup.value.REDUCTION">{0,number,#.#}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.LOAD_CAPACITY">{0,number,#.#}</entry>
 
+<!-- sendShedConfirm.jsp -->
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title">Send Shed</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.confirmQuestion">Are you sure you want to shed the load group {0}?</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.chooseShedTime">Choose a shed time:</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.shedTimeNotes">Note: Ripple switches ignore this setting.</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.cancelButton">Cancel</entry>
+
+<!-- sendRestoreConfirm.jsp -->
+<entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title">Send Restore</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.confirmQuestion">Are you sure you want to restore the load group {0}?</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.cancelButton">Cancel</entry>
+
+<!-- sendEnableConfirm.jsp -->
+<entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title">Send Enable</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title">Send Disable</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.confirmQuestion">Are you sure you want to enable the load group {0}?</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.confirmQuestion">Are you sure you want to disable the load group {0}?</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.cancelButton">Cancel</entry>
 
 <!-- Demand Response Home -->
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
@@ -280,6 +295,7 @@
 <entry key="yukon.web.modules.dr.loadGroupList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.heading.name">Name</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.heading.state">State</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.heading.action">Actions</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.heading.lastAction">Last Action</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics">Day/Month/Season/Year Hrs</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.heading.reduction">Reduction</entry>

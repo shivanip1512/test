@@ -24,4 +24,6 @@ public interface LoadGroupService extends
     public void sendShed(int loadGroupId, int durationInSeconds);
     public void sendRestore(int loadGroupId);
     public void setEnabled(int loadGroupId, boolean isEnabled);
+    
+    public boolean isEnabled(int loadGroupId);
 }

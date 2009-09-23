@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
@@ -62,13 +61,10 @@ public class LoadGroupController {
     @RequestMapping("/loadGroup/detail")
     public String detail(int loadGroupId, ModelMap modelMap,
             YukonUserContext userContext) {
+        
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        if (false && !paoAuthorizationService.isAuthorized(userContext.getYukonUser(),
-                                                           Permission.LM_VISIBLE,
-                                                           loadGroup)) {
-            throw new NotAuthorizedException("LoadGroup " + loadGroupId + " is not visible to user.");
-        }
-
+        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        
         modelMap.addAttribute("loadGroup", loadGroup);
         modelMap.addAttribute("parentPrograms",
                               programService.findProgramsForLoadGroup(userContext,
@@ -80,40 +76,91 @@ public class LoadGroupController {
     @RequestMapping("/loadGroup/sendShedConfirm")
     public String sendShedConfirm(ModelMap modelMap, int loadGroupId,
             YukonUserContext userContext) {
-        // TODO:  check permissions
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+
         modelMap.addAttribute("loadGroup", loadGroup);
         modelMap.addAttribute("shedTimeOptions", shedTimeOptions);
-
         return "dr/loadGroup/sendShedConfirm.jsp";
     }
 
     @RequestMapping("/loadGroup/sendShed")
     public String sendShed(ModelMap modelMap, int loadGroupId,
             int durationInSeconds, YukonUserContext userContext) {
-        // TODO:  check permissions
+
+        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        
         loadGroupService.sendShed(loadGroupId, durationInSeconds);
+        
+        modelMap.addAttribute("popupId", "drDialog");
+        return "common/closePopup.jsp";
+    }
+    
+    @RequestMapping("/loadGroup/sendRestoreConfirm")
+    public String sendRestoreConfirm(ModelMap modelMap, int loadGroupId,
+            YukonUserContext userContext) {
+
+        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+
+        modelMap.addAttribute("loadGroup", loadGroup);
+        return "dr/loadGroup/sendRestoreConfirm.jsp";
+    }
+
+    @RequestMapping("/loadGroup/sendRestore")
+    public String sendRestore(ModelMap modelMap, int loadGroupId, YukonUserContext userContext) {
+
+        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        
+        loadGroupService.sendRestore(loadGroupId);
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
     }
 
-    @RequestMapping("/loadGroup/sendRestore")
-    public void sendRestore(int loadGroupId, YukonUserContext userContext) {
-        // TODO:  check permissions
-        loadGroupService.sendRestore(loadGroupId);
-    }
-
-    @RequestMapping("/loadGroup/setEnabled")
-    public void setEnabled(int loadGroupId, boolean isEnabled,
+    @RequestMapping("/loadGroup/sendEnableConfirm")
+    public String sendEnableConfirm(ModelMap modelMap, int loadGroupId, boolean isEnabled,
             YukonUserContext userContext) {
-        // TODO:  check permissions
-        loadGroupService.setEnabled(loadGroupId, isEnabled);
+        
+        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        
+        modelMap.addAttribute("loadGroup", loadGroup);
+        modelMap.addAttribute("isEnabled", isEnabled);
+        return "dr/loadGroup/sendEnableConfirm.jsp";
     }
-
+    
+    @RequestMapping("/loadGroup/setEnabled")
+    public String setEnabled(ModelMap modelMap, int loadGroupId, boolean isEnabled,
+            YukonUserContext userContext) {
+        
+        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        
+        loadGroupService.setEnabled(loadGroupId, isEnabled);
+        
+        modelMap.addAttribute("popupId", "drDialog");
+        
+        return "common/closePopup.jsp";
+    }
+    
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         loadGroupControllerHelper.initBinder(binder, userContext);
+    }
+    
+    private void checkUserPaoPermission(DisplayablePao loadGroup, LiteYukonUser user) {
+        // TODO: check permissions here
+        
+//        if (!paoAuthorizationService.isAuthorized(user,
+//                                                  Permission.LM_VISIBLE,
+//                                                  loadGroup)) {
+//            throw new NotAuthorizedException("LoadGroup " + loadGroup.getPaoIdentifier().getPaoId() + " is not visible to user.");
+//        }
+
+        
     }
     
     @Autowired

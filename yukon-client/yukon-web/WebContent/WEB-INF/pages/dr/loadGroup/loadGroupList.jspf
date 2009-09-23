@@ -6,6 +6,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
+<tags:iframeDialog id="drDialog"/>
+
 <cti:url var="submitUrl" value="${baseUrl}"/>
 <cti:url var="clearFilterUrl" value="${baseUrl}">
     <c:if test="${!empty param.itemsPerPage}">
@@ -23,9 +25,34 @@
 </cti:url>
 
 <script type="text/javascript">
-function clearFilter() {
-    window.location = '${clearFilterUrl}';
-}
+    function clearFilter() {
+        window.location = '${clearFilterUrl}';
+    }
+    
+    function updateEnabled(loadGroupId) {
+
+        var disableLink = $('disableLink_' + loadGroupId);
+        var enableLink = $('enableLink_' + loadGroupId);
+        var actionSpan = $('actionSpan_' + loadGroupId);
+        
+        return function(data) {
+    	        
+            if(data.state == 'true') {
+                // enabled
+                $(disableLink).show();
+                $(enableLink).hide();
+                $(actionSpan).show();
+            } else if(data.state == 'false') {
+                // disabled
+                $(disableLink).hide();
+                $(enableLink).show();
+                $(actionSpan).show();
+            } else {
+                // load management doesn't know about this load group
+                $(actionSpan).hide();
+            }
+        };
+    }
 </script>
 
 <cti:msg var="filterLabel" key="yukon.web.modules.dr.loadGroupList.filters"/>
@@ -113,6 +140,9 @@ function clearFilter() {
                 baseUrl="${baseUrl}" fieldName="STATE"/>        
         </th>
         <th>
+            <cti:msg key="yukon.web.modules.dr.loadGroupList.heading.action" />
+        </th>
+        <th>
             <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.lastAction"
                 baseUrl="${baseUrl}" fieldName="LAST_ACTION"/>        
         </th>
@@ -143,6 +173,43 @@ function clearFilter() {
                 </cti:classUpdater>
             </td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/></td>
+            <td>
+                <span id="actionSpan_${loadGroupId}">
+                    <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
+                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                    </cti:url>
+                    <a href="javascript:void(0)"
+                        onclick="openIFrameDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
+                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
+                    </a><br>
+    
+                    <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
+                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                    </cti:url>
+                    <a href="javascript:void(0)"
+                        onclick="openIFrameDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
+                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
+                    </a><br>
+                    
+                    <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
+                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                        <cti:param name="isEnabled" value="true"/>
+                    </cti:url>
+                    <a id="enableLink_${loadGroupId}" href="javascript:void(0)"
+                        onclick="openIFrameDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
+                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
+                    </a>
+                    <cti:url var="sendDisableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
+                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                        <cti:param name="isEnabled" value="false"/>
+                    </cti:url>
+                    <a id="disableLink_${loadGroupId}" href="javascript:void(0)"
+                        onclick="openIFrameDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')">
+                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
+                    </a><br>
+                </span>
+                <cti:dataUpdaterCallback function="updateEnabled('${loadGroupId}')" initialize="true" state="DR_LOADGROUP/${loadGroupId}/ENABLED" />
+            </td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/></td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/></td>
             <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/></td>
