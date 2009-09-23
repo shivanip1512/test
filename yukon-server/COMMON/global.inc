@@ -172,8 +172,8 @@ XERCES_DLL = xerces-c_3_0D
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used
-CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 #LINKFLAGS = /link /NODEFAULTLIB:MSVCRTD.lib
 #LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRTD.lib
 #LINKFLAGS = /link /VERBOSE:LIB
