@@ -52,6 +52,23 @@ INSERT INTO State VALUES (-10, 6, 'BC', 7, 6, 0);
 INSERT INTO State VALUES (-10, 7, 'ABC', 8, 6, 0);
 /* End YUK-7847 */
 
+/* Start YUK-7840 */
+UPDATE YukonPAObject
+SET Type = 'Integration'
+WHERE Type = 'XML'
+AND PAOClass = 'TRANSMITTER';
+
+UPDATE YukonPAObject
+SET Type = 'Integration Route'
+WHERE Type = 'XML'
+AND PAOClass = 'ROUTE';
+
+UPDATE YukonPAObject
+SET Type = CONCAT(Type,' Route')
+WHERE Type IN ('RTC', 'SNPP Terminal', 'WCTP Terminal', 'TNPP Terminal')
+AND PAOClass = 'ROUTE';
+/* End YUK-7840 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
