@@ -2,6 +2,11 @@
 if "%OS%" == "Windows_NT" setlocal
 
 set JRE_HOME=%2
+::need to do some shenanigans here to remove the outer quotes
+set JRE_HOME=###%_string%###
+set JRE_HOME=%_string:"###=%
+set JRE_HOME=%_string:###"=%
+set JRE_HOME=%_string:###=%
 
 set CURRENT_DIR=%cd%
 
