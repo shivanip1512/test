@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/23/2009 9:23:34 AM                         */
+/* Created on:     9/23/2009 2:32:41 PM                         */
 /*==============================================================*/
 
 
@@ -2403,6 +2403,7 @@ create table CommandRequestExec  (
    CommandRequestExecType VARCHAR2(255)                   not null,
    UserName             VARCHAR2(64),
    CommandRequestType   VARCHAR2(100)                   not null,
+   CommandRequestExecContextId NUMBER                          not null,
    constraint PK_CommandRequestExec primary key (CommandRequestExecId)
 );
 
@@ -7419,9 +7420,9 @@ create table ScheduleTimePeriod  (
 /* Table: ScheduledGrpCommandRequest                            */
 /*==============================================================*/
 create table ScheduledGrpCommandRequest  (
-   CommandRequestExecId NUMBER                          not null,
+   CommandRequestExecContextId NUMBER                          not null,
    JobId                INTEGER                         not null,
-   constraint PK_ScheduledGrpCommandRequest primary key (CommandRequestExecId)
+   constraint PK_ScheduledGrpCommandRequest primary key (CommandRequestExecContextId)
 );
 
 /*==============================================================*/
@@ -12034,11 +12035,6 @@ alter table ScheduleShipmentMapping
 alter table ScheduleTimePeriod
    add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
       references DeliverySchedule (ScheduleID);
-
-alter table ScheduledGrpCommandRequest
-   add constraint FK_SchGrpComReq_ComReqExec foreign key (CommandRequestExecId)
-      references CommandRequestExec (CommandRequestExecId)
-      on delete cascade;
 
 alter table ScheduledGrpCommandRequest
    add constraint FK_SchGrpComReq_Job foreign key (JobId)

@@ -69,6 +69,21 @@ WHERE Type IN ('RTC', 'SNPP Terminal', 'WCTP Terminal', 'TNPP Terminal')
 AND PAOClass = 'ROUTE';
 /* End YUK-7840 */
 
+/* Start YUK-7855 */
+ALTER TABLE ScheduledGrpCommandRequest
+DROP CONSTRAINT FK_SchGrpComReq_ComReqExec;
+
+ALTER TABLE CommandRequestExec
+ADD CommandRequestExecContextId NUMERIC;
+UPDATE CommandRequestExec
+SET CommandRequestExecContextId = CommandRequestExecId;
+ALTER TABLE CommandRequestExec
+MODIFY CommandRequestExecContextId NUMERIC NOT NULL;
+
+ALTER TABLE ScheduledGrpCommandRequest
+RENAME COLUMN CommandRequestExecId TO CommandRequestExecContextId;
+/* End YUK-7855 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

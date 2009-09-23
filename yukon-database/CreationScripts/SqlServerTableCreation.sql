@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/23/2009 12:47:46 AM                        */
+/* Created on:     9/23/2009 2:30:47 PM                         */
 /*==============================================================*/
 
 
@@ -4978,6 +4978,7 @@ create table CommandRequestExec (
    CommandRequestExecType varchar(255)         not null,
    UserName             varchar(64)          null,
    CommandRequestType   varchar(100)         not null,
+   CommandRequestExecContextId numeric              not null,
    constraint PK_CommandRequestExec primary key (CommandRequestExecId)
 )
 go
@@ -10288,9 +10289,9 @@ go
 /* Table: ScheduledGrpCommandRequest                            */
 /*==============================================================*/
 create table ScheduledGrpCommandRequest (
-   CommandRequestExecId numeric              not null,
+   CommandRequestExecContextId numeric              not null,
    JobId                int                  not null,
-   constraint PK_ScheduledGrpCommandRequest primary key (CommandRequestExecId)
+   constraint PK_ScheduledGrpCommandRequest primary key (CommandRequestExecContextId)
 )
 go
 
@@ -15461,12 +15462,6 @@ go
 alter table ScheduleTimePeriod
    add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
       references DeliverySchedule (ScheduleID)
-go
-
-alter table ScheduledGrpCommandRequest
-   add constraint FK_SchGrpComReq_ComReqExec foreign key (CommandRequestExecId)
-      references CommandRequestExec (CommandRequestExecId)
-         on delete cascade
 go
 
 alter table ScheduledGrpCommandRequest
