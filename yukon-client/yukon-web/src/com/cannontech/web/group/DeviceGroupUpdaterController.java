@@ -197,18 +197,23 @@ public class DeviceGroupUpdaterController {
                     }
                     
                 } catch (IOException e) {
+                    status.setRollbackOnly();
                     processError = "Can't read file";
                     log.error(processError, e);
                 } catch (ObjectMappingException e) {
+                    status.setRollbackOnly();
                     processError = "Error (line " + currentLineNumber + "): No device with " + identifierBulkField.getInputSource().getDisplayName() + ": " + currentIdentifier + ".";
                     log.error(processError, e);
                 } catch (IndexOutOfBoundsException e) {
+                    status.setRollbackOnly();
                     processError = "Error (line " + currentLineNumber + "): Incomplete row, each row must have a value for each header column.";
                     log.error(processError, e);
                 } catch (IllegalGroupNameException e) {
+                    status.setRollbackOnly();
                     processError = "Error (line " + currentLineNumber + "): " + e.getMessage();
                     log.error(processError, e);
                 } catch (NotFoundException e) {
+                    status.setRollbackOnly();
                     processError = e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
                     log.error(processError, e);
                 } finally {
@@ -217,7 +222,6 @@ public class DeviceGroupUpdaterController {
                     } catch (IOException e){}
                 }
                 
-                status.setRollbackOnly();
                 return new ProcessingResultInfo(processError, deviceCount);
             }
         });
