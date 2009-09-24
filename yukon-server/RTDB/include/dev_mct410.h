@@ -416,6 +416,8 @@ public:
 
     virtual ULONG calcNextLPScanTime( void );
 
+    static void buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS *&OutMessage);
+
 };
 
 typedef boost::shared_ptr<CtiDeviceMCT410> CtiDeviceMCT410SPtr;

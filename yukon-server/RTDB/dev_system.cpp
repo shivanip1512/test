@@ -32,6 +32,7 @@
 #include "mgr_route.h"
 
 #include "numstr.h"
+#include "dev_mct410.h"
 
 #define DEBUG_PRINT_DECODE 0
 
@@ -76,54 +77,118 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         {
         case PutConfigRequest:
             {
-                switch(iTemp = parse.getiValue("type"))
+                if (parse.isKeyValid("phasedetect") && parse.isKeyValid("pdbroadcast"))
                 {
-                case ProtocolVersacomType:
-                    {
-                        OutMessage->EventCode |= VERSACOM;
-                        break;
-                    }
-                case ProtocolExpresscomType:
-                    {
-                        int xcserial = parse.getiValue("serial");
+                    string broadcastType = parse.getsValue("pdbroadcast");
 
-                        parse.setValue("xc_serial", xcserial);
+                    // Using a "magic string for now" This Should be an enum/const string reference when more types are added.
+                    if (stringCompareIgnoreCase(broadcastType,"mct_base_410") == 0)
+                    {
+                        CtiDeviceMCT410::buildPhaseDetectOutMessage(parse,OutMessage);
+                        OutMessage->TimeOut   = 2;
+                        OutMessage->Retry     = 2;
+                        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-                        if( INT_MIN == xcserial )
+                        OutMessage->Request.RouteID = pReq->RouteId();
+                        EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
+
+                        if ((Route = CtiDeviceBase::getRoute( OutMessage->Request.RouteID )))
                         {
-                            string   problem;
+                            OutMessage->TargetID  = 0;
 
-                            if( INT_MIN == xcserial )
+                            OutMessage->EventCode = BWORD | WAIT | RESULT;
+
+                            // BroadcastAddress
+                            OutMessage->Buffer.BSt.Address = CtiDeviceMCT4xx::UniversalAddress;
+
+                            // Store the request info for later use
+                            OutMessage->Request.ProtocolInfo.Emetcon.Function = OutMessage->Buffer.BSt.Function;
+                            OutMessage->Request.ProtocolInfo.Emetcon.IO       = OutMessage->Buffer.BSt.IO;
+
+                            int nRet = NORMAL;
+                            CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+                            if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
                             {
-                                problem = string("Invalid Request: Serial number not specified");
+                                string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + FormatError(nRet) + ") performing command on route " + Route->getName().data();
+                                pRet->setResultString(resultString);
+                                pRet->setStatus(nRet);
                             }
-
-                            status = CtiInvalidRequest;
-
-                            vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                            else
+                            {
+                                delete pRet;
+                                pRet = 0;
+                            }
+                            // This will need to be refactored out when more device types are added.
+                            // We expect a response back so tell the clients to this is not the last message.
+                            if (nRet == NORMAL)
+                            {
+                                for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+                                {
+                                    ((CtiReturnMsg*)*itr)->setExpectMore(true);
+                                }
+                            }
                         }
-
-                        OutMessage->Retry = 2;                      // Default to two tries per route!
-
-                        break;
                     }
-                case ProtocolSA105Type:
-                case ProtocolSA205Type:
-                case ProtocolSA305Type:
-                    {
-                        OutMessage->EventCode |= NORESULT;
-                        OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
-                        break;
-                    }
-                case ProtocolFisherPierceType:
-                default:
+                    else
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Protocol type " << iTemp << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Unknown device type for broadcast." << endl;
                         }
                         break;
+                    }
+                }
+                else
+                {
+                    switch(iTemp = parse.getiValue("type"))
+                    {
+                    case ProtocolVersacomType:
+                        {
+                            OutMessage->EventCode |= VERSACOM;
+                            break;
+                        }
+                    case ProtocolExpresscomType:
+                        {
+                            int xcserial = parse.getiValue("serial");
+
+                            parse.setValue("xc_serial", xcserial);
+
+                            if( INT_MIN == xcserial )
+                            {
+                                string   problem;
+
+                                if( INT_MIN == xcserial )
+                                {
+                                    problem = string("Invalid Request: Serial number not specified");
+                                }
+
+                                status = CtiInvalidRequest;
+
+                                vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                            }
+
+                            OutMessage->Retry = 2;                      // Default to two tries per route!
+
+                            break;
+                        }
+                    case ProtocolSA105Type:
+                    case ProtocolSA205Type:
+                    case ProtocolSA305Type:
+                        {
+                            OutMessage->EventCode |= NORESULT;
+                            OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
+                            break;
+                        }
+                    case ProtocolFisherPierceType:
+                    default:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Protocol type " << iTemp << endl;
+                            }
+                            break;
+                        }
                     }
                 }
 
@@ -672,3 +737,43 @@ void CtiDeviceSystem::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
+
+INT CtiDeviceSystem::ProcessResult(INMESS* InMessage, CtiTime& TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    string resultString;
+    string commandType;
+
+    CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    int ErrReturn = InMessage->EventCode & 0x3fff;
+
+    if (ErrReturn)
+    {
+        resultString = "Error (" + CtiNumStr(ErrReturn) + ") / ";
+    }
+    else
+    {
+        resultString = "Sent Successfully / ";
+    }
+
+    switch (InMessage->Sequence)
+    {
+        case Cti::Protocol::Emetcon::PutConfig_PhaseDetectClear:
+            commandType = "Broadcast / Phase Detect flag clear";
+            break;
+        case Cti::Protocol::Emetcon::PutConfig_PhaseDetect:
+            commandType = "Broadcast / Phase Detect test settings";
+            break;
+        default:
+            commandType = "Broadcast / Command";
+            break;
+    }
+
+    retMsg->setUserMessageId(InMessage->Return.UserID);
+    retMsg->setResultString(resultString + commandType);
+
+    retList.push_back(retMsg);
+
+    return NoError;
+}
+

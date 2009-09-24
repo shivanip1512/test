@@ -569,7 +569,9 @@ void CtiPILServer::resultThread()
                 {
                     LONG id = InMessage->TargetID;
 
-                    if(id == 0)
+                    // Checking the sequence since we will actually want the system device 0 for the Phase Detect cases
+                    if(id == 0 && !(InMessage->Sequence == Cti::Protocol::Emetcon::PutConfig_PhaseDetectClear ||
+                                    InMessage->Sequence == Cti::Protocol::Emetcon::PutConfig_PhaseDetect))
                     {
                         id = InMessage->DeviceID;
                     }

@@ -1281,36 +1281,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if(parse.isKeyValid("phasedetect"))
     {
-        if(parse.isKeyValid("phasedetectclear"))
-        {
-            function = Emetcon::PutConfig_PhaseDetectClear;
-            found = getOperation(function, OutMessage->Buffer.BSt);
-            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-            OutMessage->Buffer.BSt.Message[1] = Command_PhaseDetectClear;
-            OutMessage->Sequence = function;
-        }
-        else if(parse.isKeyValid("phase") )
-        {
-            function = Emetcon::PutConfig_PhaseDetect;
-            found = getOperation(function, OutMessage->Buffer.BSt);
-            string phase = parse.getsValue("phase");
-            int phaseVal = 0;
-            switch( phase[0] )
-            {
-                case 'a':  phaseVal = 1;  break;
-                case 'b':  phaseVal = 2;  break;
-                case 'c':  phaseVal = 3;  break;
-                default:  phaseVal = 0;  break;
-            }
-
-            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-            OutMessage->Buffer.BSt.Message[1] = phaseVal  & 0xff;
-            OutMessage->Buffer.BSt.Message[2] = parse.getiValue("phasedelta")  & 0xff;
-            //demand interval in 15 secs increments (1=15secs, 2=30secs, 3=45secs, etc)
-            OutMessage->Buffer.BSt.Message[3] = (parse.getiValue("phaseinterval") / 15 )  & 0xff;
-            OutMessage->Buffer.BSt.Message[4] = parse.getiValue("phasenum")  & 0xff;
-            OutMessage->Sequence = function;
-        }
+        buildPhaseDetectOutMessage(parse,OutMessage);
     }
     else
     {
@@ -1325,7 +1296,45 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     return nRet;
 }
 
+void CtiDeviceMCT410::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS *& OutMessage)
+{
+    if(parse.isKeyValid("phasedetectclear"))
+    {
+        // This should be using the getOperation but the virtual function in a static function prevents it.
+        OutMessage->Buffer.BSt.Function = FuncWrite_PhaseDetectClear;
+        OutMessage->Buffer.BSt.Length = FuncWrite_PhaseDetectClearLen;
+        OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
 
+        OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+        OutMessage->Buffer.BSt.Message[1] = Command_PhaseDetectClear;
+        OutMessage->Sequence = Emetcon::PutConfig_PhaseDetectClear;
+    }
+    else if(parse.isKeyValid("phase") )
+    {
+        string phase = parse.getsValue("phase");
+        int phaseVal = 0;
+        switch( phase[0] )
+        {
+            case 'a':  phaseVal = 1;  break;
+            case 'b':  phaseVal = 2;  break;
+            case 'c':  phaseVal = 3;  break;
+            default:  phaseVal = 0;  break;
+        }
+
+        // This should be using the getOperation but the virtual function in a static function prevents it.
+        OutMessage->Buffer.BSt.Function = FuncWrite_PhaseDetect;
+        OutMessage->Buffer.BSt.Length = FuncWrite_PhaseDetectLen;
+        OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
+
+        OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+        OutMessage->Buffer.BSt.Message[1] = phaseVal  & 0xff;
+        OutMessage->Buffer.BSt.Message[2] = parse.getiValue("phasedelta")  & 0xff;
+        //demand interval in 15 secs increments (1=15secs, 2=30secs, 3=45secs, etc)
+        OutMessage->Buffer.BSt.Message[3] = (parse.getiValue("phaseinterval") / 15 )  & 0xff;
+        OutMessage->Buffer.BSt.Message[4] = parse.getiValue("phasenum")  & 0xff;
+        OutMessage->Sequence = Emetcon::PutConfig_PhaseDetect;
+    }
+}
 
 INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                       CtiCommandParser           &parse,

@@ -2454,7 +2454,18 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
             CtiString val;
             INT setpoint = 0;
             _cmd["phasedetect"] = CtiParseValue("TRUE");
-            if(!(temp2 = CmdStr.match( CtiString(" clear"))).empty())  
+
+            if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString("broadcast[ =][a-zA-Z0-9_]+")))).empty() )
+            {
+                if(!(val = temp2.match((const boost::regex)("[ =][a-zA-Z0-9_]+"))).empty())
+                {
+                    val = val.strip(CtiString::both, '=');
+                    val = val.strip(CtiString::both, ' ');
+                    _cmd["pdbroadcast"] = CtiParseValue(val.c_str());
+                }
+            }
+
+            if(!(temp2 = CmdStr.match( CtiString(" clear"))).empty())
             {
                 _cmd["phasedetectclear"] = CtiParseValue("TRUE");
             }

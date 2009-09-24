@@ -51,5 +51,7 @@ public:
 
    virtual string getDescription(const CtiCommandParser &parse) const;
 
+   virtual INT  ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
 };
 #endif // #ifndef __DEV_SYSTEM_H__
