@@ -98,3 +98,4 @@ EXEC sp_rename
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('5.0', 'Matt K', '24-SEP-2009', 'Latest Update', 1);
