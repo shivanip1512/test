@@ -162,7 +162,7 @@ string desolveDeviceType( INT aType )
         case TYPE_TCU5000:      Ret = "tcu-5000";       break;
         case TYPE_TCU5500:      Ret = "tcu-5500";       break;
                       
-        case TYPE_XML_XMIT:     Ret = "integration transmitter"; break;
+        case TYPE_XML_XMIT:     Ret = "integration"; break;
                   
         case TYPE_TDMARKV:      Ret = "transdata mark-v";   break;
                                 
