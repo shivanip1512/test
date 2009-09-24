@@ -8,6 +8,7 @@
 <cti:standardMenu menuSelection="logs"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/spring/support/" title="Support" />
     <cti:crumbLink url="/spring/support/logging/menu" title="Log File Menu"  />
     <cti:crumbLink>Log Tailer</cti:crumbLink>
 </cti:breadCrumbs>
