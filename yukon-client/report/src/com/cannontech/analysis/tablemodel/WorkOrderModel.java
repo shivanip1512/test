@@ -35,6 +35,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -813,11 +814,16 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 	 */
 	public String[] getColumnNames() {
 		if (columnNames == null) {
-            String addtlOrderNumberStr = null; 
+            String addtlOrderNumberStr = ADDTL_ORDER_NO_STRING; 
             if( getUserID() != null)
-                addtlOrderNumberStr = DaoFactory.getAuthDao().getRolePropertyValue(getUserID().intValue(), WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL);
-            if(addtlOrderNumberStr == null)
-                addtlOrderNumberStr = ADDTL_ORDER_NO_STRING;
+            {
+                try {
+                    addtlOrderNumberStr = DaoFactory.getAuthDao().getRolePropertyValue(getUserID().intValue(), WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL);
+                } catch (UserNotInRoleException  e) {
+                    //If user is NOT in WORK_ORDER role property, then keep addtlOrderNumberStr set to default (as initialized)
+                }
+            }
+            
 			columnNames = new String[] {
 				//HEADER
 				EC_NAME_STRING,
