@@ -647,7 +647,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     xcom.setUseASCII(true);
 
     // by default the CRC is used
-    if( !gConfigParms.isTrue("YUKON_USE_EXPRESSCOM_CRC", "true") )
+    if( !gConfigParms.isTrue("YUKON_USE_EXPRESSCOM_CRC", true) )
     {
         xcom.setUseCRC(false);
     }

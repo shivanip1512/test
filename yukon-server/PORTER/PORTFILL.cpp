@@ -351,7 +351,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                     xcom.addAddressing(0, gsSPID);
                                     xcom.parseRequest(parse);
                                     xcom.setUseASCII(true);
-                                    if( !gConfigParms.isTrue("YUKON_USE_EXPRESSCOM_CRC", "true") )
+                                    if( !gConfigParms.isTrue("YUKON_USE_EXPRESSCOM_CRC", true) )
                                     {
                                         xcom.setUseCRC(false);
                                     }
@@ -511,7 +511,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                     xcom.setUseASCII(true);
 
                                     //By default we use the CRC.
-                                    if( !gConfigParms.isTrue("YUKON_USE_EXPRESSCOM_CRC", "true") )
+                                    if( !gConfigParms.isTrue("YUKON_USE_EXPRESSCOM_CRC", true) )
                                     {
                                         xcom.setUseCRC(false);
                                     }
