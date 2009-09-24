@@ -6,6 +6,7 @@
 <cti:standardMenu menuSelection="scheduler|active" />
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+	<cti:crumbLink url="/spring/support/" title="Support" />
     <cti:crumbLink>Jobs</cti:crumbLink>
 </cti:breadCrumbs>
 

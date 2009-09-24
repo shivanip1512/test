@@ -5,6 +5,7 @@
 <cti:standardMenu menuSelection="logs"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/spring/support/" title="Support" />
     <cti:crumbLink>Log File Menu</cti:crumbLink>
 </cti:breadCrumbs>
 
