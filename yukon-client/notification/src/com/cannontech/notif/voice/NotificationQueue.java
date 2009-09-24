@@ -50,6 +50,7 @@ public class NotificationQueue implements NotificationQueueMBean {
                         try {
                             Call call = notification.createNewCall();
                             callPool.submitCall(call);
+                            notification.setState(SingleNotification.STATE_CALLING);
                         } catch (NoRemainingCallsException e) {
                             notification.setState(SingleNotification.STATE_FAILED);
                         }

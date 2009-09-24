@@ -4,5 +4,5 @@ import com.cannontech.message.util.Message;
 
 public class NotifCompletedMsg extends Message {
     public String token = "";
-    public boolean gotConfirmation = false;
+    public NotifCallEvent status = NotifCallEvent.UNCONFIRMED;
 }

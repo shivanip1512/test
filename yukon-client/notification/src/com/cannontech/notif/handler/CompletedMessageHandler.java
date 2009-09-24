@@ -19,7 +19,7 @@ public class CompletedMessageHandler extends MessageHandler {
         }
         NotifCompletedMsg msg = (NotifCompletedMsg) msg_;
         
-        _voiceHandler.completeCall(msg.token, msg.gotConfirmation);
+        _voiceHandler.callStatus(msg.token, msg.status);
         
         return true;
     }

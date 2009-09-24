@@ -1,32 +1,52 @@
 package com.cannontech.notif.voice;
 
-import com.cannontech.notif.voice.callstates.TooManyRetries;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
+
 
 
 public abstract class Dialer {
+    private Logger log = YukonLogManager.getLogger(Dialer.class);
 
-    private static final int RETRY_DELAY = 3000;
-    private static final int MAX_TRIES = 15;
+    private final int retryDelayMs;
+    private final int maxTries;
+
+    private final int postCallSleepMs;
+
+    public Dialer(int retryDelayMs, int maxTries, int postCallSleepMs) {
+        this.retryDelayMs = retryDelayMs;
+        this.maxTries = maxTries;
+        this.postCallSleepMs = postCallSleepMs;
+    }
 
     public void makeCall(Call call) {
         try {
             int count = 1;
             
             dialCall(call);
-            if (call.isRetry()) {
-                Thread.sleep(RETRY_DELAY);
-                while (call.isReady()) {       
-                    count++;
-                    dialCall(call);
-                    if (count >= MAX_TRIES) {
-                        call.changeState(new TooManyRetries());
-                        break;
-                    }
-                    Thread.sleep(RETRY_DELAY);
+            while (call.isRetry()) {       
+                if (count >= maxTries) {
+                    log.info("Retry count exceeded for: " + call);
+                    call.handleFailure("too many retries");
+                    return;
                 }
+                log.debug("Retry " + count + " in " + retryDelayMs + "ms for: " + call);
+                count++;
+                Thread.sleep(retryDelayMs);
+                dialCall(call);
             }
+
         } catch (InterruptedException e) {
-            call.changeState(new com.cannontech.notif.voice.callstates.UnknownError(e));
+            log.warn("caught InterruptedException", e);
+            call.handleFailure("interrupted exception in makeCall: " + e.getMessage());
+        } finally {
+            call.handleCompletion();
+            try {
+                log.debug("sleeping for " + postCallSleepMs + "ms");
+                Thread.sleep(postCallSleepMs);
+            } catch (InterruptedException e) {
+            }
         }
     }
 

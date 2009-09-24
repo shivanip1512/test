@@ -3,22 +3,23 @@ package com.cannontech.notif.outputs;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.notif.NotifCallEvent;
 import com.cannontech.notif.voice.*;
-import com.cannontech.notif.voice.callstates.Confirmed;
-import com.cannontech.notif.voice.callstates.Unconfirmed;
 
 /**
  *  Handles all outgoing voice queries and responses.
  * 
  */
-public class VoiceHandler extends OutputHandler
-{
+public class VoiceHandler extends OutputHandler {
+    private Logger log = YukonLogManager.getLogger(VoiceHandler.class);
+    
     private NotificationQueue queue;
     private boolean acceptNewNotifications = false;
     
@@ -29,7 +30,7 @@ public class VoiceHandler extends OutputHandler
     public void handleNotification(final NotificationBuilder notifBuilder, final Contactable contact) {
         if (!acceptNewNotifications) {
             // I could throw an exception here, but what would the caller do???
-            CTILogger.error("com.cannontech.notif.outputs.VoiceHandler.handleNotification() " +
+            log.error("com.cannontech.notif.outputs.VoiceHandler.handleNotification() " +
                     "called after shutdown (or before startup).");
             return;
         }
@@ -62,7 +63,7 @@ public class VoiceHandler extends OutputHandler
             queue.add(singleNotification);
             
         } catch (Exception e) {
-            CTILogger.error("Unable to handle voice notification for " + contact, e);
+            log.error("Unable to handle voice notification for " + contact, e);
             notifBuilder.notificationComplete(contact, getNotificationMethod(), false);
         }
     }
@@ -81,19 +82,6 @@ public class VoiceHandler extends OutputHandler
         
     }
     
-    public void completeCall(String token, boolean gotConfirmation) {
-        try {
-            Call call = queue.getCall(token);
-            if (gotConfirmation) {
-                call.changeState(new Confirmed());
-            } else {
-                call.changeState(new Unconfirmed());
-            }
-        } catch (Exception e) {
-            CTILogger.warn("Unable to complete call (token=" + token + ", confiration=" + gotConfirmation + ")", e);
-        }
-    }
-
     public Call getCall(String token) throws UnknownCallTokenException {
         Call call = queue.getCall(token);
         return call;
@@ -107,5 +95,30 @@ public class VoiceHandler extends OutputHandler
     public void setQueue(NotificationQueue queue) {
         this.queue = queue;
     }
+
+	public void callStatus(String token, NotifCallEvent status) {
+	    log.debug("received " + status + " for " + token);
+        try {
+            Call call = queue.getCall(token);
+            switch (status) {
+            case DISCONNECT:
+                call.handleDisconnect();
+                break;
+			case CONFIRMED:
+				call.handleConfirmation();
+				break;
+			case UNCONFIRMED:
+				call.handleFailure("no confirmation");
+				break;
+			case FAILURE:
+				call.handleConnectionFailed("remote failure");
+				break;
+			default:
+				break;
+			}
+        } catch (Exception e) {
+            log.warn("Unable to complete call (token=" + token + ", status=" + status + ")", e);
+        }
+	}
     
 }

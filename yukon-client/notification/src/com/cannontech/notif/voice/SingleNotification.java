@@ -1,11 +1,12 @@
 package com.cannontech.notif.voice;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
 import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
@@ -13,7 +14,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.notif.outputs.Contactable;
 import com.cannontech.notif.outputs.Notification;
-import com.cannontech.notif.voice.callstates.*;
 import com.cannontech.user.UserUtils;
 
 
@@ -21,6 +21,8 @@ import com.cannontech.user.UserUtils;
  * 
  */
 public class SingleNotification {
+    private Logger log = YukonLogManager.getLogger(SingleNotification.class);
+    
     public static final String STATE_COMPLETE = "Complete";
     public static final String STATE_READY = "Ready";
     public static final String STATE_INITIAL = "Initial";
@@ -39,7 +41,7 @@ public class SingleNotification {
 	private Iterator<LiteContactNotification> _phoneIterator;
 	private Notification _message;
     private Contactable _contactable;
-    private Call _nextCall;
+    private Call nextCall;
     private String _token;
     private NotificationStatusLogger _notificationLogger;
     static private AtomicInteger _nextToken = new AtomicInteger(0);
@@ -63,51 +65,34 @@ public class SingleNotification {
         }
         LiteContact contact = DaoFactory.getContactDao().getContact(contactNotif.getContactID());
         if (contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
-            CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated YukonUser.");
+            log.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated YukonUser.");
             return createNewCall();
         } else if (!DaoFactory.getContactDao().hasPin(contact.getContactID())){
-            CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated PIN.");
+            log.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated PIN.");
             return createNewCall();
         } else {
             PhoneNumber phoneNumber = new PhoneNumber(contactNotif.getNotification());
             ContactPhone contactPhone = new ContactPhone(phoneNumber, contactNotif.getContactID());
-    		_nextCall = new Call(contactPhone, _message);
-            _nextCall.addPropertyChangeListener(new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent evt) {
-                    // check for changes to a call's state
-                    if (evt.getPropertyName().equals(Call.CALL_STATE)) {
-                        CallState callState = (CallState) evt.getNewValue();
-                        if (callState instanceof Confirmed) {
-                            _notificationLogger.logIndividualNotification(contactNotif, true);
-                            setState(STATE_COMPLETE);
-                        } else if (callState instanceof Connecting) {
-                            setState(STATE_CALLING);
-                        } else if (callState.isDone()) {
-                            _notificationLogger.logIndividualNotification(contactNotif, false);
-                            setState(STATE_READY);
-                        }
+    		nextCall = new Call(contactPhone, _message);
+    		
+    		final Call call = nextCall;
+    		nextCall.addCompletionCallback(new Runnable() {
+                public void run() {
+                    if (call.isSuccess()) {
+                        _notificationLogger.logIndividualNotification(contactNotif, true);
+                        setState(STATE_COMPLETE);
+                    } else {
+                        _notificationLogger.logIndividualNotification(contactNotif, false);
+                        setState(STATE_READY);
                     }
                 }
             });
-            CTILogger.info("Created " + _nextCall + " for " + this);
-            return _nextCall;
+    		
+    		log.info("Created " + nextCall + " for " + this);
+            return nextCall;
         }
 	}
 	
-    public void propertyChange(PropertyChangeEvent evt) {
-        // check for changes to a call's state
-        if (evt.getPropertyName().equals(Call.CALL_STATE)) {
-            CallState callState = (CallState) evt.getNewValue();
-            if (callState instanceof Confirmed) {
-                setState(STATE_COMPLETE);
-            } else if (callState instanceof Connecting) {
-                setState(STATE_CALLING);
-            } else if (callState.isDone()) {
-                setState(STATE_READY);
-            }
-        }
-    }
-        
 	/**
 	 * @param listener
 	 */
@@ -138,7 +123,7 @@ public class SingleNotification {
 	 */
 	public String setState(String state) {
 		String oldState = assignState(state);
-		CTILogger.info(this + " changing state " + oldState + " -> " + state);
+		log.info(this + " changing state " + oldState + " -> " + state);
         if (!oldState.equals(state)) {
     		_listeners.firePropertyChange(NOTIFICATION_STATE, oldState, state);
         }
@@ -154,7 +139,7 @@ public class SingleNotification {
     }
     
     public Call getLastCall() {
-        return _nextCall;
+        return nextCall;
     }
 
     public Contactable getContactable() {

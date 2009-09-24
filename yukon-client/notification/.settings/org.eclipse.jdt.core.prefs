@@ -1,4 +1,4 @@
-#Tue May 17 14:53:56 GMT-06:00 2005
+#Fri Aug 21 13:39:55 CDT 2009
 eclipse.preferences.version=1
 org.eclipse.jdt.core.codeComplete.argumentPrefixes=
 org.eclipse.jdt.core.codeComplete.argumentSuffixes=
@@ -8,6 +8,8 @@ org.eclipse.jdt.core.codeComplete.localPrefixes=
 org.eclipse.jdt.core.codeComplete.localSuffixes=
 org.eclipse.jdt.core.codeComplete.staticFieldPrefixes=
 org.eclipse.jdt.core.codeComplete.staticFieldSuffixes=
+org.eclipse.jdt.core.codeComplete.staticFinalFieldPrefixes=
+org.eclipse.jdt.core.codeComplete.staticFinalFieldSuffixes=
 org.eclipse.jdt.core.compiler.taskCaseSensitive=enabled
 org.eclipse.jdt.core.compiler.taskPriorities=NORMAL,HIGH,NORMAL
 org.eclipse.jdt.core.compiler.taskTags=TODO,FIXME,XXX

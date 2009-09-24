@@ -22,6 +22,7 @@ import com.cannontech.message.notif.DefColl_VoiceDataRequestMsg;
 import com.cannontech.message.notif.DefColl_VoiceDataResponseMsg;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;
 import com.cannontech.message.notif.EconomicEventMsg;
+import com.cannontech.message.notif.NotifCallEvent;
 import com.cannontech.message.notif.NotifCompletedMsg;
 import com.cannontech.message.notif.NotifEmailMsg;
 import com.cannontech.message.notif.ProgramActionMsg;
@@ -161,10 +162,10 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
      * @param token the call token
      * @param success true if the person called was likely to have heard the notification
      */
-    public void sendConfirmation(String token, boolean success) {
+    public void sendCallEvent(String token, NotifCallEvent event) {
         NotifCompletedMsg msg = new NotifCompletedMsg();
         msg.token = token;
-        msg.gotConfirmation = success;
+        msg.status = event;
         
         write(msg);
     }

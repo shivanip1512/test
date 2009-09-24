@@ -17,9 +17,6 @@ public class CallPoolFactory {
         CallPool callPool = new CallPool();
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
 
-        int callTimeoutSeconds = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.CALL_RESPONSE_TIMEOUT, null);
-        callPool.setCallTimeoutSeconds(callTimeoutSeconds);
-        
         int numberOfChannels = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.NUMBER_OF_CHANNELS, user);
         callPool.setNumberOfChannels(numberOfChannels);
 

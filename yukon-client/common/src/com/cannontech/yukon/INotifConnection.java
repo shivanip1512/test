@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.enums.EconomicEventAction;
+import com.cannontech.message.notif.NotifCallEvent;
 import com.cannontech.yukon.conns.NotifRequestException;
 
 /**
@@ -15,7 +16,7 @@ public interface INotifConnection
 	public String requestMessage( String token ) throws NotifRequestException;
 	public int requestMessageContactId( String callToken ) throws NotifRequestException;
 	
-	public void sendConfirmation(String token, boolean success);
+	public void sendCallEvent(String token, NotifCallEvent event);
 
     public void sendCurtailmentNotification(Integer curtailmentEventId, CurtailmentEventAction action);
 

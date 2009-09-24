@@ -15,5 +15,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
+	<classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -48,8 +48,9 @@ public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
         NotifCompletedMsg msg = (NotifCompletedMsg) obj;
 
         msg.token = (String) vstr.restoreObject(SimpleMappings.CString);
-        msg.gotConfirmation = 
-            vstr.restoreObject(SimpleMappings.CString).equals("y");
+        String callStateStr = (String) vstr.restoreObject(SimpleMappings.CString);
+		msg.status = 
+            NotifCallEvent.valueOf(callStateStr);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -58,7 +59,7 @@ public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
         NotifCompletedMsg msg = (NotifCompletedMsg) obj;
 
         vstr.saveObject(msg.token, SimpleMappings.CString);
-        vstr.saveObject(msg.gotConfirmation ? "y" : "n", SimpleMappings.CString);
+        vstr.saveObject(msg.status.name(), SimpleMappings.CString);
 
     }
 
