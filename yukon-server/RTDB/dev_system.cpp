@@ -79,10 +79,11 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
             {
                 if (parse.isKeyValid("phasedetect") && parse.isKeyValid("pdbroadcast"))
                 {
+                    int nRet = NORMAL;
                     string broadcastType = parse.getsValue("pdbroadcast");
 
                     // Using a "magic string for now" This Should be an enum/const string reference when more types are added.
-                    if (stringCompareIgnoreCase(broadcastType,"mct_base_410") == 0)
+                    if (stringCompareIgnoreCase(broadcastType,"mct_410_base") == 0)
                     {
                         CtiDeviceMCT410::buildPhaseDetectOutMessage(parse,OutMessage);
                         OutMessage->TimeOut   = 2;
@@ -105,7 +106,6 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             OutMessage->Request.ProtocolInfo.Emetcon.Function = OutMessage->Buffer.BSt.Function;
                             OutMessage->Request.ProtocolInfo.Emetcon.IO       = OutMessage->Buffer.BSt.IO;
 
-                            int nRet = NORMAL;
                             CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
                             if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
                             {
@@ -128,9 +128,39 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                 }
                             }
                         }
+                        else
+                        {
+                            string resultString = getName() + ": ERROR Route not found: " + CtiNumStr(OutMessage->Request.RouteID);
+                            CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
+                                                                             resultString,
+                                                                             NoRouteFound,
+                                                                             OutMessage->Request.RouteID,
+                                                                             OutMessage->Request.MacroOffset,
+                                                                             OutMessage->Request.Attempt,
+                                                                             OutMessage->Request.GrpMsgID,
+                                                                             OutMessage->Request.UserID,
+                                                                             OutMessage->Request.SOE,
+                                                                             CtiMultiMsg_vec());
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Route not found. id: " << OutMessage->Request.RouteID << endl;
+                            }
+                        }
                     }
                     else
                     {
+                        string resultString = getName() + ": ERROR Unsupported device type: " + broadcastType;
+                        CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
+                                                 resultString,
+                                                 UnsupportedDevice,
+                                                 OutMessage->Request.RouteID,
+                                                 OutMessage->Request.MacroOffset,
+                                                 OutMessage->Request.Attempt,
+                                                 OutMessage->Request.GrpMsgID,
+                                                 OutMessage->Request.UserID,
+                                                 OutMessage->Request.SOE,
+                                                 CtiMultiMsg_vec());
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Unknown device type for broadcast." << endl;
