@@ -80,6 +80,7 @@ protected:
     bool    getExpectedFreezeParity() const;
     CtiTime getLastFreezeTimestamp( void );
     CtiTime getLastScheduledFreezeTimestamp( void );
+    static CtiDate findLastScheduledFreeze(const CtiDate &end_date, unsigned freeze_day);
     void    updateFreezeInfo(int freeze_counter, unsigned long freeze_timestamp);
 
     static bool getMCTDebugLevel(int mask);

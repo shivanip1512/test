@@ -80,6 +80,8 @@ BOOST_AUTO_TEST_CASE(test_ctidate_methods)
     BOOST_CHECK_EQUAL( RWDate::now().dayOfMonth(), CtiDate::now().dayOfMonth() );
     BOOST_CHECK_EQUAL( RWDate::daysInMonthYear(12, 1990), CtiDate::daysInMonthYear(12, 1990) );
 
+    BOOST_CHECK_EQUAL( 0, CtiDate::daysInMonthYear(13, 1990) );
+    BOOST_CHECK_EQUAL( 0, CtiDate::daysInMonthYear( 0, 1990) );
 
     // check the special time values
     std::cout << "neg_infin date as string: " << CtiDate(CtiDate::neg_infin).asString() << std::endl;

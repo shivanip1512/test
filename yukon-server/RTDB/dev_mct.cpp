@@ -4173,32 +4173,15 @@ CtiTime CtiDeviceMCT::getLastFreezeTimestamp( void )
 
 CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp( void )
 {
-    long day = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay);
+    long freeze_day = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay);
 
     CtiTime last_scheduled_freeze(CtiTime::not_a_time);  //  not_a_time resolves to 0 seconds, ensuring it'll be less than anything else AND won't be valid
 
     //  we have a scheduled freeze we need to account for
-    if( day > 0 )
+    if( freeze_day > 0 )
     {
         //  we will calculate the previous freeze day based on today at midnight
-        CtiDate scheduled_freeze;
-
-        //  if it hasn't happened this month AND we're not at the end of the
-        //    month, move us to the end of the previous month
-        if( scheduled_freeze.dayOfMonth() <= day &&
-            scheduled_freeze.dayOfMonth() <  scheduled_freeze.daysInMonthYear(scheduled_freeze.dayOfMonth(), scheduled_freeze.year()) )
-        {
-            scheduled_freeze -= scheduled_freeze.dayOfMonth();
-        }
-
-        //  if it happened earlier this month, move us back to when it happened
-        if( scheduled_freeze.dayOfMonth() > day )
-        {
-            scheduled_freeze -= scheduled_freeze.dayOfMonth() - day;
-        }
-
-        //  freeze happens at midnight at the end of the day, or the beginning of the next
-        ++scheduled_freeze;
+        CtiDate scheduled_freeze = findLastScheduledFreeze(CtiDate(), freeze_day);
 
         if( CtiTime(scheduled_freeze) > getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp) )
         {
@@ -4207,6 +4190,36 @@ CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp( void )
     }
 
     return last_scheduled_freeze;
+}
+
+
+CtiDate CtiDeviceMCT::findLastScheduledFreeze(const CtiDate &end_date, unsigned freeze_day)
+{
+    if( freeze_day == 0 )
+    {
+        //  freeze time will never be after the freeze config date
+        return CtiDate(1, 1, 1970);
+    }
+
+    CtiDate last_freeze = end_date;
+
+    //  the freeze hasn't happened yet this month, move back to the end of last month
+    //    if freeze_day >= 32, this will always happen
+    if( freeze_day >= last_freeze.dayOfMonth() )
+    {
+        last_freeze -= last_freeze.dayOfMonth();
+    }
+
+    //  if the freeze happened earlier this month, back up
+    //    if freeze_day >= 32, this block will always be bypassed, leaving us at the end of the month
+    if( freeze_day < last_freeze.dayOfMonth() )
+    {
+        last_freeze -= last_freeze.dayOfMonth();  //  back up one month...
+        last_freeze += freeze_day;                    //  ... and add the freeze_day back on
+    }
+
+    //  freeze happens at the end of the day/beginning of the next day
+    return last_freeze + 1;
 }
 
 

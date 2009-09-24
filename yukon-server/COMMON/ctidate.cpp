@@ -224,7 +224,19 @@ unsigned int CtiDate::firstDayOfMonth() const
 
 unsigned int CtiDate::daysInMonthYear(unsigned month, unsigned year)
 {
-    return gregorian_calendar::end_of_month_day(year, month);
+    unsigned int days = 0;
+
+    try
+    {
+        days = gregorian_calendar::end_of_month_day(year, month);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - exception in CtiDate::daysInMonthYear(month,year) (" << month << "," << year << ") - returning 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return days;
 }
 
 CtiDate CtiDate::now()
