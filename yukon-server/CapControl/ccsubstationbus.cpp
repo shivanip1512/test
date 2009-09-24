@@ -3370,52 +3370,10 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                 if( request == NULL )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-
-                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
-                       << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                       try
-                       {
-                           CtiCCCapBank* currentCapBank = NULL;
-                           CtiCCFeeder* currentFeeder = NULL;
-                           for(int i=0;i<_ccfeeders.size();i++)
-                           {
-                               {
-                                   currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-                                   dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                               }
-                               CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                               for(int j=0;j<ccCapBanks.size();j++)
-                               {
-                                   currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                   dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                               }
-                           }
-                       }
-                       catch(...)
-                       {
-                           CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                       }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
-                            textInfo += " Cannot Decrease Var Level.  No Cap Banks Available to Close.";
-                        else
-                            textInfo += " Cannot Increase Volt Level.  No Cap Banks Available to Close.";
-
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
+                        createCannotControlBankText("Decrease Var", "Close", ccEvents);
+                    else
+                        createCannotControlBankText("Increase Volt", "Close", ccEvents);
                 }
                 else
                 {
@@ -3478,52 +3436,10 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                 if( request == NULL )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
-                        << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                        try
-                        {
-                            CtiCCCapBank* currentCapBank = NULL;
-                            CtiCCFeeder* currentFeeder = NULL;
-                            for(int i=0;i<_ccfeeders.size();i++)
-                            {
-                                {
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                                }
-                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                                for(int j=0;j<ccCapBanks.size();j++)
-                                {
-                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
-                            textInfo += " Cannot Increase Var Level.  No Cap Banks Available to Open.";
-                        else
-                            textInfo += " Cannot Decrease Volt Level.  No Cap Banks Available to Open.";
-
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
+                        createCannotControlBankText("Increase Var", "Open", ccEvents);
+                    else
+                        createCannotControlBankText("Decrease Volt", "Open", ccEvents);
                 }
                 else
                 {
@@ -3615,47 +3531,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                 if( capBank == NULL && request == NULL )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
-                        << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-                        try
-                        {
-                            CtiCCCapBank* currentCapBank = NULL;
-                            CtiCCFeeder* currentFeeder = NULL;
-                            for(int i=0;i<_ccfeeders.size();i++)
-                            {
-                                {
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                                }
-                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                                for(int j=0;j<ccCapBanks.size();j++)
-                                {
-                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        textInfo += " Cannot Decrease Var Level.  No Cap Banks Available to Close.";
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    createCannotControlBankText("Decrease Var", "Close", ccEvents);
                 }
                 else
                 {
@@ -3716,47 +3592,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                 if( capBank == NULL && request == NULL )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
-                        << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                        try
-                        {
-                            CtiCCCapBank* currentCapBank = NULL;
-                            CtiCCFeeder* currentFeeder = NULL;
-                            for(int i=0;i<_ccfeeders.size();i++)
-                            {
-                                {
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                                }
-                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                                for(int j=0;j<ccCapBanks.size();j++)
-                                {
-                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        textInfo += " Cannot Increase Var Level.  No Cap Banks Available to Open.";
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    createCannotControlBankText("Increase Var", "Open", ccEvents);
                 }
                 else
                 {
@@ -3904,51 +3740,10 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 }
                 if( request == NULL )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
-                        << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                        try
-                        {
-                            CtiCCCapBank* currentCapBank = NULL;
-                            CtiCCFeeder* currentFeeder = NULL;
-                            for(int i=0;i<_ccfeeders.size();i++)
-                            {
-                                {
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                                }
-                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                                for(int j=0;j<ccCapBanks.size();j++)
-                                {
-                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
-                            textInfo += " Cannot Decrease Var Level.  No Cap Banks Available to Close.";
-                        else
-                            textInfo += " Cannot Increase Volt Level.  No Cap Banks Available to Close.";
-
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
+                        createCannotControlBankText("Decrease Var", "Close", ccEvents);
+                    else
+                        createCannotControlBankText("Increase Volt", "Close", ccEvents);
                 }
                 else
                 {
@@ -4013,52 +3808,10 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
 
                 if( request == NULL )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
-                        << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                        try
-                        {
-                            CtiCCCapBank* currentCapBank = NULL;
-                            CtiCCFeeder* currentFeeder = NULL;
-                            for(int i=0;i<_ccfeeders.size();i++)
-                            {
-                                {
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                                }
-                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                                for(int j=0;j<ccCapBanks.size();j++)
-                                {
-                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
-                            textInfo += " Cannot Increase Var Level.  No Cap Banks Available to Open.";
-                        else
-                            textInfo += " Cannot Decrease Volt Level.  No Cap Banks Available to Open.";
-
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
+                        createCannotControlBankText("Increase Var", "Open", ccEvents);
+                    else
+                        createCannotControlBankText("Decrease Volt", "Open", ccEvents);
                 }
                 else
                 {
@@ -4142,49 +3895,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
 
                 if( capBank == NULL && request == NULL )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
-                        << " any further.  All cap banks are already in the Close stateor Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                        try
-                        {
-                            CtiCCCapBank* currentCapBank = NULL;
-                            CtiCCFeeder* currentFeeder = NULL;
-                            for(int i=0;i<_ccfeeders.size();i++)
-                            {
-                                {
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                                }
-                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                                for(int j=0;j<ccCapBanks.size();j++)
-                                {
-                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        textInfo += " Cannot Decrease Var Level.  No Cap Banks Available to Close.";
-
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    createCannotControlBankText("Decrease Var", "Close", ccEvents);
                 }
                 else
                 {
@@ -4248,48 +3959,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
 
                 if( capBank == NULL && request == NULL  )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-                    {
-
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
-                        << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-
-                        try
-                        {
-                            CtiCCCapBank* currentCapBank = NULL;
-                            CtiCCFeeder* currentFeeder = NULL;
-                            for(int i=0;i<_ccfeeders.size();i++)
-                            {
-                                {
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
-                                }
-                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
-                                for(int j=0;j<ccCapBanks.size();j++)
-                                {
-                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
-                                }
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (!getCorrectionNeededNoBankAvailFlag())
-                    {
-                        setCorrectionNeededNoBankAvailFlag(TRUE);
-                        string textInfo;
-                        textInfo = ("Sub: ");
-                        textInfo += getPAOName();
-                        textInfo += " Cannot Increase Var Level.  No Cap Banks Available to Open.";
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-                    }
+                    createCannotControlBankText("Increase Var", "Open", ccEvents);
                 }
                 else
                 {
@@ -7722,11 +7392,6 @@ DOUBLE CtiCCSubstationBus::convertKVARToKQ(DOUBLE kvar, DOUBLE kw)
 
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// LOTS OF WORK TO DO HERE!!!!
-/////////////////////////////////////////////////////////////////////////////
-
 BOOL CtiCCSubstationBus::isBusPerformingVerification()
 {
     return _performingVerificationFlag;
@@ -11069,6 +10734,57 @@ string CtiCCSubstationBus::getVerificationString()
     }
     text += " Banks";
     return text;
+}
+
+void CtiCCSubstationBus::createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    if (_CC_DEBUG & CC_DEBUG_EXTENDED)
+    {
+  
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can Not "<<text<<" level for substation bus: " << getPAOName()
+        << " any further.  All cap banks are already in the "<<commandString <<" state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
+  
+        try
+        {
+            CtiCCCapBank* currentCapBank = NULL;
+            CtiCCFeeder* currentFeeder = NULL;
+            for(int i=0;i<_ccfeeders.size();i++)
+            {
+                {
+                    currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
+                }
+                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
+                for(int j=0;j<ccCapBanks.size();j++)
+                {
+                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                }
+            }
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+    }
+    if (!getCorrectionNeededNoBankAvailFlag())
+    {
+        setCorrectionNeededNoBankAvailFlag(TRUE);
+        string textInfo;
+        textInfo = ("Sub: ");
+        textInfo += getPAOName();
+        textInfo += " Cannot ";
+        textInfo += text;
+        textInfo +=" Level.  No Cap Banks Available to " + commandString + ".";
+        LONG stationId, areaId, spAreaId;
+        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
+    }
+
 }
 
 bool CtiCCSubstationBus::checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC)

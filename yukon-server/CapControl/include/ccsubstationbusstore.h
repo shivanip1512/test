@@ -97,6 +97,7 @@ class CtiCCSubstationBusStore
 {
 public:   
 
+    CtiCCSubstationBusStore();
     typedef enum 
     {
         Unknown = 0,
@@ -421,16 +422,18 @@ public:
     void getSubBusParentInfo(CtiCCSubstationBus* bus, LONG &spAreaId, LONG &areaId, LONG &stationId);
     void getFeederParentInfo(CtiCCFeeder* feeder, LONG &spAreaId, LONG &areaId, LONG &stationId);
 
+    void addAreaToPaoMap(CtiCCAreaPtr area);
+    void addSubstationToPaoMap(CtiCCSubstationPtr station);
+    void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
 
 private:
 
     /* Relating to Max Kvar Cparm */
     long isKVARAvailable( long kvarNeeded );
 
-    //Don't allow just anyone to create or destroy control areas
-    CtiCCSubstationBusStore();
     virtual ~CtiCCSubstationBusStore();
-
+    
+    void startThreads(); 
     void reset();
     //bool CtiCCSubstationBusStore::findPointId(long pointId);
     void checkAMFMSystemForUpdates();

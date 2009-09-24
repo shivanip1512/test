@@ -111,18 +111,6 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     _voltReductionSystemDisabled = FALSE;
     _voltDisabledCount = 0;
 
-    //Start the reset thread
-    RWThreadFunction func = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doResetThr );
-    _resetthr = func;
-    func.start();
-    //Start the amfm thread
-    RWThreadFunction func2 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doAMFMThr );
-    _amfmthr = func2;
-    func2.start();
-    //Start the opstats thread
-    RWThreadFunction func3 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doOpStatsThr );
-    _opstatsthr = func3;
-    func3.start();
 }
 
 /*--------------------------------------------------------------------------
@@ -150,6 +138,23 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
     shutdown();
 }
 
+
+
+void CtiCCSubstationBusStore::startThreads() 
+{
+    //Start the reset thread
+    RWThreadFunction func = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doResetThr );
+    _resetthr = func;
+    func.start();
+    //Start the amfm thread
+    RWThreadFunction func2 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doAMFMThr );
+    _amfmthr = func2;
+    func2.start();
+    //Start the opstats thread
+    RWThreadFunction func3 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doOpStatsThr );
+    _opstatsthr = func3;
+    func3.start();
+}
 
 
 /*---------------------------------------------------------------------------
@@ -460,6 +465,19 @@ long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
     }
     return (iter == _altsub_sub_idmap.end() ? NULL : iter->second);
 
+}
+
+void CtiCCSubstationBusStore::addAreaToPaoMap(CtiCCAreaPtr area)
+{
+    _paobject_area_map.insert(make_pair(area->getPAOId(),area));
+}
+void CtiCCSubstationBusStore::addSubstationToPaoMap(CtiCCSubstationPtr station)
+{
+    _paobject_substation_map.insert(make_pair(station->getPAOId(),station));
+}
+void CtiCCSubstationBusStore::addSubBusToPaoMap(CtiCCSubstationBusPtr bus)
+{
+    _paobject_subbus_map.insert(make_pair(bus->getPAOId(),bus));
 }
 
 /*---------------------------------------------------------------------------
@@ -2457,6 +2475,7 @@ CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance()
     if ( _instance == NULL )
     {
         _instance = new CtiCCSubstationBusStore();
+        _instance->startThreads();
     }
 
     return _instance;

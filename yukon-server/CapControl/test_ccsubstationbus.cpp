@@ -26,6 +26,9 @@
 #include "yukon.h"
 #include "ctitime.h"
 #include "ccsubstationbus.h"
+#include "ccsubstation.h"
+#include "ccarea.h"
+#include "ccsubstationbusstore.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
@@ -35,5 +38,35 @@ BOOST_AUTO_TEST_CASE(test_get_bank_size)
     CtiCCSubstationBus bus;
     bus.setPAOId(1);
     BOOST_CHECK_EQUAL(bus.getPAOId(), 1);
+
 }
 
+
+BOOST_AUTO_TEST_CASE(test_cannot_control_bank)
+{
+    CtiCCSubstationBus bus;
+    CtiCCSubstation station;
+    CtiCCArea area;
+    CtiCCSubstationBusStore* store = new CtiCCSubstationBusStore();
+    area.setPAOId(3);
+    station.setPAOId(2);
+    bus.setPAOId(1);
+    bus.setPAOName("Test SubBus");
+    
+    store->addAreaToPaoMap(&area);
+    area.getSubStationList()->push_back(station.getPAOId());
+    store->addSubstationToPaoMap(&station);
+    station.getCCSubIds()->push_back(bus.getPAOId());
+    store->addSubBusToPaoMap(&bus);
+
+    bus.setCorrectionNeededNoBankAvailFlag(FALSE);
+    CtiMultiMsg_vec ccEvents;
+    bus.createCannotControlBankText("Increase Var", "Open", ccEvents);
+    BOOST_CHECK_EQUAL(bus.getCorrectionNeededNoBankAvailFlag(), 1);
+    BOOST_CHECK_EQUAL(ccEvents.size(), 1);
+    bus.createCannotControlBankText("Increase Var", "Open", ccEvents);
+    BOOST_CHECK_EQUAL(ccEvents.size(), 1);
+    bus.setCorrectionNeededNoBankAvailFlag(FALSE);
+    bus.createCannotControlBankText("Increase Var", "Open", ccEvents);
+    BOOST_CHECK_EQUAL(ccEvents.size(), 2);
+}

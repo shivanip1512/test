@@ -403,6 +403,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiCCCapBankPtr capBank,
                                     CtiCCFeederPtr feeder, string text, string additional, bool verifyFlag,
                                     DOUBLE before, DOUBLE after, DOUBLE change, DOUBLE phaseA, DOUBLE phaseB, DOUBLE phaseC);
+    void createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents);
     void performDataOldAndFallBackNecessaryCheck();
 
     BOOL isDirty() const;
