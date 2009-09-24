@@ -33,7 +33,7 @@ using namespace std;
 
 
 CtiProtocolExpresscom::CtiProtocolExpresscom() :
-_useProtocolCRC(false),
+_useProtocolCRC(true),
 _CRC(0),
 _useASCII(false),
 _addressLevel(0),

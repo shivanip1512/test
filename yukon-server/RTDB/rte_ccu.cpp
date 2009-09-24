@@ -479,6 +479,9 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
     xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
     status = xcom.parseRequest(parse);
 
+    // The CCU never uses a CRC for expresscom.
+    xcom.setUseCRC(false);
+
     /* the transmitter is an EMETCON device so load up the Preamble, B, and C words */
 
     memset(&BSt, 0, sizeof(BSTRUCT));
