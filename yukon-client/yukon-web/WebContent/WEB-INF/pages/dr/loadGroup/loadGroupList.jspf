@@ -28,32 +28,9 @@
     function clearFilter() {
         window.location = '${clearFilterUrl}';
     }
-    
-    function updateEnabled(loadGroupId) {
-
-        var disableLink = $('disableLink_' + loadGroupId);
-        var enableLink = $('enableLink_' + loadGroupId);
-        var actionSpan = $('actionSpan_' + loadGroupId);
-        
-        return function(data) {
-    	        
-            if(data.state == 'true') {
-                // enabled
-                $(disableLink).show();
-                $(enableLink).hide();
-                $(actionSpan).show();
-            } else if(data.state == 'false') {
-                // disabled
-                $(disableLink).hide();
-                $(enableLink).show();
-                $(actionSpan).show();
-            } else {
-                // load management doesn't know about this load group
-                $(actionSpan).hide();
-            }
-        };
-    }
 </script>
+
+<cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
 <cti:msg var="filterLabel" key="yukon.web.modules.dr.loadGroupList.filters"/>
 <tags:abstractContainer type="triangle" title="${filterLabel}">

@@ -151,6 +151,11 @@ public class LoadGroupController {
         loadGroupControllerHelper.initBinder(binder, userContext);
     }
     
+    /**
+     * Helper method to check permissions for a load group
+     * @param loadGroup - Load Group in question
+     * @param user - User to check permissions for
+     */
     private void checkUserPaoPermission(DisplayablePao loadGroup, LiteYukonUser user) {
         // TODO: check permissions here
         

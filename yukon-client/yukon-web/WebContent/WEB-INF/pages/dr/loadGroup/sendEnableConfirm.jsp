@@ -14,7 +14,7 @@
             </c:otherwise>
         </c:choose>
     </p>
-        <form id="sendEnableForm" action="/spring/dr/loadGroup/setEnabled">
+    <form id="sendEnableForm" action="/spring/dr/loadGroup/setEnabled">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
         <div class="actionArea">

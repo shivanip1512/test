@@ -100,8 +100,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     
     @Override
     public boolean isEnabled(int loadGroupId) {
-        DatedObject<LMGroupBase> datedGroup = loadControlClientConnection.getDatedGroup(loadGroupId);
-        LMGroupBase group = datedGroup.getObject();
+        LMGroupBase group = this.loadControlClientConnection.getGroup(loadGroupId);
         Boolean disableFlag = group.getDisableFlag();
         return !disableFlag;
     }

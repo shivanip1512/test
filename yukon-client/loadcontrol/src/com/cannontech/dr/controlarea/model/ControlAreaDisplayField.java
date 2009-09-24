@@ -30,6 +30,20 @@ public enum ControlAreaDisplayField {
             return new DisplayablePaoComparator(userContext, isDescending);
         }
     },
+    ENABLED {
+        @Override
+        public MessageSourceResolvable getValue(LMControlArea controlArea) {
+            return YukonMessageSourceResolvable.createDefault("", 
+                                                              String.valueOf(!controlArea.getDisableFlag()));
+        }
+        
+        @Override
+        public Comparator<DisplayablePao> getSorter(
+                ObjectMapper<DisplayablePao, LMControlArea> mapper,
+                final YukonUserContext userContext, boolean isDescending) {
+            return null;
+        }
+    },
     STATE {
         @Override
         public MessageSourceResolvable getValue(LMControlArea area) {

@@ -8,17 +8,7 @@
 <cti:standardPage module="dr" page="loadGroupDetail" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|loadGroups"/>
 
-    <script type="text/javascript">
-        function updateEnabled(data) {
-            if(data.state == 'true') {
-            	$('disableLink').show();
-            	$('enableLink').hide();
-            } else {
-            	$('disableLink').hide();
-            	$('enableLink').show();
-            }
-        }
-    </script>
+    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
     <tags:iframeDialog id="drDialog"/>
 
@@ -73,41 +63,41 @@
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
-                    <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
-                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                    </cti:url>
-                    <a href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
-                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
-                    </a><br>
-
-                    <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
-                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                    </cti:url>
-                    <a href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
-                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
-                    </a><br>
-                    
-                    <cti:dataUpdaterCallback function="updateEnabled" state="DR_LOADGROUP/${loadGroupId}/ENABLED" />
-                    <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
-                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                        <cti:param name="isEnabled" value="true"/>
-                    </cti:url>
-                    <a id="enableLink" href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')"
-                        ${(isEnabled)?'style="display: none;"':''}>
-                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
-                    </a>
-                    <cti:url var="sendDisableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
-                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                        <cti:param name="isEnabled" value="false"/>
-                    </cti:url>
-                    <a id="disableLink" href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')"
-                        ${(!isEnabled)?'style="display: none;"':''}>
-                        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
-                    </a><br>
+                    <span id="actionSpan_${loadGroupId}">
+                        <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
+                            <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                        </cti:url>
+                        <a href="javascript:void(0)"
+                            onclick="openIFrameDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
+                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
+                        </a><br>
+    
+                        <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
+                            <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                        </cti:url>
+                        <a href="javascript:void(0)"
+                            onclick="openIFrameDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
+                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
+                        </a><br>
+                        
+                        <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
+                            <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                            <cti:param name="isEnabled" value="true"/>
+                        </cti:url>
+                        <a id="enableLink_${loadGroupId}" href="javascript:void(0)"
+                            onclick="openIFrameDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
+                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
+                        </a>
+                        <cti:url var="sendDisableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
+                            <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                            <cti:param name="isEnabled" value="false"/>
+                        </cti:url>
+                        <a id="disableLink_${loadGroupId}" href="javascript:void(0)"
+                            onclick="openIFrameDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')">
+                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
+                        </a><br>
+                        <cti:dataUpdaterCallback function="updateEnabled('${loadGroupId}')" initialize="true" state="DR_LOADGROUP/${loadGroupId}/ENABLED" />
+                    </span>
                 </tags:abstractContainer>
             </td>
         </tr>

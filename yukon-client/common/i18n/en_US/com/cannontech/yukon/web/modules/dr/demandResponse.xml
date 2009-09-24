@@ -33,6 +33,44 @@
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.PEAK_PROJECTION">{0,number,0.0} / {1,number,0.0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.ATKU">{0}</entry>
 
+<!-- sendEnableConfirm.jsp -->
+<entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.title">Send Enable</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendDisableConfirm.title">Send Disable</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.confirmQuestion">Are you sure you want to enable the control area {0}?</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendDisableConfirm.confirmQuestion">Are you sure you want to disable the control area {0}?</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.cancelButton">Cancel</entry>
+
+<!-- sendResetPeakConfirm.jsp -->
+<entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title">Send Reset Peak</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.confirmQuestion">Are you sure you want to reset the Peak Value(s) to zero for all triggers the control area {0}?</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.cancelButton">Cancel</entry>
+
+<!-- getChangeTimeWindowValues.jsp -->
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title">Send Time Window Change</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions">Please enter the new start and stop times for control area {0} in the format HH:mm where HH is the hours from 00 to 23 and mm is minutes from 00 to 59.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.invalidWindow">The times you have entered are not valid.  Please make sure that the time strings are in the format mentioned above and that the stop time is after start time.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTime">New Start Time:</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.stopTime">New Stop Time:</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.cancelButton">Cancel</entry>
+
+<!-- sendChangeTimeWindowConfirm.jsp -->
+<entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.title">Send Reset Peak</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.confirmQuestion">Are you sure you want to change the time window to {0} - {1} the control area {2}?</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.cancelButton">Cancel</entry>
+
+<!-- getChangeTriggerValues.jsp -->
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title">Send Trigger Change</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.instructions">Please enter the new threshold and restore offset for the trigger(s) you would like to change for control area {0}.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.trigger">Trigger #{0} Settings</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.threshold">New threshold:</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offset">New restore offset:</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.cancelButton">Cancel</entry>
+
 <!--  Program Field Values -->
 <entry key="yukon.web.modules.dr.program.value.STATE.ACTIVE">Active</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.PARTIALLY_ACTIVE">Partially Active</entry>
@@ -199,6 +237,7 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange">Daily Time Change</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable">Disable</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable">Enable</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak">Reset Peak</entry>
 
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.programs">Programs</entry>
 
