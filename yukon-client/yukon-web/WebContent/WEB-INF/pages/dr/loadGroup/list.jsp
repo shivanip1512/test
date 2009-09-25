@@ -7,6 +7,8 @@
 <cti:standardPage module="dr" page="loadGroupList">
     <cti:standardMenu menuSelection="details|loadGroups"/>
 
+    <tags:simpleDialog id="drDialog"/>
+
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
         	<cti:msg key="yukon.web.modules.dr.loadGroupList.breadcrumb.operationsHome"/>

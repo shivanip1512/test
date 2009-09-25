@@ -32,7 +32,7 @@ function clearFilter() {
 </script>
 
 <cti:msg var="filterLabel" key="yukon.web.modules.dr.programList.filters"/>
-<tags:abstractContainer type="triangle" title="${filterLabel}">
+<tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.controlAreaId}">
             <input type="hidden" name="controlAreaId" value="${param.controlAreaId}"/>
@@ -40,14 +40,14 @@ function clearFilter() {
         <c:if test="${!empty param.scenarioId}">
             <input type="hidden" name="scenarioId" value="${param.scenarioId}"/>
         </c:if>
-        <c:if test="${!empty param.sort}">
-            <input type="hidden" name="sort" value="${param.sort}"/>
+        <c:if test="${!empty backingBean.sort}">
+            <form:hidden path="sort"/>
         </c:if>
-        <c:if test="${!empty param.descending}">
-            <input type="hidden" name="descending" value="${param.descending}"/>
+        <c:if test="${!empty backingBean.descending}">
+            <form:hidden path="descending"/>
         </c:if>
-        <c:if test="${!empty param.itemsPerPage}">
-            <input type="hidden" name="itemsPerPage" value="${param.itemsPerPage}"/>
+        <c:if test="${!empty backingBean.itemsPerPage}">
+            <form:hidden path="itemsPerPage"/>
         </c:if>
         <cti:msg var="minStr" key="yukon.web.modules.dr.programList.filter.min"/>
         <cti:msg var="maxStr" key="yukon.web.modules.dr.programList.filter.max"/>
@@ -135,6 +135,9 @@ function clearFilter() {
                 baseUrl="${baseUrl}" fieldName="STATE"/>
         </th>
         <th>
+            <cti:msg key="yukon.web.modules.dr.programList.heading.actions"/>
+        </th>
+        <th>
             <dr:sortByLink key="yukon.web.modules.dr.programList.heading.start"
                 baseUrl="${baseUrl}" fieldName="START"/>
         </th>
@@ -173,6 +176,15 @@ function clearFilter() {
                 </cti:classUpdater>
             </td>
             <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+            <td>
+                <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+                    <cti:param name="programId" value="${programId}"/>
+                </cti:url>
+                <a href="javascript:void(0)"
+                    onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
+                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
+                </a><br>
+            </td>
             <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
             <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
             <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>

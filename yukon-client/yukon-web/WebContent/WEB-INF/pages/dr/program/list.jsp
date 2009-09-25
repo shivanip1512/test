@@ -6,6 +6,9 @@
 <cti:standardPage module="dr" page="programList">
     <cti:standardMenu menuSelection="details|programs"/>
 
+    <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
             <cti:msg key="yukon.web.modules.dr.programList.breadcrumb.operationsHome"/>

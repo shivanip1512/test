@@ -348,11 +348,14 @@ function CalendarControl() {
 var calendarControl = new CalendarControl();
 
 function showCalendarControl(textField, months, days, clear, close) {
+	if (disabledCalendars[textField]) {
+		return;
+	}
 	calendarControl.setMonths(months);
 	calendarControl.setDays(days);
 	calendarControl.setClear(clear);
 	calendarControl.setClose(close);
-	calendarControl.show(textField);
+	calendarControl.show($(textField));
 }
 
 function clearCalendarControl() {
@@ -376,6 +379,8 @@ function changeCalendarControlYear(change) {
 function changeCalendarControlMonth(change) {
   calendarControl.changeMonth(change);
 }
+
+var disabledCalendars = {};
 
 document.write("<iframe id='CalendarControlIFrame' src='javascript:false;' frameBorder='0' scrolling='no'></iframe>");
 document.write("<div style='z-index:500;' id='CalendarControl'></div>");

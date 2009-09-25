@@ -9,6 +9,9 @@
 <cti:standardPage module="dr" page="scenarioList">
     <cti:standardMenu menuSelection="details|scenarios"/>
 
+    <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
             <cti:msg key="yukon.web.modules.dr.scenarioList.breadcrumb.operationsHome"/>
@@ -40,7 +43,7 @@
     </script>
 
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.scenarioList.filters"/>
-    <tags:abstractContainer type="triangle" title="${filterLabel}">
+    <tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.sort}">
             <input type="hidden" name="sort" value="${param.sort}"/>

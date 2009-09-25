@@ -6,8 +6,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<tags:iframeDialog id="drDialog"/>
-
 <cti:url var="submitUrl" value="${baseUrl}"/>
 <cti:url var="clearFilterUrl" value="${baseUrl}">
     <c:if test="${!empty param.itemsPerPage}">
@@ -33,7 +31,7 @@
 <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
 <cti:msg var="filterLabel" key="yukon.web.modules.dr.loadGroupList.filters"/>
-<tags:abstractContainer type="triangle" title="${filterLabel}">
+<tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.programId}">
             <input type="hidden" name="programId" value="${param.programId}"/>
@@ -156,7 +154,7 @@
                         <cti:param name="loadGroupId" value="${loadGroupId}"/>
                     </cti:url>
                     <a href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
+                        onclick="openSimpleDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
                         <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
                     </a><br>
     
@@ -164,7 +162,7 @@
                         <cti:param name="loadGroupId" value="${loadGroupId}"/>
                     </cti:url>
                     <a href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
+                        onclick="openSimpleDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
                         <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
                     </a><br>
                     
@@ -173,7 +171,7 @@
                         <cti:param name="isEnabled" value="true"/>
                     </cti:url>
                     <a id="enableLink_${loadGroupId}" href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
+                        onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
                         <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
                     </a>
                     <cti:url var="sendDisableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
@@ -181,7 +179,7 @@
                         <cti:param name="isEnabled" value="false"/>
                     </cti:url>
                     <a id="disableLink_${loadGroupId}" href="javascript:void(0)"
-                        onclick="openIFrameDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')">
+                        onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')">
                         <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                     </a><br>
                 </span>

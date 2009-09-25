@@ -8,12 +8,15 @@
 <cti:standardPage module="dr" page="programDetail" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|programs"/>
 
+    <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
-        	<cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome"/>
+            <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome"/>
         </cti:crumbLink>
         <cti:crumbLink url="/spring/dr/program/list">
-        	<cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.programs"/>
+            <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.programs"/>
         </cti:crumbLink>
         <cti:crumbLink>
             <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.program"
@@ -66,13 +69,21 @@
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.actions"/>
-            	<tags:abstractContainer type="box" title="${boxTitle}">
-            		<cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/><br>
-            		<cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
+                <tags:abstractContainer type="box" title="${boxTitle}">
+
+                    <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+                        <cti:param name="programId" value="${programId}"/>
+                    </cti:url>
+                    <a href="javascript:void(0)"
+                        onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
+                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
+                    </a><br>
+
+                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/><br>
                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/><br>
                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/><br>
-    	        </tags:abstractContainer>
+                </tags:abstractContainer>
             </td>
         </tr>
     </table>
@@ -105,12 +116,12 @@
         </c:if>
         <c:if test="${!empty parentScenarios}">
             <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
-	        <c:forEach var="parentScenario" items="${parentScenarios}">
+            <c:forEach var="parentScenario" items="${parentScenarios}">
                 <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
                     <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
                 </c:url>
                 <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
-	        </c:forEach>
+            </c:forEach>
         </c:if>
 
     </tags:abstractContainer>

@@ -44,9 +44,40 @@ public class DatePropertyEditorFactory {
         }
     }
 
+    private class DateTimePropertyEditor extends PropertyEditorSupport {
+        private DateFormatEnum dateFormat;
+        private YukonUserContext userContext;
+
+        private DateTimePropertyEditor(DateFormatEnum dateFormat,
+                YukonUserContext userContext) {
+            this.dateFormat = dateFormat;
+            this.userContext = userContext;
+        }
+
+        public void setAsText(String dateStr) throws IllegalArgumentException {
+            try {
+                setValue(dateFormattingService.flexibleDateParser(dateStr,
+                                                                  userContext));
+            } catch (ParseException exception) {
+                throw new IllegalArgumentException("Could not parse date", exception);
+            }
+        }
+
+        public String getAsText() {
+            Date date = (Date) getValue();
+            return date == null
+                ? "" : dateFormattingService.formatDate(date, dateFormat, userContext);
+        }
+    }
+
     public PropertyEditor getPropertyEditor(DateFormattingService.DateOnlyMode dateOnlyMode,
             YukonUserContext userContext) {
         return new DatePropertyEditor(dateOnlyMode, userContext);
+    }
+
+    public PropertyEditor getPropertyEditor(DateFormatEnum dateFormat,
+            YukonUserContext userContext) {
+        return new DateTimePropertyEditor(dateFormat, userContext);
     }
 
     @Autowired

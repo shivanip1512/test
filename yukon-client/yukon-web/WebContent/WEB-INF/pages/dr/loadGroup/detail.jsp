@@ -10,7 +10,7 @@
 
     <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
-    <tags:iframeDialog id="drDialog"/>
+    <tags:simpleDialog id="drDialog"/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -68,7 +68,7 @@
                             <cti:param name="loadGroupId" value="${loadGroupId}"/>
                         </cti:url>
                         <a href="javascript:void(0)"
-                            onclick="openIFrameDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
+                            onclick="openSimpleDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
                         </a><br>
     
@@ -76,7 +76,7 @@
                             <cti:param name="loadGroupId" value="${loadGroupId}"/>
                         </cti:url>
                         <a href="javascript:void(0)"
-                            onclick="openIFrameDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
+                            onclick="openSimpleDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
                         </a><br>
                         
@@ -85,7 +85,7 @@
                             <cti:param name="isEnabled" value="true"/>
                         </cti:url>
                         <a id="enableLink_${loadGroupId}" href="javascript:void(0)"
-                            onclick="openIFrameDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
+                            onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
                         </a>
                         <cti:url var="sendDisableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
@@ -93,7 +93,7 @@
                             <cti:param name="isEnabled" value="false"/>
                         </cti:url>
                         <a id="disableLink_${loadGroupId}" href="javascript:void(0)"
-                            onclick="openIFrameDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')">
+                            onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')">
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                         </a><br>
                         <cti:dataUpdaterCallback function="updateEnabled('${loadGroupId}')" initialize="true" state="DR_LOADGROUP/${loadGroupId}/ENABLED" />

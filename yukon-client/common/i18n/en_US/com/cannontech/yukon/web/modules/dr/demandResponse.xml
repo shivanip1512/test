@@ -76,6 +76,7 @@
 <entry key="yukon.web.modules.dr.program.value.STATE.PARTIALLY_ACTIVE">Partially Active</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.INACTIVE">Inactive</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.MANUAL_ACTIVE">Manual Active</entry>
+<entry key="yukon.web.modules.dr.program.value.STATE.SCHEDULED">Scheduled</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.CONTROL_ATTEMPT">Control Attempt</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.NOTIFIED">Notified</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.STOPPING">Stopping</entry>
@@ -89,6 +90,36 @@
 <entry key="yukon.web.modules.dr.program.value.LOAD_CAPACITY">{0,number,0.0}</entry>
 <entry key="yukon.web.modules.dr.program.value.REDUCTION"></entry>
 
+<entry key="yukon.web.modules.dr.program.startProgram.title">Start Program</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.confirmQuestion">Are you sure you want to start the program {0}?</entry>
+
+<entry key="yukon.web.modules.dr.program.startProgram.gear">Gear:</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.startTime">Start time:</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.startNow">Start Now</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.stopTime">Stop time:</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.scheduleStop">Schedule Stop</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.autoObserveConstraints">Automatically Observe Constraints</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.constraintsWillBeObserved">All constraints will be observed.</entry>
+
+<entry key="yukon.web.modules.dr.program.startProgram.startingNow">The program will be started now.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.startingAt">The program will be scheduled to start at {0}.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.stopNotScheduled">The program will not be scheduled to stop.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.stoppingAt">The program will be scheduled to stop at {0}.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.noConstraintsViolated">No constraints will be violated.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.constraintsViolated">The following constraints would be violated.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.overrideConstraints">Override These Constraints</entry>
+
+<entry key="yukon.web.modules.dr.program.startProgram.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.cancelButton">Cancel</entry>
+
+<entry key="yukon.web.modules.dr.program.stopProgram.title">Stop Program</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.confirmQuestion">Are you sure you want to stop the program {0}?</entry>
+
+<entry key="yukon.web.modules.dr.program.stopProgram.stopTime">Program stop time:</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.x">xxxxxxx</entry>
+
+<entry key="yukon.web.modules.dr.program.stopProgram.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.cancelButton">Cancel</entry>
 
 <!--  Load Group Field Values -->
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE">Active</entry>
@@ -96,7 +127,7 @@
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE_PENDING">Active Pending</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.INACTIVE_PENDING">Inactive Pending</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.LAST_ACTION">{0,date,MM/dd/yyyy HH:mm zz}</entry>
-<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_STATISTICS">{0}-{1}-{2}-{3}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_STATISTICS">{0} / {1} / {2} / {3}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.REDUCTION">{0,number,#.#}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.LOAD_CAPACITY">{0,number,#.#}</entry>
 
@@ -159,7 +190,7 @@
 <entry key="yukon.web.modules.dr.scenarioList.breadcrumb.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.noResults">No scenarios matched.</entry>
-<entry key="yukon.web.modules.dr.scenarioList.filters">Edit Filters</entry>
+<entry key="yukon.web.modules.dr.scenarioList.filters">Filters</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.name">Name</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
@@ -189,7 +220,7 @@
 <entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.noResults">No Control Areas matched.</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.filters">Edit Filters</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filters">Filters</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.name">Name</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.state">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.state.all">All</entry>
@@ -248,7 +279,7 @@
 <entry key="yukon.web.modules.dr.programList.breadcrumb.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.noResults">No programs matched.</entry>
-<entry key="yukon.web.modules.dr.programList.filters">Edit Filters</entry>
+<entry key="yukon.web.modules.dr.programList.filters">Filters</entry>
 <entry key="yukon.web.modules.dr.programList.filter.to">to</entry>
 <entry key="yukon.web.modules.dr.programList.filter.min">(min)</entry>
 <entry key="yukon.web.modules.dr.programList.filter.max">(max)</entry>
@@ -265,6 +296,7 @@
 <entry key="yukon.web.modules.dr.programList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.programList.heading.name">Name</entry>
 <entry key="yukon.web.modules.dr.programList.heading.state">State</entry>
+<entry key="yukon.web.modules.dr.programList.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.programList.heading.start">Start</entry>
 <entry key="yukon.web.modules.dr.programList.heading.stop">Stop</entry>
 <entry key="yukon.web.modules.dr.programList.heading.currentGear">Current Gear</entry>
@@ -319,7 +351,7 @@
 <entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.noResults">No load groups matched.</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.filters">Edit Filters</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.filters">Filters</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.to">to</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.min">(min)</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.max">(max)</entry>

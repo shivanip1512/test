@@ -24,7 +24,7 @@
         </div>
     </div>
     
-    <div class="content boxContainer_content">
+    <div id="${id}_body" class="content boxContainer_content">
         <jsp:doBody/>
     </div>    
 </div>

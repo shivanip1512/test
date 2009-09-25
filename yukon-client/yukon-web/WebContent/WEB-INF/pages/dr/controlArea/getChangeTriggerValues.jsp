@@ -3,8 +3,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="internal">
-
     <p>
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.instructions"
             argument="${controlArea.name}" />
@@ -32,9 +30,9 @@
         
         <br><br>
         <div class="actionArea">
-            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton"/>"/>
+            <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton"/>"
+                onclick="submitFormViaAjax('drDialog', 'getChangeTimeWindowValues')"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.cancelButton"/>"
                 onclick="parent.$('drDialog').hide()"/>
         </div>
     </form>
-</cti:standardPage>

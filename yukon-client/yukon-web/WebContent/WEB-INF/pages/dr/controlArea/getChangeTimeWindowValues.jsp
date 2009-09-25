@@ -1,8 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:standardPage module="internal">
-
     <p>
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions"
             argument="${controlArea.name}" />
@@ -23,9 +21,9 @@
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.stopTime"/>
         <input type="text" name="stopTime" value="${stopTime}"/>
         <div class="actionArea">
-            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton"/>"/>
+            <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton"/>"
+                onclick="submitFormViaAjax('drDialog', 'getChangeTimeWindowValues')"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.cancelButton"/>"
                 onclick="parent.$('drDialog').hide()"/>
         </div>
     </form>
-</cti:standardPage>

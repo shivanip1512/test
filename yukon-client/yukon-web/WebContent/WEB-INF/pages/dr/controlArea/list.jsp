@@ -9,6 +9,8 @@
 <cti:standardPage module="dr" page="controlAreaList">
     <cti:standardMenu menuSelection="details|controlareas"/>
 
+    <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
     <cti:breadCrumbs>
@@ -17,8 +19,6 @@
         </cti:crumbLink>
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas"/></cti:crumbLink>
     </cti:breadCrumbs>
-
-    <tags:iframeDialog id="drDialog"/>
 
     <h2><cti:msg key="yukon.web.modules.dr.controlAreaList.controlAreas"/></h2>
     <br>
@@ -44,7 +44,7 @@
     </script>
 
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.controlAreaList.filters"/>
-    <tags:abstractContainer type="triangle" title="${filterLabel}">
+    <tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.sort}">
             <input type="hidden" name="sort" value="${param.sort}"/>
@@ -159,7 +159,7 @@
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <a href="javascript:void(0)"
-                                    onclick="openIFrameDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
+                                    onclick="openSimpleDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
                                     <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/><br>
                                 </a>
                             </c:if>
@@ -168,7 +168,7 @@
                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                             </cti:url>
                             <a href="javascript:void(0)"
-                                onclick="openIFrameDialog('drDialog', '${sendChangeTimeWindowUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"/>')">
+                                onclick="openSimpleDialog('drDialog', '${sendChangeTimeWindowUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"/>')">
                                 <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/><br>
                             </a>
                             
@@ -177,7 +177,7 @@
                                 <cti:param name="isEnabled" value="true"/>
                             </cti:url>
                             <a id="enableLink_${controlAreaId}" href="javascript:void(0)"
-                                onclick="openIFrameDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"/>')">
+                                onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"/>')">
                                 <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                             </a>
                             <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
@@ -185,7 +185,7 @@
                                 <cti:param name="isEnabled" value="false"/>
                             </cti:url>
                             <a id="disableLink_${controlAreaId}" href="javascript:void(0)"
-                                onclick="openIFrameDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"/>')">
+                                onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"/>')">
                                 <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                             </a><br>
                             <cti:dataUpdaterCallback function="updateEnabled('${controlAreaId}')" initialize="true" state="DR_CONTROLAREA/${controlAreaId}/ENABLED" />
@@ -195,7 +195,7 @@
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <a href="javascript:void(0)"
-                                    onclick="openIFrameDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
+                                    onclick="openSimpleDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
                                     <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                                 </a>
                             </c:if>

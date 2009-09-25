@@ -7,6 +7,9 @@
 <cti:standardPage module="dr" page="scenarioDetail" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|scenarios"/>
 
+    <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
         	<cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.operationsHome"/>

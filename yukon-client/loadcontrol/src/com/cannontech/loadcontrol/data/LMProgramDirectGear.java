@@ -1,5 +1,7 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.database.db.device.lm.IlmDefines;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
@@ -98,6 +100,11 @@ public java.lang.Double getChangeTriggerOffset() {
 public java.lang.String getControlMethod() {
 	return controlMethod;
 }
+
+    public boolean isTargetCycle() {
+        return IlmDefines.CONTROL_TARGET_CYCLE.equals(controlMethod);
+    }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 9:58:28 AM)
