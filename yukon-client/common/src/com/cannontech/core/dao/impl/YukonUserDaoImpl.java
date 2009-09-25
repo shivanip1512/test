@@ -51,7 +51,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         
         selectByIdSql = selectSql + " WHERE UserID = ?";
         
-        selectByUsernameSql = selectSql + " WHERE UserName = ?";
+        selectByUsernameSql = selectSql + " WHERE LOWER( UserName ) = LOWER( ? )";
         
         rowMapper = createRowMapper();
     }
