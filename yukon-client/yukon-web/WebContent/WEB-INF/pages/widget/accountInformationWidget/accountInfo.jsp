@@ -39,7 +39,12 @@
             ${mspCustomer.lastName}
         </td>
     </tr>
-    
+    <c:if test="${not empty mspCustomer.DBAName}">
+    <tr>
+        <td width="30%" class="label">DBA:</td>
+        <td>${mspCustomer.DBAName}</td>
+    </tr>
+    </c:if>
     <tr valign="top">
         <td class="label">Address:</td>
         <td>

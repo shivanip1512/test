@@ -54,6 +54,7 @@ public class MspAccountInfoDaoImpl implements AccountInfoDao {
         final AccountInfo accountInfo = new AccountInfo();
         accountInfo.setFirstName(mspCustomer.getFirstName());
         accountInfo.setLastName(mspCustomer.getLastName());
+        accountInfo.setDbaName(mspCustomer.getDBAName());
 
         final Address address = new Address();
         address.setCityName(mspCustomer.getBillCity());

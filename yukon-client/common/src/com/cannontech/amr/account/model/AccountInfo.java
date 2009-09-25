@@ -7,6 +7,7 @@ public class AccountInfo {
     private String firstName;
     private String lastName;
     private Address address;
+    private String dbaName;
 
     public int getAccountId() {
         return accountId;
@@ -32,13 +33,20 @@ public class AccountInfo {
         this.lastName = lastName;
     }
 
-
     public Address getAddress() {
         return address;
     }
 
     public void setAddress(final Address address) {
         this.address = address;
+    }
+
+    public String getDbaName() {
+        return dbaName;
+    }
+    
+    public void setDbaName(String dbaName) {
+        this.dbaName = dbaName;
     }
     
     @Override
