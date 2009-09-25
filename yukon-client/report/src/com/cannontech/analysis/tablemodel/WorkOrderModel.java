@@ -35,7 +35,9 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -43,6 +45,7 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -50,7 +53,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
-import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
@@ -815,12 +817,18 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 	public String[] getColumnNames() {
 		if (columnNames == null) {
             String addtlOrderNumberStr = ADDTL_ORDER_NO_STRING; 
+            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+            LiteYukonUser user = new LiteYukonUser();
+            user.setUserID(getUserID());
+            
             if( getUserID() != null)
             {
-                try {
-                    addtlOrderNumberStr = DaoFactory.getAuthDao().getRolePropertyValue(getUserID().intValue(), WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL);
-                } catch (UserNotInRoleException  e) {
-                    //If user is NOT in WORK_ORDER role property, then keep addtlOrderNumberStr set to default (as initialized)
+                boolean hasRole = false;
+                hasRole = rolePropertyDao.checkRole(YukonRole.WORK_ORDER, user);
+                
+                if( hasRole ) 
+                {
+                    addtlOrderNumberStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.ADDTL_ORDER_NUMBER_LABEL, user);
                 }
             }
             
