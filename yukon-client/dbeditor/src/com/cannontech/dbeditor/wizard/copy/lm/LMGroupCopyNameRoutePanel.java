@@ -4,9 +4,14 @@ package com.cannontech.dbeditor.wizard.copy.lm;
  * This type was created in VisualAge.
  */
 
+import java.awt.GridBagConstraints;
 import java.util.List;
 
+import javax.swing.JLabel;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -28,7 +33,7 @@ public class LMGroupCopyNameRoutePanel extends com.cannontech.common.gui.util.Da
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JComboBox ivjJComboBoxRoutes = null;
 	private javax.swing.JLabel ivjJLabelRoute = null;
-	private LMGroup group = null;
+	private JLabel jLabelErrorMessage = null;
 
 	class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -82,6 +87,20 @@ private void connEtoC2(javax.swing.event.CaretEvent arg1) {
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
+}
+
+private JLabel getJLabelErrorMessage()
+{
+   if( jLabelErrorMessage == null )
+   {
+       jLabelErrorMessage = new javax.swing.JLabel();
+       jLabelErrorMessage.setFont(new java.awt.Font("dialog.bold", 1, 10));
+       jLabelErrorMessage.setMaximumSize(new java.awt.Dimension(350, 60));
+       jLabelErrorMessage.setPreferredSize(new java.awt.Dimension(350, 60));
+       jLabelErrorMessage.setMinimumSize(new java.awt.Dimension(350, 60));            
+   }
+   
+   return jLabelErrorMessage;
 }
 
 /**
@@ -194,7 +213,7 @@ private javax.swing.JTextField getJTextFieldName() {
  */
 public Object getValue(Object o) 
 {
-	group = (LMGroup)o;
+	LMGroup group = (LMGroup)o;
 	int previousGroupID = group.getPAObjectID().intValue();
 	
     PaoDao paoDao = DaoFactory.getPaoDao();
@@ -267,44 +286,56 @@ private void initialize() {
 		java.awt.GridBagConstraints consGridBagConstraints2 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints3 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints4 = new java.awt.GridBagConstraints();
-		consGridBagConstraints1.insets = new java.awt.Insets(60,20,19,10);
-		consGridBagConstraints1.ipady = 5;
-		consGridBagConstraints1.ipadx = 10;
+		java.awt.GridBagConstraints consGridBagConstraints5 = new java.awt.GridBagConstraints();
+		
+		//name label
 		consGridBagConstraints1.gridy = 0;
 		consGridBagConstraints1.gridx = 0;
-		consGridBagConstraints4.insets = new java.awt.Insets(17,2,244,28);
-		consGridBagConstraints4.ipady = 5;
-		consGridBagConstraints4.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		consGridBagConstraints4.weightx = 1.0;
-		consGridBagConstraints4.gridy = 1;
-		consGridBagConstraints4.gridx = 2;
-		consGridBagConstraints2.insets = new java.awt.Insets(60,10,16,28);
-		consGridBagConstraints2.ipady = 7;
-		consGridBagConstraints2.ipadx = 260;
+		consGridBagConstraints1.anchor = java.awt.GridBagConstraints.WEST;
+		consGridBagConstraints1.insets = new java.awt.Insets(0,20,20,0);
+		
+		//name textfield
 		consGridBagConstraints2.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		consGridBagConstraints2.weightx = 1.0;
 		consGridBagConstraints2.gridwidth = 2;
 		consGridBagConstraints2.gridy = 0;
 		consGridBagConstraints2.gridx = 1;
-		consGridBagConstraints3.insets = new java.awt.Insets(17,20,247,2);
-		consGridBagConstraints3.ipady = 6;
-		consGridBagConstraints3.ipadx = 9;
-		consGridBagConstraints3.gridwidth = 2;
+		consGridBagConstraints2.insets = new java.awt.Insets(0,0,20,20);
+		
+		//route label
 		consGridBagConstraints3.gridy = 1;
 		consGridBagConstraints3.gridx = 0;
+		consGridBagConstraints3.anchor = java.awt.GridBagConstraints.WEST;
+		consGridBagConstraints3.insets = new java.awt.Insets(0,20,20,0);
+		
+		//route combo
+		consGridBagConstraints4.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints4.weightx = 1.0;
+        consGridBagConstraints4.gridwidth = 2;
+        consGridBagConstraints4.gridy = 1;
+        consGridBagConstraints4.gridx = 1;
+        consGridBagConstraints4.insets = new java.awt.Insets(0,0,20,20);
+		
+		//error label
+		consGridBagConstraints5.gridx = 0;
+		consGridBagConstraints5.gridy = 2;
+		consGridBagConstraints5.weightx = 1.0;
+		consGridBagConstraints5.anchor = GridBagConstraints.WEST;
+		consGridBagConstraints5.gridwidth = GridBagConstraints.REMAINDER;
+		consGridBagConstraints5.insets = new java.awt.Insets(0, 20, 0, 0);
+		
 		setLayout(new java.awt.GridBagLayout());
 		this.add(getJLabelName(), consGridBagConstraints1);
 		this.add(getJTextFieldName(), consGridBagConstraints2);
 		this.add(getJLabelRoute(), consGridBagConstraints3);
 		this.add(getJComboBoxRoutes(), consGridBagConstraints4);
+		this.add(getJLabelErrorMessage(), consGridBagConstraints5);
 		setSize(412, 392);
 
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
-	// user code end
 }
 /**
  * This method was created in VisualAge.
@@ -312,20 +343,25 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
+	boolean isValid;
 	String newName = getJTextFieldName().getText();
-    if( newName == null || newName.length() <= 0 )
-	{
-		setErrorString("The Name text field must be filled in");
-		return false;
-	}
 
     //check to make sure a unique name has been entered
-    if(group == null || isUniquePao(newName, group.getPAOCategory(), group.getPAOClass())){
-        return true;
+    if(isUniquePao(newName, PaoCategory.DEVICE.toString(), PaoClass.GROUP.toString())){
+        setErrorString("");
+        isValid = true;
     } else {
-        setErrorString("The name \'" + newName + "\' is already in use");
-        return false;
+        setErrorString("(The name \'" + newName + "\' is already in use.)");
+        isValid = false;
     }
+    
+    if( newName == null || newName.length() <= 0 ) {
+        setErrorString("(The Name text field must be filled in.)");
+        isValid = false;
+    }
+    
+    getJLabelErrorMessage().setText(getErrorString());
+    return isValid;
 }
 
 /**
@@ -358,7 +394,7 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object o) 
 {
-	group = (LMGroup)o;
+	LMGroup group = (LMGroup)o;
 
 	getJTextFieldName().setText( group.getPAOName() + "(copy)");
 

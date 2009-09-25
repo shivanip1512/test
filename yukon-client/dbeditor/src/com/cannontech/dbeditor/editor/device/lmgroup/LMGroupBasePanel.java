@@ -40,9 +40,10 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
 	private javax.swing.JCheckBox ivjJCheckBoxSeasonal = null;
 	private javax.swing.JPanel ivjJPanelHistory = null;
 	private javax.swing.JPanel ivjJPanelAllHistory = null;
-	
 	private JLabel priorityLabel = null;
 	private JComboBox priorityCombo = null;
+	
+	private LMGroup lmGroup;
 	
 /**
  * Constructor
@@ -1082,7 +1083,7 @@ private void initialize() {
 		constraintsJPanelAllHistory.weightx = 1.0;
 		constraintsJPanelAllHistory.weighty = 1.0;
 		constraintsJPanelAllHistory.insets = new java.awt.Insets(4, 6, 25, 4);
-		add(getJPanelAllHistory(), constraintsJPanelAllHistory);
+		add(getJPanelAllHistory(), constraintsJPanelAllHistory);		
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -1096,23 +1097,33 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
-	if( getJTextFieldKWCapacity().isVisible()
+	boolean isValid;
+	String newName = getJTextFieldName().getText();
+    
+	if(lmGroup == null || isUniquePao(newName, lmGroup.getPAOCategory(), lmGroup.getPAOClass(), lmGroup.getPAObjectID())) {
+        setErrorString("");
+        isValid = true;
+    } else {
+        setErrorString("The name \'" + newName + "\' is already in use.");
+        isValid = false;
+    }
+	
+    if( getJTextFieldKWCapacity().isVisible()
 		 && (getJTextFieldKWCapacity().getText() == null
 		 	 || getJTextFieldKWCapacity().getText().length() <= 0) )
 	{
-		setErrorString("A value for the kW Capacity text field must be filled in");
-		return false;
+		setErrorString("The kW Capacity text field must be filled in.");
+		isValid = false;
 	}
 	
-	if( getJTextFieldName().getText() == null
-		 || getJTextFieldName().getText().length() <= 0 )
-	{
-		setErrorString("A value for the Group Name text field must be filled in");
-		return false;
+	if( newName == null || newName.length() <= 0 ) {
+		setErrorString("The Group Name text field must be filled in.");
+		isValid = false;
 	}
-	
-	return true;
+
+	return isValid;
 }
+
 /**
  * Comment
  */
@@ -1193,7 +1204,7 @@ public void setSwitchType(String type)
  */
 public void setValue(Object val)  
 {
-	LMGroup lmGroup = (LMGroup)val;
+	lmGroup = (LMGroup)val;
 
 	String name = lmGroup.getPAOName();
 	String type = lmGroup.getPAOType();

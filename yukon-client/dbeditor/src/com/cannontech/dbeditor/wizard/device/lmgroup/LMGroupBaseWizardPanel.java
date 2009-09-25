@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.lm.IGroupRoute;
@@ -46,7 +48,7 @@ public class LMGroupBaseWizardPanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JCheckBox ivjJCheckBoxSeasonal = null;
 	private javax.swing.JPanel ivjJPanelHistory = null;
 	private javax.swing.JPanel ivjJPanelAllHistory = null;
-	
+    private JLabel jLabelErrorMessage = null;	
 	private JLabel priorityLabel = null;
 	private JComboBox priorityCombo = null;
 	
@@ -1036,6 +1038,21 @@ private javax.swing.JLabel getRouteLabel() {
 	}
 	return ivjRouteLabel;
 }
+
+private JLabel getJLabelErrorMessage()
+{
+   if( jLabelErrorMessage == null )
+   {
+       jLabelErrorMessage = new javax.swing.JLabel();
+       jLabelErrorMessage.setFont(new java.awt.Font("dialog.bold", 1, 10));
+       jLabelErrorMessage.setMaximumSize(new java.awt.Dimension(250, 60));
+       jLabelErrorMessage.setPreferredSize(new java.awt.Dimension(220, 60));
+       jLabelErrorMessage.setMinimumSize(new java.awt.Dimension(220, 60));            
+   }
+   
+   return jLabelErrorMessage;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -1170,12 +1187,21 @@ private void initialize() {
 		constraintsJPanelAllHistory.weighty = 1.0;
 		constraintsJPanelAllHistory.insets = new java.awt.Insets(4, 6, 25, 4);
 		add(getJPanelAllHistory(), constraintsJPanelAllHistory);
+		
+		GridBagConstraints errorLabelConstraints = new GridBagConstraints();
+		errorLabelConstraints.gridx = 1;
+		errorLabelConstraints.gridy = 4;
+		errorLabelConstraints.fill = GridBagConstraints.BOTH;
+		errorLabelConstraints.anchor = GridBagConstraints.WEST;
+		errorLabelConstraints.weightx = 1.0;
+		errorLabelConstraints.weighty = 1.0;
+		errorLabelConstraints.insets = new Insets(0, 6, 0, 0);
+		add(getJLabelErrorMessage(), errorLabelConstraints);
+		
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
-	// user code end
 }
 /**
  * This method must be implemented if a notion of data validity needs to be supported.
@@ -1183,22 +1209,32 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
+	boolean isValid;
+	String newName = getJTextFieldName().getText();
+    
+    if(isUniquePao(newName, PaoCategory.DEVICE.toString(), PaoClass.GROUP.toString())) {
+        setErrorString("");
+        isValid = true;
+    } else {
+        setErrorString("(The name \'" + newName + "\' is already in use.)");
+        isValid = false;
+    }
+	
 	if( getJTextFieldKWCapacity().isVisible()
 		 && (getJTextFieldKWCapacity().getText() == null
 		 	 || getJTextFieldKWCapacity().getText().length() <= 0) )
 	{
-		setErrorString("A value for the kW Capacity text field must be filled in");
-		return false;
+		setErrorString("(The kW Capacity text field must be filled in.)");
+		isValid = false;
 	}
 	
-	if( getJTextFieldName().getText() == null
-		 || getJTextFieldName().getText().length() <= 0 )
-	{
-		setErrorString("A value for the Group Name text field must be filled in");
-		return false;
+	if( newName == null || newName.length() <= 0 ) {
+		setErrorString("(The Group Name text field must be filled in.)");
+		isValid = false;
 	}
 	
-	return true;
+	getJLabelErrorMessage().setText(getErrorString());
+	return isValid;
 }
 /**
  * Comment
