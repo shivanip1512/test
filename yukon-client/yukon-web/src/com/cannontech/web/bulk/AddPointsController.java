@@ -62,7 +62,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         mav.addObject("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
 
         // device type points map
-        Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = createPointsMap(deviceTypeSet, maskExistingPoints, true, deviceCollection);
+        Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = createExistsPointsMap(deviceTypeSet, maskExistingPoints, true, deviceCollection);
         mav.addObject("pointsMap", pointsMap);
         
         // shared points map

@@ -295,7 +295,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     }
     
  // points map helper
-    protected Map<Integer, Map<String, List<PointTemplateWrapper>>> createPointsMap(Set<Integer> deviceTypeSet, boolean maskExistingPoints, boolean maskIfExistOnAllDevices, DeviceCollection deviceCollection) {
+    protected Map<Integer, Map<String, List<PointTemplateWrapper>>> createExistsPointsMap(Set<Integer> deviceTypeSet, boolean maskExistingPoints, boolean maskIfExistOnAllDevices, DeviceCollection deviceCollection) {
         
         /// make a copy of device list if we'll be doing maskExistingPoints
         // being able to remove devices from the list as we process each device type will speed up the next iteration building of the devicesOfTypeList
