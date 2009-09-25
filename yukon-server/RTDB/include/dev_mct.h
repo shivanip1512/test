@@ -75,12 +75,12 @@ protected:
 
     unsigned long _disconnectAddress;
 
-    int     getCurrentFreeze () const;
-    int     getExpectedFreeze() const;
+    int     getCurrentFreezeCounter () const;
+    int     getExpectedFreezeCounter() const;
     bool    getExpectedFreezeParity() const;
-    CtiTime getLastFreezeTimestamp( void );
-    CtiTime getLastScheduledFreezeTimestamp( void );
-    static CtiDate findLastScheduledFreeze(const CtiDate &end_date, unsigned freeze_day);
+    CtiTime getLastFreezeTimestamp(const CtiTime &TimeNow);
+    CtiTime getLastScheduledFreezeTimestamp(const CtiTime &TimeNow);
+    static CtiTime findLastScheduledFreeze(const CtiTime &TimeNow, unsigned freeze_day);
     void    updateFreezeInfo(int freeze_counter, unsigned long freeze_timestamp);
 
     static bool getMCTDebugLevel(int mask);
@@ -260,7 +260,7 @@ public:
     void setConfigData( const string &configName, int configType, const string &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] );
 
     void setExpectedFreeze( int freeze );  //  overrides a do-nothing virtual in dev_base
-    int  checkFreezeLogic( int incoming_counter, std::string &error_string );
+    int  checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, std::string &error_string );
     int  getNextFreeze( void ) const;
 
     static  INT extractStatusData( const INMESS *InMessage, INT type, USHORT *StatusData );

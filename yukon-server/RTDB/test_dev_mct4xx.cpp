@@ -17,10 +17,8 @@ class test_CtiDeviceMCT4xx : public CtiDeviceMCT4xx
     virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const   {  BOOST_CHECK(0);  return point_info();  };
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)  {  BOOST_CHECK(0);  return point_info();  };
     virtual long getLoadProfileInterval(unsigned channel)                                      {  BOOST_CHECK(0);  return 0;  };
-    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {BOOST_CHECK(0);  return 0;};
-    //NOTE on above function:  This is a "BOGUS" function, that just is a place-holder, since it is declared pure-virtual in the base class.
-
-    virtual ConfigPartsList getPartsList(){return ConfigPartsList();};
+    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  BOOST_CHECK(0);  return 0;};
+    virtual ConfigPartsList getPartsList()  {  BOOST_CHECK(0);  return ConfigPartsList();  };
 
 public:
     typedef CtiDeviceMCT4xx Inherited;

@@ -3326,7 +3326,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
             pi_freezecount = CtiDeviceMCT4xx::getData(DSt->Message + 3, 1, ValueType_Raw);
 
-            if( status = checkFreezeLogic(pi_freezecount.value, freeze_error) )
+            if( status = checkFreezeLogic(TimeNow, pi_freezecount.value, freeze_error) )
             {
                 ReturnMsg->setResultString(freeze_error);
             }
@@ -3361,21 +3361,21 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
                                                     ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                                    "/" << getExpectedFreeze() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             pi.description  = "Freeze parity does not match (";
                             pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
-                            pi.description += "/" + CtiNumStr(getExpectedFreeze()) + ")";
+                            pi.description += "/" + CtiNumStr(getExpectedFreezeCounter()) + ")";
                             pi.quality = InvalidQuality;
                             pi.value = 0;
 
-                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp().asString());
+                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
                             status = ErrorInvalidFrozenReadingParity;
                         }
                         else
                         {
-                            pointTime  = getLastFreezeTimestamp();
+                            pointTime  = getLastFreezeTimestamp(TimeNow);
                             pointTime -= pointTime.seconds() % 60;
                         }
                     }
@@ -4821,9 +4821,9 @@ INT CtiDeviceMCT470::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, li
              resultString += "Last freeze timestamp: (no freeze recorded)\n";
          }
 
-         resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
+         resultString += "Freeze counter: " + CtiNumStr(getCurrentFreezeCounter()) + "\n";
          resultString += "Next freeze expected: freeze ";
-         resultString += ((getCurrentFreeze() % 2)?("two"):("one"));
+         resultString += ((getCurrentFreezeCounter() % 2)?("two"):("one"));
          resultString += "\n";
 
          ReturnMsg->setResultString(resultString);

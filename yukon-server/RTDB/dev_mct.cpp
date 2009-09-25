@@ -4140,12 +4140,12 @@ int CtiDeviceMCT::getNextFreeze( void ) const
 }
 
 
-int CtiDeviceMCT::getCurrentFreeze( void ) const
+int CtiDeviceMCT::getCurrentFreezeCounter( void ) const
 {
     return _freeze_counter;
 }
 
-int CtiDeviceMCT::getExpectedFreeze( void ) const
+int CtiDeviceMCT::getExpectedFreezeCounter( void ) const
 {
     return _freeze_expected;
 }
@@ -4155,10 +4155,10 @@ bool CtiDeviceMCT::getExpectedFreezeParity( void ) const
     return !(_freeze_expected % 2);
 }
 
-CtiTime CtiDeviceMCT::getLastFreezeTimestamp( void )
+CtiTime CtiDeviceMCT::getLastFreezeTimestamp(const CtiTime &TimeNow)
 {
     CtiTime last_freeze      = getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp);
-    CtiTime scheduled_freeze = getLastScheduledFreezeTimestamp();
+    CtiTime scheduled_freeze = getLastScheduledFreezeTimestamp(TimeNow);
 
     if( scheduled_freeze.isValid() && scheduled_freeze > last_freeze )
     {
@@ -4171,7 +4171,7 @@ CtiTime CtiDeviceMCT::getLastFreezeTimestamp( void )
 }
 
 
-CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp( void )
+CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp(const CtiTime &TimeNow)
 {
     long freeze_day = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay);
 
@@ -4180,10 +4180,10 @@ CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp( void )
     //  we have a scheduled freeze we need to account for
     if( freeze_day > 0 )
     {
-        //  we will calculate the previous freeze day based on today at midnight
-        CtiDate scheduled_freeze = findLastScheduledFreeze(CtiDate(), freeze_day);
+        //  we will calculate the previous freeze day based on the decode time
+        CtiTime scheduled_freeze = findLastScheduledFreeze(TimeNow, freeze_day);
 
-        if( CtiTime(scheduled_freeze) > getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp) )
+        if( scheduled_freeze > getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp) )
         {
             last_scheduled_freeze = scheduled_freeze;
         }
@@ -4193,7 +4193,17 @@ CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp( void )
 }
 
 
-CtiDate CtiDeviceMCT::findLastScheduledFreeze(const CtiDate &end_date, unsigned freeze_day)
+/**
+ * Returns the time that the last scheduled freeze occurred.
+ * Scheduled freezes occur at the end of the specified day, so freeze_day 1 will return midnight on the 2nd.
+ * Freeze days 31 and greater will always have a freeze time at midnight on the 1st.
+ *
+ * @param TimeNow
+ * @param freeze_day
+ *
+ * @return
+ */
+CtiTime CtiDeviceMCT::findLastScheduledFreeze(const CtiTime &TimeNow, unsigned freeze_day)
 {
     if( freeze_day == 0 )
     {
@@ -4201,17 +4211,18 @@ CtiDate CtiDeviceMCT::findLastScheduledFreeze(const CtiDate &end_date, unsigned 
         return CtiDate(1, 1, 1970);
     }
 
-    CtiDate last_freeze = end_date;
+    //  we will eventually need to add device timezone smarts here instead of assuming server-timezone midnight
+    CtiDate last_freeze = TimeNow.date();
 
-    //  the freeze hasn't happened yet this month, move back to the end of last month
-    //    if freeze_day >= 32, this will always happen
+    //  if the freeze hasn't happened yet this month, move back to the end of last month
+    //    if freeze_day >= 31, this will always happen
     if( freeze_day >= last_freeze.dayOfMonth() )
     {
         last_freeze -= last_freeze.dayOfMonth();
     }
 
     //  if the freeze happened earlier this month, back up
-    //    if freeze_day >= 32, this block will always be bypassed, leaving us at the end of the month
+    //    if freeze_day >= 31, this block will always be bypassed, leaving us at the end of the month
     if( freeze_day < last_freeze.dayOfMonth() )
     {
         last_freeze -= last_freeze.dayOfMonth();  //  back up one month...
@@ -4219,7 +4230,7 @@ CtiDate CtiDeviceMCT::findLastScheduledFreeze(const CtiDate &end_date, unsigned 
     }
 
     //  freeze happens at the end of the day/beginning of the next day
-    return last_freeze + 1;
+    return CtiTime(last_freeze + 1);
 }
 
 
@@ -4275,7 +4286,7 @@ void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
 }
 
 
-int CtiDeviceMCT::checkFreezeLogic( int incoming_counter, string &error_string )
+int CtiDeviceMCT::checkFreezeLogic(const CtiTime &TimeNow, int incoming_counter, string &error_string )
 {
     int status = NoError;
 
@@ -4288,14 +4299,14 @@ int CtiDeviceMCT::checkFreezeLogic( int incoming_counter, string &error_string )
     setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
 
     //  if this was a scheduled freeze, it's valid no matter what
-    if( getLastFreezeTimestamp() == getLastScheduledFreezeTimestamp() )
+    if( getLastFreezeTimestamp(TimeNow) == getLastScheduledFreezeTimestamp(TimeNow) )
     {
         //  set this so any calls to getExpectedFreezeParity() work properly
         _freeze_expected = _freeze_counter;
     }
     else
     {
-        if( !getLastFreezeTimestamp().isValid() || _freeze_expected == std::numeric_limits<int>::min() )
+        if( !getLastFreezeTimestamp(TimeNow).isValid() || _freeze_expected == std::numeric_limits<int>::min() )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

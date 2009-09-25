@@ -19,21 +19,21 @@ class test_CtiDeviceMCT : public CtiDeviceMCT
 {
 public:
 
-    static CtiDate test_findLastScheduledFreeze(const CtiDate &end_date, unsigned freeze_day)
+    static CtiTime test_findLastScheduledFreeze(const CtiTime &TimeNow, unsigned freeze_day)
     {
-        return findLastScheduledFreeze(end_date, freeze_day);
+        return findLastScheduledFreeze(TimeNow, freeze_day);
     }
+};
+
+struct freeze_day_check
+{
+    unsigned freeze_day;
+    CtiTime time_now;
+    CtiTime expected;
 };
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_0)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[30] =
         {
             {  0, CtiDate(30, 12, 2007), CtiDate(1, 1, 1970)},
@@ -75,47 +75,41 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_0)
             {  0, CtiDate( 3,  5, 2008), CtiDate(1, 1, 1970)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
+    //  this is relying on an implicit cast from CtiDate to CtiTime at midnight for brevity
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_1)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             {  1, CtiDate(27, 12, 2007), CtiDate( 2, 12, 2007)},
@@ -187,77 +181,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_1)
             {  1, CtiDate( 5,  5, 2008), CtiDate( 2,  5, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_2)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             {  2, CtiDate(27, 12, 2007), CtiDate( 3, 12, 2007)},
@@ -329,77 +316,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_2)
             {  2, CtiDate( 5,  5, 2008), CtiDate( 3,  5, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_27)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             { 27, CtiDate(27, 12, 2007), CtiDate(28, 11, 2007)},
@@ -471,77 +451,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_27)
             { 27, CtiDate( 5,  5, 2008), CtiDate(28,  4, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_28)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             { 28, CtiDate(27, 12, 2007), CtiDate(29, 11, 2007)},
@@ -613,77 +586,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_28)
             { 28, CtiDate( 5,  5, 2008), CtiDate(29,  4, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_29)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             { 29, CtiDate(27, 12, 2007), CtiDate(30, 11, 2007)},
@@ -755,77 +721,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_29)
             { 29, CtiDate( 5,  5, 2008), CtiDate(30,  4, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_30)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             { 30, CtiDate(27, 12, 2007), CtiDate( 1, 12, 2007)},
@@ -897,77 +856,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_30)
             { 30, CtiDate( 5,  5, 2008), CtiDate( 1,  5, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_31)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             { 31, CtiDate(27, 12, 2007), CtiDate( 1, 12, 2007)},
@@ -1039,77 +991,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_31)
             { 31, CtiDate( 5,  5, 2008), CtiDate( 1,  5, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_32)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             { 32, CtiDate(27, 12, 2007), CtiDate( 1, 12, 2007)},
@@ -1181,77 +1126,70 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_32)
             { 32, CtiDate( 5,  5, 2008), CtiDate( 1,  5, 2008)},
         };
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_1000000000)
 {
-    struct freeze_day_check
-    {
-        unsigned freeze_day;
-        CtiDate date;
-        CtiDate expected;
-    };
-
     freeze_day_check fd[60] =
         {
             { 1000000000, CtiDate(27, 12, 2007), CtiDate( 1, 12, 2007)},
@@ -1324,66 +1262,66 @@ BOOST_AUTO_TEST_CASE(test_dev_mct_findLastScheduledFreeze_day_1000000000)
         };
 
 
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].date, fd[ 0].freeze_day), fd[ 0].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].date, fd[ 1].freeze_day), fd[ 1].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].date, fd[ 2].freeze_day), fd[ 2].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].date, fd[ 3].freeze_day), fd[ 3].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].date, fd[ 4].freeze_day), fd[ 4].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].date, fd[ 5].freeze_day), fd[ 5].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].date, fd[ 6].freeze_day), fd[ 6].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].date, fd[ 7].freeze_day), fd[ 7].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].date, fd[ 8].freeze_day), fd[ 8].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].date, fd[ 9].freeze_day), fd[ 9].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].date, fd[10].freeze_day), fd[10].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].date, fd[11].freeze_day), fd[11].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].date, fd[12].freeze_day), fd[12].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].date, fd[13].freeze_day), fd[13].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].date, fd[14].freeze_day), fd[14].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].date, fd[15].freeze_day), fd[15].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].date, fd[16].freeze_day), fd[16].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].date, fd[17].freeze_day), fd[17].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].date, fd[18].freeze_day), fd[18].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].date, fd[19].freeze_day), fd[19].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].date, fd[20].freeze_day), fd[20].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].date, fd[21].freeze_day), fd[21].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].date, fd[22].freeze_day), fd[22].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].date, fd[23].freeze_day), fd[23].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].date, fd[24].freeze_day), fd[24].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].date, fd[25].freeze_day), fd[25].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].date, fd[26].freeze_day), fd[26].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].date, fd[27].freeze_day), fd[27].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].date, fd[28].freeze_day), fd[28].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].date, fd[29].freeze_day), fd[29].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].date, fd[30].freeze_day), fd[30].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].date, fd[31].freeze_day), fd[31].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].date, fd[32].freeze_day), fd[32].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].date, fd[33].freeze_day), fd[33].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].date, fd[34].freeze_day), fd[34].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].date, fd[35].freeze_day), fd[35].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].date, fd[36].freeze_day), fd[36].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].date, fd[37].freeze_day), fd[37].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].date, fd[38].freeze_day), fd[38].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].date, fd[39].freeze_day), fd[39].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].date, fd[40].freeze_day), fd[40].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].date, fd[41].freeze_day), fd[41].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].date, fd[42].freeze_day), fd[42].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].date, fd[43].freeze_day), fd[43].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].date, fd[44].freeze_day), fd[44].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].date, fd[45].freeze_day), fd[45].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].date, fd[46].freeze_day), fd[46].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].date, fd[47].freeze_day), fd[47].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].date, fd[48].freeze_day), fd[48].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].date, fd[49].freeze_day), fd[49].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].date, fd[50].freeze_day), fd[50].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].date, fd[51].freeze_day), fd[51].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].date, fd[52].freeze_day), fd[52].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].date, fd[53].freeze_day), fd[53].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].date, fd[54].freeze_day), fd[54].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].date, fd[55].freeze_day), fd[55].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].date, fd[56].freeze_day), fd[56].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].date, fd[57].freeze_day), fd[57].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].date, fd[58].freeze_day), fd[58].expected);
-    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].date, fd[59].freeze_day), fd[59].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 0].time_now, fd[ 0].freeze_day), fd[ 0].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 1].time_now, fd[ 1].freeze_day), fd[ 1].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 2].time_now, fd[ 2].freeze_day), fd[ 2].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 3].time_now, fd[ 3].freeze_day), fd[ 3].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 4].time_now, fd[ 4].freeze_day), fd[ 4].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 5].time_now, fd[ 5].freeze_day), fd[ 5].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 6].time_now, fd[ 6].freeze_day), fd[ 6].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 7].time_now, fd[ 7].freeze_day), fd[ 7].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 8].time_now, fd[ 8].freeze_day), fd[ 8].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[ 9].time_now, fd[ 9].freeze_day), fd[ 9].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[10].time_now, fd[10].freeze_day), fd[10].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[11].time_now, fd[11].freeze_day), fd[11].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[12].time_now, fd[12].freeze_day), fd[12].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[13].time_now, fd[13].freeze_day), fd[13].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[14].time_now, fd[14].freeze_day), fd[14].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[15].time_now, fd[15].freeze_day), fd[15].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[16].time_now, fd[16].freeze_day), fd[16].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[17].time_now, fd[17].freeze_day), fd[17].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[18].time_now, fd[18].freeze_day), fd[18].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[19].time_now, fd[19].freeze_day), fd[19].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[20].time_now, fd[20].freeze_day), fd[20].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[21].time_now, fd[21].freeze_day), fd[21].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[22].time_now, fd[22].freeze_day), fd[22].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[23].time_now, fd[23].freeze_day), fd[23].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[24].time_now, fd[24].freeze_day), fd[24].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[25].time_now, fd[25].freeze_day), fd[25].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[26].time_now, fd[26].freeze_day), fd[26].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[27].time_now, fd[27].freeze_day), fd[27].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[28].time_now, fd[28].freeze_day), fd[28].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[29].time_now, fd[29].freeze_day), fd[29].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[30].time_now, fd[30].freeze_day), fd[30].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[31].time_now, fd[31].freeze_day), fd[31].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[32].time_now, fd[32].freeze_day), fd[32].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[33].time_now, fd[33].freeze_day), fd[33].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[34].time_now, fd[34].freeze_day), fd[34].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[35].time_now, fd[35].freeze_day), fd[35].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[36].time_now, fd[36].freeze_day), fd[36].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[37].time_now, fd[37].freeze_day), fd[37].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[38].time_now, fd[38].freeze_day), fd[38].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[39].time_now, fd[39].freeze_day), fd[39].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[40].time_now, fd[40].freeze_day), fd[40].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[41].time_now, fd[41].freeze_day), fd[41].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[42].time_now, fd[42].freeze_day), fd[42].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[43].time_now, fd[43].freeze_day), fd[43].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[44].time_now, fd[44].freeze_day), fd[44].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[45].time_now, fd[45].freeze_day), fd[45].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[46].time_now, fd[46].freeze_day), fd[46].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[47].time_now, fd[47].freeze_day), fd[47].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[48].time_now, fd[48].freeze_day), fd[48].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[49].time_now, fd[49].freeze_day), fd[49].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[50].time_now, fd[50].freeze_day), fd[50].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[51].time_now, fd[51].freeze_day), fd[51].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[52].time_now, fd[52].freeze_day), fd[52].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[53].time_now, fd[53].freeze_day), fd[53].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[54].time_now, fd[54].freeze_day), fd[54].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[55].time_now, fd[55].freeze_day), fd[55].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[56].time_now, fd[56].freeze_day), fd[56].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[57].time_now, fd[57].freeze_day), fd[57].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[58].time_now, fd[58].freeze_day), fd[58].expected);
+    BOOST_CHECK_EQUAL(test_CtiDeviceMCT::test_findLastScheduledFreeze(fd[59].time_now, fd[59].freeze_day), fd[59].expected);
 }
 
 

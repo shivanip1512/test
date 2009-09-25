@@ -2954,7 +2954,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             string freeze_error;
 
             //  this check is mainly for the frozen kWh reading
-            if( status = checkFreezeLogic(pi_freezecount.value, freeze_error) )
+            if( status = checkFreezeLogic(TimeNow, pi_freezecount.value, freeze_error) )
             {
                 result_string += freeze_error + "\n";
 
@@ -2976,7 +2976,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                                         ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + getLastFreezeTimestamp().asString() + "\n";
+                result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString() + "\n";
                 status = ErrorInvalidFrozenReadingParity;
 
                 pi_kwh.description = "Invalid freeze parity";
@@ -2985,7 +2985,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             }
             else
             {
-                kwh_time  = getLastFreezeTimestamp();
+                kwh_time  = getLastFreezeTimestamp(TimeNow);
                 kwh_time -= kwh_time.seconds() % 60;
             }
 
@@ -3014,11 +3014,11 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 pi_kw.quality = InvalidQuality;
                 pi_kw.value = 0;
             }
-            else if( getLastFreezeTimestamp() < kw_time.seconds() )
+            else if( getLastFreezeTimestamp(TimeNow) < kw_time.seconds() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << getLastFreezeTimestamp() << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << getLastFreezeTimestamp(TimeNow) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 //  defer to the kWh errors
@@ -3027,7 +3027,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                     status = ErrorInvalidFrozenPeakTimestamp;
                 }
 
-                result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + getLastFreezeTimestamp().asString() + ")\n";
+                result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + getLastFreezeTimestamp(TimeNow).asString() + ")\n";
 
                 pi_kw.description = "Invalid peak timestamp";
                 pi_kw.quality = InvalidQuality;
