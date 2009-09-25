@@ -189,67 +189,28 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			 * When sending to a device, the route is ignored and the porter connection takes care
 			 * of sending the command on the device's assigned route. */
 			String routeID = req.getParameter("routeID");
-			if( routeID != null)
+			if( routeID != null) {
 				localBean.setRouteID(Integer.valueOf(routeID).intValue());
-
-			//HANDLE LP command - special case for "getvalue lp channel" command
-			if ( command.toLowerCase().startsWith("getvalue lp channel"))
-			{
-				DeviceLoadProfile dlp = new DeviceLoadProfile();
-				try
-				{
-					dlp.setDeviceID(new Integer(localBean.getLiteYukonPao().getLiteID()));
-					Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, dlp);
-					dlp = (DeviceLoadProfile)t.execute();
-				}
-				catch(Exception e)
-				{
-					CTILogger.error(e.getMessage(), e);
-				}
-
-				Integer rate = null;
-				//get the load profile channel and it's interval
-				if (command.indexOf("channel 1") > 0)	// kw lp
-					rate = dlp.getLoadProfileDemandRate();
-				else if (command.indexOf("channel 4") > 0)	//voltage lp
-					rate = dlp.getVoltageDmdRate();
-
-				if( rate != null)
-				{
-                    if( command.length() < 40) {    //If the length is greater than 40 then we have a stop time also so we should not submit 2 commands.
-    					String execCommand = command.substring(0, command.length() - 16).trim();
-    					String cmdDatePart = command.substring(command.length() - 16);	//16 for "mm/dd/yyyy HH:mm" date length
-    					Date queryDate = ServletUtil.parseDateStringLiberally(cmdDatePart);
-    					if( queryDate != null)
-    					{
-    						GregorianCalendar cal = new GregorianCalendar();
-    						cal.setTime(queryDate);
-    						cal.add(Calendar.SECOND, (rate.intValue() * 6));
-    						
-    						SimpleDateFormat lpFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-    						//Add on another command to send a second command for lp interval data.
-    						command += " & " + execCommand + " " + lpFormat.format(cal.getTime()); 
-    					}
-                    }
-				}
 			}
-			else if (command.toLowerCase().startsWith("putconfig tou"))
-			{
+
+			if (command.toLowerCase().startsWith("putconfig tou")) {
 				String schedID = req.getParameter("scheduleID");
-				if( schedID != null)
+				if( schedID != null) {
 					command = localBean.buildTOUScheduleCommand(Integer.valueOf(schedID).intValue());
+				}
 			}
 			//Set our yc bean command string by using a function lookup if null
-			if( command == null )
-			{
+			if( command == null ) {
 				/** If we have no command string, see if there is a function and find it's
 				 * corresponding command string.  (Will substitute based on key=value
 				 * pairs found in the commands file directory for a particular device. */ 
-				if( function != null)
+				if( function != null) {
 					command = localBean.getCommandFromLabel(function);
-				else
+				}
+				else {
 					//WE HAVE NO COMMAND?
 					command = "";
+				}
 			}
 
 			if( command.length() > 0 ) {
