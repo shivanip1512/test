@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
@@ -14,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
@@ -27,8 +29,8 @@ import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -63,19 +65,11 @@ public class PhaseDetectController {
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupService deviceGroupService;
     private DeviceGroupEditorDao deviceGroupEditorDao;
+    private CommandRequestExecutionDao commandRequestExecutionDao;
 
     @RequestMapping
     public String home(ModelMap model) throws ServletException {
         if(phaseDetectService.getPhaseDetectData() != null){
-            // test in progress
-            int substationId = phaseDetectService.getPhaseDetectData().getSubstationId();
-            int intervalLength = phaseDetectService.getPhaseDetectData().getIntervalLength();
-            int deltaVoltage = phaseDetectService.getPhaseDetectData().getDeltaVoltage();
-            int numIntervals = phaseDetectService.getPhaseDetectData().getNumIntervals();
-            model.addAttribute("intervalLength", intervalLength);
-            model.addAttribute("deltaVoltage", deltaVoltage);
-            model.addAttribute("numIntervals", numIntervals);
-            model.addAttribute("substationId", substationId);
             return "redirect:testPage";
         }
         
@@ -90,6 +84,17 @@ public class PhaseDetectController {
         try {
             Substation currentSubstation = substationDao.getById(substationId);
             List<Route> routes = strmDao.getRoutesBySubstationId(substationId);
+            Map<Integer, Integer> routeSizeMap = Maps.newHashMap();
+            
+            int deviceCount = 0;
+            
+            for(Route route : routes ){
+                int routeDeviceCount = deviceDao.getRouteDeviceCount(route.getId());
+                routeSizeMap.put(route.getId(), routeDeviceCount);
+                deviceCount += routeDeviceCount;
+            }
+            model.addAttribute("routeSizeMap", routeSizeMap);
+            model.addAttribute("deviceCount", deviceCount);
             model.addAttribute("currentSubstation", currentSubstation.getName());
             model.addAttribute("routes", routes);
             model.addAttribute("show", true);
@@ -118,35 +123,44 @@ public class PhaseDetectController {
     }
     
     @RequestMapping
-    public String clearPhaseData(ModelMap model) throws ServletException {
+    public String clearPhaseData(ModelMap model) {
         model.addAttribute("substationName", phaseDetectService.getPhaseDetectData().getSubstationName());
         return "phaseDetect/clearPhaseData.jsp";
     }
     
     
     @RequestMapping(method=RequestMethod.POST)
-    public String clear(LiteYukonUser user, ModelMap model) throws ServletException {
-        try {
-            CommandResultHolder holder = phaseDetectService.clearPhaseData(user);
-            if(holder.isExceptionOccured()) {
-                model.addAttribute("errorReason", holder.getExceptionReason());
-                return "redirect:clearPhaseData";
-            }
-        } catch(CommandCompletionException e) {
-            model.addAttribute("errorReason", e.getMessage());
+    public String clear(LiteYukonUser user, ModelMap model, HttpServletRequest request) throws ServletException {
+        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
+        List<Integer> routeIds = strmDao.getRouteIdsBySubstationId(phaseDetectService.getPhaseDetectData().getSubstationId());
+        if (cancelButton != null) { /* Cancel Test */
+            phaseDetectService.cancelTest();
+            return "redirect:home";
+        }
+        
+        phaseDetectService.clearPhaseData(routeIds, user);/* Will block until done */
+        
+        String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
+        if(StringUtils.isNotBlank(errorMsg)) {
+            model.addAttribute("errorReason", StringUtils.abbreviate(errorMsg, 65));
             return "redirect:clearPhaseData";
         }
         return "redirect:testSettings";
     }
     
     @RequestMapping
-    public String testSettings(ModelMap model) {
+    public String testSettings(ModelMap model, HttpServletRequest request) {
         model.addAttribute("substationName", phaseDetectService.getPhaseDetectData().getSubstationName());
         return "phaseDetect/testSettings.jsp";
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public String saveTestSettings(int intervalLength, int deltaVoltage, int numIntervals, ModelMap model) {
+    public String saveTestSettings(int intervalLength, int deltaVoltage, int numIntervals, ModelMap model, HttpServletRequest request) throws ServletException {
+        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
+        if (cancelButton != null) { /* Cancel Test */
+            phaseDetectService.cancelTest();
+            return "redirect:home";
+        }
         phaseDetectService.getPhaseDetectData().setIntervalLength(intervalLength);
         phaseDetectService.getPhaseDetectData().setDeltaVoltage(deltaVoltage);
         phaseDetectService.getPhaseDetectData().setNumIntervals(numIntervals);
@@ -161,8 +175,12 @@ public class PhaseDetectController {
         }
         model.addAttribute("data", phaseDetectService.getPhaseDetectData());
         model.addAttribute("state", phaseDetectService.getPhaseDetectState());
-        if(phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier() != null){
+        Boolean readCanceled = phaseDetectService.getPhaseDetectState().isReadCanceled();
+        CommandRequestExecutionIdentifier identifier = phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier();
+        if(identifier != null){
             model.addAttribute("showReadProgress", Boolean.TRUE);
+            model.addAttribute("readComplete", Boolean.valueOf(commandRequestExecutionDao.isComplete(identifier.getCommandRequestExecutionId())).toString());
+            model.addAttribute("readCanceled", readCanceled);
             model.addAttribute("errorMsg", phaseDetectService.getPhaseDetectResult().getErrorMsg());
             model.addAttribute("id", phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier().getCommandRequestExecutionId());
             model.addAttribute("totalCount", devicesOnSub.size());
@@ -172,20 +190,25 @@ public class PhaseDetectController {
         if(phaseDetectService.getPhaseDetectData().isReadAfterAll()){
             return "phaseDetect/phaseTestPage.jsp";
         } else {
+            if(readCanceled){
+                String phaseName = phaseDetectService.getPhaseDetectState().getCurrentPhaseBeingRead().name();
+                model.addAttribute("setPhase" + phaseName, Boolean.TRUE);
+            }
             return "phaseDetect/readBetweenPhaseTestPage.jsp";
         }
     }
     
     @RequestMapping(method=RequestMethod.POST)
     public View startTest(String phase, ModelMap model, LiteYukonUser user) {
-        Phase phaseEnumValue = Phase.valueOf(phase); 
+        Phase phaseEnumValue = Phase.valueOf(phase);
         List<Integer> routeIds = strmDao.getRouteIdsBySubstationId(phaseDetectService.getPhaseDetectData().getSubstationId());
         phaseDetectService.startPhaseDetect(routeIds, user, phaseEnumValue); /* Will block until done */
         model.addAttribute("phase", phase);
         model.addAttribute("complete", phaseDetectService.getPhaseDetectState().isPhaseDetectComplete());
-        if(StringUtils.isNotBlank(phaseDetectService.getPhaseDetectResult().getErrorMsg())) {
-            model.addAttribute("errorOccured", Boolean.TRUE);
-            model.addAttribute("errorMsg", phaseDetectService.getPhaseDetectResult().getErrorMsg());
+        String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
+        if(StringUtils.isNotBlank(errorMsg)) {
+            model.addAttribute("errorOccurred", Boolean.TRUE);
+            model.addAttribute("errorMsg", StringUtils.abbreviate(errorMsg, 80));
             phaseDetectService.getPhaseDetectState().setTestStep("send");
         } else {
             model.addAttribute("errorOccurred", Boolean.FALSE);
@@ -205,6 +228,7 @@ public class PhaseDetectController {
     
     @RequestMapping
     public String readPhase(String phase, ModelMap model, LiteYukonUser user, HttpServletResponse response) {
+        phaseDetectService.getPhaseDetectState().setReadCanceled(false);
         List<SimpleDevice> devicesOnSub = getDevicesOnSub(phaseDetectService.getPhaseDetectData().getSubstationId());
         Phase phaseValue = null;
         /* send a null when phase is not specified */
@@ -214,6 +238,7 @@ public class PhaseDetectController {
         try{
             phaseDetectService.readPhaseDetect(devicesOnSub, phaseValue, user);
             phaseDetectService.getPhaseDetectState().setPhaseDetectRead(phaseValue);
+            
         } catch(DispatchNotConnectedException e){
             phaseDetectService.getPhaseDetectResult().setErrorMsg(e.getMessage());
         }
@@ -239,6 +264,7 @@ public class PhaseDetectController {
         }
         String jsonStr = jsonObject.toString();
         response.addHeader("X-JSON", jsonStr);
+
         model.addAttribute("errorMsg", phaseDetectService.getPhaseDetectResult().getErrorMsg());
         model.addAttribute("id", phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier().getCommandRequestExecutionId());
         model.addAttribute("totalCount", devicesOnSub.size());
@@ -246,18 +272,25 @@ public class PhaseDetectController {
     }
     
     @RequestMapping
+    public String cancelRead(ModelMap model, LiteYukonUser user){
+        phaseDetectService.cancelReadPhaseDetect(user);
+        phaseDetectService.getPhaseDetectState().setReadCanceled(true);
+        phaseDetectService.getPhaseDetectState().setTestStep("read");
+        return "redirect:testPage";
+    }
+    
+    @RequestMapping
+    public String cancelTest(ModelMap model){
+        phaseDetectService.cancelTest();
+        return "redirect:home";
+    }
+    
+    @RequestMapping
     public String sendClearFromTestPage(LiteYukonUser user, ModelMap model, HttpServletResponse response) throws ServletException {
         JSONObject jsonObject = new JSONObject();
-        String errorReason = "";
-        
-        try {
-            CommandResultHolder holder = phaseDetectService.clearPhaseData(user);
-            if(holder.isExceptionOccured()) {
-                errorReason =  holder.getExceptionReason();
-            }
-        } catch(CommandCompletionException e) {
-            errorReason =  e.getMessage();
-        }
+        List<Integer> routeIds = strmDao.getRouteIdsBySubstationId(phaseDetectService.getPhaseDetectData().getSubstationId());
+        phaseDetectService.clearPhaseData(routeIds, user);/* Will block until done */
+        String errorReason = phaseDetectService.getPhaseDetectResult().getErrorMsg();
         Boolean success = StringUtils.isBlank(errorReason);
         if(success){
             phaseDetectService.getPhaseDetectState().setTestStep("send");
@@ -271,13 +304,26 @@ public class PhaseDetectController {
     }
     
     @RequestMapping
-    public String phaseDetectResults(ModelMap model, LiteYukonUser user) {
+    public String phaseDetectResults(ModelMap model, LiteYukonUser user, HttpServletRequest request) throws ServletException {
+        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
+        if (cancelButton != null) { /* Cancel Test */
+            phaseDetectService.cancelTest();
+            return "redirect:home";
+        }
         if(phaseDetectService.getPhaseDetectResult() != null){
+            phaseDetectService.getPhaseDetectResult().setTestData(phaseDetectService.getPhaseDetectData());
+            String cacheKey = phaseDetectService.cacheResults();
+            model.addAttribute("cacheKey", cacheKey);
             resultCopy = phaseDetectService.getPhaseDetectResult();
             dataCopy = phaseDetectService.getPhaseDetectData();
             phaseDetectService.setPhaseDetectResult(null);
             phaseDetectService.setPhaseDetectData(null);
             phaseDetectService.setPhaseDetectState(null);
+        } else {
+            String cacheKey = phaseDetectService.getLastCachedResultKey();
+            if(cacheKey != null){
+                model.addAttribute("cacheKey", cacheKey);
+            }
         }
         model.addAttribute("data", dataCopy);
         model.addAttribute("result", resultCopy);
@@ -536,5 +582,10 @@ public class PhaseDetectController {
     @Autowired
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
+    }
+    
+    @Autowired
+    public void setCommandRequestExecutionDao(CommandRequestExecutionDao commandRequestExecutionDao) {
+        this.commandRequestExecutionDao = commandRequestExecutionDao;
     }
 }

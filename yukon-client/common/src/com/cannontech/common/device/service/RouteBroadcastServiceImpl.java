@@ -20,7 +20,7 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
     CommandRequestRouteAndDeviceExecutorImpl executor;
     
     @Override
-    public void broadcastDetectionCommand(final String command, List<Integer> routeIds, CommandRequestExecutionType type, final RouteBroadcastService.CompletionCallback callback, LiteYukonUser user) {
+    public void broadcastCommand(final String command, List<Integer> routeIds, CommandRequestExecutionType type, final RouteBroadcastService.CompletionCallback callback, LiteYukonUser user) {
         
         ObjectMapper<Integer, CommandRequestRouteAndDevice> objectMapper = new ObjectMapper<Integer, CommandRequestRouteAndDevice>() {
             public CommandRequestRouteAndDevice map(Integer from) throws ObjectMappingException {
@@ -60,9 +60,9 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
     
     private CommandRequestRouteAndDevice buildRequest(Integer routeId, String command) {
         CommandRequestRouteAndDevice request = new CommandRequestRouteAndDevice();
-        request.setDevice(new SimpleDevice(13108, PaoType.MCT410IL)); /* To Be some magical mct broadcast device in the future */
+        request.setDevice(new SimpleDevice(0, PaoType.SYSTEM));
         request.setRouteId(routeId);
-        request.setBackgroundPriority(true);
+        request.setBackgroundPriority(false);
         
         String commandStr = command;
         request.setCommand(commandStr);

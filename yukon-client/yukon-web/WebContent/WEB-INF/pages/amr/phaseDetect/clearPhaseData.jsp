@@ -30,8 +30,8 @@
     </h2>
     <br>
     <br>
-    <tags:sectionContainer title="${sectionTitle}">
-        <form action="/spring/amr/phaseDetect/clear" method="post">
+    <form action="/spring/amr/phaseDetect/clear" method="post">
+        <tags:sectionContainer title="${sectionTitle}">
 	        <table>
 	            <tr>
 	                <td style="vertical-align: top;">
@@ -62,6 +62,7 @@
 	                </td>
 	            </tr>
 	        </table>
-        </form>
-    </tags:sectionContainer>
+        </tags:sectionContainer>
+        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test">
+    </form>
 </cti:standardPage>

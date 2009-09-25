@@ -151,3 +151,45 @@ function activeResultsTable_unHighLightRow(row){
 	row = $(row);
 	row.removeClassName('hover');
 }
+
+function cancelCommands(resultId, url, ccid, cancelingText, finishedText) {
+    
+    // save button text for restore on error
+    var orgCancelButtonText = $F('cancelButton' + ccid);
+    
+    // swap to wait img, disable button
+    $('waitImg' + ccid).show();
+    $('cancelButton' + ccid).disable();
+    $('cancelButton' + ccid).value = cancelingText;
+    
+    // setup callbacks
+    var onComplete = function(transport, json) {
+        
+        var errorMsg = json['errorMsg'];
+        if (errorMsg != null) {
+            handleError(ccid, errorMsg, orgCancelButtonText);
+            return;
+        } else {
+            showCancelResult(ccid, finishedText);
+            $('cancelButton' + ccid).hide();
+        }
+    };
+    
+    var onFailure = function(transport, json) {
+    	showCancelResult(ccid, transport.responseText);
+        $('cancelButton' + ccid).value = orgCancelButtonText;
+        $('cancelButton' + ccid).enable();
+    };
+
+    // run cancel    
+    var args = {};
+    args.resultId = resultId;
+    new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': onComplete, 'onFailure': onFailure, 'onException': onFailure, 'parameters': args});
+}
+
+function showCancelResult(ccid, msg) {
+
+    $('waitImg' + ccid).hide();
+    $('cancelArea' + ccid).innerHTML = msg;
+    $('cancelArea' + ccid).show();
+}

@@ -172,4 +172,11 @@ public interface DeviceDao {
      * @return List<SimpleDevice>
      */
     public List<SimpleDevice> getDevicesForRouteId(int routeId);
+
+    /**
+     * Returns the number of devices on the given route id.
+     * @param routeId
+     * @return int
+     */
+    public int getRouteDeviceCount(int routeId);
 }

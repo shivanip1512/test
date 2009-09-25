@@ -692,6 +692,26 @@
   </tag>
   
   <tag>
+    <name>dataUpdaterEventCallback</name>
+    <description>
+        Unlike the dataUpdaterCallback, this tag only handles true/false lookups
+        and will stop updating after the first true result. 
+    </description>
+    <tag-class>com.cannontech.web.updater.DataUpdaterEventCallbackTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>function</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>id</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>attributeResolver</name>
     <tag-class>com.cannontech.web.taglib.AttributeResolverTag</tag-class>
     <body-content>empty</body-content>

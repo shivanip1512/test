@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -16,15 +18,17 @@ import com.cannontech.amr.phaseDetect.data.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
+import com.cannontech.amr.phaseDetect.data.PhaseDetectVoltageReading;
 import com.cannontech.amr.phaseDetect.data.UndefinedPhaseException;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -40,16 +44,14 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -58,6 +60,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
 
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private RouteBroadcastService routeBroadcastService;
+    private Logger log = YukonLogManager.getLogger(PhaseDetectService.class);
     
     /*
      *  Internal state for the one global phase detection process 
@@ -71,18 +74,45 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupProviderDao deviceGroupProviderDao;
     private StateDao stateDao;
-    private PointDao pointDao;
     private DynamicDataSource dynamicDataSource;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupService deviceGroupService;
+    private RecentResultsCache<PhaseDetectResult> phaseDetectResultsCache;
+    private AttributeService attributeService;
+    
+    private static final String PHASE_DETECT_GROUP = "Phase Detect";
+    private static final String LAST_RESULTS_GROUP = "Last Results";
+    private static final int DEFAULT_TIMEOUT = 60; /* Seconds */
 
     @Override
-    public CommandResultHolder clearPhaseData(LiteYukonUser user) throws CommandCompletionException {
-        CommandRequestDevice request = new CommandRequestDevice();
-        request.setCommand("putconfig emetcon phasedetect clear");
-        request.setDevice(new SimpleDevice(13108, DeviceTypes.MCTBROADCAST)); /* To be some magic broadcast device in the future */
-        CommandResultHolder holder = commandRequestExecutor.execute(request, CommandRequestExecutionType.PHASE_DETECT_CLEAR, user);
-        return holder;
+    public void clearPhaseData(List<Integer> routeIds, LiteYukonUser user) {
+        /* mct410base comes from the deviceDefinition.xml file and represents all mct 410s. */
+        /* In the future it would be retrieved from some enum builts on the deviceDefinition.xml file. */
+        String command = "putconfig emetcon phasedetect clear broadcast mct_410_base"; 
+        
+        final CountDownLatch finishedLatch = new CountDownLatch(1);
+        
+        CompletionCallback callback = new CompletionCallback() {
+            @Override
+            public void success() {
+                phaseDetectResult.setErrorMsg(null);
+                finishedLatch.countDown();
+            }
+            @Override
+            public void failure(String errorReason) {
+                phaseDetectResult.setErrorMsg(errorReason);
+                finishedLatch.countDown();
+            }
+        };
+        routeBroadcastService.broadcastCommand(command, routeIds, CommandRequestExecutionType.PHASE_DETECT_CLEAR, callback , user);
+        try {
+            boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+            if(!finishedBeforeTimeout){
+                callback.failure("Timeout waiting for clear command.");
+            }
+        } catch(InterruptedException e) {
+            // do nothing
+        } 
     }
     
     @Override
@@ -90,10 +120,9 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         String delta = phaseDetectData.getDeltaVoltage().toString();
         String interval = phaseDetectData.getIntervalLength().toString();
         String num = phaseDetectData.getNumIntervals().toString();
-        String command = "putconfig emetcon phasedetect phase " + phase.name() + " delta " + delta + " interval " + interval + " num " + num;
+        String command = "putconfig emetcon phasedetect broadcast mct_410_base phase " + phase.name() + " delta " + delta + " interval " + interval + " num " + num;
         
         final CountDownLatch finishedLatch = new CountDownLatch(1);
-        
         
         CompletionCallback callback = new CompletionCallback() {
             @Override
@@ -108,9 +137,12 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
                 finishedLatch.countDown();
             }
         };
-        routeBroadcastService.broadcastDetectionCommand(command, routeIds, CommandRequestExecutionType.PHASE_DETECT_COMMAND, callback , user);
+        routeBroadcastService.broadcastCommand(command, routeIds, CommandRequestExecutionType.PHASE_DETECT_COMMAND, callback , user);
         try {
-            finishedLatch.await();
+            boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+            if(!finishedBeforeTimeout){
+                callback.failure("Timeout waiting for send command.");
+            }
         } catch(InterruptedException e) {
             // do nothing
         } 
@@ -136,25 +168,23 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 Phase phaseDetected = null;
-                String voltageReading = "N/A";
                 try {
                     phaseDetected = parsePhase(value);
-                    voltageReading = parseVoltageReading(phaseBeingRead, value);
+                    PhaseDetectVoltageReading voltageReading = parseVoltageReading(value);
                     
                     if (phaseDetected != phaseBeingRead) {
                         // do something, add to failure? ignore?
                     }
                     
-                    StoredDeviceGroup storedDeviceGroup = (StoredDeviceGroup) phaseDetectResult.getPhaseToGroupMap().get(phaseDetected);
+                    StoredDeviceGroup storedDeviceGroup = phaseDetectResult.getPhaseToGroupMap().get(phaseDetected);
+                    
                     deviceGroupMemberEditorDao.addDevices(storedDeviceGroup, command.getDevice());
                     /* Map the phase to the reading returned */
-                    Map<String, String> phaseToReadingMap = phaseDetectResult.getDeviceReadingsMap().get(command.getDevice().getDeviceId());
+                    Map<String, PhaseDetectVoltageReading> phaseToReadingMap = phaseDetectResult.getDeviceReadingsMap().get(command.getDevice().getDeviceId());
                     if(phaseToReadingMap == null){
                         phaseToReadingMap = Maps.newHashMap();
                     }
-                    if(phaseDetectData.isReadAfterAll()){
-                        phaseToReadingMap.put(phaseDetected.name(), voltageReading);
-                    } else {
+                    if(!phaseDetectData.isReadAfterAll()){
                         phaseToReadingMap.put(phaseBeingRead.name(), voltageReading);
                     }
                     /* Map the device to the reading map */
@@ -186,10 +216,19 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         
         CommandRequestExecutionIdentifier id = commandRequestExecutor.execute(requests, callback, CommandRequestExecutionType.PHASE_DETECT_READ, user);
         phaseDetectResult.setCommandRequestExecutionIdentifier(id);
-        
+        phaseDetectResult.setCallback(callback);
+    }
+    
+    public void cancelReadPhaseDetect(LiteYukonUser user){
+        try{
+            commandRequestExecutor.cancelExecution(phaseDetectResult.getCallback(), user);
+        } catch (Exception e){
+            log.warn("Unable to cancel phase detect read.", e);
+        }
     }
     
     private void proccessReadResults(List<SimpleDevice> devices, final Map<Phase, StoredDeviceGroup> groups, LiteYukonUser user) {
+        phaseDetectResult.setInputDeviceList(devices);
         for (SimpleDevice device : devices) {
             if(phaseDetectResult.getFailureGroupMap().containsKey(device)){
                 continue; /* skip devices that failed: don't add them to the unknown group or generate point data */
@@ -203,13 +242,14 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
             DetectedPhase detectedPhase = DetectedPhase.getPhase(devicePhases);
             generatePhasePointData(device, detectedPhase);
             addToDeviceGroup(device, detectedPhase);
+            phaseDetectResult.handleDetectResult(device, detectedPhase);
         }
     }
     
     public void clearPhaseDetectGroups(){
         for(DetectedPhase detectedPhase : DetectedPhase.values()){
             try {
-                DeviceGroup group = deviceGroupService.resolveGroupName("/System/Meters/Phase Detect/Last Results/" + detectedPhase.name());
+                DeviceGroup group = deviceGroupService.resolveGroupName("/System/Meters/"+ PHASE_DETECT_GROUP +"/"+ LAST_RESULTS_GROUP +"/" + detectedPhase.name());
                 StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(group);
                 deviceGroupMemberEditorDao.removeAllChildDevices(storedGroup);
             } catch(NotFoundException e) {} /* ignore if it doesn't exist yet */
@@ -217,25 +257,23 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     }
     
     private void addToDeviceGroup(SimpleDevice device, DetectedPhase detectedPhase){
-        String phaseDetectGroupName = "Phase Detect";
-        String lastResultsGroupName = "Last Results";
         String detectedPhaseGroupName = detectedPhase.name();
         
         DeviceGroup systemMetersDeviceGroup = deviceGroupService.resolveGroupName("/System/Meters/");
         StoredDeviceGroup metersGroup = deviceGroupEditorDao.getStoredGroup(systemMetersDeviceGroup);
         
-        StoredDeviceGroup phaseGroup = deviceGroupEditorDao.getGroupByName(metersGroup, phaseDetectGroupName, true);
-        StoredDeviceGroup lastResultsGroup = deviceGroupEditorDao.getGroupByName(phaseGroup, lastResultsGroupName, true);
+        StoredDeviceGroup phaseGroup = deviceGroupEditorDao.getGroupByName(metersGroup, PHASE_DETECT_GROUP, true);
+        StoredDeviceGroup lastResultsGroup = deviceGroupEditorDao.getGroupByName(phaseGroup, LAST_RESULTS_GROUP, true);
         StoredDeviceGroup detectedPhaseGroup = deviceGroupEditorDao.getGroupByName(lastResultsGroup, detectedPhaseGroupName, true);
         deviceGroupMemberEditorDao.addDevices(detectedPhaseGroup, device);
     }
     
     private void generatePhasePointData(SimpleDevice device, DetectedPhase detectedPhase){
-        int phasePointId = pointDao.getPointIDByDeviceID_Offset_PointType(device.getPaoIdentifier().getPaoId(), 3000, PointTypes.STATUS_POINT);
-        if(phasePointId == 0){
+        LitePoint phasePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.PHASE);
+        if(phasePoint == null){
+            log.warn("No Phase point found for device with id: " + device.getDeviceId());
             return;
         }
-        LitePoint phasePoint = pointDao.getLitePoint(phasePointId);
         
         LiteStateGroup phaseStateGroup = stateDao.getLiteStateGroup("PhaseStatus");
         LiteState liteState = new LiteState(0);
@@ -270,7 +308,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         return phaseDetected;
     }
     
-    private String parseVoltageReading(Phase phase, String value) {
+    private PhaseDetectVoltageReading parseVoltageReading(String value) {
         String[] words = value.split(" ");
         String initialVoltage = "";
         String lastVoltage = "";
@@ -288,13 +326,35 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         float delta = last - initial;
         DecimalFormat formatter = new DecimalFormat("##.##");
         String deltaString = formatter.format(delta);
-        String color = delta > 0 ? "<font color='green'><b>" : "<font color='red'><b>";
-        String voltageReading = "";
-        if(!phaseDetectData.isReadAfterAll()){
-            voltageReading += "Phase Read: <b>" + phase.name() + "</b> "; 
-        }
-        voltageReading += "Initial: <b>" + initialVoltage + "</b> Last: <b>" + lastVoltage + "</b> Delta: " + color + deltaString + "</b></font>";
+        initialVoltage = formatter.format(initial);
+        lastVoltage = formatter.format(last);
+        PhaseDetectVoltageReading voltageReading = new PhaseDetectVoltageReading();
+        voltageReading.setInitial(Double.valueOf(initialVoltage));
+        voltageReading.setLast(Double.valueOf(lastVoltage));
+        voltageReading.setDelta(Double.valueOf(deltaString));
         return voltageReading;
+    }
+    
+    @Override
+    public String cacheResults(){
+        return phaseDetectResultsCache.addResult(phaseDetectResult);
+    }
+    
+    @Override
+    public String getLastCachedResultKey(){
+        List<String> keys = phaseDetectResultsCache.getCompletedKeys();
+        if(keys != null && !keys.isEmpty()){
+            return keys.get(keys.size()-1);
+        } else { 
+            return null;
+        }
+    }
+    
+    @Override
+    public void cancelTest(){
+        phaseDetectData = null;
+        phaseDetectResult = null;
+        phaseDetectState = null;
     }
     
     @Override
@@ -348,12 +408,6 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     }
     
     @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    @Required
     public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
         this.dynamicDataSource = dynamicDataSource;
     }
@@ -387,5 +441,14 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     public void setPhaseDetectResult(PhaseDetectResult result) {
         this.phaseDetectResult = result;
     }
+    
+    @Required
+    public void setPhaseDetectResultsCache(RecentResultsCache<PhaseDetectResult> phaseDetectResultsCache) {
+        this.phaseDetectResultsCache = phaseDetectResultsCache;
+    }
 
+    @Autowired
+    public void setAttributeService(AttributeService attributeService){
+        this.attributeService = attributeService;
+    }
 }

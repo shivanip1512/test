@@ -319,6 +319,11 @@
     </bean>
 	
     <!-- Phase Detect Service -->
-    <bean id="phaseDetectService" class="com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl"/>
+    <bean id="phaseDetectResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
+    
+    <bean id="phaseDetectService" class="com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl">
+        <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
+    </bean>
+    
 </beans>
 

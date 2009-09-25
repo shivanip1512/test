@@ -9,6 +9,8 @@ public class PhaseDetectState {
     private Map<Phase, Boolean> phaseDetectSentMap = Maps.newHashMap();
     private Map<Phase, Boolean> phaseDetectReadMap = Maps.newHashMap();
     private String testStep = "send";
+    private boolean readCanceled = false;
+    private Phase currentPhaseBeingRead = Phase.A;
     
     public PhaseDetectState(){
         phaseDetectSentMap.put(Phase.A, false);
@@ -25,6 +27,7 @@ public class PhaseDetectState {
     
     public void setPhaseDetectRead(Phase phase) {
         phaseDetectReadMap.put(phase, true);
+        setCurrentPhaseBeingRead(phase);
     }
     
     public boolean isPhaseDetectComplete() {
@@ -65,6 +68,25 @@ public class PhaseDetectState {
 
     public void setTestStep(String testStep) {
         this.testStep = testStep;
+    }
+
+    public boolean isReadCanceled() {
+        return readCanceled;
+    }
+
+    public void setReadCanceled(boolean readCanceled) {
+        this.readCanceled = readCanceled;
+        if(readCanceled){
+            phaseDetectReadMap.put(currentPhaseBeingRead, false);
+        }
+    }
+
+    public Phase getCurrentPhaseBeingRead() {
+        return currentPhaseBeingRead;
+    }
+
+    public void setCurrentPhaseBeingRead(Phase currentPhaseBeingRead) {
+        this.currentPhaseBeingRead = currentPhaseBeingRead;
     }
 
 }

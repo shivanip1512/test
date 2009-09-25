@@ -7,8 +7,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <cti:uniqueIdentifier var="trId" prefix="nameValueTr_"/>
-<c:if test="${not empty id}">
-    <c:set var="trId" value="${id}" />
+<c:if test="${not empty pageScope.id}">
+    <c:set var="trId" value="${pageScope.id}" />
 </c:if>
 
 <c:choose>

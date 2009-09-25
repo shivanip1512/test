@@ -307,6 +307,12 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         }
     }
     
+    @Override
+    public int getRouteDeviceCount(int routeId){
+        String sql = "SELECT COUNT(*) FROM DeviceRoutes WHERE RouteId = ?";
+        return jdbcOps.queryForInt(sql, new Object[]{routeId});
+    }
+    
     public void changeRoute(YukonDevice device, int newRouteId) {
 
         // Updates the meter's meter number

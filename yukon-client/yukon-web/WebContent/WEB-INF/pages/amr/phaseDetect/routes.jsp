@@ -3,18 +3,35 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <c:if test="${show}">
-	<table class="resultsTable" style="width: 375px;padding-top: 5px;">
-	    <tr>
-	        <th nowrap="nowrap">
-	            <b>Routes On: <font color="Black">${currentSubstation}</font></b>
-	        </th>
-	    </tr>
-	    <c:forEach var="route" items="${routes}">
-	        <tr>
-	            <td nowrap="nowrap">
-	                ${route.name}
-	            </td>
-	        </tr>
-	    </c:forEach>
+    <tags:nameValueContainer>
+        <tags:nameValue name="Devices Selected" nameColumnWidth="150px">${currentSubstation}</tags:nameValue>
+        <tags:nameValueGap gapHeight="3px"/>
+        <tags:nameValue name="Device Count" nameColumnWidth="150px">${deviceCount}</tags:nameValue>
+    </tags:nameValueContainer>
+    <br>
+    <table class="resultsTable" style="padding-top: 5px;">
+        <thead>
+            <tr>
+                <th nowrap="nowrap">
+                    Route Name
+                </th>
+                <th nowrap="nowrap">
+                    Devices
+                </th>
+            </tr>
+        </thead>
+	    <tbody> 
+		    <c:forEach var="route" items="${routes}">
+		        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+		            <td nowrap="nowrap" style="padding-right: 10px;">
+		                ${route.name}
+		            </td>
+		            <td nowrap="nowrap">
+	                    ${routeSizeMap[route.id]}
+		            </td>
+		        </tr>
+		    </c:forEach>
+	    </tbody>
 	</table>
+    <br>
 </c:if>

@@ -12,7 +12,7 @@
 
 <cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
 
-<div class="titledContainer sectionContainer ${styleClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
+<div class="titledContainer sectionContainer ${styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
     
     <div class="titleBar sectionContainer_titleBar">
         <div class="titleBar sectionContainer_title">
@@ -32,8 +32,8 @@
 
 </div>
 
-<c:if test="${not empty helpText}">
-	<tags:simplePopup id="sectionContainerInfoPopup_${thisId}" title="${title}" onClose="$('sectionContainerInfoPopup_${thisId}').toggle();">
-     	${helpText}
+<c:if test="${not empty pageScope.helpText}">
+	<tags:simplePopup id="sectionContainerInfoPopup_${thisId}" title="${pageScope.title}" onClose="$('sectionContainerInfoPopup_${thisId}').toggle();">
+     	${pageScope.helpText}
 	</tags:simplePopup>	
 </c:if>

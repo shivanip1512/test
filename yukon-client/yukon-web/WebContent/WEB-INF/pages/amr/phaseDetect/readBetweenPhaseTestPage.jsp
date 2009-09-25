@@ -23,10 +23,10 @@
     <script type="text/javascript">
 
     function sendDetect() {
-            $('sendDetectButton').value = 'Sending Detect Command';
+            $('sendDetectButton').value = 'Sending';
             $('sendDetectButton').disable();
+            $('actionResultDiv').hide();
             $('spinner').show();
-            $('readButton').disable();
 
             var params = {'phase': $F('phase')};
             
@@ -36,10 +36,12 @@
                 onSuccess: function(resp, transport) {
                     if(transport.errorOccurred){
                         $('spinner').hide();
-                        $('errorSpan').innerHTML = 'Error Sending Detect Command: ' + transport.errorMsg;
-                        $('errorSpan').show();
-                        $('resetButton').enable();
+                        $('actionResultDiv').innerHTML = 'Error Sending Detect Command: ' + transport.errorMsg;
+                        $('actionResultDiv').show();
+                        $('sendDetectButton').value = 'Send';
+                        $('sendDetectButton').enable();
                     } else {
+                    	$('sendDetectButton').value = 'Send';
                         $(transport.phase).show();
                         $('spinner').hide();
                         startTimers();
@@ -47,9 +49,10 @@
                 },
                 onException: function(resp, transport) {
                     $('spinner').hide();
-                    $('errorSpan').innerHTML = 'Error Sending Detect Command: ' + transport.errorMsg;
-                    $('errorSpan').show();
-                    $('resetButton').enable();
+                    $('actionResultDiv').innerHTML = 'Error Sending Detect Command: ' + transport.errorMsg;
+                    $('actionResultDiv').show();
+                    $('sendDetectButton').value = 'Send';
+                    $('sendDetectButton').enable();
                 }
             });
 
@@ -80,63 +83,75 @@
                     setTimeout('updateTimers()', 1000);
                 }
             } else {
+                $('sendDetectButton').hide();
                 $('readButton').enable();
+                $('readButton').show();
             }
         }
 
         function reset(){
-            $('sendDetectButton').value = 'Send Phase Detect Command';
+        	$('sendDetectButton').value = 'Send';
             $('sendDetectButton').enable();
-            $('resetButton').disable();
-            $('readButton').disable();
-            $('readProgress').hide();
+            $('sendDetectButton').show();
+            $('resetButton').hide();
+            $('actionResultDiv').hide();
             $('intervalTimerNote').hide();
             $('detectTimerNote').hide();
-            $('errorSpan').hide();
             $('intervalTimerSpan').innerHTML = '${data.intervalLength}';
             $('intervalTimerFont').color = 'black';
             $('detectTimerSpan').innerHTML = '${data.intervalLength * data.numIntervals}';
             $('detectTimerFont').color = 'black';
-            $('clearButton').disable();
-            $('clearResult').hide();
         }
 
         function sendRead(){
-            new Ajax.Updater('readProgress', '/spring/amr/phaseDetect/readPhase', {method: 'get', parameters:{'phase': $F('phase')}, evalScripts: 'true',
+        	$('actionResultDiv').show();
+            new Ajax.Updater('actionResultDiv', '/spring/amr/phaseDetect/readPhase', {method: 'post', parameters:{'phase': $F('phase')}, evalScripts: 'true',
             	onSuccess: function(resp, transport) {
                     if(transport.success){
 	                    $('read' + transport.phase).show();
-	                    $('readProgress').show();
+	                    $('readButton').value = 'Reading';
 	                    $('readButton').disable();
-	                    if(transport.complete){
-	                        $('resultsButton').enable();
-	                    } else {
-	                    	$('clearButton').enable();
-	                    }
+                        if(transport.complete){
+                        	$('complete').value = 'true';
+                        }
+                    } else {
+                    	$('actionResultDiv').innerHTML = 'Error Sending Read Command: ' + transport.errorMsg;
                     }
 	            },
 	            onException: function(resp, transport) {
-	                $('errorSpan').innerHTML = 'Error Sending Read Command: ' + transport.errorMsg;
-	                $('errorSpan').show();
+	                $('actionResultDiv').innerHTML = 'Error Sending Read Command: ' + transport.errorMsg;
 	            }
             });
         }
 
         function sendClearCommand(){
-            $('clearSpinner').show();
-            new Ajax.Updater('clearResult', '/spring/amr/phaseDetect/sendClearFromTestPage', {method: 'get', evalScripts: 'true',
+            $('spinner').show();
+            $('actionResultDiv').innerHTML = '';
+            new Ajax.Updater('actionResultDiv', '/spring/amr/phaseDetect/sendClearFromTestPage', {method: 'get', evalScripts: 'true',
                 onSuccess: function(resp, transport) {
-                    $('clearSpinner').hide();
-                    $('clearResult').show();
+                    $('spinner').hide();
+                    $('actionResultDiv').show();
                     if(transport.success){
-                        $('resetButton').enable();
+                        $('clearButton').hide();
+                        $('resetButton').show();
                     }
                 },
                 onException: function(resp, transport) {
-                	$('clearSpinner').hide();
-                	$('clearResult').show();
+                	$('spinner').hide();
+                	$('actionResultDiv').show();
                 }
             });
+        }
+
+        function readFinished() {
+            $('cancelReadButton').disable();
+        	$('readButton').value = 'Read';
+            $('readButton').hide();
+            $('clearButton').enable();
+            $('clearButton').show();
+            if($F('complete') == 'true'){
+                $('resultsButton').enable();
+            }
         }
     </script>
     
@@ -151,125 +166,88 @@
     <tags:sectionContainer title="${sectionTitle}">
         <table>
             <tr>
-             <td valign="top" class="smallBoldLabel">${noteLabel}</td>
-             <td style="font-size:11px;">
-                 ${noteText}
-             </td>
-         </tr>
-        </table>
-        <table style="padding-right: 20px;padding-bottom: 10px;">
-            <tr valign="top">
-                <td>
-                    <tags:nameValueContainer>
-                        <tags:nameValue name="Substation">
-                            ${data.substationName}
-                        </tags:nameValue>
-                        <tags:nameValue name="Interval Length">
-                            ${data.intervalLength}
-                        </tags:nameValue>
-                        <tags:nameValue name="Delta Voltage">
-                            ${data.deltaVoltage}
-                        </tags:nameValue>
-                        <tags:nameValue name="Number of Intervals">
-                            ${data.numIntervals}
-                        </tags:nameValue>
-                        <tags:nameValue name="Phase">
-                            <select id="phase" name="phase">
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                            </select>
-                            <input id="sendDetectButton" type="button" <c:if test="${testStep != 'send'}">disabled</c:if> value="Send Phase Detect Command" onclick="sendDetect();"/>
-                            <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
-                            <font color="red"><b><span id="errorSpan"></span></b></font>
-                        </tags:nameValue>
-                        <tags:nameValue name="Phase Detect Sent">
-                            <b><span id="A" style="padding-right: 3px;<c:if test="${!state.phaseADetectSent}">display: none;</c:if>">
-                                <font color="green">A</font>
-                            </span>
-                            <span id="B" style="padding-right: 3px;<c:if test="${!state.phaseBDetectSent}">display: none;</c:if>">
-                                <font color="green">B</font>
-                            </span>
-                            <span id="C" style="padding-right: 3px;<c:if test="${!state.phaseCDetectSent}">display: none;</c:if>">
-                                <font color="green">C</font>
-                            </span></b>
-                        </tags:nameValue>
-                        <tags:nameValue name="Phases Read">
-                            <b><span id="readA" style="padding-right: 3px;<c:if test="${!state.phaseARead}">display: none;</c:if>">
-                                <font color="green">A</font>
-                            </span>
-                            <span id="readB" style="padding-right: 3px;<c:if test="${!state.phaseBRead}">display: none;</c:if>">
-                                <font color="green">B</font>
-                            </span>
-                            <span id="readC" style="padding-right: 3px;<c:if test="${!state.phaseCRead}">display: none;</c:if>">
-                                <font color="green">C</font>
-                            </span></b>
-                        </tags:nameValue>
-                        <tags:nameValue name="Interval Timer">
-                            <b>
-                                <font id="intervalTimerFont" color="black">
-                                    <span id="intervalTimerSpan">${data.intervalLength}</span>
-                                </font>
-                                &nbsp;seconds&nbsp;<span id="intervalTimerNote" style="display: none;">${voltIntervalNote}</span>
-                            </b>
-                        </tags:nameValue>
-                        <tags:nameValue name="Detection Timer">
-                            <b>
-                                <font id="detectTimerFont" color="black">
-                                    <span id="detectTimerSpan">${data.intervalLength * data.numIntervals}</span>
-                                </font>
-                                &nbsp;seconds&nbsp;<span id="detectTimerNote" style="display: none;">${voltDetectNote}</span>
-                            </b>
-                        </tags:nameValue>
-                    </tags:nameValueContainer>
-                </td>
+                <td valign="top" class="smallBoldLabel">${noteLabel}</td>
+                 <td style="font-size:11px;">${noteText}</td>
             </tr>
         </table>
-        <table>
-            <tr>
-                <td>
-                    <input name="readButton" id="readButton" <c:if test="${testStep != 'read'}">disabled</c:if> type="button" value="Read Phase Data" onclick="sendRead();">
-                </td>
-                <td id="readProgress">
+        <tags:nameValueContainer>
+            <tags:nameValue name="Substation" nameColumnWidth="200px">
+                ${data.substationName}
+            </tags:nameValue>
+            <tags:nameValue name="Interval Length">
+                ${data.intervalLength}
+            </tags:nameValue>
+            <tags:nameValue name="Delta Voltage">
+                ${data.deltaVoltage}
+            </tags:nameValue>
+            <tags:nameValue name="Number of Intervals">
+                ${data.numIntervals}
+            </tags:nameValue>
+            <tags:nameValue name="Phase">
+                <select id="phase" name="phase">
+                    <option <c:if test="${not empty setPhaseA}">selected</c:if> value="A">A</option>
+                    <option <c:if test="${not empty setPhaseB}">selected</c:if> value="B">B</option>
+                    <option <c:if test="${not empty setPhaseC}">selected</c:if> value="C">C</option>
+                </select>
+            </tags:nameValue>
+            <tags:nameValue name="Phase Detect Sent">
+                <b><span id="A" style="padding-right: 3px;<c:if test="${!state.phaseADetectSent}">display: none;</c:if>">
+                    <font color="green">A</font>
+                </span>
+                <span id="B" style="padding-right: 3px;<c:if test="${!state.phaseBDetectSent}">display: none;</c:if>">
+                    <font color="green">B</font>
+                </span>
+                <span id="C" style="padding-right: 3px;<c:if test="${!state.phaseCDetectSent}">display: none;</c:if>">
+                    <font color="green">C</font>
+                </span></b>
+            </tags:nameValue>
+            <tags:nameValue name="Phases Read">
+                <b><span id="readA" style="padding-right: 3px;<c:if test="${!state.phaseARead}">display: none;</c:if>">
+                    <font color="green">A</font>
+                </span>
+                <span id="readB" style="padding-right: 3px;<c:if test="${!state.phaseBRead}">display: none;</c:if>">
+                    <font color="green">B</font>
+                </span>
+                <span id="readC" style="padding-right: 3px;<c:if test="${!state.phaseCRead}">display: none;</c:if>">
+                    <font color="green">C</font>
+                </span></b>
+            </tags:nameValue>
+            <tags:nameValue name="Interval Timer">
+                <b>
+                    <font id="intervalTimerFont" color="black">
+                        <span id="intervalTimerSpan">${data.intervalLength}</span>
+                    </font>
+                    &nbsp;seconds&nbsp;<span id="intervalTimerNote" style="display: none;">${voltIntervalNote}</span>
+                </b>
+            </tags:nameValue>
+            <tags:nameValue name="Detection Timer">
+                <b>
+                    <font id="detectTimerFont" color="black">
+                        <span id="detectTimerSpan">${data.intervalLength * data.numIntervals}</span>
+                    </font>
+                    &nbsp;seconds&nbsp;<span id="detectTimerNote" style="display: none;">${voltDetectNote}</span>
+                </b>
+            </tags:nameValue>
+            <tags:nameValue name="Next Action">
+                <div id="magicButtonDiv" style="float: left;padding-right: 10px;">
+                    <input type="hidden" name="complete" id="complete" value="${state.phaseDetectComplete}">
+                    <input type="button" id="sendDetectButton" <c:if test="${testStep != 'send'}">style="display: none;"</c:if> value="Send" onclick="sendDetect();">
+                    <input type="button" id="readButton" <c:if test="${testStep != 'read'}">style="display: none;"</c:if> value="Read" onclick="sendRead();">
+                    <input type="button" id="clearButton" <c:if test="${testStep != 'clear' && testStep != 'results'}">style="display: none;"</c:if> value="Clear" onclick="sendClearCommand();">
+                    <input type="button" id="resetButton" style="display: none;" value="Reset" onclick="reset();">
+                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
+                </div>
+                <div id="actionResultDiv"  style="float: left;">
                     <c:if test="${showReadProgress}">
-                        <c:choose>
-						    <c:when test="${not empty errorMsg}">
-						        <font color="red"><b>Error Sending Read Command: ${errorMsg}</b></font>
-						    </c:when>
-						    <c:otherwise>
-						        <tags:updateableProgressBar totalCount="${totalCount}" countKey="COMMAND_REQUEST_EXECUTION/${id}/RESULTS_COUNT"/>
-						    </c:otherwise>
-						</c:choose>
+                        <jsp:include page="readPhaseResults.jsp"></jsp:include>
                     </c:if>
-                </td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td>
-                    <input id="clearButton" <c:if test="${testStep != 'clear'}">disabled</c:if> type="button" value="Clear Phase Data" onclick="sendClearCommand();">
-                    <img style="display: none;" id="clearSpinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
-                    <span id="clear"></span>
-                </td>
-                <td id="clearResult">
-                </td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td>
-                    <input id="resetButton" disabled="disabled" type="button" value="Reset For Another Detection Command" onclick="reset();">
-                </td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-               <td>
-                   <form action="/spring/amr/phaseDetect/phaseDetectResults" method="get">
-                       <input id="resultsButton" type="submit" <c:if test="${testStep != 'results'}">disabled</c:if> value="Phase Detect Results">
-                   </form>
-               </td>
-            </tr>
-        </table>
+                </div>
+            </tags:nameValue>
+        </tags:nameValueContainer>
     </tags:sectionContainer>
+    <br>
+    <form action="/spring/amr/phaseDetect/phaseDetectResults" method="get">
+        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test">
+        <input id="resultsButton" <c:if test="${testStep != 'results'}">disabled</c:if>  type="submit" value="Phase Detect Results">
+    </form>
 </cti:standardPage>

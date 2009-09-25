@@ -11,6 +11,7 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="cacheSeconds" value="0"/>
         <property name="customArgumentResolvers">
             <list>
                 <ref bean="deviceCollectionFactory"/>
@@ -590,6 +591,9 @@
                 </entry>
                 <entry key="DR_LOADGROUP">
                     <ref local="drLoadGroupBackingService"/>
+                </entry>
+                <entry key="PHASE_DETECT">
+                    <ref local="phaseDetectBackingService"/>
                 </entry>                
             </map>
         </property>
@@ -660,12 +664,6 @@
         <property name="formattingService" ref="capBankFormattingService"/>
     </bean>
     
-    
-    
-    
-    
-    
-    
     <bean id="routeLocateBackingService" class="com.cannontech.web.updater.routeLocate.RouteLocateBackingService">
         <property name="templateProcessorFactory" ref="templateProcessorFactory" />
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
@@ -725,8 +723,13 @@
     <bean id="drControlAreaBackingService" class="com.cannontech.web.updater.dr.ControlAreaBackingService"/>
     <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
-    <bean id="drLoadGroupBackingService" class="com.cannontech.web.updater.dr.LoadGroupBackingService"/>    
-
+    <bean id="drLoadGroupBackingService" class="com.cannontech.web.updater.dr.LoadGroupBackingService"/>
+    
+    <!-- phase detect -->    
+    <bean id="phaseDetectBackingService" class="com.cannontech.web.updater.phaseDetect.PhaseDetectBackingService"/>
+    <bean id="isCompletePhaseDetectUpdaterHandler" class="com.cannontech.web.updater.phaseDetect.handler.IsCompletePhaseDetectUpdaterHandler"/>
+    <bean id="resultsCountPhaseDetectUpdaterHandler" class="com.cannontech.web.updater.phaseDetect.handler.ResultsCountPhaseDetectUpdaterHandler"/>
+    
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
           abstract="true">
         <property name="filterCacheFactory" ref="filterCacheFactory"/>
@@ -786,6 +789,8 @@
     <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag">
         <property name="registrationService" ref="dataUpdaterService"/>
     </bean>
+    
+    <bean id="dataUpdaterEventCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterEventCallbackTag"/>
 
     <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.taglib.PointValueFormatterTag">
         <property name="pointFormattingService" ref="pointFormattingServiceForRequest"/>

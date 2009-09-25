@@ -2,9 +2,9 @@
 
 <c:choose>
     <c:when test="${not empty errorReason}">
-        <font color="red"><b>Error Sending Clear Command: ${errorReason}</b></font>
+        <span class="errorRed" style="font-weight: bold;">Error Sending Clear Command: ${errorReason}</span>
     </c:when>
     <c:otherwise>
-        <font color="green"><b>Clear Command Sent Successfully</b></font>
+        <span class="okGreen" style="font-weight: bold;">Clear Command Sent Successfully</span>
     </c:otherwise>
 </c:choose>

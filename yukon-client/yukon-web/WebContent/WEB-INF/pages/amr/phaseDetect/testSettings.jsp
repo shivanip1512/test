@@ -20,8 +20,8 @@
     </h2>
     <br>
     <br>
-    <tags:sectionContainer title="${sectionTitle}">
-        <form action="/spring/amr/phaseDetect/saveTestSettings" method="post">
+    <form action="/spring/amr/phaseDetect/saveTestSettings" method="post">
+        <tags:sectionContainer title="${sectionTitle}">
             <table style="padding-right: 20px;padding-bottom: 10px;">
                 <tr valign="top">
                     <td>
@@ -33,7 +33,7 @@
                                <select id="intervalLength" name="intervalLength">
                                    <option value="60">60</option>
                                    <option value="45">45</option>
-                                   <option value="30">30</option>
+                                   <option value="30" selected="selected">30</option>
                                    <option value="15">15</option>
                                </select>
                            </tags:nameValue>
@@ -41,7 +41,7 @@
                                <select id="deltaVoltage" name="deltaVoltage">
                                    <option value="4">+4</option>
                                    <option value="3">+3</option>
-                                   <option value="2">+2</option>
+                                   <option value="2" selected="selected">+2</option>
                                    <option value="1">+1</option>
                                    <option value="-1">-1</option>
                                    <option value="-2">-2</option>
@@ -51,7 +51,7 @@
                            </tags:nameValue>
                            <tags:nameValue name="Number of Intervals">
                                <select id="numIntervals" name="numIntervals">
-                                   <option value="6">6</option>
+                                   <option value="6" selected="selected">6</option>
                                    <option value="5">5</option>
                                    <option value="4">4</option>
                                </select>
@@ -59,12 +59,9 @@
                        </tags:nameValueContainer>
                     </td>
                 </tr>
-                <tr>
-                    <td align="right">
-                        <input id="nextButton" type="submit" value="Next">
-                    </td>
-                </tr>
             </table>
-        </form>
-    </tags:sectionContainer>
+        </tags:sectionContainer>
+        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test">
+        <input id="nextButton" type="submit" value="Next">
+    </form>
 </cti:standardPage>

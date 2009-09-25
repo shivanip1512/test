@@ -7,58 +7,6 @@
 
 <cti:uniqueIdentifier var="ccid" prefix="_ccid"/>
 
-<script type="text/javascript">
-
-    function cancelCommands(resultId, url, ccid, cancelingText, finishedText) {
-        
-        // save button text for restore on error
-        var orgCancelButtonText = $F('cancelButton' + ccid);
-        
-        // swap to wait img, disable button
-        $('waitImg' + ccid).show();
-        $('cancelButton' + ccid).disable();
-        $('cancelButton' + ccid).value = cancelingText;
-        
-        // setup callbacks
-        var onComplete = function(transport, json) {
-            
-            var errorMsg = json['errorMsg'];
-            if (errorMsg != null) {
-                handleError(ccid, errorMsg, orgCancelButtonText);
-                return;
-            } else {
-                showCancelResult(ccid, finishedText);
-                $('cancelButton' + ccid).hide();
-            }
-        };
-        
-        var onFailure = function(transport, json) {
-            handleError(ccid, transport.responseText, orgCancelButtonText);
-        };
-
-        // run cancel    
-        var args = {};
-        args.resultId = resultId;
-        new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': onComplete, 'onFailure': onFailure, 'onException': onFailure, 'parameters': args});
-    }
-    
-    function handleError(ccid, errorMsg, orgCancelButtonText) {
-    
-        showCancelResult(ccid, errorMsg);
-        $('cancelButton' + ccid).value = orgCancelButtonText;
-        $('cancelButton' + ccid).enable();
-    }
-    
-    function showCancelResult(ccid, msg) {
-    
-        $('waitImg' + ccid).hide();
-        $('cancelArea' + ccid).innerHTML = msg;
-        $('cancelArea' + ccid).show();
-    }
-    
-
-</script>
-
 <c:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
 <cti:msg var="cancelingText" key="yukon.common.device.commander.results.cancelingCommands" />
 <cti:msg var="finishedText" key="yukon.common.device.commander.results.finishedCancelingCommands" />

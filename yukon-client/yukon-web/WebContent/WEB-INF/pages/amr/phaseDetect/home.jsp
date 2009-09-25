@@ -39,14 +39,14 @@
     </h2>
     <br>
 	<br>
-    <tags:sectionContainer title="${sectionTitle}">
-        <form action="/spring/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
+    <form action="/spring/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
+        <tags:sectionContainer title="${sectionTitle}">
             <input type="hidden" name="selectedSub" id="selectedSub" value="-1">
 		    <table style="padding-right: 20px;padding-bottom: 10px;">
 		        <tr valign="top">
 		            <td style="padding-top: 3px;">
 		               <tags:nameValueContainer>
-		                   <tags:nameValue name="Substations">
+		                   <tags:nameValue name="Substation" nameColumnWidth="150px">
 		                       <select id="substations" onchange="selectThisSub();">
 		                           <option value="-1">(none)</option>
 			                       <c:forEach var="substation" items="${substations}">
@@ -59,7 +59,7 @@
 		        </tr>
 		        <tr>
                     <td style="padding-top: 3px;">
-                        <div id="routesDiv" style="max-height: 300px;overflow: auto;padding:5px 18px 5px 5px;"></div>
+                        <div id="routesDiv"></div>
                     </td>
 		        </tr>
 		        <tr>
@@ -77,12 +77,8 @@
                             Read Meters Between Phase Detection Tests
 	                </td>
 		        </tr>
-		        <tr>
-	                <td style="padding-top: 3px;">
-	                    <input id="nextButton" type="submit" value="Next" disabled="disabled">
-	                </td>
-		        </tr>
 		    </table>
-	    </form>
-    </tags:sectionContainer>
+        </tags:sectionContainer>
+        <input id="nextButton" name="next" type="submit" value="Next" disabled="disabled">
+	</form>
 </cti:standardPage>

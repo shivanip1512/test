@@ -23,6 +23,7 @@ public enum BuiltInAttribute implements Attribute {
     MINIMUM_VOLTAGE("Minimum Voltage"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
+    PHASE("Phase"),
     ;
     
     private BuiltInAttribute(String description) {

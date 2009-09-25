@@ -362,6 +362,34 @@
         </property>
     </bean>
     
+    <!-- Phase Detection -->
+   <bean id="phaseDetectModel" class="com.cannontech.analysis.tablemodel.PhaseDetectModel" scope="prototype">
+        <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
+        <property name="paoLoadingService" ref="paoLoadingService"/>
+    </bean>
+    
+    <bean id="phaseDetectDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="phaseDetectModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="cacheKey"/>
+                    <property name="displayName" value="Cache Key"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.PhaseDetectReportLayoutData"/>
+        </property>
+    </bean>
+    
     <!-- Failed Bulk Imports -->
    <bean id="bulkImportResultsModel" class="com.cannontech.analysis.tablemodel.BulkImportResultsModel"
          scope="prototype">

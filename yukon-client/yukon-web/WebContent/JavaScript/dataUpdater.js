@@ -153,11 +153,22 @@ function initiateCannonDataUpdate(url, delayMs) {
 }
 
 function cannonDataUpdateRegistration(callback, identifierMap) {
-  // callback will include the formatted string as its one argument
-  var theData = $H();
-  theData['identifierMap'] = $H(identifierMap);
-  theData['callback'] = callback;
-  
-  cannonDataUpdateRegistrations.push(theData);    
+	// callback will include the formatted string as its one argument
+	var theData = $H();
+	theData['identifierMap'] = $H(identifierMap);
+	theData['callback'] = callback;
+	
+	cannonDataUpdateRegistrations.push(theData);    
+}
+
+function cannonDataUpdateEventRegistration(callback, identifier) {
+	var didIt = false;
+	var callbackWrapper = function(data) {
+		if (!didIt && data['boolean'] == 'true') {
+			didIt = true;
+		    callback();
+		}
+	};
+    cannonDataUpdateRegistration(callbackWrapper, $H({'boolean': identifier}));  
 }
 

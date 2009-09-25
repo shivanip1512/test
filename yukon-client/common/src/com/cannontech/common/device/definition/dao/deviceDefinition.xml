@@ -1630,6 +1630,9 @@
             <attribute name="MAXIMUM_VOLTAGE">
                 <basicLookup point="Max Volts" />
             </attribute>
+            <attribute name="PHASE">
+                <basicLookup point="Phase" />
+            </attribute>
         </attributes>
 	</device>
         
