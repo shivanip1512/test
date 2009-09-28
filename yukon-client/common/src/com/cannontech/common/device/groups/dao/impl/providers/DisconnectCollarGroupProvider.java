@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
+
 import java.util.Collections;
 import java.util.List;
 
@@ -7,8 +8,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class DisconnectCollarGroupProvider extends DeviceGroupProviderSqlBase {
     
