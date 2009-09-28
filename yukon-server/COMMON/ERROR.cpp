@@ -230,6 +230,8 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorVerifySSPEC,     "Verify SSPEC/Firmware Revision",                   ERRTYPESYSTEM, " N/A"},
 
     { ErrorTransmitterBusy, "Transmitter is busy",                              ERRTYPEPROTOCOL, " N/A"},
+    { UnsupportedDevice,     "Device Not Supported",                            ERRTYPESYSTEM, "N/A"},
+    { NoRouteFound,         "No Route Found",                                   ERRTYPESYSTEM, "N/A"},
 
     { UnknownError,         "Unknown Error",                                    ERRTYPESYSTEM, " N/A"},
 

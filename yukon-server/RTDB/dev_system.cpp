@@ -77,90 +77,96 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         {
         case PutConfigRequest:
             {
-                if (parse.isKeyValid("phasedetect") && parse.isKeyValid("pdbroadcast"))
+                if (parse.isKeyValid("phasedetect") && parse.isKeyValid("phasedetectbroadcast"))
                 {
                     int nRet = NORMAL;
-                    string broadcastType = parse.getsValue("pdbroadcast");
+                    string broadcastType = parse.getsValue("phasedetectbroadcast");
+
+                    CtiReturnMsg * errRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
+                                             "(none)",
+                                             0,
+                                             OutMessage->Request.RouteID,
+                                             OutMessage->Request.MacroOffset,
+                                             OutMessage->Request.Attempt,
+                                             OutMessage->Request.GrpMsgID,
+                                             OutMessage->Request.UserID,
+                                             OutMessage->Request.SOE,
+                                             CtiMultiMsg_vec());
 
                     // Using a "magic string for now" This Should be an enum/const string reference when more types are added.
-                    if (stringCompareIgnoreCase(broadcastType,"mct_410_base") == 0)
+                    // MCT_410_BASE came from the deviceDefinition.xml file.
+                    if (stringCompareIgnoreCase(broadcastType,"MCT_410_BASE") == 0)
                     {
-                        CtiDeviceMCT410::buildPhaseDetectOutMessage(parse,OutMessage);
-                        OutMessage->TimeOut   = 2;
-                        OutMessage->Retry     = 2;
-                        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+                        bool found = CtiDeviceMCT410::buildPhaseDetectOutMessage(parse,OutMessage);
 
-                        OutMessage->Request.RouteID = pReq->RouteId();
-                        EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
-
-                        if ((Route = CtiDeviceBase::getRoute( OutMessage->Request.RouteID )))
+                        if (found)
                         {
-                            OutMessage->TargetID  = 0;
+                            OutMessage->TimeOut   = 2;
+                            OutMessage->Retry     = 2;
+                            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-                            OutMessage->EventCode = BWORD | WAIT | RESULT;
+                            OutMessage->Request.RouteID = pReq->RouteId();
+                            EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
 
-                            // BroadcastAddress
-                            OutMessage->Buffer.BSt.Address = CtiDeviceMCT4xx::UniversalAddress;
-
-                            // Store the request info for later use
-                            OutMessage->Request.ProtocolInfo.Emetcon.Function = OutMessage->Buffer.BSt.Function;
-                            OutMessage->Request.ProtocolInfo.Emetcon.IO       = OutMessage->Buffer.BSt.IO;
-
-                            CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
-                            if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
+                            if ((Route = CtiDeviceBase::getRoute( OutMessage->Request.RouteID )))
                             {
-                                string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + FormatError(nRet) + ") performing command on route " + Route->getName().data();
-                                pRet->setResultString(resultString);
-                                pRet->setStatus(nRet);
+                                OutMessage->TargetID  = 0;
+
+                                OutMessage->EventCode = BWORD | WAIT | RESULT;
+
+                                // BroadcastAddress
+                                OutMessage->Buffer.BSt.Address = CtiDeviceMCT4xx::UniversalAddress;
+
+                                // Store the request info for later use
+                                OutMessage->Request.ProtocolInfo.Emetcon.Function = OutMessage->Buffer.BSt.Function;
+                                OutMessage->Request.ProtocolInfo.Emetcon.IO       = OutMessage->Buffer.BSt.IO;
+
+                                CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+                                if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
+                                {
+                                    string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + FormatError(nRet) + ") performing command on route " + Route->getName().data();
+                                    pRet->setResultString(resultString);
+                                    pRet->setStatus(nRet);
+                                    retList.push_back(pRet);
+                                }
+                                else
+                                {
+                                    delete pRet;
+                                    pRet = 0;
+                                }
+                                // This will need to be refactored out when more device types are added.
+                                // We expect a response back so tell the clients to this is not the last message.
+                                if (nRet == NORMAL)
+                                {
+                                    //If we are here there is no error message to send. Delete it.
+                                    delete errRet;
+                                    errRet = 0;
+
+                                    for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+                                    {
+                                        ((CtiReturnMsg*)*itr)->setExpectMore(true);
+                                    }
+                                }
                             }
                             else
                             {
-                                delete pRet;
-                                pRet = 0;
-                            }
-                            // This will need to be refactored out when more device types are added.
-                            // We expect a response back so tell the clients to this is not the last message.
-                            if (nRet == NORMAL)
-                            {
-                                for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+                                string resultString = getName() + ": ERROR Route not found: " + CtiNumStr(OutMessage->Request.RouteID);
+                                errRet->setResultString(resultString);
+                                errRet->setStatus(NoRouteFound);
+                                retList.push_back(errRet);
                                 {
-                                    ((CtiReturnMsg*)*itr)->setExpectMore(true);
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Route not found. id: " << OutMessage->Request.RouteID << endl;
                                 }
-                            }
-                        }
-                        else
-                        {
-                            string resultString = getName() + ": ERROR Route not found: " + CtiNumStr(OutMessage->Request.RouteID);
-                            CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
-                                                                             resultString,
-                                                                             NoRouteFound,
-                                                                             OutMessage->Request.RouteID,
-                                                                             OutMessage->Request.MacroOffset,
-                                                                             OutMessage->Request.Attempt,
-                                                                             OutMessage->Request.GrpMsgID,
-                                                                             OutMessage->Request.UserID,
-                                                                             OutMessage->Request.SOE,
-                                                                             CtiMultiMsg_vec());
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Route not found. id: " << OutMessage->Request.RouteID << endl;
                             }
                         }
                     }
                     else
                     {
                         string resultString = getName() + ": ERROR Unsupported device type: " + broadcastType;
-                        CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
-                                                 resultString,
-                                                 UnsupportedDevice,
-                                                 OutMessage->Request.RouteID,
-                                                 OutMessage->Request.MacroOffset,
-                                                 OutMessage->Request.Attempt,
-                                                 OutMessage->Request.GrpMsgID,
-                                                 OutMessage->Request.UserID,
-                                                 OutMessage->Request.SOE,
-                                                 CtiMultiMsg_vec());
-
+                        errRet->setResultString(resultString);
+                        errRet->setStatus(UnsupportedDevice);
+                        retList.push_back(errRet);
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Unknown device type for broadcast." << endl;

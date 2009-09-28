@@ -416,7 +416,7 @@ public:
 
     virtual ULONG calcNextLPScanTime( void );
 
-    static void buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS *&OutMessage);
+    static bool buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS *&OutMessage);
 
 };
 

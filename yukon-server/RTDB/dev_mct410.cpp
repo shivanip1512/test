@@ -1296,10 +1296,13 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     return nRet;
 }
 
-void CtiDeviceMCT410::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS *& OutMessage)
+bool CtiDeviceMCT410::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS *& OutMessage)
 {
+    bool found = false;
+
     if(parse.isKeyValid("phasedetectclear"))
     {
+        found = true;
         // This should be using the getOperation but the virtual function in a static function prevents it.
         OutMessage->Buffer.BSt.Function = FuncWrite_PhaseDetectClear;
         OutMessage->Buffer.BSt.Length = FuncWrite_PhaseDetectClearLen;
@@ -1311,8 +1314,10 @@ void CtiDeviceMCT410::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTME
     }
     else if(parse.isKeyValid("phase") )
     {
+        found = true;
         string phase = parse.getsValue("phase");
         int phaseVal = 0;
+
         switch( phase[0] )
         {
             case 'a':  phaseVal = 1;  break;
@@ -1334,6 +1339,8 @@ void CtiDeviceMCT410::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTME
         OutMessage->Buffer.BSt.Message[4] = parse.getiValue("phasenum")  & 0xff;
         OutMessage->Sequence = Emetcon::PutConfig_PhaseDetect;
     }
+
+    return found;
 }
 
 INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,

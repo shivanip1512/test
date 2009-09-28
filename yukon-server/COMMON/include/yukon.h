@@ -225,7 +225,7 @@ enum YukonError_t
     NoDecodeResponseMethod,
     NoDataCopyMethod,
     GeneralScanAborted,
-    UnsupportedDevice,
+
     // Cmd Line Errors
     NotNumeric,
 
@@ -235,7 +235,6 @@ enum YukonError_t
     ConfigCurrent,
 
     // Control Command Info
-    NoRouteFound,
     NoRouteGroupDevice,         // No route defined in a group device
     NoRoutesInMacro,            // Route Macro contained no sub-routes.
     RouteOffsetOutOfRange,
@@ -310,6 +309,8 @@ enum YukonError_t
     ErrorVerifySSPEC,           // Need to verify SSPEC/firmware revision
 
     ErrorTransmitterBusy,
+    UnsupportedDevice,
+    NoRouteFound,
 
     FinalError
 };
