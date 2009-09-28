@@ -41,7 +41,7 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 		cal.setTime(date);
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
-		int month = cal.get(Calendar.MONTH);
+		int month = cal.get(Calendar.MONTH) + 1;
 		int year = cal.get(Calendar.YEAR);
 		
 		// one time
@@ -83,7 +83,7 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 		    Calendar cal = dateFormattingService.getCalendar(userContext);
 	        cal.clear();
 	        cal.set(Calendar.DAY_OF_MONTH, Integer.valueOf(parts[3]));
-	        cal.set(Calendar.MONTH, Integer.valueOf(parts[4]));
+	        cal.set(Calendar.MONTH, Integer.valueOf(parts[4]) - 1);
 	        cal.set(Calendar.YEAR, Integer.valueOf(parts[6]));
 	        
 			state.setDate(cal.getTime());

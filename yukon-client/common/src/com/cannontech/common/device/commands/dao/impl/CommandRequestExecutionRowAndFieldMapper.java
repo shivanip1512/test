@@ -21,6 +21,7 @@ public class CommandRequestExecutionRowAndFieldMapper implements RowAndFieldMapp
     }
 	
 	public void extractValues(MapSqlParameterSource p, CommandRequestExecution commandRequestExecution) {
+	    p.addValue("CommandRequestExecContextId", commandRequestExecution.getContextId());
 	    p.addValue("StartTime", commandRequestExecution.getStartTime());
         p.addValue("StopTime", commandRequestExecution.getStopTime());
         p.addValue("RequestCount", commandRequestExecution.getRequestCount());
@@ -31,7 +32,8 @@ public class CommandRequestExecutionRowAndFieldMapper implements RowAndFieldMapp
 	
 	public CommandRequestExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
 		CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
-    	commandRequestExecution.setId(rs.getInt("CommandRequestExecId"));
+		commandRequestExecution.setId(rs.getInt("CommandRequestExecId"));
+		commandRequestExecution.setContextId(rs.getInt("CommandRequestExecContextId"));
     	commandRequestExecution.setStartTime(rs.getTimestamp("StartTime"));
     	commandRequestExecution.setStopTime(rs.getTimestamp("StopTime"));
     	commandRequestExecution.setRequestCount(rs.getInt("RequestCount"));

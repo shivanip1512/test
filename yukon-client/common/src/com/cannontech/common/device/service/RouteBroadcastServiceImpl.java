@@ -62,7 +62,6 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
         CommandRequestRouteAndDevice request = new CommandRequestRouteAndDevice();
         request.setDevice(new SimpleDevice(0, PaoType.SYSTEM));
         request.setRouteId(routeId);
-        request.setBackgroundPriority(false);
         
         String commandStr = command;
         request.setCommand(commandStr);

@@ -2,13 +2,14 @@ package com.cannontech.amr.scheduledGroupRequestExecution.tasks;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
@@ -18,13 +19,13 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionContext;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
-import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.support.YukonTaskBase;
@@ -39,6 +40,9 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private Set<? extends Attribute> attributes = null;
     private String command = null;
     private CommandRequestExecutionType commandRequestExecutionType;
+    private int retryCount = 0;
+    private Integer stopRetryAfterHoursCount = null;
+    private Integer turnOffQueuingAfterRetryCount = null;
 
     // Injected services and daos
     private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
@@ -60,7 +64,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         
         try {
         	
-            CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = null;
+            CommandRequestExecutionContext context = null;
+            
             if (getCommand() != null) {
             
             	CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
@@ -77,20 +82,28 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                     commandRequests.add(cmdReq);
                 }
                 
-            	commandRequestExecutionIdentifier = commandRequestDeviceExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
+                CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, 
+                                                                                                                                        getRetryCount(),
+                                                                                                                                        getStopRetryAfterDate(),
+                                                                                                                                        getTurnOffQueuingAfterRetryCount());
+                context = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
             
             } else if (getAttributes() != null) {
             	
-            	SimpleCallback<GroupMeterReadResult> dummyCallback = new SimpleCallback<GroupMeterReadResult>() {
-            		@Override
-            		public void handle(GroupMeterReadResult item) throws Exception {
-            		}
+                CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
                 };
                 
     	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
-            	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, getAttributes(), getCommandRequestExecutionType(), dummyCallback, user);
-            	GroupMeterReadResult groupMeterReadResult = groupMeterReadService.getResult(resultKey);
-            	commandRequestExecutionIdentifier = groupMeterReadResult.getCommandRequestExecutionIdentifier();
+    	        
+    	        context = groupMeterReadService.readDeviceCollectionWithRetry(deviceCollection, 
+            	                                                             attributes, 
+            	                                                             getCommandRequestExecutionType(), 
+            	                                                             dummyCallback, 
+            	                                                             user, 
+            	                                                             getRetryCount(), 
+            	                                                             getStopRetryAfterDate(),
+            	                                                             getTurnOffQueuingAfterRetryCount());
+    	        
             
             } else {
             	throw new UnsupportedOperationException("A command string or attribute is required to run task.");
@@ -98,15 +111,28 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             
 	        // create ScheduledGroupRequestExecutionResult record
 	        ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
-	        pair.setCommandRequestExecutionId(commandRequestExecutionIdentifier.getCommandRequestExecutionId());
+	        pair.setCommandRequestExecutionContextId(context.getId());
 	        pair.setJobId(jobId);
 	        
 	        scheduledGroupRequestExecutionResultsDao.insert(pair);
 	        
         } catch (NotFoundException e) {
-        	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getDeviceGroup().getFullName() + ", user = " + user.getUsername() + ".", e);
+        	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getDeviceGroup().getFullName() + ", user = " + user.getUsername() + 
+        	          ", retryCount=" + getRetryCount() + ", stopRetryAfterDate=" + getStopRetryAfterDate() + ", turnOffQueuingAfterRetryCount=" + getTurnOffQueuingAfterRetryCount() + ".", e);
         }
         
+    }
+    
+    private Date getStopRetryAfterDate() {
+        
+        Date stopRetryAfterDate = null;
+        Integer hours = getTurnOffQueuingAfterRetryCount();
+        if (hours != null) {
+            stopRetryAfterDate = new Date();
+            stopRetryAfterDate = DateUtils.addHours(stopRetryAfterDate, hours);
+        }
+        
+        return stopRetryAfterDate;
     }
 
     // Setters for injected parameters
@@ -149,6 +175,30 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 		this.commandRequestExecutionType = commandRequestExecutionType;
 	}
 
+	public int getRetryCount() {
+        return retryCount;
+    }
+	
+	public void setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
+    }
+	
+	public Integer getStopRetryAfterHoursCount() {
+        return stopRetryAfterHoursCount;
+    }
+    
+    public void setStopRetryAfterHoursCount(Integer stopRetryAfterHoursCount) {
+        this.stopRetryAfterHoursCount = stopRetryAfterHoursCount;
+    }
+    
+	public Integer getTurnOffQueuingAfterRetryCount() {
+        return turnOffQueuingAfterRetryCount;
+    }
+	
+	public void setTurnOffQueuingAfterRetryCount(Integer turnOffQueuingAfterRetryCount) {
+        this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
+    }
+	
     // Setters for injected services and daos
 	@Autowired
     public void setCommandRequestDeviceExecutor(CommandRequestDeviceExecutor commandRequestDeviceExecutor) {

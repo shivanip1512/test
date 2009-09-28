@@ -26,22 +26,20 @@ public class CommandRequestRouteExecutorImpl extends
 
     private Logger log = YukonLogManager.getLogger(CommandRequestRouteExecutorImpl.class);
 
+    @Override
     protected Request buildRequest(CommandRequestRoute commandRequest) {
         Request request = new Request();
         request.setCommandString(commandRequest.getCommand());
         request.setRouteID(commandRequest.getRouteId());
         long requestId = RandomUtils.nextInt();
         request.setUserMessageID(requestId);
-        int priority = commandRequest.isBackgroundPriority() ? getDefaultBackgroundPriority()
-                : getDefaultForegroundPriority();
-        request.setPriority(priority);
+
         log.debug("Built request '" + commandRequest.getCommand() + "' for route " + commandRequest.getRouteId() + " with user id " + requestId);
         return request;
     }
 
 	@Override
-	public CommandResultHolder execute(int routeId, String command,
-			CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException {
+	public CommandResultHolder execute(int routeId, String command, CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
         commandRequest.setCommand(command);

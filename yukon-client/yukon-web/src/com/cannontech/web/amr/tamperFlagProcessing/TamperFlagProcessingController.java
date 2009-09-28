@@ -74,8 +74,8 @@ public class TamperFlagProcessingController {
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(groupMeterReadService.getPendingByType(CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
-		allReadsResults.addAll(groupMeterReadService.getCompletedByType(CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+		allReadsResults.addAll(groupMeterReadService.getPendingByType(CommandRequestExecutionType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+		allReadsResults.addAll(groupMeterReadService.getCompletedByType(CommandRequestExecutionType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
 		
 		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
 		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(tamperFlagMonitorId);
@@ -91,8 +91,8 @@ public class TamperFlagProcessingController {
 		
 		// reset results
 		List<GroupCommandResult> allResetResults = new ArrayList<GroupCommandResult>();
-		allResetResults.addAll(groupCommandExecutor.getPendingByType(CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET));
-		allResetResults.addAll(groupCommandExecutor.getCompletedByType(CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET));
+		allResetResults.addAll(groupCommandExecutor.getPendingByType(CommandRequestExecutionType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET));
+		allResetResults.addAll(groupCommandExecutor.getCompletedByType(CommandRequestExecutionType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET));
 		
 		List<GroupCommandResult> resetResults = new ArrayList<GroupCommandResult>();
 		List<String> resetResultKeysForMonitor = monitorToRecentResetKeysCache.get(tamperFlagMonitorId);
@@ -151,7 +151,7 @@ public class TamperFlagProcessingController {
             }
         };
 	
-        String resultKey = groupMeterReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
+        String resultKey = groupMeterReadService.readDeviceCollection(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), CommandRequestExecutionType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext.getYukonUser());
         monitorToRecentReadKeysCache.put(tamperFlagMonitorId, resultKey);
 		
 		
@@ -180,7 +180,7 @@ public class TamperFlagProcessingController {
 	    		public void handle(GroupCommandResult item) throws Exception {}
 	        };
 	        
-			String resultKey = groupCommandExecutor.execute(tamperFlagGroupDeviceCollection, RESET_FLAGS_COMMAND, CommandRequestExecutionType.TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET, dummyCallback, userContext.getYukonUser());
+			String resultKey = groupCommandExecutor.execute(tamperFlagGroupDeviceCollection, RESET_FLAGS_COMMAND, CommandRequestExecutionType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET, dummyCallback, userContext.getYukonUser());
 			monitorToRecentResetKeysCache.put(tamperFlagMonitorId, resultKey);
 			
 		} catch (Exception e) {

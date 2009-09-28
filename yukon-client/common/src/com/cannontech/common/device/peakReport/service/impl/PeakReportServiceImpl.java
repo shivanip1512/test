@@ -81,7 +81,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         // run command
         CommandResultHolder commandResultHolder;
         try{
-            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), CommandRequestExecutionType.DEVICE_COMMAND, userContext.getYukonUser());
+            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), CommandRequestExecutionType.PEAK_REPORT_COMMAND, userContext.getYukonUser());
         }
         catch(Exception e){
             throw new PeakSummaryReportRequestException();

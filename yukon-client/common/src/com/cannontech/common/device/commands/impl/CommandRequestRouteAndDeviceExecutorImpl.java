@@ -21,14 +21,12 @@ public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExec
         int routeId = commandRequest.getRouteId();
         int deviceId = commandRequest.getDevice().getPaoIdentifier().getPaoId();
         long requestId = RandomUtils.nextInt();
-        int priority = commandRequest.isBackgroundPriority() ? getDefaultBackgroundPriority() : getDefaultForegroundPriority();
         
         Request request = new Request();
         request.setCommandString(command);
         request.setRouteID(routeId);
         request.setDeviceID(deviceId);
         request.setUserMessageID(requestId);
-        request.setPriority(priority);
         
         log.debug("Built request '" + command + "' for route " + routeId + ", deviceID " + deviceId + " with msg id " + requestId);
         

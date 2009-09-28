@@ -124,7 +124,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, CommandRequestExecutionType.DEVICE_COMMAND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, CommandRequestExecutionType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         
@@ -137,7 +137,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, CommandRequestExecutionType.DEVICE_COMMAND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, CommandRequestExecutionType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         

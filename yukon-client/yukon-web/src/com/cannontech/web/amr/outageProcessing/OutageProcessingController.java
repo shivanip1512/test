@@ -66,8 +66,8 @@ public class OutageProcessingController extends MultiActionController {
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(groupMeterReadService.getPendingByType(CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		allReadsResults.addAll(groupMeterReadService.getCompletedByType(CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(groupMeterReadService.getPendingByType(CommandRequestExecutionType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(groupMeterReadService.getCompletedByType(CommandRequestExecutionType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
 		
 		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
 		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(outageMonitorId);
@@ -134,7 +134,7 @@ public class OutageProcessingController extends MultiActionController {
             }
         };
 	
-        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), CommandRequestExecutionType.OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
+        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), CommandRequestExecutionType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
         monitorToRecentReadKeysCache.put(outageMonitorId, resultKey);
 		
 		mav.addObject("outageMonitorId", outageMonitorId);

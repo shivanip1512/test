@@ -2,14 +2,14 @@ package com.cannontech.amr.scheduledGroupRequestExecution.dao.model;
 
 public class ScheduledGroupRequestExecutionPair {
 
-	private int commandRequestExecutionId;
+	private int commandRequestExecutionContextId;
 	private int jobId;
 	
-	public int getCommandRequestExecutionId() {
-		return commandRequestExecutionId;
+	public int getCommandRequestExecutionContextId() {
+		return commandRequestExecutionContextId;
 	}
-	public void setCommandRequestExecutionId(int commandRequestExecutionId) {
-		this.commandRequestExecutionId = commandRequestExecutionId;
+	public void setCommandRequestExecutionContextId(int commandRequestExecutionContextId) {
+		this.commandRequestExecutionContextId = commandRequestExecutionContextId;
 	}
 	
 	public int getJobId() {

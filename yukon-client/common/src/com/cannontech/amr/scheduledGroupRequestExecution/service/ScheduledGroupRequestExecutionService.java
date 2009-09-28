@@ -10,10 +10,16 @@ import com.cannontech.user.YukonUserContext;
 public interface ScheduledGroupRequestExecutionService {
 
 	public YukonJob schedule(String name, String groupName, String command, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext);
+	public YukonJob scheduleWithRetry(String name, String groupName, String command, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext, int retryCount, Integer turnOffQueuingAfterRetryCount, Integer stopRetryAfterHoursCount);
+	
 	public YukonJob schedule(String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext);
+	public YukonJob scheduleWithRetry(String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext, int retryCount, Integer turnOffQueuingAfterRetryCount, Integer stopRetryAfterHoursCount);
 		
 	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext);
+	public YukonJob scheduleReplacementWithRetry(int existingJobId, String name, String groupName, String command, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext, int retryCount, Integer turnOffQueuingAfterRetryCount, Integer stopRetryAfterHoursCount);
+	
 	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext);
+	public YukonJob scheduleReplacementWithRetry(int existingJobId, String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext, int retryCount, Integer turnOffQueuingAfterRetryCount, Integer stopRetryAfterHoursCount);
 	
 	public void disableJob(int existingJobId);
 	

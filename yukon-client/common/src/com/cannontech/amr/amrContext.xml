@@ -292,6 +292,27 @@
                                 <bean class="com.cannontech.web.input.type.CommandRequestExecutionTypeType" />
                             </property>
                         </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="retryCount" />
+                            <property name="displayName" value="Retry Count" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="turnOffQueuingAfterRetryCount" />
+                            <property name="displayName" value="Turn Off Queuing After Retry Count" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="stopRetryAfterHoursCount" />
+                            <property name="displayName" value="Stop Retry After Hours Count" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.IntegerType" />
+                            </property>
+                        </bean>
                     </list>
                 </property>
             </bean>

@@ -16,11 +16,14 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestExecutionContext;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -44,11 +47,32 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	private Logger log = YukonLogManager.getLogger(GroupMeterReadServiceImpl.class);
 	private RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<GroupMeterReadResult>();
 	
+	public CommandRequestExecutionContext readDeviceCollectionWithRetry(DeviceCollection deviceCollection, 
+                                                                   Set<? extends Attribute> attributes, 
+                                                                   CommandRequestExecutionType type, 
+                                                                   CommandCompletionCallback<CommandRequestDevice> callback, 
+                                                                   LiteYukonUser user,
+                                                                   int retryCount,
+                                                                   Date stopRetryAfterDate,
+                                                                   Integer turnOffQueuingAfterRetryCount) {
+	    
+	    
+	    Multimap<YukonDevice, CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(deviceCollection.getDeviceList(), attributes, type);
+	    List<CommandRequestDevice> allRequests = new ArrayList<CommandRequestDevice>(commandRequests.values());
+	    
+	    CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, retryCount, stopRetryAfterDate, turnOffQueuingAfterRetryCount);
+        CommandRequestExecutionContext context = retryExecutor.execute(allRequests, callback, type, user);
+        
+        return context;
+	}
+	
+	
+	
 	public String readDeviceCollection(DeviceCollection deviceCollection, 
-																	final Set<? extends Attribute> attributes, 
-																	CommandRequestExecutionType type, 
-																	final SimpleCallback<GroupMeterReadResult> callback, 
-																	LiteYukonUser user) {
+										Set<? extends Attribute> attributes, 
+										CommandRequestExecutionType type, 
+										final SimpleCallback<GroupMeterReadResult> callback, 
+										LiteYukonUser user) {
     	
         Multimap<YukonDevice, CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(deviceCollection.getDeviceList(), attributes, type);
         

@@ -16,10 +16,16 @@ public interface CommandCompletionCallback<T> {
     
     public void receivedIntermediateResultString(T command, String value);
     
+    /**
+     * Either this or receivedLastError will get called for each command exactly once, 
+     * unless a processingExceptionOccured happens, in which case it may not get called at all.
+     * @param command
+     * @param value
+     */
     public void receivedLastResultString(T command, String value);
     
     /**
-     * Called when after the process has completed.
+     * Called when after the process has completed. Guaranteed to be called exactly once.
      */
     public void complete();
     
@@ -29,7 +35,7 @@ public interface CommandCompletionCallback<T> {
     public void cancel();
     
     /**
-     * Called when an exception occurs during the processing.
+     * Called when an exception occurs during the processing. May get called multiple times before complete().
      * @param reason
      */
     public void processingExceptionOccured(String reason);

@@ -86,14 +86,14 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             commandString += " force";
         }
         
-        return sendConfigCommand(deviceCollection, callback, commandString, CommandRequestExecutionType.DEVICE_CONFIG_SEND, user);
+        return sendConfigCommand(deviceCollection, callback, commandString, CommandRequestExecutionType.GROUP_DEVICE_CONFIG_SEND, user);
     }
     
     @Override
     public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
         String commandString = "getconfig install all";
         
-        return sendConfigCommand(deviceCollection, callback, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, user);
+        return sendConfigCommand(deviceCollection, callback, commandString, CommandRequestExecutionType.GROUP_DEVICE_CONFIG_READ, user);
     }
     
     @Override
@@ -162,7 +162,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = new WaitableCommandCompletionCallback<CommandRequestDevice>(commandCompletionCallback);
         
-        commandRequestExecutor.execute(requests, waitableCallback, CommandRequestExecutionType.DEVICE_CONFIG_VERIFY, user);
+        commandRequestExecutor.execute(requests, waitableCallback, CommandRequestExecutionType.GROUP_DEVICE_CONFIG_VERIFY, user);
         try {
             waitableCallback.waitForCompletion(60, 120);
         } catch (InterruptedException e) {
@@ -185,21 +185,20 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "getconfig install all";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_READ, user);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.GROUP_DEVICE_CONFIG_READ, user);
         return resultHolder;
     }
     
     @Override
     public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "putconfig emetcon install all force";
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.DEVICE_CONFIG_SEND, user);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(device, commandString, CommandRequestExecutionType.GROUP_DEVICE_CONFIG_SEND, user);
         return resultHolder;
     }
     
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-        request.setBackgroundPriority(true);
         
         final String commandStr = command + " update";
         request.setCommand(commandStr);

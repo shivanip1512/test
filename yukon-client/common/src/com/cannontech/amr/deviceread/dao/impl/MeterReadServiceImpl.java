@@ -35,7 +35,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
         
-        CommandRequestExecutionType type = CommandRequestExecutionType.GROUP_ATTRIBUTE_READ;
+        CommandRequestExecutionType type = CommandRequestExecutionType.DEVICE_ATTRIBUTE_READ;
         
         if (!meterReadCommandGeneratorService.isReadable(device, attributes)) {
             throw new RuntimeException("It isn't possible to read " + attributes + " for  " + device);

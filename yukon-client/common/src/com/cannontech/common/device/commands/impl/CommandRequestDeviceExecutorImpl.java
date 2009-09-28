@@ -24,28 +24,26 @@ public class CommandRequestDeviceExecutorImpl extends
 
     private Logger log = YukonLogManager.getLogger(CommandRequestDeviceExecutorImpl.class);
 
+    @Override
     protected Request buildRequest(CommandRequestDevice commandRequest) {
         Request request = new Request();
         request.setCommandString(commandRequest.getCommand());
         request.setDeviceID(commandRequest.getDevice().getPaoIdentifier().getPaoId());
         long requestId = RandomUtils.nextInt();
         request.setUserMessageID(requestId);
-        int priority = commandRequest.isBackgroundPriority() ? getDefaultBackgroundPriority()
-                : getDefaultForegroundPriority();
-        request.setPriority(priority);
+        
         log.debug("Built request '" + commandRequest.getCommand() + "' for device " + commandRequest.getDevice() + " with user id " + requestId);
         return request;
     }
 
-    public CommandResultHolder execute(YukonDevice device, String command,
-    		CommandRequestExecutionType type, LiteYukonUser user) throws Exception {
+    @Override
+    public CommandResultHolder execute(YukonDevice device, String command, CommandRequestExecutionType type, LiteYukonUser user) throws Exception {
 
         CommandRequestDevice cmdRequest = new CommandRequestDevice();
         cmdRequest.setDevice(new SimpleDevice(device.getPaoIdentifier()));
 
         String commandStr = command;
         commandStr += " update";
-        commandStr += " noqueue";
         cmdRequest.setCommand(commandStr);
         return execute(cmdRequest, type, user);
     }

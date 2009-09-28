@@ -18,6 +18,7 @@
 <cti:msg var="selectDeviceGroupCancelText" key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupCancel"/>
 <cti:msg var="scheduleNameLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleName"/>
 <cti:msg var="timeFrequencyLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency"/>
+<cti:msg var="retryLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.retry"/>
 <cti:msg var="scheduleButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton"/>
 <cti:msg var="updateButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton"/>
 
@@ -70,36 +71,46 @@
 				<form id="scheduledGroupRequestExecutionForm_attr" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_ATTRIBUTE_READ">
+        		 	<cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
+        		 	<input type="hidden" name="formUniqueId" value="${formUniqueId}">
+        		 	
         		 	<cti:uniqueIdentifier var="cronTagId_attr" prefix="cronTagIdAttr_" />
         		 	<input type="hidden" name="cronTagId" value="${cronTagId_attr}">
         		 
         		 	<tags:nameValueContainer>
         		 	
-        		 		<cti:msg var="selectAttributeLabel" key="yukon.common.device.commander.attributeSelector.selectAttribute"/>
-        		 		<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
-        		 			<amr:attributeSelector fieldName="attribute" attributes="${allAttributes}" selectedAttributes="${selectedAttributes}" multipleSize="5"/>
-        		 			<br><br>
-        		 		</tags:nameValue>
-        		 		
         		 		<tags:nameValue name="${scheduleNameLabel}">
         		 			<input type="text" name="scheduleName" value="${scheduleName}">
         		 		</tags:nameValue>
-        		 	
-        		 		<tags:nameValue name="${timeFrequencyLabel}">
-        		 			<tags:cronExpressionData id="${cronTagId_attr}" state="${cronExpressionTagState}"/>
+        		 		
+        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		
+        		 		<cti:msg var="selectAttributeLabel" key="yukon.common.device.commander.attributeSelector.selectAttribute"/>
+        		 		<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
+        		 			<amr:attributeSelector fieldName="attribute" attributes="${allAttributes}" selectedAttributes="${selectedAttributes}" multipleSize="5"/>
         		 		</tags:nameValue>
+        		 	
+        		 		<tags:nameValueGap gapHeight="10px"/>
         		 		
         		 		<tags:nameValue name="${groupLabel}">
         		 			
-        		 			<tags:deviceGroupNameSelector fieldName="deviceGroupName_attr" 
+        		 			<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" 
 												  	  fieldValue="${deviceGroupName}" 
 												      dataJson="${groupDataJson}"
 												      linkGroupName="true"
 												      showSelectedDevicesIcon="false"/>
-												      
-												      
         		 		</tags:nameValue>
-        		 
+        		 		
+        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		
+        		 		<tags:nameValue name="${timeFrequencyLabel}">
+        		 			<tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
+        		 		</tags:nameValue>
+        		 		
+        		 		<tags:nameValue name="${retryLabel}">
+        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" retryCount="${retryCount}" stopRetryAfterHoursCount="${stopRetryAfterHoursCount}" turnOffQueuingAfterRetryCount="${turnOffQueuingAfterRetryCount}" />
+        		 		</tags:nameValue>
+        		 		
         			</tags:nameValueContainer>
         			
         			<br>
@@ -130,35 +141,43 @@
         		<form id="scheduledGroupRequestExecutionForm_cmd" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
-        		 	<cti:uniqueIdentifier var="cronTagId_cmd" prefix="cronTagIdCmdr_" />
-        		 	<input type="hidden" name="cronTagId" value="${cronTagId_cmd}">
+        		 	<cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_" />
+        		 	<input type="hidden" name="formUniqueId" value="${formUniqueId}">
         		 	
         		 	<tags:nameValueContainer>
         		 	
-        		 		<cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
-        		 		<tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
-        		 			<amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedSelectValue="${commandSelectValue}" selectedCommandString="${commandString}" includeDummyOption="true"/>  
-        		 			<br><br>
-        		 		</tags:nameValue>
-        		 		
         		 		<tags:nameValue name="${scheduleNameLabel}">
         		 			<input type="text" name="scheduleName" value="${scheduleName}">
         		 		</tags:nameValue>
-        		 	
-        		 		<tags:nameValue name="${timeFrequencyLabel}">
-        		 			<tags:cronExpressionData id="${cronTagId_cmd}" state="${cronExpressionTagState}"/>
+        		 		
+        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		
+        		 		<cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
+        		 		<tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
+        		 			<amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedSelectValue="${commandSelectValue}" selectedCommandString="${commandString}" includeDummyOption="true"/>  
         		 		</tags:nameValue>
+        		 		
+        		 		<tags:nameValueGap gapHeight="10px"/>
         		 		
         		 		<tags:nameValue name="${groupLabel}">
         		 			
-							<tags:deviceGroupNameSelector fieldName="deviceGroupName_cmd" 
+							<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" 
 												  	  fieldValue="${deviceGroupName}" 
 												      dataJson="${groupDataJson}"
 												      linkGroupName="true"
 												      showSelectedDevicesIcon="false"/>
-		                                                
         		 		</tags:nameValue>
-        		 
+        		 		
+        		 		<tags:nameValueGap gapHeight="12px"/>
+        		 		
+        		 		<tags:nameValue name="${timeFrequencyLabel}">
+        		 			<tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
+        		 		</tags:nameValue>
+        		 		
+        		 		<tags:nameValue name="${retryLabel}">
+        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" retryCount="${retryCount}" stopRetryAfterHoursCount="${stopRetryAfterHoursCount}" turnOffQueuingAfterRetryCount="${turnOffQueuingAfterRetryCount}" />
+        		 		</tags:nameValue>
+        		 		
         			</tags:nameValueContainer>
         			
         			<br>

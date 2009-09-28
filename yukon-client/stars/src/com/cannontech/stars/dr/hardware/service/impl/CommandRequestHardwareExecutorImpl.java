@@ -62,7 +62,7 @@ public class CommandRequestHardwareExecutorImpl implements
 					}
 					
 				},
-				CommandRequestExecutionType.ROUTE_COMMAND,
+				CommandRequestExecutionType.LM_HARDWARE_COMMAND,
 				user);
 		
 	}

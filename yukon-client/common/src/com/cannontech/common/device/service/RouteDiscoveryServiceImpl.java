@@ -176,7 +176,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     
                     // execute
                     try {
-                        commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, CommandRequestExecutionType.DEVICE_COMMAND, state.getUser());
+                        commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, CommandRequestExecutionType.PING_DEVICE_ON_ROUTE_COMMAND, state.getUser());
                     } catch (Exception e) {
                         runCallbackWithNull(state, "Unknown exception.", deviceLogStr, "", e);
                     }

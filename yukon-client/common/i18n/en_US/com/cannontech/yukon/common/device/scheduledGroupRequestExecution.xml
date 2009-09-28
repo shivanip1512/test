@@ -18,6 +18,11 @@
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.group.selectDeviceGroupCancel">Cancel</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleName">Schedule Name</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency">Time/Frequency</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry">Retry</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.checkbox">Use Request Retry Strategy</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.retryCount">Number of times to retry failed requests.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.stopRetryAfterHoursCount">Maximum number of hours to retry, leave blank for no time limit.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.turnOffQueuingAfterRetryCount">Number of retries after which request queuing should be turned off, leave blank to always remain queued.</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton">Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton">Update</entry>
     

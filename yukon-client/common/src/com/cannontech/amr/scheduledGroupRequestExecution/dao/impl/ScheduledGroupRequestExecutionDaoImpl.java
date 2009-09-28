@@ -51,7 +51,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT CRE.* FROM ScheduledGrpCommandRequest SGCR");
-    	sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecId = CRE.CommandRequestExecId)");
+    	sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
     	sql.append("WHERE SGCR.JobID = ").appendArgument(jobId);
     	
     	if (cutoff != null) {
@@ -198,7 +198,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT CRE.* FROM ScheduledGrpCommandRequest SGCR");
-        sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecId = CRE.CommandRequestExecId)");
+        sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
         
         if (jobId > 0) {
     		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
@@ -230,7 +230,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT COUNT(CRE.CommandRequestExecId) AS creCount ");
     	sql.append("FROM ScheduledGrpCommandRequest SGCR");
-        sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecId = CRE.CommandRequestExecId)");
+        sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
         
         if (jobId > 0) {
     		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
@@ -256,17 +256,17 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
             
         }
         public Number getPrimaryKey(ScheduledGroupRequestExecutionPair pair) {
-            return pair.getCommandRequestExecutionId();
+            return pair.getCommandRequestExecutionContextId();
         }
         public void setPrimaryKey(ScheduledGroupRequestExecutionPair pair, int value) {
-        	pair.setCommandRequestExecutionId(value);
+        	pair.setCommandRequestExecutionContextId(value);
         }
     };
     
 	public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair>(simpleJdbcTemplate, nextValueHelper);
         template.withTableName("ScheduledGrpCommandRequest");
-        template.withPrimaryKeyField("CommandRequestExecId");
+        template.withPrimaryKeyField("CommandRequestExecContextId");
         template.withFieldMapper(fieldMapper); 
     }
     

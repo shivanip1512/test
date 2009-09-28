@@ -8,6 +8,7 @@ import com.cannontech.common.device.commands.CommandRequestType;
 public class CommandRequestExecution {
 
 	private Integer id;
+	private int contextId;
 	private Date startTime;
 	private Date stopTime;
 	private int requestCount;
@@ -21,6 +22,12 @@ public class CommandRequestExecution {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	public int getContextId() {
+        return contextId;
+    }
+	public void setContextId(int contextId) {
+        this.contextId = contextId;
+    }
 	public Date getStartTime() {
 		return startTime;
 	}

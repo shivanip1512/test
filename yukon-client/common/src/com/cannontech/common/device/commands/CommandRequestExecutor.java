@@ -44,6 +44,9 @@ public interface CommandRequestExecutor<T> {
     public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback,
     		CommandRequestExecutionType type, LiteYukonUser user);
     
+    public CommandRequestExecutionIdentifier executeWithContext(List<T> commands, CommandCompletionCallback<? super T> callback, 
+            CommandRequestExecutionContext context);
+    
     /**
      * 
      * @param commands
@@ -52,4 +55,6 @@ public interface CommandRequestExecutor<T> {
      * @return
      */
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user);
+    
+    public CommandRequestExecutionTemplate<T> getExecutionTemplate(CommandRequestExecutionType type, final LiteYukonUser user);
 }

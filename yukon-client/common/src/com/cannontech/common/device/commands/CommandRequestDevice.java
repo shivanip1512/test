@@ -23,7 +23,6 @@ public class CommandRequestDevice extends CommandRequestBase {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("device", getDevice());
         tsc.append("command", getCommand());
-        tsc.append("backgroundPriority", isBackgroundPriority());
         return tsc.toString();
     }
 }

@@ -31,7 +31,6 @@ public class CommandRequestRouteAndDevice extends CommandRequestBase {
         tsc.append("device", getDevice());
         tsc.append("routeId", getRouteId());
         tsc.append("command", getCommand());
-        tsc.append("backgroundPriority", isBackgroundPriority());
         return tsc.toString();
     }
 }

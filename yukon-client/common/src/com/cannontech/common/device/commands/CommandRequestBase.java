@@ -6,7 +6,6 @@ package com.cannontech.common.device.commands;
  */
 public abstract class CommandRequestBase {
     private String command;
-    private boolean backgroundPriority = false;
 
     public String getCommand() {
         return command;
@@ -14,13 +13,5 @@ public abstract class CommandRequestBase {
 
     public void setCommand(String command) {
         this.command = command;
-    }
-
-    public boolean isBackgroundPriority() {
-        return backgroundPriority;
-    }
-
-    public void setBackgroundPriority(boolean backgroundPriority) {
-        this.backgroundPriority = backgroundPriority;
     }
 }

@@ -49,7 +49,7 @@ public class TouScheduleWidget extends WidgetControllerBase {
         String command = ycBean.buildTOUScheduleCommand(scheduleId);
         
         Meter meter = meterDao.getForId(deviceId);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, command, CommandRequestExecutionType.DEVICE_COMMAND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, command, CommandRequestExecutionType.TOU_SCHEDULE_COMMAND, user);
         
         mav.addObject("result", result);
         mav.addObject("successMsg", "Successful Download");

@@ -135,7 +135,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                         CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
                         };
                         
-                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, CommandRequestExecutionType.DEVICE_COMMAND, liteYukonUser);
+                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, CommandRequestExecutionType.ROUTE_DISCOVERY_PUTCONFIG_COMMAND, liteYukonUser);
                     }
                 }
             }

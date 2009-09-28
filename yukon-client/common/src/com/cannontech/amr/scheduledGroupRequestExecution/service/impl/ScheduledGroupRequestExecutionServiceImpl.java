@@ -28,18 +28,65 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionServiceImpl.class);
     
     // SCHEDULE - COMMAND
-	public YukonJob schedule(String name, String groupName, String command, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob schedule(String name, 
+	                         String groupName, 
+	                         String command, 
+	                         CommandRequestExecutionType type, 
+	                         String cronExpression, 
+	                         YukonUserContext userContext) {
 		
-		return schedule(name, groupName, command, null, type, cronExpression, userContext);
+		return schedule(name, groupName, command, null, type, cronExpression, userContext, 0, null, null);
+	}
+	
+	public YukonJob scheduleWithRetry(String name, 
+                             String groupName, 
+                             String command, 
+                             CommandRequestExecutionType type, 
+                             String cronExpression, 
+                             YukonUserContext userContext,
+                             int retryCount,
+                             Integer stopRetryAfterHoursCount,
+                             Integer turnOffQueuingAfterRetryCount) {
+        
+        return schedule(name, groupName, command, null, type, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+    }
+	
+	// SCHEDULE - ATTRIBUTE
+	public YukonJob schedule(String name, 
+	                         String groupName, 
+	                         Set<? extends Attribute> attributes, 
+	                         CommandRequestExecutionType type, 
+	                         String cronExpression, 
+	                         YukonUserContext userContext) {
+		
+		return schedule(name, groupName, null, attributes, type, cronExpression, userContext, 0, null, null);
 	}
 	
 	// SCHEDULE - ATTRIBUTE
-	public YukonJob schedule(String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
-		
-		return schedule(name, groupName, null, attributes, type, cronExpression, userContext);
-	}
+    public YukonJob scheduleWithRetry(String name, 
+                             String groupName, 
+                             Set<? extends Attribute> attributes, 
+                             CommandRequestExecutionType type, 
+                             String cronExpression, 
+                             YukonUserContext userContext,
+                             int retryCount,
+                             Integer stopRetryAfterHoursCount,
+                             Integer turnOffQueuingAfterRetryCount) {
+        
+        return schedule(name, groupName, null, attributes, type, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+    }
 	
-	private YukonJob schedule(String name, String groupName, String command, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+    // MAKE TASK, SCHEDULE TASK
+	private YukonJob schedule(String name, 
+	                          String groupName, 
+	                          String command, 
+	                          Set<? extends Attribute> attributes, 
+	                          CommandRequestExecutionType type, 
+	                          String cronExpression, 
+	                          YukonUserContext userContext,
+	                          int retryCount,
+	                          Integer stopRetryAfterHoursCount,
+	                          Integer turnOffQueuingAfterRetryCount) {
 
 		ScheduledGroupRequestExecutionTask task = scheduledGroupRequestExecutionJobDefinition.createBean();
 		task.setName(name);
@@ -47,27 +94,81 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     	task.setAttributes(attributes);
     	task.setCommand(command);
     	task.setCommandRequestExecutionType(type);
+    	task.setRetryCount(retryCount);
+    	task.setStopRetryAfterHoursCount(stopRetryAfterHoursCount);
+    	task.setTurnOffQueuingAfterRetryCount(turnOffQueuingAfterRetryCount);
 
     	YukonJob job =  jobManager.scheduleJob(scheduledGroupRequestExecutionJobDefinition, task, cronExpression, userContext);
         
-    	log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
+    	log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() +
+    	         ", retryCount=" + retryCount + ", stopRetryAfterHoursCount=" + stopRetryAfterHoursCount + ", turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount + ".");
     	
         return job;
 	}
 	
 	// SCHEDULE REPLACEMENT - COMMAND
-	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob scheduleReplacement(int existingJobId, 
+	                                    String name, 
+	                                    String groupName, 
+	                                    String command, 
+	                                    CommandRequestExecutionType type, 
+	                                    String cronExpression, 
+	                                    YukonUserContext userContext) {
 		
-		return scheduleReplacement(existingJobId, name, groupName, command, null, type, cronExpression, userContext);
+		return scheduleReplacement(existingJobId, name, groupName, command, null, type, cronExpression, userContext, 0, null, null);
 	}
+	
+	public YukonJob scheduleReplacementWithRetry(int existingJobId, 
+                                        String name, 
+                                        String groupName, 
+                                        String command, 
+                                        CommandRequestExecutionType type, 
+                                        String cronExpression, 
+                                        YukonUserContext userContext,
+                                        int retryCount,
+                                        Integer stopRetryAfterHoursCount,
+                                        Integer turnOffQueuingAfterRetryCount) {
+        
+        return scheduleReplacement(existingJobId, name, groupName, command, null, type, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+    }
 	
 	// SCHEDULE REPLACEMENT - ATTRIBUTE
-	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob scheduleReplacement(int existingJobId, 
+	                                    String name, 
+	                                    String groupName, 
+	                                    Set<? extends Attribute> attributes, 
+	                                    CommandRequestExecutionType type, 
+	                                    String cronExpression, 
+	                                    YukonUserContext userContext) {
 		
-		return scheduleReplacement(existingJobId, name, groupName, null, attributes, type, cronExpression, userContext);
+		return scheduleReplacement(existingJobId, name, groupName, null, attributes, type, cronExpression, userContext, 0, null, null);
 	}
 	
-	private YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, Set<? extends Attribute> attributes, CommandRequestExecutionType type, String cronExpression, YukonUserContext userContext) {
+	public YukonJob scheduleReplacementWithRetry(int existingJobId, 
+                                        String name, 
+                                        String groupName, 
+                                        Set<? extends Attribute> attributes, 
+                                        CommandRequestExecutionType type, 
+                                        String cronExpression, 
+                                        YukonUserContext userContext,
+                                        int retryCount,
+                                        Integer stopRetryAfterHoursCount,
+                                        Integer turnOffQueuingAfterRetryCount) {
+        
+        return scheduleReplacement(existingJobId, name, groupName, null, attributes, type, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+    }
+	
+	private YukonJob scheduleReplacement(int existingJobId, 
+	                                     String name, 
+	                                     String groupName, 
+	                                     String command, 
+	                                     Set<? extends Attribute> attributes, 
+	                                     CommandRequestExecutionType type, 
+	                                     String cronExpression, 
+	                                     YukonUserContext userContext,
+	                                     int retryCount,
+	                                     Integer stopRetryAfterHoursCount,
+	                                     Integer turnOffQueuingAfterRetryCount) {
 	
 		// get current job, generate task
 		ScheduledRepeatingJob existingJob = (ScheduledRepeatingJob)jobManager.getJob(existingJobId);
@@ -76,8 +177,9 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     	jobManager.deleteJob(existingJob);
     	
     	// schedule new job
-    	YukonJob replacementJob = schedule(name, groupName, command, attributes, type, cronExpression, userContext);
-    	log.info("Job replaced. old jobId=" + existingJob.getId() + " deleted, replacement jobId=" + replacementJob.getId() + ", name=" + name + ", groupName=" + groupName + ", attribute=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + ".");
+    	YukonJob replacementJob = schedule(name, groupName, command, attributes, type, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+    	log.info("Job replaced. old jobId=" + existingJob.getId() + " deleted, replacement jobId=" + replacementJob.getId() + ", name=" + name + ", groupName=" + groupName + ", attribute=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + 
+    	         ", retryCount=" + retryCount + ", stopRetryAfterHoursCount=" + stopRetryAfterHoursCount + ", turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount + ".");
     	
 		return replacementJob;
 	}

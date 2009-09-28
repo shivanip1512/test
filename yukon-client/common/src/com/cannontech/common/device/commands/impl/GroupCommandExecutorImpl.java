@@ -150,7 +150,6 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-        request.setBackgroundPriority(true);
         
         final String commandStr = command + " update";
         request.setCommand(commandStr);
