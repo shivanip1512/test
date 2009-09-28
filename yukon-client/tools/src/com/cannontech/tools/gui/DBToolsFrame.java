@@ -2,6 +2,7 @@ package com.cannontech.tools.gui;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -11,6 +12,7 @@ import javax.swing.filechooser.FileFilter;
 
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.dbconverter.converter.DBConverter;
+import com.cannontech.dbtools.DBCompare.DBCompare;
 import com.cannontech.dbtools.image.ImageInserter;
 import com.cannontech.dbtools.tools.ModifyConstraints;
 import com.cannontech.dbtools.updater.DBUpdater;
@@ -37,7 +39,8 @@ class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt
 		new DBConverter(),
 		new ModifyConstraints(),
 		new ImageInserter(),
-		new Yukon3Migrator()
+		new Yukon3Migrator(),
+		new DBCompare()
 	};
 	
 	private TextMsgPanePopUp textMsgPanePopUp = null;
@@ -54,7 +57,9 @@ class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt
 	private Vector outputVector = null;
 	private boolean gonnaPrint = false;
 	private javax.swing.JButton ivjBrowseButton = null;	
-	private javax.swing.JLabel ivjJLabelMsgs = null;
+	private javax.swing.JButton ivjBrowseXMLButton = null;    
+    private javax.swing.JButton ivjSaveButton = null;    
+    private javax.swing.JLabel ivjJLabelMsgs = null;
 	private javax.swing.JLabel ivjJLabelOption = null;
 	private javax.swing.JPanel ivjJPanelTools = null;
 	private javax.swing.JRadioButton ivjJRadioButton0 = null;
@@ -96,6 +101,11 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC1(e);
 	if (e.getSource() == getBrowseButton()) 
 		connEtoC2(e);
+	if (e.getSource() == getBrowseXMLButton()) 
+        connEtoC3(e);
+    if (e.getSource() == getSaveButton()) 
+	    connEtoC4(e);
+
 }
 
 
@@ -118,6 +128,18 @@ public void addOutput(final String output)
 }
 
 
+public void addOutputNoLN(final String output) 
+{
+    javax.swing.SwingUtilities.invokeLater(new Runnable()
+    {
+        public void run()
+        {
+            getMessageArea().append(output);
+        }
+    });
+
+}
+
 /**
  * Comment
  */
@@ -127,6 +149,23 @@ public void browseButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	return;
 }
 
+/**
+ * Comment
+ */
+public void browseXMLButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+    getBrowseXMLChooser();       
+    return;
+}
+
+/**
+ * Comment
+ */
+public void saveButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+    getSaveChooser();       
+    return;
+}
 
 /**
  * connEtoC1:  (StartButton.action.actionPerformed(java.awt.event.ActionEvent) --> DBToolsFrame.startButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
@@ -154,6 +193,29 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	}
 }
 
+/**
+ * connEtoC3:  (BrowseButton.action.actionPerformed(java.awt.event.ActionEvent) --> DBToolsFrame.browseXMLButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+private void connEtoC3(java.awt.event.ActionEvent arg1) {
+    try {
+        this.browseXMLButton_ActionPerformed(arg1);
+    } catch (java.lang.Throwable ivjExc) {
+        handleException(ivjExc);
+    }
+}
+
+/**
+ * connEtoC4:  (BrowseButton.action.actionPerformed(java.awt.event.ActionEvent) --> DBToolsFrame.saveButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+private void connEtoC4(java.awt.event.ActionEvent arg1) {
+    try {
+        this.saveButton_ActionPerformed(arg1);
+    } catch (java.lang.Throwable ivjExc) {
+        handleException(ivjExc);
+    }
+}
 
 /**
  * Insert the method's description here.
@@ -194,6 +256,48 @@ private javax.swing.JButton getBrowseButton() {
 }
 
 /**
+ * Return the JButton1 property value.
+ * @return javax.swing.JButton
+ */
+private javax.swing.JButton getBrowseXMLButton() {
+    if (ivjBrowseXMLButton == null) {
+        try {
+            ivjBrowseXMLButton = new javax.swing.JButton();
+            ivjBrowseXMLButton.setName("BrowseXMLButton");
+            ivjBrowseXMLButton.setText("Browse");
+            ivjBrowseXMLButton.setMinimumSize(new java.awt.Dimension(90, 25));
+            ivjBrowseXMLButton.setMaximumSize(new java.awt.Dimension(90, 25));
+            ivjBrowseXMLButton.setPreferredSize(new java.awt.Dimension(90, 25));
+            
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return ivjBrowseXMLButton;
+}
+
+/**
+ * Return the JButton2 property value.
+ * @return javax.swing.JButton
+ */
+private javax.swing.JButton getSaveButton() {
+    if (ivjSaveButton == null) {
+        try {
+            ivjSaveButton = new javax.swing.JButton();
+            ivjSaveButton.setName("SaveButton");
+            ivjSaveButton.setText("Save...");
+            ivjSaveButton.setMinimumSize(new java.awt.Dimension(90, 25));
+            ivjSaveButton.setMaximumSize(new java.awt.Dimension(90, 25));
+            ivjSaveButton.setPreferredSize(new java.awt.Dimension(90, 25));
+            
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return ivjSaveButton;
+}
+
+/**
  * Return the JPanel1 property value.
  * @return javax.swing.JPanel
  */
@@ -213,6 +317,13 @@ private javax.swing.JPanel getButtonPanel() {
 			constraintsStartButton.weightx = 1.0;
 			getButtonPanel().add(getStartButton(), constraintsStartButton);
 
+			java.awt.GridBagConstraints constraintsSaveButton = new java.awt.GridBagConstraints();
+			constraintsSaveButton.gridx = 3; constraintsSaveButton.gridy = 2;
+			constraintsSaveButton.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsSaveButton.insets = new java.awt.Insets(5, 3, 10, 6);
+			constraintsSaveButton.weightx = 1.0;
+			getButtonPanel().add(getSaveButton(), constraintsSaveButton);
+			
 			java.awt.GridBagConstraints constraintsPathField = new java.awt.GridBagConstraints();
 			constraintsPathField.gridx = 2; constraintsPathField.gridy = 1;
 			constraintsPathField.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -227,6 +338,12 @@ private javax.swing.JPanel getButtonPanel() {
 			constraintsBrowseButton.insets = new java.awt.Insets(12, 6, 6, 71);
 			getButtonPanel().add(getBrowseButton(), constraintsBrowseButton);
 
+			java.awt.GridBagConstraints constraintsBrowseXMLButton = new java.awt.GridBagConstraints();
+			constraintsBrowseXMLButton.gridx = 3; constraintsBrowseXMLButton.gridy = 1;
+			constraintsBrowseXMLButton.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsBrowseXMLButton.insets = new java.awt.Insets(12, 6, 6, 71);
+            getButtonPanel().add(getBrowseXMLButton(), constraintsBrowseXMLButton);
+			
 			java.awt.GridBagConstraints constraintsJLabelOption = new java.awt.GridBagConstraints();
 			constraintsJLabelOption.gridx = 1; constraintsJLabelOption.gridy = 1;
 			constraintsJLabelOption.anchor = java.awt.GridBagConstraints.WEST;
@@ -291,6 +408,151 @@ public void getChooser()
 	}
 
 	return;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/12/2001 11:24:36 AM)
+ */
+public void getBrowseXMLChooser()
+{
+    java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    JFileChooser fileChooser = new JFileChooser();
+
+    // We set the chooser so it will only look for dirs  
+    fileChooser.setAcceptAllFileFilterUsed( true );
+    fileChooser.setApproveButtonText("Select");
+    fileChooser.setApproveButtonMnemonic('s');
+    
+    // Allow them to see only directories and XML Files
+    fileChooser.setFileFilter( new FileFilter()
+    {
+        public boolean accept(File f) { return f.getAbsolutePath().endsWith(".xml") || f.isDirectory(); };
+        public String getDescription() { return "XML Files Only"; };
+    });
+
+
+    //set the chooser to the current location
+    fileChooser.setCurrentDirectory(
+            new File(getPathField().getText()) );
+
+
+    int res = fileChooser.showOpenDialog( this );
+    if( res == javax.swing.JFileChooser.APPROVE_OPTION )
+    {
+        try
+        {
+            getPathField().setText(fileChooser.getSelectedFile().getPath());
+
+            com.cannontech.clientutils.CTILogger.info("** Chooser path was: " + 
+                getPathField().getText() );
+        }
+        catch (Exception exep)
+        {
+            javax.swing.JOptionPane.showMessageDialog(parent,"An error occurred opening file","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    return;
+}
+
+/**
+ */
+public void getXMLFileChooser()
+{
+    //File temp = new File(shorterPath);
+    
+    //This will need to be updated someday for a new version of swing
+    java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    JFileChooser fileChooser = new JFileChooser();
+
+
+    //we set the chooser so it will only look for dirs  
+    fileChooser.setAcceptAllFileFilterUsed( true );
+    fileChooser.setFileSelectionMode( JFileChooser.SAVE_DIALOG );
+    fileChooser.setApproveButtonText("Select");
+    fileChooser.setApproveButtonMnemonic('s');
+    
+    //allow them to see only directories
+    fileChooser.setFileFilter( new FileFilter()
+    {
+        public boolean accept(File f) { return f.getName().endsWith(".xml"); };
+        public String getDescription() { return "XML Files Only"; };
+    });
+
+
+    //set the chooser to the current location
+    fileChooser.setCurrentDirectory(
+            new File(getPathField().getText()) );
+
+
+    int res = fileChooser.showOpenDialog( this );
+    if( res == javax.swing.JFileChooser.APPROVE_OPTION )
+    {
+        try
+        {
+            //thePath = fileChooser.getSelectedFile().getPath();
+            
+            getPathField().setText(
+                fileChooser.getSelectedFile().getPath() + IRunnableDBTool.FS);
+
+            com.cannontech.clientutils.CTILogger.info("** Chooser path was: " + 
+                getPathField().getText() );
+        }
+        catch (Exception exep)
+        {
+            javax.swing.JOptionPane.showMessageDialog(parent,"An error occurred opening file","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    return;
+}
+
+/**
+ */
+public void getSaveChooser()
+{
+    //File temp = new File(shorterPath);
+    
+    //This will need to be updated someday for a new version of swing
+    java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    JFileChooser fileChooser = new JFileChooser();
+
+
+    //we set the chooser so it will only look for dirs  
+    fileChooser.setAcceptAllFileFilterUsed( true );
+    fileChooser.setFileSelectionMode( JFileChooser.SAVE_DIALOG );
+    fileChooser.setApproveButtonText("Save");
+    fileChooser.setApproveButtonMnemonic('s');
+    
+    //set the chooser to the current location
+//    fileChooser.setCurrentDirectory(
+//            new File(getPathField().getText()) );
+
+
+    int res = fileChooser.showSaveDialog( this );
+    if( res == javax.swing.JFileChooser.APPROVE_OPTION )
+    {
+        try
+        {
+            //thePath = fileChooser.getSelectedFile().getPath();
+            String path = fileChooser.getSelectedFile().getPath();
+
+            String text = getMessageArea().getText();
+            FileWriter fileWriter = new FileWriter(path);
+            fileWriter.write(text);
+            fileWriter.close();
+            
+            com.cannontech.clientutils.CTILogger.info("** Saving screen results to " + path );
+            
+        }
+        catch (Exception exep)
+        {
+            javax.swing.JOptionPane.showMessageDialog(parent,"An error occurred while saving the file","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    return;
 }
 
 
@@ -377,8 +639,18 @@ private javax.swing.JPanel getJPanelTools() {
 						if( tool.getDefaultValue() != null )
 							getPathField().setText( tool.getDefaultValue() );
 
-						getBrowseButton().setEnabled( 
-							!(tool instanceof ModifyConstraints) );
+						if(!(tool instanceof ModifyConstraints)) {
+						    // Turn on the browse functionality to look for XML Files.
+						    if (tool instanceof DBCompare) {
+						        getBrowseButton().setVisible(false);
+						        getBrowseXMLButton().setVisible(true);
+						    // Revert back to browsing for directories.
+						    } else {
+						        getBrowseButton().setVisible(true);
+	                            getBrowseXMLButton().setVisible(false);
+						    }
+						    
+						}
 					}
 				}
 			};
@@ -716,6 +988,8 @@ private void initConnections() throws java.lang.Exception {
 
 	getStartButton().addActionListener(this);
 	getBrowseButton().addActionListener(this);
+	getBrowseXMLButton().addActionListener(this);
+    getSaveButton().addActionListener(this);
 }
 
 private TextMsgPanePopUp getTextMsgPanePopUp()

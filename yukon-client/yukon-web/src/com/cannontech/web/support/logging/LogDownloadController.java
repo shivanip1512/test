@@ -7,10 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
 * LogDownloadController handles the downloading of
@@ -22,6 +26,8 @@ import com.cannontech.clientutils.YukonLogManager;
 * @see LogController base class and AbstractController
 * @author dharrington
 */
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
+@Controller
 public class LogDownloadController extends LogController {
     
     //logger for this class
@@ -32,7 +38,8 @@ public class LogDownloadController extends LogController {
     * @Override of AbstractController method
     * @return null
     */
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping(value = "/logging/download", method = RequestMethod.GET)
+    public String download(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/plain");
         
         File logFile = getLogFile(request);

@@ -1,40 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:aop="http://www.springframework.org/schema/aop"
-    xmlns:tx="http://www.springframework.org/schema/tx"
-    xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<!-- Loads all @Controllers from the specified packages. -->
+    <context:component-scan base-package="com.cannontech.web.support" />
+
+	<bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="1"/>
+    </bean>
+
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <property name="order" value="2"/>
+    </bean>
 
     <bean name="/database/info" class="com.cannontech.web.support.DatabaseInformationController"/>
     <bean name="/" class="com.cannontech.web.support.InformationController"/>
 
-    <!-- create a bean for LogMenuController.java -->
-    <bean name="/logging/menu" class="com.cannontech.web.support.logging.LogMenuController">
-      <property name="poolManager" ref="databasePoolManager"/>
-    </bean>
-    
-    <!-- create a bean for LogViewController.java -->
-    <bean name="/logging/view" class="com.cannontech.web.support.logging.LogViewController">
-      <property name="dateFormattingService" ref="dateFormattingService" />
-    </bean>
-    
-    <!-- create a bean for LogDownloadController.java -->
-    <bean name="/logging/download" class="com.cannontech.web.support.logging.LogDownloadController">
-    </bean>
-    
-    <!-- create a bean for LogTailController.java -->
-    <bean name="/logging/tail" class="com.cannontech.web.support.logging.LogTailController">
-      <property name="dateFormattingService" ref="dateFormattingService" />
-    </bean>
-    
-    <!-- create a bean for LogTailUpdaterController.java -->
-    <bean name="/logging/tail/update" class="com.cannontech.web.support.logging.LogTailUpdaterController">
-      <property name="dateFormattingService" ref="dateFormattingService" />
-    </bean>
-    
     <bean name="/scheduler/*" class="com.cannontech.web.support.SchedulerDebugController">
         <property name="jobManager" ref="jobManager"/>
         <property name="yukonJobDao" ref="yukonJobDao"/>

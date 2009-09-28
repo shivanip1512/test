@@ -50,6 +50,11 @@ public abstract class MessageFrameAdaptor implements IRunnableDBTool
 					System.out.println(msg);
 				}
 			
+				public void addOutputNoLN( final String msg )
+                {
+                    System.out.print(msg);
+                }
+				
 				public void finish( String msg )
 				{}  //no-op for now
 			

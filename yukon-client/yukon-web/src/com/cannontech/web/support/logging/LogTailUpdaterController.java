@@ -14,25 +14,33 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
+@Controller
 public class LogTailUpdaterController extends LogController {
 	
     private Logger logger = YukonLogManager.getLogger(LogTailController.class);
     private DateFormattingService dateFormattingService = null;
       
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    @RequestMapping(value = "/logging/tail/update", method = RequestMethod.POST)
+    public String tailUpdate(HttpServletRequest request,
+                             HttpServletResponse response,
+                             YukonUserContext userContext,
+                             ModelMap map) throws Exception {
 
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        
         // get JSON data
         StringWriter jsonDataWriter = new StringWriter();
         FileCopyUtils.copy(request.getReader(), jsonDataWriter);
@@ -88,6 +96,7 @@ public class LogTailUpdaterController extends LogController {
         return null;
     }
 
+    @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }

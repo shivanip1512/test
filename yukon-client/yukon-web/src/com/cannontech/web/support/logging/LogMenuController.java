@@ -13,19 +13,23 @@ import java.util.SortedMap;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.LogSortUtil;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.PoolManager;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * LogMenuController handles the retrieving of log file names from the local and
@@ -33,11 +37,13 @@ import com.cannontech.database.PoolManager;
  * @see view for this controller: menu.jsp
  * @author dharrington
  */
+@CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
+@Controller
 public class LogMenuController extends LogController {
 
     private PoolManager poolManager;
     private static final Logger log = YukonLogManager.getLogger(LogMenuController.class);
-
+    
     /**
      * Stores all log filenames from local and remote directories in two lists
      * and then saves the lists in the ModelAndView
@@ -45,16 +51,13 @@ public class LogMenuController extends LogController {
      * @return a model and view containing lists of log files names (a menu of
      *         file names)
      */
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    @RequestMapping(value = "/logging/menu", method = RequestMethod.GET)
+    public String menu(HttpServletRequest request,
+                       ModelMap map) throws Exception {
 
-        // Sets up the ModelAndView Object
-        ModelAndView mav = new ModelAndView("logging/menu.jsp");
-
-        mav.addObject("versionDetails", VersionTools.getYukonDetails());
-        mav.addObject("dbUser", poolManager.getPrimaryUser());
-        mav.addObject("dbUrl", poolManager.getPrimaryUrl());
+        map.addAttribute("versionDetails", VersionTools.getYukonDetails());
+        map.addAttribute("dbUser", poolManager.getPrimaryUser());
+        map.addAttribute("dbUrl", poolManager.getPrimaryUrl());
 
         // Checks the request for parameters to update the defaults
         String sortType = ServletRequestUtils.getStringParameter(request,
@@ -80,23 +83,25 @@ public class LogMenuController extends LogController {
             	resultSet = this.sortByAlphabet(localLogList);
             	
                 // Separates the directories from the logFiles
-            	if (resultSet.containsKey("Directories")) {
-                    dirSet = new ArrayList<String>(resultSet.get("Directories"));
-                    resultSet.remove("Directories");
-                }
+            }
+            if (resultSet.containsKey("Directories")) {
+            	dirSet = new ArrayList<String>(resultSet.get("Directories"));
+            	resultSet.remove("Directories");
             }
         }
 
         // add local list to model
-        mav.addObject("oldStateSort", sortType);
-        mav.addObject("dirFile", logDir);
-        mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
-        mav.addObject("dirList", dirSet);
-        mav.addObject("localLogList", resultSet);
+        map.addAttribute("oldStateSort", sortType);
+        map.addAttribute("dirFile", logDir);
+        map.addAttribute("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
+        map.addAttribute("dirList", dirSet);
+        map.addAttribute("localLogList", resultSet);
 
-        return mav;
+        return "logging/menu.jsp";
     }
 
+    
+    
     private List<File> populateFileList(File currentDir) {
         List<File> folderListings = new ArrayList<File>();
 
@@ -167,7 +172,7 @@ public class LogMenuController extends LogController {
         return ((logName.endsWith("log")) || (logName.endsWith("xml")));
     }
 
-    @Required
+    @Autowired
     public void setPoolManager(PoolManager poolManager) {
         this.poolManager = poolManager;
     }

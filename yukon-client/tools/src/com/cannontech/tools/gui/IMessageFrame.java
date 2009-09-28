@@ -10,5 +10,7 @@ public interface IMessageFrame
 {
 	void addOutput(final String output);
 	
+	void addOutputNoLN( final String msg );
+	
 	void finish( String msg );
 }

@@ -14,6 +14,11 @@
     </target>
 
     <target name="version_db_files" depends="init" >
+        
+        <property name="yukon.major" value="5"/>
+        <property name="yukon.minor" value="0"/>
+        <property name="yukon.revision" value="1"/>
+      
         <!-- set up some local variables -->
         <property name="sql.insert" 
             value="insert into CTIDatabase values('${yukon.major}.${yukon.minor}', 'Matt K', '${today}', 'Latest Update', ${yukon.revision} );"/>
@@ -28,5 +33,111 @@
         <replace file="CreationScripts/SqlServerTableCreation.sql" token="/* __YUKON_VERSION__ */" value="${sql.insert}"/>
         <replace file="CreationScripts/OracleTableCreation.sql" token="/* __YUKON_VERSION__ */" value="${sql.insert}"/>
     </target>
-   
+    
+    <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
+        <property name="databaseName" value="TempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
+        
+        <replace file="Custom Scripts/SQL Server/CreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+        <replace file="Custom Scripts/SQL Server/DropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+        <echo message="tempDatabase"/>
+        
+        <!-- Create sql server databse and user-->
+        <sql
+            driver="net.sourceforge.jtds.jdbc.Driver"
+            url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+            userid="sa"
+            password="cannontech123">
+            <transaction src="Custom Scripts/SQL Server/CreateDatabase.sql" /> 
+        </sql>
+        
+        <sql
+             driver="net.sourceforge.jtds.jdbc.Driver"
+             url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+             userid="sa"
+             password="cannontech123">
+            sp_addsrvrolemember '${databaseName}' , 'sysadmin';
+        </sql>
+        
+        <!-- Run the sql server creation scripts -->
+        <sql
+            driver="net.sourceforge.jtds.jdbc.Driver"
+            url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+            userid="${databaseName}"
+            password="${databaseName}"
+            delimiter='go'>
+            <transaction src="CreationScripts/SqlServerTableCreation.sql" />
+        </sql>
+
+        <!-- Build xml file -->
+        <java jar="../lib/SchemaDumpToXML.jar"
+        	fork="true">
+            <arg value="--dbDriver=net.sourceforge.jtds.jdbc.Driver"/>
+            <arg value="--dbUrl=jdbc:jtds:sqlserver://SWDBServer1:1433"/>
+        	<arg value="--user=${databaseName}"/>
+            <arg value="--password=${databaseName}"/>
+            <arg value="--schema=dbo"/>
+            <arg value="--outputXmlFile=${export}/sqlServer${databaseName}.xml"/>
+        </java>
+    	
+        <!-- Drop sql server databse and user -->
+        <sql
+            driver="net.sourceforge.jtds.jdbc.Driver"
+            url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+            userid="sa"
+            password="cannontech123">
+            <transaction src="Custom Scripts/SQL Server/DropDatabase.sql" />
+        </sql>
+    	
+    	<replace file="Custom Scripts/SQL Server/CreateDatabase.sql" token="${databaseName}" value="tempDatabase"/>
+    	<replace file="Custom Scripts/SQL Server/DropDatabase.sql" token="${databaseName}" value="tempDatabase"/>
+    	        
+    </target>
+    
+    <target name="oracleCreationScriptXMLFile" depends="version_db_files">
+        <property name="databaseName" value="tempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
+        
+        <replace file="Custom Scripts/Oracle/CreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+        <replace file="Custom Scripts/Oracle/DropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+        <echo message="tempDatabase"/>
+        
+        <!-- Create oracle databse and user-->
+        <sql
+            driver="oracle.jdbc.OracleDriver"
+            url="jdbc:oracle:thin:@SWDBServer1:1521:swdb1"
+            userid="sys as sysdba"
+            password="cannontech123">
+            <transaction src="Custom Scripts/Oracle/CreateDatabase.sql" /> 
+        </sql>
+
+        <!-- Run the oracle creation scripts -->
+        <exec executable="sqlplus" output="db-init-lookup-identity.log">
+            <arg value="${databaseName}/${databaseName}@swdb1"/>
+            <arg value="@CreationScripts/OracleTableCreation.sql"/>
+        </exec>
+
+    	<!-- Build xml file -->
+    	<java jar="../lib/SchemaDumpToXML.jar"
+    	      fork="true">
+    	    <arg value="--dbDriver=oracle.jdbc.OracleDriver"/>
+    	    <arg value="--dbUrl=jdbc:oracle:thin:@SWDBServer1:1521:swdb1"/>
+    	    <arg value="--user=${databaseName}"/>
+    	    <arg value="--password=${databaseName}"/>
+    	    <arg value="--schema=${databaseName}"/>
+    	    <arg value="--outputXmlFile=${export}/oracle${databaseName}.xml"/>
+    	</java>
+        
+        <!-- Drop oracle databse and user -->
+        <sql
+            driver="oracle.jdbc.OracleDriver"
+            url="jdbc:oracle:thin:@SWDBServer1:1521:swdb1"
+            userid="sys as sysdba"
+            password="cannontech123">
+            <transaction src="Custom Scripts/Oracle/DropDatabase.sql" />
+        </sql>
+    	
+        <replace file="Custom Scripts/Oracle/CreateDatabase.sql" token="${databaseName}" value="tempDatabase"/>
+        <replace file="Custom Scripts/Oracle/DropDatabase.sql" token="${databaseName}" value="tempDatabase"/>
+
+    </target>
+
 </project>
