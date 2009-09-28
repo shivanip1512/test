@@ -3373,7 +3373,8 @@ string CtiDeviceMCT410::describeStatusAndEvents(unsigned char *buf)
         descriptor += (buf[2] & 0x01)?"Zero usage stored for 24 hours\n":"";
         descriptor += (buf[2] & 0x02)?"Disconnect error (demand seen after disconnect)\n":"";
         descriptor += (buf[2] & 0x04)?"Last meter reading corrupt\n":"";
-        //  0x08 - 0x80 aren't used yet
+        descriptor += (buf[2] & 0x08)?"Reverse power flag set\n":"";
+        //  0x10 - 0x80 aren't used yet
 
         //  starts at offset 30 - NOTE that this is byte 0
         descriptor += (buf[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
