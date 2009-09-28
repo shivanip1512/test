@@ -136,6 +136,11 @@
         <property name="mainDelegator" ref="deviceGroupDao"/>
         <property name="paoDao" ref="paoDao"/>
     </bean>
+
+    <bean id="disconnectCollarGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.DisconnectCollarGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+    </bean>    
     
     <bean id="composedGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ComposedGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
@@ -163,6 +168,7 @@
                 <entry key="METERS_SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
                 <entry key="METERS_DISABLED" value-ref="disabledGroupProvider"/>
+                <entry key="METERS_DISCONNECT_COLLAR" value-ref="disconnectCollarGroupProvider"/>
                 <entry key="COMPOSED" value-ref="composedGroupProvider"/>
             </map>
         </property>

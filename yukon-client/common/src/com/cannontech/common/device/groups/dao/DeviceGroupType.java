@@ -12,7 +12,8 @@ public enum DeviceGroupType {
     METERS_SCANNING_INTEGRITY(DeviceGroupPermission.NOEDIT_NOMOD),
     METERS_SCANNING_ACCUMULATOR(DeviceGroupPermission.NOEDIT_NOMOD),
     METERS_DISABLED(DeviceGroupPermission.NOEDIT_NOMOD),
-    COMPOSED(DeviceGroupPermission.EDIT_NOMOD);
+    COMPOSED(DeviceGroupPermission.EDIT_NOMOD),
+    METERS_DISCONNECT_COLLAR(DeviceGroupPermission.NOEDIT_NOMOD);
     
     private DeviceGroupPermission deviceGroupPermission;
 
