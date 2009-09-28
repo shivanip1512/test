@@ -422,6 +422,9 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
         case TYPE_CCU721:
         {
+            //  retries are handled internally by the CCU-721
+            OutMessage->Retry = 0;
+
             //  message gets built up inside the CCU code directly instead of here in the route
 
             break;
