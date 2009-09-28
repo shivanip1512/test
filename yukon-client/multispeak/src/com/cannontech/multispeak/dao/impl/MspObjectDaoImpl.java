@@ -97,7 +97,29 @@ public class MspObjectDaoImpl implements MspObjectDao {
        }
        return mspMeter;
     }
-    
+
+    @Override
+    public List<com.cannontech.multispeak.deploy.service.Meter> getAllMspMeters(String lastReceived, MultispeakVendor mspVendor) {
+        List<com.cannontech.multispeak.deploy.service.Meter> mspMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+                com.cannontech.multispeak.deploy.service.Meter[] meters = port.getAllMeters(lastReceived);
+                if( meters != null) {
+                    mspMeters = Arrays.asList(meters);
+                }
+            } else {
+                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+            }
+        } catch (RemoteException e) {
+            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+            CTILogger.error("TargetService: " + endpointURL + " - getMeterByMeterNo (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            CTILogger.info("A default(empty) is being used for Meter");
+       }
+       return mspMeters;
+    }
+
     @Override
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor) {
     	return getMspMetersByServiceLocation(mspServiceLocation.getObjectID(), mspVendor);    	

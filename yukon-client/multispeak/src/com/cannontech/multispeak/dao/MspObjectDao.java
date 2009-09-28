@@ -73,6 +73,16 @@ public interface MspObjectDao {
 
 
     /**
+     * Returns a List of Msp Meter, starting with LastReceived value.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List of Meter objects is returned.
+     * @param lastReceived
+     * @param mspVendor
+     * @return
+     */
+    public List<com.cannontech.multispeak.deploy.service.Meter> getAllMspMeters(String lastReceived, MultispeakVendor mspVendor);
+    
+    /**
      * Returns a list of the MeterNumber(s) for the mspServiceLocation.
      * If the interface/method is not supported by mspVendor, or if no object is found,
      * an empty List<Meter> object is returned.
