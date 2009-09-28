@@ -33,7 +33,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestBase;
-import com.cannontech.common.device.commands.CommandRequestExecutionContext;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+import com.cannontech.common.device.commands.CommandRequestExecutionParameterDto;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
@@ -309,7 +310,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     
-    // EXECUTE MULTIPLE, CALLBACK (creates a one time use context and calls executeWithContext)
+    // EXECUTE MULTIPLE, CALLBACK (creates a one time use parameterDto and calls executeWithParameterDto)
     public CommandRequestExecutionIdentifier execute(final List<T> commands,
                                                      final CommandCompletionCallback<? super T> callback, 
                                                      CommandRequestExecutionType type, 
@@ -320,10 +321,10 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     
-    // EXECUTE MULTIPLE, CALLBACK, CONTEXT
-    public CommandRequestExecutionIdentifier executeWithContext(final List<T> commands,
+    // EXECUTE MULTIPLE, CALLBACK, parameterDto
+    public CommandRequestExecutionIdentifier executeWithParameterDto(final List<T> commands,
                                                                 final CommandCompletionCallback<? super T> callback, 
-                                                                CommandRequestExecutionContext context) {
+                                                                CommandRequestExecutionParameterDto parameterDto) {
 
         log.debug("Executing " + commands.size() + " for " + callback);
 
@@ -333,16 +334,17 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             return null;
         }
         
-        // context
-        int contextId = context.getId();
-        final CommandRequestExecutionType type = context.getType();
-        final LiteYukonUser user = context.getUser();
-        final boolean contextNoqueue = context.isNoqueue();
-        final int contextPriority = context.getPriority();
+        // parameterDto
+        final LiteYukonUser user = parameterDto.getUser();
+        final boolean noqueue = parameterDto.isNoqueue();
+        final int priority = parameterDto.getPriority();
         
-        // create CommandREquestExection record
+        // create CommandRequestExection record
+        CommandRequestExecutionContextId contextId = parameterDto.getContextId();
+        CommandRequestExecutionType type = parameterDto.getType();
+        
         final CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
-        commandRequestExecution.setContextId(contextId);
+        commandRequestExecution.setContextId(contextId.getId());
         commandRequestExecution.setStartTime(new Date());
         commandRequestExecution.setRequestCount(commands.size());
         commandRequestExecution.setCommandRequestExecutionType(type);
@@ -350,10 +352,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         commandRequestExecution.setCommandRequestType(getCommandRequestType());
         
         commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
-        
         CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = new CommandRequestExecutionIdentifier(commandRequestExecution.getId());
         
-        
+        // execute
         executor.execute(new Runnable() {
         	
         	public void run() {
@@ -367,11 +368,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            // request
 		            Request request = buildRequest(command);
 		            request.setGroupMessageID(groupMessageId);
-		            request.setPriority(contextPriority);
+		            request.setPriority(priority);
 		            
 		            // request holder
 		            String commandStr = command.getCommand();
-		            if (contextNoqueue && !StringUtils.containsIgnoreCase(commandStr, " noqueue")) {
+		            if (noqueue && !StringUtils.containsIgnoreCase(commandStr, " noqueue")) {
 		                commandStr += " noqueue";
 		                command.setCommand(commandStr);
 		            }
@@ -496,40 +497,54 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     // EXECUTION TEMPLATE
     public CommandRequestExecutionTemplate<T> getExecutionTemplate(CommandRequestExecutionType type, final LiteYukonUser user) {
         
-        int contextId = nextValueHelper.getNextValue("CommandRequestExec");
-        CommandRequestExecutionContext context = new CommandRequestExecutionContext(contextId, type, user);
+        CommandRequestExecutionContextId contextId = new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
+        CommandRequestExecutionParameterDto parameterDto = new CommandRequestExecutionParameterDto(contextId, type, user);
         
-        // TODO override priority on context based on master.cfg
-        
-        final CommandRequestExecutionContext initializedContext = context.clone();
-        
-        return new CommandRequestExecutionTemplate<T>() {
-            
-            private CommandRequestExecutionContext myContext = initializedContext; // do this for real with a constructor?
-
-            @Override
-            public CommandRequestExecutionIdentifier execute(List<T> commands,CommandCompletionCallback<? super T> callback) {
-                return executeWithContext(commands, callback, myContext);
-            }
-            
-            @Override
-            public CommandRequestExecutionContext getContext() {
-                return myContext;
-            }
-            
-            @Override
-            public void setIsNoqueue(boolean noqueue) {
-             
-                myContext = myContext.withNoqueue(noqueue);
-            }
-            
-            @Override
-            public void setPriority(int priority) {
-                myContext = myContext.withPriority(priority);
-            }
-        };
+        return new CommandRequestExecutionTemplateImpl(parameterDto);
     }
     
+    private final class CommandRequestExecutionTemplateImpl implements CommandRequestExecutionTemplate<T> {
+        
+        private CommandRequestExecutionParameterDto parameterDto;
+
+        private CommandRequestExecutionTemplateImpl(CommandRequestExecutionParameterDto parameterDto) {
+            this.parameterDto = parameterDto;
+        }
+        
+        @Override
+        public CommandRequestExecutionContextId getContextId() {
+            return this.parameterDto.getContextId();
+        };
+        
+        @Override
+        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback) {
+            return executeWithParameterDto(commands, callback, this.parameterDto);
+        };
+
+        @Override
+        public CommandRequestExecutionIdentifier execute(List<T> commands,CommandCompletionCallback<? super T> callback, boolean noqueue) {
+            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue));
+        }
+        
+        @Override
+        public CommandRequestExecutionIdentifier execute(List<T> commands,CommandCompletionCallback<? super T> callback,int priority) {
+            return executeWithParameterDto(commands, callback, this.parameterDto.withPriority(priority));
+        }
+        
+        @Override
+        public CommandRequestExecutionIdentifier execute(List<T> commands,CommandCompletionCallback<? super T> callback, boolean noqueue, int priority) {
+            return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue).withPriority(priority));
+        }
+        
+        @Override
+        public String toString() {
+
+            ToStringCreator tsc = new ToStringCreator(this);
+            tsc.append("parameterDto", parameterDto.toString());
+            return tsc.toString();
+        }
+    }
+
     // HELPERS
     private void logCommand(Request request, LiteYukonUser user) {
         new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log("Manual: " + request.getCommandString(), "ID: " + request.getDeviceID() + ", Route: " + request.getRouteID(), user);

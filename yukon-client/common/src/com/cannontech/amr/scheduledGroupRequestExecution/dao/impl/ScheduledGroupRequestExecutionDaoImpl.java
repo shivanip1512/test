@@ -16,6 +16,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionRowAndFieldMapper;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -256,10 +257,10 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
             
         }
         public Number getPrimaryKey(ScheduledGroupRequestExecutionPair pair) {
-            return pair.getCommandRequestExecutionContextId();
+            return pair.getCommandRequestExecutionContextId().getId();
         }
         public void setPrimaryKey(ScheduledGroupRequestExecutionPair pair, int value) {
-        	pair.setCommandRequestExecutionContextId(value);
+        	pair.setCommandRequestExecutionContextId(new CommandRequestExecutionContextId(value));
         }
     };
     

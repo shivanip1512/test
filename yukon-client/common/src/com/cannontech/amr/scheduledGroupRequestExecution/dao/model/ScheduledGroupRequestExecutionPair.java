@@ -1,14 +1,16 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.dao.model;
 
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+
 public class ScheduledGroupRequestExecutionPair {
 
-	private int commandRequestExecutionContextId;
+	private CommandRequestExecutionContextId commandRequestExecutionContextId;
 	private int jobId;
 	
-	public int getCommandRequestExecutionContextId() {
+	public CommandRequestExecutionContextId getCommandRequestExecutionContextId() {
 		return commandRequestExecutionContextId;
 	}
-	public void setCommandRequestExecutionContextId(int commandRequestExecutionContextId) {
+	public void setCommandRequestExecutionContextId(CommandRequestExecutionContextId commandRequestExecutionContextId) {
 		this.commandRequestExecutionContextId = commandRequestExecutionContextId;
 	}
 	

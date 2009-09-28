@@ -19,7 +19,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionContext;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
@@ -47,7 +47,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	private Logger log = YukonLogManager.getLogger(GroupMeterReadServiceImpl.class);
 	private RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<GroupMeterReadResult>();
 	
-	public CommandRequestExecutionContext readDeviceCollectionWithRetry(DeviceCollection deviceCollection, 
+	public CommandRequestExecutionContextId readDeviceCollectionWithRetry(DeviceCollection deviceCollection, 
                                                                    Set<? extends Attribute> attributes, 
                                                                    CommandRequestExecutionType type, 
                                                                    CommandCompletionCallback<CommandRequestDevice> callback, 
@@ -61,9 +61,9 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	    List<CommandRequestDevice> allRequests = new ArrayList<CommandRequestDevice>(commandRequests.values());
 	    
 	    CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, retryCount, stopRetryAfterDate, turnOffQueuingAfterRetryCount);
-        CommandRequestExecutionContext context = retryExecutor.execute(allRequests, callback, type, user);
+	    CommandRequestExecutionContextId contextId = retryExecutor.execute(allRequests, callback, type, user);
         
-        return context;
+        return contextId;
 	}
 	
 	

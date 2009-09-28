@@ -8,9 +8,9 @@ public interface CommandRequestExecutionTemplate<T> {
     
     public CommandRequestExecutionIdentifier execute(final List<T> commands, final CommandCompletionCallback<? super T> callback);
     
-    public CommandRequestExecutionContext getContext();
+    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noQueue);
+    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, int priority);
+    public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noQueue, int priority);
     
-    public void setIsNoqueue(boolean noqueue);
-    
-    public void setPriority(int priority);
+    public CommandRequestExecutionContextId getContextId();
 }

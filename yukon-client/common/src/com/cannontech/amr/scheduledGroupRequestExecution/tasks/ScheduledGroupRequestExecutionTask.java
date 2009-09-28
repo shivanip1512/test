@@ -19,7 +19,7 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionContext;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -64,7 +64,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         
         try {
         	
-            CommandRequestExecutionContext context = null;
+            CommandRequestExecutionContextId contextId = null;
             
             if (getCommand() != null) {
             
@@ -86,7 +86,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                                                                                                                                         getRetryCount(),
                                                                                                                                         getStopRetryAfterDate(),
                                                                                                                                         getTurnOffQueuingAfterRetryCount());
-                context = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
+                contextId = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
             
             } else if (getAttributes() != null) {
             	
@@ -95,7 +95,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 
     	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
     	        
-    	        context = groupMeterReadService.readDeviceCollectionWithRetry(deviceCollection, 
+    	        contextId = groupMeterReadService.readDeviceCollectionWithRetry(deviceCollection, 
             	                                                             attributes, 
             	                                                             getCommandRequestExecutionType(), 
             	                                                             dummyCallback, 
@@ -111,7 +111,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             
 	        // create ScheduledGroupRequestExecutionResult record
 	        ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
-	        pair.setCommandRequestExecutionContextId(context.getId());
+	        pair.setCommandRequestExecutionContextId(contextId);
 	        pair.setJobId(jobId);
 	        
 	        scheduledGroupRequestExecutionResultsDao.insert(pair);

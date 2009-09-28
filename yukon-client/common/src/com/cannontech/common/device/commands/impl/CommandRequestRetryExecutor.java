@@ -10,7 +10,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionRetryCallback;
-import com.cannontech.common.device.commands.CommandRequestExecutionContext;
+import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
@@ -45,7 +45,7 @@ public class CommandRequestRetryExecutor<T> {
     }
     
     // EXECUTE
-    public CommandRequestExecutionContext execute(List<T> commands, 
+    public CommandRequestExecutionContextId execute(List<T> commands, 
                                                   CommandCompletionCallback<? super T> callback,
                                                   CommandRequestExecutionType type,
                                                   LiteYukonUser user) {
@@ -53,10 +53,10 @@ public class CommandRequestRetryExecutor<T> {
         CommandRequestExecutionTemplate<T> template = this.commandRequestExecutor.getExecutionTemplate(type, user);
         RetryCallback retryCallback = new RetryCallback(this.commandRequestExecutor, callback, this.retryCount, this.stopRetryAfterDate, this.turnOffQueuingAfterRetryCount, template);
         
-        log.debug("++++++++++ Starting intial execution attempt using retry executor: contextId= " + template.getContext().getId() + " retryCount=" + retryCount + " stopRetryAfterDate=" + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
+        log.debug("++++++++++ Starting intial execution attempt using retry executor: contextId=" + template.getContextId().getId() + " retryCount=" + retryCount + " stopRetryAfterDate=" + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
         template.execute(commands, retryCallback);
         
-        return template.getContext();
+        return template.getContextId();
     }
     
     
@@ -128,7 +128,7 @@ public class CommandRequestRetryExecutor<T> {
                 timeUp ||
                 noMoreFails) {
                 
-                log.debug("++++++++++ Stop retry excutor after " + this.retryDescription + ". contextId= " + this.executionTemplate.getContext().getId() + ". Reason: noMoreRetrys=" + noMoreRetrys + " timeUp=" + timeUp + " noMoreFails=" + noMoreFails +
+                log.debug("++++++++++ Stop retry excutor after " + this.retryDescription + ". contextId= " + this.executionTemplate.getContextId().getId() + ". Reason: noMoreRetrys=" + noMoreRetrys + " timeUp=" + timeUp + " noMoreFails=" + noMoreFails +
                           ". " + this.failedCommands.size() + " failed commands remain and will be handled by delegate callback: " + this.delegateCallback);
                 
                 // these won't be retried after all, send to delegate
@@ -142,13 +142,11 @@ public class CommandRequestRetryExecutor<T> {
             }
             
             // start new execution of failed commands with reduced retry count, same context
-            log.debug("++++++++++ Running another retry executor after " + this.retryDescription + " for " +  this.failedCommands.size() + " failed requests. contextId= " + this.executionTemplate.getContext().getId() + ". ");
+            log.debug("++++++++++ Running another retry executor after " + this.retryDescription + " for " +  this.failedCommands.size() + " failed requests. contextId= " + this.executionTemplate.getContextId().getId() + ". ");
             
-            boolean turnOffQueing = this.turnOffQueuingAfterRetryCount != null &&  this.turnOffQueuingAfterRetryCount > this.retryCount;
-            if (turnOffQueing) {
-                log.debug("++++++++++ Retry executor will be executed with 'noqueue' after " + this.retryDescription + ". turnOffQueuingAfterRetryCount=" + this.turnOffQueuingAfterRetryCount + " contextId= " + this.executionTemplate.getContext().getId() + ". ");
-                
-                this.executionTemplate.setIsNoqueue(true);
+            boolean turnOffQueuing = this.turnOffQueuingAfterRetryCount != null &&  this.turnOffQueuingAfterRetryCount > this.retryCount;
+            if (turnOffQueuing) {
+                log.debug("++++++++++ Retry executor will be executed with 'noqueue' after " + this.retryDescription + ". turnOffQueuingAfterRetryCount=" + this.turnOffQueuingAfterRetryCount + " contextId= " + this.executionTemplate.getContextId().getId() + ". ");
             }
             
             RetryCallback retryCallback = new RetryCallback(this.initialRetryCount, this.commandRequestExecutor, this.delegateCallback, this.retryCount - 1, 
@@ -159,7 +157,8 @@ public class CommandRequestRetryExecutor<T> {
             for (FailedCommandAndError failedCommand : this.failedCommands) {
                 commands.add(failedCommand.getCommand());
             }
-            this.executionTemplate.execute(commands, retryCallback);
+            
+            this.executionTemplate.execute(commands, retryCallback, turnOffQueuing ? true : false);
         }
         
         private String getRetryDesciption(int currentRetryCount, int initialRetryCount) {
