@@ -2470,12 +2470,15 @@ CtiCCSubstationBusStore* CtiCCSubstationBusStore::_instance = NULL;
 
     Returns a pointer to the singleton instance of CtiCCSubstationBusStore
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance()
+CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance(bool unitTest)
 {
     if ( _instance == NULL )
     {
         _instance = new CtiCCSubstationBusStore();
-        _instance->startThreads();
+        if (!unitTest)
+        {
+            _instance->startThreads();
+        }
     }
 
     return _instance;

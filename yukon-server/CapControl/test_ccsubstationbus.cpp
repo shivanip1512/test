@@ -47,12 +47,16 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank)
     CtiCCSubstationBus bus;
     CtiCCSubstation station;
     CtiCCArea area;
-    CtiCCSubstationBusStore* store = new CtiCCSubstationBusStore();
+   CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(true);
     area.setPAOId(3);
     station.setPAOId(2);
     bus.setPAOId(1);
     bus.setPAOName("Test SubBus");
-    
+   bus.setParentId(2);
+   bus.setEventSequence(22);  
+   bus.setCurrentVarLoadPointValue(55, CtiTime());
+   station.setParentId(1);
+   station.setSaEnabledFlag(FALSE);
     store->addAreaToPaoMap(&area);
     area.getSubStationList()->push_back(station.getPAOId());
     store->addSubstationToPaoMap(&station);
