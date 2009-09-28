@@ -33,16 +33,8 @@
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_TEST_CASE(test_get_bank_size)
-{
-    CtiCCSubstationBus bus;
-    bus.setPAOId(1);
-    BOOST_CHECK_EQUAL(bus.getPAOId(), 1);
 
-}
-
-
-BOOST_AUTO_TEST_CASE(test_cannot_control_bank)
+BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
 {
     CtiCCSubstationBus bus;
     CtiCCSubstation station;
