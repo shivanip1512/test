@@ -20,7 +20,7 @@ public enum SystemGroupEnum {
     DEVICETAGS("/System/Device Tags/"),
     OUTAGE_PROCESSING("/Meters/Monitors/Outage/"),
     TAMPER_FLAG_PROCESSING("/Meters/Monitors/Tamper Flag/"),
-    SYSTEMMETERS_DISCONNECTCOLLARS("/System/Meters/Disconnect Collars/"),
+    SYSTEMMETERS_DISCONNECT("/System/Meters/Disconnect/"),
     ;
 
     private String fullPath;
