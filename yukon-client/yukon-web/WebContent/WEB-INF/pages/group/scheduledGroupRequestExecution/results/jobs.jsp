@@ -148,7 +148,16 @@
 					<td class="${tdClass}">${jobWrapper.scheduleDescription}</td>
 					<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
 					<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
-					<td class="${tdClass}" style="text-align:center;"">${filterDisabledText}</td>
+					<td class="${tdClass}" style="text-align:center;"">
+						<c:choose>
+							<c:when test="${jobWrapper.job.disabled}">
+								${filterDisabledText}
+							</c:when>
+							<c:otherwise>
+								${filterEnabledText}
+							</c:otherwise>
+						</c:choose>
+					</td>
 					<td class="${tdClass}" style="text-align:center;">${jobWrapper.job.userContext.yukonUser.username}</td>
 					
 				</tr>
