@@ -26,6 +26,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -117,6 +118,11 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             newDevice.setAddress(address);
             newDevice.getDeviceRoutes().setRouteID(routeId);
 
+            if (newDevice instanceof MCT400SeriesBase) {
+                // Following how DBEditor defaults this field...
+                ((MCT400SeriesBase) newDevice).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(3600));
+            }
+            
             Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
             
             // db change msg
