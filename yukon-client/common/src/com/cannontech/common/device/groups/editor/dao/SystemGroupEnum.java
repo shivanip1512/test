@@ -21,6 +21,7 @@ public enum SystemGroupEnum {
     OUTAGE_PROCESSING("/Meters/Monitors/Outage/"),
     TAMPER_FLAG_PROCESSING("/Meters/Monitors/Tamper Flag/"),
     SYSTEMMETERS_DISCONNECT("/System/Meters/Disconnect/"),
+    SUBSTATION_NAME("/Meters/Substation/"),
     ;
 
     private String fullPath;

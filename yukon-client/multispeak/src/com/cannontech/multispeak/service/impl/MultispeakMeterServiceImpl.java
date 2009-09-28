@@ -867,6 +867,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String cycleGroupName = mspServiceLocation.getBillingCycle();
         updateBillingCyle(cycleGroupName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
         
+        // UPDATE SubstationName GROUP
+        updateSubstationGroup(substationName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
+        
         // ROUTES
         updateMeterRouteForSubstation(newDevice, mspVendor, substationName, meterNumber);
     }
@@ -973,35 +976,71 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Adds the Meter to 'newBilling' Billing child group.  If the billing group does not already
      * exist, then a new Billing sub group is created. 
      */
-    private void updateBillingCyle(String newBilling, String meterNumber, YukonDevice meter,
+    private void updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice,
             String logActionStr, MultispeakVendor mspVendor) {
 
-        boolean alreadyInGroup = false;
         if (!StringUtils.isBlank(newBilling)) {
 
             //Remove from all billing membership groups
             DeviceGroup billingCycledeviceGroup = multispeakFuncs.getBillingCycleDeviceGroup();
             StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(billingCycledeviceGroup);
-            Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, meter);
-            for (StoredDeviceGroup deviceGroup : deviceGroups) {
-                if( deviceGroup.getName().equalsIgnoreCase(newBilling) ) {
-                    System.out.println("Already in billing group:  " + newBilling);
-                    alreadyInGroup = true;
-                } else {
-                    deviceGroupMemberEditorDao.removeDevices(deviceGroup, meter);
-                    mspObjectDao.logMSPActivity(logActionStr,
-                                   "MeterNumber(" + meterNumber + ") - Removed from Group: " + deviceGroup.getFullName() + ".",
-                                   mspVendor.getCompanyName());
-                }
-            }
+            updatePrefixGroup(newBilling, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
+        }
+    }
+    
+    /**
+     * Removes the Meter from all Substation group memberships (all children under Substation).
+     * Adds the Meter to 'substationName' Substation child group.  If the substation group does not already
+     * exist, then a new Substation sub group is created. 
+     */
+    private void updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice,
+            String logActionStr, MultispeakVendor mspVendor) {
 
-            if (!alreadyInGroup) {
-                StoredDeviceGroup billingGroup = deviceGroupEditorDao.getGroupByName(deviceGroupParent, newBilling, true);
-                deviceGroupMemberEditorDao.addDevices(billingGroup, meter);
+        if (!StringUtils.isBlank(substationName)) {
+            
+            //Remove from all substation membership groups
+            DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.SUBSTATION_NAME);
+            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(substationNameDeviceGroup);
+            updatePrefixGroup(substationName, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
+        }
+    }
+
+    /**
+     * Removes meter from all immediate descendants of deviceGroupParent.
+     * Adds meter to a subgroup of deviceGroupParent called groupName.
+     * If groupName does not exist, a new group will be created.
+     * @param groupName
+     * @param meterNumber
+     * @param yukonDevice
+     * @param logActionStr
+     * @param mspVendor
+     * @param deviceGroupParent
+     */
+    private void updatePrefixGroup(String groupName, String meterNumber,
+                             YukonDevice yukonDevice, String logActionStr,
+                             MultispeakVendor mspVendor,
+                             StoredDeviceGroup deviceGroupParent) {
+        boolean alreadyInGroup = false;
+        
+        Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, yukonDevice);
+        for (StoredDeviceGroup deviceGroup : deviceGroups) {
+            if( deviceGroup.getName().equalsIgnoreCase(groupName) ) {
+                System.out.println("Already in group:  " + groupName);
+                alreadyInGroup = true;
+            } else {
+                deviceGroupMemberEditorDao.removeDevices(deviceGroup, yukonDevice);
                 mspObjectDao.logMSPActivity(logActionStr,
-                               "MeterNumber(" + meterNumber+ ") - Added to Group: " + billingGroup.getFullName() + ".",
+                               "MeterNumber(" + meterNumber + ") - Removed from Group: " + deviceGroup.getFullName() + ".",
                                mspVendor.getCompanyName());
             }
+        }
+
+        if (!alreadyInGroup) {
+            StoredDeviceGroup deviceGroup = deviceGroupEditorDao.getGroupByName(deviceGroupParent, groupName, true);
+            deviceGroupMemberEditorDao.addDevices(deviceGroup, yukonDevice);
+            mspObjectDao.logMSPActivity(logActionStr,
+                           "MeterNumber(" + meterNumber+ ") - Added to Group: " + deviceGroup.getFullName() + ".",
+                           mspVendor.getCompanyName());
         }
     }
 
@@ -1483,6 +1522,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         //Update route
         if (!StringUtils.isBlank(substationName)) {
+            //update the substation group
+            updateSubstationGroup(substationName, meter.getMeterNumber(), meter, "MeterAddNotification", mspVendor);
+            
         	updateMeterRouteForSubstation(yukonPaobject.getPAObjectID(), mspVendor, substationName, meter.getMeterNumber());
         }
         
@@ -1553,6 +1595,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         if(dbChange) {
             dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
         }
+        
+        // Verify substation name
+        String substationName = getMeterSubstationName(mspMeter);
+        if (!StringUtils.isBlank(substationName)) {
+            //update the substation group
+            updateSubstationGroup(substationName, meter.getMeterNumber(), meter, "MeterAddNotification", mspVendor);
+        }
+
         mspObjectDao.logMSPActivity("MeterChangedNotification",
                        paoNameLog,
                        mspVendor.getCompanyName());
