@@ -794,8 +794,8 @@ function deleteWarehouse(form, warehouseId) {
 %>
                                   <tr> 
                                     <td class="TableCell" width="5%">&nbsp;</td>
-                                    <td class="TableCell" width="30%"><%= lYukonUser.getUsername() %></td>
-                                    <td class="TableCell" width="40%"><%= groupNames %></td>
+                                    <td class="TableCell" width="30%"><%= StringEscapeUtils.escapeHtml(lYukonUser.getUsername()) %></td>
+                                    <td class="TableCell" width="40%"><%= StringEscapeUtils.escapeHtml(groupNames) %></td>
                                     <td width="10%" class="TableCell"> 
                                       <input type="button" name="Edit4" value="Edit" onclick="location.href='OperatorLogin.jsp?UserID=<%= lYukonUser.getUserID() %>'">
                                     </td>
@@ -825,8 +825,8 @@ function deleteWarehouse(form, warehouseId) {
 %>
                                   <tr> 
                                     <td class="TableCell" width="5%">&nbsp;</td>
-                                    <td class="TableCell" width="30%"><%= liteUser.getUsername() %></td>
-                                    <td class="TableCell" width="40%"><%= groupNames %></td>
+                                    <td class="TableCell" width="30%"><%= StringEscapeUtils.escapeHtml(liteUser.getUsername()) %></td>
+                                    <td class="TableCell" width="40%"><%= StringEscapeUtils.escapeHtml(groupNames) %></td>
                                     <td width="10%" class="TableCell"> 
                                       <input type="button" name="Edit5" value="Edit" onclick="location.href='OperatorLogin.jsp?UserID=<%= liteUser.getUserID() %>'">
                                     </td>

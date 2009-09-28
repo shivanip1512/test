@@ -104,7 +104,7 @@ function validate(form) {
                                 selected
                             <%} %>
                             value="<%= group.getGroupID() %>" 
-                            ><%= group.getGroupName() %></option>
+                            ><%= StringEscapeUtils.escapeHtml(group.getGroupName()) %></option>
 <%
 		}
 %>

@@ -189,7 +189,7 @@ function newCode(form) {
                                 	int[] availUserids = com.cannontech.database.db.contact.Contact.findAvailableUserIDs( sc.getPrimaryContact().getLoginID());
                                 	for( int i = 0; i < availUserids.length; i++ ){
                                 		if(availUserids[i] == UserUtils.USER_DEFAULT_ID || availUserids[i] > 0 ){%>
-                                		<option value='<%=availUserids[i]%>' <%=availUserids[i]==sc.getPrimaryContact().getLoginID()?"selected":""%>><%=DaoFactory.getYukonUserDao().getLiteYukonUser(availUserids[i])%></option>
+                                		<option value='<%=availUserids[i]%>' <%=availUserids[i]==sc.getPrimaryContact().getLoginID()?"selected":""%>><%= StringEscapeUtils.escapeHtml(DaoFactory.getYukonUserDao().getLiteYukonUser(availUserids[i]).toString()) %></option>
                                 	<%}}
                                 %>
                                 </select>

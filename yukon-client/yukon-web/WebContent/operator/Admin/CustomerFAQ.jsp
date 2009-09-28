@@ -3,6 +3,8 @@
 
 <%@ include file="../Consumer/include/StarsHeader.jsp"%>
 
+<cti:verifyRolesAndProperties value="ADMIN_CONFIG_ENERGY_COMPANY"/>
+
 <%
     String faqLink = ServletUtils.getCustomerFAQLink(liteEC);
     boolean inherited = ServletUtils.isCustomerFAQInherited(liteEC);
