@@ -139,11 +139,7 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
             
             boolean removed = orderedRouteIds.remove(initialRouteId);
             if (removed) {
-                
-                List<Integer> reOrderedRouteIds = new ArrayList<Integer>();
-                reOrderedRouteIds.add(initialRouteId);
-                reOrderedRouteIds.addAll(orderedRouteIds);
-                orderedRouteIds = reOrderedRouteIds;
+                orderedRouteIds.add(0, initialRouteId);
             }
         }
         
