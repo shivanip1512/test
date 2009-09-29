@@ -85,7 +85,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     private static final int DEFAULT_TIMEOUT = 60; /* Seconds */
 
     @Override
-    public void clearPhaseData(List<Integer> routeIds, LiteYukonUser user) {
+    public void clearPhaseData(LiteYukonUser user) {
         /* mct410base comes from the deviceDefinition.xml file and represents all mct 410s. */
         /* In the future it would be retrieved from some enum builts on the deviceDefinition.xml file. */
         String command = "putconfig emetcon phasedetect clear broadcast mct_410_base"; 
@@ -104,7 +104,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
                 finishedLatch.countDown();
             }
         };
-        routeBroadcastService.broadcastCommand(command, routeIds, CommandRequestExecutionType.PHASE_DETECT_CLEAR, callback , user);
+        routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), CommandRequestExecutionType.PHASE_DETECT_CLEAR, callback , user);
         try {
             boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
             if(!finishedBeforeTimeout){
@@ -116,7 +116,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     }
     
     @Override
-    public void startPhaseDetect(List<Integer> routeIds, LiteYukonUser user, final Phase phase) {
+    public void startPhaseDetect(LiteYukonUser user, final Phase phase) {
         String delta = phaseDetectData.getDeltaVoltage().toString();
         String interval = phaseDetectData.getIntervalLength().toString();
         String num = phaseDetectData.getNumIntervals().toString();
@@ -137,7 +137,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
                 finishedLatch.countDown();
             }
         };
-        routeBroadcastService.broadcastCommand(command, routeIds, CommandRequestExecutionType.PHASE_DETECT_COMMAND, callback , user);
+        routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), CommandRequestExecutionType.PHASE_DETECT_COMMAND, callback , user);
         try {
             boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
             if(!finishedBeforeTimeout){

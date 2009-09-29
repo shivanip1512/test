@@ -13,9 +13,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.common.model.Route;
+import com.cannontech.core.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
-import com.cannontech.multispeak.db.Route;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
@@ -70,12 +70,12 @@ public class RouteActionController extends  MultiActionController {
         }            
 
         final JSONArray array = JSONArray.fromString(jsonString);
-        final List<Route> routeList = new ArrayList<Route>(array.length());
+        final List<Integer> routeIdList = new ArrayList<Integer>(array.length());
         for (int x = 0; x < array.length(); x++) {
-            routeList.add(new Route(Integer.parseInt(array.getString(x)), null, (x + 1)));
+            routeIdList.add(Integer.parseInt(array.getString(x)));
         }
 
-        strmDao.update(substationId, routeList);
+        strmDao.update(substationId, routeIdList);
         return view(request,response);
     }
 

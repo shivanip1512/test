@@ -1,6 +1,6 @@
-package com.cannontech.multispeak.db;
+package com.cannontech.common.model;
 
-import com.cannontech.multispeak.db.Substation;
+import com.cannontech.common.model.Substation;
 
 public class Substation {
     private int id;

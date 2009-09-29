@@ -1,4 +1,4 @@
-package com.cannontech.multispeak.dao.impl;
+package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,9 +9,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.model.Route;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
-import com.cannontech.multispeak.db.Route;
+import com.cannontech.core.dao.SubstationToRouteMappingDao;
 
 public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMappingDao {
     private static final SqlStatementBuilder insertSql;
@@ -42,12 +43,12 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
         deleteByRouteIdSql.append("WHERE RouteID = ?");
 
         selectAllSql = new SqlStatementBuilder();
-        selectAllSql.append("SELECT PAObjectID,PAOName from YukonPAObject");
+        selectAllSql.append("SELECT PAObjectID,PAOName, Type from YukonPAObject");
         selectAllSql.append("WHERE Category = 'ROUTE'");
         selectAllSql.append("AND PAOClass = 'ROUTE'");
 
         selectBySubIdSql = new SqlStatementBuilder();
-        selectBySubIdSql.append("SELECT PAObjectID,PAOName,Ordering");
+        selectBySubIdSql.append("SELECT PAObjectID, PAOName, Type, Ordering");
         selectBySubIdSql.append("FROM YukonPAObject pao, SubstationToRouteMapping stm, Route");
         selectBySubIdSql.append("WHERE pao.PAObjectID = stm.RouteID");
         selectBySubIdSql.append("AND Route.RouteID = stm.RouteID AND stm.SubstationID = ?");
@@ -84,12 +85,13 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean update(final int substationId, final List<Route> routeList) {
+    public boolean update(final int substationId, final List<Integer> routeIdList) {
         removeAllBySubstationId(substationId);
-
-        for (Route route : routeList) {
-            boolean result = add(substationId, route.getId(), route.getOrder());
+        int order = 1;
+        for (Integer routeId : routeIdList) {
+            boolean result = add(substationId, routeId, order);
             if (!result) return false;
+            order++;
         }
         return true;
     }
@@ -98,7 +100,8 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     public List<Route> getRoutesBySubstationId(final int substationId) {
         return template.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Route>() {
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), rs.getInt("Ordering"));
+                PaoType type = PaoType.getForDbString(rs.getString("Type"));
+                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), rs.getInt("Ordering"), type);
             };
         }, substationId);
     }
@@ -116,7 +119,8 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     public List<Route> getAvailableRoutesBySubstationId(final int substationId) {
         return template.query(selectAvailableSql.toString(), new ParameterizedRowMapper<Route>() {
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1);
+                PaoType type = PaoType.getForDbString(rs.getString("Type"));
+                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1, type);
             }    
         }, substationId);
     }
@@ -125,7 +129,8 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     public List<Route> getAll() {
         return template.query(selectAllSql.toString(), new ParameterizedRowMapper<Route>() {
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1);
+                PaoType type = PaoType.getForDbString(rs.getString("Type"));
+                return new Route(rs.getInt("PAObjectID"), rs.getString("PAOName"), -1, type);
             }    
         });
     }

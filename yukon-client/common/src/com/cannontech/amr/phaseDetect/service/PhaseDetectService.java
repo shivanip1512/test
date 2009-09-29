@@ -6,13 +6,12 @@ import com.cannontech.amr.phaseDetect.data.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface PhaseDetectService {
 
-    public void startPhaseDetect(List<Integer> routeIds, LiteYukonUser user, Phase phase);
+    public void startPhaseDetect(LiteYukonUser user, Phase phase);
     
     public void readPhaseDetect(List<SimpleDevice> devices, Phase constrainToPhase, LiteYukonUser user);
 
@@ -38,6 +37,6 @@ public interface PhaseDetectService {
 
     public String getLastCachedResultKey();
 
-    public void clearPhaseData(List<Integer> routeIds, LiteYukonUser user);
+    public void clearPhaseData(LiteYukonUser user);
 
 }

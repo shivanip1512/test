@@ -15,7 +15,7 @@
                 <th nowrap="nowrap">
                     Route Name
                 </th>
-                <th nowrap="nowrap">
+                <th>
                     Devices
                 </th>
             </tr>
@@ -24,9 +24,10 @@
 		    <c:forEach var="route" items="${routes}">
 		        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 		            <td nowrap="nowrap" style="padding-right: 10px;">
+                        <input id="read_route_${route.id}" name="read_route_${route.id}" checked="checked" type="checkbox">
 		                ${route.name}
 		            </td>
-		            <td nowrap="nowrap">
+		            <td>
 	                    ${routeSizeMap[route.id]}
 		            </td>
 		        </tr>

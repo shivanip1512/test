@@ -1,5 +1,9 @@
 package com.cannontech.amr.phaseDetect.data;
 
+import java.util.List;
+
+import com.cannontech.common.model.Route;
+
 public class PhaseDetectData {
     
     private Integer intervalLength;
@@ -8,6 +12,8 @@ public class PhaseDetectData {
     private Integer substationId;
     private String substationName;
     private boolean readAfterAll;
+    private List<Route> readRoutes;
+    private List<Route> broadcastRoutes;
     
     public Integer getIntervalLength() {
         return intervalLength;
@@ -46,5 +52,21 @@ public class PhaseDetectData {
     
     public void setSubstationName(String substationName) {
         this.substationName = substationName;
+    }
+    
+    public void setBroadcastRoutes(List<Route> broadcastRoutes) {
+        this.broadcastRoutes = broadcastRoutes;
+    }
+    
+    public List<Route> getBroadcastRoutes() {
+        return broadcastRoutes;
+    }
+    
+    public void setReadRoutes(List<Route> readRoutes) {
+        this.readRoutes = readRoutes;
+    }
+    
+    public List<Route> getReadRoutes() {
+        return readRoutes;
     }
 }

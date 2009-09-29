@@ -1,4 +1,4 @@
-package com.cannontech.multispeak.dao.impl;
+package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,11 +8,11 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.SubstationDao;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.multispeak.dao.SubstationDao;
-import com.cannontech.multispeak.db.Substation;
 
 public class SubstationDaoImpl implements SubstationDao {
     private static final ParameterizedRowMapper<Substation> rowMapper;

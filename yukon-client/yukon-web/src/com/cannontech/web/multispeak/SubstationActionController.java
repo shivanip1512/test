@@ -9,10 +9,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.common.model.Substation;
+import com.cannontech.core.dao.SubstationDao;
+import com.cannontech.core.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.multispeak.dao.SubstationDao;
-import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
-import com.cannontech.multispeak.db.Substation;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)

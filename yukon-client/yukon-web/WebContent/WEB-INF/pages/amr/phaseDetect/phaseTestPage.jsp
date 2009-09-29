@@ -3,11 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:msg key="yukon.web.modules.amr.phaseDetect.pageTitle" var="pageTitle"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle" var="sectionTitle"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step4.noteLabel" var="noteLabel"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step4.noteText" var="noteText"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step4.voltIntervalNote" var="voltIntervalNote"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step4.voltDetectNote" var="voltDetectNote"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step5.sectionTitle" var="sectionTitle"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step5.noteLabel" var="noteLabel"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step5.noteText" var="noteText"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step5.voltIntervalNote" var="voltIntervalNote"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step5.voltDetectNote" var="voltDetectNote"/>
 
 <cti:standardPage title="Phase Detection" module="amr">
     <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>

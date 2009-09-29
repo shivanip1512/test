@@ -14,7 +14,6 @@ public class SystemActionsMenuWidget extends WidgetControllerBase {
 
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("systemActionsMenuWidget/render.jsp");
-
         return mav;
     }
 

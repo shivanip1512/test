@@ -29,7 +29,7 @@
 		    	button.enable();
 		    }
 		    var params = {'substationId': selection};
-            new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', parameters: params});
+            new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', evalScripts: true, parameters: params});
         }
 	</script>
 	

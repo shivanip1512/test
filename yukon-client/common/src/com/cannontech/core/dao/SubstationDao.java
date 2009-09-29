@@ -1,10 +1,10 @@
-package com.cannontech.multispeak.dao;
+package com.cannontech.core.dao;
 
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.multispeak.db.Substation;
+import com.cannontech.common.model.Substation;
 
 public interface SubstationDao {
 

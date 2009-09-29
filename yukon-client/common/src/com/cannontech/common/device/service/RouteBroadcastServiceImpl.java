@@ -10,6 +10,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.model.Route;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -20,10 +21,10 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
     CommandRequestRouteAndDeviceExecutorImpl executor;
     
     @Override
-    public void broadcastCommand(final String command, List<Integer> routeIds, CommandRequestExecutionType type, final RouteBroadcastService.CompletionCallback callback, LiteYukonUser user) {
+    public void broadcastCommand(final String command, List<Route> routes, CommandRequestExecutionType type, final RouteBroadcastService.CompletionCallback callback, LiteYukonUser user) {
         
-        ObjectMapper<Integer, CommandRequestRouteAndDevice> objectMapper = new ObjectMapper<Integer, CommandRequestRouteAndDevice>() {
-            public CommandRequestRouteAndDevice map(Integer from) throws ObjectMappingException {
+        ObjectMapper<Route, CommandRequestRouteAndDevice> objectMapper = new ObjectMapper<Route, CommandRequestRouteAndDevice>() {
+            public CommandRequestRouteAndDevice map(Route from) throws ObjectMappingException {
                 return buildRequest(from, command);
             }
         };
@@ -52,16 +53,16 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
             }
         };
         
-        List<CommandRequestRouteAndDevice> commands = new MappingList<Integer, CommandRequestRouteAndDevice>(routeIds, objectMapper);
+        List<CommandRequestRouteAndDevice> commands = new MappingList<Route, CommandRequestRouteAndDevice>(routes, objectMapper);
         
         executor.execute(commands, dummyCallback, type, user);
         
     }
     
-    private CommandRequestRouteAndDevice buildRequest(Integer routeId, String command) {
+    private CommandRequestRouteAndDevice buildRequest(Route route, String command) {
         CommandRequestRouteAndDevice request = new CommandRequestRouteAndDevice();
         request.setDevice(new SimpleDevice(0, PaoType.SYSTEM));
-        request.setRouteId(routeId);
+        request.setRouteId(route.getId());
         
         String commandStr = command;
         request.setCommand(commandStr);

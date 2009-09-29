@@ -1,18 +1,23 @@
-package com.cannontech.multispeak.db;
+package com.cannontech.common.model;
 
-import com.cannontech.multispeak.db.Route;
+import com.cannontech.common.model.Route;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 
-public class Route {
+public class Route implements DisplayablePao{
     private int id;
     private String name;
     private int order;
+    private PaoType paoType;
     
     public Route() { }
     
-    public Route(final int id, final String name, final int order) {
+    public Route(final int id, final String name, final int order, PaoType paoType) {
         this.id = id;
         this.name = name;
         this.order = order;
+        this.paoType = paoType;
     }
     
     public void setId(final int id) {
@@ -60,6 +65,19 @@ public class Route {
         result = result * 37 + name.length();
         result = result * 37 + order;
         return result;
+    }
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(id, paoType);
+    }
+
+    public void setPaoType(PaoType paoType) {
+        this.paoType = paoType;
+    }
+
+    public PaoType getPaoType() {
+        return paoType;
     }
     
 }

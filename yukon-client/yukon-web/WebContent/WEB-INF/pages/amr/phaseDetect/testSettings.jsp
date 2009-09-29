@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:msg key="yukon.web.modules.amr.phaseDetect.pageTitle" var="pageTitle"/>
-<cti:msg key="yukon.web.modules.amr.phaseDetect.step3.sectionTitle" var="sectionTitle"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle" var="sectionTitle"/>
 
 <cti:standardPage title="Phase Detection" module="amr">
     <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>

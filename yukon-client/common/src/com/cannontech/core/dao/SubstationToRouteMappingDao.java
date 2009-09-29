@@ -1,8 +1,8 @@
-package com.cannontech.multispeak.dao;
+package com.cannontech.core.dao;
 
 import java.util.List;
 
-import com.cannontech.multispeak.db.Route;
+import com.cannontech.common.model.Route;
 
 public interface SubstationToRouteMappingDao {
 
@@ -14,7 +14,7 @@ public interface SubstationToRouteMappingDao {
 
     public boolean removeAllByRouteId(int routeId);
 
-    public boolean update(int substationId, List<Route> routeList);
+    public boolean update(int substationId, List<Integer> routeIdList);
 
     public List<Route> getRoutesBySubstationId(int substationId);
     

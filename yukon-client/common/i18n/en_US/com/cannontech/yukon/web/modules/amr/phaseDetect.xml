@@ -2,28 +2,37 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
-    <entry key="yukon.web.modules.amr.phaseDetect.pageTitle">Phase Detect</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.pageTitle">Phase Detection</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.step1.sectionTitle">Step 1: Select A Substation</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle">Step 2: Clear Phase Data</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step3.sectionTitle">Step 3: Test Parameters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle">Step 4: Phase Detect Test</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.sectionTitle">Step 5: Phase Detect Results</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.noteLabel">Instructions:</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.progressLabel">Reading</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.progressBarLabel">Read Progress</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.noteText">Lock out substation voltage regulators on the other two phases as well as all downline voltage regulators.  
+    
+    <entry key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle">Step 2: Select Broadcast Routes</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step2.noteLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step2.noteText">Select the routes to broadcast the clear and phase detect commands on.  Some knowledge of your system's
+    route layout maybe need to understand which routes to unselect to avoid redundant or unnecessary broadcasting commands.</entry>
+    
+    <entry key="yukon.web.modules.amr.phaseDetect.step3.sectionTitle">Step 3: Clear Phase Data</entry>
+    
+    <entry key="yukon.web.modules.amr.phaseDetect.step4.sectionTitle">Step 4 Test Parameters</entry>
+    
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.sectionTitle">Step 5: Phase Detection Test</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.noteLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.progressLabel">Reading</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.progressBarLabel">Read Progress</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.noteText">Lock out substation voltage regulators on the other two phases as well as all downline voltage regulators.  
         For best results, step down one step on regulator right now and then up three steps after the timer expires that appears after 'Send' button is pressed.  After 
         voltage regulators are locked out press 'Send' when ready.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.voltIntervalNote">until you should tell the lineman to adjust the voltage regulators.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step4.voltDetectNote">until you can tell the lineman to return the voltage regulators to normal.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.phaseA.collectionActionLabel">Perform A Collection Action On Phase A Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.phaseB.collectionActionLabel">Perform A Collection Action On Phase B Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.phaseC.collectionActionLabel">Perform A Collection Action On Phase C Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.phaseAB.collectionActionLabel">Perform A Collection Action On Phase AB Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.phaseAC.collectionActionLabel">Perform A Collection Action On Phase AC Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.phaseBC.collectionActionLabel">Perform A Collection Action On Phase BC Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.phaseABC.collectionActionLabel">Perform A Collection Action On Phase ABC Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.undefined.collectionActionLabel">Perform A Collection Action On Undefined Meters</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.step5.failure.collectionActionLabel">Perform A Collection Action On Failure Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.voltIntervalNote">until you should tell the lineman to adjust the voltage regulators.</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step5.voltDetectNote">until you can tell the lineman to return the voltage regulators to normal.</entry>
+    
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.sectionTitle">Step 6: Phase Detection Results</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseA.collectionActionLabel">Perform A Collection Action On Phase A Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseB.collectionActionLabel">Perform A Collection Action On Phase B Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseC.collectionActionLabel">Perform A Collection Action On Phase C Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseAB.collectionActionLabel">Perform A Collection Action On Phase AB Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseAC.collectionActionLabel">Perform A Collection Action On Phase AC Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseBC.collectionActionLabel">Perform A Collection Action On Phase BC Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.phaseABC.collectionActionLabel">Perform A Collection Action On Phase ABC Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.undefined.collectionActionLabel">Perform A Collection Action On Undefined Meters</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.step6.failure.collectionActionLabel">Perform A Collection Action On Failure Meters</entry>
     
 </properties>
