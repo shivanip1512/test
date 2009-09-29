@@ -17,6 +17,9 @@
 #define BOOST_AUTO_TEST_MAIN "Test LM Program"
 #include <boost/test/unit_test.hpp>
 
+// Nonexistent window
+const CtiLMProgramControlWindow *no_window = 0;
+
 
 /*
 ***  TESTING: GetTimeFromOffsetAndDate()
@@ -231,7 +234,6 @@ BOOST_AUTO_TEST_CASE(test_get_wallclock_time_fall_2009_dst_invalid_time)
 BOOST_AUTO_TEST_CASE(test_get_control_window_same_day)
 {
     CtiLMProgramDirect lmProgram;
-    CtiLMProgramControlWindow *no_window = static_cast<CtiLMProgramControlWindow *>(0);
     CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
 
     window1->setPAOId(1);
@@ -268,7 +270,6 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_same_day)
 BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days)
 {
     CtiLMProgramDirect lmProgram;
-    CtiLMProgramControlWindow *no_window = static_cast<CtiLMProgramControlWindow *>(0);
     CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
 
     window1->setPAOId(1);
@@ -303,7 +304,6 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days)
 BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days_end_of_month)
 {
     CtiLMProgramDirect lmProgram;
-    CtiLMProgramControlWindow *no_window = static_cast<CtiLMProgramControlWindow *>(0);
     CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
 
     window1->setPAOId(1);
@@ -340,7 +340,6 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_overlap_two_days_end_of_month)
 BOOST_AUTO_TEST_CASE(test_get_control_window_spring_2009_dst)
 {
     CtiLMProgramDirect lmProgram;
-    CtiLMProgramControlWindow *no_window = static_cast<CtiLMProgramControlWindow *>(0);
     CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
 
     window1->setPAOId(1);
@@ -385,7 +384,6 @@ BOOST_AUTO_TEST_CASE(test_get_control_window_spring_2009_dst)
 BOOST_AUTO_TEST_CASE(test_get_control_window_fall_2009_dst)
 {
     CtiLMProgramDirect lmProgram;
-    CtiLMProgramControlWindow *no_window = static_cast<CtiLMProgramControlWindow *>(0);
     CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
 
     window1->setPAOId(1);
