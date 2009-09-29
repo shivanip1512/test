@@ -43,8 +43,8 @@
     <br>
     
 		
-	<%-- FILTERS --%>
-	<tags:sectionContainer title="${filterSectionText}" id="filterSection">
+	<%-- FILTER POPUP --%>
+    <tags:simplePopup id="filterPopup" title="${filterSectionText}" onClose="$('filterPopup').toggle();">
 	
 		<form name="clearForm" id="clearForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
 		</form>
@@ -91,40 +91,39 @@
 			<br><br>
 		
 		</form>
+		
+	</tags:simplePopup>
 	
-	</tags:sectionContainer>
 	
 	<%-- RESULTS TABLE --%>
-	<tags:sectionContainer title="${executionsSectionText}" id="executionsSection">
+	<tags:filterLink popupId="filterPopup"/>
 	
-		<table id="cresTable" class="resultsTable activeResultsTable">
+	<table id="cresTable" class="resultsTable activeResultsTable">
+	
+		<tr>
+			<th>${executionsTypeText}</th>
+			<th>${executionsStartTimeText}</th>
+			<th>${executionsStopTimeText}</th>
+			<th>${executionsUserText}</th>
+		</tr>
+	
+		<c:forEach var="cre" items="${cres}" varStatus="status">
 		
-			<tr>
-				<th>${executionsTypeText}</th>
-				<th>${executionsStartTimeText}</th>
-				<th>${executionsStopTimeText}</th>
-				<th>${executionsUserText}</th>
+			<tr class="<tags:alternateRow odd="" even="altRow"/>" 
+				onclick="forwardToCreDetail(this, ${cre.id})" 
+				onmouseover="activeResultsTable_highLightRow(this)" 
+				onmouseout="activeResultsTable_unHighLightRow(this)"
+				title="${cre.commandRequestExecutionType.description} ID: ${cre.id}">
+				
+				<td>${cre.commandRequestExecutionType.shortName}</td>
+				<td><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
+				<td><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
+				<td>${cre.userName}</td>
+				
 			</tr>
 		
-			<c:forEach var="cre" items="${cres}" varStatus="status">
-			
-				<tr class="<tags:alternateRow odd="" even="altRow"/>" 
-					onclick="forwardToCreDetail(this, ${cre.id})" 
-					onmouseover="activeResultsTable_highLightRow(this)" 
-					onmouseout="activeResultsTable_unHighLightRow(this)"
-					title="${cre.commandRequestExecutionType.description} ID: ${cre.id}">
-					
-					<td>${cre.commandRequestExecutionType.shortName}</td>
-					<td><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
-					<td><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
-					<td>${cre.userName}</td>
-					
-				</tr>
-			
-			</c:forEach>
-		
-		</table>
+		</c:forEach>
 	
-	</tags:sectionContainer>
-		
+	</table>
+	
 </cti:standardPage>

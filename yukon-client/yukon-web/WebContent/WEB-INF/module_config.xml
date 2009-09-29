@@ -306,13 +306,13 @@
           </links>
 	    </option>
 	    <option id="commandRequestExecution">
-		  <link>/spring/group/scheduledGroupRequestExecution/home</link>
+		  <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
 		  <links>
+		  	<option id="scheduleLogs">
+              <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
+            </option>
 		    <option id="createSchedule">
               <link>/spring/group/scheduledGroupRequestExecution/home</link>
-            </option>
-		    <option id="scheduleLogs">
-              <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
             </option>
           </links>
 	    </option>

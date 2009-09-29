@@ -54,14 +54,14 @@
     <h2>${pageTitle}</h2>
     <br>
     
-    <%-- FILTERS --%>
-    <tags:sectionContainer title="${filterSectionText}" id="filterSection">
-    
-    	<form name="clearForm" id="clearForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs" method="get">
-    	</form>
-		
-		<form name="filterForm" id="filterForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs" method="get">
-		
+    <%-- FILTER POPUP --%>
+    <tags:simplePopup id="filterPopup" title="${filterSectionText}" onClose="$('filterPopup').toggle();">
+     	
+		<form name="clearForm" id="clearForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs" method="get">
+   		</form>
+   		
+   		<form name="filterForm" id="filterForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs" method="get">
+	
 		    <tags:nameValueContainer>
 		    
 		    	<tags:nameValue name="${filerDateFromText}" nameColumnWidth="160px">
@@ -96,76 +96,75 @@
 		    </tags:nameValueContainer>
 			
 			<br>
+			<div style="white-space:nowrap;">
 			<tags:slowInput myFormId="filterForm" labelBusy="${filterButtonText}" label="${filterButtonText}"/>
 			<tags:slowInput myFormId="clearForm" label="${filterClearText}" labelBusy="${filterClearText}"/>
+			</div>
 		</form>
-		
-	</tags:sectionContainer>
-	<br>
+			
+	</tags:simplePopup>	
 	
 	
 	<%-- RESULTS TABLE --%>
-	<tags:sectionContainer title="${executionsSectionText}" id="executionsSection">
+	<tags:filterLink popupId="filterPopup"/>
 	
-		<table id="jobsTable" class="resultsTable activeResultsTable">
+	<table id="jobsTable" class="resultsTable activeResultsTable">
+	
+		<tr>
+			<th>${scheduleNameText}</th>
+			<th>${executionsTypeText}</th>
+			<th>${attributeOrCommandText}</th>
+			<th>${scheduleDescriptionText}</th>
+			<th>${executionsLastRunText}</th>
+			<th>${executionsNextRunText}</th>
+			<th>${executionsEnabledStatusText}</th>
+			<th>${executionsUserText}</th>
+		</tr>
 		
-			<tr>
-				<th>${scheduleNameText}</th>
-				<th>${executionsTypeText}</th>
-				<th>${attributeOrCommandText}</th>
-				<th>${scheduleDescriptionText}</th>
-				<th>${executionsLastRunText}</th>
-				<th>${executionsNextRunText}</th>
-				<th>${executionsEnabledStatusText}</th>
-				<th>${executionsUserText}</th>
+		
+	
+		<c:forEach var="jobWrapper" items="${jobWrappers}">
+	    				
+	    	<c:set var="tdClass" value=""/>
+			<c:if test="${jobWrapper.job.disabled}">
+				<c:set var="tdClass" value="subtleGray"/>
+			</c:if>
+		
+			<tr class="<tags:alternateRow odd="" even="altRow"/>" 
+				onclick="forwardToJobDetail(this, ${jobWrapper.job.id})" 
+				onmouseover="activeResultsTable_highLightRow(this)" 
+				onmouseout="activeResultsTable_unHighLightRow(this)"
+				title="ID: ${jobWrapper.job.id}">
+				
+				<td class="${tdClass}">${jobWrapper.name}</td>
+				<td class="${tdClass}">${jobWrapper.commandRequestTypeShortName}</td>
+				<td class="${tdClass}">
+					<c:if test="${not empty jobWrapper.attributes}">
+						${jobWrapper.attributeDescriptions} ${attributeWord}<c:if test="${fn:length(jobWrapper.attributes) > 1}">s</c:if>
+					</c:if>
+					<c:if test="${not empty jobWrapper.command}">
+						${jobWrapper.command}
+					</c:if>
+				</td>
+				<td class="${tdClass}">${jobWrapper.scheduleDescription}</td>
+				<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
+				<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
+				<td class="${tdClass}" style="text-align:center;"">
+					<c:choose>
+						<c:when test="${jobWrapper.job.disabled}">
+							${filterDisabledText}
+						</c:when>
+						<c:otherwise>
+							${filterEnabledText}
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td class="${tdClass}" style="text-align:center;">${jobWrapper.job.userContext.yukonUser.username}</td>
+				
 			</tr>
-			
-			
 		
-			<c:forEach var="jobWrapper" items="${jobWrappers}">
-		    				
-		    	<c:set var="tdClass" value=""/>
-				<c:if test="${jobWrapper.job.disabled}">
-					<c:set var="tdClass" value="subtleGray"/>
-				</c:if>
-			
-				<tr class="<tags:alternateRow odd="" even="altRow"/>" 
-					onclick="forwardToJobDetail(this, ${jobWrapper.job.id})" 
-					onmouseover="activeResultsTable_highLightRow(this)" 
-					onmouseout="activeResultsTable_unHighLightRow(this)"
-					title="ID: ${jobWrapper.job.id}">
-					
-					<td class="${tdClass}">${jobWrapper.name}</td>
-					<td class="${tdClass}">${jobWrapper.commandRequestTypeShortName}</td>
-					<td class="${tdClass}">
-						<c:if test="${not empty jobWrapper.attributes}">
-							${jobWrapper.attributeDescriptions} ${attributeWord}<c:if test="${fn:length(jobWrapper.attributes) > 1}">s</c:if>
-						</c:if>
-						<c:if test="${not empty jobWrapper.command}">
-							${jobWrapper.command}
-						</c:if>
-					</td>
-					<td class="${tdClass}">${jobWrapper.scheduleDescription}</td>
-					<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
-					<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
-					<td class="${tdClass}" style="text-align:center;"">
-						<c:choose>
-							<c:when test="${jobWrapper.job.disabled}">
-								${filterDisabledText}
-							</c:when>
-							<c:otherwise>
-								${filterEnabledText}
-							</c:otherwise>
-						</c:choose>
-					</td>
-					<td class="${tdClass}" style="text-align:center;">${jobWrapper.job.userContext.yukonUser.username}</td>
-					
-				</tr>
-			
-			</c:forEach>
-		
-		</table>
+		</c:forEach>
 	
-	</tags:sectionContainer>
+	</table>
 	
 </cti:standardPage>

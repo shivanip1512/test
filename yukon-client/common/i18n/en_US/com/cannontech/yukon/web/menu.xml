@@ -96,8 +96,8 @@
 <entry key="yukon.web.menu.config.amr.devicegroups.scheduledGroupRequestExecution">Scheduled Request</entry>
 <entry key="yukon.web.menu.config.amr.devicegroups.updater">Upload</entry>
 <entry key="yukon.web.menu.config.amr.commandRequestExecution">Schedules</entry>
+<entry key="yukon.web.menu.config.amr.commandRequestExecution.scheduleLogs">All</entry>
 <entry key="yukon.web.menu.config.amr.commandRequestExecution.createSchedule">Create</entry>
-<entry key="yukon.web.menu.config.amr.commandRequestExecution.scheduleLogs">Logs</entry>
 
 <!-- Demand Response module -->
 <entry key="yukon.web.menu.config.dr.home">Demand Response</entry>
