@@ -2453,22 +2453,23 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         {
             _cmd["arms"] = CtiParseValue("TRUE");
         }
+        //This will set broadcast to a device type to be used by the system device.
+        if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString("broadcast[ =]*[a-z0-9_]+")))).empty() )
+        {
+            CtiString val;
+            temp2.erase(0,9);//broadcast
+            if(!(val = temp2.match((const boost::regex)("[a-z0-9_]+"))).empty())
+            {
+                val = val.strip(CtiString::both, '=');
+                val = val.strip(CtiString::both, ' ');
+                _cmd["broadcast"] = CtiParseValue(val.c_str());
+            }
+        }
         if(CmdStr.contains(" phasedetect"))
         {
             CtiString val;
             INT setpoint = 0;
             _cmd["phasedetect"] = CtiParseValue("TRUE");
-
-            if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString("broadcast[ =]*[a-z0-9_]+")))).empty() )
-            {
-                temp2.erase(0,9);//broadcast
-                if(!(val = temp2.match((const boost::regex)("[a-z0-9_]+"))).empty())
-                {
-                    val = val.strip(CtiString::both, '=');
-                    val = val.strip(CtiString::both, ' ');
-                    _cmd["phasedetectbroadcast"] = CtiParseValue(val.c_str());
-                }
-            }
 
             if(!(temp2 = CmdStr.match( CtiString(" clear"))).empty())
             {
@@ -2477,7 +2478,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
             else
             {
                 if(!(temp2 = CmdStr.match( (const boost::regex) (CtiString(" phase") + str_phase) )).empty() )
-               {
+                {
                     if(!(val = temp2.match(re_phase)).empty())
                     {
                         val = val.strip(CtiString::both, '=');

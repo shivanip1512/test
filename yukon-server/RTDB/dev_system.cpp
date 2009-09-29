@@ -77,10 +77,10 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         {
         case PutConfigRequest:
             {
-                if (parse.isKeyValid("phasedetect") && parse.isKeyValid("phasedetectbroadcast"))
+                if (parse.isKeyValid("phasedetect") && parse.isKeyValid("broadcast"))
                 {
                     int nRet = NORMAL;
-                    string broadcastType = parse.getsValue("phasedetectbroadcast");
+                    string broadcastType = parse.getsValue("broadcast");
 
                     CtiReturnMsg * errRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr),
                                              "(none)",

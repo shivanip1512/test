@@ -1281,7 +1281,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if(parse.isKeyValid("phasedetect"))
     {
-        buildPhaseDetectOutMessage(parse,OutMessage);
+        found = buildPhaseDetectOutMessage(parse,OutMessage);
     }
     else
     {
