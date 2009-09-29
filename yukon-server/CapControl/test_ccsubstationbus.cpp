@@ -36,33 +36,34 @@ using namespace std;
 
 BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
 {
-    CtiCCSubstationBus bus;
-    CtiCCSubstation station;
-    CtiCCArea area;
+    CtiCCSubstationBus *bus = new CtiCCSubstationBus();
+    CtiCCSubstation *station = new CtiCCSubstation();
+    CtiCCArea *area = new CtiCCArea();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(true);
-    area.setPAOId(3);
-    station.setPAOId(2);
-    bus.setPAOId(1);
-    bus.setPAOName("Test SubBus");
-    bus.setParentId(2);
-    bus.setEventSequence(22);  
-    bus.setCurrentVarLoadPointValue(55, CtiTime());
-    station.setParentId(1);
-    station.setSaEnabledFlag(FALSE);
-    store->addAreaToPaoMap(&area);
-    area.getSubStationList()->push_back(station.getPAOId());
-    store->addSubstationToPaoMap(&station);
-    station.getCCSubIds()->push_back(bus.getPAOId());
-    store->addSubBusToPaoMap(&bus);
+    area->setPAOId(3);
+    station->setPAOId(2);
+    bus->setPAOId(1);
+    bus->setPAOName("Test SubBus");
+    bus->setParentId(2);
+    bus->setEventSequence(22);  
+    bus->setCurrentVarLoadPointValue(55, CtiTime());
+    station->setParentId(1);
+    station->setSaEnabledFlag(FALSE);
+    store->addAreaToPaoMap(area);
+    area->getSubStationList()->push_back(station->getPAOId());
+    store->addSubstationToPaoMap(station);
+    station->getCCSubIds()->push_back(bus->getPAOId());
+    store->addSubBusToPaoMap(bus);
 
-    bus.setCorrectionNeededNoBankAvailFlag(FALSE);
+    bus->setCorrectionNeededNoBankAvailFlag(FALSE);
     CtiMultiMsg_vec ccEvents;
-    bus.createCannotControlBankText("Increase Var", "Open", ccEvents);
-    BOOST_CHECK_EQUAL(bus.getCorrectionNeededNoBankAvailFlag(), 1);
+    bus->createCannotControlBankText("Increase Var", "Open", ccEvents);
+    BOOST_CHECK_EQUAL(bus->getCorrectionNeededNoBankAvailFlag(), 1);
     BOOST_CHECK_EQUAL(ccEvents.size(), 1);
-    bus.createCannotControlBankText("Increase Var", "Open", ccEvents);
+    bus->createCannotControlBankText("Increase Var", "Open", ccEvents);
     BOOST_CHECK_EQUAL(ccEvents.size(), 1);
-    bus.setCorrectionNeededNoBankAvailFlag(FALSE);
-    bus.createCannotControlBankText("Increase Var", "Open", ccEvents);
+    bus->setCorrectionNeededNoBankAvailFlag(FALSE);
+    bus->createCannotControlBankText("Increase Var", "Open", ccEvents);
     BOOST_CHECK_EQUAL(ccEvents.size(), 2);
+    store->deleteInstance();
 }
