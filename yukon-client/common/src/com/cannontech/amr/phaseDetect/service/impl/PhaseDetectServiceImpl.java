@@ -88,7 +88,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     public void clearPhaseData(LiteYukonUser user) {
         /* mct410base comes from the deviceDefinition.xml file and represents all mct 410s. */
         /* In the future it would be retrieved from some enum builts on the deviceDefinition.xml file. */
-        String command = "putconfig emetcon phasedetect clear broadcast mct_410_base"; 
+        String command = "putconfig emetcon phasedetect clear broadcast MCT_410_BASE"; 
         
         final CountDownLatch finishedLatch = new CountDownLatch(1);
         
@@ -120,7 +120,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         String delta = phaseDetectData.getDeltaVoltage().toString();
         String interval = phaseDetectData.getIntervalLength().toString();
         String num = phaseDetectData.getNumIntervals().toString();
-        String command = "putconfig emetcon phasedetect broadcast mct_410_base phase " + phase.name() + " delta " + delta + " interval " + interval + " num " + num;
+        String command = "putconfig emetcon phasedetect broadcast MCT_410_BASE phase " + phase.name() + " delta " + delta + " interval " + interval + " num " + num;
         
         final CountDownLatch finishedLatch = new CountDownLatch(1);
         
