@@ -4077,7 +4077,6 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
 //Voltage Phase Timestamp(byte 1-4)
 //First Interval Voltage (byte 5-6)
 //Last Interval Voltage (byte 7-8)
-    int phase = 0;
     string phaseStr;
     unsigned long volt_timestamp;
     float first_interval_voltage, last_interval_voltage;
@@ -4086,15 +4085,26 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
     {
         // No error occured, we must do a real decode!
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
  //       Binary Values: 00 - Phase Unknown (default)
  //                      01 - Phase A
  //                      10 - Phase B
  //                      11 - Phase C
  //                      Other - Invalid
-
-        phase = DSt->Message[0] & 0xFF;
+        int phase = DSt->Message[0] & 0xFF;
+        point_info pi_phase;
+        pi_phase.quality = NormalQuality;
+        pi_phase.value = phase;
         switch( phase )
         {
             case 1:
@@ -4128,26 +4138,15 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
                                   DSt->Message[6] ) * 0.1;
         last_interval_voltage =  (DSt->Message[7] <<  8 |
                                   DSt->Message[8] ) * 0.1;
-
-        resultStr  = getName() + " / Phase: " + phaseStr ;
-        resultStr += " ( " + CtiTime(volt_timestamp).asString() + " )\n";
-        resultStr  += "First Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
+               
+        insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
+        resultStr  = "\nFirst Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
         resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage, 1);
 
-        if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
-        {
-            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-            ReturnMsg->setResultString(resultStr);
+        ReturnMsg->setResultString(resultStr);
 
-            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            status = MEMORY;
-        }
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        
     }
 
     return status;

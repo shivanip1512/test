@@ -300,6 +300,7 @@ protected:
         PointOffset_VoltageMin    =   15,
 
         PointOffset_Analog_Outage =  100,
+        PointOffset_Status_PhaseDetect =  3000,
     };
 
     enum ChannelIdentifiers
