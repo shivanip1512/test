@@ -20,6 +20,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
@@ -86,8 +87,10 @@ public class LoadGroupControllerHelper {
             filters.add(detailFilter);
         }
 
-        filters.add(new AuthorizedFilter(paoAuthorizationService,
-                                         userContext.getYukonUser()));
+        filters.add(new AuthorizedFilter(paoAuthorizationService, 
+                                         userContext.getYukonUser(), 
+                                         Permission.LM_VISIBLE));
+        
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
         }

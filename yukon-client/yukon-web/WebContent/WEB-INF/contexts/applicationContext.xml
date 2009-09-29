@@ -827,6 +827,10 @@
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     
+    <bean id="checkPaoAuthorizationTagPrototype" class="com.cannontech.web.taglib.CheckPaoAuthorizationTag">
+        <property name="paoAuthorizationService" ref="paoAuthorizationService"/>
+    </bean>
+    
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
         <property name="maxCacheSize" value="50" />
         <property name="accessOrder" value="true" />

@@ -22,6 +22,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -140,8 +141,12 @@ public class ProgramController {
             YukonUserContext userContext,
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
+        
         DisplayablePao program = programService.getProgram(programId);
-        // TODO:  check permissions
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE);
+        
         modelMap.addAttribute("program", program);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
@@ -165,14 +170,18 @@ public class ProgramController {
             ModelMap modelMap, YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
 
+        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE,
+                                                     Permission.CONTROL_COMMAND);
+        
         backingBean.setGearNumber(1);
         backingBean.setStartNow(true);
         backingBean.setStartDate(new Date());
         backingBean.setScheduleStop(true);
         backingBean.setStopDate(new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusHours(4).toDate());
 
-        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
-        // TODO:  check permissions
         modelMap.addAttribute("program", program);
 
         boolean autoObserveConstraintsAllowed =
@@ -209,9 +218,12 @@ public class ProgramController {
             ModelMap modelMap, YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
 
-        // TODO:  check permissions
-
         DisplayablePao program = programService.getProgram(backingBean.getProgramId());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE,
+                                                     Permission.CONTROL_COMMAND);
+
         modelMap.addAttribute("program", program);
 
         // If the gear is a target cycle gear, ask for target cycle adjustments.
@@ -269,12 +281,18 @@ public class ProgramController {
             ModelMap modelMap, YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
 
+        int programId = backingBean.getProgramId();
+        DisplayablePao program = programService.getProgram(programId);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE,
+                                                     Permission.CONTROL_COMMAND);
+        
         // TODO:  if override, make sure override is allowed...
         boolean overrideAllowed =
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
 
-        // TODO:  check permissions
-        programService.startProgram(userContext, backingBean.getProgramId(),
+        programService.startProgram(userContext, programId,
                                     backingBean.getGearNumber(),
                                     backingBean.getStartDate(),
                                     backingBean.getStopDate(),

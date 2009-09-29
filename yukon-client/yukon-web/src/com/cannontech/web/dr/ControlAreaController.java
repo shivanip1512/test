@@ -24,14 +24,15 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.DurationFormattingService.DurationFormat;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaDisplayField;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
+import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -90,6 +91,11 @@ public class ControlAreaController {
             BindingResult result, SessionStatus status) {
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+        
+        filters.add(new AuthorizedFilter(paoAuthorizationService, 
+                                         userContext.getYukonUser(), 
+                                         Permission.LM_VISIBLE));
+        
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
         }
@@ -130,7 +136,9 @@ public class ControlAreaController {
             BindingResult result, SessionStatus status) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE);
         
         modelMap.addAttribute("controlArea", controlArea);
 
@@ -146,7 +154,10 @@ public class ControlAreaController {
             YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         modelMap.addAttribute("controlArea", controlArea);
         modelMap.addAttribute("isEnabled", isEnabled);
@@ -158,9 +169,12 @@ public class ControlAreaController {
             YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
-        controlAreaService.setEnabled(controlAreaId, isEnabled);
+        controlAreaService.setEnabled(controlAreaId, isEnabled, userContext);
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -172,7 +186,10 @@ public class ControlAreaController {
                                        YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         modelMap.addAttribute("controlArea", controlArea);
         return "dr/controlArea/sendResetPeakConfirm.jsp";
@@ -182,9 +199,12 @@ public class ControlAreaController {
     public String resetPeak(ModelMap modelMap, int controlAreaId, YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
-        controlAreaService.resetPeak(controlAreaId);
+        controlAreaService.resetPeak(controlAreaId, userContext);
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -196,7 +216,10 @@ public class ControlAreaController {
                                             YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         DatedObject<LMControlArea> datedControlArea = 
             this.loadControlClientConnection.getDatedControlArea(controlAreaId);
@@ -226,7 +249,10 @@ public class ControlAreaController {
                                               YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         modelMap.addAttribute("controlArea", controlArea);
         modelMap.addAttribute("startTime", startTime);
@@ -245,14 +271,18 @@ public class ControlAreaController {
                                    String stopTime, YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         int startSeconds = this.parseTime(startTime);
         int stopSeconds = this.parseTime(stopTime);
         
         controlAreaService.changeTimeWindow(controlAreaId, 
                                             startSeconds, 
-                                            stopSeconds);
+                                            stopSeconds,
+                                            userContext);
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -264,7 +294,10 @@ public class ControlAreaController {
                                          YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         DatedObject<LMControlArea> datedControlArea = 
             this.loadControlClientConnection.getDatedControlArea(controlAreaId);
@@ -283,13 +316,17 @@ public class ControlAreaController {
                                 YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        this.checkUserPaoPermission(controlArea, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     controlArea, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         controlAreaService.changeTriggers(controlAreaId, 
                                           threshold1, 
                                           offset1, 
                                           threshold2, 
-                                          offset2);
+                                          offset2,
+                                          userContext);
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -344,23 +381,6 @@ public class ControlAreaController {
         }
         
         return startSeconds < stopSeconds;
-    }
-    
-    /**
-     * Helper method to check permssions for a control area
-     * @param controlArea- Load Group in question
-     * @param user - User to check permissions for
-     */
-    private void checkUserPaoPermission(DisplayablePao controlArea, LiteYukonUser user) {
-        // TODO: check permissions here
-        
-//        if (!paoAuthorizationService.isAuthorized(user,
-//                                                  Permission.LM_VISIBLE,
-//                                                  loadGroup)) {
-//            throw new NotAuthorizedException("LoadGroup " + loadGroup.getPaoIdentifier().getPaoId() + " is not visible to user.");
-//        }
-
-        
     }
 
     @InitBinder

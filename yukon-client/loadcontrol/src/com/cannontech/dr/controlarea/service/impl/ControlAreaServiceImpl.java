@@ -17,6 +17,7 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -45,6 +46,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     private ControlAreaDao controlAreaDao;
     private LoadControlClientConnection loadControlClientConnection;
     private FilterService filterService;
+    private DemandResponseEventLogService demandResponseEventLogService;
 
     private static class TriggerRowMapper implements RowMapperWithBaseQuery<ControlAreaTrigger> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId = Maps.newHashMap();
@@ -223,7 +225,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
     
     @Override
-    public void resetPeak(int controlAreaId) {
+    public void resetPeak(int controlAreaId, YukonUserContext userContext) {
         
         ControlArea controlArea = this.getControlArea(controlAreaId);
         
@@ -239,19 +241,30 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
         loadControlClientConnection.write(multi);
         
+        demandResponseEventLogService.controlAreaPeakReset(userContext.getYukonUser(), 
+                                                           controlArea.getName());
     }
     
     @Override
-    public void setEnabled(int controlAreaId, boolean isEnabled) {
+    public void setEnabled(int controlAreaId, boolean isEnabled, YukonUserContext userContext) {
         int loadControlCommand = isEnabled ? LMCommand.ENABLE_CONTROL_AREA
                 : LMCommand.DISABLE_CONTROL_AREA;
         Message msg = new LMCommand(loadControlCommand, controlAreaId, 0, 0.0);
         loadControlClientConnection.write(msg);
+        
+        ControlArea controlArea = this.getControlArea(controlAreaId);
+        if(isEnabled) {
+            demandResponseEventLogService.controlAreaEnabled(userContext.getYukonUser(), 
+                                                             controlArea.getName());
+        } else {
+            demandResponseEventLogService.controlAreaDisabled(userContext.getYukonUser(), 
+                                                              controlArea.getName());
+        }
     }
     
     @Override
     public void changeTriggers(int controlAreaId, Double threshold1, Double offset1, 
-                               Double threshold2, Double offset2) {
+                               Double threshold2, Double offset2, YukonUserContext userContext) {
 
         DatedObject<LMControlArea> datedControlArea = 
             loadControlClientConnection.getDatedControlArea(controlAreaId);
@@ -280,10 +293,15 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
 
         loadControlClientConnection.write(multi);
+        demandResponseEventLogService.controlAreaTriggersChanged(userContext.getYukonUser(), 
+                                                                 controlArea.getYukonName(),
+                                                                 threshold1, offset1, 
+                                                                 threshold2, offset2);
     }
     
     @Override
-    public void changeTimeWindow(int controlAreaId, Integer startSeconds, Integer stopSeconds) {
+    public void changeTimeWindow(int controlAreaId, Integer startSeconds, Integer stopSeconds, 
+                                 YukonUserContext userContext) {
         
         Multi<LMCommand> multi = new Multi<LMCommand>();
         
@@ -307,6 +325,12 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
         
         loadControlClientConnection.write(multi);
+        
+        ControlArea controlArea = this.getControlArea(controlAreaId);
+        demandResponseEventLogService.controlAreaTimeWindowChanged(userContext.getYukonUser(), 
+                                                                   controlArea.getName(),
+                                                                   startSeconds,
+                                                                   stopSeconds);
     }
     
     @Override
@@ -370,5 +394,11 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     @Autowired
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
+    }
+    
+    @Autowired
+    public void setDemandResponseEventLogService(
+                                 DemandResponseEventLogService demandResponseEventLogService) {
+        this.demandResponseEventLogService = demandResponseEventLogService;
     }
 }

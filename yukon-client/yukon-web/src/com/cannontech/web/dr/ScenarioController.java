@@ -17,11 +17,11 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.model.DisplayablePaoComparator;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -36,12 +36,17 @@ public class ScenarioController {
     private ProgramControllerHelper programControllerHelper;
 
     @RequestMapping("/scenario/list")
-    public String list(ModelMap modelMap, YukonUserContext userContext,
-            @ModelAttribute("backingBean") ListBackingBean backingBean, BindingResult result,
-            SessionStatus status) {
+    public String list(ModelMap modelMap, 
+                       YukonUserContext userContext,
+                       @ModelAttribute("backingBean") ListBackingBean backingBean, 
+                       BindingResult result,
+                       SessionStatus status) {
         // TODO:  validation on backing bean
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+
+        filters.add(new AuthorizedFilter(paoAuthorizationService, userContext.getYukonUser()));
+        
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
         }
@@ -61,16 +66,18 @@ public class ScenarioController {
     }
 
     @RequestMapping("/scenario/detail")
-    public String detail(int scenarioId, ModelMap modelMap,
-            YukonUserContext userContext,
-            @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
-            BindingResult result, SessionStatus status) {
+    public String detail(int scenarioId, 
+                         ModelMap modelMap,
+                         YukonUserContext userContext,
+                         @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
+                         BindingResult result, 
+                         SessionStatus status) {
+        
         DisplayablePao scenario = scenarioService.getScenario(scenarioId);
-        if (false && !paoAuthorizationService.isAuthorized(userContext.getYukonUser(),
-                                                 Permission.LM_VISIBLE, scenario)) {
-            throw new NotAuthorizedException("Scenario " + scenarioId
-                                             + " is not visible to user.");
-        }
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     scenario, 
+                                                     Permission.LM_VISIBLE);
+        
         modelMap.addAttribute("scenario", scenario);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);

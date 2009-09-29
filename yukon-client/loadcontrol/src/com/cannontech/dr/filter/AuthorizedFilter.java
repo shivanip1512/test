@@ -14,11 +14,21 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class AuthorizedFilter implements UiFilter<DisplayablePao> {
     private PaoAuthorizationService paoAuthorizationService;
     private LiteYukonUser user;
+    private Permission[] permissions;
 
+    /**
+     * Constructor for Authorization filter
+     * @param paoAuthorizationService - authorization service
+     * @param user - User to check permissions for
+     * @param permissions - Permissions to check - the user must be authorized for ALL permissions
+     *                      for the pao in order to 'match'
+     */
     public AuthorizedFilter(PaoAuthorizationService paoAuthorizationService,
-            LiteYukonUser user) {
+                            LiteYukonUser user,
+                            Permission... permissions) {
         this.paoAuthorizationService = paoAuthorizationService;
         this.user = user;
+        this.permissions = permissions;
     }
 
     @Override
@@ -29,11 +39,16 @@ public class AuthorizedFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                // TODO:
+                
+                for(Permission permission : permissions) {
+                    if(!paoAuthorizationService.isAuthorized(user,
+                                                             permission,
+                                                             pao)) {
+                        return false;
+                    }
+                }
+                
                 return true;
-//                return paoAuthorizationService.isAuthorized(user,
-//                                                            Permission.LM_VISIBLE,
-//                                                            pao);
             }});
         return retVal;
     }

@@ -29,6 +29,19 @@ public enum ProgramDisplayField {
             return new DisplayablePaoComparator(userContext, isDescending);
         }
     },
+    ENABLED {
+        @Override
+        public MessageSourceResolvable getValue(LMProgramBase program) {
+            return YukonMessageSourceResolvable.createDefault("", 
+                                                              String.valueOf(!program.getDisableFlag()));
+        }
+        
+        @Override
+        public Comparator<DisplayablePao> getSorter(ObjectMapper<DisplayablePao, LMProgramBase> mapper,
+                                                    final YukonUserContext userContext, boolean isDescending) {
+            return null;
+        }
+    },
     STATE {
         @Override
         public MessageSourceResolvable getValue(LMProgramBase program) {

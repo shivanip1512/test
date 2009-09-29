@@ -2,5 +2,24 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={2} by {0}</entry>
+    <!-- AMR -->
+    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={2} by {0}</entry>
+
+    <!-- Demand Response -->
+
+    <!-- Control Area -->
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {1} was started at {4} by user {0}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {1} was stopped at {4} by user {0}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged">Control area {1} had its triggers changed by user {0}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged">Control area {1} had its time window changed to {3} - {4} (in seconds from midnight) by user {0}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaEnabled">Control area {1} was enabled by user {0}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {1} was disabled by user {0}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {1} had its triggers peak(s) reset by user {0}</entry>
+
+    <!-- Load Group -->
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupShed">Load group {1} was shed for {3} seconds by user {0}</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupRestore">Load group {1} was restored by user {0}</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupEnabled">Load group {1} was enabled by user {0}</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {1} was disabled by user {0}</entry>
+    
 </properties>

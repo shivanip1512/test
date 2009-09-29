@@ -71,17 +71,26 @@
   </tag>  
 
   <tag>
-  	<name>checkDeviceAuthorization</name>
-  	<tag-class>com.cannontech.web.taglib.CheckDeviceAuthorization</tag-class>
+  	<name>checkPaoAuthorization</name>
+  	<tag-class>com.cannontech.web.taglib.CheckPaoAuthorizationTag</tag-class>
+    <body-content>scriptless</body-content>
   	<attribute>
-  		<name>device</name>
+  		<name>pao</name>
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
+        <description>YukonPao to check permission for</description>
   	</attribute>	
   	<attribute>
   		<name>permission</name>
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
+        <description>String value of Permission to check</description>
+  	</attribute>	
+  	<attribute>
+  		<name>invert</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+        <description>Set to true to check if the user does NOT have authorization</description>
   	</attribute>	
   </tag>  
 

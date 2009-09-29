@@ -11,6 +11,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -35,6 +36,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     private LoadGroupDao loadGroupDao = null;
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
+    private DemandResponseEventLogService demandResponseEventLogService;
 
     @Override
     public LMDirectGroupBase map(DisplayablePao from) throws ObjectMappingException {
@@ -74,28 +76,46 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }    
 
     @Override
-    public void sendShed(int loadGroupId, int durationInSeconds) {
-        // TODO:  Log action
+    public void sendShed(int loadGroupId, int durationInSeconds, YukonUserContext userContext) {
+
         Message msg = new LMCommand(LMCommand.SHED_GROUP, loadGroupId,
                                     durationInSeconds, 0.0);
         loadControlClientConnection.write(msg);
+        
+        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        demandResponseEventLogService.loadGroupShed(userContext.getYukonUser(), 
+                                                    loadGroup.getName(), 
+                                                    durationInSeconds);
     }
 
     @Override
-    public void sendRestore(int loadGroupId) {
-        // TODO:  Log action
+    public void sendRestore(int loadGroupId, YukonUserContext userContext) {
+
         Message msg = new LMCommand(LMCommand.RESTORE_GROUP, loadGroupId,
                                     0, 0.0);
         loadControlClientConnection.write(msg);
+
+        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        demandResponseEventLogService.loadGroupRestore(userContext.getYukonUser(), 
+                                                       loadGroup.getName());
     }
 
     @Override
-    public void setEnabled(int loadGroupId, boolean isEnabled) {
-        // TODO:  Log action
+    public void setEnabled(int loadGroupId, boolean isEnabled, YukonUserContext userContext) {
+
         int loadControlCommand = isEnabled ? LMCommand.ENABLE_GROUP
                 : LMCommand.DISABLE_GROUP;
         Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);
         loadControlClientConnection.write(msg);
+        
+        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        if(isEnabled) {
+            demandResponseEventLogService.loadGroupEnabled(userContext.getYukonUser(), 
+                                                           loadGroup.getName());
+        } else {
+            demandResponseEventLogService.loadGroupDisabled(userContext.getYukonUser(), 
+                                                            loadGroup.getName());
+        }
     }
     
     @Override
@@ -144,5 +164,11 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Autowired
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
+    }
+    
+    @Autowired
+    public void setDemandResponseEventLogService(
+                                                 DemandResponseEventLogService demandResponseEventLogService) {
+        this.demandResponseEventLogService = demandResponseEventLogService;
     }
 }

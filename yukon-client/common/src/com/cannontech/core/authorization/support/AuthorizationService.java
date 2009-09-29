@@ -1,5 +1,6 @@
 package com.cannontech.core.authorization.support;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface AuthorizationService<T> {
@@ -14,4 +15,14 @@ public interface AuthorizationService<T> {
      */
     public boolean isAuthorized(LiteYukonUser user, Permission permission, T object);
 
+    /**
+     * Method to determine if a user is authorized for ALL of the given permissions for
+     * the given object
+     * @param user - User to verify permission for
+     * @param object - Object to verify permission for
+     * @param permissions - Permissions to verify
+     * @return Throws NotAuthorizedException if the user is not authorized for ALL of the permissions
+     */
+    public void verifyAllPermissions(LiteYukonUser user, T object, Permission... permissions)
+            throws NotAuthorizedException;
 }

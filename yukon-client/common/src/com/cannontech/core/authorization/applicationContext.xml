@@ -149,7 +149,7 @@
 
 	<!-- 
 		Service which authorizes permissions for LM objects based on a role property.  This service is
-		neccessary because some LM objects are not paos.  Contains a list of authorizations which map an 
+		necessary because some LM objects are not paos.  Contains a list of authorizations which map an 
 		LM object permission with a role property.
 	 -->
     <bean id="lmAuthorizationService" class="com.cannontech.core.authorization.service.impl.LMSerialTypeAuthorizationServiceImpl" >
@@ -337,6 +337,11 @@
                         </bean>
 			    	</property>
 			    	<property name="permission" value="CONTROL_COMMAND"/>
+			    </bean>
+			    <!-- Config to check if a user has permission to view an LM pao  -->
+			    <bean class="com.cannontech.core.authorization.support.pao.LMVisibleAuthorization">
+			    	<property name="objectChecker" ref="loadManagementPaoCheck" />
+			    	<property name="paoPermissionService" ref="paoPermissionService"/>
 			    </bean>
 
 			    <!-- Catch all for unknown commands.  If a command is not known, the EXECUTE_UNKNOWN_COMMAND

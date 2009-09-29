@@ -17,4 +17,8 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.MeteringEventLogService"/>
     </bean>
     
+    <bean id="demandResponseEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.DemandResponseEventLogService"/>
+    </bean>
+    
 </beans>

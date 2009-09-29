@@ -115,8 +115,8 @@ public class ProgramControllerHelper {
             filters.add(detailFilter);
         }
 
-        filters.add(new AuthorizedFilter(paoAuthorizationService,
-                                         userContext.getYukonUser()));
+        filters.add(new AuthorizedFilter(paoAuthorizationService, userContext.getYukonUser()));
+        
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
         }

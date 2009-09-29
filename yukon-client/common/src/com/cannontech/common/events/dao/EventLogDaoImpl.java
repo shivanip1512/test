@@ -38,8 +38,12 @@ public class EventLogDaoImpl implements EventLogDao {
         Builder<ArgumentColumn> builder = ImmutableList.builder();
         builder.add(new ArgumentColumn("String1", Types.VARCHAR));
         builder.add(new ArgumentColumn("String2", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int3", Types.BIGINT));
+        builder.add(new ArgumentColumn("String3", Types.VARCHAR));
         builder.add(new ArgumentColumn("Int4", Types.BIGINT));
+        builder.add(new ArgumentColumn("Int5", Types.BIGINT));
+        builder.add(new ArgumentColumn("Int6", Types.BIGINT));
+        builder.add(new ArgumentColumn("Int7", Types.BIGINT));
+        builder.add(new ArgumentColumn("Date8", Types.TIMESTAMP));
         argumentColumns = builder.build();
         
         countOfTotalArguments = argumentColumns.size() + countOfNonVariableColumns; 
@@ -93,7 +97,7 @@ public class EventLogDaoImpl implements EventLogDao {
     
     public Set<String> getAllTypes() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select distinct Type from EventLog");
+        sql.append("select distinct EventType from EventLog");
         
         Set<String> result = Sets.newHashSet();
         yukonJdbcTemplate.query(sql, new StringRowMapper(), result);
@@ -136,8 +140,8 @@ public class EventLogDaoImpl implements EventLogDao {
     public List<EventLog> findAllByCategory(EventCategory eventCategory) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select * from EventLog");
-        sql.append("where Type like ").appendArgument(eventCategory.getFullName() + "%");
-        sql.append("order by DateTime, EventLogId");
+        sql.append("where EventType like ").appendArgument(eventCategory.getFullName() + "%");
+        sql.append("order by EventTime, EventLogId");
         
         List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
         return result;
@@ -154,12 +158,12 @@ public class EventLogDaoImpl implements EventLogDao {
         SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
         for (EventCategory eventCategory : slimEventCategories) {
             SqlStatementBuilder whereFragment = new SqlStatementBuilder();
-            whereFragment.append("Type like ").appendArgument(eventCategory.getFullName() + "%");
+            whereFragment.append("EventType like ").appendArgument(eventCategory.getFullName() + "%");
             sqlFragmentCollection.add(whereFragment);
             
         }
         sql.appendFragment(sqlFragmentCollection);
-        sql.append("order by DateTime, EventLogId");
+        sql.append("order by EventTime, EventLogId");
         
         List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
         return result;

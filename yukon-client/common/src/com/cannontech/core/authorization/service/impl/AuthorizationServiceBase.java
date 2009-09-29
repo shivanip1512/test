@@ -2,6 +2,7 @@ package com.cannontech.core.authorization.service.impl;
 
 import java.util.List;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authorization.support.Authorization;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.AuthorizationService;
@@ -40,6 +41,19 @@ public class AuthorizationServiceBase<T> implements AuthorizationService<T> {
             }
         }
         return false;
+    }
+    
+    public void verifyAllPermissions(LiteYukonUser user, T object, Permission... permissions) 
+            throws NotAuthorizedException {
+        
+        for(Permission permission : permissions) {
+            if (!this.isAuthorized(user,
+                                   permission,
+                                   object)) {
+                throw new NotAuthorizedException("The user is not autorized for object " + 
+                                                 object.toString());
+            }
+        }
     }
 
 }

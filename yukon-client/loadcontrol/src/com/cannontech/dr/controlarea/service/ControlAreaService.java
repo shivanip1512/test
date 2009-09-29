@@ -25,8 +25,8 @@ public interface ControlAreaService
 
     public ControlArea getControlArea(int controlAreaId);
     
-    public void setEnabled(int controlAreaId, boolean isEnabled);
-    public void resetPeak(int controlAreaId);
+    public void setEnabled(int controlAreaId, boolean isEnabled, YukonUserContext userContext);
+    public void resetPeak(int controlAreaId, YukonUserContext userContext);
     
     /**
      * Method to change trigger offset and threshold values for a given control area
@@ -37,14 +37,15 @@ public interface ControlAreaService
      * @param threshold2 - Trigger2 threshold value
      */
     public void changeTriggers(int controlAreaId, Double offset1, Double threshold1, 
-                               Double offset2, Double threshold2);
+                               Double offset2, Double threshold2, YukonUserContext userContext);
     /**
      * Method to set the time window for the control area
      * @param controlAreaId - Control Area to change
      * @param startSeconds - Seconds after midnight for start
      * @param stopSeconds - Seconds after midnight for stop
      */
-    public void changeTimeWindow(int controlAreaId, Integer startSeconds, Integer stopSeconds);
+    public void changeTimeWindow(int controlAreaId, Integer startSeconds, Integer stopSeconds, 
+                                 YukonUserContext userContext);
     
     public boolean isEnabled(int controlAreaId);
 }

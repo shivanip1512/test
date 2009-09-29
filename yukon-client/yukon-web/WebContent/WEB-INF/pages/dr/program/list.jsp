@@ -5,6 +5,8 @@
 
 <cti:standardPage module="dr" page="programList">
     <cti:standardMenu menuSelection="details|programs"/>
+    
+    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>

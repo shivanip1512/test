@@ -16,7 +16,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
@@ -63,7 +63,9 @@ public class LoadGroupController {
             YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     loadGroup, 
+                                                     Permission.LM_VISIBLE);
         
         modelMap.addAttribute("loadGroup", loadGroup);
         modelMap.addAttribute("parentPrograms",
@@ -78,7 +80,10 @@ public class LoadGroupController {
             YukonUserContext userContext) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     loadGroup, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
 
         modelMap.addAttribute("loadGroup", loadGroup);
         modelMap.addAttribute("shedTimeOptions", shedTimeOptions);
@@ -90,9 +95,12 @@ public class LoadGroupController {
             int durationInSeconds, YukonUserContext userContext) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     loadGroup, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
-        loadGroupService.sendShed(loadGroupId, durationInSeconds);
+        loadGroupService.sendShed(loadGroupId, durationInSeconds, userContext);
         
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
@@ -103,7 +111,10 @@ public class LoadGroupController {
             YukonUserContext userContext) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     loadGroup, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
 
         modelMap.addAttribute("loadGroup", loadGroup);
         return "dr/loadGroup/sendRestoreConfirm.jsp";
@@ -113,9 +124,12 @@ public class LoadGroupController {
     public String sendRestore(ModelMap modelMap, int loadGroupId, YukonUserContext userContext) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     loadGroup, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
-        loadGroupService.sendRestore(loadGroupId);
+        loadGroupService.sendRestore(loadGroupId, userContext);
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
     }
@@ -125,7 +139,10 @@ public class LoadGroupController {
             YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     loadGroup, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
         modelMap.addAttribute("loadGroup", loadGroup);
         modelMap.addAttribute("isEnabled", isEnabled);
@@ -137,9 +154,12 @@ public class LoadGroupController {
             YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        this.checkUserPaoPermission(loadGroup, userContext.getYukonUser());
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     loadGroup, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
         
-        loadGroupService.setEnabled(loadGroupId, isEnabled);
+        loadGroupService.setEnabled(loadGroupId, isEnabled, userContext);
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -149,23 +169,6 @@ public class LoadGroupController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         loadGroupControllerHelper.initBinder(binder, userContext);
-    }
-    
-    /**
-     * Helper method to check permissions for a load group
-     * @param loadGroup - Load Group in question
-     * @param user - User to check permissions for
-     */
-    private void checkUserPaoPermission(DisplayablePao loadGroup, LiteYukonUser user) {
-        // TODO: check permissions here
-        
-//        if (!paoAuthorizationService.isAuthorized(user,
-//                                                  Permission.LM_VISIBLE,
-//                                                  loadGroup)) {
-//            throw new NotAuthorizedException("LoadGroup " + loadGroup.getPaoIdentifier().getPaoId() + " is not visible to user.");
-//        }
-
-        
     }
     
     @Autowired
