@@ -755,6 +755,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 }
             }
         }
+        else if(CmdStr.contains(" phasecurrent read"))
+        {
+            _cmd["phasecurrentread"] = CtiParseValue(TRUE);
+        }
         else
         {
             // Default Get Value request has been specified....

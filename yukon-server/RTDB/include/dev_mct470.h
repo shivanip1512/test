@@ -92,6 +92,11 @@ private:
         PointOffset_VoltsPhaseB = 42,
         PointOffset_VoltsPhaseC = 43,
 
+        PointOffset_CurrentNeutral  = 44,
+        PointOffset_CurrentPhaseA   = 45,
+        PointOffset_CurrentPhaseB   = 46,
+        PointOffset_CurrentPhaseC   = 47,
+
         PointOffset_FrozenPointOffset = 100,        // Frozen points are 100 more than the corresponding non frozen
 
         PointOffset_DNPStatus_RealTime1   = 501,
@@ -347,6 +352,9 @@ protected:
         FuncWrite_CurrentReading        = 0xd5,
         FuncWrite_CurrentReadingLen     =    5,
 
+        FuncRead_PhaseCurrent           = 0xda,
+        FuncRead_PhaseCurrentLen        =   13,
+
         FuncWrite_DNPReqTable           = 0xd6,
 
         FuncRead_ChannelSetupDataPos    = 0x20,
@@ -431,6 +439,7 @@ protected:
     INT decodeGetValueDemand       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueMinMaxDemand ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueIED          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValuePhaseCurrent( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     INT decodeGetConfigIED         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );

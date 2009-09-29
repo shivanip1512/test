@@ -157,6 +157,8 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetStatus_Freeze,           Emetcon::IO_Read,           Memory_LastFreezeTimestampPos, Memory_LastFreezeTimestampLen
                                                                                                                              + Memory_FreezeCounterLen));
 
+    cs.insert(CommandStore(Emetcon::GetValue_PhaseCurrent,      Emetcon::IO_Function_Read,  FuncRead_PhaseCurrent,        FuncRead_PhaseCurrentLen));
+
     //******************************** Config Related starts here *************************
     cs.insert(CommandStore(Emetcon::PutConfig_LongLoadProfile,  Emetcon::IO_Function_Write, FuncWrite_LLPStoragePos,     FuncWrite_LLPStorageLen));
     cs.insert(CommandStore(Emetcon::GetConfig_LongLoadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,       FuncRead_LLPStatusLen));
@@ -1263,6 +1265,7 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetValue_PeakDemand:
         case Emetcon::GetValue_FrozenPeakDemand: status = decodeGetValueMinMaxDemand(InMessage, TimeNow, vgList, retList, outList); break;
+        case Emetcon::GetValue_PhaseCurrent:     status = decodeGetValuePhaseCurrent(InMessage, TimeNow, vgList, retList, outList); break;
 
         case Emetcon::GetConfig_IEDDNP:
         case Emetcon::GetConfig_IEDTime:
@@ -1703,6 +1706,32 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
     else if( parse.isKeyValid("lp_command") )
     {
         nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+    else if( parse.isKeyValid("phasecurrentread") )
+    {
+        switch( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0xf0) >> 4 )
+        {
+            case IED_Type_LG_S4:
+            case IED_Type_Alpha_A3:
+            case IED_Type_GE_kV:   
+            case IED_Type_GE_kV2:  
+            case IED_Type_Sentinel:
+            case IED_Type_DNP:     
+            case IED_Type_GE_kV2c:
+            {
+                function = Emetcon::GetValue_PhaseCurrent;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+
+                OutMessage->Sequence = Emetcon::GetValue_PhaseCurrent;
+                break;
+            }
+            case IED_Type_Alpha_PP:
+            default:
+            {
+                found = false;
+                break;
+            }
+        }
     }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
     {
@@ -5267,6 +5296,48 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         }
 
     }
+}
+
+
+INT CtiDeviceMCT470::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    string descriptor;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT &DSt   = InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+        point_info  pi, pi_time;
+        pi = getData(DSt.Message, 2, ValueType_IED);
+        insertPointDataReport(AnalogPointType, PointOffset_CurrentNeutral,
+                              ReturnMsg, pi, "Neutral Current");
+        pi = getData(DSt.Message + 2, 2, ValueType_IED);
+        insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseA,
+                              ReturnMsg, pi, "Phase A Current");
+        pi = getData(DSt.Message + 4, 2, ValueType_IED);
+        insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseB,
+                              ReturnMsg, pi, "Phase B Current");
+        pi = getData(DSt.Message + 6, 2, ValueType_IED);
+        insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
+                              ReturnMsg, pi, "Phase C Current");
+
+
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
 }
 
 //This expects a string in the format: "01 0x01 01 020 055 0x0040" ect..
