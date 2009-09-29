@@ -296,11 +296,11 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
 
     private Phase parsePhase(String porterResultString) {
         Phase phaseDetected;
-        if(porterResultString.contains("Phase: A")){
+        if(porterResultString.contains("Phase = A")){
             phaseDetected = Phase.A;
-        } else if(porterResultString.contains("Phase: B")) {
+        } else if(porterResultString.contains("Phase = B")) {
             phaseDetected = Phase.B;
-        } else if(porterResultString.contains("Phase: C")) {
+        } else if(porterResultString.contains("Phase = C")) {
             phaseDetected = Phase.C;
         } else {
             throw new UndefinedPhaseException();
