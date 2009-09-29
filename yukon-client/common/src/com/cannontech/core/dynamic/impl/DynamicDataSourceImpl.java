@@ -89,12 +89,14 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         }
         
         // Request to dispatch for the rest
-        Map<Integer, Set<Signal>> retrievedSignals = dispatchProxy.getSignals(notCachedPointIds);
-        signals.putAll(retrievedSignals);
-        for(Integer pointId : notCachedPointIds) {
-            Set<Signal> pointSignals = retrievedSignals.get(pointId);
-            if(pointSignals == null) pointSignals = Collections.emptySet();
-            dynamicDataCache.handleSignals(pointSignals, pointId);
+        if(!notCachedPointIds.isEmpty()){
+            Map<Integer, Set<Signal>> retrievedSignals = dispatchProxy.getSignals(notCachedPointIds);
+            signals.putAll(retrievedSignals);
+            for(Integer pointId : notCachedPointIds) {
+                Set<Signal> pointSignals = retrievedSignals.get(pointId);
+                if(pointSignals == null) pointSignals = Collections.emptySet();
+                dynamicDataCache.handleSignals(pointSignals, pointId);
+            }
         }
         return signals;
     }
