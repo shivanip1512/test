@@ -40,9 +40,11 @@ class IM_EX_CTIYUKONDB CtiTablePortTCPIP : public CtiMemDBObject
 protected:
 
    // PortTerminalServer
-   LONG           _portID;
-   string      _ipAddress;                 // in struct [15];
-   INT            _ipPort;
+   LONG _portID;
+   string _ipAddress;
+   INT _ipPort;
+   string _encodingKey;
+   string _encodingType;
 
 private:
 
@@ -57,17 +59,20 @@ public:
    CtiTablePortTCPIP& operator=(const CtiTablePortTCPIP& aRef);
 
    INT getIPPort() const;
-
-   CtiTablePortTCPIP& setIPPort(const INT i);
+   void setIPPort(const INT i);
 
    const string &getIPAddress() const;
+   void setIPAddress(const string &str);
 
-   CtiTablePortTCPIP&   setIPAddress(const string &str);
+   const string & getEncodingKey() const;
+   void setEncodingKey(const string& encodingKey);
+
+   const string & getEncodingType() const;
+   void setEncodingType(const string& encodingType);
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-
    static string getTableName();
+
 };
 #endif // #ifndef __TBL_PORT_TCPIP_H__

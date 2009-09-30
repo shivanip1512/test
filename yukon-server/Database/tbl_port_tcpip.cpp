@@ -40,17 +40,52 @@ CtiTablePortTCPIP& CtiTablePortTCPIP::operator=(const CtiTablePortTCPIP& aRef)
     {
         _ipPort    = aRef.getIPPort();
         _ipAddress = aRef.getIPAddress();
+        _encodingKey = aRef.getEncodingKey();
+        _encodingType = aRef.getEncodingType();
     }
     return *this;
 }
 
 
-CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPAddress(const string &str)  {  _ipAddress = str;  return *this;  }
-CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPPort   (const INT i)        {  _ipPort    = i;    return *this;  }
+void CtiTablePortTCPIP::setIPAddress(const string &str)
+{
+    _ipAddress = str;
+}
 
-const string &CtiTablePortTCPIP::getIPAddress() const  {  return _ipAddress;  }
-INT           CtiTablePortTCPIP::getIPPort()    const  {  return _ipPort;     }
+void CtiTablePortTCPIP::setIPPort(const INT i)
+{
+    _ipPort = i;
+}
 
+const string &CtiTablePortTCPIP::getIPAddress() const
+{
+    return _ipAddress;
+}
+
+INT CtiTablePortTCPIP::getIPPort() const
+{
+    return _ipPort;
+}
+
+const string & CtiTablePortTCPIP::getEncodingKey() const
+{
+    return _encodingKey;
+}
+
+void CtiTablePortTCPIP::setEncodingKey(const string& encodingKey)
+{
+    _encodingKey = encodingKey;
+}
+
+const string & CtiTablePortTCPIP::getEncodingType() const
+{
+    return _encodingType;
+}
+
+void CtiTablePortTCPIP::setEncodingType(const string& encodingType)
+{
+    _encodingType = encodingType;
+}
 
 void CtiTablePortTCPIP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
@@ -58,7 +93,9 @@ void CtiTablePortTCPIP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
     selector <<
     portTbl["ipaddress"] <<
-    portTbl["socketportnumber"];
+    portTbl["socketportnumber"] <<
+    portTbl["encodingkey"] <<
+    portTbl["encodingtype"];
 
     selector.from(portTbl);
 
@@ -69,8 +106,10 @@ void CtiTablePortTCPIP::DecodeDatabaseReader(RWDBReader &rdr)
 {
     try
     {
-        rdr["ipaddress"]        >> _ipAddress;
+        rdr["ipaddress"] >> _ipAddress;
         rdr["socketportnumber"] >> _ipPort;
+        rdr["encodingkey"] >> _encodingKey;
+        rdr["encodingtype"] >> _encodingType;
 
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
@@ -78,6 +117,8 @@ void CtiTablePortTCPIP::DecodeDatabaseReader(RWDBReader &rdr)
             dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " IP Address           : " << _ipAddress << endl;
             dout << " IP Port              : " << _ipPort << endl;
+            dout << " Encoding Key         : " << _encodingKey << endl;
+            dout << " Encoding Type        : " << _encodingType << endl;
         }
     }
     catch(...)
@@ -91,4 +132,3 @@ string CtiTablePortTCPIP::getTableName()
 {
     return "PortTerminalServer";
 }
-
