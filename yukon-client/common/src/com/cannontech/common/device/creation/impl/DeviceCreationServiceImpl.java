@@ -118,11 +118,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             newDevice.setAddress(address);
             newDevice.getDeviceRoutes().setRouteID(routeId);
 
-            if (newDevice instanceof MCT400SeriesBase) {
-                // Following how DBEditor defaults this field...
-                ((MCT400SeriesBase) newDevice).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(3600));
-            }
-            
             Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
             
             // db change msg

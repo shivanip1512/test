@@ -21,13 +21,16 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.route.CCURoute;
@@ -177,12 +180,15 @@ public class DeviceRoutePanel
         } else {
             value = val;
         }
-        
-        if (value instanceof MCT400SeriesBase) {
-            // sloppy way of setting a 400 series load profile default...
-            // improve this later
-            ((MCT400SeriesBase) value).getDeviceLoadProfile()
-                                      .setLoadProfileDemandRate(new Integer(3600));
+
+        if( value instanceof MCTBase) {
+            // The default value for DeviceLoadProfile.loadProfileDemandRate was changed to 3600, therefore, 
+            //   all "legacy" mcts should be set to 300.  This is just to keep the DBEditor code working the same for these meter types.
+            // New bulk operations will not have this check it it, we're assuming these legacy devices are not being added using those tools.
+            int deviceType = PAOGroups.getDeviceType( ((MCTBase)value).getPAOType() );
+            if( DeviceTypesFuncs.isMCT2XXORMCT310XX(deviceType) || DeviceTypesFuncs.isMCT3xx(deviceType)) {
+                ((MCTBase) value).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(300));
+            }
         }
 
         ((CarrierBase) value).getDeviceRoutes().setRouteID(new Integer(((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));

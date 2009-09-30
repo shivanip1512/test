@@ -7,7 +7,7 @@ public class DeviceLoadProfile extends com.cannontech.database.db.DBPersistent
 {
 	private Integer deviceID = null;
 	private Integer lastIntervalDemandRate = new Integer(300);
-	private Integer loadProfileDemandRate = new Integer(300);
+	private Integer loadProfileDemandRate = new Integer(3600);
 	private String loadProfileCollection = "NNNN";
 	private Integer voltageDmdInterval = new Integer(60);
 	private Integer voltageDmdRate = new Integer(300);
