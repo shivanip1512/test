@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/23/2009 2:30:47 PM                         */
+/* Created on:     9/29/2009 11:37:51 PM                        */
 /*==============================================================*/
 
 
@@ -12183,6 +12183,7 @@ INSERT INTO YukonRoleProperty VALUES(-20211,-202,'CIS Info Widget Enabled','true
 INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines the type of CIS Information widget to display. Available placeholders: NONE, MULTISPEAK, CAYENTA');
 INSERT INTO YukonRoleProperty VALUES(-20213,-202,'Outage Processing','true','Controls access to Outage Processing');
 INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','true','Controls access to Tamper Flag Processing');
+INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');

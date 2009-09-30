@@ -94,6 +94,10 @@ EXEC sp_rename
 @objtype = 'COLUMN';
 /* End YUK-7855 */
 
+/* Start YUK-7873 */
+INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
+/* End YUK-7873 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
