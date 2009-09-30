@@ -1,30 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_emetcon
-*
-* Class:  CtiProtocolEmetcon
-* Date:   1/29/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/08/13 21:23:35 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_EMETCON_H__
-#define __PROT_EMETCON_H__
+#pragma once
 #pragma warning( disable : 4786)
 
-
-#include <utility>
-
-#include "ctidbgmem.h" // defines CTIDBG_new
+#include "dlldefs.h"
 #include "dsm2.h"
-#include "cmdparse.h"
-
 
 namespace Cti       {
 namespace Protocol  {
@@ -32,24 +10,12 @@ namespace Protocol  {
 class IM_EX_PROT Emetcon  //  note that we do NOT inherit from the Protocol::Interface class - Emetcon doesn't fit the generate/decode paradigm
 {
 private:
-
-protected:
-
-    bool _double;                    // Double the sent messages (protocol operation, sends twice)
-
-public:
-
     Emetcon();
     Emetcon(const Emetcon& aRef);
+    Emetcon& operator=(const Emetcon& aRef);
     virtual ~Emetcon();
 
-    Emetcon& operator=(const Emetcon& aRef);
-
-    /*-------------------------------------------------------------------------*
-     * This method MUST be called prior to any command building method.
-     *-------------------------------------------------------------------------*/
-    Emetcon& setDouble(bool dbl);
-    bool     getDouble() const;
+public:
 
     static unsigned determineDWordCount(unsigned length);
     static int calculateControlInterval(int interval);
@@ -163,7 +129,7 @@ public:
         GetConfig_CentronParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
         GetConfig_Freeze,             //    commands like this one, i don't like this being a big mess of non-general commands
         GetConfig_PhaseDetect,
-        
+
         // PutConfig commands
         PutConfig_Install,
         PutConfig_GroupAddressInhibit,
@@ -220,7 +186,7 @@ public:
         Control_Connect,
         Control_Disconnect,
         Control_Latch,
-        
+
         Command_Loop,
 
         DLCCmd_LAST    // PLACEHOLDER!!!
@@ -228,8 +194,6 @@ public:
 };
 
 
-};
-};
+}
+}
 
-
-#endif // #ifndef __PROT_EMETCON_H__

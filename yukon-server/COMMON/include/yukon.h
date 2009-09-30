@@ -480,8 +480,9 @@ enum CtiOutMessageFlags_t
     MessageFlag_QueuedToDevice             = 0x00000001 << 4,
     MessageFlag_BroadcastOnMacroSubroutes  = 0x00000001 << 5,
     MessageFlag_PortSharing                = 0x00000001 << 6,
-    MessageFlag_AddSilence                 = 0x00000001 << 7,
-    MessageFlag_StatisticsRequested        = 0x00000001 << 8,
+    MessageFlag_AddMctDisconnectSilence    = 0x00000001 << 7,
+    MessageFlag_AddCcu711CooldownSilence   = 0x00000001 << 8,
+    MessageFlag_StatisticsRequested        = 0x00000001 << 9,
 };
 
 

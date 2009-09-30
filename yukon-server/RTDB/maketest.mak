@@ -59,6 +59,7 @@ test_dev_mct410.obj \
 test_dev_mct470.obj \
 test_dev_addr_global.obj \
 test_lcr3102.obj \
+test_rte_ccu.obj \
 
 ALL:            $(TEST_OBJS) Makefile
 

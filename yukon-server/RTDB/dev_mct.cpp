@@ -2875,7 +2875,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 
         if( dead_air )
         {
-            OutMessage->MessageFlags |= MessageFlag_AddSilence;
+            OutMessage->MessageFlags |= MessageFlag_AddMctDisconnectSilence;
         }
 
         OutMessage->Request.RouteID   = getRouteID();
@@ -2893,7 +2893,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
                 gs_OutMessage->Sequence = Emetcon::GetStatus_Disconnect;
 
                 //  this doesn't need the silence referenced above
-                gs_OutMessage->MessageFlags = gs_OutMessage->MessageFlags & ~MessageFlag_AddSilence;
+                gs_OutMessage->MessageFlags = gs_OutMessage->MessageFlags & ~MessageFlag_AddMctDisconnectSilence;
 
                 outList.push_back(gs_OutMessage);
             }

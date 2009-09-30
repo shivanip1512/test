@@ -1,73 +1,14 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_emetcon
-*
-* Date:   2/22/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/09/04 16:45:16 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-
-#include "cmdparse.h"
-#include "devicetypes.h"
-#include "dllbase.h"
-#include "porter.h"
 #include "prot_emetcon.h"
 #include "logger.h"
 #include "utility.h"
+#include "porter.h"
 
 
 namespace Cti      {
 namespace Protocol {
-
-
-Emetcon::Emetcon() :
-    _double(FALSE)
-{
-}
-
-
-Emetcon::Emetcon(const Emetcon& aRef)  :
-    _double(FALSE)
-{
-    *this = aRef;
-}
-
-
-Emetcon::~Emetcon()
-{
-}
-
-
-Emetcon& Emetcon::operator=(const Emetcon& aRef)
-{
-    if(this != &aRef)
-    {
-    }
-    return *this;
-}
-
-
-Emetcon& Emetcon::setDouble(bool dbl)
-{
-   _double = dbl;
-   return *this;
-}
-
-
-bool Emetcon::getDouble() const
-{
-   return _double;
-}
 
 
 void Emetcon::buildAWordMessage(OUTMESS *&out_result)

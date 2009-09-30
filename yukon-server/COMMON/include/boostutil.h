@@ -1,7 +1,7 @@
-#ifndef __BOOST_UTIL
-#define __BOOST_UTIL
+#pragma once
 
-#include "utility.h"
+#include "utility.h"  //  defines autopsy()
+
 
 namespace boost
 {
@@ -11,5 +11,8 @@ namespace boost
     }
 } // namespace boost
 
-#endif
+
+#define BOOST_CHECK_INDEXED_EQUAL(i,x,y) \
+    BOOST_CHECK_MESSAGE((x) == (y), "failed with index = " << (i)); \
+    BOOST_CHECK_EQUAL((x), (y))
 

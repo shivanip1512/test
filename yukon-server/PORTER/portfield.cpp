@@ -3222,7 +3222,8 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             status = NACKPAD1;
                         }
 
-                        if( !(OutMessage->MessageFlags & MessageFlag_AddSilence) )
+                        if( !(OutMessage->MessageFlags & (MessageFlag_AddMctDisconnectSilence |
+                                                          MessageFlag_AddCcu711CooldownSilence)) )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - repeaters expected but not heard **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

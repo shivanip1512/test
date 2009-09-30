@@ -31,7 +31,14 @@ protected:
    // This is a vector of repeaters 0 to 7 in length... currently we rely on DBEditor to assure this...
    RWTValOrderedVector< CtiTableRepeaterRoute >  RepeaterList;
 
+   static void adjustStagesToFollow(unsigned short &stagesToFollow, unsigned &messageFlags, const bool isOneWayCcu711Request);
+
 private:
+
+    enum
+    {
+        MaxStagesToFollow = 7
+    };
 
 public:
 

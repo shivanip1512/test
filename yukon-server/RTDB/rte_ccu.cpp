@@ -38,6 +38,8 @@
 
 #include "cparms.h"
 
+using Cti::Protocol::Emetcon;
+
 #define MAX_EXPRESSCOM_IN_EMETCON_LENGTH 18
 
 static bool NoQueingVersacom   = gConfigParms.isTrue("VERSACOM_CCU_NOQUEUE");
@@ -322,8 +324,6 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), string(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
-    Cti::Protocol::Emetcon prot;
-
     if(OutMessage->EventCode & BWORD)
     {
         /* Load up the hunks of the B structure that we know/need */
@@ -335,20 +335,14 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
         OutMessage->Buffer.BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
 
-        //  this was a great idea and all, but it causes the CCU to report that transmission of the message has failed
-        //    since it doesn't hear any transmissions during the "stages" delay.
-        //  This should be replaced by an actual delay on the server side.
-        if( OutMessage->MessageFlags & MessageFlag_AddSilence )
-        {
-            OutMessage->MessageFlags ^= MessageFlag_AddSilence;
+        const bool isOneWayRequest = (OutMessage->Buffer.BSt.IO == Emetcon::IO_Write) ||
+                                     (OutMessage->Buffer.BSt.IO == Emetcon::IO_Function_Write);
 
-            if( _transmitterDevice->getType() != TYPE_CCU700 &&
-                _transmitterDevice->getType() != TYPE_CCU710 )
-            {
-                //  doesn't work on a 710
-                OutMessage->Buffer.BSt.DlcRoute.Stages += 2;
-            }
-        }
+        const bool isCcu711Transmitter = _transmitterDevice->getType() == TYPE_CCU711;
+
+        //  Adjust the stages-to-follow count if we have anything special to do,
+        //    such as an MCT-410 disconnect or we want to delay one-way commands
+        adjustStagesToFollow(OutMessage->Buffer.BSt.DlcRoute.Stages, OutMessage->MessageFlags, isOneWayRequest && isCcu711Transmitter);
     }
     else if(OutMessage->EventCode & AWORD)
     {
@@ -361,7 +355,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.ASt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
 
         // Add these two items to the list for control accounting!
-        parse.setValue("control_interval", prot.calculateControlInterval(parse.getiValue("shed", 0)));
+        parse.setValue("control_interval", Emetcon::calculateControlInterval(parse.getiValue("shed", 0)));
         parse.setValue("control_reduction", 100 );
     }
 
@@ -390,11 +384,11 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
             {
                 if( OutMessage->EventCode & BWORD )
                 {
-                    prot.buildBWordMessage(OutMessage);
+                    Emetcon::buildBWordMessage(OutMessage);
                 }
                 else if( OutMessage->EventCode & AWORD )
                 {
-                    prot.buildAWordMessage(OutMessage);
+                    Emetcon::buildAWordMessage(OutMessage);
                 }
 
                 /* load the IDLC specific stuff for DTRAN */
@@ -448,6 +442,49 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
     return status;
 }
+
+
+/**
+ * adjustStagesToFollow() calculates the "stages to follow"
+ * count based on the route's repeater count and any additional
+ * silence that may be required for a command.
+ *
+ * @param isOneWayRequest
+ *               Is this a one way request?
+ * @param stages Base stages-to-follow count from the route
+ * @param MessageFlags
+ *               MessageFlags from the OutMessage
+ * @param TransmitterType
+ *               Transmitter type from _transmitterDevice
+ *
+ * @return Adjusted stages-to-follow count.
+ */
+void CtiRouteCCU::adjustStagesToFollow(unsigned short &stagesToFollow, unsigned &messageFlags, const bool isOneWayCcu711Request)
+{
+    //  we only add silence for one way commands
+    //    also, this hack doesn't work for CCU-700/710s at this point - uncertain if they can handle it
+    //    we may need to improve the CCU-710 NAK handling to allow us to handle the error
+    if( isOneWayCcu711Request )
+    {
+        //  add on silence for the MCT-410 to broadcast to its disconnect collar
+        if( messageFlags & MessageFlag_AddMctDisconnectSilence )
+        {
+            stagesToFollow += 2;
+        }
+
+        //  make sure we have at least 1 stages-to-follow delay for the CCU to cool down
+        if( stagesToFollow == 0 )
+        {
+            stagesToFollow++;
+
+            messageFlags |= MessageFlag_AddCcu711CooldownSilence;
+        }
+    }
+
+    stagesToFollow = std::min(stagesToFollow, (unsigned short)MaxStagesToFollow);
+}
+
+
 
 INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                                          CtiCommandParser         &parse,
