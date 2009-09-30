@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/29/2009 11:37:51 PM                        */
+/* Created on:     9/30/2009 12:14:43 AM                        */
 /*==============================================================*/
 
 
@@ -12294,7 +12294,7 @@ INSERT INTO YukonRoleProperty VALUES (-21304,-213,'Group Commander','true','Cont
 INSERT INTO YukonRoleProperty VALUES (-21305,-213,'Mass Change','true','Controls access to mass change collection actions. Includes all Mass Change actions.'); 
 INSERT INTO YukonRoleProperty VALUES (-21306,-213,'Locate Route','true','Controls access to locate route action'); 
 INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','true','Controls access to mass delete devices action'); 
-INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Remove Points','false','Controls access to Add/Remove Points collection action.');
+INSERT INTO YukonRoleProperty VALUES (-21308,-213,'Add/Update/Remove Points','false','Controls access to Add/Remove Points collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21309,-213,'Send/Read Configs','false','Controls access to Send Config and Read Config collection actions.');
 INSERT INTO YukonRoleProperty VALUES (-21310,-213,'Assign Configs','false','Controls access to Assign Config collection action.');
 

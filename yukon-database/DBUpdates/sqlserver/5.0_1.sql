@@ -98,6 +98,12 @@ EXEC sp_rename
 INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
 /* End YUK-7873 */
 
+/* Start YUK-7872 */
+UPDATE YukonRoleProperty
+SET KeyName = 'Add/Update/Remove Points'
+WHERE RolePropertyId = -21308;
+/* End YUK-7872 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
