@@ -5,10 +5,24 @@
 
 
 <script type="text/javascript">
+targetCycleGears = {
+    <c:forEach var="gear" varStatus="status" items="${gears}">
+        <c:if test="${gear.targetCycle}">
+            ${sep}${status.index + 1} : true
+            <c:set var="sep" value=","/>
+        </c:if>
+    </c:forEach>
+};
+
 submitForm = function() {
     combineDateAndTimeFields('startDate');
     combineDateAndTimeFields('stopDate');
-    submitFormViaAjax('drDialog', 'startProgramForm');
+    if (targetCycleGears[$('gearNumber').value] && $('addAdjustmentsCheckbox').checked) {
+        url = '<cti:url value="/spring/dr/program/startProgramGearAdjustments"/>';
+    } else {
+        url = '<cti:url value="/spring/dr/program/startProgramConstraints"/>';
+    }
+    return submitFormViaAjax('drDialog', 'startProgramForm', url);
 }
 
 startNowChecked = function() {
@@ -18,6 +32,27 @@ startNowChecked = function() {
 scheduleStopChecked = function() {
     setDateTimeInputEnabled('stopDate', $('scheduleStopCheckbox').checked);
 }
+
+gearChanged = function() {
+    if (targetCycleGears[$('gearNumber').value]) {
+        $('addAdjustmentsArea').show();
+    } else {
+        $('addAdjustmentsArea').hide();
+        $('addAdjustmentsCheckbox').checked = false;
+        updateSubmitButtons();
+    }
+}
+
+updateSubmitButtons = function() {
+    if ($('addAdjustmentsCheckbox').checked
+        || !$('autoObserveConstraints').checked) {
+        $('okButton').hide();
+        $('nextButton').show();
+    } else {
+        $('okButton').show();
+        $('nextButton').hide();
+    }
+}
 </script>
 
 <p>
@@ -25,19 +60,29 @@ scheduleStopChecked = function() {
         argument="${program.name}"/>
 </p><br>
 
-<cti:url var="submitUrl" value="/spring/dr/program/startProgramConstraints"/>
-<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}">
+<form:form id="startProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="programId"/>
 
     <table width="100%">
         <tr valign="top">
             <td width="33%">
                 <cti:msg key="yukon.web.modules.dr.program.startProgram.gear"/><br>
-                <form:select path="gearNumber">
+                <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
                     <c:forEach var="gear" varStatus="status" items="${gears}">
                         <form:option value="${status.index + 1}">${gear.gearName}</form:option>
                     </c:forEach>
                 </form:select><br>
+                <c:set var="addAdjustmentAreaStyle" value="none"/>
+                <c:if test="${!empty gears && gears[0].targetCycle}">
+                    <c:set var="addAdjustmentAreaStyle" value="block"/>
+                </c:if>
+                <div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
+                    <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
+                        onclick="updateSubmitButtons();"/>
+                    <label for="addAdjustmentsCheckbox">
+                        <cti:msg key="yukon.web.modules.dr.program.startProgram.addAdjustments"/>
+                    </label><br>
+                </div>
             </td>
             <td width="33%">
                 <cti:msg key="yukon.web.modules.dr.program.startProgram.startTime"/><br>
@@ -66,7 +111,8 @@ scheduleStopChecked = function() {
 
     <c:if test="${autoObserveConstraintsAllowed}">
         <c:if test="${checkConstraintsAllowed}">
-            <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints"/>
+            <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints"
+                onclick="updateSubmitButtons();"/>
             <label for="autoObserveConstraints">
                 <cti:msg key="yukon.web.modules.dr.program.startProgram.autoObserveConstraints"/>
             </label>
@@ -80,8 +126,9 @@ scheduleStopChecked = function() {
 
     <div class="actionArea">
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
-            <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.okButton"/>"
-                onclick="submitForm()"/>
+            <input id="nextButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.nextButton"/>"/>
+            <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.okButton"/>"/>
+            <script type="text/javascript">updateSubmitButtons();</script>
         </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"
             onclick="parent.$('drDialog').hide()"/>

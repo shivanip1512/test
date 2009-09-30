@@ -39,7 +39,26 @@ public interface DemandResponseEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void controlAreaPeakReset(LiteYukonUser user, String controlAreaName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programScheduled(LiteYukonUser user, String programName,
+            Boolean overrideConstraints, String gearName, Boolean manual,
+            Date startDate, Boolean stopScheduled, Date stopDate);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programStopped(LiteYukonUser user, String programName,
+            Boolean manual, Date stopDate, String gearName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programStopScheduled(LiteYukonUser user, String programName,
+            Boolean manual, Date stopDate, String gearName);
     
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programEnabled(LiteYukonUser user, String programName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programDisabled(LiteYukonUser user, String programName);
+
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
     public void loadGroupShed(LiteYukonUser user, String loadGroupName, int shedSeconds);
     
@@ -51,11 +70,4 @@ public interface DemandResponseEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
     public void loadGroupDisabled(LiteYukonUser user, String loadGroupName);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programEnabled(LiteYukonUser user, String programName);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programDisabled(LiteYukonUser user, String programName);
-    
 }

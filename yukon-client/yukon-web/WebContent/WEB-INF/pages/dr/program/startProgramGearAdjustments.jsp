@@ -8,30 +8,42 @@
 </script>
 
 <p>
-    <cti:msg key="yukon.web.modules.dr.program.startProgramDetails.confirmQuestion"
+    <cti:msg key="yukon.web.modules.dr.program.startProgram.enterdjustments"
         argument="${program.name}"/>
 </p><br>
 
-<cti:url value="/spring/dr/program/startProgramConstraints"/>
-<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}">
+<cti:url var="submitUrl" value="/spring/dr/program/startProgramConstraints"/>
+<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
+    onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
     <form:hidden path="programId"/>
     <form:hidden path="gearNumber"/>
-    <form:hidden path="gearAdjustments"/>
+    <form:hidden path="startNow"/>
     <form:hidden path="startDate"/>
-    <form:hidden path="autoObserverConstraints"/>
+    <form:hidden path="scheduleStop"/>
+    <form:hidden path="stopDate"/>
+    <form:hidden path="autoObserveConstraints"/>
+    <form:hidden path="addAdjustments"/>
+    <form:hidden path="numAdjustments"/>
 
-<!-- TODO:  internationalize -->
-    TODO:  need to ask for gear adjustments here; default to 100%
+    <c:forEach var="timeSlot" varStatus="status" items="${timeSlots}">
+        <cti:formatDate type="TIME24H" value="${timeSlot.startTime}"/> -
+        <cti:formatDate type="TIME24H" value="${timeSlot.endTime}"/>
+        <form:input path="gearAdjustments[${status.count-1}]"/><br>
+    </c:forEach>
+
     <br>
     <br>
 
-    <input id="autoObserveConstraints" name="autoObserveConstraints" type="checkbox"/>
-    <label for="autoObserveConstraints">Automatically Observe Constraints</label><br>
-
+    <cti:msg var="submitButtonText" key="yukon.web.modules.dr.program.startProgram.nextButton"/>
+    <c:if test="${backingBean.autoObserveConstraints}">
+        <cti:msg var="submitButtonText" key="yukon.web.modules.dr.program.startProgram.okButton"/>
+    </c:if>
     <div class="actionArea">
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgramDetails.okButton"/>"
-            onclick="submitForm()"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgramDetails.cancelButton"/>"
+        <cti:url var="backUrl" value="/spring/dr/program/startProgramDetails"/>
+        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
+            onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
+        <input type="submit" value="${submitButtonText}"/>
+        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"
             onclick="parent.$('drDialog').hide()"/>
     </div>
 </form:form>

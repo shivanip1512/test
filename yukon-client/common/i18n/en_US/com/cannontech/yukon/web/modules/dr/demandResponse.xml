@@ -94,6 +94,8 @@
 <entry key="yukon.web.modules.dr.program.startProgram.confirmQuestion">Are you sure you want to start the program {0}?</entry>
 
 <entry key="yukon.web.modules.dr.program.startProgram.gear">Gear:</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.addAdjustments">Add Adjustments</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.enterdjustments">Enter adjustments for program {0} below.</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.startTime">Start time:</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.startNow">Start Now</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.stopTime">Stop time:</entry>
@@ -109,6 +111,8 @@
 <entry key="yukon.web.modules.dr.program.startProgram.constraintsViolated">The following constraints would be violated.</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.overrideConstraints">Override These Constraints</entry>
 
+<entry key="yukon.web.modules.dr.program.startProgram.backButton">Back</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.cancelButton">Cancel</entry>
 
@@ -116,8 +120,17 @@
 <entry key="yukon.web.modules.dr.program.stopProgram.confirmQuestion">Are you sure you want to stop the program {0}?</entry>
 
 <entry key="yukon.web.modules.dr.program.stopProgram.stopTime">Program stop time:</entry>
-<entry key="yukon.web.modules.dr.program.stopProgram.x">xxxxxxx</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.stopNow">Stop Now</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.useStopGear">Use Stop Gear</entry>
 
+<entry key="yukon.web.modules.dr.program.stopProgram.stoppingNow">The program will be stopped now.</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.stoppingAt">The program will be scheduled to stop at {0}.</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.noConstraintsViolated">No constraints will be violated.</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.constraintsViolated">The following constraints would be violated.</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.overrideConstraints">Override These Constraints</entry>
+
+<entry key="yukon.web.modules.dr.program.stopProgram.backButton">Back</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.cancelButton">Cancel</entry>
 

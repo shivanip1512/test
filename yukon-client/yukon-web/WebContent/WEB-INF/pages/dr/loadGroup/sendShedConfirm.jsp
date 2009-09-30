@@ -5,7 +5,10 @@
         <cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.confirmQuestion"
             argument="${loadGroup.name}"/>
     </p>
-    <form id="sendShedForm" action="/spring/dr/loadGroup/sendShed">
+
+    <cti:url var="submitUrl" value="/spring/dr/loadGroup/sendShed"/>
+    <form id="sendShedForm" action="${submitUrl}"
+        onsubmit="return submitFormViaAjax('drDialog', 'sendShedForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
         <p><cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.chooseShedTime"/> <select name="durationInSeconds">
             <c:forEach var="shedTimeOption" items="${shedTimeOptions}">
@@ -15,8 +18,7 @@
         </p>
         <p><cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.shedTimeNotes"/></p>
         <div class="actionArea">
-            <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.okButton"/>"
-                onclick="submitFormViaAjax('drDialog', 'sendShedForm')"/>
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.okButton"/>"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.cancelButton"/>"
                 onclick="parent.$('drDialog').hide()"/>
         </div>

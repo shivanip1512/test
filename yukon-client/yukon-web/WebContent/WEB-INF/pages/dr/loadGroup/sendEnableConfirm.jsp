@@ -13,12 +13,14 @@
             </c:otherwise>
         </c:choose>
     </p>
-    <form id="sendEnableForm" action="/spring/dr/loadGroup/setEnabled">
+
+    <cti:url var="submitUrl" value="/spring/dr/loadGroup/setEnabled"/>
+    <form id="sendEnableForm" action="${submitUrl}"
+        onsubmit="return submitFormViaAjax('drDialog', 'sendEnableForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
         <div class="actionArea">
-            <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.okButton"/>"
-                onclick="submitFormViaAjax('drDialog', 'sendEnableForm')"/>
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.okButton"/>"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.cancelButton"/>"
                 onclick="parent.$('drDialog').hide()"/>
         </div>

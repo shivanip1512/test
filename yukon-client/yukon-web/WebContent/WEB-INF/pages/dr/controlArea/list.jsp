@@ -42,6 +42,9 @@
 
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.controlAreaList.filters"/>
     <tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
+    <cti:url var="action1" value="../my/action1"/>
+    <form:form action="${action1}"/>
+    <form:form action="../my/action2"/>
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.sort}">
             <input type="hidden" name="sort" value="${param.sort}"/>

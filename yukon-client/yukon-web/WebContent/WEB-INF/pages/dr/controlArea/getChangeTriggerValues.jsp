@@ -8,7 +8,9 @@
             argument="${controlArea.name}" />
     </p>
 
-    <form id="getChangeTimeWindowValues" action="/spring/dr/controlArea/triggerChange">
+    <cti:url var="submitUrl" value="/spring/dr/controlArea/triggerChange"/>
+    <form id="getChangeTimeWindowValues" action="${submitUrl}"
+        onsubmit="submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');return false;">
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
         
         <cti:msg var="thresholdName" key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.threshold"/>
@@ -27,11 +29,10 @@
           </div>
           <br><br>
         </c:forEach>
-        
+
         <br><br>
         <div class="actionArea">
-            <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton"/>"
-                onclick="submitFormViaAjax('drDialog', 'getChangeTimeWindowValues')"/>
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton"/>"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.cancelButton"/>"
                 onclick="parent.$('drDialog').hide()"/>
         </div>

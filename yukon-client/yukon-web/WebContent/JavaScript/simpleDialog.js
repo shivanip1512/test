@@ -72,4 +72,5 @@ function submitFormViaAjax(dialogId, formId, url) {
             'method': 'post',
             'parameters': $(formId).serialize(true)
         });
+    return false; // useful if we want to use this for "onsubmit" on a form
 }

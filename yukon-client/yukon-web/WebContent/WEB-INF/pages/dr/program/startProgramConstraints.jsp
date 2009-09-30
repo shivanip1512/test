@@ -5,20 +5,28 @@
 
 <script type="text/javascript">
 overrideConstraintsChecked = function() {
-	<%-- never called if there are no violations so we don't have to check that --%>
+    <%-- never called if there are no violations so we don't have to check that --%>
     $('okButton').disabled = !$('overrideConstraints').checked;
 }
 </script>
 
 <cti:url var="submitUrl" value="/spring/dr/program/startProgram"/>
-<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}">
+<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
+    onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
     <form:hidden path="programId"/>
     <form:hidden path="gearNumber"/>
     <form:hidden path="startNow"/>
     <form:hidden path="startDate"/>
     <form:hidden path="scheduleStop"/>
     <form:hidden path="stopDate"/>
-    <input type="hidden" name="overrideConstraints" value="true"/>
+    <form:hidden path="autoObserveConstraints"/>
+    <form:hidden path="addAdjustments"/>
+    <form:hidden path="numAdjustments"/>
+    <c:if test="${backingBean.numAdjustments > 0}">
+        <c:forEach var="index" begin="0" end="${backingBean.numAdjustments - 1}">
+            <form:hidden path="gearAdjustments[${index}]"/>
+        </c:forEach>
+    </c:if>
 
     <p><cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
         argument="${program.name}"/></p><br>
@@ -68,11 +76,17 @@ overrideConstraintsChecked = function() {
     <br>
 
     <div class="actionArea">
+        <cti:url var="backUrl" value="/spring/dr/program/startProgramDetails"/>
+        <c:if test="${backingBean.addAdjustments}">
+            <cti:url var="backUrl" value="/spring/dr/program/startProgramGearAdjustments"/>
+        </c:if>
+        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
+            onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
         <c:if test="${empty violations.violations || overrideAllowed}">
-            <input type="button" id="okButton" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.okButton"/>"
-                onclick="submitFormViaAjax('drDialog', 'startProgramForm')"/>
+            <input type="submit" id="okButton" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.okButton"/>"/>
             <c:if test="${!empty violations.violations}">
                 <script type="text/javascript">$('okButton').disabled = true</script>
+                <!-- TODO:  need to disable submit via text field too -->
             </c:if>
         </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"

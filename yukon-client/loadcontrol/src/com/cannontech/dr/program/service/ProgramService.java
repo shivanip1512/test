@@ -49,7 +49,20 @@ public interface ProgramService
      *            overridden. If not, they will be observed.
      */
     public void startProgram(YukonUserContext userContext, int programId,
-            int gearNumber, Date startDate, Date stopDate,
+            int gearNumber, Date startDate, boolean stopScheduled,
+            Date stopDate, boolean overrideConstraints, String additionalInfo);
+
+    public void scheduleProgramStop(YukonUserContext userContext,
+            int programId, Date stopDate);
+
+    public void stopProgram(YukonUserContext userContext, int programId);
+
+    public ConstraintViolations getConstraintViolationsForStopProgram(
+            YukonUserContext userContext, int programId, int gearNumber,
+            Date stopDate);
+
+    public void stopProgramWithGear(YukonUserContext userContext,
+            int programId, int gearNumber, Date stopDate,
             boolean overrideConstraints);
 
     public void setEnabled(int programId, boolean isEnabled, YukonUserContext userContext);

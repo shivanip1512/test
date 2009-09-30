@@ -82,9 +82,16 @@
                                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <cti:msg key="yukon.web.modules.dr.programDetail.actions.start.text"/>
                             </a><br>
-        
-                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/><br>
+
+                            <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+                                <cti:param name="programId" value="${programId}"/>
+                            </cti:url>
+                            <a href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/><br>
+                            </a><br>
+
                             <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
                             

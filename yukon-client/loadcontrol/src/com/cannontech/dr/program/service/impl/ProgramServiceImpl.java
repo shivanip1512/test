@@ -20,6 +20,7 @@ import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -29,8 +30,10 @@ import com.cannontech.dr.program.model.ProgramDisplayField;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
@@ -129,6 +132,122 @@ public class ProgramServiceImpl implements ProgramService {
             }
         }
 
+        return makeServerRequest(controlRequest);
+    }
+
+    @Override
+    public void startProgram(YukonUserContext userContext, int programId,
+            int gearNumber, Date startDate, boolean stopScheduled, Date stopDate,
+            boolean overrideConstraints, String additionalInfo) {
+
+        int constraintId = overrideConstraints
+            ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+            : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
+        LMManualControlRequest controlRequest =
+            getManualControlMessage(userContext, programId, gearNumber,
+                                    startDate, stopDate, constraintId);
+
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        String gearName = getGearNameForProgram(program, gearNumber);
+        if (additionalInfo != null) {
+            ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
+        }
+
+        // TODO:  Do we need to check the response from the server here?
+        // (The old 3-tier didn't so what the response means exactly needs to
+        // be researched.)
+        ServerRequest serverRequest = new ServerRequestImpl();
+        serverRequest.makeServerRequest(loadControlClientConnection, controlRequest);
+
+        demandResponseEventLogService.programScheduled(userContext.getYukonUser(),
+                                                       program.getYukonName(),
+                                                       overrideConstraints,
+                                                       gearName, true,
+                                                       startDate, stopScheduled,
+                                                       stopDate);
+    }
+
+    private String getGearNameForProgram(LMProgramBase program, int gearNumber) {
+        if (program instanceof IGearProgram) {
+            LMProgramDirectGear gear =
+                ((IGearProgram) program).getDirectGearVector().get(gearNumber - 1);
+            return gear.getGearName();
+        }
+        return null;
+    }
+
+    @Override
+    public void scheduleProgramStop(YukonUserContext userContext, int programId,
+            Date stopDate) {
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        Date startDate = CtiUtilities.get1990GregCalendar().getTime();
+        LMManualControlRequest controlRequest =
+            program.createScheduledStopMsg(startDate, stopDate, 1, null);
+        loadControlClientConnection.write(controlRequest);
+
+        demandResponseEventLogService.programStopScheduled(userContext.getYukonUser(),
+                                                           program.getYukonName(),
+                                                           true, stopDate, null);
+    }
+
+    @Override
+    public void stopProgram(YukonUserContext userContext, int programId) {
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        Date stopDate = new Date();
+        LMManualControlRequest controlRequest =
+            program.createStartStopNowMsg(stopDate, 1, null, false,
+                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE);
+        loadControlClientConnection.write(controlRequest);
+
+        demandResponseEventLogService.programStopped(userContext.getYukonUser(),
+                                                     program.getYukonName(),
+                                                     true, stopDate, null);
+    }
+
+    @Override
+    public ConstraintViolations getConstraintViolationsForStopProgram(
+            YukonUserContext userContext, int programId, int gearNumber,
+            Date stopDate) {
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        Date startDate = CtiUtilities.get1990GregCalendar().getTime();
+        LMManualControlRequest changeGearRequest = 
+            program.createScheduledStopMsg(
+                    startDate, 
+                    stopDate,
+                    gearNumber, null);
+        changeGearRequest.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
+        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
+
+        return makeServerRequest(changeGearRequest);
+    }
+
+    @Override
+    public void stopProgramWithGear(YukonUserContext userContext,
+            int programId, int gearNumber, Date stopDate,
+            boolean overrideConstraints) {
+        int constraintId = overrideConstraints
+            ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+            : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        String gearName = getGearNameForProgram(program, gearNumber);
+        Date startDate = CtiUtilities.get1990GregCalendar().getTime();
+        LMManualControlRequest changeGearRequest = 
+            program.createScheduledStopMsg(
+                    startDate, 
+                    stopDate,
+                    gearNumber, null);
+        changeGearRequest.setConstraintFlag(constraintId);
+        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
+
+        ServerRequest serverRequest = new ServerRequestImpl();
+        serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
+
+        demandResponseEventLogService.programStopped(userContext.getYukonUser(),
+                                                     program.getYukonName(),
+                                                     true, stopDate, gearName);
+    }
+
+    private ConstraintViolations makeServerRequest(LMManualControlRequest controlRequest) {
         ServerRequest serverRequest = new ServerRequestImpl();
         ServerResponseMsg serverResponse =
             serverRequest.makeServerRequest(loadControlClientConnection, controlRequest);
@@ -152,24 +271,10 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void startProgram(YukonUserContext userContext, int programId,
-            int gearNumber, Date startDate, Date stopDate,
-            boolean overrideConstraints) {
-
-        int constraintId = overrideConstraints
-            ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
-            : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
-        LMManualControlRequest controlRequest =
-            getManualControlMessage(userContext, programId, gearNumber,
-                                    startDate, stopDate, constraintId);
-
-        // TODO:  Do we need to check the response from the server here?
-        // (The old 3-tier didn't so what the response means exactly needs to
-        // be researched.)
-        ServerRequest serverRequest = new ServerRequestImpl();
-        serverRequest.makeServerRequest(loadControlClientConnection, controlRequest);
+    public DisplayablePao getProgram(int programId) {
+        return programDao.getProgram(programId);
     }
-    
+
     @Override
     public void setEnabled(int programId, boolean isEnabled, YukonUserContext userContext) {
 
@@ -189,11 +294,6 @@ public class ProgramServiceImpl implements ProgramService {
         
     }
 
-    @Override
-    public DisplayablePao getProgram(int programId) {
-        return programDao.getProgram(programId);
-    }
-
     @Autowired
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
@@ -209,10 +309,10 @@ public class ProgramServiceImpl implements ProgramService {
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
     }
-    
+
     @Autowired
     public void setDemandResponseEventLogService(
-                                                 DemandResponseEventLogService demandResponseEventLogService) {
+            DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
     }
 

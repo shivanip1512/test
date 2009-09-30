@@ -1,0 +1,72 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<script type="text/javascript">
+overrideConstraintsChecked = function() {
+    <%-- never called if there are no violations so we don't have to check that --%>
+    $('okButton').disabled = !$('overrideConstraints').checked;
+}
+</script>
+
+<cti:url var="submitUrl" value="/spring/dr/program/stopProgram"/>
+<form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}"
+    onsubmit="return submitFormViaAjax('drDialog', 'stopProgramForm');">
+    <form:hidden path="programId"/>
+    <form:hidden path="stopNow"/>
+    <form:hidden path="stopDate"/>
+    <form:hidden path="useStopGear"/>
+    <form:hidden path="gearNumber"/>
+
+    <p><cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
+        argument="${program.name}"/></p><br>
+
+    <p>
+    <c:if test="${backingBean.stopNow}">
+        <cti:msg key="yukon.web.modules.dr.program.stopProgram.stoppingNow"/>
+    </c:if>
+    <c:if test="${!backingBean.stopNow}">
+        <cti:formatDate var="formattedStopDate" type="BOTH" value="${backingBean.stopDate}"/>
+        <cti:msg key="yukon.web.modules.dr.program.stopProgram.stoppingAt"
+            argument="${formattedStopDate}"/>
+    </c:if>
+    </p>
+
+    <c:if test="${empty violations.violations}">
+        <p><cti:msg key="yukon.web.modules.dr.program.stopProgram.noConstraintsViolated"/></p>
+    </c:if>
+    <c:if test="${!empty violations.violations}">
+        <p><cti:msg key="yukon.web.modules.dr.program.stopProgram.constraintsViolated"/></p>
+        <ul>
+            <c:forEach var="violation" items="${violations.violations}">
+                <li>${violation}</li>
+            </c:forEach>
+        </ul>
+        <br>
+
+        <c:if test="${overrideAllowed}">
+            <p><input type="checkbox" id="overrideConstraints"
+                name="overrideConstraints" onclick="overrideConstraintsChecked();">
+            <label for="overrideConstraints">
+                <cti:msg key="yukon.web.modules.dr.program.stopProgram.overrideConstraints"/>
+            </label></p>
+        </c:if>
+    </c:if>
+    <br>
+
+    <div class="actionArea">
+        <cti:url var="backUrl" value="/spring/dr/program/stopProgramDetails"/>
+        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.backButton"/>"
+            onclick="submitFormViaAjax('drDialog', 'stopProgramForm', '${backUrl}')"/>
+        <c:if test="${empty violations.violations || overrideAllowed}">
+            <input type="submit" id="okButton" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.okButton"/>"/>
+            <c:if test="${!empty violations.violations}">
+                <script type="text/javascript">$('okButton').disabled = true</script>
+                <!-- TODO:  need to disable submit via text field too -->
+            </c:if>
+        </c:if>
+        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.cancelButton"/>"
+            onclick="parent.$('drDialog').hide()"/>
+    </div>
+</form:form>

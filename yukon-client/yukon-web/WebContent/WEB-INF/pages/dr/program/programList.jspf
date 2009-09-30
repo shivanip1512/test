@@ -188,8 +188,15 @@ function clearFilter() {
                                 onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
                                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.start"/>
                             </a>
+
+                            <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+                                <cti:param name="programId" value="${programId}"/>
+                            </cti:url>
+                            <a href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
+                            </a>
         
-                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
                             
                             <cti:url var="sendEnableUrl" value="/spring/dr/program/sendEnableConfirm">
                                 <cti:param name="programId" value="${programId}"/>

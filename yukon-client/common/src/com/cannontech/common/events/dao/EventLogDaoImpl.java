@@ -39,13 +39,17 @@ public class EventLogDaoImpl implements EventLogDao {
         builder.add(new ArgumentColumn("String1", Types.VARCHAR));
         builder.add(new ArgumentColumn("String2", Types.VARCHAR));
         builder.add(new ArgumentColumn("String3", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int4", Types.BIGINT));
-        builder.add(new ArgumentColumn("Int5", Types.BIGINT));
-        builder.add(new ArgumentColumn("Int6", Types.BIGINT));
+        builder.add(new ArgumentColumn("String4", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String5", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String6", Types.VARCHAR));
         builder.add(new ArgumentColumn("Int7", Types.BIGINT));
-        builder.add(new ArgumentColumn("Date8", Types.TIMESTAMP));
+        builder.add(new ArgumentColumn("Int8", Types.BIGINT));
+        builder.add(new ArgumentColumn("Int9", Types.BIGINT));
+        builder.add(new ArgumentColumn("Int10", Types.BIGINT));
+        builder.add(new ArgumentColumn("Date11", Types.TIMESTAMP));
+        builder.add(new ArgumentColumn("Date12", Types.TIMESTAMP));
         argumentColumns = builder.build();
-        
+
         countOfTotalArguments = argumentColumns.size() + countOfNonVariableColumns; 
         
         totalArgumentTypes = new int[countOfTotalArguments];

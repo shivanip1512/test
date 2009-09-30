@@ -16,6 +16,11 @@
     <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {1} was disabled by user {0}</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {1} had its triggers peak(s) reset by user {0}</entry>
 
+    <!-- Program -->
+    <entry key="yukon.common.events.dr.program.programScheduled">Program {1} start scheduled at {5} with gear {3} by user {0}; stop scheduled {7}</entry>
+    <entry key="yukon.common.events.dr.program.programStopped">Program {1} was stopped at {4} by user {0}</entry>
+    <entry key="yukon.common.events.dr.program.programStopScheduled">Program {1} was scheduled to stop at {4} by user {0}</entry>
+
     <!-- Load Group -->
     <entry key="yukon.common.events.dr.loadGroup.loadGroupShed">Load group {1} was shed for {3} seconds by user {0}</entry>
     <entry key="yukon.common.events.dr.loadGroup.loadGroupRestore">Load group {1} was restored by user {0}</entry>
