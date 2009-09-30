@@ -172,6 +172,19 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
      *   That method prepares an outmessage for submission to the internals..
      */
 
+    string resultString;
+    CtiReturnMsg *pReturnMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                            string(OutMessage->Request.CommandStr),
+                                            string(),
+                                            nRet,
+                                            OutMessage->Request.RouteID,
+                                            OutMessage->Request.MacroOffset,
+                                            OutMessage->Request.Attempt,
+                                            OutMessage->Request.GrpMsgID,
+                                            OutMessage->Request.UserID,
+                                            OutMessage->Request.SOE,
+                                            CtiMultiMsg_vec());
+
     switch(parse.getCommand())
     {
     case PutValueRequest:
@@ -188,6 +201,9 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
                 OutMessage->InLength    = 0;
                 OutMessage->Source      = 0;
                 OutMessage->Retry       = 2;
+
+                resultString = "Device: " + getName() + " -- Raw ASCII Command sent \n\"" + outputValue + "\"";
+
                 outList.push_back(OutMessage);
                 OutMessage = NULL;
                 break;
@@ -212,28 +228,23 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
-                                                    string(OutMessage->Request.CommandStr),
-                                                    string("TAP Devices do not support this command (yet?)"),
-                                                    nRet,
-                                                    OutMessage->Request.RouteID,
-                                                    OutMessage->Request.MacroOffset,
-                                                    OutMessage->Request.Attempt,
-                                                    OutMessage->Request.GrpMsgID,
-                                                    OutMessage->Request.UserID,
-                                                    OutMessage->Request.SOE,
-                                                    CtiMultiMsg_vec()));
+            resultString = "WCTP Devices do not support this command (yet?)";
 
             if(OutMessage)                // And get rid of our memory....
             {
                 delete OutMessage;
                 OutMessage = NULL;
             }
-
             break;
         }
     }
 
+    if(pReturnMsg != NULL)
+    {
+        pReturnMsg->setResultString(resultString);
+        pReturnMsg->setStatus(nRet);
+        retList.push_back(pReturnMsg);
+    }
 
     return nRet;
 }
