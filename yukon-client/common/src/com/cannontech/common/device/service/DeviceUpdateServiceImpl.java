@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -28,7 +27,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
@@ -42,7 +40,7 @@ import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
-import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -264,37 +262,15 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             ((CapBankControllerDNP) newDevice).setDeviceCBC(((CapBankControllerDNP) oldDevice).getDeviceCBC());
         }
         
-        if (newDevice instanceof MCT410IL) {
+        if (newDevice instanceof MCTBase && oldDevice instanceof MCTBase ) {
+            ((MCTBase)newDevice).setDeviceLoadProfile(((MCTBase)oldDevice).getDeviceLoadProfile());
+            ((MCTBase)newDevice).setConfigMapping(((MCTBase)oldDevice).getConfigMapping());
 
-            boolean loadProfileExists = false;
-            try {
-                SimpleDevice meter = deviceDao.getYukonDeviceForDevice(oldDevice);
-                attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
-                loadProfileExists = true;
-            } catch (NotFoundException e) {
-                // Do nothing - no load profile point
-            } catch (IllegalArgumentException e) {
-                // Do nothing - no load profile point
+            if ( newDevice instanceof MCT400SeriesBase && oldDevice instanceof MCT400SeriesBase) {
+                ((MCT400SeriesBase) newDevice).setDeviceMCT400Series(((MCT400SeriesBase)oldDevice).getDeviceMCT400Series());
+                ((MCT400SeriesBase) newDevice).setHasNewDisconnect(true);
+                ((MCT400SeriesBase) newDevice).setHasNewTOU(true);
             }
-            if (loadProfileExists) {
-                StringBuffer lp = new StringBuffer(((MCTBase) oldDevice).getDeviceLoadProfile()
-                                                   .getLoadProfileCollection());
-                lp.delete(1, 4);
-                lp.append("NNN");
-                ((MCT410IL) newDevice).getDeviceLoadProfile()
-                .setLoadProfileCollection(lp.toString());
-                ((MCT410IL) newDevice).getDeviceLoadProfile()
-                .setLoadProfileDemandRate(((MCTBase) oldDevice).getDeviceLoadProfile()
-                                          .getLoadProfileDemandRate());
-            } else {
-                ((MCT410IL) newDevice).getDeviceLoadProfile().setLoadProfileCollection("NNNN");
-                ((MCT410IL) newDevice).getDeviceLoadProfile()
-                .setLoadProfileDemandRate(new Integer(3600));
-            }
-
-            ((MCT410IL) newDevice).getDeviceLoadProfile().setVoltageDmdRate(new Integer(3600));
-            ((MCT410IL) newDevice).getDeviceLoadProfile().setVoltageDmdInterval(new Integer(60));
-
         }
 
         try {
