@@ -10,6 +10,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -18,8 +19,10 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
+@CheckRoleProperty(YukonRoleProperty.ADMIN_CONFIG_ENERGY_COMPANY)
 public class UpdateFAQSourceController extends StarsAdminActionController {
     private enum Type { Customized, Inherited, Link };
     
