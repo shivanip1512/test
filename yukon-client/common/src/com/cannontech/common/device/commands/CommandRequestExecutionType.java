@@ -15,7 +15,7 @@ public enum CommandRequestExecutionType {
     // Commands intended to be sent to a single device at a time may use a higher priority (~14).
 
     
-	PING_COMMAND(true, 14, "Ping Command", "A 'ping' command sent to device.", false),
+	METER_INFORMATION_PING_COMMAND(true, 14, "Ping Command", "A 'ping' command sent to device.", false),
 	PING_DEVICE_ON_ROUTE_COMMAND(false, 14, "Ping Device On Route Command", "A 'ping' command sent to device on a specific route.", false),
 	PEAK_REPORT_COMMAND(true, 14, "Peak Report Command", "A 'getvalue lp peak' command sent for the purpose of profiling.", false),
 	ROUTE_DISCOVERY_PUTCONFIG_COMMAND(false, 14, "Route Discovery Put Config Command", "A 'putconfig emetcon intervals' command sent to 410s after a route has been set due to running a route discovery action.", false),

@@ -22,6 +22,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -196,7 +197,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	// SCHEDULED BLINK COUNT REQUEST JOB
         	if (isNewMonitor && scheduleGroupCommand) {
             		
-            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext);
+            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext, RetryStrategy.noRetryStrategy());
         	}
         	
         	// OUTAGE GROUP

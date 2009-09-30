@@ -53,7 +53,7 @@ public class CommandRequestRetryExecutor<T> {
         CommandRequestExecutionTemplate<T> template = this.commandRequestExecutor.getExecutionTemplate(type, user);
         RetryCallback retryCallback = new RetryCallback(this.commandRequestExecutor, callback, this.retryCount, this.stopRetryAfterDate, this.turnOffQueuingAfterRetryCount, template);
         
-        log.debug("++++++++++ Starting intial execution attempt using retry executor: contextId=" + template.getContextId().getId() + " retryCount=" + retryCount + " stopRetryAfterDate=" + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
+        log.debug("Starting intial execution attempt using retry executor: contextId=" + template.getContextId().getId() + " retryCount=" + retryCount + " stopRetryAfterDate=" + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
         template.execute(commands, retryCallback);
         
         return template.getContextId();
@@ -120,45 +120,45 @@ public class CommandRequestRetryExecutor<T> {
             
             // no more retry OR time up OR no more failures
             // ok to call complete() on delegate callback
-            boolean noMoreRetrys = this.retryCount == 0;
-            boolean timeUp = this.stopRetryAfterDate != null && this.stopRetryAfterDate.compareTo(new Date()) <= 0;
-            boolean noMoreFails = this.failedCommands.size() == 0 && !noMoreRetrys && !timeUp;
+            boolean noMoreRetrys = retryCount == 0;
+            boolean timeUp = stopRetryAfterDate != null && stopRetryAfterDate.compareTo(new Date()) <= 0;
+            boolean noMoreFails = failedCommands.size() == 0 && !noMoreRetrys && !timeUp;
             
             if (noMoreRetrys || 
                 timeUp ||
                 noMoreFails) {
                 
-                log.debug("++++++++++ Stop retry excutor after " + this.retryDescription + ". contextId= " + this.executionTemplate.getContextId().getId() + ". Reason: noMoreRetrys=" + noMoreRetrys + " timeUp=" + timeUp + " noMoreFails=" + noMoreFails +
-                          ". " + this.failedCommands.size() + " failed commands remain and will be handled by delegate callback: " + this.delegateCallback);
+                log.debug("Stop retry excutor after " + retryDescription + ". contextId= " + executionTemplate.getContextId().getId() + ". Reason: noMoreRetrys=" + noMoreRetrys + " timeUp=" + timeUp + " noMoreFails=" + noMoreFails +
+                          ". " + failedCommands.size() + " failed commands remain and will be handled by delegate callback: " + delegateCallback);
                 
                 // these won't be retried after all, send to delegate
                 for (FailedCommandAndError failedCommand : this.failedCommands) {
-                    this.delegateCallback.receivedLastError(failedCommand.getCommand(), failedCommand.getError());
+                    delegateCallback.receivedLastError(failedCommand.getCommand(), failedCommand.getError());
                 }
                 
                 // complete delegate and get out
-                this.delegateCallback.complete();
+                delegateCallback.complete();
                 return;
             }
             
             // start new execution of failed commands with reduced retry count, same context
-            log.debug("++++++++++ Running another retry executor after " + this.retryDescription + " for " +  this.failedCommands.size() + " failed requests. contextId= " + this.executionTemplate.getContextId().getId() + ". ");
+            log.debug("Running another retry executor after " + retryDescription + " for " +  failedCommands.size() + " failed requests. contextId= " + executionTemplate.getContextId().getId() + ". ");
             
-            boolean turnOffQueuing = this.turnOffQueuingAfterRetryCount != null &&  this.turnOffQueuingAfterRetryCount > this.retryCount;
+            boolean turnOffQueuing = turnOffQueuingAfterRetryCount != null &&  turnOffQueuingAfterRetryCount > retryCount;
             if (turnOffQueuing) {
-                log.debug("++++++++++ Retry executor will be executed with 'noqueue' after " + this.retryDescription + ". turnOffQueuingAfterRetryCount=" + this.turnOffQueuingAfterRetryCount + " contextId= " + this.executionTemplate.getContextId().getId() + ". ");
+                log.debug("Retry executor will be executed with 'noqueue' after " + retryDescription + ". turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount + " contextId= " + executionTemplate.getContextId().getId() + ". ");
             }
             
-            RetryCallback retryCallback = new RetryCallback(this.initialRetryCount, this.commandRequestExecutor, this.delegateCallback, this.retryCount - 1, 
-                                                            this.stopRetryAfterDate, this.turnOffQueuingAfterRetryCount, this.executionTemplate);
+            RetryCallback retryCallback = new RetryCallback(initialRetryCount, commandRequestExecutor, delegateCallback, retryCount - 1, 
+                                                            stopRetryAfterDate, turnOffQueuingAfterRetryCount, executionTemplate);
             
             // re-run template with failed commands
             List<T> commands = new ArrayList<T>();
-            for (FailedCommandAndError failedCommand : this.failedCommands) {
+            for (FailedCommandAndError failedCommand : failedCommands) {
                 commands.add(failedCommand.getCommand());
             }
             
-            this.executionTemplate.execute(commands, retryCallback, turnOffQueuing ? true : false);
+            executionTemplate.execute(commands, retryCallback, turnOffQueuing ? true : false);
         }
         
         private String getRetryDesciption(int currentRetryCount, int initialRetryCount) {
@@ -174,13 +174,13 @@ public class CommandRequestRetryExecutor<T> {
         public void receivedLastError(T command, DeviceErrorDescription error) {
 
             // no more retry
-            if (this.retryCount <= 0) {
-                this.delegateCallback.receivedLastError(command, error);
+            if (retryCount <= 0) {
+                delegateCallback.receivedLastError(command, error);
                 return;
             }
             
             // add to failedCommands
-            this.failedCommands.add(new FailedCommandAndError(command, error));
+            failedCommands.add(new FailedCommandAndError(command, error));
         }
 
         
@@ -188,34 +188,34 @@ public class CommandRequestRetryExecutor<T> {
         // UNINTERESTING, PASS THROUGH TO DELEGATE
         @Override
         public void processingExceptionOccured(String reason) {
-            this.retryCount = 0;
-            this.delegateCallback.processingExceptionOccured(reason);
+            retryCount = 0;
+            delegateCallback.processingExceptionOccured(reason);
         }
         
         @Override
         public void receivedLastResultString(T command, String value) {
-            this.delegateCallback.receivedLastResultString(command, value);
+            delegateCallback.receivedLastResultString(command, value);
         }
         
         @Override
         public void receivedValue(T command, PointValueHolder value) {
-            this.delegateCallback.receivedValue(command, value);
+            delegateCallback.receivedValue(command, value);
         }
         
         @Override
         public void receivedIntermediateError(T command, DeviceErrorDescription error) {
-            this.delegateCallback.receivedIntermediateError(command, error);
+            delegateCallback.receivedIntermediateError(command, error);
             
         }
         
         @Override
         public void receivedIntermediateResultString(T command, String value) {
-            this.delegateCallback.receivedLastResultString(command, value);
+            delegateCallback.receivedLastResultString(command, value);
         }
         
         @Override
         public void cancel() {
-            this.delegateCallback.cancel();
+            delegateCallback.cancel();
         }
     }
     

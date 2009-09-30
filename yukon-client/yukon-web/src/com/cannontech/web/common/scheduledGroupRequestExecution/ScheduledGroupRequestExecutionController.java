@@ -26,6 +26,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -341,11 +342,12 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		
 		// schedule / re-schedule
 		YukonJob job = null;
+		RetryStrategy retryStrategy = new RetryStrategy(retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
 		
 		if (editJobId <= 0) {
-			job = scheduledGroupRequestExecutionService.scheduleWithRetry(scheduleName, deviceGroupName, selectedAttributes, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+			job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, selectedAttributes, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
 		} else {
-			job = scheduledGroupRequestExecutionService.scheduleReplacementWithRetry(editJobId, scheduleName, deviceGroupName, selectedAttributes, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+			job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
 		}
 		
 		mav.addObject("jobId", job.getId());
@@ -396,11 +398,12 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
         
         // schedule /  re-schedule
         YukonJob job = null;
+        RetryStrategy retryStrategy = new RetryStrategy(retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
         
         if (editJobId <= 0) {
-        	job = scheduledGroupRequestExecutionService.scheduleWithRetry(scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+        	job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
         } else {
-        	job = scheduledGroupRequestExecutionService.scheduleReplacementWithRetry(editJobId, scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext,retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+        	job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
         }
 		
         mav.addObject("jobId", job.getId());

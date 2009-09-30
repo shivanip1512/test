@@ -59,7 +59,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
 
         Meter meter = meterDao.getForId(deviceId);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, "ping", CommandRequestExecutionType.PING_COMMAND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, "ping", CommandRequestExecutionType.METER_INFORMATION_PING_COMMAND, user);
         mav.addObject("isRead", true);
 
         mav.addObject("result", result);

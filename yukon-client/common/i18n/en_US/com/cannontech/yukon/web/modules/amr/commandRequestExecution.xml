@@ -84,6 +84,9 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.executionCount">Executions</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.enabledStatus">Status</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.user">User</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.noJobs"><![CDATA[
+    	No schedules setup, use the "Create" link to create a schedule.
+    ]]></entry>
     
     
     <!-- ScheduledGroupRequestExecutionController jobDetail.jsp -->
