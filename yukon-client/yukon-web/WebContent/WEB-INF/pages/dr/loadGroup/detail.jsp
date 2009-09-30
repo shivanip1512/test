@@ -63,49 +63,77 @@
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
-                    <span id="actionSpan_${loadGroupId}">
+                    <div id="actionSpan_${loadGroupId}">
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
                             <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
                                 <cti:param name="loadGroupId" value="${loadGroupId}"/>
                             </cti:url>
-                            <a href="javascript:void(0)"
+                            <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
+                                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
+                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.text"/>
                             </a><br>
         
                             <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
                                 <cti:param name="loadGroupId" value="${loadGroupId}"/>
                             </cti:url>
-                            <a href="javascript:void(0)"
+                            <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
+                                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
+                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.text"/>
                             </a><br>
                             
                             <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
                                 <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 <cti:param name="isEnabled" value="true"/>
                             </cti:url>
-                            <a id="enableLink_${loadGroupId}" href="javascript:void(0)"
+                            <a id="enableLink_${loadGroupId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
+                                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
+                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable.text"/>
                             </a>
                             <cti:url var="sendDisableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
                                 <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 <cti:param name="isEnabled" value="false"/>
                             </cti:url>
-                            <a id="disableLink_${loadGroupId}" href="javascript:void(0)"
+                            <a id="disableLink_${loadGroupId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
+                                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
+                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable.text"/>
                             </a><br>
-                            <cti:dataUpdaterCallback function="updateEnabled('${loadGroupId}')" initialize="true" state="DR_LOADGROUP/${loadGroupId}/ENABLED" />
                         </cti:checkPaoAuthorization>
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
-                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/><br>
-                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/><br>
-                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/> / 
-                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/><br>
+                            <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
+                            <div class="subtleGray" title="${noLoadGroupControl}">
+                                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noLoadGroupControl}">
+                                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noLoadGroupControl}">
+                                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.disable.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable.text"/>
+                            </div>
                         </cti:checkPaoAuthorization>
-                    </span>
+                    </div>
+                    <div id="actionSpanDisabled_${loadGroupId}">
+                        <cti:msg var="loadGroupUnknown" key="yukon.web.modules.dr.loadGroupDetail.unknown"/>
+                        <div class="subtleGray" title="${loadGroupUnknown}">
+                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.disabled"/>
+                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.text"/>
+                        </div>
+                        <div class="subtleGray" title="${loadGroupUnknown}">
+                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.disabled"/>
+                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.text"/>
+                        </div>
+                        <div class="subtleGray" title="${loadGroupUnknown}">
+                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.disable.disabled"/>
+                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable.text"/>
+                        </div>
+                    </div>
+                    <cti:dataUpdaterCallback function="updateEnabled('${loadGroupId}')" initialize="true" state="DR_LOADGROUP/${loadGroupId}/ENABLED" />
                 </tags:abstractContainer>
             </td>
         </tr>

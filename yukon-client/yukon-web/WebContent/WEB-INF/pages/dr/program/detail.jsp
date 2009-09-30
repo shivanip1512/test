@@ -77,24 +77,41 @@
                             <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
                                 <cti:param name="programId" value="${programId}"/>
                             </cti:url>
-                            <a href="javascript:void(0)"
+                            <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.start.text"/>
                             </a><br>
         
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/><br>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/><br>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/><br>
+                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
+                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/><br>
+                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
+                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.enable"/>
+                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable.text"/><br>
+                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable"/>
+                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable.text"/><br>
                             
                             <cti:dataUpdaterCallback function="updateEnabled('${programId}')" initialize="true" state="DR_PROGRAM/${programId}/ENABLED" />
                         </cti:checkPaoAuthorization>
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/><br>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/><br>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/> / 
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/><br>
+                            <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
+                            <div class="subtleGray" title="${noProgramControl}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.start.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noProgramControl}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noProgramControl}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noProgramControl}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable.text"/>
+                            </div>
                         </cti:checkPaoAuthorization>
                     </span>
                 </tags:abstractContainer>
@@ -104,10 +121,8 @@
     <br>
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
-    <tags:abstractContainer type="box" title="${boxTitle}">
-        <c:set var="baseUrl" value="/spring/dr/program/detail"/>
-         <%@ include file="../loadGroup/loadGroupList.jspf" %>
-    </tags:abstractContainer>
+    <c:set var="baseUrl" value="/spring/dr/program/detail"/>
+    <%@ include file="../loadGroup/loadGroupList.jspf" %>
     <br>
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.parents"/>

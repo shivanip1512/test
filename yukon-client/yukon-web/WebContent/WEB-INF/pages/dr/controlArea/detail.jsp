@@ -55,34 +55,26 @@
                         </tags:nameValue>
 
 	                    <c:if test="${!empty controlArea.triggers}">
-	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.triggers"/>
-	                        <tags:nameValue name="${fieldName}">
-                            <table id="controlAreaList" class="resultsTable activeResultsTable">
-                                <tr>
-                                    <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/></th>
-                                    <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/></th>
-                                    <th><cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.atku"/></th>
-                                </tr>
-                                <c:forEach var="trigger" items="${controlArea.triggers}">
-                                    <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>                               
-                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                        <td>
-                                           <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
-                                        </td>
-                                        <td>
-                                            <c:if test="${trigger.thresholdType}">
-                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
-                                            </c:if>
-                                        </td>
-                                        <td>
-                                            <c:if test="${trigger.thresholdType}">
-                                               <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
-                                            </c:if>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </table>
-	                        </tags:nameValue>
+                            <c:forEach var="trigger" items="${controlArea.triggers}">
+                                <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
+    	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.trigger" argument="${triggerNumber}"/>
+    	                        <tags:nameValue name="${fieldName}">
+                                    <cti:msg var="thresholdTitle" key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/>
+                                    <tags:nameValue name="${thresholdTitle}">
+                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
+                                    </tags:nameValue>
+    
+                                    <cti:msg var="peakTitle" key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/>
+                                    <tags:nameValue name="${peakTitle}">
+                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
+                                    </tags:nameValue>
+    
+                                    <cti:msg var="atkuTitle" key="yukon.web.modules.dr.controlAreaDetail.info.atku"/>
+                                    <tags:nameValue name="${atkuTitle}">
+                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
+                                    </tags:nameValue>
+                                </tags:nameValue>
+                            </c:forEach>                     
 	                    </c:if>
                     </tags:nameValueContainer>
                     <c:if test="${empty controlArea.triggers}">
@@ -97,63 +89,107 @@
             	<tags:abstractContainer type="box" title="${boxTitle}">
                     <span id="actionSpan_${controlAreaId}">
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}">
-                    		<cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/><br>
-                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/><br>
+                    		<cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start.text"/><br>
+                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop.text"/><br>
     
-                            <c:if test="${!empty controlArea.triggers}">
-                                <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
-                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
-                                </cti:url>
-                                <a href="javascript:void(0)"
-                                    onclick="openSimpleDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/><br>
-                                </a>
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${!empty controlArea.triggers}">
+                                    <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                        <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    </cti:url>
+                                    <a href="javascript:void(0)" class="simpleLink"
+                                        onclick="openSimpleDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.text"/><br>
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled.text"/>
+                                    <span class="subtleGray" title="${triggersChangeDisabled}">
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.text"/><br>
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
                             
                             <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                             </cti:url>
-                            <a href="javascript:void(0)"
+                            <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendChangeTimeWindowUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/><br>
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange.text"/><br>
                             </a>
                             
                             <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 <cti:param name="isEnabled" value="true"/>
                             </cti:url>
-                            <a id="enableLink_${controlAreaId}" href="javascript:void(0)"
+                            <a id="enableLink_${controlAreaId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enable.text"/>
                             </a>
                             <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 <cti:param name="isEnabled" value="false"/>
                             </cti:url>
-                            <a id="disableLink_${controlAreaId}" href="javascript:void(0)"
+                            <a id="disableLink_${controlAreaId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"/>')">
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
-                            </a><br>
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable.text"/>
+                            </a>
                             <cti:dataUpdaterCallback function="updateEnabled('${controlAreaId}')" initialize="true" state="DR_CONTROLAREA/${controlAreaId}/ENABLED" />
                             
-                            <c:if test="${!empty controlArea.triggers}">
-                                <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
-                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
-                                </cti:url>
-                                <a href="javascript:void(0)"
-                                    onclick="openSimpleDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
-                                </a>
-                            </c:if>
+                            <br>
+                            <c:choose>
+                                <c:when test="${!empty controlArea.triggers}">
+                                    <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                        <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    </cti:url>
+                                    <a href="javascript:void(0)" class="simpleLink"
+                                        onclick="openSimpleDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.text"/>
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled.text"/>
+                                    <span class="subtleGray" title="${resetDisabled}">
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.text"/>
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
                         </cti:checkPaoAuthorization>
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}" invert="true">
-                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/><br>
-                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/><br>
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/><br>
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/><br>
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enable"/> / 
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/><br>
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                            <cti:msg var="noControlAreaControl" key="yukon.web.modules.dr.controlAreaDetail.noControl"/>
+                            <div class="subtleGray" title="${noControlAreaControl}">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.start.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noControlAreaControl}">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stop.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noControlAreaControl}">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noControlAreaControl}">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noControlAreaControl}">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disable.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable.text"/>
+                            </div>
+                            <div class="subtleGray" title="${noControlAreaControl}">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.text"/>
+                            </div>
                         </cti:checkPaoAuthorization>
                     </span>
     	        </tags:abstractContainer>
@@ -162,10 +198,7 @@
     </table>
     <br>
 
-    <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.programs"/>
-    <tags:abstractContainer type="box" title="${boxTitle}">
-        <c:set var="baseUrl" value="/spring/dr/controlArea/detail"/>
-        <%@ include file="../program/programList.jspf" %>
-    </tags:abstractContainer>
+    <c:set var="baseUrl" value="/spring/dr/controlArea/detail"/>
+    <%@ include file="../program/programList.jspf" %>
 
 </cti:standardPage>

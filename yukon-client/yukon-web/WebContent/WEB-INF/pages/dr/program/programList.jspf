@@ -124,91 +124,112 @@ function clearFilter() {
 </c:if>
 <c:if test="${searchResult.hitCount > 0}">
 <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
-<table id="programList" class="resultsTable activeResultsTable">
-    <tr>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.name"
-                baseUrl="${baseUrl}" fieldName="NAME"/>
-        </th>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.state"
-                baseUrl="${baseUrl}" fieldName="STATE"/>
-        </th>
-        <th>
-            <cti:msg key="yukon.web.modules.dr.programList.heading.actions"/>
-        </th>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.start"
-                baseUrl="${baseUrl}" fieldName="START"/>
-        </th>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.stop"
-                baseUrl="${baseUrl}" fieldName="STOP"/>
-        </th>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.currentGear"
-                baseUrl="${baseUrl}" fieldName="CURRENT_GEAR"/>
-        </th>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.priority"
-                baseUrl="${baseUrl}" fieldName="PRIORITY"/>
-        </th>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.reduction"
-                baseUrl="${baseUrl}" fieldName="REDUCTION"/>
-        </th>
-        <th>
-            <dr:sortByLink key="yukon.web.modules.dr.programList.heading.loadCapacity"
-                baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
-        </th>
-    </tr>
-    <c:forEach var="program" items="${programs}">
-        <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-        <c:url var="programURL" value="/spring/dr/program/detail">
-            <c:param name="programId" value="${programId}"/>
-        </c:url>
-        <tr id="programRow${programId}" class="<tags:alternateRow odd="" even="altRow"/>">
-            <td>
-                <%-- TODO:  in phase 3, update cti:classUpdater to be able to
-                 update the class of the row instead --%>
-                <cti:classUpdater identifier="${programId}/STATE_CLASSNAME" type="DR_PROGRAM">
-                    <a href="${programURL}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></a>
-                </cti:classUpdater>
-            </td>
-            <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
-            <td>
-                <span id="actionSpan_${loadGroupId}">
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
-                        <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
-                            <cti:param name="programId" value="${programId}"/>
-                        </cti:url>
-                        <a href="javascript:void(0)"
-                            onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
-                        </a><br>
-    
-                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
-                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/><br>
-                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/><br>
-                        
-                        <cti:dataUpdaterCallback function="updateEnabled('${programId}')" initialize="true" state="DR_PROGRAM/${programId}/ENABLED" />
-                    </cti:checkPaoAuthorization>
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
-                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/><br>
-                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
-                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/> / 
-                        <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/><br>
-                    </cti:checkPaoAuthorization>
-                </span>
-            </td>
-            <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
-            <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
-            <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
-            <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/></td>
-            <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/></td>
-            <td><cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/></td>
+<cti:msg var="programTitle" key="yukon.web.modules.dr.programList.programs"/>
+<tags:abstractContainer type="box" title="${programTitle}">
+    <table id="programList" class="compactResultsTable rowHighlighting">
+        <tr>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.name"
+                    baseUrl="${baseUrl}" fieldName="NAME"/>
+            </th>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.state"
+                    baseUrl="${baseUrl}" fieldName="STATE"/>
+            </th>
+            <th>
+                <cti:msg key="yukon.web.modules.dr.programList.heading.actions"/>
+            </th>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.start"
+                    baseUrl="${baseUrl}" fieldName="START"/>
+            </th>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.stop"
+                    baseUrl="${baseUrl}" fieldName="STOP"/>
+            </th>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.currentGear"
+                    baseUrl="${baseUrl}" fieldName="CURRENT_GEAR"/>
+            </th>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.priority"
+                    baseUrl="${baseUrl}" fieldName="PRIORITY"/>
+            </th>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.reduction"
+                    baseUrl="${baseUrl}" fieldName="REDUCTION"/>
+            </th>
+            <th>
+                <dr:sortByLink key="yukon.web.modules.dr.programList.heading.loadCapacity"
+                    baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
+            </th>
         </tr>
-    </c:forEach>
-</table>
+        <c:forEach var="program" items="${programs}">
+            <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+            <c:url var="programURL" value="/spring/dr/program/detail">
+                <c:param name="programId" value="${programId}"/>
+            </c:url>
+            <tr id="programRow${programId}" class="<tags:alternateRow odd="" even="altRow"/>">
+                <td>
+                    <%-- TODO:  in phase 3, update cti:classUpdater to be able to
+                     update the class of the row instead --%>
+                    <cti:classUpdater identifier="${programId}/STATE_CLASSNAME" type="DR_PROGRAM">
+                        <a href="${programURL}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></a>
+                    </cti:classUpdater>
+                </td>
+                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                <td style="white-space: nowrap;">
+                    <span id="actionSpan_${programId}">
+                        <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
+                            <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+                                <cti:param name="programId" value="${programId}"/>
+                            </cti:url>
+                            <a href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start"/>
+                            </a>
+        
+                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
+                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.enable"/>
+                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable"/>
+                            
+                        </cti:checkPaoAuthorization>
+                        <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
+                            <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
+                            <span class="subtleGray" title="${noProgramControl}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start.disabled"/>
+                            </span>
+                            <span class="subtleGray" title="${noProgramControl}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop.disabled"/>
+                            </span>
+                            <span class="subtleGray" title="${noProgramControl}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable.disabled"/>
+                            </span>
+                        </cti:checkPaoAuthorization>
+                    </span>
+                    <span id="actionSpanDisabled_${programId}">
+                        <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
+                        <span class="subtleGray" title="${programUnknown}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start.disabled"/>
+                            </span>
+                            <span class="subtleGray" title="${programUnknown}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop.disabled"/>
+                            </span>
+                            <span class="subtleGray" title="${programUnknown}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable.disabled"/>
+                            </span>
+                    </span>
+                    <cti:dataUpdaterCallback function="updateEnabled('${programId}')" initialize="true" state="DR_PROGRAM/${programId}/ENABLED" />
+                </td>
+                <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/></td>
+            </tr>
+        </c:forEach>
+    </table>
+</tags:abstractContainer>
 <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
 </c:if>

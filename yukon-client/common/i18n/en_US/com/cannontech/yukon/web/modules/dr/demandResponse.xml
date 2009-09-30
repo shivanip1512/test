@@ -196,6 +196,7 @@
 <entry key="yukon.web.modules.dr.scenarioList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filter.clear">Show All</entry>
 <entry key="yukon.web.modules.dr.scenarioList.heading.name">Name</entry>
+<entry key="yukon.web.modules.dr.scenarioList.heading.actions">Actions</entry>
 
 
 <!-- Scenario Detail -->
@@ -208,8 +209,17 @@
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.info">Info</entry>
 
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.actions.start">Start</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.actions.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.noControl">You do not have permission to control this scenario</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.start.text">Start Scenario</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.start">/WebConfig/yukon/Icons/lightning_go.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.start.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.start.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.start.alt">Start Scenario</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stop.text">Stop Scenario</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stop">/WebConfig/yukon/Icons/stop.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stop.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stop.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stop.alt">Stop Scenario</entry>
 
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.programs">Programs</entry>
 
@@ -234,8 +244,8 @@
 <entry key="yukon.web.modules.dr.controlAreaList.heading.name">Name</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.state">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold">Value/Threshold</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.heading.peakProjection">Peak/Projection</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold">Value / Threshold</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.heading.peakProjection">Peak / Projection</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.atku">ATKU</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.priority">Priority</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.heading.timeWindow">Time Window</entry>
@@ -257,18 +267,49 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.priority">Priority</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.startStop">Time Window</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity">Load Capacity</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.info.triggers">Triggers</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.info.trigger">Trigger {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers">No triggers found</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.separator">-</entry>
 
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.start">Start</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop">Stop</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange">Triggers Change</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange">Daily Time Change</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable">Disable</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable">Enable</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak">Reset Peak</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.noControl">You do not have permission to control this control area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.start.text">Start Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.start">/WebConfig/yukon/Icons/lightning_go.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.start.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.start.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.start.alt">Start Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop.text">Stop Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop">/WebConfig/yukon/Icons/stop.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop.alt">Stop Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.text">Change Control Area Trigger Values</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange">/WebConfig/yukon/Icons/wrench.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.hover">/WebConfig/yukon/Icons/wrench_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled">/WebConfig/yukon/Icons/wrench_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled.text">There are no triggers on this control area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.alt">Change Triggers</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange.text">Change Control Area Time Window</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange">/WebConfig/yukon/Icons/time.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange.hover">/WebConfig/yukon/Icons/time_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange.disabled">/WebConfig/yukon/Icons/time_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange.alt">Change Time Window</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable.text">Disable Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable">/WebConfig/yukon/Icons/disable.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable.hover">/WebConfig/yukon/Icons/disable_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.disable.alt">Disable Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable.text">Enble Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable">/WebConfig/yukon/Icons/enable.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable.hover">/WebConfig/yukon/Icons/enable_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable.disabled">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.enable.alt">Enable Control Area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.text">Reset Daily Peak</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak">/WebConfig/yukon/Icons/control_repeat_blue.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.hover">/WebConfig/yukon/Icons/control_repeat_blue_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled">/WebConfig/yukon/Icons/control_repeat_blue_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled.text">There are no triggers on this control area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.alt">Reset Peak</entry>
 
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.programs">Programs</entry>
 
@@ -279,7 +320,7 @@
 <entry key="yukon.web.modules.dr.programList.breadcrumb.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.noResults">No programs matched.</entry>
-<entry key="yukon.web.modules.dr.programList.filters">Filters</entry>
+<entry key="yukon.web.modules.dr.programList.filters">Program Filters</entry>
 <entry key="yukon.web.modules.dr.programList.filter.to">to</entry>
 <entry key="yukon.web.modules.dr.programList.filter.min">(min)</entry>
 <entry key="yukon.web.modules.dr.programList.filter.max">(max)</entry>
@@ -322,11 +363,33 @@
 <entry key="yukon.web.modules.dr.programDetail.info.loadCapacity">Load Capacity</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.start">Start</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.stop">Stop</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.changeGears">Change Gears</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.enable">Enable</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.disable">Disable</entry>
+<entry key="yukon.web.modules.dr.programDetail.noControl">You do not have permission to control this program</entry>
+<entry key="yukon.web.modules.dr.programDetail.unknown">This program is not in Load Management</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.start.text">Start Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.start">/WebConfig/yukon/Icons/lightning_go.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.start.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.start.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.start.alt">Start Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stop.text">Stop Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stop">/WebConfig/yukon/Icons/stop.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stop.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stop.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stop.alt">Stop Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.changeGears.text">Change Gears</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.changeGears">/WebConfig/yukon/Icons/cog_edit.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.changeGears.hover">/WebConfig/yukon/Icons/cog_edit_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled">/WebConfig/yukon/Icons/cog_edit_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.changeGears.alt">Change Gears</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enable.text">Enable Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enable">/WebConfig/yukon/Icons/enable.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enable.hover">/WebConfig/yukon/Icons/enable_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enable.disabled">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enable.alt">Enable Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disable.text">Disable Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disable">/WebConfig/yukon/Icons/disable.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disable.hover">/WebConfig/yukon/Icons/disable_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disable.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disable.alt">Disable Program</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 
@@ -351,7 +414,7 @@
 <entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.noResults">No load groups matched.</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.filters">Filters</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.filters">Load Group Filters</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.to">to</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.min">(min)</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.max">(max)</entry>
@@ -387,10 +450,28 @@
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity">Load Capacity</entry>
 
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.actions">Actions</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed">Send Shed</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore">Send Restore</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable">Enable</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable">Disable</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.unknown">This load group is not in Load Management</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.noControl">You do not have permission to control this load group</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.text">Send Shed</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed">/WebConfig/yukon/Icons/lightning_go.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed.alt">Shed Load Group</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.text">Send Restore</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore">/WebConfig/yukon/Icons/stop.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore.alt">Restore Load Group</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable.text">Enable Load Group</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable">/WebConfig/yukon/Icons/enable.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable.hover">/WebConfig/yukon/Icons/enable_over.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable.disabled">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable.alt">Enable Load Group</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable.text">Disable Load Group</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable">/WebConfig/yukon/Icons/disable.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable.hover">/WebConfig/yukon/Icons/disable_over.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.disable.alt">Disable Load Group</entry>
 
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.parents">Parents</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.programs">

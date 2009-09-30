@@ -47,8 +47,23 @@ public class LogoTag extends YukonTagSupport {
 	                sb.append(" alt=\"");
 	                sb.append(altText);
 	                sb.append("\"");
+
+	                sb.append(" title=\"");
+	                sb.append(altText);
+	                sb.append("\"");
 	            } catch (NoSuchMessageException e) {
 	                // no alt text
+	            }
+
+	            // Add hover image if it exists
+	            try {
+	                String hoverUrl = messageSourceAccessor.getMessage(key + ".hover");
+	                String safeHoverUrl = ServletUtil.createSafeUrl(getRequest(), hoverUrl);
+	                
+	                sb.append(" onmouseover=\"javascript:this.src='" + safeHoverUrl + "'\"");
+	                sb.append(" onmouseout=\"javascript:this.src='" + safeUrl + "'\"");
+	            } catch (NoSuchMessageException e) {
+	                // no hover image
 	            }
 	
 	            sb.append(">");

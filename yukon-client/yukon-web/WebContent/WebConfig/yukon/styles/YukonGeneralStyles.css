@@ -250,6 +250,10 @@ table.compactResultsTable {
 	border-collapse: collapse;
 }
 
+div.boxContainer table.compactResultsTable {
+	width: 100%;
+}
+
 table.compactResultsTable th {
 	border-bottom: 1px solid #CCCCCC;
 	color: 	#000000;
@@ -257,13 +261,18 @@ table.compactResultsTable th {
 	font-weight: 600;
 	text-align:left;
 	vertical-align:bottom;
-	
+}
+
+table.compactResultsTable th a {
+	text-decoration: none;
+    color: #000000;
 }
 
 table.compactResultsTable td {
     padding: 2px 2px;
     font-size: 11px;
     padding-top:3px;
+    vertical-align: top;
 }
 
 table.compactResultsTable td.label {
@@ -295,6 +304,15 @@ table.nameValueTable td.name {
 	vertical-align: top;
 	font-weight: bold;
 	padding-right:10px;
+}
+
+table.nameValueTable tr.indent1 td.name {
+	padding-left:40px;
+	font-size: .8em;
+}
+
+table.nameValueTable tr.indent1 td.value {
+	font-size: .7em;
 }
 
 .altRow {
@@ -638,7 +656,7 @@ h3.indentedElementHeading + * {
 
 table.pagingArea {
 	font-size: .75em;
-	width: 95%;
+	width: 100%;
 }
 
 table.pagingArea td.viewing {
@@ -659,4 +677,13 @@ table.pagingArea td.pages {
 div.actionArea {
 	margin-top: 10px;
 	text-align: right;
+}
+
+a.simpleLink {
+    text-decoration: none;
+    color: black;
+}
+
+table.rowHighlighting tr:hover td {
+    background-color: yellow;
 }

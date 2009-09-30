@@ -23,14 +23,16 @@
     </c:if>
 </cti:url>
 
-<a href="${sortUrl}"><cti:msg key="${key}"/></a>
-<c:if test="${currentSort == fieldName}">
-    <c:choose>
-        <c:when test="${!param.descending}">
-            <span title="Sorted ascending">&#9650;</span>
-        </c:when>
-        <c:otherwise>
-            <span title="Sorted descending">&#9660;</span>
-        </c:otherwise>
-    </c:choose>
-</c:if>
+<a href="${sortUrl}">
+    <cti:msg key="${key}"/>
+    <c:if test="${currentSort == fieldName}">
+        <c:choose>
+            <c:when test="${!param.descending}">
+                <span title="Sorted ascending">&#9650;</span>
+            </c:when>
+            <c:otherwise>
+                <span title="Sorted descending">&#9660;</span>
+            </c:otherwise>
+        </c:choose>
+    </c:if>
+</a>

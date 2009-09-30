@@ -12,16 +12,33 @@
 </c:if>
 
 <c:choose>
+  <c:when test="${empty nameValueNest}">
+      <c:set var="nameValueNest" value="0" scope="request"/>
+  </c:when>
+  <c:otherwise>
+      <c:set var="nameValueNest" value="${nameValueNest + 1}" scope="request"/>
+  </c:otherwise>
+</c:choose>
+
+<c:set var="indentStyle" value="indent${nameValueNest}" scope="request"/>
+
+<c:choose>
 	<c:when test="${nameValueContainter}">
+        
+        <c:if test="${pageScope.nameValueNest > -1}">
+            </td></tr>
+        </c:if>
+  
+  
 		<c:choose>
 			<c:when test="${rowHighlight}">
-				<tr class="highlighted" id="${trId}">
+				<tr class="highlighted ${indentStyle}" id="${trId}">
 			</c:when>
 			<c:when test="${altRowOn && altRow}">
-				<tr class="altRow" id="${trId}">
+				<tr class="altRow ${indentStyle}" id="${trId}">
 			</c:when>
 			<c:otherwise>
-				<tr id="${trId}">
+				<tr class="${indentStyle}" id="${trId}">
 			</c:otherwise>
 		</c:choose>
 		<c:set var="altRow" value="${!altRow}" scope="request"/>
@@ -36,3 +53,7 @@
 		</div>
 	</c:otherwise>
 </c:choose>
+
+<c:if test="${nameValueNest > -1}">
+    <c:set var="nameValueNest" value="${nameValueNest - 1}" scope="request"/>
+</c:if>

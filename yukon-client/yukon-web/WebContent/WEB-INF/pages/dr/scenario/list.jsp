@@ -19,9 +19,6 @@
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.scenarioList.breadcrumb.scenarios"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.modules.dr.scenarioList.scenarios"/></h2>
-    <br>
-
     <c:set var="baseUrl" value="/spring/dr/scenario/list"/>
     <cti:url var="submitUrl" value="${baseUrl}"/>
     <cti:url var="clearFilterUrl" value="${baseUrl}">
@@ -75,24 +72,47 @@
     </c:if>
     <c:if test="${searchResult.hitCount > 0}">
         <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
-        <table id="scenarioList" class="resultsTable activeResultsTable">
-            <tr>
-                <th>
-                    <dr:sortByLink key="yukon.web.modules.dr.scenarioList.heading.name"
-                        baseUrl="${baseUrl}" fieldName="NAME"/>
-                </th>
-            </tr>
-            <c:forEach var="scenario" items="${scenarios}">
-                <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
-                    <c:param name="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
-                </c:url>
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td>
-                        <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${scenario.name}</spring:escapeBody></a>
-                    </td>
+        <cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios"/>
+        <tags:abstractContainer type="box" title="${scenarioTitle}">
+            <table id="scenarioList" class="compactResultsTable rowHighlighting">
+                <tr>
+                    <th>
+                        <dr:sortByLink key="yukon.web.modules.dr.scenarioList.heading.name"
+                            baseUrl="${baseUrl}" fieldName="NAME"/>
+                    </th>
+                    <th>
+                        <cti:msg key="yukon.web.modules.dr.scenarioList.heading.actions"/>
+                    </th>
                 </tr>
-            </c:forEach>
-        </table>
+                <c:forEach var="scenario" items="${scenarios}">
+                    <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
+                        <c:param name="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
+                    </c:url>
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td>
+                            <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${scenario.name}</spring:escapeBody></a>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <span id="actionSpan_${loadGroupId}">
+                                <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.start"/>
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
+                                </cti:checkPaoAuthorization>
+                                <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">
+                                    <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>
+                                    <span title="${noScenarioControl}">
+                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.start.disabled"/>
+                                    </span>
+                                    <span title="${noScenarioControl}">
+                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stop.disabled"/>
+                                    </span>
+                                </cti:checkPaoAuthorization>
+                            </span>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </tags:abstractContainer>
         <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
     </c:if>
 

@@ -16,9 +16,6 @@
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.modules.dr.loadGroupList.loadGroups"/></h2>
-    <br>
-
     <c:set var="baseUrl" value="/spring/dr/loadGroup/list"/>
     <%@ include file="loadGroupList.jspf" %>
 
