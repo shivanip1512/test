@@ -108,6 +108,10 @@ public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
 	deviceMeterGroup = dvMtrGrp_;
 }
 
+public void setDeviceLoadProfile(DeviceLoadProfile deviceLoadProfile) {
+    this.deviceLoadProfile = deviceLoadProfile;
+}
+
 /**
  * This method was created in VisualAge.
  */
