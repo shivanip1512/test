@@ -94,6 +94,41 @@ SET KeyName = 'Add/Update/Remove Points'
 WHERE RolePropertyId = -21308;
 /* End YUK-7872 */
 
+/* Start YUK-7874 */
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
+SELECT DG1.DeviceGroupId,
+       'Disconnect',
+       DG2.ParentDeviceGroupId,
+       'NOEDIT_MOD',
+       'STATIC'
+FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
+      FROM DeviceGroup DG
+      WHERE DG.DeviceGroupId < 100) DG1,
+	 (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
+      FROM DeviceGroup DG
+      WHERE DG.GroupName = 'System'
+      AND DG.ParentDeviceGroupId = 0) DG2
+WHERE DG1.DeviceGroupId < 100;
+
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
+SELECT DG1.DeviceGroupId,
+       'Collars',
+       DG2.ParentDeviceGroupId,
+       'NOEDIT_MOD',
+       'METERS_DISCONNECT_COLLAR'
+FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
+      FROM DeviceGroup DG
+      WHERE DG.DeviceGroupId < 100) DG1,
+     (SELECT MAX(DeviceGroupId) ParentDeviceGroupId
+      FROM DeviceGroup
+      WHERE GroupName = 'Disconnect'
+      AND ParentDeviceGroupId = (SELECT MAX(DeviceGroupId)
+                                 FROM DeviceGroup
+                                 WHERE GroupName = 'System'
+                                 AND ParentDeviceGroupId = 0)) DG2
+WHERE DeviceGroupId < 100;
+/* End YUK-7874 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
