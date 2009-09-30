@@ -133,7 +133,7 @@ public:
     CtiCCArea_vec* getCCGeoAreas(ULONG secondsFrom1901, bool checkReload = false);
     CtiCCSpArea_vec* getCCSpecialAreas(ULONG secondsFrom1901, bool checkReload = false);
 
-    static CtiCCSubstationBusStore* getInstance(bool unitTest = false);
+    static CtiCCSubstationBusStore* getInstance(bool startThreads=true);
     static void deleteInstance();
 
     void dumpAllDynamicData();

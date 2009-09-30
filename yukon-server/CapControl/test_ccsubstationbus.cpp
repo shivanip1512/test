@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     CtiCCSubstationBus *bus = new CtiCCSubstationBus();
     CtiCCSubstation *station = new CtiCCSubstation();
     CtiCCArea *area = new CtiCCArea();
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(true);
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(false);
     area->setPAOId(3);
     station->setPAOId(2);
     bus->setPAOId(1);
