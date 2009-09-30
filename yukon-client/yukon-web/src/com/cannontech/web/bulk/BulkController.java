@@ -8,8 +8,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +32,10 @@ import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -52,10 +59,13 @@ import com.cannontech.web.reports.JsonReportDataUtils;
  */
 public class BulkController extends BulkControllerBase {
 
+    private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
+    
     private PaoLoadingService paoLoadingService = null;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     private RolePropertyDao rolePropertyDao;
+    private DeviceGroupService deviceGroupService;
     
     // BULK HOME
     public ModelAndView bulkHome(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -204,6 +214,54 @@ public class BulkController extends BulkControllerBase {
         columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "route"), 150, null));
         
         return columnInfo;
+    }
+    
+    // SELECTED DEVICES POPUP TBALE
+    public ModelAndView selectedDevicesTableForDeviceCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        int totalDeviceCount = (int)deviceCollection.getDeviceCount();
+        List<SimpleDevice> devicesToLoad = deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED);
+
+        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
+    }
+    
+    public ModelAndView selectedDevicesTableForGroupName(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
+        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        
+        int totalDeviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
+        Set<SimpleDevice> devicesToLoad = deviceGroupService.getDevices(Collections.singletonList(group), MAX_SELECTED_DEVICES_DISPLAYED);
+        
+        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
+        
+    }
+    
+    private ModelAndView getSelectedDevicesTableMav(Collection<SimpleDevice> devicesToLoad, int totalDeviceCount) {
+        
+        ModelAndView mav = new ModelAndView("selectedDevicesPopup.jsp");
+        
+        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
+        
+        List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
+        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
+            
+            Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
+            
+            deviceInfo.put("Device Name", device.getName());
+            deviceInfo.put("Address", device.getAddress());
+            deviceInfo.put("Route", device.getRoute());
+            
+            deviceInfoList.add(deviceInfo);
+        }
+        
+        if (totalDeviceCount > MAX_SELECTED_DEVICES_DISPLAYED) {
+            mav.addObject("resultsLimitedTo", MAX_SELECTED_DEVICES_DISPLAYED);
+        }
+        mav.addObject("deviceInfoList", deviceInfoList);
+        
+        return mav;
     }
     
     
@@ -375,5 +433,10 @@ public class BulkController extends BulkControllerBase {
     @Autowired
     public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
         this.paoLoadingService = paoLoadingService;
+    }
+    
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
     }
 }

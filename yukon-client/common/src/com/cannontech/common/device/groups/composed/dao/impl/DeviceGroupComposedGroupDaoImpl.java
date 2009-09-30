@@ -1,11 +1,11 @@
-package com.cannontech.common.device.groups.dao.impl;
+package com.cannontech.common.device.groups.composed.dao.impl;
 
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.groups.dao.DeviceGroupComposedGroupDao;
+import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedGroupDao;
 import com.cannontech.common.device.groups.model.DeviceGroupComposedGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SimpleTableAccessTemplate;

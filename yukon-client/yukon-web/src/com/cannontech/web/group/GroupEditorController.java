@@ -1,12 +1,8 @@
 package com.cannontech.web.group;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +20,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.groups.dao.DeviceGroupComposedDao;
+import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -36,19 +32,17 @@ import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
-import com.cannontech.common.device.groups.service.NotEqualToOrDecendantOfGroupsPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.device.model.DeviceCollectionReportDevice;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.groups.service.NotEqualToOrDecendantOfGroupsPredicate;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
@@ -66,7 +60,6 @@ public class GroupEditorController extends MultiActionController {
     private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
     private RolePropertyDao rolePropertyDao;
     private DeviceGroupComposedDao deviceGroupComposedDao;
-    private PaoLoadingService paoLoadingService;
     
     private DeviceCollectionFactory deviceCollectionFactory = null;
 
@@ -258,10 +251,12 @@ public class GroupEditorController extends MultiActionController {
 
             try {
                 
+                StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(group);
+                
                 // PLAIN STATIC GROUP
                 if (subGroupType.equals(DeviceGroupType.STATIC)) {
-                
-                    StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
+                    
+                    StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup(storedGroup,
                                                   DeviceGroupType.STATIC,
                                                   childGroupName);
                     
@@ -273,7 +268,7 @@ public class GroupEditorController extends MultiActionController {
                 // COMPOSED GROUP
                 } else if (subGroupType.equals(DeviceGroupType.COMPOSED)) {
                     
-                    StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
+                    StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup(storedGroup,
                                                                                DeviceGroupType.COMPOSED,
                                                                                childGroupName);
                     
@@ -291,6 +286,10 @@ public class GroupEditorController extends MultiActionController {
                 }
                 
             } catch (DuplicateException e) {
+                deviceGroupMav.addObject("groupName", groupName);
+                deviceGroupMav.addObject("errorMessage", e.getMessage());
+                return deviceGroupMav;
+            } catch (NotFoundException e) {
                 deviceGroupMav.addObject("groupName", groupName);
                 deviceGroupMav.addObject("errorMessage", e.getMessage());
                 return deviceGroupMav;
@@ -452,10 +451,6 @@ public class GroupEditorController extends MultiActionController {
             
             if (deviceGroupDao.isGroupCanMoveUnderGroup(group, parentGroup)) {
                 
-                
-//            }
-//            
-//            if (group.isEditable()) {
                 group.setParent(parentGroup);
                 deviceGroupEditorDao.updateGroup(group);
     
@@ -587,54 +582,6 @@ public class GroupEditorController extends MultiActionController {
 
     }
     
-    // SELECTED DEVICES POPUP TBALE
-    public ModelAndView selectedDevicesTableForDeviceCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        int totalDeviceCount = (int)deviceCollection.getDeviceCount();
-        List<SimpleDevice> devicesToLoad = deviceCollection.getDevices(0, maxGetDevicesSize);
-
-        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
-    }
-    
-    public ModelAndView selectedDevicesTableForGroupName(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        
-        String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        
-        int totalDeviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
-        Set<SimpleDevice> devicesToLoad = deviceGroupService.getDevices(Collections.singletonList(group), maxGetDevicesSize);
-        
-        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
-        
-    }
-    
-    private ModelAndView getSelectedDevicesTableMav(Collection<SimpleDevice> devicesToLoad, int totalDeviceCount) {
-        
-        ModelAndView mav = new ModelAndView("selectedDevicesPopup.jsp");
-        
-        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
-        
-        List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
-        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
-            
-            Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
-            
-            deviceInfo.put("Device Name", device.getName());
-            deviceInfo.put("Address", device.getAddress());
-            deviceInfo.put("Route", device.getRoute());
-            
-            deviceInfoList.add(deviceInfo);
-        }
-        
-        if (totalDeviceCount > maxGetDevicesSize) {
-            mav.addObject("resultsLimitedTo", maxGetDevicesSize);
-        }
-        mav.addObject("deviceInfoList", deviceInfoList);
-        
-        return mav;
-    }
-    
     @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
@@ -696,10 +643,5 @@ public class GroupEditorController extends MultiActionController {
     @Autowired
     public void setDeviceGroupComposedDao(DeviceGroupComposedDao deviceGroupComposedDao) {
         this.deviceGroupComposedDao = deviceGroupComposedDao;
-    }
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
     }
 }

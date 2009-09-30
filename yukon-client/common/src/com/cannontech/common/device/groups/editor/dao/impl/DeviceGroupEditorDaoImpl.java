@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException;
+import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -257,9 +258,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("(?, ?, ?, ?, ?)");
         
         String rawName = SqlUtils.convertStringToDbValue(groupName);
+        
+        DeviceGroupPermission permission = type.equals(DeviceGroupType.STATIC) ? DeviceGroupPermission.EDIT_MOD : DeviceGroupPermission.EDIT_NOMOD;
 
         try {
-            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), type.getDeviceGroupPermission().toString(), type.name());
+            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), permission.name(), type.name());
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Cannot create group with the same name as an existing group with the same parent.", e);
         }
@@ -268,7 +271,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         result.setId(nextValue);
         result.setName(groupName);
         result.setParent(group);
-        result.setPermission(type.getDeviceGroupPermission());
+        result.setPermission(permission);
         result.setType(type);
         return result;
     }

@@ -1837,6 +1837,11 @@ public static double convertTemperature(double temperature, String fromUnit, Str
          return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME);
      }
      
+     /**
+      * See /yukon-web/WebContent/WEB-INF/pages/group/home.jsp JavaScript function "isValidGroupName()" for client side implementation.
+      * @param groupName
+      * @return
+      */
      public static boolean isValidGroupName(String groupName) {
          
          return !StringUtils.isBlank(groupName) && !isContainsInvalidDeviceGroupNameCharacters(groupName);

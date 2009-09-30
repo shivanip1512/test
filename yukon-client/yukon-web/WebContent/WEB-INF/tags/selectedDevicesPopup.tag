@@ -16,7 +16,7 @@
 <%-- CREATE URL --%>
 <c:choose>
 	<c:when test="${not empty pageScope.deviceCollection}">
-		<c:url var="selectedDevicesTableUrl" value="/spring/group/editor/selectedDevicesTableForDeviceCollection">
+		<c:url var="selectedDevicesTableUrl" value="/spring/bulk/selectedDevicesTableForDeviceCollection">
 		    <c:forEach var="deviceCollectionParam" items="${pageScope.deviceCollection.collectionParameters}">
 		        <c:param name="${deviceCollectionParam.key}" value="${fn:escapeXml(deviceCollectionParam.value)}"/>
 		    </c:forEach>
@@ -24,7 +24,7 @@
 	</c:when>
 
 	<c:when test="${not empty pageScope.groupName}">
-		<c:url var="selectedDevicesTableUrl" value="/spring/group/editor/selectedDevicesTableForGroupName">
+		<c:url var="selectedDevicesTableUrl" value="/spring/bulk/selectedDevicesTableForGroupName">
 	        <c:param name="groupName" value="${fn:escapeXml(pageScope.groupName)}"/>
 		</c:url>
 	</c:when>
@@ -41,7 +41,7 @@
 <c:url var="magOverDisabled" value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>
 
 <img onclick="javascript:showSelectedDevices(this, '${id}', '${id}InnerDiv', '${selectedDevicesTableUrl}', '${mag}', '${magOverDisabled}');" title="${warning}" src="${mag}" onmouseover="javascript:this.src='${magOver}'" onmouseout="javascript:this.src='${mag}'">
-<tags:simplePopup id="${id}" title="${popupTitle}" onClose="closeSelectedDevices('${id}');">
+<tags:simplePopup id="${id}" title="${popupTitle}">
     <div style="height:300px;overflow:auto;">
     <div class="smallBoldLabel" id="${id}InnerDiv" style="text-align:left;"></div>
     </div>

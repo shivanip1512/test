@@ -55,7 +55,7 @@
     <br>
     
     <%-- FILTER POPUP --%>
-    <tags:simplePopup id="filterPopup" title="${filterSectionText}" onClose="$('filterPopup').toggle();">
+    <tags:simplePopup id="filterPopup" title="${filterSectionText}">
      	
 		<form name="clearForm" id="clearForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs" method="get">
    		</form>
@@ -147,8 +147,8 @@
 					</c:if>
 				</td>
 				<td class="${tdClass}">${jobWrapper.scheduleDescription}</td>
-				<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
-				<td class="${tdClass}" style="text-align:center;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
+				<td class="${tdClass}" style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
+				<td class="${tdClass}" style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
 				<td class="${tdClass}" style="text-align:center;"">
 					<c:choose>
 						<c:when test="${jobWrapper.job.disabled}">

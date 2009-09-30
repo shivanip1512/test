@@ -61,15 +61,15 @@
 			</a>
 			
 			<c:if test="${showInfoPopup}">	
-			<img onclick="$('lastRunLinkInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-		
-			<tags:simplePopup id="lastRunLinkInfoPopup" title="Last Run" onClose="$('lastRunLinkInfoPopup').toggle();">
-			     <br>
-			     View the results of the most recent execution of this job.
-			     <br><br>
-			     Note: The most recent execution may still be in progress. It's progress will be displayed and updated on the results page.
-			     <br><br>
-			</tags:simplePopup>
+			
+				<tags:helpInfoPopup title="Last Run">
+					<br>
+				     View the results of the most recent execution of this job.
+				     <br><br>
+				     Note: The most recent execution may still be in progress. It's progress will be displayed and updated on the results page.
+				     <br><br>
+				</tags:helpInfoPopup>
+			
 			</c:if>
 			
 		</div>

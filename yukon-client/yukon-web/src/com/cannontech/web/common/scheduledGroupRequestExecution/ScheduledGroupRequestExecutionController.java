@@ -26,6 +26,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.AttributeNameComparator;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
@@ -136,7 +137,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			    retryCheckbox = true;
 			}
 			if (deviceGroupName == null) {
-				deviceGroupName = existingTask.getDeviceGroup().getFullName();
+			    DeviceGroup existingDeviceGroup = existingTask.getDeviceGroup();
+			    if (existingDeviceGroup != null) {
+			        deviceGroupName = existingTask.getDeviceGroup().getFullName();
+			    }
 			}
 		}
 		

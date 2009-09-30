@@ -167,7 +167,7 @@
 	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}"> 
 	<img onclick="$('customCronExpressInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 	
-	<tags:simplePopup id="customCronExpressInfoPopup" title="Custom Cron Expression" onClose="$('customCronExpressInfoPopup').toggle();">
+	<tags:simplePopup id="customCronExpressInfoPopup" title="Custom Cron Expression">
 	     <br>
 	     So you've decided to use a custom Cron Expression, <a href="http://www.opensymphony.com/quartz/wikidocs/CronTriggers%20Tutorial.html" target="_blank">now what</a>?
 	     <br><br>

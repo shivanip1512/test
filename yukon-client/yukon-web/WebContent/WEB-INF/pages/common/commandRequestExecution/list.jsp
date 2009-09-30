@@ -44,7 +44,7 @@
     
 		
 	<%-- FILTER POPUP --%>
-    <tags:simplePopup id="filterPopup" title="${filterSectionText}" onClose="$('filterPopup').toggle();">
+    <tags:simplePopup id="filterPopup" title="${filterSectionText}">
 	
 		<form name="clearForm" id="clearForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
 		</form>
@@ -116,8 +116,8 @@
 				title="${cre.commandRequestExecutionType.description} ID: ${cre.id}">
 				
 				<td>${cre.commandRequestExecutionType.shortName}</td>
-				<td><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
-				<td><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
+				<td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
+				<td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
 				<td>${cre.userName}</td>
 				
 			</tr>

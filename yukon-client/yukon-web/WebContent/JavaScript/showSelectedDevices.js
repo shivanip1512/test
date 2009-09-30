@@ -26,9 +26,3 @@ function showSelectedDevices(imgEl, divId, innerDivId, url, mag, magOverDisabled
       }
     );
 }
-
-function closeSelectedDevices(divId) {
-
-  $(divId).hide();
-        
-}

@@ -10,6 +10,9 @@
 <entry key="yukon.web.deviceGroups.widget.groupTree.submitButtonText">Add Device To Selected Groups</entry>
 <entry key="yukon.web.deviceGroups.widget.groupTree.closeButtonText">Cancel</entry>
 
+<!-- EDITOR home.jsp and related jsps -->
+<!-- ================================================================================================================================================= -->
+<!-- ================================================================================================================================================= -->
 <entry key="yukon.web.deviceGroups.editor.groupsContainer.title">Groups</entry>
 <entry key="yukon.web.deviceGroups.editor.groupsContainer.groupTree.expandAllText">Expand All</entry>
 <entry key="yukon.web.deviceGroups.editor.groupsContainer.groupTree.collapseAllText">Collapse All</entry>
@@ -21,9 +24,13 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText">Edit Group Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText">New Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText">Change Name</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError"><![CDATA[
+Group names may not be blank or contain slashes.
+]]></entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup">Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.title">Click to delete this group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure">Are you sure you want to permanently remove this group and all of it's sub groups?  You will not be able to undo this removal.</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup">Move Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup.title">Click to move this group</entry>
@@ -32,7 +39,7 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkText">Copy Contents</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkTitle">Click to copy this groups's contents to another group</entry>
 
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkText">Edit Composition</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkText">Edit Composition Rules</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkTitle">Click to change the groups that make up this composed group</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.title">Select Group To Copy Contents To</entry>
@@ -93,7 +100,10 @@
 <entry key="yukon.web.deviceGroups.deviceGroupPicker.selectButton">Select Group</entry>
 <entry key="yukon.web.deviceGroups.deviceGroupPicker.cancelButton">Cancel</entry>
 
-<entry key="yukon.web.deviceGroups.composedGroup.pageTitle">Create Composed Device Group</entry>
+<!-- COMPOSED create.jsp -->
+<!-- ================================================================================================================================================= -->
+<!-- ================================================================================================================================================= -->
+<entry key="yukon.web.deviceGroups.composedGroup.pageTitle">Composed Device Group Setup</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup">Add Another Device Group</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.nameLabel">Name</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.header.rules">Rules</entry>
@@ -112,14 +122,17 @@
 		<br>
 		<li>The rules are combined to determine which devices that the Composed Device Group will contain. There are two ways to combine rules:</li>
 		<li>&nbsp;&bull; <i><b>At Least One</b></i>: For a device to be included in the Composed Device Group, it must match at least one of the rules.</li>
-		<li>&nbsp;&bull; <i><b>Every</b></i>: For a device to be included in the Composed Device Group, it must match at every rule.</li>
+		<li>&nbsp;&bull; <i><b>Every One</b></i>: For a device to be included in the Composed Device Group, it must match at every rule.</li>
 		<br>
-		<li>For more control over which devices are included, a Composed Device Group may be made up other Composed Device Groups.</li>
+		<li>For more control over which devices are included, a Composed Device Group may include other other Composed Device Groups.</li>
 	</ul>
 ]]></entry>
 <entry key="yukon.web.deviceGroups.composedGroup.matchSentence.prefix">Match</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.matchSentence.suffix">of the following rules:</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.prefix">Devices</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.suffix">group:</entry>
+
+<entry key="yukon.web.deviceGroups.deviceGroupComposedCompositionType.UNION">At Least One</entry>
+<entry key="yukon.web.deviceGroups.deviceGroupComposedCompositionType.INTERSECTION">Every One</entry>
 
 </properties>

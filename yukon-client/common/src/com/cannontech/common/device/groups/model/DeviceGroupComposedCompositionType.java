@@ -1,23 +1,26 @@
 package com.cannontech.common.device.groups.model;
 
-public enum DeviceGroupComposedCompositionType {
+import com.cannontech.common.i18n.DisplayableEnum;
 
-    UNION("OR", "At Least One"),
-    INTERSECTION("AND", "Every One");
+public enum DeviceGroupComposedCompositionType implements DisplayableEnum {
+
+    UNION("OR"),
+    INTERSECTION("AND");
     
     private String sqlFragmentCombiner;
-    private String description;
     
-    DeviceGroupComposedCompositionType(String sqlFragmentCombiner, String description) {
+    DeviceGroupComposedCompositionType(String sqlFragmentCombiner) {
         this.sqlFragmentCombiner = sqlFragmentCombiner;
-        this.description = description;
     }
     
     public String getSqlFragmentCombiner() {
         return this.sqlFragmentCombiner;
     }
     
-    public String getDescription() {
-        return this.description;
+    private final String keyPrefix = "yukon.web.deviceGroups.deviceGroupComposedCompositionType.";
+    
+    @Override
+    public String getFormatKey() {
+        return keyPrefix + name();
     }
 }

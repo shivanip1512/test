@@ -17,10 +17,10 @@
 <cti:msg var="ruleSentenceDeviceGroupPrefix" key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.prefix"/>
 <cti:msg var="ruleSentenceDeviceGroupSuffix" key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.suffix"/>
 
-<c:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
-<c:url var="addOver" value="/WebConfig/yukon/Icons/add_over.gif"/>
-<c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
+<cti:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
+<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.gif"/>
+<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
+<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
 
@@ -49,6 +49,11 @@
 
     <h2>${pageTitle}</h2>
     <br>
+    
+    <c:if test="${not empty errorMsg}">
+		<div class="errorRed">${errorMsg}</div>
+		<br>
+	</c:if>
     
     <form id="buildForm" action="/spring/group/composedGroup/build" method="post">
     
@@ -82,7 +87,7 @@
 			<c:if test="${compositionType == selectedCompositionType}">
 				<c:set var="selected" value="selected"/>
 			</c:if>
-			<option value="${compositionType}" ${selected}>${compositionType.description}</option>
+			<option value="${compositionType}" ${selected}><cti:msg key="${compositionType.formatKey}"/></option>
 		</c:forEach>
  	</select>
  	${matchSentenceSuffix}

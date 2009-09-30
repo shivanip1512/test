@@ -207,10 +207,9 @@
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
     
-    <bean id="deviceGroupComposedDao" class="com.cannontech.common.device.groups.dao.impl.DeviceGroupComposedDaoImpl"/>
-    <bean id="deviceGroupComposedGroupDao" class="com.cannontech.common.device.groups.dao.impl.DeviceGroupComposedGroupDaoImpl"/>
-    <bean id="deviceGroupComposedGroupRowAndFieldMapper" class="com.cannontech.common.device.groups.dao.impl.DeviceGroupComposedGroupRowAndFieldMapper"/>
-    <bean id="deviceGroupComposedService" class="com.cannontech.common.device.groups.service.impl.DeviceGroupComposedServiceImpl"/>
+    <bean id="deviceGroupComposedDao" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedDaoImpl"/>
+    <bean id="deviceGroupComposedGroupDao" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedGroupDaoImpl"/>
+    <bean id="deviceGroupComposedGroupRowAndFieldMapper" class="com.cannontech.common.device.groups.composed.dao.impl.DeviceGroupComposedGroupRowAndFieldMapper"/>
     
     <bean id="peakReportDao"
         class="com.cannontech.common.device.peakReport.dao.impl.PeakReportDaoImpl">

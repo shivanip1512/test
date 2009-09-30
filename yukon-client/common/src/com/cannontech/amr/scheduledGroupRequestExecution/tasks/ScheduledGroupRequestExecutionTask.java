@@ -66,6 +66,11 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         	
             CommandRequestExecutionContextId contextId = null;
             
+            DeviceGroup deviceGroup = getDeviceGroup();
+            if (deviceGroup == null) {
+                throw new IllegalArgumentException("DeviceGroup does not exist, task cannot run.");
+            }
+            
             if (getCommand() != null) {
             
             	CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {

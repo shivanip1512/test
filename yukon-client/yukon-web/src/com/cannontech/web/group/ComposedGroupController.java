@@ -15,13 +15,16 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.device.groups.dao.DeviceGroupComposedDao;
-import com.cannontech.common.device.groups.dao.DeviceGroupComposedGroupDao;
+import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
+import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedGroupDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -31,11 +34,11 @@ import com.cannontech.common.device.groups.model.DeviceGroupComposedGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
-import com.cannontech.common.device.groups.service.NotEqualToOrDecendantOfGroupsPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.device.groups.service.NotEqualToOrDecendantOfGroupsPredicate;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.ExtTreeNode;
@@ -49,6 +52,7 @@ public class ComposedGroupController {
     private DeviceGroupUiService deviceGroupUiService;
     private DeviceGroupComposedDao deviceGroupComposedDao;
     private DeviceGroupComposedGroupDao deviceGroupComposedGroupDao;
+    private TransactionOperations transactionTemplate;
     
     @RequestMapping
     public String build(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
@@ -67,42 +71,56 @@ public class ComposedGroupController {
         DeviceGroupComposed composedGroup = deviceGroupComposedDao.findForDeviceGroupId(group.getId());
         List<DisplayableComposedGroup> displayableComposedGroups = new ArrayList<DisplayableComposedGroup>(2);
         
-        // FIRST LOAD
-        if (firstLoad) {
+        String errorMsg = null;
+        try {
             
+            // FIRST LOAD
+            if (firstLoad) {
+                
+                displayableComposedGroups = getCurrentGroupsForComposedGroup(composedGroup);
+                compositionType = composedGroup.getDeviceGroupComposedCompositionType();
+                    
+                if (displayableComposedGroups.size() == 0) {
+                    
+                    displayableComposedGroups.add(new DisplayableComposedGroup(0));
+                }
+                
+            // REMOVE ROW
+            } else if (removeRow.size() > 0) {
+                
+                for (String key : removeRow.keySet()) {
+                    String[] keyParts = StringUtils.split(key, ".");
+                    int rowOrder = Integer.valueOf(keyParts[0]);
+                    displayableComposedGroups = removeGroup(request, rowOrder);
+                    break; // remove one row at a time, ignore extra ".x" and ".y" parameters
+                }
+                
+            // ADD ROW
+            } else if (addRow.size() > 0) {
+                
+                displayableComposedGroups = getGroupsFromPage(request);
+                displayableComposedGroups.add(new DisplayableComposedGroup(displayableComposedGroups.size()));
+            
+            // SAVE
+            } else {
+                
+                errorMsg = saveComposedGroup(group.getParent(), composedGroup, compositionType, request);
+                
+                if (errorMsg == null) {
+                    model.addAttribute("groupName", groupName);
+                    return "redirect:/spring/group/editor/home";
+                } else {
+                    displayableComposedGroups = getCurrentGroupsForComposedGroup(composedGroup);
+                }
+            }
+            
+        } catch (NotFoundException e) {
+            errorMsg = e.getMessage();
             displayableComposedGroups = getCurrentGroupsForComposedGroup(composedGroup);
-            compositionType = composedGroup.getDeviceGroupComposedCompositionType();
-                
-            if (displayableComposedGroups.size() == 0) {
-                
-                displayableComposedGroups.add(new DisplayableComposedGroup(0));
-            }
-            
-        // REMOVE ROW
-        } else if (removeRow.size() > 0) {
-            
-            for (String key : removeRow.keySet()) {
-                String[] keyParts = StringUtils.split(key, ".");
-                int rowOrder = Integer.valueOf(keyParts[0]);
-                displayableComposedGroups = removeGroup(request, rowOrder);
-                break; // remove one row at a time, ignore extra ".x" and ".y" parameters
-            }
-            
-        // ADD ROW
-        } else if (addRow.size() > 0) {
-            
-            displayableComposedGroups = getGroupsFromPage(request);
-            displayableComposedGroups.add(new DisplayableComposedGroup(displayableComposedGroups.size()));
-        
-        // SAVE
-        } else {
-            
-            saveComposedGroup(composedGroup, compositionType, request);
-            model.addAttribute("groupName", groupName);
-            return "redirect:/spring/group/editor/home";
         }
         
         Collections.sort(displayableComposedGroups);
+        model.addAttribute("errorMsg", errorMsg);
         model.addAttribute("groupName", groupName);
         model.addAttribute("availableCompositionTypes", Arrays.asList(DeviceGroupComposedCompositionType.values()));
         model.addAttribute("selectedCompositionType", compositionType);
@@ -115,19 +133,39 @@ public class ComposedGroupController {
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
         
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
-        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, aggregatePredicate);
-        ExtTreeNode groupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
+        ExtTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
         
-        JSONObject chooseGrouptreeJsonObj = new JSONObject(groupRoot.toMap());
+        JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
         String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();
         model.addAttribute("chooseGroupTreeJson", chooseGroupTreeJson);
         
         return "composedGroup/create.jsp";
     }
     
+//    @ModelAttribute("chooseGroupTreeJson")
+//    public String chooseGroupTreeJson(String groupName) {
+//        
+//        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
+//        
+//        // tree json
+//        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
+//        predicates.add(new NonHiddenDeviceGroupPredicate());
+//        predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(group));
+//        AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
+//        
+//        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
+//        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
+//        ExtTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
+//        
+//        JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
+//        String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();
+//        
+//        return chooseGroupTreeJson;
+//    }
+    
     @SuppressWarnings("unchecked")
-    private List<DisplayableComposedGroup> getGroupsFromPage(HttpServletRequest request) throws ServletRequestBindingException {
+    private List<DisplayableComposedGroup> getGroupsFromPage(HttpServletRequest request) throws ServletRequestBindingException, NotFoundException {
         
         List<DisplayableComposedGroup> newDisplayableComposedGroups = new ArrayList<DisplayableComposedGroup>(2);
         
@@ -147,6 +185,9 @@ public class ComposedGroupController {
                     String groupFullName = ServletRequestUtils.getRequiredStringParameter(request, "deviceGroupNameField_" + order);
                     
                     DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupFullName);
+                    if (deviceGroup == null && !StringUtils.isBlank(groupFullName)) {
+                        throw new NotFoundException("Group Does Not Exist: " + groupFullName);
+                    }
                     newDisplayableComposedGroups.add(new DisplayableComposedGroup(Integer.valueOf(order), deviceGroup, isNot));
                 }
             }
@@ -172,39 +213,52 @@ public class ComposedGroupController {
         return groups;
     }
     
-    private void saveComposedGroup(DeviceGroupComposed composedGroup, DeviceGroupComposedCompositionType compositionType, HttpServletRequest request) throws ServletRequestBindingException {
-
-        // remove current groups
-        deviceGroupComposedGroupDao.removeAllGroups(composedGroup.getDeviceGroupComposedId());
+    private String saveComposedGroup(final DeviceGroup parentGroup, final DeviceGroupComposed composedGroup, final DeviceGroupComposedCompositionType compositionType, HttpServletRequest request) throws ServletRequestBindingException, NotFoundException {
         
-        // update composition type
-        composedGroup.setDeviceGroupComposedCompositionType(compositionType);
-        deviceGroupComposedDao.saveOrUpdate(composedGroup);
+        final List<DisplayableComposedGroup> displayableComposedGroups = getGroupsFromPage(request);
         
-        // add new groups
-        List<DisplayableComposedGroup> displayableComposedGroups = getGroupsFromPage(request);
-        for (DisplayableComposedGroup displayableComposedGroup : displayableComposedGroups) {
-            
-            String groupFullName = displayableComposedGroup.getGroupFullName();
-            String[] groupFullNameParts = groupFullName.split("/");
-            if (groupFullNameParts.length > 0 && CtiUtilities.isValidGroupName(groupFullNameParts[groupFullNameParts.length - 1])) {
+        String saveError = (String)transactionTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
                 
-                DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupFullName);
-                if(deviceGroup == null) {
-                    continue;
+                String saveError = null;
+                
+                // remove current groups
+                deviceGroupComposedGroupDao.removeAllGroups(composedGroup.getDeviceGroupComposedId());
+                
+                // update composition type
+                composedGroup.setDeviceGroupComposedCompositionType(compositionType);
+                deviceGroupComposedDao.saveOrUpdate(composedGroup);
+                
+                // add new groups
+                for (DisplayableComposedGroup displayableComposedGroup : displayableComposedGroups) {
+                    
+                    String groupFullName = displayableComposedGroup.getGroupFullName();
+                    DeviceGroup group = deviceGroupService.findGroupName(groupFullName);
+                    if (group != null) {
+                        
+                        DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(groupFullName);
+                        if (deviceGroup.equals(parentGroup)) {
+                            saveError = "Cannot include parent group in composed group: " + groupFullName;
+                            status.setRollbackOnly();
+                        }
+                        
+                        DeviceGroupComposedGroup compositionGroup = new DeviceGroupComposedGroup();
+                        compositionGroup.setDeviceGroupComposedId(composedGroup.getDeviceGroupComposedId());
+                        compositionGroup.setDeviceGroup(deviceGroup);
+                        compositionGroup.setNot(displayableComposedGroup.isNegate());
+                        
+                        deviceGroupComposedGroupDao.saveOrUpdate(compositionGroup);
+                    }
                 }
                 
-                DeviceGroupComposedGroup compositionGroup = new DeviceGroupComposedGroup();
-                compositionGroup.setDeviceGroupComposedId(composedGroup.getDeviceGroupComposedId());
-                compositionGroup.setDeviceGroup(deviceGroup);
-                compositionGroup.setNot(displayableComposedGroup.isNegate());
-                
-                deviceGroupComposedGroupDao.saveOrUpdate(compositionGroup);
+                return saveError;
             }
-        }
+        });
+        
+        return saveError;
     }
     
-    private List<DisplayableComposedGroup> removeGroup(HttpServletRequest request, int removeRow) throws ServletRequestBindingException {
+    private List<DisplayableComposedGroup> removeGroup(HttpServletRequest request, int removeRow) throws ServletRequestBindingException, NotFoundException {
         
         List<DisplayableComposedGroup> displayableComposedGroups = getGroupsFromPage(request);
         
@@ -283,5 +337,10 @@ public class ComposedGroupController {
     @Autowired
     public void setDeviceGroupComposedGroupDao(DeviceGroupComposedGroupDao deviceGroupComposedGroupDao) {
         this.deviceGroupComposedGroupDao = deviceGroupComposedGroupDao;
+    }
+    
+    @Autowired
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
     }
 }

@@ -1,10 +1,10 @@
-package com.cannontech.common.device.groups.dao.impl;
+package com.cannontech.common.device.groups.composed.dao.impl;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.common.device.groups.dao.DeviceGroupComposedDao;
+import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
 import com.cannontech.common.device.groups.model.DeviceGroupComposed;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.RowAndFieldMapper;

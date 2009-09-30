@@ -169,19 +169,6 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         return deviceGroupDao.getRootGroup();
     }
     
-    @Override
-    public boolean isBasicGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
-        
-        if (!groupToMove.isEditable() 
-            || !proposedParent.isModifiable()
-            || groupToMove.isEqualToOrDescendantOf(proposedParent)
-            || proposedParent.equals(groupToMove.getParent())) {
-            return false;
-        }
-        
-        return true;
-    }
-
     @Required
     public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;

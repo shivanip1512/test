@@ -1,4 +1,4 @@
-package com.cannontech.common.device.groups.dao;
+package com.cannontech.common.device.groups.composed.dao;
 
 import java.util.List;
 

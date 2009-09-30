@@ -9,8 +9,10 @@
 
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 
-<img onclick="$('${uniqueId}').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-					
-<tags:simplePopup id="${uniqueId}" title="${title}" onClose="$('${uniqueId}').toggle();">
+<a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
+<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+</a>
+
+<tags:simplePopup id="${uniqueId}" title="${title}">
      <jsp:doBody/>
 </tags:simplePopup>

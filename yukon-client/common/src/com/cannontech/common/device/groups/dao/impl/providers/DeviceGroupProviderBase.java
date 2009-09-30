@@ -164,7 +164,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     @Override
     public boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
         
-        return deviceGroupService.isBasicGroupCanMoveUnderGroup(groupToMove, proposedParent);
+        return getGroupCanMovePredicate(groupToMove).evaluate(proposedParent);
     }
     
     @Override
@@ -173,7 +173,15 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
         Predicate<DeviceGroup> canMoveUnderPredicate = new Predicate<DeviceGroup>(){
             @Override
             public boolean evaluate(DeviceGroup deviceGroup) {
-                return deviceGroupService.isBasicGroupCanMoveUnderGroup(groupToMove, deviceGroup);
+                
+                if (!groupToMove.isEditable() 
+                    || !deviceGroup.isModifiable()
+                    || groupToMove.isEqualToOrDescendantOf(deviceGroup)
+                    || deviceGroup.equals(groupToMove.getParent())) {
+                    return false;
+                }
+                
+                return true;
             }
         };
         

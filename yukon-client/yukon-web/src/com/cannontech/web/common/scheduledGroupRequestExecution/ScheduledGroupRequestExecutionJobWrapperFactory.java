@@ -100,6 +100,9 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
 		public String getDeviceGroupName() {
+		    if (this.task.getDeviceGroup() == null) {
+		        return null;
+		    }
 			return this.task.getDeviceGroup().getFullName();
 		}
 		

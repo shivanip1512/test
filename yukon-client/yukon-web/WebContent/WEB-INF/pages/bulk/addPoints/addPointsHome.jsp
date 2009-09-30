@@ -121,21 +121,21 @@
 			</table>
 			<br>
 			
-			<tags:simplePopup id="sharedPointsOptionInfoPopup" title="${sharedPointsOptionLabel}" onClose="$('sharedPointsOptionInfoPopup').toggle();">
+			<tags:simplePopup id="sharedPointsOptionInfoPopup" title="${sharedPointsOptionLabel}">
 			     <br><tags:nameValueContainer>
 			     	<tags:nameValue name="${sharedPointsFalseOptionText}">${sharedPointsFalseOptionTooltip}<br><br></tags:nameValue>
 			     	<tags:nameValue name="${sharedPointsTrueOptionText}">${sharedPointsTrueOptionTooltip}</tags:nameValue>
 			     </tags:nameValueContainer><br>
 			</tags:simplePopup>
 			
-			<tags:simplePopup id="updatePointsOptionInfoPopup" title="${updatePointsOptionLabel}" onClose="$('updatePointsOptionInfoPopup').toggle();">
+			<tags:simplePopup id="updatePointsOptionInfoPopup" title="${updatePointsOptionLabel}">
 			     <br><tags:nameValueContainer>
 			     	<tags:nameValue name="${updatePointsFalseOptionText}">${updatePointsFalseOptionTooltip}<br><br></tags:nameValue>
 			     	<tags:nameValue name="${updatePointsTrueOptionText}">${updatePointsTrueOptionTooltip}</tags:nameValue>
 			     </tags:nameValueContainer><br>
 			</tags:simplePopup>
 			
-			<tags:simplePopup id="maskExistingPointsOptionInfoPopup" title="${maskExistingPointsOptionLabel}" onClose="$('maskExistingPointsOptionInfoPopup').toggle();">
+			<tags:simplePopup id="maskExistingPointsOptionInfoPopup" title="${maskExistingPointsOptionLabel}">
 			     <br><tags:nameValueContainer>
 			     	<tags:nameValue name="${maskExistingPointsFalseOptionText}">${maskExistingPointsFalseOptionTooltip}<br><br></tags:nameValue>
 			     	<tags:nameValue name="${maskExistingPointsTrueOptionText}">${maskExistingPointsTrueOptionTooltip}</tags:nameValue>

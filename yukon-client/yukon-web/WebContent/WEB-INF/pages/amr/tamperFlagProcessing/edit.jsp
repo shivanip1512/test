@@ -109,12 +109,9 @@
 											      dataJson="${groupDataJson}"
 											      linkGroupName="true"/>
 	                                                    
-	            	<img onclick="$('deviceGroupInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-				
-					<tags:simplePopup id="deviceGroupInfoPopup" title="${deviceGroupText}" onClose="$('deviceGroupInfoPopup').toggle();">
-					     ${deviceGroupPopupInfoText}
-					</tags:simplePopup>
-					
+	                <tags:helpInfoPopup title="${deviceGroupText}">
+	            		${deviceGroupPopupInfoText}
+					</tags:helpInfoPopup>
 					
 				</tags:nameValue>
 			
@@ -130,21 +127,19 @@
 							<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
 								
 								<tags:slowInput myFormId="disableMonitoringForm" labelBusy="${tamperFlagMonitoringDisableText}" label="${tamperFlagMonitoringDisableText}"/>
-								<img onclick="$('disableMonitoringInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 								
-								<tags:simplePopup id="disableMonitoringInfoPopup" title="${tamperFlagMonitoringDisableText} ${tamperFlagMonitoringText}" onClose="$('disableMonitoringInfoPopup').toggle();">
-								     ${tamperFlagMonitoringDisablePopupInfo}
-								</tags:simplePopup>
-							
+								<tags:helpInfoPopup title="${tamperFlagMonitoringDisableText} ${tamperFlagMonitoringText}">
+				            		${tamperFlagMonitoringDisablePopupInfo}
+								</tags:helpInfoPopup>
+								
 							</c:when>
 							<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'DISABLED'}">
 
 								<tags:slowInput myFormId="enableMonitoringForm" labelBusy="${tamperFlagMonitoringEnableText}" label="${tamperFlagMonitoringEnableText}"/>
-								<img onclick="$('enableMonitoringInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 								
-								<tags:simplePopup id="enableMonitoringInfoPopup" title="${tamperFlagMonitoringEnableText} ${tamperFlagMonitoringText}" onClose="$('enableMonitoringInfoPopup').toggle();">
-								     ${tamperFlagMonitoringEnablePopupInfo}
-								</tags:simplePopup>
+								<tags:helpInfoPopup title="${tamperFlagMonitoringEnableText} ${tamperFlagMonitoringText}">
+				            		${tamperFlagMonitoringEnablePopupInfo}
+								</tags:helpInfoPopup>
 								
 							</c:when>
 							<c:otherwise>

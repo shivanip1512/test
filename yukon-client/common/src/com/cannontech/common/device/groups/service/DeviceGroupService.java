@@ -103,17 +103,4 @@ public interface DeviceGroupService {
      */
     public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> group, String identifier);
     
-    /**
-     * Performs basic checks to determine if groupToMove is allowed to be relocated to proposedParent.
-     * This method is provided as convenience to users who may want to use it for basic validation.
-     * Use the real DeviceGroupProvider.isGroupCanMoveUnderGroup() to perform full validation that may be implemented by specific providers.
-     * Specific types of DeviceGroupProvider may override isGroupCanMoveUnderGroup to add additional checks. These providers should generally call 
-     * this method (provided by DeviceGroupProviderBase, use a super call) in addition to any custom validation.
-     * super.
-     * @param groupToMove
-     * @param proposedParent
-     * @return
-     */
-    public boolean isBasicGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent);
-
 }

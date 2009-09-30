@@ -55,13 +55,15 @@
 	function viewDeviceGroup_${uniqueId}() {
 		// ugly? but we can't sumbit a real form since the tag will most likely appear within a form already.
 		// this should be safe though, it is the same way that a redirecting ext tree works.
-		window.location = '/spring/group/editor/home?groupName=' + encodeURIComponent($('${fieldName}').value);
+		var url = '<cti:url value="/spring/group/editor/home"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
+		
+		window.location = url;
 	}
 
 	function viewDevices_${uniqueId}(imgEl) {
 
-		var url = '/spring/group/editor/selectedDevicesTableForGroupName?groupName=' + encodeURIComponent($('${fieldName}').value);
-		
+		var url = '<cti:url value="/spring/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
+
 		showSelectedDevices(imgEl, 'showSelectedDevices_${uniqueId}', 'showSelectedDevices_innerDiv_${uniqueId}', url, '${mag}', '${magOverDisabled}');
 	}
 	
@@ -97,8 +99,10 @@
 </c:choose>
 
 		
-<%-- PICKER ICON --%>			
-<img id="chooseGroupIcon_${uniqueId}" title="${selectDeviceGroupChooseText}" src="${folderEdit}" onmouseover="javascript:this.src='${folderEditOver}'" onmouseout="javascript:this.src='${folderEdit}'">&nbsp;
+<%-- PICKER ICON --%>	
+<a href="javascript:void(0);" title="${selectDeviceGroupChooseText}"  id="chooseGroupIcon_${uniqueId}" style="text-decoration:none;">	
+<img src="${folderEdit}" onmouseover="javascript:this.src='${folderEditOver}'" onmouseout="javascript:this.src='${folderEdit}'">&nbsp;
+</a>	
 
 <%-- MAGNIFIER ICON --%>
 <c:if test="${showSelectedDevicesIcon}">
@@ -106,8 +110,10 @@
 <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 		
 <span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty fieldValue}">style="display:none;"</c:if>>
-<img onclick="viewDevices_${uniqueId}(this);" title="${popupTitle}" src="${mag}" onmouseover="javascript:this.src='${magOver}'" onmouseout="javascript:this.src='${mag}'">&nbsp;
-<tags:simplePopup id="showSelectedDevices_${uniqueId}" title="${popupTitle}" onClose="closeSelectedDevices('showSelectedDevices_${uniqueId}');">
+<a href="javascript:void(0);" title="${popupTitle}"  onclick="viewDevices_${uniqueId}($('mag_${uniqueId}'));" >
+	<img id="mag_${uniqueId}" src="${mag}" onmouseover="javascript:this.src='${magOver}'" onmouseout="javascript:this.src='${mag}'">
+</a>&nbsp;
+<tags:simplePopup id="showSelectedDevices_${uniqueId}" title="${popupTitle}">
     <div style="height:300px;overflow:auto;">
     <div class="smallBoldLabel" id="showSelectedDevices_innerDiv_${uniqueId}" style="text-align:left;"></div>
     </div>

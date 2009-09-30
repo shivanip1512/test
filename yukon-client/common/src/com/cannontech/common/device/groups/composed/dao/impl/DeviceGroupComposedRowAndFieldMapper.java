@@ -1,4 +1,4 @@
-package com.cannontech.common.device.groups.dao.impl;
+package com.cannontech.common.device.groups.composed.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

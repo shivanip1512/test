@@ -32,7 +32,7 @@ public class DeviceGroupType extends DefaultValidatedType<DeviceGroup> {
         PropertyEditor editor = new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) throws IllegalArgumentException {
-                DeviceGroup group = deviceGroupService.resolveGroupName(text);
+                DeviceGroup group = deviceGroupService.findGroupName(text);
                 setValue(group);
             }
 

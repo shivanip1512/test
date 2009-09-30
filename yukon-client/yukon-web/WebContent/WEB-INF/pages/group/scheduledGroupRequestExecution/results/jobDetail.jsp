@@ -133,19 +133,19 @@
 			
 			<%-- device group --%>
 			<tags:nameValue name="${deviceGroupText}">
-				<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
-					<cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
-				</cti:url>
-				<a href="${deviceGroupUrl}">
-					${jobWrapper.deviceGroupName}
-				</a>
-				
-				<img onclick="$('deviceGroupInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-		
-				<tags:simplePopup id="deviceGroupInfoPopup" title="Last Run" onClose="$('deviceGroupInfoPopup').toggle();">
-				     ${deviceGroupPopupInfoText}
-				</tags:simplePopup>
-			
+				<c:choose>
+					<c:when test="${not empty jobWrapper.deviceGroupName}">
+						<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+							<cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
+						</cti:url>
+						<a href="${deviceGroupUrl}">
+							${jobWrapper.deviceGroupName}
+						</a>
+					</c:when>
+					<c:otherwise>
+						<span class="errorRed">Group does not exist.</span>
+					</c:otherwise>
+				</c:choose>
 			</tags:nameValue>
 			
 			<%-- user --%>
@@ -167,7 +167,7 @@
 					
 					<img onclick="$('viewAllExecutionsInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 			
-					<tags:simplePopup id="viewAllExecutionsInfoPopup" title="View All Executions" onClose="$('viewAllExecutionsInfoPopup').toggle();">
+					<tags:simplePopup id="viewAllExecutionsInfoPopup" title="View All Executions">
 					     ${executionsPopupInfoText}
 					</tags:simplePopup>
 					

@@ -38,7 +38,9 @@
 			${title}
 			
 			<c:if test="${not empty helpText}">
-            	<img onclick="$('boxContainerInfoPopup_${thisId}').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+				<a href="javascript:void(0);" onclick="$('boxContainerInfoPopup_${thisId}').toggle();" >
+            	<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+            	</a>
         	</c:if>
         	
 		</div>
@@ -60,7 +62,7 @@
 </c:if>
 
 <c:if test="${not empty helpText}">
-	<tags:simplePopup id="boxContainerInfoPopup_${thisId}" title="${title}" onClose="$('boxContainerInfoPopup_${thisId}').toggle();">
+	<tags:simplePopup id="boxContainerInfoPopup_${thisId}" title="${title}">
      	${helpText}
 	</tags:simplePopup>	
 </c:if>

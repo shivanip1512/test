@@ -149,12 +149,9 @@
 												      dataJson="${groupDataJson}"
 												      linkGroupName="true"/>
 		                                                    
-		            	<img onclick="$('deviceGroupInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-					
-						<tags:simplePopup id="deviceGroupInfoPopup" title="${deviceGroupText}" onClose="$('deviceGroupInfoPopup').toggle();">
-						     ${deviceGroupPopupInfoText}
-						</tags:simplePopup>
-						
+		                <tags:helpInfoPopup title="${deviceGroupText}">
+		            		${deviceGroupPopupInfoText}
+						</tags:helpInfoPopup>
 						
 					</tags:nameValue>
 				
@@ -168,11 +165,10 @@
 						
 						<input type="text" name="numberOfOutages" maxlength="3" size="3" style="text-align:right;" value="${numberOfOutages}"> 
 						${numberOfOutagesOutagesText}
-						<img onclick="$('numberOfOutagesInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-					
-						<tags:simplePopup id="numberOfOutagesInfoPopup" title="${numberOfOutagesText}" onClose="$('numberOfOutagesInfoPopup').toggle();">
-						     ${numberOfOutagesPopupInfoText}
-						</tags:simplePopup>
+						
+						<tags:helpInfoPopup title="${numberOfOutagesText}">
+		            		${numberOfOutagesPopupInfoText}
+						</tags:helpInfoPopup>
 						
 					</tags:nameValue>
 					
@@ -181,11 +177,10 @@
 							
 						<input type="text" name="timePeriod" maxlength="3" size="3" style="text-align:right;" value="${timePeriod}">
 						${timePeriodDaysText}
-						<img onclick="$('timePeriodInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-					
-						<tags:simplePopup id="timePeriodInfoPopup" title="${timePeriodText}" onClose="$('timePeriodInfoPopup').toggle();">
-						     ${timePeriodPopupInfoText}
-						</tags:simplePopup>
+						
+						<tags:helpInfoPopup title="${timePeriodText}">
+		            		${timePeriodPopupInfoText}
+						</tags:helpInfoPopup>
 						
 					</tags:nameValue>
 					
@@ -196,21 +191,19 @@
 								<c:when test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
 									
 									<tags:slowInput myFormId="disableMonitoringForm" labelBusy="${outageMonitoringDisableText}" label="${outageMonitoringDisableText}"/>
-									<img onclick="$('disableMonitoringInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 									
-									<tags:simplePopup id="disableMonitoringInfoPopup" title="${outageMonitoringDisableText} ${outageMonitoringText}" onClose="$('disableMonitoringInfoPopup').toggle();">
-									     ${outageMonitoringDisablePopupInfo}
-									</tags:simplePopup>
+									<tags:helpInfoPopup title="${outageMonitoringDisableText} ${outageMonitoringText}">
+					            		${outageMonitoringDisablePopupInfo}
+									</tags:helpInfoPopup>
 								
 								</c:when>
 								<c:when test="${outageMonitor.evaluatorStatus eq 'DISABLED'}">
 									
 									<tags:slowInput myFormId="enableMonitoringForm" labelBusy="${outageMonitoringEnableText}" label="${outageMonitoringEnableText}"/>
-									<img onclick="$('enableMonitoringInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 									
-									<tags:simplePopup id="enableMonitoringInfoPopup" title="${outageMonitoringEnableText} ${outageMonitoringText}" onClose="$('enableMonitoringInfoPopup').toggle();">
-									     ${outageMonitoringEnablePopupInfo}
-									</tags:simplePopup>
+									<tags:helpInfoPopup title="${outageMonitoringEnableText} ${outageMonitoringText}">
+					            		${outageMonitoringEnablePopupInfo}
+									</tags:helpInfoPopup>
 									
 								</c:when>
 								<c:otherwise>
@@ -247,11 +240,10 @@
 					<%-- schedule read --%>
 					<input type="checkbox" id="scheduleGroupCommand" name="scheduleGroupCommand" onclick="toggleReadFrequencyOptions();" <c:if test="${scheduleGroupCommand}">checked</c:if>> 
 					${scheduleReadDescriptionText}
-					<img onclick="$('scheduleReadInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-				
-					<tags:simplePopup id="scheduleReadInfoPopup" title="${scheduleReadText}" onClose="$('scheduleReadInfoPopup').toggle();">
-					     ${scheduleReadPopupInfoText}
-					</tags:simplePopup>
+					
+					<tags:helpInfoPopup title="${scheduleReadText}">
+	            		${scheduleReadPopupInfoText}
+					</tags:helpInfoPopup>
 						
 					<%-- schedule name --%>
 					<tags:nameValue name="${scheduleNameText}" id="scheduleNameTr" nameColumnWidth="250px">

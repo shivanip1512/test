@@ -6,28 +6,31 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.dao.DeviceGroupComposedGroupDao;
+import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
+import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedGroupDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupComposed;
 import com.cannontech.common.device.groups.model.DeviceGroupComposedCompositionType;
 import com.cannontech.common.device.groups.model.DeviceGroupComposedGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupComposedService;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
+import com.cannontech.core.dao.NotFoundException;
 
 public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
 
     private DeviceGroupProviderDao deviceGroupDao;
-    private DeviceGroupComposedService deviceGroupComposedService;
     private DeviceGroupComposedGroupDao deviceGroupComposedGroupDao;
+    private DeviceGroupEditorDao deviceGroupEditorDao;
+    private DeviceGroupComposedDao deviceGroupComposedDao;
     
     private Logger log = YukonLogManager.getLogger(ComposedGroupProvider.class);
     
@@ -39,50 +42,42 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
     @Override
     public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
         
-        int deviceId = device.getPaoIdentifier().getPaoId();
-        
-        DeviceGroupComposed deviceGroupComposed = deviceGroupComposedService.getDeviceGroupComposed(group);
+        DeviceGroupComposed deviceGroupComposed = getDeviceGroupComposed(group);
         DeviceGroupComposedCompositionType compositionType = deviceGroupComposed.getDeviceGroupComposedCompositionType();
         
-        if (compositionType.equals(DeviceGroupComposedCompositionType.INTERSECTION)) {
+        List<DeviceGroupComposedGroup> compositionGroups = deviceGroupComposedGroupDao.getComposedGroupsForId(deviceGroupComposed.getDeviceGroupComposedId());
+        for (DeviceGroupComposedGroup compositionGroup : compositionGroups) {
             
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT ypo.PAObjectID");
-            sql.append("FROM YukonPAObject ypo");
-            sql.append("JOIN Device d ON ypo.PAObjectID = d.DEVICEID");
-            sql.append("WHERE ypo.PAObjectID = ").appendArgument(deviceId);
-            sql.append("AND");
-            
-            SqlFragmentSource childDeviceGroupSqlWhereClause = getChildDeviceGroupSqlWhereClause(group, "ypo.PAObjectID");
-            sql.append(childDeviceGroupSqlWhereClause);
-            
-            try {
-                getSimpleJdbcTemplate().queryForInt(sql.getSql(), sql.getArguments());
-                return true;
-            } catch (EmptyResultDataAccessException e) {
-                return false;
+            boolean not = compositionGroup.isNot();
+            DeviceGroup searchGroup = compositionGroup.getDeviceGroup();
+            if (searchGroup == null) {
+                log.debug("Composition group does not exist, device cannot be a child, skipping search in this group.");
+                continue;
             }
             
-        // TODO Is this a worthwhile optimization? Is it an optimization at all? Is there a better way to optimize the "any" case?
-        } else if (compositionType.equals(DeviceGroupComposedCompositionType.UNION)) {
-            
-            List<DeviceGroupComposedGroup> compositionGroups = deviceGroupComposedGroupDao.getComposedGroupsForId(deviceGroupComposed.getDeviceGroupComposedId());
-            for (DeviceGroupComposedGroup compositionGroup : compositionGroups) {
+            if (compositionType.equals(DeviceGroupComposedCompositionType.INTERSECTION)) {
                 
-                boolean not = compositionGroup.isNot();
-                DeviceGroup searchGroup = compositionGroup.getDeviceGroup();
-                if (searchGroup == null) {
-                    log.debug("Composition group does not exist, device cannot be a child, skipping search in this group.");
-                    continue;
+                if ((!not && !deviceGroupDao.isDeviceInGroup(searchGroup, device)) || 
+                    (not && deviceGroupDao.isDeviceInGroup(searchGroup, device))) {
+                    return false;
                 }
                 
-                if ((!not && deviceGroupDao.isDeviceInGroup(searchGroup, device)) || (not && !deviceGroupDao.isDeviceInGroup(searchGroup, device))) {
+            } else if (compositionType.equals(DeviceGroupComposedCompositionType.UNION)) {
+                
+                if ((!not && deviceGroupDao.isDeviceInGroup(searchGroup, device)) || 
+                    (not && !deviceGroupDao.isDeviceInGroup(searchGroup, device))) {
                     return true;
                 }
+                
+            } else {
+                throw new IllegalArgumentException("Unhandled DeviceGroupComposedCompositionType: " + compositionType.name());
             }
-
+        }
+        
+        if (compositionType.equals(DeviceGroupComposedCompositionType.INTERSECTION)) {
+            return true;
+        } else if (compositionType.equals(DeviceGroupComposedCompositionType.UNION)) {
             return false;
-            
         } else {
             throw new IllegalArgumentException("Unhandled DeviceGroupComposedCompositionType: " + compositionType.name());
         }
@@ -125,16 +120,11 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
     }
     
     @Override
-    public boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
-        return getGroupCanMovePredicate(groupToMove).evaluate(proposedParent);
-    }
-    
-    @Override
     public Predicate<DeviceGroup> getGroupCanMovePredicate(DeviceGroup groupToMove) {
         
         Predicate<DeviceGroup> basicCheckPredicate = super.getGroupCanMovePredicate(groupToMove);
         
-        List<DeviceGroupComposedGroup> compositionGroups = deviceGroupComposedService.getCompositionGroups(groupToMove);
+        List<DeviceGroupComposedGroup> compositionGroups = getCompositionGroups(groupToMove);
         final List<DeviceGroup> compositionGroupGroups = new ArrayList<DeviceGroup>(compositionGroups.size());
         for (DeviceGroupComposedGroup compositionGroup : compositionGroups) {
             
@@ -151,7 +141,7 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
             public boolean evaluate(DeviceGroup deviceGroup) {
                 
                 for (DeviceGroup compositionGroupGroup : compositionGroupGroups) {
-                    if (compositionGroupGroup.isEqualToOrDescendantOf(deviceGroup)) {
+                    if (deviceGroup.isEqualToOrDescendantOf(compositionGroupGroup)) {
                         return false;
                     }
                 }
@@ -171,7 +161,7 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
     // HELPERS
     private CompositionTypeAndFragments getCompositionTypeAndFragmentsForGroup(DeviceGroup group) throws IllegalArgumentException {
         
-        DeviceGroupComposed deviceGroupComposed = deviceGroupComposedService.getDeviceGroupComposed(group);
+        DeviceGroupComposed deviceGroupComposed = getDeviceGroupComposed(group);
         List<DeviceGroupComposedGroup> compositionGroups = deviceGroupComposedGroupDao.getComposedGroupsForId(deviceGroupComposed.getDeviceGroupComposedId());
         
         List<SqlFragmentSource> sqlFragments = new ArrayList<SqlFragmentSource>(compositionGroups.size());
@@ -203,6 +193,30 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
         return new CompositionTypeAndFragments(deviceGroupComposed.getDeviceGroupComposedCompositionType(), sqlFragments);
     }
     
+    private DeviceGroupComposed getDeviceGroupComposed(DeviceGroup group) throws IllegalArgumentException {
+        
+        StoredDeviceGroup storedGroup;
+        try {
+            storedGroup= deviceGroupEditorDao.getStoredGroup(group);
+        } catch (NotFoundException e) {
+            throw new IllegalArgumentException(group.getFullName() + " is not a stored group, it cannot be a composed group.", e);
+        }
+        
+        int deviceGroupId = storedGroup.getId();
+        DeviceGroupComposed deviceGroupComposed = deviceGroupComposedDao.findForDeviceGroupId(deviceGroupId);
+        if (deviceGroupComposed == null) {
+            throw new IllegalArgumentException(group.getFullName() + " does not exist in the DeviceGroupComposed table, it cannot be a composed group.");
+        }
+        
+        return deviceGroupComposed;
+    }
+    
+    private List<DeviceGroupComposedGroup> getCompositionGroups(DeviceGroup group) throws IllegalArgumentException {
+        
+        DeviceGroupComposed deviceGroupComposed = getDeviceGroupComposed(group);
+        return deviceGroupComposedGroupDao.getComposedGroupsForId(deviceGroupComposed.getDeviceGroupComposedId());
+    }
+    
     private class CompositionTypeAndFragments {
         
         private DeviceGroupComposedCompositionType compositionType;
@@ -226,11 +240,15 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
         this.deviceGroupDao = deviceGroupDao;
     }
     @Autowired
-    public void setDeviceGroupComposedService(DeviceGroupComposedService deviceGroupComposedService) {
-        this.deviceGroupComposedService = deviceGroupComposedService;
-    }
-    @Autowired
     public void setDeviceGroupComposedGroupDao(DeviceGroupComposedGroupDao deviceGroupComposedGroupDao) {
         this.deviceGroupComposedGroupDao = deviceGroupComposedGroupDao;
+    }
+    @Autowired
+    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
+        this.deviceGroupEditorDao = deviceGroupEditorDao;
+    }
+    @Autowired
+    public void setDeviceGroupComposedDao(DeviceGroupComposedDao deviceGroupComposedDao) {
+        this.deviceGroupComposedDao = deviceGroupComposedDao;
     }
 }

@@ -13,6 +13,9 @@
         <cti:crumbLink title="Device Groups" />
     </cti:breadCrumbs>
     
+    <cti:msg var="removeGroupAreYouSure" key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure" javaScriptEscape="true"/>
+    <cti:msg var="invalidGroupNameError" key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError" javaScriptEscape="true"/>
+    
     <script type="text/javascript">
     
         function showGroupPopup(popupDiv, focusElem){
@@ -25,7 +28,7 @@
         }
         
         function removeGroup(formName){
-            var confirmRemove = confirm("Are you sure you want to permanently remove this group and all of it's sub groups?  You will not be able to undo this removal.");
+            var confirmRemove = confirm('${removeGroupAreYouSure}');
             if(confirmRemove) {
                 
                 if(formName != null) {
@@ -40,7 +43,8 @@
             }
             return false;
         }
-        
+
+        // js implementation of CtiUtilities.isValidGroupName(name).
         function isValidGroupName(name) {
             if(name == null || name.strip() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
                 return false;
@@ -52,7 +56,7 @@
         
             var newName = $F(nameId);
             if(!isValidGroupName(newName)) {
-                alert('Group names may not be blank or contain slashes.\n\nPlease enter a new name.');
+                alert('${invalidGroupNameError}');
                 $(nameId).focus();
             } else {
                 $(buttonId).disabled = true;
