@@ -87,10 +87,25 @@
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/><br>
                             <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
-                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.enable"/>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable.text"/><br>
-                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable"/>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable.text"/><br>
+                            
+                            <cti:url var="sendEnableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:param name="programId" value="${programId}"/>
+                                <cti:param name="isEnabled" value="true"/>
+                            </cti:url>
+                            <a id="enableLink_${programId}" href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendEnableConfirm.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.enable"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable.text"/><br>
+                            </a>
+                            <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:param name="programId" value="${programId}"/>
+                                <cti:param name="isEnabled" value="false"/>
+                            </cti:url>
+                            <a id="disableLink_${programId}" href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendDisableConfirm.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable.text"/><br>
+                            </a>
                             
                             <cti:dataUpdaterCallback function="updateEnabled('${programId}')" initialize="true" state="DR_PROGRAM/${programId}/ENABLED" />
                         </cti:checkPaoAuthorization>

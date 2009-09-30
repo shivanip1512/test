@@ -305,6 +305,38 @@ public class ProgramController {
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
     }
+    
+    @RequestMapping("/program/sendEnableConfirm")
+    public String sendEnableConfirm(ModelMap modelMap, int programId, boolean isEnabled,
+            YukonUserContext userContext) {
+        
+        DisplayablePao program = programService.getProgram(programId);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
+        
+        modelMap.addAttribute("program", program);
+        modelMap.addAttribute("isEnabled", isEnabled);
+        return "dr/program/sendEnableConfirm.jsp";
+    }
+    
+    @RequestMapping("/program/setEnabled")
+    public String setEnabled(ModelMap modelMap, int programId, boolean isEnabled,
+            YukonUserContext userContext) {
+        
+        DisplayablePao program = programService.getProgram(programId);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
+        
+        programService.setEnabled(programId, isEnabled, userContext);
+        
+        modelMap.addAttribute("popupId", "drDialog");
+        
+        return "common/closePopup.jsp";
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {

@@ -52,5 +52,10 @@ public interface DemandResponseEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
     public void loadGroupDisabled(LiteYukonUser user, String loadGroupName);
     
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programEnabled(LiteYukonUser user, String programName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programDisabled(LiteYukonUser user, String programName);
     
 }

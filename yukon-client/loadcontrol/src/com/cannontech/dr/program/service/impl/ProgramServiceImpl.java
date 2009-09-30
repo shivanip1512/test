@@ -14,6 +14,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -30,9 +31,11 @@ import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.user.YukonUserContext;
@@ -42,6 +45,7 @@ public class ProgramServiceImpl implements ProgramService {
     private ProgramDao programDao = null;
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
+    private DemandResponseEventLogService demandResponseEventLogService;
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -165,6 +169,25 @@ public class ProgramServiceImpl implements ProgramService {
         ServerRequest serverRequest = new ServerRequestImpl();
         serverRequest.makeServerRequest(loadControlClientConnection, controlRequest);
     }
+    
+    @Override
+    public void setEnabled(int programId, boolean isEnabled, YukonUserContext userContext) {
+
+        int loadControlCommand = isEnabled ? LMCommand.ENABLE_PROGRAM
+                : LMCommand.DISABLE_PROGRAM;
+        Message msg = new LMCommand(loadControlCommand, programId, 0, 0.0);
+        loadControlClientConnection.write(msg);
+        
+        DisplayablePao program = this.getProgram(programId);
+        if(isEnabled) {
+            demandResponseEventLogService.programEnabled(userContext.getYukonUser(), 
+                                                           program.getName());
+        } else {
+            demandResponseEventLogService.programDisabled(userContext.getYukonUser(), 
+                                                            program.getName());
+        }
+        
+    }
 
     @Override
     public DisplayablePao getProgram(int programId) {
@@ -185,6 +208,12 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
+    }
+    
+    @Autowired
+    public void setDemandResponseEventLogService(
+                                                 DemandResponseEventLogService demandResponseEventLogService) {
+        this.demandResponseEventLogService = demandResponseEventLogService;
     }
 
     private LMManualControlRequest getManualControlMessage(
