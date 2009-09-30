@@ -100,7 +100,8 @@ INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Cont
 
 /* Start YUK-7872 */
 UPDATE YukonRoleProperty
-SET KeyName = 'Add/Update/Remove Points'
+SET KeyName = 'Add/Update/Remove Points', 
+    Description = 'Controls access to Add, Update and Remove Points collection actions.'
 WHERE RolePropertyId = -21308;
 /* End YUK-7872 */
 
