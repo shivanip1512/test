@@ -1,13 +1,14 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
+import static com.cannontech.common.device.groups.model.DeviceGroupComposedCompositionType.INTERSECTION;
+import static com.cannontech.common.device.groups.model.DeviceGroupComposedCompositionType.UNION;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
 import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedGroupDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
@@ -32,8 +33,6 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupComposedDao deviceGroupComposedDao;
     
-    private Logger log = YukonLogManager.getLogger(ComposedGroupProvider.class);
-    
     @Override
     public List<DeviceGroup> getChildGroups(DeviceGroup group) {
         return Collections.emptyList();
@@ -50,37 +49,44 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
             
             boolean not = compositionGroup.isNot();
             DeviceGroup searchGroup = compositionGroup.getDeviceGroup();
-            if (searchGroup == null) {
-                log.debug("Composition group does not exist, device cannot be a child, skipping search in this group.");
-                continue;
-            }
             
-            if (compositionType.equals(DeviceGroupComposedCompositionType.INTERSECTION)) {
+            boolean inGroup = isDeviceInGroupNullSafe(searchGroup, device);
+            
+            if (compositionType.equals(INTERSECTION)) {
                 
-                if ((!not && !deviceGroupDao.isDeviceInGroup(searchGroup, device)) || 
-                    (not && deviceGroupDao.isDeviceInGroup(searchGroup, device))) {
+                if ((!not && !inGroup) || 
+                    (not && inGroup)) {
                     return false;
                 }
+            }
+            
+            if (compositionType.equals(UNION)) {
                 
-            } else if (compositionType.equals(DeviceGroupComposedCompositionType.UNION)) {
-                
-                if ((!not && deviceGroupDao.isDeviceInGroup(searchGroup, device)) || 
-                    (not && !deviceGroupDao.isDeviceInGroup(searchGroup, device))) {
+                if ((!not && inGroup) || 
+                    (not && !inGroup)) {
                     return true;
                 }
-                
-            } else {
-                throw new IllegalArgumentException("Unhandled DeviceGroupComposedCompositionType: " + compositionType.name());
             }
         }
         
-        if (compositionType.equals(DeviceGroupComposedCompositionType.INTERSECTION)) {
+        if (compositionType.equals(INTERSECTION)) {
             return true;
-        } else if (compositionType.equals(DeviceGroupComposedCompositionType.UNION)) {
-            return false;
-        } else {
-            throw new IllegalArgumentException("Unhandled DeviceGroupComposedCompositionType: " + compositionType.name());
         }
+        if (compositionType.equals(UNION)) {
+            return false;
+        }
+        
+        return false;
+    }
+    
+    private boolean isDeviceInGroupNullSafe(DeviceGroup group, YukonDevice device) {
+        
+        // group does not exist, handle as if it were empty
+        if (group == null) {
+            return false;
+        }
+        
+        return deviceGroupDao.isDeviceInGroup(group, device);
     }
     
     @Override
@@ -173,7 +179,7 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
             if (deviceGroup != null) {
                 sqlFragmentSource = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singletonList(deviceGroup), "ypo.PAObjectID");
             } else {
-                sqlFragmentSource = new SimpleSqlFragment("1=0");
+                sqlFragmentSource = new SimpleSqlFragment("1 = 0");
             }
             
             boolean isNot = compositionGroup.isNot();
