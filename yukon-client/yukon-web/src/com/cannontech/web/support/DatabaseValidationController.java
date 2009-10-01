@@ -3,6 +3,7 @@ package com.cannontech.web.support;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.util.concurrent.Semaphore;
@@ -86,7 +87,10 @@ public class DatabaseValidationController implements ResourceLoaderAware {
             // Writes the comparison information to the browser
             StringWriter stringWriter = new StringWriter();
             schemaDifferences.printDifferences(stringWriter);
-            StringEscapeUtils.escapeHtml(response.getWriter(), stringWriter.toString());
+            PrintWriter writer = response.getWriter();
+            writer.write("<pre>");
+            StringEscapeUtils.escapeHtml(writer, stringWriter.toString());
+            writer.write("</pre>");
     
             return null;
         } finally{
