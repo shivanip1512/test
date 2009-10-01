@@ -6,6 +6,7 @@ import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
 
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.AuthDao;
@@ -118,6 +119,10 @@ public class CBCSelectionLists {
 		new SelectItem(new Integer(PointTypes.STATUS_POINT), PointTypes.getType(PointTypes.STATUS_POINT) )
 	};
 
+	final private SelectItem[] controllerTypes = JSFUtil.convertSelectionListByName(YukonSelectionListDefs.YUK_LIST_ID_CONTROLLER_TYPE);
+	final private SelectItem[] switchManufacturers = JSFUtil.convertSelectionListByName(YukonSelectionListDefs.YUK_LIST_ID_SWITCH_MANUFACTURER);
+	final private SelectItem[] switchTypes = JSFUtil.convertSelectionListByName(YukonSelectionListDefs.YUK_LIST_ID_SWITCH_TYPE);
+	
 	private static final SelectItem[] daySelection =  {
 		//value, label
 		new SelectItem("0", "Sunday" ),
@@ -573,6 +578,18 @@ public class CBCSelectionLists {
                 new SelectItem (new Integer (1800), "1800"),
                 new SelectItem (new Integer (2400), "2400"),
         }; 
+    }
+    
+    public SelectItem[] getControllerTypes() {
+        return controllerTypes;
+    }
+    
+    public SelectItem[] getSwitchManufacturers() {
+        return switchManufacturers;
+    }
+    
+    public SelectItem[] getSwitchTypes() {
+        return switchTypes;
     }
     
     public TimeZone getTimeZone () {

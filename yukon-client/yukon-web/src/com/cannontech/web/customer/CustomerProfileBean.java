@@ -34,7 +34,7 @@ public class CustomerProfileBean {
     private boolean needsInitialization = true;
     
     final private SelectItem[] notificationSelections = 
-        JSFUtil.convertSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
+        JSFUtil.convertSelectionListById(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
 
     public LiteYukonUser getYukonUser() {
         return yukonUser;

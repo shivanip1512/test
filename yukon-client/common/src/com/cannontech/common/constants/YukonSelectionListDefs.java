@@ -12,7 +12,9 @@ public interface YukonSelectionListDefs {
 
 	public static final int YUK_LIST_ID_CONTACT_TYPE = 1;
     public static final int YUK_LIST_ID_CUSTOMER_TYPE = 1071;
-	
+	public static final int YUK_LIST_ID_CONTROLLER_TYPE = 1072;
+	public static final int YUK_LIST_ID_SWITCH_MANUFACTURER = 1073;
+	public static final int YUK_LIST_ID_SWITCH_TYPE = 1074;
 	// List names are now only used in STARS
 	public static final String YUK_LIST_NAME_CONTACT_TYPE = "ContactType";
 	

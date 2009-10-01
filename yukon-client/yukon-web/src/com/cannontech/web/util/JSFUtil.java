@@ -75,20 +75,31 @@ public abstract class JSFUtil {
         return null;
     }
 
-    public static SelectItem[] convertSelectionList(int selectionListId) {
+    public static SelectItem[] convertSelectionListById(int selectionListId) {
+        return convertSelectionList(selectionListId,false);
+    }
+    
+    public static SelectItem[] convertSelectionListByName(int selectionListId) {
+        return convertSelectionList(selectionListId,true);
+    }
+    
+    private static SelectItem[] convertSelectionList(int selectionListId, boolean byName) {
         YukonSelectionList yukonSelectionList = DaoFactory.getYukonListDao()
                                                           .getYukonSelectionList(selectionListId);
         List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
         SelectItem[] items = new SelectItem[yukonListEntries.size()];
         int i = 0;
         for (YukonListEntry entry : yukonListEntries) {
-            SelectItem selectItem = new SelectItem(entry.getEntryID(),
-                                                   entry.getEntryText());
+            Object id = entry.getEntryID();
+            if (byName) {
+                id = entry.getEntryText();
+            }
+            SelectItem selectItem = new SelectItem(id,entry.getEntryText());
             items[i++] = selectItem;
         }
         return items;
     }
-
+    
     @SuppressWarnings("unchecked")
     public static LiteYukonUser getYukonUser() {
         FacesContext fc = FacesContext.getCurrentInstance();

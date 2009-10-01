@@ -72,37 +72,21 @@
 						title="What company manufactured this item" />
 					<x:selectOneMenu id="bankMan"
 						value="#{capBankEditor.capBank.capBank.switchManufacture}">
-						<f:selectItem itemValue="(none)" />
-						<f:selectItem itemValue="ABB" />
-						<f:selectItem itemValue="Cannon Tech" />
-						<f:selectItem itemValue="Cooper" />
-						<f:selectItem itemValue="Trinetics" />
-						<f:selectItem itemValue="Siemens" />
-						<f:selectItem itemValue="Westinghouse" />
-						<f:selectItem itemValue="Mix" />
+						<f:selectItems value="#{selLists.switchManufacturers}" />
 					</x:selectOneMenu>
 	
 					<x:outputLabel for="cntrlerType" value="Controller Type: "
 						title="What type of switch this item is" />
 					<x:selectOneMenu id="cntrlerType"
 						value="#{capBankEditor.capBank.capBank.controllerType}">
-						<f:selectItem itemValue="(none)" />
-						<f:selectItem itemValue="CTI DLC" />
-						<f:selectItem itemValue="CTI Paging" />
-						<f:selectItem itemValue="CTI FM" />
-						<f:selectItem itemValue="FP Paging" />
-						<f:selectItem itemValue="Telemetric" />
+						<f:selectItems value="#{selLists.controllerTypes}" />
 					</x:selectOneMenu>
 	
 					<x:outputLabel for="bankType" value="Type of Switch: "
 						title="What type of switch this item is" />
 					<x:selectOneMenu id="bankType"
 						value="#{capBankEditor.capBank.capBank.typeOfSwitch}">
-						<f:selectItem itemValue="(none)" />
-						<f:selectItem itemValue="Oil" />
-						<f:selectItem itemValue="Vacuum" />
-						<f:selectItem itemValue="Mix" />
-						<f:selectItem itemValue="Hybrid" />
+						<f:selectItems value="#{selLists.switchTypes}" />
 					</x:selectOneMenu>
 				
 				</x:panelGrid>
