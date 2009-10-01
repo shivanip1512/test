@@ -23,7 +23,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
 	private Double currentWattLoadPointValue = null;
 	private String mapLocationID = null;
    
-	private Integer displayOrder = null;
+	private Float displayOrder = null;
 	private Boolean newPointDataReceivedFlag = null;
 	private java.util.Date lastCurrentVarPointUpdateTime = null;
 	private Integer estimatedVarLoadPointID = null;
@@ -155,7 +155,7 @@ public java.lang.Integer getDailyOperationsAnalogPointID() {
  * Creation date: (11/19/2001 1:11:48 PM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getDisplayOrder() {
+public java.lang.Float getDisplayOrder() {
 	return displayOrder;
 }
 /**
@@ -283,7 +283,7 @@ public void setDailyOperationsAnalogPointID(java.lang.Integer newDailyOperations
  * Creation date: (11/19/2001 1:11:48 PM)
  * @param newDisplayOrder java.lang.Integer
  */
-public void setDisplayOrder(java.lang.Integer newDisplayOrder) {
+public void setDisplayOrder(java.lang.Float newDisplayOrder) {
 	displayOrder = newDisplayOrder;
 }
 /**

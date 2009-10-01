@@ -65,7 +65,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setCurrentWattLoadPointValue( new Double( vstr.extractDouble() ) );
 	feeder.setMapLocationID( (String) vstr.restoreObject( SimpleMappings.CString ) );
    
-	feeder.setDisplayOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
+	//feeder.setDisplayOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
+	feeder.setDisplayOrder( new Float(vstr.extractFloat() ) );
+
 	feeder.setNewPointDataReceivedFlag( 
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
@@ -149,7 +151,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertDouble( feeder.getCurrentWattLoadPointValue().doubleValue() );
 	vstr.saveObject( feeder.getMapLocationID(), SimpleMappings.CString );
    
-	vstr.insertUnsignedInt( feeder.getDisplayOrder().intValue() );
+	//vstr.insertUnsignedInt( feeder.getDisplayOrder().intValue() );
+    vstr.insertFloat( feeder.getDisplayOrder().floatValue() ); 
 	vstr.insertUnsignedInt( 
 		(feeder.getNewPointDataReceivedFlag().booleanValue() == true)
 		? 1 : 0 );
