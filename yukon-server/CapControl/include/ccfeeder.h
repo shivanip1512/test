@@ -137,7 +137,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const string& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
-    LONG getDisplayOrder() const;
+    float getDisplayOrder() const;
+    LONG getOriginalSubBusId() const;
+    float getOriginalSwitchingOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
     const CtiTime& getLastCurrentVarPointUpdateTime() const;
     LONG getEstimatedVarLoadPointId() const;
@@ -256,7 +258,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setControlUnits(const string& contunit);
     CtiCCFeeder& setControlDelayTime(LONG delay);
     CtiCCFeeder& setControlSendRetries(LONG retries);
-    CtiCCFeeder& setDisplayOrder(LONG order);
+    CtiCCFeeder& setDisplayOrder(float order);
+    CtiCCFeeder& setOriginalSubBusId(LONG subBusId);
+    CtiCCFeeder& setOriginalSwitchingOrder(float order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setEstimatedVarLoadPointId(LONG estimatedvarid);
@@ -500,7 +504,10 @@ private:
     DOUBLE _peakpfsetpoint;
     DOUBLE _offpkpfsetpoint;
 
-    LONG _displayorder;
+    float _displayorder;
+    LONG _originalsubbusid;
+    float _originalswitchingorder;
+
     BOOL _newpointdatareceivedflag;
     CtiTime _lastcurrentvarpointupdatetime;
     LONG _estimatedvarloadpointid;

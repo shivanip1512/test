@@ -2879,15 +2879,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
     return *this;
 }
 
-/*---------------------------------------------------------------------------
-    checkForAndProvideNeededControl
-
-
----------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::checkForMaxDailyOpsHit()
 {
-    BOOL keepGoing = TRUE;
-
     //have we went past the max daily ops
     if( getMaxDailyOperation() > 0 &&
         (_currentdailyoperations == getMaxDailyOperation()  ||
@@ -2915,87 +2908,86 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         setMaxDailyOpsHitFlag(TRUE);
 
     }
+}
+
+BOOL CtiCCSubstationBus::maxOperationsHitDisableBus()
+{
+   setDisableFlag(TRUE);
+   setBusUpdatedFlag(TRUE);
+   CtiCCSubstationBusStore::getInstance()->UpdateBusDisableFlagInDB(this);
+   setSolution("  Sub Disabled. Automatic Control Inhibited.");
+   string text = string("Substation Bus Disabled");
+   string additional = string("Bus: ");
+   additional += getPAOName();
+   if (_LOG_MAPID_INFO)
+   {
+       additional += " MapID: ";
+       additional += getMapLocationId();
+       additional += " (";
+       additional += getPAODescription();
+       additional += ")";
+   }
+   if (getDailyOperationsAnalogPointId() > 0)
+   {
+       CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
+                                                                           TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
+       pSig->setCondition(CtiTablePointAlarming::highReasonability);
+       CtiCapController::getInstance()->sendMessageToDispatch(pSig);
+   }
+   
+   return FALSE;
+}
+
+BOOL CtiCCSubstationBus::isAnyBankClosed()
+{
+    BOOL closeFoundFlag = false;
+    for(LONG i=0;i<_ccfeeders.size();i++)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+        if (!currentFeeder->getDisableFlag())
+        {
+            for (LONG j=0; j<currentFeeder->getCCCapBanks().size(); j++)
+            {
+                CtiCCCapBank* currentCap = (CtiCCCapBank*)currentFeeder->getCCCapBanks()[j];
+                if (currentCap->getControlStatus() == CtiCCCapBank::Close ||
+                    currentCap->getControlStatus() == CtiCCCapBank::CloseQuestionable )
+                {
+                    closeFoundFlag = true;
+                    break;
+                }
+            }
+            if (closeFoundFlag)
+            {
+                break;
+            }
+        }
+    }
+    return closeFoundFlag;
+}
+
+/*---------------------------------------------------------------------------
+    checkForAndProvideNeededControl
+
+
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+{
+    BOOL keepGoing = TRUE;
+
+    checkForMaxDailyOpsHit();
     if( getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
     {
         if ( !_END_DAY_ON_TRIP )
         {
-            setDisableFlag(TRUE);
-            setBusUpdatedFlag(TRUE);
-            CtiCCSubstationBusStore::getInstance()->UpdateBusDisableFlagInDB(this);
-            setSolution("  Sub Disabled. Automatic Control Inhibited.");
-            string text = string("Substation Bus Disabled");
-            string additional = string("Bus: ");
-            additional += getPAOName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += getMapLocationId();
-                additional += " (";
-                additional += getPAODescription();
-                additional += ")";
-            }
-            if (getDailyOperationsAnalogPointId() > 0)
-            {
-                CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
-                                                                                    TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
-                pSig->setCondition(CtiTablePointAlarming::highReasonability);
-                CtiCapController::getInstance()->sendMessageToDispatch(pSig);
-            }
-            keepGoing = FALSE;
+            keepGoing = maxOperationsHitDisableBus();
         }
         else
         {
-            bool closeFoundFlag = false;
-            for(LONG i=0;i<_ccfeeders.size();i++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-                if (!currentFeeder->getDisableFlag())
-                {
-                    for (LONG j=0; j<currentFeeder->getCCCapBanks().size(); j++)
-                    {
-                        CtiCCCapBank* currentCap = (CtiCCCapBank*)currentFeeder->getCCCapBanks()[j];
-                        if (currentCap->getControlStatus() == CtiCCCapBank::Close ||
-                            currentCap->getControlStatus() == CtiCCCapBank::CloseQuestionable )
-                        {
-                            keepGoing = TRUE;
-                            closeFoundFlag = true;
-                            break;
-                        }
-                    }
-                    if (closeFoundFlag)
-                    {
-                        break;
-                    }
-                }
-            }
+            bool closeFoundFlag = isAnyBankClosed();
             if (!closeFoundFlag)
             {
-                setDisableFlag(TRUE);
-                setBusUpdatedFlag(TRUE);
-                setSolution("  Sub Disabled. Automatic Control Inhibited.");
-                CtiCCSubstationBusStore::getInstance()->UpdateBusDisableFlagInDB(this);
-                string text = string("Substation Bus Disabled");
-                string additional = string("Bus: ");
-                additional += getPAOName();
-                if (_LOG_MAPID_INFO)
-                {
-                    additional += " MapID: ";
-                    additional += getMapLocationId();
-                    additional += " (";
-                    additional += getPAODescription();
-                    additional += ")";
-                }
-                if (getDailyOperationsAnalogPointId() > 0)
-                {
-                    CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
-                                                                                        TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
-                    pSig->setCondition(CtiTablePointAlarming::highReasonability);
-                    CtiCapController::getInstance()->sendMessageToDispatch(pSig);
-                }
-
-                keepGoing = FALSE;
+                keepGoing = maxOperationsHitDisableBus();
             }
-
         }
     }
 
@@ -10771,7 +10763,7 @@ void CtiCCSubstationBus::createCannotControlBankText(string text, string command
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
-    if (!getCorrectionNeededNoBankAvailFlag())
+   if (!getCorrectionNeededNoBankAvailFlag())
     {
         setCorrectionNeededNoBankAvailFlag(TRUE);
         string textInfo;
@@ -10783,7 +10775,8 @@ void CtiCCSubstationBus::createCannotControlBankText(string text, string command
         LONG stationId, areaId, spAreaId;
         store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
-    }
+  }
+    
 
 }
 

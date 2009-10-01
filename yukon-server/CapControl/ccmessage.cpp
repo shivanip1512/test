@@ -200,6 +200,128 @@ CtiMessage* CtiCCCommand::replicateMessage() const
     or permanent.
 ===========================================================================*/
 
+RWDEFINE_COLLECTABLE( CtiCCObjectMoveMsg, CTICCOBJECTMOVEMSG_ID )
+
+CtiCCObjectMoveMsg::CtiCCObjectMoveMsg(INT permanentflag, LONG oldparentid, LONG objectid,LONG newparentid,
+                   float switchingorder, float closeOrder, float tripOrder) :
+    CtiCCMessage( ),
+    _permanentflag(permanentflag),
+    _oldparentid(oldparentid),
+    _objectid(objectid),
+    _newparentid(newparentid),
+    _switchingorder(switchingorder),
+    _closeOrder(closeOrder),
+    _tripOrder(tripOrder)
+    
+{
+
+
+}
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCObjectMoveMsg::~CtiCCObjectMoveMsg()
+{
+}
+
+
+INT CtiCCObjectMoveMsg::getPermanentFlag() const
+{
+    return _permanentflag;
+}
+LONG CtiCCObjectMoveMsg::getOldParentId() const
+{
+    return _oldparentid;
+}
+LONG CtiCCObjectMoveMsg::getObjectId() const
+{
+    return _objectid;
+}
+LONG CtiCCObjectMoveMsg::getNewParentId() const
+{
+    return _newparentid;
+}
+float CtiCCObjectMoveMsg::getSwitchingOrder() const
+{
+    return _switchingorder;
+}
+float CtiCCObjectMoveMsg::getCloseOrder() const
+{
+    return _closeOrder;
+}
+float CtiCCObjectMoveMsg::getTripOrder() const
+{
+    return _tripOrder;
+}
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restores the state of self from the given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCObjectMoveMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+    strm >> _permanentflag  
+         >> _oldparentid    
+         >> _objectid       
+         >> _newparentid    
+         >> _switchingorder 
+         >> _closeOrder     
+         >> _tripOrder;     
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCObjectMoveMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+
+    strm << _permanentflag 
+         << _oldparentid   
+         << _objectid      
+         << _newparentid   
+         << _switchingorder
+         << _closeOrder    
+         << _tripOrder;     
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCObjectMoveMsg& CtiCCObjectMoveMsg::operator=(const CtiCCObjectMoveMsg& right)
+{
+    if( this != &right )
+    {
+        CtiCCMessage::operator=(right);
+
+        _permanentflag   = right._permanentflag;
+        _oldparentid     = right._oldparentid;
+        _objectid        = right._objectid;
+        _newparentid     = right._newparentid;
+        _switchingorder  = right._switchingorder;
+        _closeOrder      = right._closeOrder;
+        _tripOrder       = right._tripOrder;
+
+    }
+
+    return *this;
+}
+
+/*===========================================================================
+    CtiCCCapBankMoveMsg
+
+    Message to dynamically move cap banks between feeders both temporarily
+    or permanent.
+===========================================================================*/
+
 RWDEFINE_COLLECTABLE( CtiCCCapBankMoveMsg, CTICCCAPBANKMOVEMSG_ID )
 
 /*---------------------------------------------------------------------------

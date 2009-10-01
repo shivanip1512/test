@@ -33,6 +33,7 @@ public:
 protected:
     CtiCCExecutor() {};
     void moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder);
+    void moveFeeder(INT permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder);
 };
 
 class CtiCCClientMsgExecutor : public CtiCCExecutor
@@ -72,6 +73,7 @@ private:
     void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG bankId);
     void SendAllData();
     void ReturnCapToOriginalFeeder();
+    void ReturnFeederToOriginalSubBus();
     void ResetDailyOperations();
     void ConfirmFeeder();
     void ResetAllSystemOpCounts();
@@ -117,6 +119,19 @@ private:
     CtiCCCapBankMoveMsg* _capMoveMsg;
 };
 
+
+class CtiCCFeederMoveExecutor : public CtiCCExecutor
+{
+public:
+    CtiCCFeederMoveExecutor(CtiCCObjectMoveMsg* fdrMoveMsg) : _fdrMoveMsg(fdrMoveMsg) {};
+    virtual ~CtiCCFeederMoveExecutor() { delete _fdrMoveMsg;};
+
+    virtual void Execute();
+
+private:
+
+    CtiCCObjectMoveMsg* _fdrMoveMsg;
+};
 
 class CtiCCSubstationVerificationExecutor : public CtiCCExecutor
 {

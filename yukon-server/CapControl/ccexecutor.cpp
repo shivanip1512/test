@@ -94,6 +94,9 @@ void CtiCCCommandExecutor::Execute()
         ReturnCapToOriginalFeeder();
         break;
 
+    case CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS:
+        ReturnFeederToOriginalSubBus();
+        break;
     case CtiCCCommand::RESET_DAILY_OPERATIONS:
         ResetDailyOperations();
         break;
@@ -6294,6 +6297,73 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
 }
 
 /*---------------------------------------------------------------------------
+    ReturnFeederToOriginalSubBus
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::ReturnFeederToOriginalSubBus()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG fdrId = _command->getId();
+    BOOL found = FALSE;
+    LONG tempSubBusId = 0;
+    LONG movedFeederId = fdrId;
+    LONG originalSubBusId = 0;
+    float fdrSwitchingOrder = 0.0;
+    
+    CtiCCSubstationBus* currentSubstationBus = NULL;
+    CtiCCFeeder* currentFeeder = NULL;
+
+    currentFeeder = store->findFeederByPAObjectID(fdrId);
+    if (currentFeeder != NULL) 
+    { 
+        currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
+        if (currentSubstationBus == NULL)
+            return;
+        if (!currentSubstationBus->getVerificationFlag())
+        {
+            tempSubBusId = currentFeeder->getParentId();
+            movedFeederId = fdrId;
+            originalSubBusId = currentFeeder->getOriginalSubBusId();
+            fdrSwitchingOrder = currentFeeder->getOriginalSwitchingOrder();
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                             <<".  Cannot perform RETURN FEEDER on Fdr: " << currentFeeder->getPAOName() << " PAOID: " << currentFeeder->getPAOId() << "."<<endl;
+        }
+    }
+
+    if( tempSubBusId > 0 && movedFeederId > 0 && originalSubBusId > 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Move Feeder to original SubBus PAO Id: " << originalSubBusId << endl;
+        }
+        moveFeeder(1, tempSubBusId, movedFeederId, originalSubBusId, fdrSwitchingOrder);
+    }
+    else
+    {
+        if( tempSubBusId==0 )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - SubBus not found PAO Id: " << tempSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        if( originalSubBusId==0 )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - SubBus not found PAO Id: " << originalSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        if( movedFeederId==0 )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Feeder not found PAO Id: " << movedFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
     ResetDailyOperations
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::ResetDailyOperations()
@@ -6868,6 +6938,203 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 }
 
 
+
+
+
+/*===========================================================================
+    CtiCCCapBankMoveExecutor
+===========================================================================*/
+/*---------------------------------------------------------------------------
+    Execute
+---------------------------------------------------------------------------*/    
+void CtiCCFeederMoveExecutor::Execute()
+{
+    INT permanentFlag = _fdrMoveMsg->getPermanentFlag();
+    LONG oldSubBusId = _fdrMoveMsg->getOldParentId();
+    LONG movedFeederId = _fdrMoveMsg->getObjectId();
+    LONG newSubBusId = _fdrMoveMsg->getNewParentId();
+    float fdrSwitchingOrder = _fdrMoveMsg->getSwitchingOrder();
+
+    moveFeeder(permanentFlag, oldSubBusId, movedFeederId, newSubBusId, fdrSwitchingOrder);
+}
+
+/*---------------------------------------------------------------------------
+    moveCapBank
+---------------------------------------------------------------------------*/    
+void CtiCCExecutor::moveFeeder(INT permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiCCSubstationBus* oldSubBusPtr = NULL;
+    CtiCCSubstationBus* newSubBusPtr = NULL;
+    CtiCCFeeder* movedFeederPtr = NULL;
+
+
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+
+    BOOL found = FALSE;
+    BOOL verificationFlag = FALSE;
+
+    movedFeederPtr = store->findFeederByPAObjectID(movedFeederId);
+    if (movedFeederPtr == NULL) 
+        return;
+
+    oldSubBusPtr = store->findSubBusByPAObjectID(oldSubBusId);
+    if (oldSubBusPtr != NULL) 
+    {
+        if (oldSubBusPtr->getVerificationFlag()) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< oldSubBusPtr->getPAOName() <<" PAOID: "<< oldSubBusPtr->getPAOId() 
+                             <<".  Cannot perform MOVE FEEDER: "<<movedFeederPtr->getPAOName()<<" PAOID: "<<movedFeederId<<"."<<endl;
+            }
+            verificationFlag = TRUE;
+            found = TRUE;
+        }
+        else
+        {
+            oldSubBusPtr->setBusUpdatedFlag(TRUE);
+        }
+    }
+    newSubBusPtr = store->findSubBusByPAObjectID(newSubBusId);
+    if (newSubBusPtr != NULL) 
+    {
+        if (newSubBusPtr->getVerificationFlag()) 
+         {
+             {
+                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                 dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< newSubBusPtr->getPAOName() <<" PAOID: "<< newSubBusPtr->getPAOId() 
+                              <<".  Cannot perform MOVE FEEDER: "<<movedFeederPtr->getPAOName()<<" PAOID: "<<movedFeederId<<"."<<endl;
+             }
+             verificationFlag = TRUE;
+             found = TRUE;
+         }
+         else
+         {
+             newSubBusPtr->setBusUpdatedFlag(TRUE);
+         }
+    }
+   
+    if( oldSubBusPtr!=NULL && newSubBusPtr!=NULL && movedFeederPtr!=NULL && !verificationFlag)
+    {
+        {
+            CtiFeeder_vec& oldFeeders = oldSubBusPtr->getCCFeeders();
+
+            CtiFeeder_vec::iterator itr = oldFeeders.begin();
+            while( itr != oldFeeders.end() )
+            {
+                if (*itr == movedFeederPtr) {
+                    itr = oldFeeders.erase( itr );
+                }else
+                    ++itr;
+            }
+
+            store->removeItemsFromMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, movedFeederId);
+            for (int i = 0; i < movedFeederPtr->getCCCapBanks().size(); i++)
+            {
+                store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap,  movedFeederPtr->getCCCapBanks()[i]->getPAOId());
+            }
+
+
+            
+            if( !permanentFlag )
+            {
+                movedFeederPtr->setOriginalSubBusId(oldSubBusPtr->getPAOId());
+                movedFeederPtr->setOriginalSwitchingOrder(movedFeederPtr->getDisplayOrder());
+                
+            }
+            else
+            {
+                movedFeederPtr->setOriginalSubBusId(0);
+                movedFeederPtr->setOriginalSwitchingOrder(0.0);
+
+            }
+
+            movedFeederPtr->setParentId(newSubBusId);
+            movedFeederPtr->setDisplayOrder(fdrSwitchingOrder);
+          
+        }
+        {
+            CtiFeeder_vec& newFeeders = newSubBusPtr->getCCFeeders();
+            int insertPoint = newFeeders.size();
+            int j = insertPoint;
+
+            while (j > 0)
+            {
+                if (fdrSwitchingOrder <= ((CtiCCFeeder*)newFeeders.at(j-1))->getDisplayOrder())
+                {
+                    insertPoint =  j - 1;
+                }
+
+                j--;
+            }
+            CtiFeeder_vec& ccF = newSubBusPtr->getCCFeeders();
+            ccF.insert( ccF.begin()+insertPoint, movedFeederPtr );
+
+            store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &movedFeederId, &newSubBusId);
+            for (int i = 0; i < movedFeederPtr->getCCCapBanks().size(); i++)
+            {
+                store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap,  movedFeederPtr->getCCCapBanks()[i]->getPAOId());
+            }
+        }
+        store->UpdateFeederSubAssignmentInDB(oldSubBusPtr);
+        store->UpdateFeederSubAssignmentInDB(newSubBusPtr);
+        
+        {
+            string typeString = (permanentFlag?"Permanent":"Temporary");
+
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Manual "
+                 << typeString
+                 << " Feeder with PAO Id: "
+                 << movedFeederPtr->getPAOId() << ", name: "
+                 << movedFeederPtr->getPAOName()
+                 << ", was moved from SubBus PAO Id: "
+                 << oldSubBusPtr->getPAOId() << ", name: "
+                 << oldSubBusPtr->getPAOName() << ", to SubBus PAO Id: "
+                 << newSubBusPtr->getPAOId() << ", name: "
+                 << newSubBusPtr->getPAOName() << ", with order: "
+                 << movedFeederPtr->getDisplayOrder() << endl;
+        }
+
+        CtiMultiMsg_vec modifiedSubsList;
+        modifiedSubsList.clear();
+        modifiedSubsList.push_back(newSubBusPtr);
+        modifiedSubsList.push_back(oldSubBusPtr);
+        CtiCCExecutorFactory f;
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
+        executor->Execute();
+        delete executor;
+
+
+    }
+    else
+    {
+        if (!verificationFlag)
+        {    
+            if( oldSubBusPtr==NULL )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - SubBus not found PAO Id: " << oldSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+            if( newSubBusPtr==NULL )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - SubBus not found PAO Id: " << newSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+            if( movedFeederPtr==NULL )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Feeder not found PAO Id: " << movedFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            } 
+        }
+    }
+}
+
+
+
 /*===========================================================================
     CtiCCClientMsgExecutor
 ===========================================================================*/
@@ -7226,6 +7493,9 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
     
         case CTICCCAPBANKMOVEMSG_ID:
             ret_val = new CtiCCCapBankMoveExecutor( (CtiCCCapBankMoveMsg*)message );
+            break;
+        case CTICCOBJECTMOVEMSG_ID:
+            ret_val = new CtiCCFeederMoveExecutor( (CtiCCObjectMoveMsg*)message );
             break;
 
         case CTICCSUBVERIFICATIONMSG_ID:

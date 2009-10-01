@@ -162,6 +162,7 @@ public:
     bool UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
+    bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus);
 
     bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
 
@@ -425,6 +426,7 @@ public:
     void addAreaToPaoMap(CtiCCAreaPtr area);
     void addSubstationToPaoMap(CtiCCSubstationPtr station);
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
+    void addFeederToPaoMap(CtiCCFeederPtr feeder);
 
 private:
 

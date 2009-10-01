@@ -81,7 +81,8 @@ private:
     void checkPIL(ULONG secondsFrom1901);
     void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
     void updateAllPointQualities(long quality, ULONG secondsFrom1901);
-    
+    void adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr primary);
+    void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
     void parseMessage(RWCollectable* message, ULONG secondsFrom1901);
     void pointDataMsg(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
     void pointDataMsgBySubBus(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);

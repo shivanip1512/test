@@ -1064,6 +1064,8 @@ void CtiCapController::controlLoop()
 }
 
 
+
+
 void CtiCapController::processCCEventMsgs()
 {
     try
@@ -2047,6 +2049,193 @@ DOUBLE convertPowerFactorToSend(DOUBLE powerFactor)
     return returnPowerFactor;
 }
 
+void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr primary)
+{
+    if (primary->getAltDualSubId() == primary->getPAOId() )
+    {
+        if (!stringCompareIgnoreCase(primary->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) )
+        {
+            primary->setAltSubControlValue(value);
+        }
+        else
+        {
+            primary->setAltSubControlValue(primary->getCurrentVarLoadPointValue());
+        }
+        primary->setBusUpdatedFlag(TRUE);
+    }
+}
+
+
+void CtiCapController::handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    if (value != currentSubstationBus->getSwitchOverStatus())
+    {
+        LONG stationId, areaId, spAreaId;
+        store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+        INT seqId = CCEventSeqIdGen();
+        currentSubstationBus->setEventSequence(seqId);
+        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
+        if (!currentSubstationBus->getDualBusEnable())
+        {
+            if (value > 0)
+            {
+                if (!currentSubstationBus->getDisableFlag())
+                { 
+                    currentSubstationBus->setDisableFlag(TRUE);
+                    currentSubstationBus->setReEnableBusFlag(TRUE);
+                    LONG stationId, areaId, spAreaId;
+                    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
+                    string text = currentSubstationBus->getPAOName();
+                    text += " Disabled";
+                    string additional = string("Inhibit PointId Updated");
+
+                    sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+                }
+
+            }
+            else
+            {
+                currentSubstationBus->setDisableFlag(FALSE);
+                LONG stationId, areaId, spAreaId;
+                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
+                string text = currentSubstationBus->getPAOName();
+                text += " Enabled";
+                string additional = string("Inhibit PointId Updated");
+
+                sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+
+            }
+
+            
+        }
+        else //dual Bus Enabled.
+        {
+            string text = currentSubstationBus->getPAOName();
+            if (currentSubstationBus->getAltDualSubId() != currentSubstationBus->getPAOId())
+            {
+                CtiCCSubstationBus* altSub = NULL;
+                altSub = store->findSubBusByPAObjectID(currentSubstationBus->getAltDualSubId());
+                if (altSub != NULL)
+                {
+                    if (value > 0)
+                    {
+                        if (altSub->getDisableFlag())
+                        {
+                            currentSubstationBus->setDisableFlag(TRUE);
+                            currentSubstationBus->setReEnableBusFlag(TRUE);
+                            text += " Disabled by Alt Sub";
+                        }
+                        else if (altSub->getSwitchOverStatus())
+                        {
+                            currentSubstationBus->setDisableFlag(TRUE);
+                            currentSubstationBus->setReEnableBusFlag(TRUE);
+                            altSub->setDisableFlag(TRUE);
+                            altSub->setReEnableBusFlag(TRUE);
+                            altSub->setBusUpdatedFlag(TRUE);
+                            text += " Disabled by Alt Sub";
+                        }
+                        else
+                        {    
+                            text += " Alt Sub Enabled";
+                            if (!stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                            {
+    
+                                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                                int j = ccFeeders.size();
+                                while (j > 0)
+                                {
+                                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
+
+                                    CtiCCExecutorFactory f;
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(0, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), altSub->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
+                                    executor->Execute();
+                                    delete executor;
+                                    j--;
+                                }
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        if (currentSubstationBus->getDisableFlag() && currentSubstationBus->getReEnableBusFlag())
+                        {
+                            currentSubstationBus->setDisableFlag(FALSE);
+                            currentSubstationBus->setReEnableBusFlag(FALSE);
+                            text += " ReEnabled";
+                            if (altSub->getAltDualSubId() == currentSubstationBus->getPAOId())
+                            {
+                                if (altSub->getSwitchOverStatus() && altSub->getDisableFlag() && altSub->getReEnableBusFlag())
+                                {
+                                    altSub->setDisableFlag(FALSE);
+                                    altSub->setReEnableBusFlag(FALSE);
+                                    altSub->setBusUpdatedFlag(TRUE);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            text += " Alt Sub Not Enabled";
+                            if (!stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                            {
+    
+                                CtiFeeder_vec& ccFeeders = altSub->getCCFeeders();
+                                int j = ccFeeders.size();
+                                while (j > 0)
+                                {
+                                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
+                                    if (currentFeeder->getOriginalSubBusId() == currentSubstationBus->getPAOId())
+                                    {
+                                    
+                                        CtiCCExecutorFactory f;
+                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPAOId()));
+                                        executor->Execute();
+                                        delete executor;
+                                    }
+                                    j--;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+            string additional = string("Dual Bus Switch PointId Updated");
+            sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+        }
+    }
+    else if (value > 0 && !currentSubstationBus->getDisableFlag() && !currentSubstationBus->getDualBusEnable() )
+    {
+        currentSubstationBus->setDisableFlag(TRUE);
+        currentSubstationBus->setReEnableBusFlag(TRUE);
+        INT seqId = CCEventSeqIdGen();
+        currentSubstationBus->setEventSequence(seqId);
+        LONG stationId, areaId, spAreaId;
+        store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
+        string text = currentSubstationBus->getPAOName();
+        text += " Disabled";
+        string additional = string("Inhibit PointId Updated");
+
+        sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
+
+    }
+    
+    currentSubstationBus->setSwitchOverStatus(value);
+    currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+    currentSubstationBus->setBusUpdatedFlag(TRUE);
+
+}
+
 /*---------------------------------------------------------------------------
     pointDataMsg
 
@@ -2387,13 +2576,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                     currentSubstationBus->updateIntegrationVPoint(CtiTime());
                                 }
                             }
+                            adjustAlternateBusModeValues(value, currentSubstationBus);
 
-                            if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
-                            {
-                                currentSubstationBus->setAltSubControlValue(value);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            }
                         }
                         else //phase A point id
                         {
@@ -2407,14 +2591,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                     currentSubstationBus->updateIntegrationVPoint(CtiTime());
                                 }
                             }
-
-
-                            if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
-                            {
-                                currentSubstationBus->setAltSubControlValue(currentSubstationBus->getCurrentVarLoadPointValue());
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            }
+                            adjustAlternateBusModeValues(value, currentSubstationBus);
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->setCurrentVarPointQuality(quality);
@@ -2517,137 +2694,14 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             }
                         }
                         currentSubstationBus->setCurrentVoltPointQuality(quality);
-                        if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
-                        {
-                            currentSubstationBus->setAltSubControlValue(value);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        }
+                        adjustAlternateBusModeValues(value, currentSubstationBus);
                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                         currentSubstationBus->figureAndSetTargetVarValue();
                     }
                 }
                 else if (currentSubstationBus->getSwitchOverPointId() == pointID)
                 {
-                    if (value != currentSubstationBus->getSwitchOverStatus())
-                    {
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                        INT seqId = CCEventSeqIdGen();
-                        currentSubstationBus->setEventSequence(seqId);
-                        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
-                        if (!currentSubstationBus->getDualBusEnable())
-                        {
-                            if (value > 0)
-                            {
-                                if (!currentSubstationBus->getDisableFlag())
-                                {
-                                    currentSubstationBus->setDisableFlag(TRUE);
-                                    currentSubstationBus->setReEnableBusFlag(TRUE);
-                                    LONG stationId, areaId, spAreaId;
-                                    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
-                                    string text = currentSubstationBus->getPAOName();
-                                    text += " Disabled";
-                                    string additional = string("Inhibit PointId Updated");
-
-                                    sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
-                                }
-
-                            }
-                            else
-                            {
-                                currentSubstationBus->setDisableFlag(FALSE);
-                                LONG stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
-                                string text = currentSubstationBus->getPAOName();
-                                text += " Enabled";
-                                string additional = string("Inhibit PointId Updated");
-
-                                sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
-
-                            }
-
-
-                        }
-                        else //dual Bus Enabled.
-                        {
-                            string text = currentSubstationBus->getPAOName();
-                            if (currentSubstationBus->getAltDualSubId() != currentSubstationBus->getPAOId())
-                            {
-                                CtiCCSubstationBus* altSub = NULL;
-                                altSub = store->findSubBusByPAObjectID(currentSubstationBus->getAltDualSubId());
-                                if (altSub != NULL)
-                                {
-                                    if (value > 0)
-                                    {
-                                        if (altSub->getDisableFlag())
-                                        {
-                                            currentSubstationBus->setDisableFlag(TRUE);
-                                            currentSubstationBus->setReEnableBusFlag(TRUE);
-                                            text += " Disabled by Alt Sub";
-                                        }
-                                        else if (altSub->getSwitchOverStatus())
-                                        {
-                                            currentSubstationBus->setDisableFlag(TRUE);
-                                            currentSubstationBus->setReEnableBusFlag(TRUE);
-                                            altSub->setDisableFlag(TRUE);
-                                            altSub->setReEnableBusFlag(TRUE);
-                                            altSub->setBusUpdatedFlag(TRUE);
-                                            text += " Disabled by Alt Sub";
-                                        }
-                                        else
-                                            text += " Alt Sub Enabled";
-
-                                    }
-                                    else
-                                    {
-                                        if (currentSubstationBus->getDisableFlag() && currentSubstationBus->getReEnableBusFlag())
-                                        {
-                                            currentSubstationBus->setDisableFlag(FALSE);
-                                            currentSubstationBus->setReEnableBusFlag(FALSE);
-                                            text += " ReEnabled";
-                                            if (altSub->getAltDualSubId() == currentSubstationBus->getPAOId())
-                                            {
-                                                if (altSub->getSwitchOverStatus() && altSub->getDisableFlag() && altSub->getReEnableBusFlag())
-                                                {
-                                                    altSub->setDisableFlag(FALSE);
-                                                    altSub->setReEnableBusFlag(FALSE);
-                                                    altSub->setBusUpdatedFlag(TRUE);
-                                                }
-                                            }
-                                        }
-                                        else
-                                            text += " Alt Sub Not Enabled";
-                                    }
-                                }
-                            }
-                            string additional = string("Dual Bus Switch PointId Updated");
-                            sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
-                        }
-                    }
-                    else if (value > 0 && !currentSubstationBus->getDisableFlag() && !currentSubstationBus->getDualBusEnable() )
-                    {
-                        currentSubstationBus->setDisableFlag(TRUE);
-                        currentSubstationBus->setReEnableBusFlag(TRUE);
-                        INT seqId = CCEventSeqIdGen();
-                        currentSubstationBus->setEventSequence(seqId);
-                        LONG stationId, areaId, spAreaId;
-                        store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
-                        string text = currentSubstationBus->getPAOName();
-                        text += " Disabled";
-                        string additional = string("Inhibit PointId Updated");
-
-                        sendMessageToDispatch(new CtiSignalMsg(pointID,0,text,additional,CapControlLogType,SignalEvent,"cap control"));
-
-                    }
-
-                    currentSubstationBus->setSwitchOverStatus(value);
-                    currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-
+                    handleAlternateBusModeValues(pointID, value, currentSubstationBus);
                 }
 
                 if ((currentSubstationBus->getPhaseBId() == pointID ||
@@ -2677,12 +2731,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             }
                         }
 
-                        if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
-                        {
-                            currentSubstationBus->setAltSubControlValue(currentSubstationBus->getCurrentVarLoadPointValue());
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        }
+                        adjustAlternateBusModeValues(value, currentSubstationBus);
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->figureAndSetTargetVarValue();
                     }
@@ -2728,8 +2777,19 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(subId);
                         if (altSub != NULL)
                         {
-                            altSub->setAllAltSubValues(currentSubstationBus->getCurrentVoltLoadPointValue(), currentSubstationBus->getCurrentVarLoadPointValue(),
-                                                       currentSubstationBus->getCurrentWattLoadPointValue());
+                            if( !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                                !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) || 
+                                !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                            {
+                                altSub->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2, 
+                                                           altSub->getCurrentVarLoadPointValue() + currentSubstationBus->getCurrentVarLoadPointValue(), 
+                                                           altSub->getCurrentWattLoadPointValue() + currentSubstationBus->getCurrentWattLoadPointValue());
+                            }
+                            else
+                            {
+                                 altSub->setAllAltSubValues(currentSubstationBus->getCurrentVoltLoadPointValue(), currentSubstationBus->getCurrentVarLoadPointValue(), 
+                                 currentSubstationBus->getCurrentWattLoadPointValue());
+                            }
                         }
                     }
                     altSubIdCount--;

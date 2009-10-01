@@ -120,7 +120,9 @@ public:
         SEND_TIME_SYNC, //34
         CHANGE_OPERATIONALSTATE,  //35
         AUTO_ENABLE_OVUV, //36
-        AUTO_DISABLE_OVUV //37
+        AUTO_DISABLE_OVUV, //37
+
+        RETURN_FEEDER_TO_ORIGINAL_SUBBUS,//38 - julie testing
     };
 
     CtiCCCommand(LONG command);
@@ -177,6 +179,38 @@ private:
     float _tripOrder;
 };
 
+class CtiCCObjectMoveMsg : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiCCObjectMoveMsg )
+
+public:
+    CtiCCObjectMoveMsg(INT permanentflag, LONG oldparentid, LONG objectid, LONG newparentid, 
+                       float switchingorder, float closeOrder = 0, float tripOrder = 0);
+    virtual ~CtiCCObjectMoveMsg();
+
+    INT getPermanentFlag() const;
+    LONG getOldParentId() const;
+    LONG getObjectId() const;
+    LONG getNewParentId() const;
+    float getSwitchingOrder() const;
+    float getCloseOrder() const;
+    float getTripOrder() const;
+
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
+    CtiCCObjectMoveMsg& operator=(const CtiCCObjectMoveMsg& right);
+private:
+    CtiCCObjectMoveMsg() { }; //provided for polymorphic persitence only
+
+    INT _permanentflag;
+    LONG _oldparentid;
+    LONG _objectid;
+    LONG _newparentid;
+    float _switchingorder;
+    float _closeOrder;
+    float _tripOrder;
+};
 
 class CtiCCSubstationVerificationMsg : public CtiCCMessage
 {

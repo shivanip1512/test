@@ -27,7 +27,7 @@ class CtiTime;
 #define CTICCGEOAREAS_MSG_ID        509
 #define CTICCERROR_ID               510
 #define CTICCDONE_ID                511
-#define CTICCUPDATE_ID              512
+#define CTICCOBJECTMOVEMSG_ID       512
 #define CTICCCAPBANKMOVEMSG_ID      513
 #define CTICCSUBVERIFICATIONMSG_ID  514
 #define CTIPAOSCHEDULEMSG_ID        515

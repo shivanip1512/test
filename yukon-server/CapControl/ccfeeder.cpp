@@ -509,9 +509,19 @@ LONG CtiCCFeeder::getControlSendRetries() const
 
     Returns the display order of the feeder
 ---------------------------------------------------------------------------*/
-LONG CtiCCFeeder::getDisplayOrder() const
+float CtiCCFeeder::getDisplayOrder() const
 {
     return _displayorder;
+}
+
+LONG CtiCCFeeder::getOriginalSubBusId() const
+{
+    return _originalsubbusid;
+}
+
+float CtiCCFeeder::getOriginalSwitchingOrder() const
+{
+    return _originalswitchingorder;
 }
 
 /*---------------------------------------------------------------------------
@@ -1486,9 +1496,20 @@ CtiCCFeeder& CtiCCFeeder::setMapLocationId(const string& maplocation)
 
     Sets the display order of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setDisplayOrder(LONG order)
+CtiCCFeeder& CtiCCFeeder::setDisplayOrder(float order)
 {
     _displayorder = order;
+    return *this;
+}
+
+CtiCCFeeder& CtiCCFeeder::setOriginalSubBusId(LONG subBusId)
+{
+    _originalsubbusid = subBusId;
+    return *this;
+}
+CtiCCFeeder& CtiCCFeeder::setOriginalSwitchingOrder(float order)
+{
+    _originalswitchingorder = order;
     return *this;
 }
 
@@ -7262,6 +7283,10 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _peakpfsetpoint = right._peakpfsetpoint;
         _offpkpfsetpoint = right._offpkpfsetpoint;
         _displayorder = right._displayorder;
+
+        _originalsubbusid = right._originalsubbusid;
+        _originalswitchingorder = right._originalswitchingorder;
+
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
         _estimatedvarloadpointid = right._estimatedvarloadpointid;

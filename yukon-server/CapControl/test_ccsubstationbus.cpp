@@ -29,10 +29,54 @@
 #include "ccsubstation.h"
 #include "ccarea.h"
 #include "ccsubstationbusstore.h"
+#include "ccexecutor.h"
+#include "ccmessage.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
+template <class T>
+T *create_object(long objectid, string name)
+{
+    T *object = new T();
+
+    object->setPAOId(objectid);
+    object->setPAOName(name);
+    return object;
+}
+void initialize_area(CtiCCSubstationBusStore* store, CtiCCArea* area)
+{
+    store->addAreaToPaoMap(area);
+}
+void initialize_station(CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
+{
+    station->setSaEnabledFlag(FALSE);
+    station->setParentId(parentArea->getPAOId());
+    parentArea->getSubStationList()->push_back(station->getPAOId());
+    store->addSubstationToPaoMap(station);
+
+
+}
+void initialize_bus(CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
+{
+    bus->setParentId(parentStation->getPAOId());
+    bus->setEventSequence(22);  
+    bus->setCurrentVarLoadPointValue(55, CtiTime());
+    bus->setVerificationFlag(FALSE);
+    parentStation->getCCSubIds()->push_back(bus->getPAOId());
+    store->addSubBusToPaoMap(bus);
+}
+void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
+{
+    long feederId = feed->getPAOId();
+    long busId = parentBus->getPAOId();
+    feed->setParentId(busId);
+    feed->setDisplayOrder(displayOrder);
+    parentBus->getCCFeeders().push_back(feed);
+    store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &feederId, &busId);
+    store->addFeederToPaoMap(feed);
+
+}
 
 BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
 {
@@ -65,5 +109,80 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     bus->setCorrectionNeededNoBankAvailFlag(FALSE);
     bus->createCannotControlBankText("Increase Var", "Open", ccEvents);
     BOOST_CHECK_EQUAL(ccEvents.size(), 2);
+    store->deleteInstance();
+}
+
+BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
+{
+    
+    CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
+    CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
+
+
+    CtiCCSubstationBus *bus1 = create_object<CtiCCSubstationBus>(3, "SubBus-A1");
+    CtiCCFeeder *feed11 = create_object<CtiCCFeeder>(11, "Feeder11");
+    CtiCCFeeder *feed12 = create_object<CtiCCFeeder>(12, "Feeder12");
+    CtiCCFeeder *feed13 = create_object<CtiCCFeeder>(13, "Feeder13");
+
+    CtiCCSubstationBus *bus2 = create_object<CtiCCSubstationBus>(4, "SubBus-A2");
+    CtiCCFeeder *feed21 = create_object<CtiCCFeeder>(21, "Feeder21");
+    CtiCCFeeder *feed22 = create_object<CtiCCFeeder>(22, "Feeder22");
+    CtiCCFeeder *feed23 = create_object<CtiCCFeeder>(23, "Feeder23");
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(false);
+    initialize_area(store, area);
+    initialize_station(store, station, area);
+    initialize_bus(store, bus1, station);
+    initialize_bus(store, bus2, station);
+
+    initialize_feeder(store, feed11, bus1, 1);
+    initialize_feeder(store, feed12, bus1, 2);
+    initialize_feeder(store, feed13, bus1, 3);
+    initialize_feeder(store, feed21, bus2, 1);
+    initialize_feeder(store, feed22, bus2, 2);
+    initialize_feeder(store, feed23, bus2, 3);
+
+
+    BOOST_CHECK_EQUAL(bus1->getCCFeeders().size(), 3);
+    BOOST_CHECK_EQUAL(bus2->getCCFeeders().size(), 3);
+
+
+
+    CtiFeeder_vec& ccFeeders = bus1->getCCFeeders();
+    int j = ccFeeders.size();
+    while (j > 0)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
+
+        CtiCCExecutorFactory f;
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(0, bus1->getPAOId(), currentFeeder->getPAOId(), bus2->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
+        executor->Execute();
+        delete executor;
+        j--;
+    }
+
+    BOOST_CHECK_EQUAL(bus1->getCCFeeders().size(), 0);
+    BOOST_CHECK_EQUAL(bus2->getCCFeeders().size(), 6);
+
+
+    CtiFeeder_vec& ccFeeders2 = bus2->getCCFeeders();
+    j = ccFeeders2.size();
+    while (j > 0)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders2[j-1];
+        if (currentFeeder->getOriginalSubBusId() == bus1->getPAOId())
+        {
+        
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPAOId()));
+            executor->Execute();
+            delete executor;
+        }
+        j--;
+    }
+  
+    BOOST_CHECK_EQUAL(bus1->getCCFeeders().size(), 3);
+    BOOST_CHECK_EQUAL(bus2->getCCFeeders().size(), 3);
+
     store->deleteInstance();
 }

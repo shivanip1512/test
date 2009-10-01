@@ -479,6 +479,11 @@ void CtiCCSubstationBusStore::addSubBusToPaoMap(CtiCCSubstationBusPtr bus)
 {
     _paobject_subbus_map.insert(make_pair(bus->getPAOId(),bus));
 }
+void CtiCCSubstationBusStore::addFeederToPaoMap(CtiCCFeederPtr feeder)
+{
+    _paobject_feeder_map.insert(make_pair(feeder->getPAOId(),feeder));
+}
+
 
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
@@ -3342,6 +3347,57 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 }
 
 
+bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    if (!_resetthr.isValid())
+    {
+        return false;
+    }
+
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        if (conn.isValid())
+        {
+
+            RWDBTable ccFeederSubAssignmentTable = getDatabase().table("ccfeedersubassignment");
+            RWDBDeleter deleter = ccFeederSubAssignmentTable.deleter();
+
+            deleter.where( ccFeederSubAssignmentTable["substationbusid"] == bus->getPAOId() );
+
+            deleter.execute( conn );
+
+
+            RWDBInserter inserter = ccFeederSubAssignmentTable.inserter();
+
+            CtiFeeder_vec& ccFeeders = bus->getCCFeeders();
+            for(LONG i=0;i<ccFeeders.size();i++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[i];
+
+                inserter << bus->getPAOId()
+                         << currentFeeder->getPAOId()
+                         << currentFeeder->getDisplayOrder();
+
+                inserter.execute( conn );
+            }
+
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPAOId(), ChangePAODb,
+                                                          bus->getPAOCategory(),
+                                                          bus->getPAOType(),
+                                                          ChangeTypeUpdate);
+            dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+            CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+            return inserter.status().isValid();
+        }
+
+    }
+    return false;
+}
 
 /*---------------------------------------------------------------------------
     UpdateCapBankInDB
@@ -6623,7 +6679,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                             long currentSubBusId;
                             long currentFeederId;
-                            long displayOrder;
+                            float displayOrder;
                             rdr["feederid"] >> currentFeederId;
                             rdr["substationbusid"] >> currentSubBusId;
                             rdr["displayorder"] >>displayOrder;
@@ -7604,7 +7660,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << pointTable["pointid"]
                     << pointTable["pointoffset"]
                     << pointTable["pointtype"];
-
 
                     selector.from(pointTable);
                     selector.from(capBankTable);
