@@ -107,7 +107,7 @@
 						<h:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
 							valueChangeListener="#{capControlForm.showScanRate}"
 							value="#{capControlForm.CBControllerEditor.editingIntegrity}"
-							disabled="#{!capControlForm.CBControllerEditor.editingController || capControlForm.editingAuthorized}" />
+							disabled="#{!capControlForm.CBControllerEditor.editingController || !capControlForm.editingAuthorized}" />
 						
 						<x:htmlTag value="br"/>
 						
@@ -154,7 +154,7 @@
 							valueChangeListener="#{capControlForm.showScanRate}"
 							value="#{capControlForm.CBControllerEditor.editingException}"
 							immediate="true"
-							disabled="#{!capControlForm.CBControllerEditor.editingController || capControlForm.editingAuthorized}" />
+							disabled="#{!capControlForm.CBControllerEditor.editingController || !capControlForm.editingAuthorized}" />
 						
 						<x:htmlTag value="br"/>
 						
