@@ -32,8 +32,8 @@ public enum ProgramDisplayField {
     ENABLED {
         @Override
         public MessageSourceResolvable getValue(LMProgramBase program) {
-            return YukonMessageSourceResolvable.createDefault("", 
-                                                              String.valueOf(!program.getDisableFlag()));
+            String enabled = String.valueOf(!program.getDisableFlag());
+            return YukonMessageSourceResolvable.createDefaultWithoutCode(enabled);
         }
         
         @Override
@@ -80,7 +80,7 @@ public enum ProgramDisplayField {
         @Override
         public MessageSourceResolvable getValue(LMProgramBase program) {
             boolean manualActive = program.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE;
-            return YukonMessageSourceResolvable.createDefault("", String.valueOf(manualActive));
+            return YukonMessageSourceResolvable.createDefaultWithoutCode(String.valueOf(manualActive));
         }
         
         @Override

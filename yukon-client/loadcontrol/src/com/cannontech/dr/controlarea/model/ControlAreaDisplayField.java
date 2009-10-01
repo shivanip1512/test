@@ -33,8 +33,8 @@ public enum ControlAreaDisplayField {
     ENABLED {
         @Override
         public MessageSourceResolvable getValue(LMControlArea controlArea) {
-            return YukonMessageSourceResolvable.createDefault("", 
-                                                              String.valueOf(!controlArea.getDisableFlag()));
+            String enabled = String.valueOf(!controlArea.getDisableFlag());
+            return YukonMessageSourceResolvable.createDefaultWithoutCode(enabled);
         }
         
         @Override

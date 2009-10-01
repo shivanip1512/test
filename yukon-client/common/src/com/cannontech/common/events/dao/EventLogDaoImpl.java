@@ -42,10 +42,10 @@ public class EventLogDaoImpl implements EventLogDao {
         builder.add(new ArgumentColumn("String4", Types.VARCHAR));
         builder.add(new ArgumentColumn("String5", Types.VARCHAR));
         builder.add(new ArgumentColumn("String6", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int7", Types.BIGINT));
-        builder.add(new ArgumentColumn("Int8", Types.BIGINT));
-        builder.add(new ArgumentColumn("Int9", Types.BIGINT));
-        builder.add(new ArgumentColumn("Int10", Types.BIGINT));
+        builder.add(new ArgumentColumn("Number7", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number8", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number9", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number10", Types.NUMERIC));
         builder.add(new ArgumentColumn("Date11", Types.TIMESTAMP));
         builder.add(new ArgumentColumn("Date12", Types.TIMESTAMP));
         argumentColumns = builder.build();

@@ -30,8 +30,8 @@ public enum LoadGroupDisplayField {
     ENABLED {
         @Override
         public MessageSourceResolvable getValue(LMDirectGroupBase group) {
-            return YukonMessageSourceResolvable.createDefault("", 
-                                                              String.valueOf(!group.getDisableFlag()));
+            String enabled = String.valueOf(!group.getDisableFlag());
+            return YukonMessageSourceResolvable.createDefaultWithoutCode(enabled);
         }
         
         @Override

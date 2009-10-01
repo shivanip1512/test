@@ -110,7 +110,7 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         // do anything unless a Types.REAL has been added as one of the database columns).
         // Refer to the EventLogDaoImpl to see which columns are actually supported.
         Builder<ArgumentMapper<?>> builder = ImmutableList.builder();
-        builder.add(ArgumentMapper.create(Number.class, Types.BIGINT));
+        builder.add(ArgumentMapper.create(Number.class, Types.NUMERIC));
         builder.add(ArgumentMapper.create(String.class, Types.VARCHAR));
         builder.add(ArgumentMapper.create(Boolean.class, Types.VARCHAR));
         builder.add(ArgumentMapper.create(Date.class, Types.TIMESTAMP));

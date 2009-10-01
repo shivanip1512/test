@@ -41,8 +41,8 @@ public class EventLogFactoryBeanTest {
         Builder<ArgumentColumn> builder = ImmutableList.builder();
         builder.add(new ArgumentColumn("String1", Types.VARCHAR));
         builder.add(new ArgumentColumn("String2", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int3", Types.BIGINT));
-        builder.add(new ArgumentColumn("Int4", Types.BIGINT));
+        builder.add(new ArgumentColumn("Number3", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number4", Types.NUMERIC));
         final List<ArgumentColumn> argumentColumns = builder.build();
         
         
@@ -100,8 +100,8 @@ public class EventLogFactoryBeanTest {
         Builder<ArgumentColumn> builder = ImmutableList.builder();
         builder.add(new ArgumentColumn("String1", Types.VARCHAR));
         builder.add(new ArgumentColumn("String2", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int3", Types.BIGINT));
-        builder.add(new ArgumentColumn("Int4", Types.BIGINT));
+        builder.add(new ArgumentColumn("Number3", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number4", Types.NUMERIC));
         final List<ArgumentColumn> argumentColumns = builder.build();
         
         
