@@ -123,9 +123,13 @@
         </div>
         <br/><br/>
     </c:if>
-
-    <%-- GROUPS HIERARCHY BOX --%>
-    <div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px;">
+    
+    <table>
+   	<tr style="vertical-align:top;">
+   	
+   	<td style="padding-right:10px;">
+   	<%-- GROUPS HIERARCHY BOX --%>
+    <div style="width: 450px;">
 
         <cti:msg key="yukon.web.deviceGroups.editor.groupsContainer.title" var="groupsTitle"/>
         <tags:boxContainer title="${groupsTitle}" hideEnabled="false">
@@ -147,9 +151,11 @@
                                 
         </tags:boxContainer>
     </div>
-    
-    <%-- OPERATIONS BOX --%>
-    <div style="float: left; margin-right: .75em; margin-bottom: 10px; width: 450px;">
+   	</td>
+   	
+   	<td>
+   	<%-- OPERATIONS BOX --%>
+    <div style="width: 450px;height: 278px;"">
         
         <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.title" var="operationsTitle"/>
         <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.topLevelLabel" var="topLevelLabel"/>
@@ -185,7 +191,8 @@
                     
                     <c:if test="${group.editable}">
                     
-                        <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupLabel"/></h4>
+                        <h3><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupLabel"/></h3>
+                        <div class="groupEditorContentDetail">
                         
                         <%-- EDIT NAME --%>
                         <c:set var="editGroupNamePopupId" value="editGroupNamePopup" />
@@ -254,7 +261,7 @@
                                                                 noSelectionAlertText="${noGroupSelectedAlertText}" />
                         </form>
                         </div>
-                            
+                        </div>
                     </c:if>
                     
                     </cti:checkProperty>
@@ -265,7 +272,8 @@
                     <%--########################################################################--%>
                     <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
                     <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
-                    <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.modifyGroupsLabel" /></h4>
+                    <h3><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.modifyGroupsLabel" /></h3>
+                    <div class="groupEditorContentDetail">
                     
                     <%-- CHANGE COMPOSED GROUPS --%>
                     <c:if test="${isComposedGroup}">
@@ -389,13 +397,14 @@
                                                             noSelectionAlertText="${noGroupSelectedAlertText}" />
                     </form>
                     </div>
-                    
+                    </div>
                     </cti:checkProperty>
                     </cti:checkRole>
                     
                     <%--############################ GENERATE REPORTS ##########################--%>
                     <%--########################################################################--%>
-                    <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel"/></h4>
+                    <h3><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel"/></h3>
+                    <div class="groupEditorContentDetail">
                     
                     <cti:url value="/spring/amr/reports/groupDevicesReport" var="htmlUrl">
                         <cti:param name="def" value="groupDevicesDefinition"/>
@@ -414,11 +423,14 @@
                             No devices
                         </c:otherwise>
                     </c:choose>
+                    </div>
                     
                     
                     <%--########################## COLLECTION ACTIONS ##########################--%>
                     <%--########################################################################--%>
-                    <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.collectionActionLabel"/></h4>
+                    <h3><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.collectionActionLabel"/></h3>
+                    <div class="groupEditorContentDetail">
+                    
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
                             
@@ -445,16 +457,16 @@
                             No devices
                         </c:otherwise>
                     </c:choose>
-                    
+                    </div>
                 </div>
             </jsp:body>
         </tags:boxContainer>
         
     </div>
-    
-    <%-- MEMBERS BOX --%>
+   	
+   	<%-- MEMBERS BOX --%>
     <br>
-    <div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px">
+    <div style="width: 450px">
     
         <tags:boxContainer hideEnabled="false">
         
@@ -472,11 +484,14 @@
             </jsp:attribute>
         
             <jsp:body>
-                <div style="overflow: auto; height: 353px;">
+            
+                <div style="overflow: auto; height: 330px;">
     
                     <%--############################### SUBGROUPS ##############################--%>
                     <%--########################################################################--%>
-                    <table style="width: 95%; border-bottom: 1px dotted black;padding-bottom: 10px; margin-bottom: 10px;" >
+                   	<h4>Subgroups</h4>
+                   	<div class="groupEditorContentDetail">
+                    <table style="width: 95%; padding-bottom: 10px;" >
                         <c:choose>
                             <c:when test="${fn:length(subGroups) > 0}">
                             
@@ -533,9 +548,13 @@
                             </c:otherwise>
                         </c:choose>
                     </table>
+                    </div>
                 
                     <%--################################ DEVICES ###############################--%>
                     <%--########################################################################--%>
+                    <h4>Group Members</h4>
+                   	<div class="groupEditorContentDetail">
+                   	
                     <div id="deviceMembers">
                         <c:choose>
                             <c:when test="${not showImmediately && (showDevices == false )}">
@@ -563,12 +582,16 @@
                             </c:otherwise>
                         </c:choose>
                     </div>
+                    </div>
                     
                 </div>
             </jsp:body>
         </tags:boxContainer>
         
     </div>
-    <div style="clear: both" />
+   	
+   	</td>
+   	</tr>
+    </table>
 
 </cti:standardPage>

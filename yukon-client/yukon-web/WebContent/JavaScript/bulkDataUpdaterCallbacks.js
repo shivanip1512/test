@@ -26,7 +26,7 @@ function abortProgressBar(pbarId) {
     return function(data) {
 
         if (data['isAborted'] == 'true') {
-            $('progressBorder_' + pbarId).style.backgroundColor = '#CC0000';
+            $('progressBorder_' + pbarId).style.backgroundImage = "url('/WebConfig/yukon/Icons/progressbar_red.gif')";
         }
     };
 }

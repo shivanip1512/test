@@ -24,6 +24,17 @@ h2 { /*Page Header*/
   font-size: .9em;
 }
 
+.titledContainer .content h3 {
+  margin-bottom: 2px;
+  margin-top: 8px;
+  font-size: 1.0em;
+}
+
+.titledContainer .content .groupEditorContentDetail {
+  padding-left:8px;
+}
+
+
 .content {
   overflow: auto;
 }
@@ -634,10 +645,10 @@ table.collectionActionCellPadding td {
 }
 
 div.progressBarBorder {
-    height:12px; width:100px; border:1px solid black; padding:0px; background-color:#CCCCCC;
+    height:12px; width:102px; border:1px solid black; padding:0px; background-color:#CCCCCC;
 }
 div.progressBarInner {
-    height: 10px; width: 0px; padding:1px; overflow:hidden; background-color:#006633;
+    height: 10px; width: 0px; padding:1px; overflow:hidden; background-color:#006633; background-image:url('/WebConfig/yukon/Icons/progressbar_green.gif');
 }
 span.progressBarPercentComplete {
     padding-left:6px;padding-right:10px;display:inline;font-size:11px;

@@ -38,6 +38,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -137,12 +138,12 @@ public class GroupEditorController extends MultiActionController {
         
         // MOVE GROUPS TREE JSON
         Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(group);
-        String moveGroupDataJson = makeHierarchyJson(allGroupsGroupHierarchy, canMoveUnderPredicate);
+        String moveGroupDataJson = makeNonhiddenPlusHierarchyJson(Collections.singletonList(canMoveUnderPredicate));
         mav.addObject("moveGroupDataJson", moveGroupDataJson); 
         
         // COPY GROUPS TREE JSON
         NotEqualToOrDecendantOfGroupsPredicate notEqualToOrDecendantOfGroupsPredicate = new NotEqualToOrDecendantOfGroupsPredicate(group);
-        String copyGroupDataJson = makeHierarchyJson(allGroupsGroupHierarchy, notEqualToOrDecendantOfGroupsPredicate);
+        String copyGroupDataJson = makeNonhiddenPlusHierarchyJson(Collections.singletonList(notEqualToOrDecendantOfGroupsPredicate));
         mav.addObject("copyGroupDataJson", copyGroupDataJson); 
         
         // DEVICE COLLECTION
@@ -152,9 +153,14 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
     
-    private String makeHierarchyJson(DeviceGroupHierarchy allGroupsGroupHierarchy, Predicate<DeviceGroup> predicate) {
+    private String makeNonhiddenPlusHierarchyJson(List<? extends Predicate<DeviceGroup>> additionalPredicates) {
         
-        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, predicate);
+        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
+        predicates.add(new NonHiddenDeviceGroupPredicate());
+        predicates.addAll(additionalPredicates);
+        AggregateAndPredicate<DeviceGroup> nonHiddenPlusPredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
+        
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(), nonHiddenPlusPredicate);
         ExtTreeNode groupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
         
         JSONObject groupJsonObj = new JSONObject(groupRoot.toMap());
