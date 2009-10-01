@@ -26,6 +26,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/stars"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
-	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar"/>
+	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar" sourcepath="/SchemaCompare"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

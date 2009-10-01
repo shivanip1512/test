@@ -22,7 +22,7 @@ Event.observe(window, 'load', function() {
 Due to the way Oracle accesses its database information, the current validation of your database could take some time. (~5 Minutes)
 </c:if>
 
-loading... <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting"> 
+loading... <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 </div>
 </pre>
 </cti:standardPage>

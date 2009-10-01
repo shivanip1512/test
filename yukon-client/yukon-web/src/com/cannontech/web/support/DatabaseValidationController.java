@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.sql.Connection;
 import java.util.concurrent.Semaphore;
 
 import javax.servlet.http.HttpServletResponse;
@@ -70,10 +71,12 @@ public class DatabaseValidationController implements ResourceLoaderAware {
             Resource databaseSnapshot = getDatabaseXMLFile();
             File xmlCompareFile = convertToTempFile(databaseSnapshot);
             
-            // Builds up the compare 
+            Connection connection = jdbcTemplate.getDataSource().getConnection();
+            
+            // Builds up the compare
             SchemaCompare schemaCompare = new SchemaCompare();
             SchemaCompareConnection schCompConn1 = 
-                new SchemaCompareConnection("Local Database");
+                new SchemaCompareConnection("Local Database", connection);
             SchemaCompareConnection schCompConn2 = 
                 new SchemaCompareConnection(xmlCompareFile.getName(), 
                                             xmlCompareFile.getPath());
