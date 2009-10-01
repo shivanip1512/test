@@ -22,6 +22,14 @@ public enum SystemGroupEnum {
     TAMPER_FLAG_PROCESSING("/Meters/Monitors/Tamper Flag/"),
     SYSTEMMETERS_DISCONNECT("/System/Meters/Disconnect/"),
     SUBSTATION_NAME("/Meters/Substation/"),
+    PHASE_DETECT_LAST_RESULTS_A("/System/Meters/Phase Detect/Last Results/A"),
+    PHASE_DETECT_LAST_RESULTS_B("/System/Meters/Phase Detect/Last Results/B"),
+    PHASE_DETECT_LAST_RESULTS_C("/System/Meters/Phase Detect/Last Results/C"),
+    PHASE_DETECT_LAST_RESULTS_AB("/System/Meters/Phase Detect/Last Results/AB"),
+    PHASE_DETECT_LAST_RESULTS_AC("/System/Meters/Phase Detect/Last Results/AC"),
+    PHASE_DETECT_LAST_RESULTS_BC("/System/Meters/Phase Detect/Last Results/BC"),
+    PHASE_DETECT_LAST_RESULTS_ABC("/System/Meters/Phase Detect/Last Results/ABC"),
+    PHASE_DETECT_LAST_RESULTS_UNKNOWN("/System/Meters/Phase Detect/Last Results/UNKNOWN"),
     ;
 
     private String fullPath;
