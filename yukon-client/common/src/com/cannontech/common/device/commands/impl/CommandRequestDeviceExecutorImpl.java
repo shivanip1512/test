@@ -25,15 +25,19 @@ public class CommandRequestDeviceExecutorImpl extends
     private Logger log = YukonLogManager.getLogger(CommandRequestDeviceExecutorImpl.class);
 
     @Override
-    protected Request buildRequest(CommandRequestDevice commandRequest) {
-        Request request = new Request();
-        request.setCommandString(commandRequest.getCommand());
-        request.setDeviceID(commandRequest.getDevice().getPaoIdentifier().getPaoId());
+    protected void adjustRequest(Request request, CommandRequestDevice commandRequest) {
+        
         long requestId = RandomUtils.nextInt();
+        int deviceId = commandRequest.getDevice().getPaoIdentifier().getPaoId();
+        
+        request.setDeviceID(deviceId);
         request.setUserMessageID(requestId);
         
-        log.debug("Built request '" + commandRequest.getCommand() + "' for device " + commandRequest.getDevice() + " with user id " + requestId);
-        return request;
+        String debugStr = "Built request: " +
+        "command = " + request.getCommandString() + " " +
+        "deviceid = " + deviceId + " " +
+        "userMessageId = " + requestId;
+        log.debug(debugStr);
     }
 
     @Override

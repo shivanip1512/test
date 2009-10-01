@@ -100,7 +100,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 
     	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
     	        
-    	        contextId = groupMeterReadService.readDeviceCollectionWithRetry(deviceCollection, 
+    	        contextId = groupMeterReadService.backgroundReadDeviceCollection(deviceCollection, 
             	                                                             attributes, 
             	                                                             getCommandRequestExecutionType(), 
             	                                                             dummyCallback, 

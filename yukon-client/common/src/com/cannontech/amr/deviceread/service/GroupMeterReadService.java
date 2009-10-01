@@ -21,7 +21,7 @@ public interface GroupMeterReadService {
     								   SimpleCallback<GroupMeterReadResult> callback, 
     								   LiteYukonUser user);
 	
-	public CommandRequestExecutionContextId readDeviceCollectionWithRetry(DeviceCollection deviceCollection, 
+	public CommandRequestExecutionContextId backgroundReadDeviceCollection(DeviceCollection deviceCollection, 
 	                                                                    Set<? extends Attribute> attributes, 
 	                                                                    CommandRequestExecutionType type, 
 	                                                                    CommandCompletionCallback<CommandRequestDevice> callback, 

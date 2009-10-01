@@ -365,18 +365,21 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        
 		        for (T command : commands) {
 		            
-		            // request
-		            Request request = buildRequest(command);
-		            request.setGroupMessageID(groupMessageId);
-		            request.setPriority(priority);
+		            // build basic request
+		            Request request = new Request();
+		            String commandStr = command.getCommand();
+                    if (noqueue && !StringUtils.containsIgnoreCase(commandStr, " noqueue")) {
+                        commandStr += " noqueue";
+                        command.setCommand(commandStr);
+                    }
+                    request.setCommandString(command.getCommand()); // ensure any modification to command string of T has been done BEFORE setting the request command string to it.
+                    request.setGroupMessageID(groupMessageId);
+                    request.setPriority(priority);
+                    
+		            // allow executor to adjust request (set deviceId, routeId, etc)
+		            adjustRequest(request, command);
 		            
 		            // request holder
-		            String commandStr = command.getCommand();
-		            if (noqueue && !StringUtils.containsIgnoreCase(commandStr, " noqueue")) {
-		                commandStr += " noqueue";
-		                command.setCommand(commandStr);
-		            }
-		            
 		            RequestHolder requestHolder = new RequestHolder();
 		            requestHolder.command = command;
 		            requestHolder.request = request;
@@ -558,7 +561,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     // ABSTRACT METHODS
-    protected abstract Request buildRequest(T commandRequest);
+    protected abstract void adjustRequest(Request request, T commandRequest);
     
     protected abstract CommandRequestType getCommandRequestType();
     

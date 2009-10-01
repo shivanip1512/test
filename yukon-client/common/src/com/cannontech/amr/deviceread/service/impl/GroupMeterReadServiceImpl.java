@@ -47,7 +47,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	private Logger log = YukonLogManager.getLogger(GroupMeterReadServiceImpl.class);
 	private RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<GroupMeterReadResult>();
 	
-	public CommandRequestExecutionContextId readDeviceCollectionWithRetry(DeviceCollection deviceCollection, 
+	public CommandRequestExecutionContextId backgroundReadDeviceCollection(DeviceCollection deviceCollection, 
                                                                    Set<? extends Attribute> attributes, 
                                                                    CommandRequestExecutionType type, 
                                                                    CommandCompletionCallback<CommandRequestDevice> callback, 

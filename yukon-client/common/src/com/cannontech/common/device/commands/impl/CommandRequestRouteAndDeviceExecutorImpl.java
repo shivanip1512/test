@@ -15,22 +15,22 @@ public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExec
     private Logger log = YukonLogManager.getLogger(CommandRequestRouteAndDeviceExecutorImpl.class);
     
     @Override
-    protected Request buildRequest(CommandRequestRouteAndDevice commandRequest) {
+    protected void adjustRequest(Request request, CommandRequestRouteAndDevice commandRequest) {
 
-        String command = commandRequest.getCommand();
+        long requestId = RandomUtils.nextInt();
         int routeId = commandRequest.getRouteId();
         int deviceId = commandRequest.getDevice().getPaoIdentifier().getPaoId();
-        long requestId = RandomUtils.nextInt();
         
-        Request request = new Request();
-        request.setCommandString(command);
         request.setRouteID(routeId);
         request.setDeviceID(deviceId);
-        request.setUserMessageID(requestId);
+        request.setUserMessageID(RandomUtils.nextInt());
         
-        log.debug("Built request '" + command + "' for route " + routeId + ", deviceID " + deviceId + " with msg id " + requestId);
-        
-        return request;
+        String debugStr = "Built request: " +
+        "command = " + request.getCommandString() + " " +
+        "routeId = " + routeId + " " +
+        "deviceId = " + deviceId + " " +
+        "userMessageId = " + requestId;
+        log.debug(debugStr);
     }
     
     @Override

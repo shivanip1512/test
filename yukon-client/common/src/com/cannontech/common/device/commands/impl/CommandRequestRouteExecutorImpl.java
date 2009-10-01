@@ -27,15 +27,19 @@ public class CommandRequestRouteExecutorImpl extends
     private Logger log = YukonLogManager.getLogger(CommandRequestRouteExecutorImpl.class);
 
     @Override
-    protected Request buildRequest(CommandRequestRoute commandRequest) {
-        Request request = new Request();
-        request.setCommandString(commandRequest.getCommand());
-        request.setRouteID(commandRequest.getRouteId());
+    protected void adjustRequest(Request request, CommandRequestRoute commandRequest) {
+        
         long requestId = RandomUtils.nextInt();
+        int routeId = commandRequest.getRouteId();
+        
+        request.setRouteID(routeId);
         request.setUserMessageID(requestId);
 
-        log.debug("Built request '" + commandRequest.getCommand() + "' for route " + commandRequest.getRouteId() + " with user id " + requestId);
-        return request;
+        String debugStr = "Built request: " +
+        "command = " + request.getCommandString() + " " +
+        "routeId = " + routeId + " " +
+        "userMessageId = " + requestId;
+        log.debug(debugStr);
     }
 
 	@Override
