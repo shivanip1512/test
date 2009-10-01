@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/30/2009 2:55:41 PM                         */
+/* Created on:     10/1/2009 10:37:51 AM                        */
 /*==============================================================*/
 
 
@@ -4844,20 +4844,20 @@ INSERT INTO Command VALUES(-83, 'putconfig emetcon timesync', 'Write Time/Date t
 INSERT INTO Command VALUES(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
 
 /* All LCRs */
-INSERT INTO Command VALUES(-85, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'All LCRs');
-INSERT INTO Command VALUES(-86, 'control shed 5m relay 2', 'Shed 5-min Relay 2', 'All LCRs');
-INSERT INTO Command VALUES(-87, 'control shed 5m relay 3', 'Shed 5-min Relay 3', 'All LCRs');
-INSERT INTO Command VALUES(-88, 'control restore relay 1', 'Restore Relay 1', 'All LCRs');
-INSERT INTO Command VALUES(-89, 'control restore relay 2', 'Restore Relay 2', 'All LCRs');
-INSERT INTO Command VALUES(-90, 'control restore relay 3', 'Restore Relay 3', 'All LCRs');
-INSERT INTO Command VALUES(-91, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'All LCRs');
-INSERT INTO Command VALUES(-92, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'All LCRs');
-INSERT INTO Command VALUES(-93, 'control cycle terminate relay 2', 'Terminate Cycle Relay 2', 'All LCRs');
-INSERT INTO Command VALUES(-94, 'control cycle terminate relay 3', 'Terminate Cycle Relay 3', 'All LCRs');
+INSERT INTO Command VALUES(-85, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'VersacomSerial');
+INSERT INTO Command VALUES(-86, 'control shed 5m relay 2', 'Shed 5-min Relay 2', 'VersacomSerial');
+INSERT INTO Command VALUES(-87, 'control shed 5m relay 3', 'Shed 5-min Relay 3', 'VersacomSerial');
+INSERT INTO Command VALUES(-88, 'control restore relay 1', 'Restore Relay 1', 'VersacomSerial');
+INSERT INTO Command VALUES(-89, 'control restore relay 2', 'Restore Relay 2', 'VersacomSerial');
+INSERT INTO Command VALUES(-90, 'control restore relay 3', 'Restore Relay 3', 'VersacomSerial');
+INSERT INTO Command VALUES(-91, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'VersacomSerial');
+INSERT INTO Command VALUES(-92, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'VersacomSerial');
+INSERT INTO Command VALUES(-93, 'control cycle terminate relay 2', 'Terminate Cycle Relay 2', 'VersacomSerial');
+INSERT INTO Command VALUES(-94, 'control cycle terminate relay 3', 'Terminate Cycle Relay 3', 'VersacomSerial');
 
-INSERT INTO Command VALUES(-95, 'putconfig service out', 'Set to Out-of-Service', 'All LCRs');
-INSERT INTO Command VALUES(-96, 'putconfig service in', 'Set to In-Service', 'All LCRs');
-INSERT INTO Command VALUES(-97, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'All LCRs'); 
+INSERT INTO Command VALUES(-95, 'putconfig service out', 'Set to Out-of-Service', 'VersacomSerial');
+INSERT INTO Command VALUES(-96, 'putconfig service in', 'Set to In-Service', 'VersacomSerial');
+INSERT INTO Command VALUES(-97, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'VersacomSerial'); 
 INSERT INTO Command VALUES(-98, 'putconfig emetcon disconnect', 'Upload Disconnect Address', 'MCT-410IL');
 INSERT INTO Command VALUES(-99, 'getconfig disconnect', 'Read Disconnect Address/Status', 'MCT-410IL');
 INSERT INTO Command VALUES(-100, 'scan general', 'General Meter Scan', 'SENTINEL');
@@ -4946,6 +4946,20 @@ INSERT INTO Command VALUES(-170, 'getvalue daily read detail channel ?''Channel 
 INSERT INTO Command VALUES(-171, 'putvalue ovuv analog 1 0', 'Disable OVUV', 'Twoway CBCs');
 INSERT INTO Command VALUES(-172, 'putvalue ovuv analog 1 1', 'Enable OVUV', 'Twoway CBCs');
 INSERT INTO Command VALUES(-173, 'putvalue analog ?''Enter point offset'' ?''Enter value''', 'Write Value', 'Twoway CBCs'); 
+
+INSERT INTO Command VALUES(-174, 'control xcom shed 5m relay 1', 'Shed 5-min Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-175, 'control xcom shed 5m relay 2', 'Shed 5-min Relay 2', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-176, 'control xcom shed 5m relay 3', 'Shed 5-min Relay 3', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-177, 'control xcom restore relay 1', 'Restore Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-178, 'control xcom restore relay 2', 'Restore Relay 2', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-179, 'control xcom restore relay 3', 'Restore Relay 3', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-180, 'control xcom cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-181, 'control xcom cycle terminate relay 1', 'Terminate Cycle Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-182, 'control xcom cycle terminate relay 2', 'Terminate Cycle Relay 2', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-183, 'control xcom cycle terminate relay 3', 'Terminate Cycle Relay 3', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-184, 'putconfig xcom service out', 'Set to Out-of-Service', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-185, 'putconfig xcom service in', 'Set to In-Service', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-186, 'putconfig xcom led yyy', 'Configure LEDS (load, test, report)', 'ExpresscomSerial'); 
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -6402,20 +6416,20 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-129, -67, 'ExpresscomSerial', 5, 'Y', -1)
 INSERT INTO DEVICETYPECOMMAND VALUES (-130, -68, 'ExpresscomSerial', 6, 'Y', -1);
 
 INSERT INTO DEVICETYPECOMMAND VALUES (-131, -69, 'ExpresscomSerial', 7, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-132, -85, 'ExpresscomSerial', 8, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-133, -86, 'ExpresscomSerial', 9, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-134, -87, 'ExpresscomSerial', 10, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-135, -88, 'ExpresscomSerial', 11, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-136, -89, 'ExpresscomSerial', 12, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-137, -90, 'ExpresscomSerial', 13, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-138, -91, 'ExpresscomSerial', 14, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-139, -92, 'ExpresscomSerial', 15, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-140, -93, 'ExpresscomSerial', 16, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-132, -174, 'ExpresscomSerial', 8, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-133, -175, 'ExpresscomSerial', 9, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-134, -176, 'ExpresscomSerial', 10, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-135, -177, 'ExpresscomSerial', 11, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-136, -178, 'ExpresscomSerial', 12, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-137, -179, 'ExpresscomSerial', 13, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-138, -180, 'ExpresscomSerial', 14, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-139, -181, 'ExpresscomSerial', 15, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-140, -182, 'ExpresscomSerial', 16, 'Y', -1);
 
-INSERT INTO DEVICETYPECOMMAND VALUES (-141, -94, 'ExpresscomSerial', 17, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-142, -95, 'ExpresscomSerial', 18, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-143, -96, 'ExpresscomSerial', 19, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-144, -97, 'ExpresscomSerial', 20, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-141, -183, 'ExpresscomSerial', 17, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-142, -184, 'ExpresscomSerial', 18, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-143, -185, 'ExpresscomSerial', 19, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-144, -186, 'ExpresscomSerial', 20, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-147, -1, 'MCT-210', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-148, -2, 'MCT-210', 2, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-149, -3, 'MCT-210', 3, 'Y', -1);

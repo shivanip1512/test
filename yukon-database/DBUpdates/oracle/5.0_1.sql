@@ -130,6 +130,66 @@ FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
 WHERE DeviceGroupId < 100;
 /* End YUK-7874 */
 
+/* Start YUK-7398 */
+UPDATE Command 
+SET Category = 'VersacomSerial' 
+WHERE Category = 'ALL LCRs';
+
+INSERT INTO Command VALUES(-174, 'control xcom shed 5m relay 1', 'Shed 5-min Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-175, 'control xcom shed 5m relay 2', 'Shed 5-min Relay 2', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-176, 'control xcom shed 5m relay 3', 'Shed 5-min Relay 3', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-177, 'control xcom restore relay 1', 'Restore Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-178, 'control xcom restore relay 2', 'Restore Relay 2', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-179, 'control xcom restore relay 3', 'Restore Relay 3', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-180, 'control xcom cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-181, 'control xcom cycle terminate relay 1', 'Terminate Cycle Relay 1', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-182, 'control xcom cycle terminate relay 2', 'Terminate Cycle Relay 2', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-183, 'control xcom cycle terminate relay 3', 'Terminate Cycle Relay 3', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-184, 'putconfig xcom service out', 'Set to Out-of-Service', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-185, 'putconfig xcom service in', 'Set to In-Service', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-186, 'putconfig xcom led yyy', 'Configure LEDS (load, test, report)', 'ExpresscomSerial');
+
+UPDATE DeviceTypeCommand 
+SET CommandId = -174 
+WHERE DeviceCommandId = -132; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -175 
+WHERE DeviceCommandId = -133; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -176 
+WHERE DeviceCommandId = -134; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -177 
+WHERE DeviceCommandId = -135; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -178 
+WHERE DeviceCommandId = -136; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -179 
+WHERE DeviceCommandId = -137; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -180 
+WHERE DeviceCommandId = -138; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -181 
+WHERE DeviceCommandId = -139; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -182 
+WHERE DeviceCommandId = -140; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -183 
+WHERE DeviceCommandId = -141; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -184 
+WHERE DeviceCommandId = -142; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -185 
+WHERE DeviceCommandId = -143; 
+UPDATE DeviceTypeCommand 
+SET CommandId = -186 
+WHERE DeviceCommandId = -144; 
+/* End YUK-7398 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
