@@ -147,7 +147,7 @@
       <links>
         <option id="capControl">
         <requireRoleProperty value="CBC_SETTINGS" />
-          <link>/capcontrol/subareas.jsp</link>
+          <link>/spring/capcontrol/tier/areas</link>
         </option>
         <option id="eSub">
         <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
