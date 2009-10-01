@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/1/2009 1:44:05 PM                         */
+/* Created on:     10/1/2009 2:40:57 PM                         */
 /*==============================================================*/
 
 
@@ -8919,6 +8919,28 @@ insert into yukonlistentry values (10202, 1068, 0, 'Updated', 0);
 
 insert into YukonListEntry values (10431,1053,0,'Customer Type',2911);
 
+INSERT INTO YukonListEntry VALUES (10500,1072,0,'(none)',0);
+INSERT INTO YukonListEntry VALUES (10501,1072,1,'CTI DLC',0);
+INSERT INTO YukonListEntry VALUES (10502,1072,2,'CTI Paging',0);
+INSERT INTO YukonListEntry VALUES (10503,1072,3,'CTI FM',0);
+INSERT INTO YukonListEntry VALUES (10504,1072,4,'FP Paging',0);
+INSERT INTO YukonListEntry VALUES (10505,1072,5,'Telemetric',0);
+
+INSERT INTO YukonListEntry VALUES (10520,1073,0,'(none)',0);
+INSERT INTO YukonListEntry VALUES (10521,1073,1,'ABB',0);
+INSERT INTO YukonListEntry VALUES (10522,1073,2,'Cannon Tech',0);
+INSERT INTO YukonListEntry VALUES (10523,1073,3,'Cooper',0);
+INSERT INTO YukonListEntry VALUES (10524,1073,4,'Trinetics',0);
+INSERT INTO YukonListEntry VALUES (10525,1073,5,'Siemens',0);
+INSERT INTO YukonListEntry VALUES (10526,1073,6,'Westinghouse',0);
+INSERT INTO YukonListEntry VALUES (10527,1073,7,'Mix',0);
+
+INSERT INTO YukonListEntry VALUES (10540,1074,0,'(none)',0);
+INSERT INTO YukonListEntry VALUES (10541,1074,1,'Oil',0);
+INSERT INTO YukonListEntry VALUES (10542,1074,2,'Vacuum',0);
+INSERT INTO YukonListEntry VALUES (10543,1074,3,'Mix',0);
+INSERT INTO YukonListEntry VALUES (10544,1074,4,'Hybrid',0);
+
 insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 
 
@@ -9601,6 +9623,9 @@ insert into YukonSelectionList values (1066,'A','(none)','Energy Company Settlem
 insert into yukonselectionlist values (1067, 'A', '(none)', 'System category types for Event Logging in STARS', 'EventSystemCategory', 'N');
 insert into yukonselectionlist values (1068, 'A', '(none)', 'Action types for Customer Account events in STARS', 'EventAccountActions', 'N');
 insert into YukonSelectionList values (1071,'A','(none)','Commercial Customer Types','CICustomerType','N');
+INSERT INTO YukonSelectionList VALUES (1072,'N','(none)','Cap Bank Editor','Controller Type','N');
+INSERT INTO YukonSelectionList VALUES (1073,'N','(none)','Cap Bank Editor','Switch Manufacturer','N');
+INSERT INTO YukonSelectionList VALUES (1074,'N','(none)','Cap Bank Editor','Type of Switch','N'); 
 
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 
