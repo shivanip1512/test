@@ -16,5 +16,6 @@ public interface ReportController {
     
     public LinkedHashMap<ReportFilter, List<? extends Object>> getFilterObjectsMap(int userId);
     public void setRequestParameters(HttpServletRequest request);
+    public boolean useStartStopTimes();
     
 }

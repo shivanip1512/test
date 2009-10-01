@@ -543,6 +543,10 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 		return true;
 	}
 	
+	public boolean useStartStopTimes() {
+	    return false;
+	}
+	
 	/**
 	 * @return
 	 */

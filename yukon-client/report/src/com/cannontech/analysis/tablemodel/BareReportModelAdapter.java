@@ -104,5 +104,10 @@ public final class BareReportModelAdapter extends ReportModelBase {
     public boolean useStopDate() {
         return model instanceof DatedModelAttributes;
     }
+    
+    @Override
+    public boolean useStartStopTimes() {
+        throw new UnsupportedOperationException("useStartStopTimes() is not supported");
+    }
 
 }

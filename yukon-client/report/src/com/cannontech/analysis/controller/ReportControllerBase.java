@@ -60,4 +60,9 @@ public abstract class ReportControllerBase implements ReportController {
 
         }
     }
+    
+    @Override
+    public boolean useStartStopTimes() {
+        return false;
+    }
 }

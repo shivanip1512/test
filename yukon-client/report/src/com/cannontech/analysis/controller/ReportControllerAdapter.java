@@ -35,4 +35,8 @@ public class ReportControllerAdapter extends ReportControllerBase  {
         reportModelbase.setParameters(request);
     }
     
+    public boolean useStartStopTimes() {
+        return reportModelbase.useStartStopTimes();
+    }
+    
 }

@@ -22,6 +22,7 @@ public enum ReportTypes {
     SYSTEM_LOG("System Log", SystemLogModel.class, ReportGroup.ADMINISTRATIVE),
     POINT_DATA_INTERVAL("Point Data Interval", PointDataIntervalModel.class, ReportGroup.ADMINISTRATIVE),
     POINT_DATA_SUMMARY("Point Data Summary", PointDataSummaryModel.class, ReportGroup.ADMINISTRATIVE),  //Peaks/Usage
+    DEVICE_READINGS("Device Readings", DeviceReadingsController.class, ReportGroup.ADMINISTRATIVE),
     
     CARRIER_DATA("Carrier Data", CarrierDBModel.class, ReportGroup.DATABASE),
     CARRIER_ROUTE_MACRO_DATA("Carrier Route Macro Data", RouteMacroModel.class, ReportGroup.DATABASE),

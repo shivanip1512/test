@@ -590,4 +590,9 @@ public class LoadControlVerificationModel extends ReportModelBase
     {
         return transmitterIDs;
     }
+    
+    @Override
+    public boolean useStartStopTimes() {
+        return true;
+    }
 }

@@ -520,4 +520,9 @@ public class PointDataIntervalModel extends ReportModelBase
 			}
 		}
 	}
+	
+	@Override
+	public boolean useStartStopTimes() {
+	    return true;
+	}
 }

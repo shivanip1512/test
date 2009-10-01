@@ -25,7 +25,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 
-<%@page import="com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter"%><cti:verifyRolesAndProperties value="REPORTING"/>
+<%@page import="com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter"%>
+<%@page import="com.cannontech.analysis.controller.ReportController"%>
+<cti:verifyRolesAndProperties value="REPORTING"/>
 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
@@ -144,6 +146,10 @@ function enableDates(value)
 
 	$('startCal').disabled = !value;
 	$('stopCal').disabled = !value;
+	$('stopHourID').disabled = !value;
+	$('stopMinuteID').disabled = !value;
+	$('startHourID').disabled = !value;
+	$('startMinuteID').disabled = !value;
 }
 
 function checkDates(){
@@ -230,6 +236,7 @@ function makeFirstSelectedFilterValueVisible() {
 	String linkImgExp = null;
 	
 	final ReportModelBase model = REPORT_BEAN.getModel();
+    final ReportController controller = REPORT_BEAN.getReportController();
 %>
 
 	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">
@@ -252,9 +259,21 @@ function makeFirstSelectedFilterValueVisible() {
 			  <tr bgcolor="EEEEEE">
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
-                <td class="main"><span class='NavText'>* Greater than 00:00, not inclusive</span></td>
+                <td class="main">
+                    <%if(controller == null){ %>
+                    <span class='NavText'>* Greater than 00:00, not inclusive</span>
+                    <%} else if(!controller.useStartStopTimes()){%>
+                    <span class='NavText'>* Greater than 00:00, not inclusive</span>
+                    <%} %>
+                </td>
                 <td class="main">&nbsp;</td>
-                <td class="main"><span class='NavText'>* Less than or equal to 00:00, inclusive</span></td>
+                <td class="main">
+                    <%if(controller == null){ %>
+                    <span class='NavText'>* Less than or equal to 00:00, inclusive</span>
+                    <%} else if(!controller.useStartStopTimes()){%>
+                    <span class='NavText'>* Less than or equal to 00:00, inclusive</span>
+                    <%} %>
+                </td>
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
               </tr>
@@ -291,8 +310,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                 fieldValue="<%= datePart.format(REPORT_BEAN.getStartDate()) %>"/>
 				   		
 					  </td>
-			   		  <% if( (model != null && model instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
-			   		  		  model instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
+			   		  <%if( controller != null && controller.useStartStopTimes() ){%>
 					  <td width="45" class="columnHeader" align="center">Hour<BR>
 					    <select name="startHour" id="startHourID">
 					    <% for (int i = 0; i < 24; i++) {
@@ -327,8 +345,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                 fieldValue="<%= datePart.format(REPORT_BEAN.getStopDate()) %>"/>
                                                 	
                 	  </td>
-					  <% if( (model != null && model instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
-			   		  		  model instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
+					  <% if( controller != null && controller.useStartStopTimes() ){%>
 
 					  <td width="45" class="columnHeader" align="center">Hour<BR>
 					    <select name="stopHour" id="stopHourID">

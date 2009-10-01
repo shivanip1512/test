@@ -1,0 +1,140 @@
+package com.cannontech.analysis.controller;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.springframework.web.bind.ServletRequestUtils;
+
+import com.cannontech.analysis.report.DeviceReadingsReport;
+import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.DeviceReadingsModel;
+import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.ServletUtil;
+
+public class DeviceReadingsController extends ReportControllerBase{
+
+    private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS, ReportFilter.DEVICE};
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    
+    public DeviceReadingsController() {
+        super();
+        model = YukonSpringHook.getBean("deviceReadingsModel", DeviceReadingsModel.class);
+        report = new DeviceReadingsReport(model);
+    }
+
+    public YukonReportBase getReport() {
+        return report;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ReportModelBase getModel() {
+        return report.getModel();
+    }
+
+    public ReportFilter[] getFilterModelTypes() {
+        return filterModelTypes;
+    }
+
+    public void setRequestParameters(HttpServletRequest request) {
+        super.setRequestParameters(request);
+        DeviceReadingsModel deviceReadingsModel = (DeviceReadingsModel)model;
+        String attributeString = ServletUtil.getParameter(request, "dataAttribute");
+        String startHour = ServletUtil.getParameter(request, "startHour");
+        String startMinute = ServletUtil.getParameter(request, "startMinute");
+        String stopHour = ServletUtil.getParameter(request, "stopHour");
+        String stopMinute = ServletUtil.getParameter(request, "stopMinute");
+        String resultType = ServletUtil.getParameter(request, "resultType");
+        
+        if(StringUtils.isNotBlank(attributeString)){
+            Attribute attribute = BuiltInAttribute.valueOf(attributeString);
+            deviceReadingsModel.setAttribute(attribute);
+        }
+        if(StringUtils.isNotBlank(startHour)){
+            /* Joda treats hours as 1-24, Reports.jsp uses 0-23, halarity insues. */
+            if(startHour.equalsIgnoreCase("0")) startHour = "24";
+            if(stopHour.equalsIgnoreCase("0")) stopHour = "24";
+            TimeZone timeZone = YukonUserContextUtils.getYukonUserContext(request).getTimeZone();
+            DateTimeFormatter pattern = DateTimeFormat.forPattern("kk:mm");
+            DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+            /* Construct new start date/time */
+            DateTime startDateTime = pattern.parseDateTime(startHour + ":" + startMinute);
+            LocalTime startLocalTime = startDateTime.toLocalTime();
+            DateTime newStartDateTime = new DateTime(deviceReadingsModel.getStartDate(), dateTimeZone);
+            DateTime startTime = startLocalTime.toDateTime(newStartDateTime);
+            deviceReadingsModel.setStartDate(startTime.toDate());
+            /* Construct new stop date/time */
+            DateTime stopDateTime = pattern.parseDateTime(stopHour + ":" + stopMinute);
+            LocalTime stopLocalTime = stopDateTime.toLocalTime();
+            DateTime newStopDateTime = new DateTime(deviceReadingsModel.getStopDate(), dateTimeZone);
+            DateTime stopTime = stopLocalTime.toDateTime(newStopDateTime);
+            deviceReadingsModel.setStopDate(stopTime.toDate());
+        }
+        
+        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
+
+        if (filterModelType == ReportFilter.GROUPS.ordinal()) {
+            String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
+            List<String> namesList = Arrays.asList(names); 
+            deviceReadingsModel.setGroupsFilter(namesList);
+            deviceReadingsModel.setDeviceFilter(null);
+        } else if(filterModelType == ReportFilter.DEVICE.ordinal()){
+            String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_DEVICE_VALUES).trim();
+            String names[] = filterValueList.split(", ");
+            List<String> namesList = Arrays.asList(names); 
+            deviceReadingsModel.setGroupsFilter(null);
+            deviceReadingsModel.setDeviceFilter(namesList);
+        }
+        
+        if(StringUtils.isNotBlank(resultType)){
+            boolean all = resultType.equalsIgnoreCase("all");
+            deviceReadingsModel.setRetrieveAll(all);
+        }
+    }
+    
+    @Override
+    public boolean useStartStopTimes() {
+        return true;
+    }
+
+    public String getHTMLOptionsTable() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<table style='padding: 10px;' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("    <tr>" + LINE_SEPARATOR);
+        
+        sb.append("        <td class='TitleHeader' style='padding-right: 5px;'>Data Attribute: </td>");
+        sb.append("        <td class='main'>" + LINE_SEPARATOR);
+        sb.append("            <select id=\"dataAttribute\" name=\"dataAttribute\">" + LINE_SEPARATOR);
+        for(BuiltInAttribute attribute : BuiltInAttribute.values()){
+            sb.append("              <option value=\"" + attribute + "\">" + attribute.getDescription() + "</option>" + LINE_SEPARATOR);
+        }
+        sb.append("            </select>" + LINE_SEPARATOR);
+        sb.append("        </td>" + LINE_SEPARATOR);
+
+        sb.append("        <td style='padding-left: 30px;vertical-align: middle;'>");
+        sb.append("            <input type='radio' name='resultType' value='all' title='Get All the readings for each device within the date/time range.' checked='checked' onclick='enableDates(true)'>"); 
+        sb.append(" Get All Results ");
+        sb.append("            <input type='radio' name='resultType' value='last' title='Get only the most recent reading for each device.' onclick='enableDates(false)'>"); 
+        sb.append(" Get Most Recent Results <span style='font-weight: bold;''>(Ignores date and time range.)</span>");
+        sb.append("        </td>");
+        
+        sb.append("    </tr>" + LINE_SEPARATOR);
+        sb.append("</table>" + LINE_SEPARATOR);
+        
+        return sb.toString();
+    }
+
+}

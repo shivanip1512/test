@@ -63,6 +63,16 @@
         <property name="jdbcOps" ref="jdbcTemplate"/>
     </bean>
     
+    <!-- Device Readings Model -->
+   <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="attributeService" ref="attributeService" />
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="deviceGroupService" ref="deviceGroupService" />
+        <property name="stateDao" ref="stateDao" />
+        <property name="deviceDao" ref="deviceDao" />
+    </bean>
+    
    <!-- Cap Control Disabled Devices -->
    <bean id="capControlDisabledDevicesModel" class="com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel"
         scope="prototype">
