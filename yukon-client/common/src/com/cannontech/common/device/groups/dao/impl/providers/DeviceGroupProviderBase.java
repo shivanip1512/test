@@ -162,7 +162,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
     
     @Override
-    public boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
+    public final boolean isGroupCanMoveUnderGroup(DeviceGroup groupToMove, DeviceGroup proposedParent) {
         
         return getGroupCanMovePredicate(groupToMove).evaluate(proposedParent);
     }
