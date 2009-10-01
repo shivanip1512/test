@@ -34,3 +34,4 @@ INSERT INTO YukonListEntry VALUES (10544,1074,4,'Hybrid',0);
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '01-OCT-2009', 'Latest Update', 17);
