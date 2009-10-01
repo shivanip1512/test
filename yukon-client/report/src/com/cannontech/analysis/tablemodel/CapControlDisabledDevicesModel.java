@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.SqlStatementBuilder;
 
 
 public class CapControlDisabledDevicesModel extends BareReportModelBase<CapControlDisabledDevicesModel.ModelRow> implements CapControlFilterable {
@@ -21,15 +22,10 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     private JdbcOperations jdbcOps;
     
     // inputs
-    @SuppressWarnings("unused")
     private Set<Integer> capBankIds;
-    @SuppressWarnings("unused")
     private Set<Integer> feederIds;
-    @SuppressWarnings("unused")
     private Set<Integer> subbusIds;
-    @SuppressWarnings("unused")
     private Set<Integer> substationIds;
-    @SuppressWarnings("unused")
     private Set<Integer> areaIds;
     private String[] deviceTypes;
     
@@ -155,6 +151,13 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         areaQuery += "(select * from yukonpaobject where type = 'CCAREA' and disableflag = 'Y') yp ";
         areaQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         areaQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
+        if(areaIds != null && !areaIds.isEmpty()) {
+            areaQuery +=  "where yp.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
+            areaQuery +=  wheres;
+            areaQuery +=  " ) ";
+        }
+        areaQuery += "order by yp.paoname";
         
         String substationQuery = "select yp.paoname devicename ";
         substationQuery += ", yp.type deviceType ";
@@ -167,12 +170,23 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         substationQuery += ", c.commenttime ";
         substationQuery += ", yu.username ";
         substationQuery += "from (select * from yukonpaobject where type = 'CCSUBSTATION' and disableflag = 'Y') yp ";
-        substationQuery += "join (select ypa.paoname area , yps.paobjectid from yukonpaobject ypa , yukonpaobject yps, ";
+        substationQuery += "join (select ypa.paoname area , ypa.paobjectid areaId, yps.paobjectid from yukonpaobject ypa , yukonpaobject yps, ";
         substationQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss where yps.paobjectid = ss.substationid ";
         substationQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo on yp.paobjectid = pInfo.paobjectid ";
         substationQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         substationQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
-        substationQuery += "order by yp.type ";
+        if(substationIds != null && !substationIds.isEmpty()) {
+            substationQuery += "where yp.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            substationQuery +=  wheres;
+            substationQuery +=  " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            substationQuery +=  "where pInfo.areaId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
+            substationQuery +=  wheres;
+            substationQuery +=  " ) ";
+        }
+        substationQuery += "order by yp.paoname, yp.type ";
         
         String subBusQuery = "select yp.paoname devicename ";
         subBusQuery += ", yp.type deviceType ";
@@ -185,13 +199,29 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         subBusQuery += ", c.commenttime ";
         subBusQuery += ", yu.username ";
         subBusQuery += "from (select * from yukonpaobject where type = 'CCSUBBUS' and disableflag = 'Y') yp ";
-        subBusQuery += "join (select ypa.paoname area, yps.paoname substation, ypsb.paobjectid from yukonpaobject ypa, yukonpaobject yps, ";
+        subBusQuery += "join (select ypa.paoname area, ypa.paobjectid areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paobjectid from yukonpaobject ypa, yukonpaobject yps, ";
         subBusQuery += "yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss where ypsb.paobjectid = ss.substationbusid ";
         subBusQuery += "and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid ";
         subBusQuery += "and ypsb.type like 'CCSUBBUS') pInfo on yp.paobjectid = pInfo.paobjectid ";
         subBusQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         subBusQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
-        subBusQuery += "order by yp.type ";
+        if(subbusIds != null && !subbusIds.isEmpty()) {
+            subBusQuery += "where yp.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            subBusQuery +=  wheres;
+            subBusQuery +=  " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            subBusQuery += "where pInfo.substationId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            subBusQuery +=  wheres;
+            subBusQuery +=  " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            subBusQuery +=  "where pInfo.areaId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
+            subBusQuery +=  wheres;
+            subBusQuery +=  " ) ";
+        }
+        subBusQuery += "order by yp.paoname, yp.type ";
         
         String feederQuery = "select yp.paoname devicename ";
         feederQuery += ", yp.type deviceType ";
@@ -204,14 +234,36 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         feederQuery += ", c.commenttime ";
         feederQuery += ", yu.username ";
         feederQuery += "from (select * from yukonpaobject where type = 'CCFEEDER' and disableflag = 'Y') yp ";
-        feederQuery += "join (select ypa.paoname area, yps.paoname substation, ypsb.paoname subbus, ypf.paobjectid from yukonpaobject ypa, ";
+        feederQuery += "join (select ypa.paoname area, ypa.paobjectid areaId, yps.paoname substation, yps.paobjectId substationId, ";
+        feederQuery += "ypsb.paoname subbus, ypsb.paobjectid subbusId, ypf.paobjectid from yukonpaobject ypa, ";
         feederQuery += "yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, ccsubareaassignment sa, ccsubstationsubbuslist ss, ";
         feederQuery += "ccfeedersubassignment fs where ypf.paobjectid = fs.feederid and ypsb.paobjectid = fs.substationbusid ";
         feederQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
         feederQuery += "and sa.areaid = ypa.paobjectid and ypf.type like 'CCFEEDER') pInfo on yp.paobjectid = pInfo.paobjectid ";
         feederQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         feederQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
-        feederQuery += "order by yp.type ";
+        if(feederIds != null && !feederIds.isEmpty()) {
+            feederQuery += "where yp.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
+            feederQuery += wheres;
+            feederQuery += " ) ";
+        }else if(subbusIds != null && !subbusIds.isEmpty()) {
+            feederQuery += "where pInfo.subbusId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            feederQuery +=  wheres;
+            feederQuery +=  " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            feederQuery += "where pInfo.substationId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            feederQuery +=  wheres;
+            feederQuery +=  " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            feederQuery +=  "where pInfo.areaId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
+            feederQuery +=  wheres;
+            feederQuery +=  " ) ";
+        }
+        feederQuery += "order by yp.paoname, yp.type ";
         
         String capBankQuery = "select yp.paoname devicename ";
         capBankQuery += ", yp.type deviceType ";
@@ -224,7 +276,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         capBankQuery += ", c.commenttime ";
         capBankQuery += ", yu.username ";
         capBankQuery += "from (select * from yukonpaobject where type = 'CAP BANK' and disableflag = 'Y') yp ";
-        capBankQuery += "join (select ypa.paoname area, yps.paoname substation, ypsb.paoname subbus, ypf.paoname feeder, ypc.paobjectid ";
+        capBankQuery += "join (select ypa.paoname area, ypa.PAObjectID areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paoname subbus, ypsb.PAObjectID subbusId, ypf.paoname feeder, ypf.paobjectid feederId, ypc.paobjectid ";
         capBankQuery += "from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ";
         capBankQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c ";
         capBankQuery += "where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid ";
@@ -232,7 +284,33 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         capBankQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo on pInfo.paobjectid = yp.paobjectid ";
         capBankQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         capBankQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
-        capBankQuery += "order by yp.type ";
+        if(capBankIds != null && !capBankIds.isEmpty()) {
+            capBankQuery += "where yp.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(capBankIds);
+            capBankQuery += wheres;
+            capBankQuery += " ) ";
+        }else if(feederIds != null && !feederIds.isEmpty()) {
+            capBankQuery += "where pInfo.feederId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
+            capBankQuery += wheres;
+            capBankQuery += " ) ";
+        }else if(subbusIds != null && !subbusIds.isEmpty()) {
+            capBankQuery += "where pInfo.subbusId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            capBankQuery +=  wheres;
+            capBankQuery +=  " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            capBankQuery += "where pInfo.substationId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            capBankQuery +=  wheres;
+            capBankQuery +=  " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            capBankQuery +=  "where pInfo.areaId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
+            capBankQuery +=  wheres;
+            capBankQuery +=  " ) ";
+        }
+        capBankQuery += "order by yp.paoname, yp.type ";
         
         String cbcQuery = "select yp.paoname devicename ";
         cbcQuery += ", yp.type deviceType ";
@@ -245,7 +323,8 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         cbcQuery += ", c.commenttime ";
         cbcQuery += ", yu.username ";
         cbcQuery += "from (select * from yukonpaobject where type like 'CBC%' and disableflag = 'Y') yp ";
-        cbcQuery += "join (select ypa.paoname area, yps.paoname substation, ";
+        cbcQuery += "join (select ypa.paoname area, ypa.PAObjectID areaId, yps.paoname substation, yps.PAObjectID substationId, ";
+        cbcQuery += "ypsb.paobjectid subbusId, ypf.paobjectid feederId, ypc.paobjectid capbankId, ";
         cbcQuery += "ypsb.paoname subbus, ypf.paoname feeder, ypc.paoname capbank, yp.paobjectid from yukonpaobject yp , yukonpaobject ypa, ";
         cbcQuery += "yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ccsubareaassignment sa, ccsubstationsubbuslist ss, ";
         cbcQuery += "ccfeedersubassignment fs, ccfeederbanklist fb, capbank c where yp.paobjectid = c.controldeviceid and ypc.paobjectid = c.deviceid ";
@@ -254,7 +333,33 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo on yp.paobjectid = pInfo.paobjectid ";
         cbcQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         cbcQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
-        cbcQuery += "order by yp.type ";
+        if(capBankIds != null && !capBankIds.isEmpty()) {
+            cbcQuery += "pInfo.capbankId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(capBankIds);
+            cbcQuery += wheres;
+            cbcQuery += " ) ";
+        }else if(feederIds != null && !feederIds.isEmpty()) {
+            cbcQuery += "where pInfo.feederId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
+            cbcQuery += wheres;
+            cbcQuery += " ) ";
+        }else if(subbusIds != null && !subbusIds.isEmpty()) {
+            cbcQuery += "where pInfo.subbusId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            cbcQuery +=  wheres;
+            cbcQuery +=  " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            cbcQuery += "where pInfo.substationId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            cbcQuery +=  wheres;
+            cbcQuery +=  " ) ";
+        }else if(areaIds != null && !areaIds.isEmpty()) {
+            cbcQuery +=  "where pInfo.areaId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
+            cbcQuery +=  wheres;
+            cbcQuery +=  " ) ";
+        }
+        cbcQuery += "order by yp.paoname, yp.type ";
         
         if(type.equalsIgnoreCase("CBC")) {
             return cbcQuery;
