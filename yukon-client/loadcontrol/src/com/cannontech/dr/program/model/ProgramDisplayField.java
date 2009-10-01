@@ -76,6 +76,19 @@ public enum ProgramDisplayField {
                 }};
         }
     },
+    MANUAL_ACTIVE {
+        @Override
+        public MessageSourceResolvable getValue(LMProgramBase program) {
+            boolean manualActive = program.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE;
+            return YukonMessageSourceResolvable.createDefault("", String.valueOf(manualActive));
+        }
+        
+        @Override
+        public Comparator<DisplayablePao> getSorter(ObjectMapper<DisplayablePao, LMProgramBase> mapper,
+                                                    final YukonUserContext userContext, boolean isDescending) {
+            return null;
+        }
+    },
     STATE_CLASSNAME {
         @Override
         public MessageSourceResolvable getValue(LMProgramBase program) {

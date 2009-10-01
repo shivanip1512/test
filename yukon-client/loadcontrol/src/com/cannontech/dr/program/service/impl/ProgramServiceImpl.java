@@ -274,6 +274,37 @@ public class ProgramServiceImpl implements ProgramService {
     public DisplayablePao getProgram(int programId) {
         return programDao.getProgram(programId);
     }
+    
+    @Override
+    public void changeGear(int programId, int gearNumber, YukonUserContext userContext) {
+        
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        Date stopDate = program.getStopTime().getTime();
+        
+        // Change gears is only available for programs in the Manual Active state
+        if(LMProgramBase.STATUS_MANUAL_ACTIVE != program.getProgramStatus()) {
+            throw new IllegalStateException("The program " + 
+                                            program.getYukonName() + 
+                                            " must be in the Manual Active state to change gears.");
+        }
+        
+        LMManualControlRequest changeGearRequest = 
+            program.createStartStopNowMsg(stopDate, 
+                                          gearNumber, 
+                                          null, 
+                                          true, 
+                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE) ;
+        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
+        changeGearRequest.setStartTime(program.getStartTime());
+
+        ServerRequest serverRequest = new ServerRequestImpl();
+        serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
+        
+        String gearName = getGearNameForProgram(program, gearNumber);
+        demandResponseEventLogService.programChangeGear(userContext.getYukonUser(), 
+                                                        program.getYukonName(), 
+                                                        gearName);
+    }
 
     @Override
     public void setEnabled(int programId, boolean isEnabled, YukonUserContext userContext) {

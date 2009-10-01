@@ -54,6 +54,9 @@ public interface DemandResponseEventLogService {
             Boolean manual, Date stopDate, String gearName);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programChangeGear(LiteYukonUser user, String programName, String gearName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
     public void programEnabled(LiteYukonUser user, String programName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")

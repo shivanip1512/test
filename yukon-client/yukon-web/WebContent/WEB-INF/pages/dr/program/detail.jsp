@@ -13,6 +13,24 @@
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
+<script type="text/javascript">
+    function updateChangeGearEnabled(data) {
+    
+        var enabledSpan = $('changeGearEnabled');
+        var disabledSpan = $('changeGearDisabled');
+        
+        if(data.state == 'true') {
+            // enabled
+            $(enabledSpan).show();
+            $(disabledSpan).hide();
+        } else {
+            // disabled
+            $(enabledSpan).hide();
+            $(disabledSpan).show();
+        }
+    }
+</script>
+
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
             <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome"/>
@@ -90,11 +108,26 @@
                                 onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
                                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/><br>
-                            </a><br>
+                            </a>
 
-                            <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
-                            <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
+                            <span id="changeGearEnabled">
+                                <cti:url var="changeGearsUrl" value="/spring/dr/program/getChangeGearValue">
+                                    <cti:param name="programId" value="${programId}"/>
+                                </cti:url>
+                                <a href="javascript:void(0)" class="simpleLink"
+                                    onclick="openSimpleDialog('drDialog', '${changeGearsUrl}', '<cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.title"/>')">
+                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
+                                </a>
+                            </span>
                             
+                            <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled.text"/>
+                            <span id="changeGearDisabled" title="${changeGearsDisabled}">
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
+                            </span>
+                            <cti:dataUpdaterCallback function="updateChangeGearEnabled" initialize="true" state="DR_PROGRAM/${programId}/MANUAL_ACTIVE" />
+                                                   
                             <cti:url var="sendEnableUrl" value="/spring/dr/program/sendEnableConfirm">
                                 <cti:param name="programId" value="${programId}"/>
                                 <cti:param name="isEnabled" value="true"/>

@@ -64,6 +64,8 @@ public interface ProgramService
     public void stopProgramWithGear(YukonUserContext userContext,
             int programId, int gearNumber, Date stopDate,
             boolean overrideConstraints);
+    
+    public void changeGear(int programId, int gearNumber, YukonUserContext userContext);
 
     public void setEnabled(int programId, boolean isEnabled, YukonUserContext userContext);
 }

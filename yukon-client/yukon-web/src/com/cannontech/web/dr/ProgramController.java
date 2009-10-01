@@ -509,9 +509,34 @@ public class ProgramController {
         return closeDialog(modelMap);
     }
 
-    private String closeDialog(ModelMap modelMap) {
-        modelMap.addAttribute("popupId", "drDialog");
-        return "common/closePopup.jsp";
+    @RequestMapping("/program/getChangeGearValue")
+    public String getGearChangeValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
+        
+        DisplayablePao program = programService.getProgram(programId);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
+        
+        this.addGearsToModel(program, modelMap);
+        modelMap.addAttribute("program", program);
+        
+        return "dr/program/getChangeGearValue.jsp";
+    }
+    
+    @RequestMapping("/program/changeGear")
+    public String changeGear(ModelMap modelMap, int programId, int gearNumber, 
+                             YukonUserContext userContext) {
+        
+        DisplayablePao program = programService.getProgram(programId);
+        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                     program, 
+                                                     Permission.LM_VISIBLE, 
+                                                     Permission.CONTROL_COMMAND);
+        
+        programService.changeGear(programId, gearNumber, userContext);
+        
+        return closeDialog(modelMap);
     }
     
     @RequestMapping("/program/sendEnableConfirm")
@@ -541,9 +566,7 @@ public class ProgramController {
         
         programService.setEnabled(programId, isEnabled, userContext);
         
-        modelMap.addAttribute("popupId", "drDialog");
-        
-        return "common/closePopup.jsp";
+        return closeDialog(modelMap);
     }
 
     @InitBinder
@@ -583,6 +606,11 @@ public class ProgramController {
         if (!overrideAllowed && overrideConstraints != null && overrideConstraints) {
             throw new NotAuthorizedException("override not allowed");
         }
+    }
+    
+    private String closeDialog(ModelMap modelMap) {
+        modelMap.addAttribute("popupId", "drDialog");
+        return "common/closePopup.jsp";
     }
 
     @Autowired
