@@ -15,7 +15,7 @@
                 <table>
                     <tr>
                         <td style="vertical-align: middle;padding-top: 0px;">
-                            <cti:msg key="yukon.web.modules.amr.phaseDetect.step4.progressBarLabel" />:
+                            <cti:msg key="yukon.web.modules.amr.phaseDetect.step5.progressBarLabel" />:
                         </td>
                         <td style="padding-top: 0px;">
                             <tags:updateableProgressBar totalCount="${totalCount}" countKey="PHASE_DETECT/${id}/RESULTS_COUNT" />

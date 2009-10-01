@@ -266,7 +266,7 @@ public class PhaseDetectController {
         return new JsonView();
     }
     
-    @RequestMapping
+    @RequestMapping(method=RequestMethod.POST, value="readPhase")
     public String readPhase(String phase, ModelMap model, LiteYukonUser user, HttpServletResponse response) {
         phaseDetectService.getPhaseDetectState().setReadCanceled(false);
         List<SimpleDevice> devicesOnSub = Lists.newArrayList();

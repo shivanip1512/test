@@ -33,24 +33,24 @@
             new Ajax.Request('/spring/amr/phaseDetect/startTest', {
                 method: 'post',
                 parameters: params,
-                onSuccess: function(resp, transport) {
-                    $('complete').value = transport.complete;
-                    if(transport.errorOccurred){
+                onSuccess: function(resp, json) {
+                    $('complete').value = json.complete;
+                    if(json.errorOccurred){
                     	$('spinner').hide();
-                    	$('actionResultDiv').innerHTML = 'Error Sending Detect Command: ' + transport.errorMsg;
+                    	$('actionResultDiv').innerHTML = 'Error Sending Detect Command: ' + json.errorMsg;
                         $('actionResultDiv').show();
                         $('sendDetectButton').value = 'Send';
                         $('sendDetectButton').enable();
                     } else {
                     	$('sendDetectButton').value = 'Send';
-	                    $(transport.phase).show();
+	                    $(json.phase).show();
 	                    $('spinner').hide();
 		                startTimers();
                     }
                 },
-                onException: function(resp, transport) {
+                onException: function(resp, json) {
                 	$('spinner').hide();
-                    $('actionResultDiv').innerHTML = 'Error Sending Detect Command: ' + transport.errorMsg;
+                    $('actionResultDiv').innerHTML = 'Error Sending Detect Command: ' + json.errorMsg;
                     $('actionResultDiv').show();
                     $('sendDetectButton').value = 'Send';
                     $('sendDetectButton').enable();
@@ -111,16 +111,16 @@
         function sendRead(){
             $('actionResultDiv').show();
             new Ajax.Updater('actionResultDiv', '/spring/amr/phaseDetect/readPhase', {method: 'post', evalScripts: 'true',
-            	onSuccess: function(resp, transport) {
-		            if(transport.success){
+            	onSuccess: function(resp, json) {
+		            if(json.success){
 		            	$('readButton').value = 'Reading';
                         $('readButton').disable();
 		            } else {
-		            	$('actionResultDiv').innerHTML = 'Error Sending Read Command: ' + transport.errorMsg;
+		            	$('actionResultDiv').innerHTML = 'Error Sending Read Command: ' + json.errorMsg;
 		            }
 	            },
-	            onException: function(resp, transport) {
-                    $('actionResultDiv').innerHTML = 'Error Sending Read Command: ' + transport.errorMsg;
+	            onException: function(resp, json) {
+                    $('actionResultDiv').innerHTML = 'Error Sending Read Command: ' + json.errorMsg;
                 }
             });
         }
