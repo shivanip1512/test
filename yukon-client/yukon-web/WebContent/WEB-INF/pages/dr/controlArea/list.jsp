@@ -155,8 +155,8 @@
                             <span id="actionSpan_${loadGroupId}">
                                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}">
                                     
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
             
                                     <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                         <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -164,7 +164,7 @@
                                     </cti:url>
                                     <a id="enableLink_${controlAreaId}" href="javascript:void(0)"
                                         onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"/>')">
-                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"/>
                                     </a>
                                     <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                         <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -172,17 +172,17 @@
                                     </cti:url>
                                     <a id="disableLink_${controlAreaId}" href="javascript:void(0)"
                                         onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"/>')">
-                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"/>
                                     </a><br>
                                     <cti:dataUpdaterCallback function="updateEnabled('${controlAreaId}')" initialize="true" state="DR_CONTROLAREA/${controlAreaId}/ENABLED" />
                                 </cti:checkPaoAuthorization>
                                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}" invert="true">
                                     <cti:msg var="noControlAreaControl" key="yukon.web.modules.dr.controlAreaDetail.noControl"/>
                                     <span title="${noControlAreaControl}">
-                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.start.disabled"/>
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
                                     </span>
                                     <span title="${noControlAreaControl}">
-                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stop.disabled"/>
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
                                     </span>
                                     <span title="${noControlAreaControl}">
                                         <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disable.disabled"/>

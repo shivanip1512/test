@@ -97,8 +97,8 @@
                             </cti:url>
                             <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.start.text"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
                             </a><br>
 
                             <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
@@ -106,8 +106,8 @@
                             </cti:url>
                             <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/><br>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/><br>
                             </a>
 
                             <span id="changeGearEnabled">
@@ -116,15 +116,15 @@
                                 </cti:url>
                                 <a href="javascript:void(0)" class="simpleLink"
                                     onclick="openSimpleDialog('drDialog', '${changeGearsUrl}', '<cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
+                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"/>
+                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/><br>
                                 </a>
                             </span>
                             
-                            <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled.text"/>
+                            <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
                             <span id="changeGearDisabled" title="${changeGearsDisabled}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/><br>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/><br>
                             </span>
                             <cti:dataUpdaterCallback function="updateChangeGearEnabled" initialize="true" state="DR_PROGRAM/${programId}/MANUAL_ACTIVE" />
                                                    
@@ -134,8 +134,8 @@
                             </cti:url>
                             <a id="enableLink_${programId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendEnableConfirm.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.enable"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable.text"/><br>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.enableIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/><br>
                             </a>
                             <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
                                 <cti:param name="programId" value="${programId}"/>
@@ -143,8 +143,8 @@
                             </cti:url>
                             <a id="disableLink_${programId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendDisableConfirm.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable.text"/><br>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/><br>
                             </a>
                             
                             <cti:dataUpdaterCallback function="updateEnabled('${programId}')" initialize="true" state="DR_PROGRAM/${programId}/ENABLED" />
@@ -152,20 +152,20 @@
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
                             <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
                             <div class="subtleGray" title="${noProgramControl}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start.disabled"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.start.text"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
                             </div>
                             <div class="subtleGray" title="${noProgramControl}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop.disabled"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop.text"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
                             </div>
                             <div class="subtleGray" title="${noProgramControl}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears.text"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                             </div>
                             <div class="subtleGray" title="${noProgramControl}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable.disabled"/>
-                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable.text"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon.disabled"/>
+                                <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/>
                             </div>
                         </cti:checkPaoAuthorization>
                     </span>

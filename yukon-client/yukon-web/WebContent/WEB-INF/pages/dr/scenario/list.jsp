@@ -95,16 +95,16 @@
                         <td style="white-space: nowrap;">
                             <span id="actionSpan_${loadGroupId}">
                                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
-                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.start"/>
-                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
                                 </cti:checkPaoAuthorization>
                                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">
                                     <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>
                                     <span title="${noScenarioControl}">
-                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.start.disabled"/>
+                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.disabled"/>
                                     </span>
                                     <span title="${noScenarioControl}">
-                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stop.disabled"/>
+                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled"/>
                                     </span>
                                 </cti:checkPaoAuthorization>
                             </span>

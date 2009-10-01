@@ -186,7 +186,7 @@ function clearFilter() {
                             </cti:url>
                             <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon"/>
                             </a>
 
                             <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
@@ -194,7 +194,7 @@ function clearFilter() {
                             </cti:url>
                             <a href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
                             </a>
         
                             
@@ -204,7 +204,7 @@ function clearFilter() {
                             </cti:url>
                             <a id="enableLink_${programId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendEnableConfirm.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.enable"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.enableIcon"/>
                             </a>
                             <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
                                 <cti:param name="programId" value="${programId}"/>
@@ -212,33 +212,33 @@ function clearFilter() {
                             </cti:url>
                             <a id="disableLink_${programId}" href="javascript:void(0)" class="simpleLink"
                                 onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendDisableConfirm.title"/>')">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon"/>
                             </a>
                             
                         </cti:checkPaoAuthorization>
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
                             <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
                             <span class="subtleGray" title="${noProgramControl}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start.disabled"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
                             </span>
                             <span class="subtleGray" title="${noProgramControl}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop.disabled"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
                             </span>
                             <span class="subtleGray" title="${noProgramControl}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable.disabled"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon.disabled"/>
                             </span>
                         </cti:checkPaoAuthorization>
                     </span>
                     <span id="actionSpanDisabled_${programId}">
                         <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
                         <span class="subtleGray" title="${programUnknown}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.start.disabled"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
                             </span>
                             <span class="subtleGray" title="${programUnknown}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stop.disabled"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
                             </span>
                             <span class="subtleGray" title="${programUnknown}">
-                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disable.disabled"/>
+                                <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon.disabled"/>
                             </span>
                     </span>
                     <cti:dataUpdaterCallback function="updateEnabled('${programId}')" initialize="true" state="DR_PROGRAM/${programId}/ENABLED" />

@@ -40,21 +40,21 @@
             	<tags:abstractContainer type="box" title="${boxTitle}">
                     <span id="actionSpan_${loadGroupId}">
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
-                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.start"/>
-                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start.text"/><br>
+                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
+                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start"/><br>
                         
-                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
-                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop.text"/><br>
+                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
+                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop"/><br>
                         </cti:checkPaoAuthorization>
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">
                             <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>
                             <span title="${noScenarioControl}">
-                                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.start.disabled"/>
-                        		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start.text"/><br>
+                                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.disabled"/>
+                        		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start"/><br>
                             </span>
                             <span title="${noScenarioControl}">
-                                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stop.disabled"/>
-                        		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop.text"/><br>
+                                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled"/>
+                        		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop"/><br>
                             </span>
                         </cti:checkPaoAuthorization>
                     </span>
