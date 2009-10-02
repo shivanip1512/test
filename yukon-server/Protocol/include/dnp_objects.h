@@ -40,7 +40,7 @@ namespace DNP       {
 class TimeCTO;  //  forward declaration
 class Time;
 
-class Object
+class IM_EX_PROT Object
 {
 protected:
     unsigned char _group, _variation;

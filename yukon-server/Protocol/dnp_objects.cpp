@@ -24,6 +24,7 @@
 #include "dnp_object_analogoutput.h"
 #include "dnp_object_binaryinput.h"
 #include "dnp_object_binaryoutput.h"
+#include "dnp_object_internalindications.h"
 #include "dnp_object_class.h"
 #include "dnp_object_counter.h"
 #include "dnp_object_time.h"
@@ -35,6 +36,8 @@ namespace Protocol  {
 namespace DNP       {
 
 Object::Object( int group, int variation )
+//  Shouldn't we be setting _valid = false here?
+//    Seems like it, but the change falls outside the testing scope of YUK-7563
 {
     _group     = group;
     _variation = variation;
@@ -519,6 +522,8 @@ unsigned ObjectBlock::serialize( unsigned char *buf ) const
             buf[pos++] = (_objectIndices[i] >> 8) & 0xff;
         }
 
+        //  ACH: should add support for single-bit objects
+
         _objectList[i]->serialize(&buf[pos]);
 
         pos += _objectList[i]->getSerializedLen();
@@ -661,9 +666,10 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 
 
             //  special case for single-bit objects...
-            if( (_group ==  1 && _variation == 1) ||  //  single-bit binary input
-                (_group == 10 && _variation == 1) ||  //  single-bit binary output
-                (_group == 12 && _variation == 3) )   //  single-bit pattern mask
+            if( (_group == BinaryInput::Group  && _variation == BinaryInput::BI_SingleBitPacked) ||
+                (_group == BinaryOutput::Group && _variation == BinaryOutput::BO_SingleBit)      ||
+                (_group == BinaryOutputControl::Group && _variation == BinaryOutputControl::BOC_PatternMask) ||
+                (_group == InternalIndications::Group && _variation == InternalIndications::II_InternalIndications) )
             {
                 objbitlen = restoreBitObject(buf + pos, bitpos, len - pos, tmpObj);
             }
@@ -782,6 +788,10 @@ int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int 
 
         case BinaryOutputControl::Group:
             obj = CTIDBG_new BinaryOutputControl(_variation);
+            break;
+
+        case InternalIndications::Group:
+            obj = CTIDBG_new InternalIndications(_variation);
             break;
 
         default:
