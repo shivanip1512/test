@@ -235,9 +235,9 @@ INSERT INTO YukonListEntry VALUES (10542,1074,2,'Vacuum',0);
 INSERT INTO YukonListEntry VALUES (10543,1074,3,'Mix',0);
 INSERT INTO YukonListEntry VALUES (10544,1074,4,'Hybrid',0);
 
-ALTER TABLE CAPBANK MODIFY controllerType varchar2(64) NOT NULL;
-ALTER TABLE CAPBANK MODIFY switchManufacture varchar2(64) NOT NULL;
-ALTER TABLE CAPBANK MODIFY typeOfSwitch varchar2(64) NOT NULL;
+ALTER TABLE CapBank MODIFY ControllerType VARCHAR2(64);
+ALTER TABLE CapBank MODIFY SwitchManufacture VARCHAR2(64);
+ALTER TABLE CapBank MODIFY TypeOfSwitch VARCHAR2(64);
 /* @error ignore-end */
 /* End YUK-7881 */
 
