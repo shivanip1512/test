@@ -18,9 +18,9 @@ Event.observe(window, 'load', function() {
 
 <div id="compareResults">
 <c:if test="${displayOracleWarning}">
-Due to the way Oracle accesses its database information, the current validation of your database could take some time. (~5 Minutes)
+Validation of your database schema is in progress (this process may take several minutes).
 </c:if>
-
+<br>
 loading... <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 </div>
 </cti:standardPage>
