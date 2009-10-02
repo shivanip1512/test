@@ -88,7 +88,7 @@ public class LogTailController extends LogController {
         map.addAttribute("logFilePath", fileName);
         map.addAttribute("numLines", numLines);
         
-        return "logTail.jsp";
+        return "logging/logTail.jsp";
     }   
 
     @Autowired
