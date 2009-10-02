@@ -866,6 +866,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetConfig_Multiplier:
         case Emetcon::GetConfig_CentronParameters:  status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);      break;
+        // Intentional fall through
+        case Emetcon::GetConfig_PhaseDetectArchive:
         case Emetcon::GetConfig_PhaseDetect:        status = decodeGetConfigPhaseDetect(InMessage, TimeNow, vgList, retList, outList);      break;
 
         default:
@@ -1881,7 +1883,12 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
         OutMessage->Buffer.BSt.Function = Emetcon::GetConfig_PhaseDetect;
         found = getOperation(OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt);
 
-        OutMessage->Sequence = Emetcon::GetConfig_PhaseDetect;
+        if(parse.isKeyValid("phasedetectarchive"))
+        {
+            OutMessage->Sequence = Emetcon::GetConfig_PhaseDetectArchive;
+        }
+        else
+            OutMessage->Sequence = Emetcon::GetConfig_PhaseDetect;
     }
     else
     {
@@ -4138,17 +4145,13 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
                                   DSt->Message[6] ) * 0.1;
         last_interval_voltage =  (DSt->Message[7] <<  8 |
                                   DSt->Message[8] ) * 0.1;
-               
-        insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
-        if( !ReturnMsg->ResultString().empty() )
-        {
-            resultStr = ReturnMsg->ResultString();
+          
+        if (InMessage->Sequence == Emetcon::GetConfig_PhaseDetectArchive)     
+        {           
+            insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
         }
-        else
-        {
-            resultStr  = getName() + " / Phase = " + phaseStr ;
-            resultStr += " @ " + CtiTime(volt_timestamp).asString();
-        }
+        resultStr  = getName() + " / Phase = " + phaseStr ;
+        resultStr += " @ " + CtiTime(volt_timestamp).asString();
         resultStr  +="\nFirst Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
         resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage, 1);
 

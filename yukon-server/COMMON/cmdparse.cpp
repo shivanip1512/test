@@ -1633,6 +1633,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
             {  
                 _cmd["phasedetectread"] = CtiParseValue(TRUE);
             }
+            if(CmdStr.contains("archive"))
+            {
+                _cmd["phasedetectarchive"] = CtiParseValue(TRUE);
+            }
         }
         if(CmdStr.contains(" raw"))
         {
