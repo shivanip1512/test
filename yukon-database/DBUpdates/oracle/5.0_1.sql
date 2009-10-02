@@ -107,8 +107,8 @@ FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
       WHERE DG.DeviceGroupId < 100) DG1,
 	 (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
       FROM DeviceGroup DG
-      WHERE DG.GroupName = 'System'
-      AND DG.ParentDeviceGroupId = 0) DG2;
+      WHERE DG.GroupName = 'Meters'
+      AND DG.ParentDeviceGroupId = 12) DG2;
 
 INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
 SELECT DG1.DeviceGroupId,
@@ -124,8 +124,8 @@ FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
       WHERE GroupName = 'Disconnect'
       AND ParentDeviceGroupId = (SELECT MAX(DeviceGroupId)
                                  FROM DeviceGroup
-                                 WHERE GroupName = 'System'
-                                 AND ParentDeviceGroupId = 0)) DG2;
+                                 WHERE GroupName = 'Meters'
+                                 AND ParentDeviceGroupId = 12)) DG2;
 /* End YUK-7874 */
 
 /* Start YUK-7398 */
@@ -191,7 +191,7 @@ WHERE DeviceCommandId = -144;
 /* Start YUK-7875 */
 INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
 SELECT DG1.DeviceGroupId,
-       'Disconnect',
+       'CIS Substation',
        DG2.ParentDeviceGroupId,
        'NOEDIT_MOD',
        'STATIC'
@@ -201,10 +201,7 @@ FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
 	 (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
       FROM DeviceGroup DG
       WHERE DG.GroupName = 'Meters'
-      AND DG.ParentDeviceGroupId = (SELECT MAX(DeviceGroupId)
-                                    FROM DeviceGroup
-                                    WHERE GroupName = 'System'
-                                    AND ParentDeviceGroupId = 0)) DG2;
+      AND DG.ParentDeviceGroupId = 0) DG2;
 /* End YUK-7875 */
 
 /* Start YUK-7881 */
