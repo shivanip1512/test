@@ -4140,7 +4140,16 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
                                   DSt->Message[8] ) * 0.1;
                
         insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
-        resultStr  = "\nFirst Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
+        if( !ReturnMsg->ResultString().empty() )
+        {
+            resultStr = ReturnMsg->ResultString();
+        }
+        else
+        {
+            resultStr  = getName() + " / Phase = " + phaseStr ;
+            resultStr += " @ " + CtiTime(volt_timestamp).asString();
+        }
+        resultStr  +="\nFirst Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
         resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage, 1);
 
         ReturnMsg->setResultString(resultStr);
