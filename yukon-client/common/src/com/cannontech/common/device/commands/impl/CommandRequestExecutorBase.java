@@ -370,9 +370,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            String commandStr = command.getCommand();
                     if (noqueue && !StringUtils.containsIgnoreCase(commandStr, " noqueue")) {
                         commandStr += " noqueue";
-                        command.setCommand(commandStr);
                     }
-                    request.setCommandString(command.getCommand()); // ensure any modification to command string of T has been done BEFORE setting the request command string to it.
+                    request.setCommandString(commandStr);
                     request.setGroupMessageID(groupMessageId);
                     request.setPriority(priority);
                     
