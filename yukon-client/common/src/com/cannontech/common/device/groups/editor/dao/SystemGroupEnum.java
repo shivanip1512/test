@@ -21,7 +21,7 @@ public enum SystemGroupEnum {
     OUTAGE_PROCESSING("/Meters/Monitors/Outage/"),
     TAMPER_FLAG_PROCESSING("/Meters/Monitors/Tamper Flag/"),
     SYSTEMMETERS_DISCONNECT("/System/Meters/Disconnect/"),
-    SUBSTATION_NAME("/Meters/Substation/"),
+    SUBSTATION_NAME("/Meters/CIS Substation/"),
     PHASE_DETECT_LAST_RESULTS_A("/System/Meters/Phase Detect/Last Results/A"),
     PHASE_DETECT_LAST_RESULTS_B("/System/Meters/Phase Detect/Last Results/B"),
     PHASE_DETECT_LAST_RESULTS_C("/System/Meters/Phase Detect/Last Results/C"),
