@@ -11,6 +11,8 @@ import com.cannontech.user.checker.UserChecker;
  */
 public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
 
+    private boolean fallthroughIfNotAuthorized = false;
+    
     Checker<T> objectChecker = new Checker<T>() {
         public boolean check(T object) {
             return true;
@@ -46,8 +48,10 @@ public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
             // Object and permission match - return value of role
             if (this.roleChecker.check(user)) {
                 return AuthorizationResponse.AUTHORIZED;
-            } else {
+            } else if(!this.fallthroughIfNotAuthorized) {
                 return AuthorizationResponse.UNAUTHORIZED;
+            } else {
+                return AuthorizationResponse.UNKNOWN;
             }
         } else {
             // Either object or permission doesn't match - don't know if
@@ -59,6 +63,10 @@ public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
     @Override
     public String toString() {
         return permission + " and " + roleChecker + " and " + objectChecker + " authorization";
+    }
+    
+    public void setFallthroughIfNotAuthorized(boolean fallthroughIfNotAuthorized) {
+        this.fallthroughIfNotAuthorized = fallthroughIfNotAuthorized;
     }
 
 }

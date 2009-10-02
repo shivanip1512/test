@@ -226,9 +226,29 @@
                     <property name="permission" value="ALLOWED_COMMAND"/>
                 </bean>
 
+                <!-- Ignore pao permissions check -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="objectChecker" ref="loadManagementPaoCheck" />
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                            <constructor-arg value="IGNORE_PER_PAO_PERMISSIONS"/>
+                        </bean>
+                    </property>
+                    <property name="permission" value="LM_VISIBLE"/>
+                    <property name="fallthroughIfNotAuthorized" value="true"/>
+                </bean>
+
         		<!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->
 				<bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization">
 					<property name="paoPermissionService" ref="paoPermissionService" />
+				</bean>
+
+        		<!-- Parent permissions from the UserPaoPermission and GroupPaoPermission db tables -->
+				<bean class="com.cannontech.core.authorization.support.pao.LMParentAuthorization">
+					<property name="paoAuthorizationService" ref="paoAuthorizationService" />
+					<property name="objectChecker" ref="loadManagementPaoCheck" />
+                    <property name="demandResponseDao" ref="demandResponseDao" />
+                    <property name="permission" value="LM_VISIBLE"/>
 				</bean>
 
         		<!-- Load Management pao permissions -->
@@ -337,11 +357,6 @@
                         </bean>
 			    	</property>
 			    	<property name="permission" value="CONTROL_COMMAND"/>
-			    </bean>
-			    <!-- Config to check if a user has permission to view an LM pao  -->
-			    <bean class="com.cannontech.core.authorization.support.pao.LMVisibleAuthorization">
-			    	<property name="objectChecker" ref="loadManagementPaoCheck" />
-			    	<property name="paoPermissionService" ref="paoPermissionService"/>
 			    </bean>
 
 			    <!-- Catch all for unknown commands.  If a command is not known, the EXECUTE_UNKNOWN_COMMAND

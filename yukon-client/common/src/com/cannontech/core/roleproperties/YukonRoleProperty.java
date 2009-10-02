@@ -190,6 +190,7 @@ public enum YukonRoleProperty {
     ALLOW_OVERRIDE_CONSTRAINT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT, booleanType()),
     DEFAULT_CONSTRAINT_SELECTION(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION, stringType()),
     ALLOW_STOP_GEAR_ACCESS(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS, booleanType()),
+    IGNORE_PER_PAO_PERMISSIONS(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.IGNORE_PER_PAO_PERMISSIONS, booleanType()),
     
     NUMBER_OF_CHANNELS(IVR, com.cannontech.roles.notifications.IvrRole.NUMBER_OF_CHANNELS, integerType()),
     IVR_URL_DIALER_TEMPLATE(IVR, com.cannontech.roles.notifications.IvrRole.IVR_URL_DIALER_TEMPLATE, stringType()),

@@ -16,4 +16,5 @@ public interface DirectLoadcontrolRole {
 	public static final int ALLOW_OVERRIDE_CONSTRAINT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 6;
 	public static final int DEFAULT_CONSTRAINT_SELECTION = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 7;
     public static final int ALLOW_STOP_GEAR_ACCESS = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 8;
+    public static final int IGNORE_PER_PAO_PERMISSIONS = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 9;
 }

@@ -45,7 +45,9 @@ public class ScenarioController {
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
 
-        filters.add(new AuthorizedFilter(paoAuthorizationService, userContext.getYukonUser()));
+        filters.add(new AuthorizedFilter(paoAuthorizationService, 
+                                         userContext.getYukonUser(),
+                                         Permission.LM_VISIBLE));
         
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
