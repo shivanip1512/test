@@ -134,4 +134,13 @@ public interface MspObjectDao {
      * @param userName
      */
     public void logMSPActivity(String method, String description, String userName);
+    
+    /**
+     * Returns a list of SubstationNames for the vendor.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty String List object is returned.
+     * @param mspVendor
+     * @return
+     */
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor);
 }

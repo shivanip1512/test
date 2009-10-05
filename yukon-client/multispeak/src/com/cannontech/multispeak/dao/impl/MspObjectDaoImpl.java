@@ -16,6 +16,7 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.DomainMember;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
@@ -190,5 +191,40 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public void logMSPActivity(String method, String description, String userName) {
         getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName, SystemLog.TYPE_MULTISPEAK);
         CTILogger.debug("MSP Activity (Method: " + method +  " - " + description + ")");
+    }
+    
+    @Override
+
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor) {
+
+        List<String> substationNames = new ArrayList<String>();
+        
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+
+        try {
+
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+
+                DomainMember [] domainMembers = port.getDomainMembers("substationCode");
+                if(domainMembers != null) {
+
+                    for (DomainMember domainMember : domainMembers) {
+
+                        substationNames.add(domainMember.getDescription());
+                    }
+                }
+            } else {
+
+                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for DomainMember 'Substation'");
+            }
+
+        } catch (RemoteException e) {
+
+            CTILogger.error("TargetService: " + endpointURL + " - getDomainMembers(" + mspVendor.getCompanyName() + ") for DomainMember 'Substation'");
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+
+        return substationNames;
     }
 }

@@ -37,4 +37,18 @@ function SubstationToRouteMappings_updateRoutes(url) {
     new Ajax.Request(url, {"method": "post", "parameters": {"array": jsonObject, "substationid": substationId, "update": ""}});
 }
 
+function mspSubstations_check(doCheck) {
+	$$('input[type=checkbox].mspSubstationCheckbox').each(function(c) {
+		c.checked = doCheck;
+	});
+}
 
+function SubstationToRouteMappings_disableInputs(doDisable) {
+	$$('input').each(function(c) {
+		if (doDisable) {
+			c.disable();
+		} else {
+			c.enable();
+		}
+	});
+}

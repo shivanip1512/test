@@ -12,25 +12,29 @@
     <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 
 	<h2>Substation To Route Mapping</h2>
+	<br>
 
-    <table cellpadding="25px">
+    <table>
         <tr>
+            
             <td valign="top">
                 <div id="sub_element">
-                    <jsp:include
-                        page="/spring/multispeak/setup/routemapping/substation">
+                    <jsp:include page="/spring/multispeak/setup/routemapping/substation">
                         <jsp:param name="view" value="" />
                     </jsp:include>
                 </div>
             </td>
+            
+            <td style="width:50px;">&nbsp;</td>
+            
             <td valign="top">
                 <div id="route_element">
-                    <jsp:include
-                        page="/spring/multispeak/setup/routemapping/route">
+                    <jsp:include page="/spring/multispeak/setup/routemapping/route">
                         <jsp:param name="view" value="" />
                     </jsp:include>
                 </div>
             </td>
+            
         </tr>
     </table>
 
