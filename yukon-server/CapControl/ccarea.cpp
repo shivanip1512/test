@@ -106,8 +106,21 @@ void CtiCCArea::restoreGuts(RWvistream& istrm)
         _subStationIds.push_back(tempSubBusId);
     }
 
-    istrm >> _pfactor
-        >> _estPfactor
+
+    double pfDisplayValue = _pfactor;
+    double estPfDisplayValue = _estPfactor;
+
+    // Modifying the display value of pFactor to represent +100% values as a negative value.
+    if (_pfactor > 1)
+    {
+        pfDisplayValue -= 2;
+    }
+    if (_estPfactor > 1)
+    {
+        estPfDisplayValue -= 2;
+    }
+    istrm >> pfDisplayValue
+        >> estPfDisplayValue
         >> _voltReductionControlValue
         >> _childVoltReductionFlag;
 }
