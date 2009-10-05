@@ -1617,7 +1617,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                     found = true;
                 }
             }
-            if( parse.getFlags() & CMD_FLAG_GV_PEAK )
+            else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
             {
                 //  these are the new Precanned Table 11 reads
 

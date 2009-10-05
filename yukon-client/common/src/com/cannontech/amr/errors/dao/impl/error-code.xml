@@ -29,6 +29,18 @@
      </ul>
   </troubleshooting>
   </error>
+<error code="9">
+    <category>Data Validation</category> 
+    <porter>Parameter Out of Range</porter>
+    <description>A parameter supplied in the command string is outside of its valid range.</description>
+    <troubleshooting>
+        A parameter supplied in the command string is outside of its valid range.
+        Correct the invalid parameter and attempt the command again.
+        <ul> 
+        <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
+        </ul>
+    </troubleshooting>
+</error>
 <error code="15">
 	<category>Bulk Communications</category> 
 	<porter>Parity Error</porter>
