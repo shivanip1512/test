@@ -8,6 +8,8 @@
     <cti:standardMenu menuSelection="details|controlareas"/>
 
     <tags:simpleDialog id="drDialog"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
@@ -89,11 +91,24 @@
             	<tags:abstractContainer type="box" title="${boxTitle}">
                     <span id="actionSpan_${controlAreaId}">
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}">
-                    		<cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
-                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/><br>
-                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/><br>
-    
+                            <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                            </cti:url>
+                            <a href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${startControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/><br>
+                            </a>
+
+                            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                            </cti:url>
+                            <a href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/><br>
+                            </a>
+
                             <c:choose>
                                 <c:when test="${!empty controlArea.triggers}">
                                     <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">

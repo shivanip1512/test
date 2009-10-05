@@ -8,9 +8,11 @@
 <cti:standardPage module="dr" page="loadGroupDetail" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|loadGroups"/>
 
-    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
-
     <tags:simpleDialog id="drDialog"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -140,20 +142,16 @@
     </table>
     <br>
 
-    <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.parents"/>
-    <tags:abstractContainer type="box" title="${boxTitle}">
-
-        <c:if test="${empty parentPrograms}">
-            <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms"/></p>
-        </c:if>
-        <c:if test="${!empty parentPrograms}">
-            <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.programs"/></p>
-            <c:forEach var="parentProgram" items="${parentPrograms}">
-                <c:url var="programURL" value="/spring/dr/program/detail">
-                    <c:param name="programId" value="${parentProgram.paoIdentifier.paoId}"/>
-                </c:url>
-                <a href="${programURL}"><spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody></a><br>
-            </c:forEach>
-        </c:if>
-    </tags:abstractContainer>
+    <c:if test="${empty parentPrograms}">
+        <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms"/></p>
+    </c:if>
+    <c:if test="${!empty parentPrograms}">
+        <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.programs"/></p>
+        <c:forEach var="parentProgram" items="${parentPrograms}">
+            <c:url var="programURL" value="/spring/dr/program/detail">
+                <c:param name="programId" value="${parentProgram.paoIdentifier.paoId}"/>
+            </c:url>
+            <a href="${programURL}"><spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody></a><br>
+        </c:forEach>
+    </c:if>
 </cti:standardPage>

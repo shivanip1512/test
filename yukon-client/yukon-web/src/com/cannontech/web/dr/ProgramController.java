@@ -1,13 +1,15 @@
 package com.cannontech.web.dr;
 
 
-import java.beans.PropertyEditor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.FactoryUtils;
+import org.apache.commons.collections.list.LazyList;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -25,14 +27,16 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
+import com.cannontech.dr.program.filter.ForControlAreaFilter;
+import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
@@ -42,6 +46,8 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 public class ProgramController {
@@ -52,7 +58,6 @@ public class ProgramController {
     private ProgramControllerHelper programControllerHelper;
     private LoadGroupControllerHelper loadGroupControllerHelper;
     private RolePropertyDao rolePropertyDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
     private DemandResponseEventLogService demandResponseEventLogService;
 
     public static class GearAdjustmentTimeSlot {
@@ -71,18 +76,61 @@ public class ProgramController {
         }
     }
 
-    public static class StartProgramBackingBean {
+    public abstract static class StartProgramBackingBeanBase {
+        private boolean startNow;
+        private Date startDate;
+        private boolean scheduleStop;
+        private Date stopDate;
+        private boolean autoObserveConstraints;
+
+        public boolean isStartNow() {
+            return startNow;
+        }
+
+        public void setStartNow(boolean startNow) {
+            this.startNow = startNow;
+        }
+
+        public Date getStartDate() {
+            return startDate;
+        }
+
+        public void setStartDate(Date startDate) {
+            this.startDate = startDate;
+        }
+
+        public boolean isScheduleStop() {
+            return scheduleStop;
+        }
+
+        public void setScheduleStop(boolean scheduleStop) {
+            this.scheduleStop = scheduleStop;
+        }
+
+        public Date getStopDate() {
+            return stopDate;
+        }
+
+        public void setStopDate(Date stopDate) {
+            this.stopDate = stopDate;
+        }
+
+        public boolean isAutoObserveConstraints() {
+            return autoObserveConstraints;
+        }
+
+        public void setAutoObserveConstraints(boolean autoObserveConstraints) {
+            this.autoObserveConstraints = autoObserveConstraints;
+        }
+    }
+
+    public static class StartProgramBackingBean extends StartProgramBackingBeanBase {
         private int programId;
         private int gearNumber;
         // only used for target cycle gears
         private boolean addAdjustments;
         private int numAdjustments;
         private List<Double> gearAdjustments = new ArrayList<Double>();
-        private boolean startNow;
-        private Date startDate;
-        private boolean scheduleStop;
-        private Date stopDate;
-        private boolean autoObserveConstraints;
 
         public int getProgramId() {
             return programId;
@@ -123,45 +171,86 @@ public class ProgramController {
         public void setGearAdjustments(List<Double> gearAdjustments) {
             this.gearAdjustments = gearAdjustments;
         }
+    }
 
-        public boolean isStartNow() {
-            return startNow;
+    public static class ProgramStartInfo {
+        private int programId;
+        private int gearNumber;
+        private boolean startProgram;
+        private boolean overrideConstraints;
+
+        public ProgramStartInfo() {
         }
 
-        public void setStartNow(boolean startNow) {
-            this.startNow = startNow;
+        public ProgramStartInfo(int programId, int gearNumber,
+                boolean startProgram) {
+            this.programId = programId;
+            this.gearNumber = gearNumber;
+            this.startProgram = startProgram;
         }
 
-        public Date getStartDate() {
-            return startDate;
+        public int getProgramId() {
+            return programId;
         }
 
-        public void setStartDate(Date startDate) {
-            this.startDate = startDate;
+        public void setProgramId(int programId) {
+            this.programId = programId;
         }
 
-        public boolean isScheduleStop() {
-            return scheduleStop;
+        public int getGearNumber() {
+            return gearNumber;
         }
 
-        public void setScheduleStop(boolean scheduleStop) {
-            this.scheduleStop = scheduleStop;
+        public void setGearNumber(int gearNumber) {
+            this.gearNumber = gearNumber;
         }
 
-        public Date getStopDate() {
-            return stopDate;
+        public boolean isStartProgram() {
+            return startProgram;
         }
 
-        public void setStopDate(Date stopDate) {
-            this.stopDate = stopDate;
+        public void setStartProgram(boolean startProgram) {
+            this.startProgram = startProgram;
         }
 
-        public boolean isAutoObserveConstraints() {
-            return autoObserveConstraints;
+        public boolean isOverrideConstraints() {
+            return overrideConstraints;
         }
 
-        public void setAutoObserveConstraints(boolean autoObserveConstraints) {
-            this.autoObserveConstraints = autoObserveConstraints;
+        public void setOverrideConstraints(boolean overrideConstraints) {
+            this.overrideConstraints = overrideConstraints;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static class StartProgramsBackingBean extends StartProgramBackingBeanBase {
+        private Integer controlAreaId;
+        private Integer scenarioId;
+        private List<ProgramStartInfo> programStartInfo =
+            LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ProgramStartInfo.class));
+
+        public Integer getControlAreaId() {
+            return controlAreaId;
+        }
+
+        public void setControlAreaId(Integer controlAreaId) {
+            this.controlAreaId = controlAreaId;
+        }
+
+        public Integer getScenarioId() {
+            return scenarioId;
+        }
+
+        public void setScenarioId(Integer scenarioId) {
+            this.scenarioId = scenarioId;
+        }
+
+        public List<ProgramStartInfo> getProgramStartInfo() {
+            return programStartInfo;
+        }
+
+        public void setProgramStartInfo(List<ProgramStartInfo> programStartInfo) {
+            this.programStartInfo = programStartInfo;
         }
     }
 
@@ -256,7 +345,6 @@ public class ProgramController {
     public String startProgramDetails(
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
-        LiteYukonUser user = userContext.getYukonUser();
 
         DisplayablePao program = programService.getProgram(backingBean.getProgramId());
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
@@ -273,22 +361,7 @@ public class ProgramController {
 
         modelMap.addAttribute("program", program);
 
-        boolean autoObserveConstraintsAllowed =
-            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
-        boolean checkConstraintsAllowed =
-            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
-
-        modelMap.addAttribute("autoObserveConstraintsAllowed", autoObserveConstraintsAllowed);
-        modelMap.addAttribute("checkConstraintsAllowed", checkConstraintsAllowed);
-
-        if (checkConstraintsAllowed && autoObserveConstraintsAllowed) {
-            // It might be more sane to change the "DEFAULT_CONSTRAINT_SELECTION"
-            // role property to something more like "AUTO_OBSERVE_CONSTRAINTS_BY_DEFAULT".
-            String defaultConstraint =
-                rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
-            backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE]));
-        }
-
+        addConstraintsInfoToModel(modelMap, userContext, backingBean);
         addGearsToModel(program, modelMap);
 
         return "dr/program/startProgramDetails.jsp";
@@ -321,11 +394,13 @@ public class ProgramController {
         // TODO:  when coming at this page from "back", don't reinitialize adjustments
         modelMap.addAttribute("gear", gear);
         Calendar timeSlotStartCal = Calendar.getInstance(userContext.getLocale());
-        timeSlotStartCal.setTime(backingBean.startDate);
+        timeSlotStartCal.setTime(backingBean.getStartDate());
         timeSlotStartCal.set(Calendar.MINUTE, 0);
         timeSlotStartCal.set(Calendar.SECOND, 0);
         timeSlotStartCal.set(Calendar.MILLISECOND, 0);
-        int numTimeSlots = LCUtils.getTimeSlotsForTargetCycle(backingBean.stopDate, backingBean.startDate, gear.getMethodPeriod());
+        int numTimeSlots = LCUtils.getTimeSlotsForTargetCycle(backingBean.getStopDate(),
+                                                              backingBean.getStartDate(),
+                                                              gear.getMethodPeriod());
         backingBean.numAdjustments = numTimeSlots;
         backingBean.gearAdjustments.clear();
         GearAdjustmentTimeSlot[] timeSlots = new GearAdjustmentTimeSlot[numTimeSlots];
@@ -357,12 +432,12 @@ public class ProgramController {
         // scheduling exactly what we checked for constraints.
         // We keep the "startNow" and "scheduleStop" booleans around so we
         // always know if the user chose those options.
-        if (backingBean.startNow) {
-            backingBean.startDate = new Date();
+        if (backingBean.isStartNow()) {
+            backingBean.setStartDate(new Date());
         }
-        if (!backingBean.scheduleStop) {
-            backingBean.stopDate =
-                new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusYears(1).toDate();
+        if (!backingBean.isScheduleStop()) {
+            backingBean.setStopDate(
+                new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusYears(1).toDate());
         }
 
         // TODO:  validate
@@ -371,22 +446,23 @@ public class ProgramController {
 
         boolean autoObserveConstraintsAllowed =
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
-        boolean checkConstraintsAllowed =
-            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
-        boolean overrideAllowed =
-            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
 
         if (autoObserveConstraintsAllowed && backingBean.isAutoObserveConstraints()) {
             return startProgram(backingBean, false, modelMap, userContext);
         }
 
+        boolean checkConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
             return closeDialog(modelMap);
         }
 
+        boolean overrideAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
         modelMap.addAttribute("overrideAllowed", overrideAllowed);
+
         ConstraintViolations violations =
             programService.getConstraintViolationForStartProgram(backingBean.getProgramId(),
                                                                  backingBean.getGearNumber(),
@@ -435,6 +511,216 @@ public class ProgramController {
                                                                 program.getName(),
                                                                 startDate);
         
+        return closeDialog(modelMap);
+    }
+
+    @RequestMapping("/program/startMultipleProgramsDetails")
+    public String startMultipleProgramsDetails(
+            @ModelAttribute("backingBean") StartProgramsBackingBean backingBean,
+            ModelMap modelMap, YukonUserContext userContext) {
+
+        UiFilter<DisplayablePao> filter = null;
+
+        if (backingBean.controlAreaId != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         controlArea, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("controlArea", controlArea);
+            filter = new ForControlAreaFilter(backingBean.controlAreaId);
+        }
+        if (backingBean.scenarioId != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         scenario, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("scenario", scenario);
+            filter = new ForScenarioFilter(backingBean.scenarioId);
+        }
+
+        if (filter == null) {
+            throw new IllegalArgumentException();
+        }
+
+        SearchResult<DisplayablePao> searchResult =
+            programService.filterPrograms(filter, null, 0, Integer.MAX_VALUE,
+                                          userContext);
+        List<DisplayablePao> programs = searchResult.getResultList();
+        modelMap.addAttribute("programs", programs);
+
+        // TODO:  need to not do this if they came via the "back" button...
+        backingBean.setStartNow(true);
+        backingBean.setStartDate(new Date());
+        backingBean.setScheduleStop(true);
+        backingBean.setStopDate(new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusHours(4).toDate());
+        List<ProgramStartInfo> programStartInfo = new ArrayList<ProgramStartInfo>(programs.size());
+        for (DisplayablePao program : programs) {
+            programStartInfo.add(new ProgramStartInfo(program.getPaoIdentifier().getPaoId(),
+                                                      1, true));
+        }
+        backingBean.setProgramStartInfo(programStartInfo);
+
+        addConstraintsInfoToModel(modelMap, userContext, backingBean);
+        addGearsToModel(searchResult.getResultList(), modelMap);
+
+        return "dr/program/startMultipleProgramsDetails.jsp";
+    }
+
+    @RequestMapping("/program/startMultipleProgramsConstraints")
+    public String startMultipleProgramsConstraints(
+            @ModelAttribute("backingBean") StartProgramsBackingBean backingBean,
+            ModelMap modelMap, YukonUserContext userContext) {
+        LiteYukonUser user = userContext.getYukonUser();
+
+        if (backingBean.controlAreaId != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         controlArea, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("controlArea", controlArea);
+        }
+        if (backingBean.scenarioId != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         scenario, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("scenario", scenario);
+        }
+
+        // With start and stop, it's important that we get the values
+        // squared away up front and don't change them after checking
+        // constraints so when we actually schedule the controlArea, we are
+        // scheduling exactly what we checked for constraints.
+        // We keep the "startNow" and "scheduleStop" booleans around so we
+        // always know if the user chose those options.
+        if (backingBean.isStartNow()) {
+            backingBean.setStartDate(new Date());
+        }
+        if (!backingBean.isScheduleStop()) {
+            backingBean.setStopDate(
+                new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusYears(1).toDate());
+        }
+
+        // TODO:  validate
+
+        boolean autoObserveConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
+
+        if (autoObserveConstraintsAllowed && backingBean.isAutoObserveConstraints()) {
+            return startMultiplePrograms(backingBean, modelMap, userContext);
+        }
+
+        boolean checkConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
+        if (!checkConstraintsAllowed) {
+            // they're not allowed to do anything...they got here by hacking
+            // (or a bug)
+            return closeDialog(modelMap);
+        }
+
+        boolean overrideAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
+        modelMap.addAttribute("overrideAllowed", overrideAllowed);
+
+        Map<Integer, ConstraintViolations> violationsByProgramId = Maps.newHashMap();
+        Map<Integer, DisplayablePao> programsByProgramId = Maps.newHashMap();
+        boolean constraintsViolated = false;
+        int numProgramsToStart = 0;
+        for (ProgramStartInfo programStartInfo : backingBean.getProgramStartInfo()) {
+            if (!programStartInfo.startProgram) {
+                continue;
+            }
+
+            numProgramsToStart++;
+            int programId = programStartInfo.getProgramId();
+            DisplayablePao program = programService.getProgram(programId);
+            programsByProgramId.put(programId, program);
+
+            ConstraintViolations violations =
+                programService.getConstraintViolationForStartProgram(programId,
+                                                                     programStartInfo.gearNumber,
+                                                                     backingBean.getStartDate(),
+                                                                     backingBean.getStopDate());
+            if (violations != null && violations.getViolations().size() > 0) {
+                violationsByProgramId.put(programId, violations);
+                constraintsViolated = true;
+            }
+        }
+
+        if (numProgramsToStart == 0) {
+            // nothing was selected to start...
+            // TODO:  error to user that nothing was selected
+            return "dr/program/startMultipleProgramsDetails.jsp";
+        }
+
+        modelMap.addAttribute("numProgramsToStart", numProgramsToStart);
+        modelMap.addAttribute("programsByProgramId", programsByProgramId);
+        modelMap.addAttribute("violationsByProgramId", violationsByProgramId);
+        modelMap.addAttribute("constraintsViolated", constraintsViolated);
+
+        return "dr/program/startMultipleProgramsConstraints.jsp";
+    }
+
+    @RequestMapping("/program/startMultiplePrograms")
+    public String startMultiplePrograms(
+            @ModelAttribute("backingBean") StartProgramsBackingBean backingBean,
+            ModelMap modelMap, YukonUserContext userContext) {
+
+        // TODO:  validate
+
+        if (backingBean.controlAreaId != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         controlArea, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("controlArea", controlArea);
+            demandResponseEventLogService.controlAreaStarted(controlArea.getName(),
+                                                             true,
+                                                             backingBean.getStartDate());
+        }
+        if (backingBean.scenarioId != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         scenario, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("scenario", scenario);
+            demandResponseEventLogService.scenarioStarted(scenario.getName(),
+                                                          true,
+                                                          backingBean.getStartDate());
+        }
+
+        // TODO:  validate permissions on programs too...or at least check to
+        // make sure the programs here are actually part of the control area
+        // or scenario that we've checked permissions on.
+
+        boolean overrideAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT,
+                                          userContext.getYukonUser());
+
+        for (ProgramStartInfo programStartInfo : backingBean.getProgramStartInfo()) {
+            if (!programStartInfo.startProgram) {
+                continue;
+            }
+
+            if (programStartInfo.overrideConstraints && !overrideAllowed) {
+                throw new NotAuthorizedException("not authorized to override constraints");
+            }
+
+            programService.startProgram(programStartInfo.programId,
+                                        programStartInfo.gearNumber,
+                                        backingBean.getStartDate(),
+                                        backingBean.isScheduleStop(),
+                                        backingBean.getStopDate(),
+                                        programStartInfo.overrideConstraints,
+                                        null);
+        }
+
         return closeDialog(modelMap);
     }
 
@@ -535,10 +821,10 @@ public class ProgramController {
                                                      program, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
-        
-        this.addGearsToModel(program, modelMap);
+
+        addGearsToModel(program, modelMap);
         modelMap.addAttribute("program", program);
-        
+
         return "dr/program/getChangeGearValue.jsp";
     }
     
@@ -587,7 +873,7 @@ public class ProgramController {
                                                      Permission.CONTROL_COMMAND);
         
         programService.setEnabled(programId, isEnabled);
-        
+
         if(isEnabled) {
             demandResponseEventLogService.threeTierProgramEnabled(yukonUser, program.getName());
         } else {
@@ -599,11 +885,42 @@ public class ProgramController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        PropertyEditor fullDateTimeEditor =
-            datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
-        binder.registerCustomEditor(Date.class, fullDateTimeEditor);
         programControllerHelper.initBinder(binder, userContext);
         loadGroupControllerHelper.initBinder(binder, userContext);
+    }
+
+    private void addConstraintsInfoToModel(ModelMap modelMap,
+            YukonUserContext userContext, StartProgramBackingBeanBase backingBean) {
+        LiteYukonUser user = userContext.getYukonUser();
+        boolean autoObserveConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
+        boolean checkConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
+
+        modelMap.addAttribute("autoObserveConstraintsAllowed", autoObserveConstraintsAllowed);
+        modelMap.addAttribute("checkConstraintsAllowed", checkConstraintsAllowed);
+
+        if (checkConstraintsAllowed && autoObserveConstraintsAllowed) {
+            // It might be more sane to change the "DEFAULT_CONSTRAINT_SELECTION"
+            // role property to something more like "AUTO_OBSERVE_CONSTRAINTS_BY_DEFAULT".
+            String defaultConstraint =
+                rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
+            backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE]));
+        }
+
+    }
+
+    private void addGearsToModel(List<DisplayablePao> programs, ModelMap modelMap) {
+        Map<Integer, List<LMProgramDirectGear>> gearsByProgramId = Maps.newHashMap();
+        for (DisplayablePao program : programs) {
+            List<LMProgramDirectGear> gears = Collections.emptyList();
+            LMProgramBase programBase = programService.map(program);
+            if (programBase instanceof IGearProgram) {
+                gears = ((IGearProgram) programBase).getDirectGearVector();
+            }
+            gearsByProgramId.put(program.getPaoIdentifier().getPaoId(), gears);
+        }
+        modelMap.addAttribute("gearsByProgramId", gearsByProgramId);
     }
 
     private void addGearsToModel(DisplayablePao program, ModelMap modelMap) {
@@ -676,12 +993,6 @@ public class ProgramController {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setDatePropertyEditorFactory(
-            DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
     }
     
     @Autowired

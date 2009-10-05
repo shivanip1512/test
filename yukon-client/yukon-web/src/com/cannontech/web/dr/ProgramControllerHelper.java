@@ -2,9 +2,11 @@ package com.cannontech.web.dr;
 
 import java.beans.PropertyEditor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.dr.filter.AuthorizedFilter;
@@ -29,7 +32,11 @@ import com.cannontech.dr.program.filter.StartStopFilter;
 import com.cannontech.dr.program.filter.StateFilter;
 import com.cannontech.dr.program.model.ProgramDisplayField;
 import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.loadcontrol.data.IGearProgram;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Maps;
 
 public class ProgramControllerHelper {
     public static class ProgramListBackingBean extends ListBackingBean {
@@ -85,6 +92,10 @@ public class ProgramControllerHelper {
     private DatePropertyEditorFactory datePropertyEditorFactory;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        PropertyEditor fullDateTimeEditor =
+            datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
+        binder.registerCustomEditor(Date.class, fullDateTimeEditor);
+
         // Since Range uses generics, spring can't determine the type of the
         // min and max values on its own.  In any case, for dates, we need
         // to handle the start and end differently.

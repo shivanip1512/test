@@ -10,6 +10,8 @@
     <cti:standardMenu menuSelection="details|controlareas"/>
 
     <tags:simpleDialog id="drDialog"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
@@ -42,9 +44,6 @@
 
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.controlAreaList.filters"/>
     <tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
-    <cti:url var="action1" value="../my/action1"/>
-    <form:form action="${action1}"/>
-    <form:form action="../my/action2"/>
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.sort}">
             <input type="hidden" name="sort" value="${param.sort}"/>
@@ -141,23 +140,36 @@
                 </tr>
                 <c:forEach var="controlArea" items="${controlAreas}">
                     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
-                    <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
+                    <c:url var="controlAreaUrl" value="/spring/dr/controlArea/detail">
                         <c:param name="controlAreaId" value="${controlAreaId}"/>
                     </c:url>
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                         <td>
-                            <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${controlArea.name}</spring:escapeBody></a>
+                            <a href="${controlAreaUrl}"><spring:escapeBody htmlEscape="true">${controlArea.name}</spring:escapeBody></a>
                         </td>
                         <td>
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STATE"/>
                         </td>
                         <td style="white-space: nowrap;">
-                            <span id="actionSpan_${loadGroupId}">
+                            <span id="actionSpan_${controlAreaId}">
                                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}">
                                     
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-            
+                                    <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+                                        <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    </cti:url>
+                                    <a id="startLink_${controlAreaId}" href="javascript:void(0)"
+                                        onclick="openSimpleDialog('drDialog', '${startControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+                                    </a>
+
+                                    <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramDetails">
+                                        <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    </cti:url>
+                                    <a id="stopLink_${controlAreaId}" href="javascript:void(0)"
+                                        onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
+                                        <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
+                                    </a>
+
                                     <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                         <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         <cti:param name="isEnabled" value="true"/>

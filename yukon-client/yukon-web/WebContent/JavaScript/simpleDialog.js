@@ -57,9 +57,12 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, width, height) {
         dialogDiv.show();
     }
 
+    var errorCallback = successCallback;
+
     new Ajax.Updater(dialogId + '_body', innerHtmlUrl, {
             'evalScripts': true,
-            'onSuccess': successCallback
+            'onSuccess': successCallback,
+            'onFailure' : errorCallback
         });
 }
 

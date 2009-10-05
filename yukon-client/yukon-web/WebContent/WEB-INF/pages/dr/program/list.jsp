@@ -9,6 +9,8 @@
     <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
     <tags:simpleDialog id="drDialog"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
     <cti:breadCrumbs>

@@ -8,6 +8,8 @@
     <cti:standardMenu menuSelection="details|scenarios"/>
 
     <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
     <cti:breadCrumbs>
@@ -27,6 +29,7 @@
         htmlEscape="true" argument="${scenario.name}"/></h2>
     <br>
 
+    <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
@@ -38,13 +41,25 @@
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.actions"/>
             	<tags:abstractContainer type="box" title="${boxTitle}">
-                    <span id="actionSpan_${loadGroupId}">
+                    <span id="actionSpan_${scenarioId}">
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
-                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
-                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start"/><br>
-                        
-                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
-                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop"/><br>
+                            <cti:url var="startScenarioUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+                                <cti:param name="scenarioId" value="${scenarioId}"/>
+                            </cti:url>
+                            <a href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${startScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start"/><br>
+                            </a>
+
+                            <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                                <cti:param name="scenarioId" value="${scenarioId}"/>
+                            </cti:url>
+                            <a href="javascript:void(0)" class="simpleLink"
+                                onclick="openSimpleDialog('drDialog', '${stopScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
+                                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
+                                <cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop"/><br>
+                            </a>
                         </cti:checkPaoAuthorization>
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">
                             <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>

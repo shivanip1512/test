@@ -150,7 +150,7 @@ public class ControlAreaController {
 
         return "dr/controlArea/detail.jsp";
     }
-    
+
     @RequestMapping("/controlArea/sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int controlAreaId, boolean isEnabled,
             YukonUserContext userContext) {
@@ -186,10 +186,8 @@ public class ControlAreaController {
             demandResponseEventLogService.threeTierControlAreaDisabled(yukonUser, 
                                                                        controlArea.getName());
         }
-        
-        modelMap.addAttribute("popupId", "drDialog");
-        
-        return "common/closePopup.jsp";
+
+        return closeDialog(modelMap);
     }
     
     @RequestMapping("/controlArea/sendResetPeakConfirm")
@@ -220,10 +218,8 @@ public class ControlAreaController {
         
         demandResponseEventLogService.threeTierControlAreaPeakReset(yukonUser, 
                                                                     controlArea.getName());
-        
-        modelMap.addAttribute("popupId", "drDialog");
-        
-        return "common/closePopup.jsp";
+
+        return closeDialog(modelMap);
     }
     
     @RequestMapping("/controlArea/getChangeTimeWindowValues")
@@ -303,10 +299,8 @@ public class ControlAreaController {
                                                                             controlArea.getName(),
                                                                             startSeconds,
                                                                             stopSeconds);
-        
-        modelMap.addAttribute("popupId", "drDialog");
-        
-        return "common/closePopup.jsp";
+
+        return closeDialog(modelMap);
     }
     
     @RequestMapping("/controlArea/getTriggerChangeValues")
@@ -352,10 +346,8 @@ public class ControlAreaController {
                                                                           controlArea.getName(),
                                                                           threshold1, offset1, 
                                                                           threshold2, offset2);
-        
-        modelMap.addAttribute("popupId", "drDialog");
-        
-        return "common/closePopup.jsp";
+
+        return closeDialog(modelMap);
     }
     
     /**
@@ -406,6 +398,11 @@ public class ControlAreaController {
         }
         
         return startSeconds < stopSeconds;
+    }
+
+    private String closeDialog(ModelMap modelMap) {
+        modelMap.addAttribute("popupId", "drDialog");
+        return "common/closePopup.jsp";
     }
 
     @InitBinder

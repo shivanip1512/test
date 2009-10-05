@@ -134,6 +134,40 @@
 <entry key="yukon.web.modules.dr.program.stopProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.cancelButton">Cancel</entry>
 
+<!-- start control area -->
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.title">Start Programs</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea">Are you sure you want to start control area {0}?</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.scenario">Are you sure you want to start scenario {0}?</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.programs">Programs to Start</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.startProgramName">Start</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.startTime">Start time:</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.startNow">Start Now</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.stopTime">Stop time:</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.scheduleStop">Schedule Stop</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.startAllPrograms">Start All Programs</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.autoObserveConstraints">Automatically Observe Constraints</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.constraintsWillBeObserved">All constraints will be observed.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.gear">Gear</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.currentState">Current State</entry>
+
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.startingNow">The programs will be started now.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.startingAt">The programs will be scheduled to start at {0}.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.stopNotScheduled">The programs will not be scheduled to stop.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.stoppingAt">The programs will be scheduled to stop at {0}.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.violations">Violations</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.programName">Name</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.overrideProgramName">Override</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.noConstraintsViolated">No constraints will be violated.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.noConstraintsViolatedForProgram">None</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.overrideAllConstraints">Override all constraints</entry>
+
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.backButton">Back</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.nextButton">Next</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.cancelButton">Cancel</entry>
+
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.title">Stop Programs</entry>
+
 <!-- getChangeGearValue.jsp -->
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.title">Send Change Gear</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.instructions">Please select the gear to change to for program {0}.</entry>
@@ -424,18 +458,17 @@
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 
-<entry key="yukon.web.modules.dr.programDetail.heading.parents">Parents</entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.controlArea">
-    This program belongs to the following control area.
+    This program is included in the following control area.
 </entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.noControlArea">
-    This program has no parent control area.
+    This program is not included in a control area.
 </entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.scenarios">
-    This program belongs to the following scenarios.
+    This program is included in the following scenarios.
 </entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.noScenarios">
-    This program has no parent scenarios.
+    This program is not included in any scenarios.
 </entry>
 
 
@@ -504,12 +537,11 @@
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon.alt">Disable Load Group</entry>
 
-<entry key="yukon.web.modules.dr.loadGroupDetail.heading.parents">Parents</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.programs">
-    This load group belongs to the following programs.
+    This load group is included in the following programs.
 </entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms">
-    This load group has no parent programs.
+    This load group is not included in any programs.
 </entry>
 
 </properties>

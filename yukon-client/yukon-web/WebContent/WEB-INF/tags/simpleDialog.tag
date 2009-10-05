@@ -9,9 +9,6 @@
 
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 
-<cti:includeScript link="/JavaScript/calendarControl.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-
 <%-- if the title is going to be specified when popping up the dialog,
      it doesn't matter what it is for now --%>
 <c:if test="${empty title}">

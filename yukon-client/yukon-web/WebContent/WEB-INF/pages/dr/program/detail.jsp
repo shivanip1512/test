@@ -8,10 +8,11 @@
 <cti:standardPage module="dr" page="programDetail" title="${pageTitle}">
     <cti:standardMenu menuSelection="details|programs"/>
 
-    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
-    
     <tags:simpleDialog id="drDialog"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
 <script type="text/javascript">
     function updateChangeGearEnabled(data) {
@@ -90,7 +91,7 @@
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
-                    <span id="actionSpan_${loadGroupId}">
+                    <span id="actionSpan_${programId}">
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
                             <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
                                 <cti:param name="programId" value="${programId}"/>
@@ -180,34 +181,29 @@
     <%@ include file="../loadGroup/loadGroupList.jspf" %>
     <br>
 
-    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.parents"/>
-    <tags:abstractContainer type="box" title="${boxTitle}">
+    <c:if test="${empty parentControlArea}">
+        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
+    </c:if>
+    <c:if test="${!empty parentControlArea}">
+        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
+        <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
+            <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
+        </c:url>
+        <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
+    </c:if>
+    <br>
 
-        <c:if test="${empty parentControlArea}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
-        </c:if>
-        <c:if test="${!empty parentControlArea}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
-            <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
-                <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
+    <c:if test="${empty parentScenarios}">
+        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
+    </c:if>
+    <c:if test="${!empty parentScenarios}">
+        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
+        <c:forEach var="parentScenario" items="${parentScenarios}">
+            <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
+                <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
             </c:url>
-            <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
-        </c:if>
-        <br>
-
-        <c:if test="${empty parentScenarios}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
-        </c:if>
-        <c:if test="${!empty parentScenarios}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
-            <c:forEach var="parentScenario" items="${parentScenarios}">
-                <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
-                    <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
-                </c:url>
-                <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
-            </c:forEach>
-        </c:if>
-
-    </tags:abstractContainer>
+            <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
+        </c:forEach>
+    </c:if>
 
 </cti:standardPage>

@@ -698,3 +698,7 @@ a.simpleLink {
 table.rowHighlighting tr:hover td {
     background-color: yellow;
 }
+
+#startMultipleProgramsOverridePrograms .override {
+	white-space: nowrap;
+}

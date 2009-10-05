@@ -8,6 +8,15 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface DemandResponseEventLogService {
     
+    // Scenario logging
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.scenario")
+    public void scenarioStarted(String controlAreaName, Boolean manual,
+            Date startDate);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.scenario")
+    public void scenarioStopped(String controlAreaName, Boolean manual,
+            Date stopDate);
+
     // Control Area logging
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void controlAreaStarted(String controlAreaName, 
