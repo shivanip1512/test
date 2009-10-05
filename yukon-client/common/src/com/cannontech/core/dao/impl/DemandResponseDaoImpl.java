@@ -1,22 +1,16 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DemandResponseDao;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class DemandResponseDaoImpl implements DemandResponseDao {
 
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
     @Override
     public List<YukonPao> getControlAreasAndScenariosForProgram(YukonPao program) {
@@ -35,8 +29,8 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         sql.appendArgument(programId);
         sql.append("    )");
         
-        List<YukonPao> parentList = 
-            simpleJdbcTemplate.query(sql.getSql(), new YukonPaoRowMapper(), sql.getArguments());
+        List<YukonPao> parentList = new ArrayList<YukonPao>();
+        yukonJdbcTemplate.query(sql, new YukonPaoRowMapper(), parentList);
         
         return parentList;
     }
@@ -52,29 +46,14 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         sql.appendArgument(group.getPaoIdentifier().getPaoId());
         sql.append("    )");
         
-        List<YukonPao> programList = 
-            simpleJdbcTemplate.query(sql.getSql(), new YukonPaoRowMapper(), sql.getArguments());
+        List<YukonPao> programList = new ArrayList<YukonPao>();
+        yukonJdbcTemplate.query(sql, new YukonPaoRowMapper(), programList);
         
         return programList;
     }
     
-    private class YukonPaoRowMapper implements ParameterizedRowMapper<YukonPao> {
-
-        public YukonPao mapRow(ResultSet rs, int rowNum) throws SQLException {
-            int paoID = rs.getInt("PAObjectID");
-            String paoCategory = rs.getString("Category").trim();
-            String paoType = rs.getString("Type").trim();
-
-            int type = PAOGroups.getPAOType(paoCategory, paoType);
-            PaoIdentifier paoIdentifier = new PaoIdentifier(paoID,
-                                                            PaoType.getForId(type));
-
-            return paoIdentifier;
-        }
-    }
-    
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
 }

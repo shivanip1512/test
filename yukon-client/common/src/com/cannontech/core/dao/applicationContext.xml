@@ -60,7 +60,7 @@
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
   <bean id="demandResponseDao" class="com.cannontech.core.dao.impl.DemandResponseDaoImpl">
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+    <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
   <bean id="deviceCustomerListDao" class="com.cannontech.core.dao.impl.DeviceCustomerListDaoImpl" />
   <bean id="graphCustomerListDao" class="com.cannontech.core.dao.impl.GraphCustomerListDaoImpl" />
