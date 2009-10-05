@@ -275,8 +275,16 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         
         if (bareModel instanceof DatedModelAttributes) {
             DatedModelAttributes datedModel = (DatedModelAttributes) bareModel;
-            return getDateFormat().format(datedModel.getStartDate()) + " through " +
-               getDateFormat().format(datedModel.getStopDate());
+            Date startDate = datedModel.getStartDate();
+            Date stopDate = datedModel.getStopDate();
+            if(startDate == null || stopDate == null){
+                /* Must be a report that can disable the date fields as an option. */
+                /* Some browsers will not return inputs that are disabled. */ 
+                /* Just print out the date the report was run. */
+                return getDateFormat().format(new Date()); 
+            } else {
+                return getDateFormat().format(startDate) + " through " + getDateFormat().format(stopDate);
+            }
         }
         
         // won't work because report is "created" before data is loaded
