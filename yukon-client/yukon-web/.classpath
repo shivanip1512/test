@@ -56,7 +56,7 @@
 	<classpathentry kind="lib" path="/third-party/jsp-api.jar" sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-io-1.3.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-webmvc.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.3-with-dependencies.zip"/>
+	<classpathentry kind="lib" path="/third-party/spring-webmvc.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/jopcbridge.jar"/>
 	<classpathentry kind="lib" path="/third-party/dom4j-1.6.1.jar"/>
