@@ -19,6 +19,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
@@ -27,6 +28,7 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.DurationFormattingService.DurationFormat;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
@@ -84,6 +86,7 @@ public class ControlAreaController {
     private ProgramControllerHelper programControllerHelper;
     private LoadControlClientConnection loadControlClientConnection;
     private DurationFormattingService durationFormattingService;
+    private DemandResponseEventLogService demandResponseEventLogService;
 
     @RequestMapping("/controlArea/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
@@ -119,9 +122,8 @@ public class ControlAreaController {
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         SearchResult<ControlArea> searchResult =
-            controlAreaService.filterControlAreas(userContext, filter, sorter,
-                                                  startIndex,
-                                                  backingBean.getItemsPerPage());
+            controlAreaService.filterControlAreas(filter, sorter, startIndex, 
+                                                  backingBean.getItemsPerPage(), userContext);
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("controlAreas", searchResult.getResultList());
@@ -169,12 +171,21 @@ public class ControlAreaController {
             YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      controlArea, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
         
-        controlAreaService.setEnabled(controlAreaId, isEnabled, userContext);
+        controlAreaService.setEnabled(controlAreaId, isEnabled);
+        
+        if(isEnabled) {
+            demandResponseEventLogService.threeTierControlAreaEnabled(yukonUser, 
+                                                                      controlArea.getName());
+        } else {
+            demandResponseEventLogService.threeTierControlAreaDisabled(yukonUser, 
+                                                                       controlArea.getName());
+        }
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -199,12 +210,16 @@ public class ControlAreaController {
     public String resetPeak(ModelMap modelMap, int controlAreaId, YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      controlArea, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
         
-        controlAreaService.resetPeak(controlAreaId, userContext);
+        controlAreaService.resetPeak(controlAreaId);
+        
+        demandResponseEventLogService.threeTierControlAreaPeakReset(yukonUser, 
+                                                                    controlArea.getName());
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -271,7 +286,8 @@ public class ControlAreaController {
                                    String stopTime, YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      controlArea, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
@@ -281,8 +297,12 @@ public class ControlAreaController {
         
         controlAreaService.changeTimeWindow(controlAreaId, 
                                             startSeconds, 
-                                            stopSeconds,
-                                            userContext);
+                                            stopSeconds);
+        
+        demandResponseEventLogService.threeTierControlAreaTimeWindowChanged(yukonUser,
+                                                                            controlArea.getName(),
+                                                                            startSeconds,
+                                                                            stopSeconds);
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -316,7 +336,8 @@ public class ControlAreaController {
                                 YukonUserContext userContext) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      controlArea, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
@@ -325,8 +346,12 @@ public class ControlAreaController {
                                           threshold1, 
                                           offset1, 
                                           threshold2, 
-                                          offset2,
-                                          userContext);
+                                          offset2);
+        
+        demandResponseEventLogService.threeTierControlAreaTriggersChanged(yukonUser,
+                                                                          controlArea.getName(),
+                                                                          threshold1, offset1, 
+                                                                          threshold2, offset2);
         
         modelMap.addAttribute("popupId", "drDialog");
         
@@ -413,5 +438,10 @@ public class ControlAreaController {
     @Autowired
     public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
         this.durationFormattingService = durationFormattingService;
+    }
+    
+    @Autowired
+    public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
+        this.demandResponseEventLogService = demandResponseEventLogService;
     }
 }

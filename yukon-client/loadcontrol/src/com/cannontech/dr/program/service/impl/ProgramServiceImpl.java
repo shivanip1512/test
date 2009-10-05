@@ -86,20 +86,21 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<DisplayablePao> findProgramsForLoadGroup(
-            YukonUserContext userContext, int loadGroupId) {
+    public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 
+                                                         YukonUserContext userContext) {
         UiFilter<DisplayablePao> filter = new ForLoadGroupFilter(loadGroupId);
 
         SearchResult<DisplayablePao> searchResult =
-            filterPrograms(userContext, filter, null, 0, Integer.MAX_VALUE);
+            filterPrograms(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         return searchResult.getResultList();
     }
 
     @Override
-    public SearchResult<DisplayablePao> filterPrograms(
-            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
-            Comparator<DisplayablePao> sorter, int startIndex, int count) {
+    public SearchResult<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
+                                                       Comparator<DisplayablePao> sorter, 
+                                                       int startIndex, int count,
+                                                       YukonUserContext userContext) {
 
         Comparator<DisplayablePao> defaultSorter = ProgramDisplayField.NAME.getSorter(this, userContext, false);
         if (sorter == null) {
@@ -114,11 +115,9 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public ConstraintViolations getConstraintViolationForStartProgram(
-            YukonUserContext userContext, int programId, int gearNumber,
-            Date startDate, Date stopDate) {
+            int programId, int gearNumber, Date startDate, Date stopDate) {
         LMManualControlRequest controlRequest =
-            getManualControlMessage(userContext, programId, gearNumber,
-                                    startDate, stopDate,
+            getManualControlMessage(programId, gearNumber, startDate, stopDate,
                                     LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
 
         // better be a program for this Request Message!
@@ -136,16 +135,14 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void startProgram(YukonUserContext userContext, int programId,
-            int gearNumber, Date startDate, boolean stopScheduled, Date stopDate,
-            boolean overrideConstraints, String additionalInfo) {
+    public void startProgram(int programId, int gearNumber, Date startDate, boolean stopScheduled, 
+                             Date stopDate, boolean overrideConstraints, String additionalInfo) {
 
         int constraintId = overrideConstraints
             ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
             : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         LMManualControlRequest controlRequest =
-            getManualControlMessage(userContext, programId, gearNumber,
-                                    startDate, stopDate, constraintId);
+            getManualControlMessage(programId, gearNumber, startDate, stopDate, constraintId);
 
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         String gearName = getGearNameForProgram(program, gearNumber);
@@ -159,8 +156,7 @@ public class ProgramServiceImpl implements ProgramService {
         ServerRequest serverRequest = new ServerRequestImpl();
         serverRequest.makeServerRequest(loadControlClientConnection, controlRequest);
 
-        demandResponseEventLogService.programScheduled(userContext.getYukonUser(),
-                                                       program.getYukonName(),
+        demandResponseEventLogService.programScheduled(program.getYukonName(),
                                                        overrideConstraints,
                                                        gearName, true,
                                                        startDate, stopScheduled,
@@ -177,21 +173,19 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void scheduleProgramStop(YukonUserContext userContext, int programId,
-            Date stopDate) {
+    public void scheduleProgramStop(int programId, Date stopDate) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
         LMManualControlRequest controlRequest =
             program.createScheduledStopMsg(startDate, stopDate, 1, null);
         loadControlClientConnection.write(controlRequest);
 
-        demandResponseEventLogService.programStopScheduled(userContext.getYukonUser(),
-                                                           program.getYukonName(),
+        demandResponseEventLogService.programStopScheduled(program.getYukonName(),
                                                            true, stopDate, null);
     }
 
     @Override
-    public void stopProgram(YukonUserContext userContext, int programId) {
+    public void stopProgram(int programId) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date stopDate = new Date();
         LMManualControlRequest controlRequest =
@@ -199,15 +193,12 @@ public class ProgramServiceImpl implements ProgramService {
                                           LMManualControlRequest.CONSTRAINTS_FLAG_USE);
         loadControlClientConnection.write(controlRequest);
 
-        demandResponseEventLogService.programStopped(userContext.getYukonUser(),
-                                                     program.getYukonName(),
-                                                     true, stopDate, null);
+        demandResponseEventLogService.programStopped(program.getYukonName(), true, stopDate, null);
     }
 
     @Override
-    public ConstraintViolations getConstraintViolationsForStopProgram(
-            YukonUserContext userContext, int programId, int gearNumber,
-            Date stopDate) {
+    public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber, 
+                                                                      Date stopDate) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
         LMManualControlRequest changeGearRequest = 
@@ -222,9 +213,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void stopProgramWithGear(YukonUserContext userContext,
-            int programId, int gearNumber, Date stopDate,
-            boolean overrideConstraints) {
+    public void stopProgramWithGear(int programId, int gearNumber, Date stopDate, 
+                                    boolean overrideConstraints) {
         int constraintId = overrideConstraints
             ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
             : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
@@ -242,8 +232,7 @@ public class ProgramServiceImpl implements ProgramService {
         ServerRequest serverRequest = new ServerRequestImpl();
         serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
 
-        demandResponseEventLogService.programStopped(userContext.getYukonUser(),
-                                                     program.getYukonName(),
+        demandResponseEventLogService.programStopped(program.getYukonName(),
                                                      true, stopDate, gearName);
     }
 
@@ -276,7 +265,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     @Override
-    public void changeGear(int programId, int gearNumber, YukonUserContext userContext) {
+    public void changeGear(int programId, int gearNumber) {
         
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date stopDate = program.getStopTime().getTime();
@@ -301,13 +290,11 @@ public class ProgramServiceImpl implements ProgramService {
         serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
         
         String gearName = getGearNameForProgram(program, gearNumber);
-        demandResponseEventLogService.programChangeGear(userContext.getYukonUser(), 
-                                                        program.getYukonName(), 
-                                                        gearName);
+        demandResponseEventLogService.programChangeGear(program.getYukonName(), gearName);
     }
 
     @Override
-    public void setEnabled(int programId, boolean isEnabled, YukonUserContext userContext) {
+    public void setEnabled(int programId, boolean isEnabled) {
 
         int loadControlCommand = isEnabled ? LMCommand.ENABLE_PROGRAM
                 : LMCommand.DISABLE_PROGRAM;
@@ -316,11 +303,9 @@ public class ProgramServiceImpl implements ProgramService {
         
         DisplayablePao program = this.getProgram(programId);
         if(isEnabled) {
-            demandResponseEventLogService.programEnabled(userContext.getYukonUser(), 
-                                                           program.getName());
+            demandResponseEventLogService.programEnabled(program.getName());
         } else {
-            demandResponseEventLogService.programDisabled(userContext.getYukonUser(), 
-                                                            program.getName());
+            demandResponseEventLogService.programDisabled(program.getName());
         }
         
     }
@@ -348,8 +333,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     private LMManualControlRequest getManualControlMessage(
-            YukonUserContext userContext, int programId, int gearNumber,
-            Date startDate, Date stopDate, int constraintId) {
+            int programId, int gearNumber, Date startDate, Date stopDate, int constraintId) {
         if (stopDate == null) {
             throw new IllegalArgumentException("startDate cannot be null");
         }

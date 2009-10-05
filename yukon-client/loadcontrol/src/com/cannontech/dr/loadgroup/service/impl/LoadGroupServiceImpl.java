@@ -76,32 +76,30 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }    
 
     @Override
-    public void sendShed(int loadGroupId, int durationInSeconds, YukonUserContext userContext) {
+    public void sendShed(int loadGroupId, int durationInSeconds) {
 
         Message msg = new LMCommand(LMCommand.SHED_GROUP, loadGroupId,
                                     durationInSeconds, 0.0);
         loadControlClientConnection.write(msg);
         
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
-        demandResponseEventLogService.loadGroupShed(userContext.getYukonUser(), 
-                                                    loadGroup.getName(), 
+        demandResponseEventLogService.loadGroupShed(loadGroup.getName(), 
                                                     durationInSeconds);
     }
 
     @Override
-    public void sendRestore(int loadGroupId, YukonUserContext userContext) {
+    public void sendRestore(int loadGroupId) {
 
         Message msg = new LMCommand(LMCommand.RESTORE_GROUP, loadGroupId,
                                     0, 0.0);
         loadControlClientConnection.write(msg);
 
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
-        demandResponseEventLogService.loadGroupRestore(userContext.getYukonUser(), 
-                                                       loadGroup.getName());
+        demandResponseEventLogService.loadGroupRestore(loadGroup.getName());
     }
 
     @Override
-    public void setEnabled(int loadGroupId, boolean isEnabled, YukonUserContext userContext) {
+    public void setEnabled(int loadGroupId, boolean isEnabled) {
 
         int loadControlCommand = isEnabled ? LMCommand.ENABLE_GROUP
                 : LMCommand.DISABLE_GROUP;
@@ -109,12 +107,11 @@ public class LoadGroupServiceImpl implements LoadGroupService {
         loadControlClientConnection.write(msg);
         
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        String name = loadGroup.getName();
         if(isEnabled) {
-            demandResponseEventLogService.loadGroupEnabled(userContext.getYukonUser(), 
-                                                           loadGroup.getName());
+            demandResponseEventLogService.loadGroupEnabled(name);
         } else {
-            demandResponseEventLogService.loadGroupDisabled(userContext.getYukonUser(), 
-                                                            loadGroup.getName());
+            demandResponseEventLogService.loadGroupDisabled(name);
         }
     }
     

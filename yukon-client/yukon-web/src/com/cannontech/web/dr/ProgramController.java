@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -52,6 +53,7 @@ public class ProgramController {
     private LoadGroupControllerHelper loadGroupControllerHelper;
     private RolePropertyDao rolePropertyDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
+    private DemandResponseEventLogService demandResponseEventLogService;
 
     public static class GearAdjustmentTimeSlot {
         private Date startTime;
@@ -386,8 +388,7 @@ public class ProgramController {
 
         modelMap.addAttribute("overrideAllowed", overrideAllowed);
         ConstraintViolations violations =
-            programService.getConstraintViolationForStartProgram(userContext,
-                                                                 backingBean.getProgramId(),
+            programService.getConstraintViolationForStartProgram(backingBean.getProgramId(),
                                                                  backingBean.getGearNumber(),
                                                                  backingBean.getStartDate(),
                                                                  backingBean.getStopDate());
@@ -418,14 +419,22 @@ public class ProgramController {
             additionalInfo = "adjustments " +
             		StringUtils.join(backingBean.gearAdjustments, ' ');
         }
-        programService.startProgram(userContext, programId,
-                                    backingBean.getGearNumber(),
-                                    backingBean.getStartDate(),
-                                    backingBean.isScheduleStop(),
-                                    backingBean.getStopDate(),
+        int gearNumber = backingBean.getGearNumber();
+        Date startDate = backingBean.getStartDate();
+        boolean scheduleStop = backingBean.isScheduleStop();
+        Date stopDate = backingBean.getStopDate();
+        programService.startProgram(programId,
+                                    gearNumber,
+                                    startDate,
+                                    scheduleStop,
+                                    stopDate,
                                     overrideConstraints != null && overrideConstraints,
                                     additionalInfo);
 
+        demandResponseEventLogService.threeTierProgramScheduled(userContext.getYukonUser(),
+                                                                program.getName(),
+                                                                startDate);
+        
         return closeDialog(modelMap);
     }
 
@@ -469,8 +478,7 @@ public class ProgramController {
         assertStopGearAllowed(userContext);
 
         ConstraintViolations violations =
-            programService.getConstraintViolationsForStopProgram(userContext,
-                                                                 backingBean.getProgramId(),
+            programService.getConstraintViolationsForStopProgram(backingBean.getProgramId(),
                                                                  backingBean.getGearNumber(),
                                                                  backingBean.getStopDate());
         modelMap.addAttribute("violations", violations);
@@ -485,25 +493,35 @@ public class ProgramController {
             ModelMap modelMap, YukonUserContext userContext) {
 
         DisplayablePao program = programService.getProgram(backingBean.getProgramId());
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      program, 
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
 
+        Date stopDate = backingBean.stopDate;
+        int gearNumber = backingBean.gearNumber;
         if (backingBean.useStopGear) {
             assertStopGearAllowed(userContext);
             assertOverrideAllowed(userContext, overrideConstraints);
-            programService.stopProgramWithGear(userContext,
-                                               backingBean.programId,
-                                               backingBean.gearNumber,
-                                               backingBean.stopDate,
+            programService.stopProgramWithGear(backingBean.programId,
+                                               gearNumber,
+                                               stopDate,
                                                overrideConstraints != null && overrideConstraints);
+            
+            demandResponseEventLogService.threeTierProgramStopped(yukonUser,
+                                                                  program.getName(), 
+                                                                  stopDate);
         } else if (backingBean.stopNow) {
-            programService.stopProgram(userContext, backingBean.programId);
+            programService.stopProgram(backingBean.programId);
+            demandResponseEventLogService.threeTierProgramStopped(yukonUser,
+                                                                  program.getName(), 
+                                                                  stopDate);
         } else {
-            programService.scheduleProgramStop(userContext,
-                                       backingBean.programId,
-                                       backingBean.stopDate);
+            programService.scheduleProgramStop(backingBean.programId, stopDate);
+            demandResponseEventLogService.threeTierProgramStopScheduled(yukonUser,
+                                                                        program.getName(), 
+                                                                        stopDate);
         }
 
         return closeDialog(modelMap);
@@ -529,12 +547,15 @@ public class ProgramController {
                              YukonUserContext userContext) {
         
         DisplayablePao program = programService.getProgram(programId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      program, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
         
-        programService.changeGear(programId, gearNumber, userContext);
+        programService.changeGear(programId, gearNumber);
+        
+        demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
         
         return closeDialog(modelMap);
     }
@@ -559,12 +580,19 @@ public class ProgramController {
             YukonUserContext userContext) {
         
         DisplayablePao program = programService.getProgram(programId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+        LiteYukonUser yukonUser = userContext.getYukonUser();
+        paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      program, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
         
-        programService.setEnabled(programId, isEnabled, userContext);
+        programService.setEnabled(programId, isEnabled);
+        
+        if(isEnabled) {
+            demandResponseEventLogService.threeTierProgramEnabled(yukonUser, program.getName());
+        } else {
+            demandResponseEventLogService.threeTierProgramDisabled(yukonUser, program.getName());
+        }
         
         return closeDialog(modelMap);
     }
@@ -654,5 +682,10 @@ public class ProgramController {
     public void setDatePropertyEditorFactory(
             DatePropertyEditorFactory datePropertyEditorFactory) {
         this.datePropertyEditorFactory = datePropertyEditorFactory;
+    }
+    
+    @Autowired
+    public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
+        this.demandResponseEventLogService = demandResponseEventLogService;
     }
 }

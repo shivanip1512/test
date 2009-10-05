@@ -21,9 +21,9 @@ public interface LoadGroupService extends
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count);
 
-    public void sendShed(int loadGroupId, int durationInSeconds, YukonUserContext userContext);
-    public void sendRestore(int loadGroupId, YukonUserContext userContext);
-    public void setEnabled(int loadGroupId, boolean isEnabled, YukonUserContext userContext);
+    public void sendShed(int loadGroupId, int durationInSeconds);
+    public void sendRestore(int loadGroupId);
+    public void setEnabled(int loadGroupId, boolean isEnabled);
     
     public boolean isEnabled(int loadGroupId);
 }

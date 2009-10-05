@@ -184,7 +184,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         UiFilter<DisplayablePao> filter = new ForProgramFilter(programId);
 
         SearchResult<ControlArea> searchResult =
-            filterControlAreas(userContext, filter, null, 0, Integer.MAX_VALUE);
+            filterControlAreas(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         if (searchResult.getHitCount() > 0) {
             return searchResult.getResultList().get(0);
@@ -193,9 +193,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public SearchResult<ControlArea> filterControlAreas(
-            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
-            Comparator<DisplayablePao> sorter, int startIndex, int count) {
+    public SearchResult<ControlArea> filterControlAreas(UiFilter<DisplayablePao> filter,
+                                                        Comparator<DisplayablePao> sorter, 
+                                                        int startIndex, int count,
+                                                        YukonUserContext userContext) {
 
         UiFilter<ControlAreaTrigger> triggerFilter = null;
         if (filter != null) {
@@ -225,7 +226,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
     
     @Override
-    public void resetPeak(int controlAreaId, YukonUserContext userContext) {
+    public void resetPeak(int controlAreaId) {
         
         ControlArea controlArea = this.getControlArea(controlAreaId);
         
@@ -241,12 +242,11 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
         loadControlClientConnection.write(multi);
         
-        demandResponseEventLogService.controlAreaPeakReset(userContext.getYukonUser(), 
-                                                           controlArea.getName());
+        demandResponseEventLogService.controlAreaPeakReset(controlArea.getName());
     }
     
     @Override
-    public void setEnabled(int controlAreaId, boolean isEnabled, YukonUserContext userContext) {
+    public void setEnabled(int controlAreaId, boolean isEnabled) {
         int loadControlCommand = isEnabled ? LMCommand.ENABLE_CONTROL_AREA
                 : LMCommand.DISABLE_CONTROL_AREA;
         Message msg = new LMCommand(loadControlCommand, controlAreaId, 0, 0.0);
@@ -254,17 +254,15 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         
         ControlArea controlArea = this.getControlArea(controlAreaId);
         if(isEnabled) {
-            demandResponseEventLogService.controlAreaEnabled(userContext.getYukonUser(), 
-                                                             controlArea.getName());
+            demandResponseEventLogService.controlAreaEnabled(controlArea.getName());
         } else {
-            demandResponseEventLogService.controlAreaDisabled(userContext.getYukonUser(), 
-                                                              controlArea.getName());
+            demandResponseEventLogService.controlAreaDisabled(controlArea.getName());
         }
     }
     
     @Override
     public void changeTriggers(int controlAreaId, Double threshold1, Double offset1, 
-                               Double threshold2, Double offset2, YukonUserContext userContext) {
+                               Double threshold2, Double offset2) {
 
         DatedObject<LMControlArea> datedControlArea = 
             loadControlClientConnection.getDatedControlArea(controlAreaId);
@@ -293,15 +291,13 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
 
         loadControlClientConnection.write(multi);
-        demandResponseEventLogService.controlAreaTriggersChanged(userContext.getYukonUser(), 
-                                                                 controlArea.getYukonName(),
+        demandResponseEventLogService.controlAreaTriggersChanged(controlArea.getYukonName(),
                                                                  threshold1, offset1, 
                                                                  threshold2, offset2);
     }
     
     @Override
-    public void changeTimeWindow(int controlAreaId, Integer startSeconds, Integer stopSeconds, 
-                                 YukonUserContext userContext) {
+    public void changeTimeWindow(int controlAreaId, Integer startSeconds, Integer stopSeconds) {
         
         Multi<LMCommand> multi = new Multi<LMCommand>();
         
@@ -327,8 +323,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         loadControlClientConnection.write(multi);
         
         ControlArea controlArea = this.getControlArea(controlAreaId);
-        demandResponseEventLogService.controlAreaTimeWindowChanged(userContext.getYukonUser(), 
-                                                                   controlArea.getName(),
+        demandResponseEventLogService.controlAreaTimeWindowChanged(controlArea.getName(),
                                                                    startSeconds,
                                                                    stopSeconds);
     }

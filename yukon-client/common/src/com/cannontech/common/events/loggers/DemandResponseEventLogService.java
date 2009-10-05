@@ -8,69 +8,121 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface DemandResponseEventLogService {
     
+    // Control Area logging
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
-    public void controlAreaStarted(LiteYukonUser user,
-                                   String controlAreaName, 
+    public void controlAreaStarted(String controlAreaName, 
                                    Boolean manual,
                                    Date startDate);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
-    public void controlAreaStopped(LiteYukonUser user,
-                                  String controlAreaName, 
-                                  Boolean manual,
-                                  Date stopDate);
+    public void controlAreaStopped(String controlAreaName, 
+                                   Boolean manual,
+                                   Date stopDate);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
-    public void controlAreaTriggersChanged(LiteYukonUser user, String controlAreaName, 
-                                           Double threshold1, Double offset1, 
-                                           Double threshold2, Double offset2);
+    public void threeTierControlAreaTriggersChanged(LiteYukonUser yukonUser,
+                                                    String name,
+                                                    Double threshold1,
+                                                    Double offset1,
+                                                    Double threshold2,
+                                                    Double offset2);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
+    public void controlAreaTriggersChanged(String controlAreaName, Double threshold1, 
+                                           Double offset1, Double threshold2, Double offset2);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
-    public void controlAreaTimeWindowChanged(LiteYukonUser user, 
-                                             String controlAreaName,
+    public void threeTierControlAreaTimeWindowChanged(LiteYukonUser yukonUser,
+                                                      String name,
+                                                      int startSeconds,
+                                                      int stopSeconds);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
+    public void controlAreaTimeWindowChanged(String controlAreaName,
                                              int startTime,
                                              int stopTime);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
-    public void controlAreaEnabled(LiteYukonUser user, String controlAreaName);
+    public void threeTierControlAreaEnabled(LiteYukonUser yukonUser, String name);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
-    public void controlAreaDisabled(LiteYukonUser user, String controlAreaName);
+    public void controlAreaEnabled(String controlAreaName);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
-    public void controlAreaPeakReset(LiteYukonUser user, String controlAreaName);
+    public void threeTierControlAreaDisabled(LiteYukonUser yukonUser, String name);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
+    public void controlAreaDisabled(String controlAreaName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
+    public void threeTierControlAreaPeakReset(LiteYukonUser yukonUser, String name);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
+    public void controlAreaPeakReset(String controlAreaName);
 
+    // Program logging
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programScheduled(LiteYukonUser user, String programName,
-            Boolean overrideConstraints, String gearName, Boolean manual,
-            Date startDate, Boolean stopScheduled, Date stopDate);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programStopped(LiteYukonUser user, String programName,
-            Boolean manual, Date stopDate, String gearName);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programStopScheduled(LiteYukonUser user, String programName,
-            Boolean manual, Date stopDate, String gearName);
+    public void threeTierProgramScheduled(LiteYukonUser yukonUser, String name, Date startDate);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programChangeGear(LiteYukonUser user, String programName, String gearName);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programEnabled(LiteYukonUser user, String programName);
+    public void programScheduled(String programName, Boolean overrideConstraints, String gearName, 
+                                 Boolean manual, Date startDate, Boolean stopScheduled, 
+                                 Date stopDate);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programDisabled(LiteYukonUser user, String programName);
+    public void threeTierProgramStopped(LiteYukonUser user, String name, Date stopDate);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programStopped(String programName, Boolean manual, Date stopDate, String gearName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void threeTierProgramStopScheduled(LiteYukonUser user, String name, Date stopDate);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programStopScheduled(String programName, Boolean manual, Date stopDate, 
+                                     String gearName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void threeTierProgramChangeGear(LiteYukonUser yukonUser, String name);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programChangeGear(String programName, String gearName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void threeTierProgramEnabled(LiteYukonUser yukonUser, String programName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programEnabled(String programName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void threeTierProgramDisabled(LiteYukonUser yukonUser, String programName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
+    public void programDisabled(String programName);
+
+    // Load Group logging
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
+    public void threeTierLoadGroupShed(LiteYukonUser user, String loadGroupName, int shedSeconds);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
-    public void loadGroupShed(LiteYukonUser user, String loadGroupName, int shedSeconds);
+    public void loadGroupShed(String loadGroupName, int shedSeconds);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
-    public void loadGroupRestore(LiteYukonUser user, String loadGroupName);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
-    public void loadGroupEnabled(LiteYukonUser user, String loadGroupName);
+    public void threeTierLoadGroupRestore(LiteYukonUser yukonUser, String name);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
-    public void loadGroupDisabled(LiteYukonUser user, String loadGroupName);
+    public void loadGroupRestore(String loadGroupName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
+    public void threeTierLoadGroupEnabled(LiteYukonUser user, String loadGroupName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
+    public void loadGroupEnabled(String loadGroupName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
+    public void threeTierLoadGroupDisabled(LiteYukonUser user, String loadGroupName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.loadGroup")
+    public void loadGroupDisabled(String loadGroupName);
+
 }

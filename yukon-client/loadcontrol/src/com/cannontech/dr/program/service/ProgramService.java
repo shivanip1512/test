@@ -18,12 +18,13 @@ public interface ProgramService
 
     public DatedObject<LMProgramBase> findDatedProgram(int programId);
 
-    public List<DisplayablePao> findProgramsForLoadGroup(YukonUserContext userContext,
-                                                         int loadGroupId);
+    public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 
+                                                         YukonUserContext userContext);
 
-    public SearchResult<DisplayablePao> filterPrograms(
-            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
-            Comparator<DisplayablePao> sorter, int startIndex, int count);
+    public SearchResult<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
+                                                       Comparator<DisplayablePao> sorter, 
+                                                       int startIndex, int count, 
+                                                       YukonUserContext userContext);
 
     /**
      * Check to see if any constraints would be violated by starting the program
@@ -36,8 +37,7 @@ public interface ProgramService
      *         returns the violated constraints.
      */
     public ConstraintViolations getConstraintViolationForStartProgram(
-            YukonUserContext userContext, int programId, int gearNumber,
-            Date startDate, Date stopDate);
+            int programId, int gearNumber, Date startDate, Date stopDate);
 
     /**
      * Start the given program with the given gear number, start and end time.
@@ -48,24 +48,20 @@ public interface ProgramService
      * @param overrideConstraints If this is set to true, constraints will be
      *            overridden. If not, they will be observed.
      */
-    public void startProgram(YukonUserContext userContext, int programId,
-            int gearNumber, Date startDate, boolean stopScheduled,
-            Date stopDate, boolean overrideConstraints, String additionalInfo);
+    public void startProgram(int programId, int gearNumber, Date startDate, boolean stopScheduled,
+                             Date stopDate, boolean overrideConstraints, String additionalInfo);
 
-    public void scheduleProgramStop(YukonUserContext userContext,
-            int programId, Date stopDate);
+    public void scheduleProgramStop(int programId, Date stopDate);
 
-    public void stopProgram(YukonUserContext userContext, int programId);
+    public void stopProgram(int programId);
 
-    public ConstraintViolations getConstraintViolationsForStopProgram(
-            YukonUserContext userContext, int programId, int gearNumber,
-            Date stopDate);
+    public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber,
+                                                                      Date stopDate);
 
-    public void stopProgramWithGear(YukonUserContext userContext,
-            int programId, int gearNumber, Date stopDate,
-            boolean overrideConstraints);
+    public void stopProgramWithGear(int programId, int gearNumber, Date stopDate, 
+                                    boolean overrideConstraints);
     
-    public void changeGear(int programId, int gearNumber, YukonUserContext userContext);
+    public void changeGear(int programId, int gearNumber);
 
-    public void setEnabled(int programId, boolean isEnabled, YukonUserContext userContext);
+    public void setEnabled(int programId, boolean isEnabled);
 }

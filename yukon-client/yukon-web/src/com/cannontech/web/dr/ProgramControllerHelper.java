@@ -149,8 +149,8 @@ public class ProgramControllerHelper {
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         SearchResult<DisplayablePao> searchResult =
-            programService.filterPrograms(userContext, filter, sorter,
-                                startIndex, backingBean.getItemsPerPage());
+            programService.filterPrograms(filter, sorter, startIndex, backingBean.getItemsPerPage(),
+                                          userContext);
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("programs", searchResult.getResultList());
