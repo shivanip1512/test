@@ -106,7 +106,7 @@
                                         <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
                                     </a>
 
-                                    <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramDetails">
+                                    <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                         <cti:param name="scenarioId" value="${scenarioId}"/>
                                     </cti:url>
                                     <a id="stopLink_${scenarioId}" href="javascript:void(0)"

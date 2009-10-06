@@ -8,10 +8,12 @@
     <!-- Demand Response -->
 
     <!-- Scenario -->
-    <entry key="yukon.common.events.dr.scenario.scenarioStarted">Control area {0} was started at {3}</entry>
-    <entry key="yukon.common.events.dr.scenario.scenarioStopped">Control area {0} was stopped at {3}</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted">Scenario {1} was started by {0}</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped">Scenario {1} was stopped by {0}</entry>
 
     <!-- Control Area -->
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted">Control area {1} was started by {0}</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped">Control area {1} was stopped by {0}</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged">Control area {1} had its triggers changed by user {0} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged">Control area {1} had its time window changed to {6} - {7} (in seconds from midnight) by user {0} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled">Control area {1} was enabled by user {0} via 3-Tier</entry>

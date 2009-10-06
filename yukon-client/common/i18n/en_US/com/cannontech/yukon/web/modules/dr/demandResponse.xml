@@ -134,7 +134,7 @@
 <entry key="yukon.web.modules.dr.program.stopProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.cancelButton">Cancel</entry>
 
-<!-- start control area -->
+<!-- start multiple programs -->
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.title">Start Programs</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea">Are you sure you want to start control area {0}?</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.scenario">Are you sure you want to start scenario {0}?</entry>
@@ -166,7 +166,21 @@
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.cancelButton">Cancel</entry>
 
+<!-- stop multiple programs -->
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.title">Stop Programs</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.confirmQuestion.controlArea">Are you sure you want to stop control area {0}?</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.confirmQuestion.scenario">Are you sure you want to stop scenario {0}?</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopTime">Stop time:</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow">Stop Now</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.programs">Programs to Stop</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopProgramName">Stop</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.currentState">Current State</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopAllPrograms">Stop All Programs</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.autoObserveConstraints">Automatically Observe Constraints</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.constraintsWillBeObserved">All constraints will be observed.</entry>
+
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.okButton">OK</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton">Cancel</entry>
 
 <!-- getChangeGearValue.jsp -->
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.title">Send Change Gear</entry>

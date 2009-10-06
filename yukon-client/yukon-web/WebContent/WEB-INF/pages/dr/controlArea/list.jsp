@@ -162,7 +162,7 @@
                                         <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
                                     </a>
 
-                                    <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramDetails">
+                                    <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                         <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     </cti:url>
                                     <a id="stopLink_${controlAreaId}" href="javascript:void(0)"

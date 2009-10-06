@@ -50,6 +50,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
+@RequestMapping("/program/*")
 public class ProgramController {
     private ControlAreaService controlAreaService = null;
     private ScenarioDao scenarioDao = null;
@@ -223,7 +224,7 @@ public class ProgramController {
     }
 
     @SuppressWarnings("unchecked")
-    public static class StartProgramsBackingBean extends StartProgramBackingBeanBase {
+    public static class StartMultipleProgramsBackingBean extends StartProgramBackingBeanBase {
         private Integer controlAreaId;
         private Integer scenarioId;
         private List<ProgramStartInfo> programStartInfo =
@@ -254,20 +255,9 @@ public class ProgramController {
         }
     }
 
-    public static class StopProgramBackingBean {
-        private int programId;
+    public static class StopProgramBackingBeanBase {
         private boolean stopNow;
         private Date stopDate;
-        private boolean useStopGear;
-        private int gearNumber;
-
-        public int getProgramId() {
-            return programId;
-        }
-
-        public void setProgramId(int programId) {
-            this.programId = programId;
-        }
 
         public boolean isStopNow() {
             return stopNow;
@@ -283,6 +273,20 @@ public class ProgramController {
 
         public void setStopDate(Date stopDate) {
             this.stopDate = stopDate;
+        }
+    }
+
+    public static class StopProgramBackingBean extends StopProgramBackingBeanBase {
+        private int programId;
+        private boolean useStopGear;
+        private int gearNumber;
+
+        public int getProgramId() {
+            return programId;
+        }
+
+        public void setProgramId(int programId) {
+            this.programId = programId;
         }
 
         public boolean isUseStopGear() {
@@ -302,7 +306,77 @@ public class ProgramController {
         }
     }
 
-    @RequestMapping("/program/list")
+    public static class ProgramStopInfo {
+        private int programId;
+        private boolean stopProgram;
+        private boolean overrideConstraints;
+
+        public ProgramStopInfo() {
+        }
+
+        public ProgramStopInfo(int programId, boolean stopProgram) {
+            this.programId = programId;
+            this.stopProgram = stopProgram;
+        }
+
+        public int getProgramId() {
+            return programId;
+        }
+
+        public void setProgramId(int programId) {
+            this.programId = programId;
+        }
+
+        public boolean isStopProgram() {
+            return stopProgram;
+        }
+
+        public void setStopProgram(boolean stopProgram) {
+            this.stopProgram = stopProgram;
+        }
+
+        public boolean isOverrideConstraints() {
+            return overrideConstraints;
+        }
+
+        public void setOverrideConstraints(boolean overrideConstraints) {
+            this.overrideConstraints = overrideConstraints;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static class StopMultipleProgramsBackingBean extends StopProgramBackingBeanBase {
+        private Integer controlAreaId;
+        private Integer scenarioId;
+        private List<ProgramStopInfo> programStopInfo =
+            LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ProgramStopInfo.class));
+
+        public Integer getControlAreaId() {
+            return controlAreaId;
+        }
+
+        public void setControlAreaId(Integer controlAreaId) {
+            this.controlAreaId = controlAreaId;
+        }
+
+        public Integer getScenarioId() {
+            return scenarioId;
+        }
+
+        public void setScenarioId(Integer scenarioId) {
+            this.scenarioId = scenarioId;
+        }
+
+        public List<ProgramStopInfo> getProgramStopInfo() {
+            return programStopInfo;
+        }
+
+        public void setProgramStopInfo(List<ProgramStopInfo> programStopInfo) {
+            this.programStopInfo = programStopInfo;
+        }
+    }
+
+    @RequestMapping
     public String list(ModelMap modelMap, YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
@@ -313,7 +387,7 @@ public class ProgramController {
         return "dr/program/list.jsp";
     }
 
-    @RequestMapping("/program/detail")
+    @RequestMapping
     public String detail(int programId, ModelMap modelMap,
             YukonUserContext userContext,
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
@@ -341,7 +415,7 @@ public class ProgramController {
     /**
      * Page one of the "start program" saga.
      */
-    @RequestMapping("/program/startProgramDetails")
+    @RequestMapping
     public String startProgramDetails(
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
@@ -367,7 +441,7 @@ public class ProgramController {
         return "dr/program/startProgramDetails.jsp";
     }
 
-    @RequestMapping("/program/startProgramGearAdjustments")
+    @RequestMapping
     public String startProgramGearAdjustments(
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
@@ -414,7 +488,7 @@ public class ProgramController {
         return "dr/program/startProgramGearAdjustments.jsp";
     }
 
-    @RequestMapping("/program/startProgramConstraints")
+    @RequestMapping
     public String startProgramConstraints(
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
@@ -473,7 +547,7 @@ public class ProgramController {
         return "dr/program/startProgramConstraints.jsp";
     }
 
-    @RequestMapping("/program/startProgram")
+    @RequestMapping
     public String startProgram(
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             Boolean overrideConstraints,
@@ -514,9 +588,9 @@ public class ProgramController {
         return closeDialog(modelMap);
     }
 
-    @RequestMapping("/program/startMultipleProgramsDetails")
+    @RequestMapping
     public String startMultipleProgramsDetails(
-            @ModelAttribute("backingBean") StartProgramsBackingBean backingBean,
+            @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
 
         UiFilter<DisplayablePao> filter = null;
@@ -568,9 +642,9 @@ public class ProgramController {
         return "dr/program/startMultipleProgramsDetails.jsp";
     }
 
-    @RequestMapping("/program/startMultipleProgramsConstraints")
+    @RequestMapping
     public String startMultipleProgramsConstraints(
-            @ModelAttribute("backingBean") StartProgramsBackingBean backingBean,
+            @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
 
@@ -665,9 +739,9 @@ public class ProgramController {
         return "dr/program/startMultipleProgramsConstraints.jsp";
     }
 
-    @RequestMapping("/program/startMultiplePrograms")
+    @RequestMapping
     public String startMultiplePrograms(
-            @ModelAttribute("backingBean") StartProgramsBackingBean backingBean,
+            @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
 
         // TODO:  validate
@@ -679,9 +753,8 @@ public class ProgramController {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("controlArea", controlArea);
-            demandResponseEventLogService.controlAreaStarted(controlArea.getName(),
-                                                             true,
-                                                             backingBean.getStartDate());
+            demandResponseEventLogService.threeTierControlAreaStarted(userContext.getYukonUser(),
+                                                                      controlArea.getName());
         }
         if (backingBean.scenarioId != null) {
             DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
@@ -690,9 +763,8 @@ public class ProgramController {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("scenario", scenario);
-            demandResponseEventLogService.scenarioStarted(scenario.getName(),
-                                                          true,
-                                                          backingBean.getStartDate());
+            demandResponseEventLogService.threeTierScenarioStarted(userContext.getYukonUser(),
+                                                                   scenario.getName());
         }
 
         // TODO:  validate permissions on programs too...or at least check to
@@ -724,15 +796,15 @@ public class ProgramController {
         return closeDialog(modelMap);
     }
 
-    @RequestMapping("/program/stopProgramDetails")
+    @RequestMapping
     public String stopProgramDetails(
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
 
         // TODO:  don't do this if we're coming here from the back button
-        backingBean.stopNow = true;
-        backingBean.gearNumber = 1;
-        backingBean.stopDate = new Date();
+        backingBean.setStopNow(true);
+        backingBean.setGearNumber(1);
+        backingBean.setStopDate(new Date());
 
         DisplayablePao program = programService.getProgram(backingBean.programId);
         modelMap.addAttribute("program", program);
@@ -746,7 +818,7 @@ public class ProgramController {
         return "dr/program/stopProgramDetails.jsp";
     }
 
-    @RequestMapping("/program/stopProgramConstraints")
+    @RequestMapping
     public String stopProgramConstraints(
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
@@ -772,7 +844,7 @@ public class ProgramController {
         return "dr/program/stopProgramConstraints.jsp";
     }
 
-    @RequestMapping("/program/stopProgram")
+    @RequestMapping
     public String stopProgram(
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             Boolean overrideConstraints,
@@ -785,7 +857,7 @@ public class ProgramController {
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
 
-        Date stopDate = backingBean.stopDate;
+        Date stopDate = backingBean.getStopDate();
         int gearNumber = backingBean.gearNumber;
         if (backingBean.useStopGear) {
             assertStopGearAllowed(userContext);
@@ -798,7 +870,7 @@ public class ProgramController {
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
                                                                   program.getName(), 
                                                                   stopDate);
-        } else if (backingBean.stopNow) {
+        } else if (backingBean.isStopNow()) {
             programService.stopProgram(backingBean.programId);
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
                                                                   program.getName(), 
@@ -813,7 +885,103 @@ public class ProgramController {
         return closeDialog(modelMap);
     }
 
-    @RequestMapping("/program/getChangeGearValue")
+    @RequestMapping
+    public String stopMultipleProgramsDetails(
+            @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
+            ModelMap modelMap, YukonUserContext userContext) {
+
+        UiFilter<DisplayablePao> filter = null;
+
+        if (backingBean.controlAreaId != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         controlArea, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("controlArea", controlArea);
+            filter = new ForControlAreaFilter(backingBean.controlAreaId);
+        }
+        if (backingBean.scenarioId != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         scenario, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("scenario", scenario);
+            filter = new ForScenarioFilter(backingBean.scenarioId);
+        }
+
+        if (filter == null) {
+            throw new IllegalArgumentException();
+        }
+
+        SearchResult<DisplayablePao> searchResult =
+            programService.filterPrograms(filter, null, 0, Integer.MAX_VALUE,
+                                          userContext);
+        List<DisplayablePao> programs = searchResult.getResultList();
+        modelMap.addAttribute("programs", programs);
+
+        // TODO:  don't do this if we're coming here from the back button
+        backingBean.setStopNow(true);
+        backingBean.setStopDate(new Date());
+        List<ProgramStopInfo> programStopInfo = new ArrayList<ProgramStopInfo>(programs.size());
+        for (DisplayablePao program : programs) {
+            programStopInfo.add(new ProgramStopInfo(program.getPaoIdentifier().getPaoId(),
+                                                    true));
+        }
+        backingBean.setProgramStopInfo(programStopInfo);
+
+        return "dr/program/stopMultipleProgramsDetails.jsp";
+    }
+
+    @RequestMapping
+    public String stopMultiplePrograms(
+            @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
+            Boolean overrideConstraints,
+            ModelMap modelMap, YukonUserContext userContext) {
+
+        Date stopDate = backingBean.getStopDate();
+        if (backingBean.controlAreaId != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         controlArea, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("controlArea", controlArea);
+            demandResponseEventLogService.threeTierControlAreaStopped(userContext.getYukonUser(),
+                                                                      controlArea.getName());
+        }
+        if (backingBean.scenarioId != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         scenario, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("scenario", scenario);
+            demandResponseEventLogService.threeTierScenarioStopped(userContext.getYukonUser(),
+                                                                   scenario.getName());
+        }
+
+        // TODO:  validate permissions on programs too...or at least check to
+        // make sure the programs here are actually part of the control area
+        // or scenario that we've checked permissions on.
+
+        for (ProgramStopInfo programStopInfo : backingBean.getProgramStopInfo()) {
+            if (!programStopInfo.stopProgram) {
+                continue;
+            }
+
+            if (backingBean.isStopNow()) {
+                programService.stopProgram(programStopInfo.programId);
+            } else {
+                programService.scheduleProgramStop(programStopInfo.programId, stopDate);
+            }
+        }
+
+        return closeDialog(modelMap);
+    }
+
+    @RequestMapping
     public String getGearChangeValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
         
         DisplayablePao program = programService.getProgram(programId);
@@ -828,7 +996,7 @@ public class ProgramController {
         return "dr/program/getChangeGearValue.jsp";
     }
     
-    @RequestMapping("/program/changeGear")
+    @RequestMapping
     public String changeGear(ModelMap modelMap, int programId, int gearNumber, 
                              YukonUserContext userContext) {
         
@@ -846,7 +1014,7 @@ public class ProgramController {
         return closeDialog(modelMap);
     }
     
-    @RequestMapping("/program/sendEnableConfirm")
+    @RequestMapping
     public String sendEnableConfirm(ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext) {
         
@@ -861,7 +1029,7 @@ public class ProgramController {
         return "dr/program/sendEnableConfirm.jsp";
     }
     
-    @RequestMapping("/program/setEnabled")
+    @RequestMapping
     public String setEnabled(ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext) {
         

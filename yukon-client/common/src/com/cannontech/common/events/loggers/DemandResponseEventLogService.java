@@ -10,12 +10,10 @@ public interface DemandResponseEventLogService {
     
     // Scenario logging
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.scenario")
-    public void scenarioStarted(String controlAreaName, Boolean manual,
-            Date startDate);
+    public void threeTierScenarioStarted(LiteYukonUser yukonUser, String scenarioName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.scenario")
-    public void scenarioStopped(String controlAreaName, Boolean manual,
-            Date stopDate);
+    public void threeTierScenarioStopped(LiteYukonUser yukonUser, String scenarioName);
 
     // Control Area logging
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
@@ -51,6 +49,12 @@ public interface DemandResponseEventLogService {
                                              int startTime,
                                              int stopTime);
     
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
+    public void threeTierControlAreaStarted(LiteYukonUser yukonUser, String controlAreaName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
+    public void threeTierControlAreaStopped(LiteYukonUser yukonUser, String controlAreaName);
+
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void threeTierControlAreaEnabled(LiteYukonUser yukonUser, String name);
     

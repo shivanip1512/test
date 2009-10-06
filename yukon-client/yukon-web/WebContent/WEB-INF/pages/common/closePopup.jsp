@@ -1,3 +1,4 @@
 <script type="text/javascript">
-    parent.$('${popupId}').hide()
+    $('${popupId}').hide();
+    location.reload(true);
 </script>
