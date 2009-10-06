@@ -4456,7 +4456,7 @@
     <device id="CBC_1WAY_BASE" abstract="true">
         <changeGroup>cap1</changeGroup>
         <points>
-            <point type="Status" offset="8">
+            <point type="Status" offset="1">
                 <name>BANK STATUS</name>
                 <stategroup value="TwoStateStatus"/>
             </point>
