@@ -29,6 +29,7 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -261,11 +262,29 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         
         DeviceGroup systemMetersDeviceGroup = deviceGroupService.resolveGroupName("/System/Meters/");
         StoredDeviceGroup metersGroup = deviceGroupEditorDao.getStoredGroup(systemMetersDeviceGroup);
+        StoredDeviceGroup phaseGroup = retrieveGroup(metersGroup, PHASE_DETECT_GROUP);
+        StoredDeviceGroup lastResultsGroup = retrieveGroup(phaseGroup, LAST_RESULTS_GROUP);
+        StoredDeviceGroup detectedPhaseGroup = retrieveGroup(lastResultsGroup, detectedPhaseGroupName);
         
-        StoredDeviceGroup phaseGroup = deviceGroupEditorDao.getGroupByName(metersGroup, PHASE_DETECT_GROUP, true);
-        StoredDeviceGroup lastResultsGroup = deviceGroupEditorDao.getGroupByName(phaseGroup, LAST_RESULTS_GROUP, true);
-        StoredDeviceGroup detectedPhaseGroup = deviceGroupEditorDao.getGroupByName(lastResultsGroup, detectedPhaseGroupName, true);
         deviceGroupMemberEditorDao.addDevices(detectedPhaseGroup, device);
+    }
+    
+    /**
+     * If the group doesn't exist, it will be created with the permissions DeviceGroupPermission.NOEDIT_NOMOD.
+     * @param parent
+     * @param groupName
+     * @return
+     */
+    private StoredDeviceGroup retrieveGroup(StoredDeviceGroup parent, String groupName){
+        StoredDeviceGroup group = null;
+        try{
+            group = deviceGroupEditorDao.getGroupByName(parent, groupName, false);
+        } catch (NotFoundException e){
+            group = deviceGroupEditorDao.getGroupByName(parent, groupName, true);
+            group.setPermission(DeviceGroupPermission.NOEDIT_NOMOD);
+            deviceGroupEditorDao.updateGroup(group);
+        }
+        return group;
     }
     
     private void generatePhasePointData(SimpleDevice device, DetectedPhase detectedPhase){
