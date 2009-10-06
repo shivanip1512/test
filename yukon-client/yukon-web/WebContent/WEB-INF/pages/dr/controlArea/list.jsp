@@ -43,7 +43,7 @@
     </script>
 
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.controlAreaList.filters"/>
-    <tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
+    <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.sort}">
             <input type="hidden" name="sort" value="${param.sort}"/>
@@ -55,11 +55,13 @@
             <input type="hidden" name="itemsPerPage" value="${param.itemsPerPage}"/>
         </c:if>
 
+        <cti:msg var="minStr" key="yukon.web.modules.dr.controlAreaList.filter.min"/>
+        <cti:msg var="maxStr" key="yukon.web.modules.dr.controlAreaList.filter.max"/>
         <table cellspacing="10">
             <tr>
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.name"/>
                 <td>${fieldName}</td>
-                <td><form:input path="name"/></td>
+                <td><form:input path="name" size="40"/></td>
 
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.state"/>
                 <td>${fieldName}:</td>
@@ -82,8 +84,8 @@
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.priority"/>
                 <td>${fieldName}:</td>
                 <td>
-                    <form:input path="priority.min"/>${minStr}
-                    <form:input path="priority.max"/>${maxStr}
+                    <form:input path="priority.min" size="5"/>&nbsp;${minStr}&nbsp;&nbsp;
+                    <form:input path="priority.max" size="5"/>&nbsp;${maxStr}
                 </td>
 
                 <!--
@@ -102,13 +104,16 @@
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlAreaList.filter.clear"/>"
             onclick="javascript:clearFilter()"/>
     </form:form>
-    </tags:abstractContainer><br>
+    </tags:simplePopup><br>
 
     <c:if test="${searchResult.hitCount == 0}">
-        <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults"/>
+        <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults"/><br>
+        <a href="javascript:void(0)" onclick="$('filterPopup').show()"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a>
+        <a href="javascript:void(0)" onclick="javascript:clearFilter()"><cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/></a>
     </c:if>
     <c:if test="${searchResult.hitCount > 0}">
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
+        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
+            filter="$('filterPopup').show()"/>
         <cti:msg var="controlAreaTitle" key="yukon.web.modules.dr.controlAreaList.controlAreas"/>
         <tags:abstractContainer type="box" title="${controlAreaTitle}">
             <table id="controlAreaList" class="compactResultsTable rowHighlighting">
@@ -245,7 +250,8 @@
                 </c:forEach>
             </table>
         </tags:abstractContainer>
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
+        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
+            filter="$('filterPopup').show()"/>
     </c:if>
 
 </cti:standardPage>

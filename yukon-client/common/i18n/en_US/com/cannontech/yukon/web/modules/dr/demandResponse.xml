@@ -9,6 +9,7 @@
 
 <entry key="yukon.web.modules.dr.paging.viewing">Viewing {0}-{1} of {2}</entry>
 <entry key="yukon.web.modules.dr.paging.resultsPerPage">Results per page:</entry>
+<entry key="yukon.web.modules.dr.paging.filter">Filter</entry>
 <entry key="yukon.web.modules.dr.paging.page">Page:</entry>
 
 <entry key="yukon.web.modules.dr.paging.first">first</entry>
@@ -309,6 +310,8 @@
 <entry key="yukon.web.modules.dr.controlAreaList.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.noResults">No Control Areas matched.</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filters">Filters</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.min">(min)</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.filter.max">(max)</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.name">Name</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.state">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filter.state.all">All</entry>

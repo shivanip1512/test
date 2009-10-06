@@ -42,7 +42,7 @@
     </script>
 
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.scenarioList.filters"/>
-    <tags:abstractContainer type="triangle" title="${filterLabel}" showInitially="false">
+    <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
         <c:if test="${!empty param.sort}">
             <input type="hidden" name="sort" value="${param.sort}"/>
@@ -58,7 +58,7 @@
             <tr>
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.scenarioList.filter.name"/>
                 <td>${fieldName}</td>
-                <td><form:input path="name"/></td>
+                <td><form:input path="name" size="40"/></td>
             </tr>
         </table>
         
@@ -67,13 +67,16 @@
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.clear"/>"
             onclick="javascript:clearFilter()"/>
     </form:form>
-    </tags:abstractContainer><br>
+    </tags:simplePopup><br>
 
     <c:if test="${searchResult.hitCount == 0}">
-        <cti:msg key="yukon.web.modules.dr.scenarioList.noResults"/>
+        <cti:msg key="yukon.web.modules.dr.scenarioList.noResults"/><br>
+        <a href="javascript:void(0)" onclick="$('filterPopup').show()"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a>
+        <a href="javascript:void(0)" onclick="javascript:clearFilter()"><cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/></a>
     </c:if>
     <c:if test="${searchResult.hitCount > 0}">
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
+        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
+            filter="$('filterPopup').show()"/>
         <cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios"/>
         <tags:abstractContainer type="box" title="${scenarioTitle}">
             <table id="scenarioList" class="compactResultsTable rowHighlighting">
@@ -129,7 +132,8 @@
                 </c:forEach>
             </table>
         </tags:abstractContainer>
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
+        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
+            filter="$('filterPopup').show()"/>
     </c:if>
 
 </cti:standardPage>

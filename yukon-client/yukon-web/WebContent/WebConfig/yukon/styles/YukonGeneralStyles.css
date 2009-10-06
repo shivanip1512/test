@@ -676,8 +676,13 @@ table.pagingArea td.viewing {
 }
 
 table.pagingArea td.resultsPerPage {
-	text-align: center;
+    text-align: center;
     width: 30%;
+}
+
+table.pagingArea td.filter {
+    text-align: center;
+    width: 0%;
 }
 
 table.pagingArea td.pages {

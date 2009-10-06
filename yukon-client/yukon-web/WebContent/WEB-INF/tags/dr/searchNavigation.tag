@@ -1,6 +1,7 @@
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
 <%@ attribute name="baseUrl" required="true" type="java.lang.String" %>
 <%@ attribute name="pageLinksToShow" required="false" type="java.lang.Integer" %>
+<%@ attribute name="filter" %>
 <%@ tag body-content="empty" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -36,6 +37,10 @@
                 <dr:itemsPerPageLink searchResult="${searchResult}" itemsPerPage="50"
                     baseUrl="${baseUrl}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </td>
+
+        <c:if test="${!empty filter}">
+            <td class="filter"><a href="javascript:void(0)" onclick="${filter}"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a></td>
+        </c:if>
 
         <td class="pages">
             <cti:msg key="yukon.web.modules.dr.paging.page"/>
