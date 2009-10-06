@@ -235,7 +235,7 @@
                     <input type="hidden" name="complete" id="complete" value="${state.phaseDetectComplete}">
                     <input type="button" id="sendDetectButton" <c:if test="${testStep != 'send'}">style="display: none;"</c:if> value="Send" onclick="sendDetect();">
                     <input type="button" id="readButton" <c:if test="${testStep != 'read'}">style="display: none;"</c:if> value="Read" onclick="sendRead();">
-                    <input type="button" id="clearButton" <c:if test="${testStep != 'clear' && testStep != 'results'}">style="display: none;"</c:if> value="Clear" onclick="sendClearCommand();">
+                    <input type="button" id="clearButton" <c:if test="${testStep != 'clear' && testStep != 'results'}">style="display: none;"</c:if> value="Clear Phase Data" onclick="sendClearCommand();">
                     <input type="button" id="resetButton" style="display: none;" value="Reset" onclick="reset();">
                     <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
                 </div>

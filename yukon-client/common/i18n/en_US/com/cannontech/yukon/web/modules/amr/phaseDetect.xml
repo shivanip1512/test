@@ -8,7 +8,7 @@
     <entry key="yukon.web.modules.amr.phaseDetect.step2.sectionTitle">Step 2: Select Broadcast Routes</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.step2.noteLabel">Instructions:</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.step2.noteText">Select the routes to broadcast the clear and phase detect commands on.  Some knowledge of your system's
-    route layout maybe need to understand which routes to unselect to avoid redundant or unnecessary broadcasting commands.</entry>
+    route layout maybe needed to understand which routes to unselect to avoid redundant or unnecessary broadcasting commands.</entry>
     
     <entry key="yukon.web.modules.amr.phaseDetect.step3.sectionTitle">Step 3: Clear Phase Data</entry>
     
