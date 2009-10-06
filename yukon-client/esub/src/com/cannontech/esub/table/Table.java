@@ -20,7 +20,7 @@ public class Table {
 	private static final Color TABLE_BACKGROUND_COLOR = Color.BLACK;
 	private static final Color TABLE_TEXT_COLOR = Color.WHITE;
 	private static final Color COLUMN_SEPARATOR_COLOR = Color.WHITE;
-	
+	private static int shrinkColumn = 3;
 	private static final Font TITLE_FONT = new Font("Arial",Font.BOLD,12);
 		
 	private TableModel model;
@@ -93,11 +93,39 @@ public class Table {
 	  	g.setColor(TABLE_TEXT_COLOR);
 	  	for(int i = 0; i < model.getRowCount(); i++) {
 	  		text = model.getValueAt(i,col).toString();
+	  		Rectangle2D colStrBounds = fm.getStringBounds(text,null);
+	  		double textWidth = colStrBounds.getWidth();
+	  		if(col == shrinkColumn && textWidth > colWidth){
+	  		    text = abbreviateText(text, fm, colWidth);
+	  		}
 	  		g.drawString(text, x+2, y + (int)(strBounds.getHeight()*(i+1)));
 	  		
 	  	}
 	}
-
+	
+	/**
+	 * Returns an abbreviated version of the text that will fit in the column. 
+	 * @param text
+	 * @param fm
+	 * @param colWidth
+	 * @return
+	 */
+	private String abbreviateText(String text, FontMetrics fm, int colWidth){
+        String newText = new String(text); 
+        while (true){
+            newText = newText.substring(0, newText.length()-1);
+            if(newText.length() < 20){
+                return newText;
+            }
+            Rectangle2D newBounds = fm.getStringBounds(newText,null);
+            double newTextWidth = newBounds.getWidth();
+            if(newTextWidth < colWidth){
+                text = newText.substring(0, newText.length()-3) + "...";
+                break;
+            }
+        }
+        return text;
+	}
 
 	private int[] calcColumnWidths(Graphics g, TableModel model, int tableWidth) {
 		int[] widths = new int[model.getColumnCount()];
@@ -109,6 +137,10 @@ public class Table {
 		
 		// find the minimum width needed for each column
 		for(int col = model.getColumnCount()-1; col >= 0; col--) {
+		    int colHeaderWidth = fm.stringWidth(model.getColumnName(col));
+		    if(colHeaderWidth > widths[col]){
+		        widths[col] = colHeaderWidth;
+		    }
 			for(int row = model.getRowCount()-1; row >= 0; row--) {
 				String val = model.getValueAt(row,col).toString();
 				int valWidth = fm.stringWidth(val);
@@ -119,8 +151,8 @@ public class Table {
 			allocatedWidth += widths[col];	
 		}
 		
-		// if the min width is less than the table width, allocate the rest
-		// of the space evenly, if it isn't then doh!
+		/* If the min width is less than the table width, allocate the rest */
+		/* of the space evenly, if it isn't shrink the 'shrink' row as much as possible. */
 		int extraWidth = Math.max(tableWidth - allocatedWidth, 0); 
 		int extraCellWidth = extraWidth / model.getColumnCount();
 		int remainingWidth = extraWidth % model.getColumnCount();
@@ -129,6 +161,11 @@ public class Table {
 			widths[col] += extraCellWidth;	
 		}
 		widths[widths.length-1] += remainingWidth;
+		
+		if(allocatedWidth > tableWidth){
+		    int shrinkSize = allocatedWidth - tableWidth;
+		    widths[shrinkColumn] -= shrinkSize;
+		}
 		
 		return widths;
 	}
@@ -169,6 +206,24 @@ public class Table {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
+	/**
+	 * Set the index of the column that will shrink in width if the total colums width
+	 * is greater than the width of the table.
+	 * @param shrinkColumn
+	 */
+    public static void setShrinkColumn(int shrinkColumn) {
+        Table.shrinkColumn = shrinkColumn;
+    }
+
+    /**
+     * Returns the index of the column that will shrink in width if the total colums width
+     * is greater than the width of the table.
+     * @return int shrinkColumn
+     */
+    public static int getShrinkColumn() {
+        return shrinkColumn;
+    }
 
 }
 
