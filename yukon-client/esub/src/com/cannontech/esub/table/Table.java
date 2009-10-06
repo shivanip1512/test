@@ -13,7 +13,8 @@ import javax.swing.table.TableModel;
  * @author alauinger
  */
 public class Table {
-	private static final Color COMPONENT_BACKGROUND_COLOR = Color.WHITE;
+	private static final int MIN_ABBREVIATION_LENGTH = 20;
+    private static final Color COMPONENT_BACKGROUND_COLOR = Color.WHITE;
 	private static final Color MAIN_TITLE_COLOR = new Color(0,0,153);
 	private static final Color COLUMN_HEADING_TEXT_COLOR = Color.BLACK;
 	private static final Color COLUMN_HEADING_BACKGROUND_COLOR = new Color(204,204,128);
@@ -114,7 +115,7 @@ public class Table {
         String newText = new String(text); 
         while (true){
             newText = newText.substring(0, newText.length()-1);
-            if(newText.length() < 20){
+            if(newText.length() < MIN_ABBREVIATION_LENGTH){
                 return newText;
             }
             Rectangle2D newBounds = fm.getStringBounds(newText,null);
@@ -164,13 +165,12 @@ public class Table {
 		
 		if(allocatedWidth > tableWidth){
 		    int shrinkSize = allocatedWidth - tableWidth;
-		    widths[shrinkColumn] -= shrinkSize;
+		    int newColWidth = widths[shrinkColumn] - shrinkSize;
+		    widths[shrinkColumn] = newColWidth > MIN_ABBREVIATION_LENGTH ? newColWidth : MIN_ABBREVIATION_LENGTH;
 		}
 		
 		return widths;
 	}
-
-
 
 	/**
 	 * Returns the model.
