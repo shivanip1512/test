@@ -15,9 +15,15 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.DomainMember;
+import com.cannontech.multispeak.deploy.service.EA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.LM_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 
@@ -114,7 +120,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             }
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getMeterByMeterNo (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+            CTILogger.error("TargetService: " + endpointURL + " - getAllMeters (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for Meter");
        }
@@ -130,8 +136,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor) {
         
     	List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
-    	// lookup by meter number
-        //lookup meter by servicelocation
         String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
 
         try {
@@ -148,7 +152,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             	CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
             }
         } catch (RemoteException e) {
-        	CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
+        	CTILogger.error("TargetService: " + endpointURL + " - getMeterByServLoc (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
         	CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return meters;
@@ -194,37 +198,162 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     @Override
-
     public List<String> getMspSubstationName(MultispeakVendor mspVendor) {
 
         List<String> substationNames = new ArrayList<String>();
-        
         String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-
         try {
-
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
-
                 DomainMember [] domainMembers = port.getDomainMembers("substationCode");
                 if(domainMembers != null) {
-
                     for (DomainMember domainMember : domainMembers) {
-
                         substationNames.add(domainMember.getDescription());
                     }
                 }
             } else {
-
                 CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for DomainMember 'Substation'");
             }
-
         } catch (RemoteException e) {
-
             CTILogger.error("TargetService: " + endpointURL + " - getDomainMembers(" + mspVendor.getCompanyName() + ") for DomainMember 'Substation'");
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
         }
-
         return substationNames;
+    }
+
+    @Override
+    public List<String> getMspMethods(String mspServer, MultispeakVendor mspVendor) {
+        
+        String[] objects = new String[]{};
+        try {
+            if(mspServer.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
+                OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
+                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
+                MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
+                EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
+                LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
+                CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
+                CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
+                CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor);
+                objects = port.getMethods();
+            }
+        } catch (RemoteException e) {
+            CTILogger.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return Arrays.asList(objects);
+    }
+    
+    @Override
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByEALocation(String eaLocation, MultispeakVendor mspVendor) {
+        
+        List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+        
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+                com.cannontech.multispeak.deploy.service.Meter[] mspMeters = port.getMetersByEALocation(eaLocation);
+                if( mspMeters!= null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for EALocation: " + eaLocation);
+            }
+        } catch (RemoteException e) {
+            CTILogger.error("TargetService: " + endpointURL + " - getMetersByEALocation (" + mspVendor.getCompanyName() + ") for EALocation: " + eaLocation);
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return meters;
+    }
+    
+    @Override
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByFacilityId(String facilityId, MultispeakVendor mspVendor) {
+        
+        List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+        
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+                com.cannontech.multispeak.deploy.service.Meter[] mspMeters = port.getMetersByFacilityID(facilityId);
+                if( mspMeters!= null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for FacilityId: " + facilityId);
+            }
+        } catch (RemoteException e) {
+            CTILogger.error("TargetService: " + endpointURL + " - getMetersByFacilityID (" + mspVendor.getCompanyName() + ") for FacilityId: " + facilityId);
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return meters;
+    }
+    
+    @Override
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByAccountNumber(String accountNumber, MultispeakVendor mspVendor) {
+        
+        List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+        
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+                com.cannontech.multispeak.deploy.service.Meter[] mspMeters = port.getMeterByAccountNumber(accountNumber);
+                if( mspMeters!= null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for Account Number: " + accountNumber);
+            }
+        } catch (RemoteException e) {
+            CTILogger.error("TargetService: " + endpointURL + " - getMeterByAccountNumber (" + mspVendor.getCompanyName() + ") for Account Number: " + accountNumber);
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return meters;
+    }
+    
+    @Override
+    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByCustId(String custId, MultispeakVendor mspVendor) {
+        
+        List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+        //lookup meter by eaLocation
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+                com.cannontech.multispeak.deploy.service.Meter[] mspMeters = port.getMeterByCustID(custId);
+                if( mspMeters!= null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for CustId: " + custId);
+            }
+        } catch (RemoteException e) {
+            CTILogger.error("TargetService: " + endpointURL + " - getMeterByCustID (" + mspVendor.getCompanyName() + ") for CustId: " + custId);
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return meters;
     }
 }
