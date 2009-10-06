@@ -69,7 +69,7 @@
         <property name="attributeService" ref="attributeService" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupService" ref="deviceGroupService" />
-        <property name="stateDao" ref="stateDao" />
+        <property name="pointFormattingService" ref="pointFormattingService" />
         <property name="deviceDao" ref="deviceDao" />
     </bean>
     

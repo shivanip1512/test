@@ -23,6 +23,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class DeviceReadingsController extends ReportControllerBase{
@@ -51,6 +52,7 @@ public class DeviceReadingsController extends ReportControllerBase{
 
     public void setRequestParameters(HttpServletRequest request) {
         super.setRequestParameters(request);
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         DeviceReadingsModel deviceReadingsModel = (DeviceReadingsModel)model;
         String attributeString = ServletUtil.getParameter(request, "dataAttribute");
         String startHour = ServletUtil.getParameter(request, "startHour");
@@ -67,7 +69,7 @@ public class DeviceReadingsController extends ReportControllerBase{
             /* Joda treats hours as 1-24, Reports.jsp uses 0-23, halarity insues. */
             if(startHour.equalsIgnoreCase("0")) startHour = "24";
             if(stopHour.equalsIgnoreCase("0")) stopHour = "24";
-            TimeZone timeZone = YukonUserContextUtils.getYukonUserContext(request).getTimeZone();
+            TimeZone timeZone = yukonUserContext.getTimeZone();
             DateTimeFormatter pattern = DateTimeFormat.forPattern("kk:mm");
             DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
             /* Construct new start date/time */
@@ -103,6 +105,8 @@ public class DeviceReadingsController extends ReportControllerBase{
             boolean all = resultType.equalsIgnoreCase("all");
             deviceReadingsModel.setRetrieveAll(all);
         }
+        
+        deviceReadingsModel.setYukonUserContext(yukonUserContext);
     }
     
     @Override
