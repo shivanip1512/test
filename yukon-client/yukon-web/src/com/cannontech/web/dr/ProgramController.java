@@ -982,7 +982,7 @@ public class ProgramController {
     }
 
     @RequestMapping
-    public String getGearChangeValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
+    public String getChangeGearValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
         
         DisplayablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
