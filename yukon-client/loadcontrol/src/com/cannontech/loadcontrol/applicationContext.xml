@@ -37,8 +37,18 @@
    <bean id="drProgramDao" class="com.cannontech.dr.program.dao.impl.ProgramDaoImpl"/>
    <bean id="drLoadGroupDao" class="com.cannontech.dr.loadgroup.dao.impl.LoadGroupDaoImpl"/>
 
-   <bean id="drControlAreaService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaServiceImpl"/>
-   <bean id="drScenarioService" class="com.cannontech.dr.scenario.service.impl.ScenarioServiceImpl"/>
-   <bean id="drProgramService" class="com.cannontech.dr.program.service.impl.ProgramServiceImpl"/>
-   <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
+    <bean id="drControlAreaService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaServiceImpl"/>
+    <bean id="drScenarioService" class="com.cannontech.dr.scenario.service.impl.ScenarioServiceImpl"/>
+    <bean id="drProgramService" class="com.cannontech.dr.program.service.impl.ProgramServiceImpl"/>
+    <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
+    
+    <bean id="drLoadGroupFieldService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupFieldServiceImpl"/>
+    <bean id="drLoadGroupNameField" class="com.cannontech.dr.loadgroup.model.LoadGroupNameField"/>
+    <bean id="drLoadGroupStateField" class="com.cannontech.dr.loadgroup.model.LoadGroupStateField"/>
+    <bean id="drLoadGroupLastActionField" class="com.cannontech.dr.loadgroup.model.LoadGroupLastActionField"/>
+    <bean id="drLoadGroupControlStatisticsField" class="com.cannontech.dr.loadgroup.model.LoadGroupControlStatisticsField"/>
+    <bean id="drLoadGroupReductionField" class="com.cannontech.dr.loadgroup.model.LoadGroupReductionField"/>
+    <bean id="drLoadGroupLoadCapacityField" class="com.cannontech.dr.loadgroup.model.LoadGroupLoadCapacityField"/>
+    <bean id="drLoadGroupStateClassnameField" class="com.cannontech.dr.loadgroup.model.LoadGroupStateClassnameField"/>
+    <bean id="drLoadGroupShowAction" class="com.cannontech.dr.loadgroup.model.LoadGroupShowActionField"/>
 </beans>

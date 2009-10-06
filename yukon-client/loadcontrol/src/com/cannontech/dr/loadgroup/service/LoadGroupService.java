@@ -4,17 +4,18 @@ import java.util.Comparator;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.user.YukonUserContext;
 
-public interface LoadGroupService extends
-    ObjectMapper<DisplayablePao, LMDirectGroupBase>, LoadGroupDao {
+public interface LoadGroupService {
 
+    public DisplayablePao getLoadGroup(int loadGroupId);
+    public LMDirectGroupBase getGroupForPao(YukonPao from);
+    
     public DatedObject<LMGroupBase> findDatedGroup(int loadGroupId);
 
     public SearchResult<DisplayablePao> filterGroups(

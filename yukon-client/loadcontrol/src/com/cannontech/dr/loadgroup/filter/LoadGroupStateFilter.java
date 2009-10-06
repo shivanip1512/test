@@ -7,19 +7,18 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 
 public class LoadGroupStateFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper;
+    private LoadGroupService loadGroupService;
 
     // we either show active (or similar) or show inactive
     // if the filter is off, we don't create an instance of this class at all
     private boolean showActive;
 
-    public LoadGroupStateFilter(ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper,
-            boolean showActive) {
-        this.mapper = mapper;
+    public LoadGroupStateFilter(LoadGroupService loadGroupService, boolean showActive) {
+        this.loadGroupService = loadGroupService;
         this.showActive = showActive;
     }
 
@@ -31,7 +30,7 @@ public class LoadGroupStateFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMDirectGroupBase group = mapper.map(pao);
+                LMDirectGroupBase group = loadGroupService.getGroupForPao(pao);
                 return group != null
                     && (group.isActive() && showActive
                     || !group.isActive() && !showActive);

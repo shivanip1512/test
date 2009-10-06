@@ -10,19 +10,20 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
-import com.cannontech.dr.loadgroup.model.LoadGroupDisplayField;
+import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -37,12 +38,13 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
-
+    private LoadGroupFieldService loadGroupFieldService;
+    
     @Override
-    public LMDirectGroupBase map(DisplayablePao from) throws ObjectMappingException {
+    public LMDirectGroupBase getGroupForPao(YukonPao from) {
         LMDirectGroupBase group = null;
-        DatedObject<LMGroupBase> datedGroup = loadControlClientConnection.getDatedGroup(from.getPaoIdentifier()
-                                                                                            .getPaoId());
+        DatedObject<LMGroupBase> datedGroup = 
+            loadControlClientConnection.getDatedGroup(from.getPaoIdentifier().getPaoId());
         if (datedGroup != null && datedGroup.getObject() instanceof LMDirectGroupBase) {
             group = (LMDirectGroupBase) datedGroup.getObject();
         }
@@ -64,7 +66,9 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        Comparator<DisplayablePao> defaultSorter = LoadGroupDisplayField.NAME.getSorter(this, userContext, false);
+        DemandResponseBackingField<LMGroupBase> loadGroupNameField = 
+            loadGroupFieldService.getBackingField("NAME");
+        Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(false, userContext);
         if (sorter == null) {
             sorter = defaultSorter;
         } else {
@@ -164,8 +168,13 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }
     
     @Autowired
-    public void setDemandResponseEventLogService(
-                                                 DemandResponseEventLogService demandResponseEventLogService) {
+    public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
     }
+    
+    @Autowired
+    public void setLoadGroupFieldService(LoadGroupFieldService loadGroupFieldService) {
+        this.loadGroupFieldService = loadGroupFieldService;
+    }
+    
 }

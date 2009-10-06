@@ -8,18 +8,18 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.Range;
+import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 
 public class LoadGroupLastActionFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper;
+    private LoadGroupService loadGroupService;
 
     private Range<Date> filter;
 
-    public LoadGroupLastActionFilter(ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper,
+    public LoadGroupLastActionFilter(LoadGroupService loadGroupService,
             Range<Date> filter) {
-        this.mapper = mapper;
+        this.loadGroupService = loadGroupService;
         this.filter = filter;
     }
 
@@ -31,7 +31,7 @@ public class LoadGroupLastActionFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMDirectGroupBase group = mapper.map(pao);
+                LMDirectGroupBase group = loadGroupService.getGroupForPao(pao);
                 boolean retVal = group != null && filter.intersects(group.getGroupTime());
                 return retVal;
             }});

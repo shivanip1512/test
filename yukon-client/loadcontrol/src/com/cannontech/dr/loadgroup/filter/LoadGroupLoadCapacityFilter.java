@@ -7,16 +7,15 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.Range;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.dr.loadgroup.service.LoadGroupService;
 
 public class LoadGroupLoadCapacityFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper;
+    private LoadGroupService loadGroupService;
     private Range<Double> filter;
     
-    public LoadGroupLoadCapacityFilter(ObjectMapper<DisplayablePao, LMDirectGroupBase> mapper, Range<Double> filter) {
-        this.mapper = mapper;
+    public LoadGroupLoadCapacityFilter(LoadGroupService loadGroupService, Range<Double> filter) {
+        this.loadGroupService = loadGroupService;
         this.filter = filter;
     }
 

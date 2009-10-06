@@ -22,13 +22,15 @@ import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
+import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupLastActionFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupLoadCapacityFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
-import com.cannontech.dr.loadgroup.model.LoadGroupDisplayField;
+import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
+import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupControllerHelper {
@@ -60,6 +62,7 @@ public class LoadGroupControllerHelper {
     private LoadGroupService loadGroupService = null;
     private PaoAuthorizationService paoAuthorizationService;
     private DatePropertyEditorFactory datePropertyEditorFactory;
+    private LoadGroupFieldService loadGroupFieldService;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         // Since Range uses generics, spring can't determine the type of the
@@ -109,10 +112,15 @@ public class LoadGroupControllerHelper {
             filters.add(new LoadGroupLoadCapacityFilter(loadGroupService, backingBean.getLoadCapacity()));
         }
 
-        LoadGroupDisplayField sortField = StringUtils.isEmpty(backingBean.getSort())
-            ? LoadGroupDisplayField.NAME : LoadGroupDisplayField.valueOf(backingBean.getSort());
-        Comparator<DisplayablePao> sorter =
-            sortField.getSorter(loadGroupService, userContext, backingBean.getDescending());
+        // Name is the default sort field
+        DemandResponseBackingField<LMGroupBase> sortField = 
+            loadGroupFieldService.getBackingField("NAME");
+        if(!StringUtils.isEmpty(backingBean.getSort())) {
+            sortField = loadGroupFieldService.getBackingField(backingBean.getSort());
+        }
+        
+        Comparator<DisplayablePao> sorter = 
+            sortField.getSorter(backingBean.getDescending(), userContext);
         
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
@@ -138,5 +146,10 @@ public class LoadGroupControllerHelper {
     public void setDatePropertyEditorFactory(
             DatePropertyEditorFactory datePropertyEditorFactory) {
         this.datePropertyEditorFactory = datePropertyEditorFactory;
+    }
+    
+    @Autowired
+    public void setLoadGroupFieldService(LoadGroupFieldService loadGroupFieldService) {
+        this.loadGroupFieldService = loadGroupFieldService;
     }
 }
