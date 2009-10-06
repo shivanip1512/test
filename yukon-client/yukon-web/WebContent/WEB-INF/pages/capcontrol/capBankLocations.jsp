@@ -37,10 +37,10 @@
 			<tbody id="tableBody">
 			<c:forEach var="bank" items="${capBankList}" varStatus="i">
 				<tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
-					<td><c:out value="${bank.ccName}"/></td>
-					<td><c:out value="${addList[i.index].serialNumber}"/></td>
-					<td><c:out value="${bank.ccArea}"/></td>
-					<td><c:out value="${addList[i.index].drivingDirections}"/></td>
+					<td><c:out value="${bank.name}"/></td>
+					<td><c:out value="${bank.serialNumber}"/></td>
+					<td><c:out value="${bank.address}"/></td>
+					<td><c:out value="${bank.directions}"/></td>
 				</tr>
 				
 			</c:forEach>
