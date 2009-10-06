@@ -21,6 +21,9 @@
 <cti:msg var="retryLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.retry"/>
 <cti:msg var="scheduleButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton"/>
 <cti:msg var="updateButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton"/>
+<cti:msg var="enableJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.enableJobButton" />
+<cti:msg var="disableJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.disableJobButton" />
+<cti:msg var="disableAndDeleteJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.disableAndDeleteJobButton" />
 
 <c:choose>
 	<c:when test="${!editMode}">
@@ -62,6 +65,15 @@
         <%-- DEVICE GROUP JSON DATA --%>
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" selectGroupName="${deviceGroupName}" selectedNodePathVar="selectedNodePath" />
         
+        <%-- TOGGLE/DELETE FORMS --%>
+        <form id="toggleJobEnabledForm" action="/spring/group/scheduledGroupRequestExecution/toggleJobEnabled" method="post">
+			<input type="hidden" name="toggleJobId" value="${editJobId}">
+		</form>
+		
+		<form id="disabledAndDeleteJobForm" action="/spring/group/scheduledGroupRequestExecution/deleteJob" method="post">
+			<input type="hidden" name="deleteJobId" value="${editJobId}">
+		</form>
+							
         <%-- TABS --%>
 		<cti:tabbedContentSelector>
 		        
@@ -70,6 +82,7 @@
         		
 				<form id="scheduledGroupRequestExecutionForm_attr" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
+        		 	<input type="hidden" name="editJobId" value="${editJobId}">
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_ATTRIBUTE_READ">
         		 	<cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
         		 	<input type="hidden" name="formUniqueId" value="${formUniqueId}">
@@ -113,23 +126,32 @@
         		 		
         			</tags:nameValueContainer>
         			
-        			<br>
-					<div class="scheduleButtonDiv">
-			        <c:choose>
-			       	 	<%-- SCHDULE MODE --%>
-						<c:when test="${!editMode}">
-							<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}"/>
-						</c:when>
-						
-						<%-- EDIT MODE --%>
-						<c:otherwise>
-							<input type="hidden" name="editJobId" value="${editJobId}">
-							<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}"/>
-						</c:otherwise>
-					</c:choose>
-					</div>
-        	
         		</form>
+        			
+       			<br>
+		        <c:choose>
+		       	 	<%-- SCHDULE MODE --%>
+					<c:when test="${!editMode}">
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" width="80px"/>
+					</c:when>
+					
+					<%-- EDIT MODE --%>
+					<c:otherwise>
+						
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" width="80px"/>
+						
+						<c:choose>
+							<c:when test="${disabled}">
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" width="80px"/>
+							</c:when>
+							<c:otherwise>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" width="80px"/>
+							</c:otherwise>
+						</c:choose>
+						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" width="80px"/>
+						
+					</c:otherwise>
+				</c:choose>
         	
         	</cti:tabbedContentSelectorContent>
         	
@@ -140,6 +162,7 @@
         	
         		<form id="scheduledGroupRequestExecutionForm_cmd" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
+        		 	<input type="hidden" name="editJobId" value="${editJobId}">
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
         		 	<cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_" />
         		 	<input type="hidden" name="formUniqueId" value="${formUniqueId}">
@@ -180,23 +203,32 @@
         		 		
         			</tags:nameValueContainer>
         			
-        			<br>
-        			<div class="scheduleButtonDiv">
-			        <c:choose>
-			       	 	<%-- SCHDULE MODE --%>
-						<c:when test="${!editMode}">
-							<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}"/>
-						</c:when>
-						
-						<%-- EDIT MODE --%>
-						<c:otherwise>
-							<input type="hidden" name="editJobId" value="${editJobId}">
-							<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}"/>
-						</c:otherwise>
-					</c:choose>
-					</div>
-        	
         		</form>
+        			
+       			<br>
+		        <c:choose>
+		       	 	<%-- SCHDULE MODE --%>
+					<c:when test="${!editMode}">
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" width="80px"/>
+					</c:when>
+					
+					<%-- EDIT MODE --%>
+					<c:otherwise>
+	
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" width="80px"/>
+						
+						<c:choose>
+							<c:when test="${disabled}">
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" width="80px"/>
+							</c:when>
+							<c:otherwise>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" width="80px"/>
+							</c:otherwise>
+						</c:choose>
+						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" width="80px"/>
+	
+					</c:otherwise>
+				</c:choose>
         	
         	</cti:tabbedContentSelectorContent>
         

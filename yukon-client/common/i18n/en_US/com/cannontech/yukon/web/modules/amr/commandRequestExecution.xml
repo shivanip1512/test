@@ -124,8 +124,6 @@
 	     View a listing of every time this job has run.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit Schedule</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.enableJobButton">Enable Schedule</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.disableJobButton">Disable Schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit</entry>
     
 </properties>

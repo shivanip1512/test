@@ -37,6 +37,9 @@
 <c:choose>
 <c:when test="${fn:length(jobWrappers) > 0}">
 
+<c:if test="${fn:length(jobWrappers) > 20}">
+	<div style="overflow:auto; height:500px;">
+</c:if>
 <table class="compactResultsTable">
 	
 	<tr>
@@ -81,13 +84,13 @@
 			</td>
 			
 			<%-- name --%>	
-			<td class="${tdClass}">${jobWrapper.name}</td>
+			<td class="${tdClass}" style="white-space:nowrap;">${jobWrapper.name}</td>
 			
 			<%-- schedule description --%>
-			<td class="${tdClass}">${jobWrapper.scheduleDescription}</td>
+			<td class="${tdClass}" style="white-space:nowrap;">${jobWrapper.scheduleDescription}</td>
 			
 			<%-- status --%>
-			<td class="${tdClass}" style="text-align:center;">
+			<td class="${tdClass}" style="text-align:center;" title="${jobWrapper.job.id}">
 				<c:choose>
 					<c:when test="${jobWrapper.job.disabled}">
 						<span class="subtleGray">${disabledText}</span>
@@ -108,6 +111,10 @@
 	</c:forEach>
 
 </table>
+<c:if test="${fn:length(jobWrappers) > 20}">
+	</div>
+</c:if>
+
 </c:when>
 
 <c:otherwise>

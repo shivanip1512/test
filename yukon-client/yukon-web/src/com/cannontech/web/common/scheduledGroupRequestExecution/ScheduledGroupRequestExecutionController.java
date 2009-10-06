@@ -37,6 +37,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
@@ -59,6 +60,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
 	private CronExpressionTagService cronExpressionTagService;
 	private AttributeSelectorHelperService attributeSelectorHelperService;
+	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	
 	private List<LiteCommand> meterCommands;
 	
@@ -90,9 +92,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		}
 		
 		// set the parameters to those of the current job if they are not already present in the request (which may exist due to error pass-through)
+		ScheduledRepeatingJob existingJob = null;
 		if (editMode) {
 			
-			ScheduledRepeatingJob existingJob = jobManager.getRepeatingJob(editJobId);
+			existingJob = jobManager.getRepeatingJob(editJobId);
 			ScheduledGroupRequestExecutionTask existingTask = new ScheduledGroupRequestExecutionTask();
 			InputRoot inputRoot = scheduledGroupRequestExecutionJobDefinition.getInputs();
 	        InputUtil.applyProperties(inputRoot, existingTask, existingJob.getJobProperties());
@@ -146,6 +149,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		}
 		
 		mav.addObject("editJobId", editJobId);
+		if (editMode) {
+		    mav.addObject("disabled", existingJob.isDisabled());
+		}
 		mav.addObject("editMode", editMode);
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("requestType", requestType);
@@ -432,6 +438,40 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		return mav;
 	}
 	
+	// TOGGLE JOB ENABLED
+    public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        ModelAndView mav = new ModelAndView("redirect:home");
+        
+        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+        
+        if (job.isDisabled()) {
+            jobManager.enableJob(job);
+        } else {
+            jobManager.disableJob(job);
+        }
+        
+        mav.addObject("editJobId", toggleJobId);
+        
+        return mav;
+        
+    }
+    
+    // DELETE JOB (not really a hard delete, but set Job.Disabled = 'D' to hide it)
+    public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/jobs");
+        
+        int deleteJobId = ServletRequestUtils.getRequiredIntParameter(request, "deleteJobId");
+        
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(deleteJobId);
+        jobManager.deleteJob(job);
+        
+        return mav;
+    }
+	
 	
 	// HELPERS
     private String makeSelectedAttributeStrsParameter(Set<Attribute> attributeParameters) {
@@ -490,5 +530,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	@Autowired
 	public void setAttributeSelectorHelperService(AttributeSelectorHelperService attributeSelectorHelperService) {
         this.attributeSelectorHelperService = attributeSelectorHelperService;
+    }
+	
+	@Autowired
+	public void setScheduledRepeatingJobDao(ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
+        this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
     }
 }

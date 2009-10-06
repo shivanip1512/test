@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +28,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
-import com.cannontech.jobs.service.JobManager;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
@@ -38,7 +36,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
-	private JobManager jobManager;
 	private DateFormattingService dateFormattingService;
 	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
 	
@@ -159,27 +156,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		
 	}
 	
-	// TOGGLE JOB ENABLED
-	public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("redirect:detail");
-		
-		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
-        
-        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
-        
-        if (job.isDisabled()) {
-        	jobManager.enableJob(job);
-        } else {
-        	jobManager.disableJob(job);
-        }
-        
-        mav.addObject("jobId", jobId);
-        
-        return mav;
-		
-	}
-	
 
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(
@@ -191,11 +167,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	public void setScheduledRepeatingJobDao(
 			ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
 		this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
-	}
-	
-	@Resource(name="jobManager")
-	public void setJobManager(JobManager jobManager) {
-		this.jobManager = jobManager;
 	}
 	
 	@Autowired
