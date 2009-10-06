@@ -146,7 +146,7 @@
                 <table>
                     <tr>
                         <td style="padding-right: 10px;">
-                            <b>Select field to modify: </b>
+                            <b>Select update type: </b>
                             <select id="fieldToModify" name="fieldToModify">
                                 <c:forEach var="pointField" items="${pointFields}">
                                     <option value="${pointField}">${pointField.displayValue}</option>
@@ -154,17 +154,16 @@
                             </select>
                         </td>
                         <td>
-                            <b>Update Value: </b>
+                            <span style="font-weight: bold;">Value: </span>
                             <input type="text" name="setValue">
+                        </td>
+                        <td>
+                            <cti:msg var="updateButtonLabel" key="yukon.common.device.bulk.updatePointsHome.updateButton"/>
+                            <tags:slowInput myFormId="executeUpdatePointsForm" labelBusy="${updateButtonLabel}" label="${updateButtonLabel}" />
                         </td>
                     </tr>
                 </table>
             </div>
-                    
-            <%-- UPDATE POINTS BUTTON --%>
-            <cti:msg var="updateButtonLabel" key="yukon.common.device.bulk.updatePointsHome.updateButton"/>
-            <tags:slowInput myFormId="executeUpdatePointsForm" labelBusy="${updateButtonLabel}" label="${updateButtonLabel}" />
-            
         </form>
     
     </tags:bulkActionContainer>

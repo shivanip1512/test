@@ -54,6 +54,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Lists;
 
 @CheckRoleProperty(YukonRoleProperty.ADD_REMOVE_POINTS)
 public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
@@ -154,7 +155,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     
     protected Map<Integer, DeviceCollection> getDeviceTypeDeviceCollectionMap(Set<Integer> deviceTypeSet, DeviceCollection deviceCollection) {
     	
-    	List<SimpleDevice> devices = deviceCollection.getDeviceList();
+    	List<SimpleDevice> devices = Lists.newArrayList(deviceCollection.getDeviceList());
     	
     	Map<Integer, DeviceCollection> deviceTypeDeviceCollectionMap = new LinkedHashMap<Integer, DeviceCollection>();
         for (int deviceType : deviceTypeSet) {

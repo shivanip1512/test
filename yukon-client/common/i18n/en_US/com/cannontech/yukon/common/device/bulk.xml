@@ -443,7 +443,7 @@
     <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionTooltip">Show only those points that all selected device types support.</entry>
     
     <!-- misc -->
-    <entry key="yukon.common.device.bulk.updatePointsHome.updateButton">Update Points</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.updateButton">Update</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noPointsSelectedError">No points selected.</entry>
     
     <!-- updatePointsResults.jsp -->
