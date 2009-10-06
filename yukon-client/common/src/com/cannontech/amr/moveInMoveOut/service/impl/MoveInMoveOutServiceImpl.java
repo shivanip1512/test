@@ -32,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceEventEnum;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -104,6 +105,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 logger.info("Starting meter read for " + meter.toString());
                 CommandResultHolder meterReadResults = meterReadService.readMeter(meter, 
                                                                                   Collections.singleton(BuiltInAttribute.USAGE),
+                                                                                  CommandRequestExecutionType.MOVE_IN_MOVE_OUT_USAGE_READ,
                                                                                   moveInFormObj.getUserContext().getYukonUser());
                 
                 if (meterReadResults.isAnyErrorOrException()) {
@@ -144,6 +146,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 try {
                     resultHolder = calculatedPointService.calculatePoint(moveInResult.getPreviousMeter(),
                                                                          moveInFormObj.getMoveInDate(),
+                                                                         CommandRequestExecutionType.MOVE_IN_MOVE_OUT_USAGE_READ,
                                                                          moveInFormObj.getUserContext());
             
                     if (!resultHolder.getErrors().isEmpty()) {
@@ -254,6 +257,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 logger.info("Starting meter read for " + meter.toString());
                 CommandResultHolder meterReadResults = meterReadService.readMeter(meter, 
                                                                                   Collections.singleton(BuiltInAttribute.USAGE),
+                                                                                  CommandRequestExecutionType.MOVE_IN_MOVE_OUT_USAGE_READ,
                                                                                   moveOutFormObj.getUserContext().getYukonUser());
     
                 
@@ -297,6 +301,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 try {
                     resultHolder = calculatedPointService.calculatePoint(moveOutResult.getPreviousMeter(),
                                                                          moveOutFormObj.getMoveOutDate(),
+                                                                         CommandRequestExecutionType.MOVE_IN_MOVE_OUT_USAGE_READ,
                                                                          moveOutFormObj.getUserContext());
                     if (!resultHolder.getErrors().isEmpty()) {
                         logger.info("Move out for " + moveOutResult.getPreviousMeter()

@@ -19,6 +19,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
@@ -101,7 +102,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         allExistingAttributes.retainAll(attributes);
         
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, CommandRequestExecutionType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ, user);
         
         //result
         mav.addObject("result", result);

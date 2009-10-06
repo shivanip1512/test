@@ -22,6 +22,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -132,7 +133,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, userContext.getYukonUser());
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, CommandRequestExecutionType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
         
         if( allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG)) {
             PerishableOutageData data = addOutageData(meter, result.getValues(), userContext);

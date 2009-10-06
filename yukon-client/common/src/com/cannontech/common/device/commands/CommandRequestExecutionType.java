@@ -10,7 +10,7 @@ public enum CommandRequestExecutionType {
     // IN GENERAL, commands sent to a device (i.e. no specific route) should have a defaultNoqueue = true. If you are using the type with the
     // CommandRequestRouteAndDeviceExecutor or the CommandRequestRouteExecutor, then set defaultNoqueue = false.
     //
-    // IN GENERAL, using a type with a service that results in sending commands to several devices a lower priority should be used (~8). Consider naming the type
+    // IN GENERAL, when using a type with a service that results in sending commands to several devices, a lower priority should be used (~8). Consider naming the type
     // with a prefix of "GROUP_". In special cases, such as PHASE_DETECT_COMMAND, the priority is set higher even though this type is used to send commands to multiple devices at a time.
     // Commands intended to be sent to a single device at a time may use a higher priority (~14).
 
@@ -22,8 +22,14 @@ public enum CommandRequestExecutionType {
 	CONTROL_CONNECT_DISCONNECT_COMAMND(true, 14, "Connect/Disconnect Command", "A 'control connect' or 'control disconnect' command sent from the disconnect widget.", false),
 	TOU_SCHEDULE_COMMAND(true, 14, "TOU Schedule Command", "A 'putconfig tou ...' command sent from the TOU widget.", false),
 	LM_HARDWARE_COMMAND(false, 14, "LM Hardware Command", "A command sent to LM hardware.", false),
+	MOVE_IN_MOVE_OUT_USAGE_READ(false, 14, "Move In/Move Out Usage Reading", "Move In/Move Out Usage Reading", false),
 	
-	DEVICE_ATTRIBUTE_READ(false, 14, "Device Attribute Read", "An attribute read command sent to a device.", false),
+	METER_OUTAGES_WIDGET_ATTRIBUTE_READ(false, 14, "Outage Widget Attribute Read", "Reads all meter attributes for display in the Meter Outages Widget.", false),
+	METER_READINGS_WIDGET_ATTRIBUTE_READ(false, 14, "Meter Readings Widget Attribute Read", "Reads all meter attributes that are displayed in the Meter Readings Widget.", false),
+	SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ(false, 14, "Simple Attributes Widget Attribute Read", "Reads a set of attributes for the Simple Attributes Widget.", false),
+	TOU_WIDGET_ATTRIBUTE_READ(false, 14, "TOU Widget Attribute Read", "Reads TOU attributes for the TOU Widget.", false),
+	DISCONNECT_STATUS_ATTRIBUTE_READ(false, 14, "Disconnect Status Attribute Read", "Disconnect Status Attribute Read", false),
+	
 	GROUP_COMMAND(false, 8, "Group Command", "A command sent to a group of devices.", false),
 	GROUP_ATTRIBUTE_READ(false, 8, "Group Attribute Read", "An attribute read command sent to a group of devices.", false),
 	SCHEDULED_GROUP_COMMAND(false, 8, "Scheduled Group Command", "A command sent to a group of devices periodically.", true),

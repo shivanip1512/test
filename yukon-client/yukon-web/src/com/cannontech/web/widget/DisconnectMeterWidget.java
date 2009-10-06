@@ -96,7 +96,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         ModelAndView mav = getReadModelAndView(meter, true);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, CommandRequestExecutionType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
         
         mav.addObject("state", getDisconnectedState(meter, result));
         String configStr = "";

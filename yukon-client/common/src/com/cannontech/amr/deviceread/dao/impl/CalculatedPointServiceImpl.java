@@ -13,6 +13,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
@@ -43,7 +44,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 	 * @param device
 	 * @param beginDate
 	 */
-	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, YukonUserContext userContext) {
+	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, CommandRequestExecutionType type, YukonUserContext userContext) {
 
         CalculatedPointResults results = new CalculatedPointResults();
 
@@ -52,6 +53,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		logger.info("Starting meter read for " + meter.toString());
 		CommandResultHolder meterReadResults = meterReadService.readMeter(
 				meter, Collections.singleton(BuiltInAttribute.USAGE),
+				type,
 				userContext.getYukonUser());
 
         PointValueHolder currentPVH = null;

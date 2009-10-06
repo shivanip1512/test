@@ -23,6 +23,7 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -97,7 +98,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, CommandRequestExecutionType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
         
         mav.addObject("result", result);
         

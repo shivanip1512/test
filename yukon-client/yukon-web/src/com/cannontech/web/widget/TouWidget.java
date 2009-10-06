@@ -18,6 +18,7 @@ import com.cannontech.amr.tou.dao.TouDao;
 import com.cannontech.amr.tou.model.TouAttributeMapping;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -85,7 +86,7 @@ public class TouWidget extends WidgetControllerBase {
         List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
         Set<Attribute> existingAttributes = getExistingAttributes(meter, touRatesList);
 
-        CommandResultHolder result = meterReadService.readMeter(meter, existingAttributes, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, existingAttributes, CommandRequestExecutionType.TOU_WIDGET_ATTRIBUTE_READ, user);
 
         mav.addObject("result", result);
         
