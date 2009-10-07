@@ -3,9 +3,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage title="Device Definitions" module="blank">
-	<cti:standardMenu menuSelection="" />
-	
+<cti:standardPage title="Device Definitions" module="support">
+<cti:standardMenu menuSelection="information|deviceDef"/>
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/spring/support/" title="Support" />
+    <cti:crumbLink>Device Definitions</cti:crumbLink>
+</cti:breadCrumbs>
+
 	<c:url var="url" value="/spring/common/deviceDefinition.xml"/>
 	
 	<style type="text/css">

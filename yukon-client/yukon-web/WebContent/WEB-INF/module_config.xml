@@ -687,6 +687,14 @@
         <links>
             <option id="information">
                 <link>/spring/support/</link>
+                <links>
+                    <option id="system">
+                        <link>/spring/support/</link>
+                    </option>
+                    <option id="deviceDef">
+                        <link>/spring/common/deviceDefinition.xml</link>
+                    </option>
+                </links>
             </option>
             <option id="logs">
                 <link>/spring/support/logging/menu</link>
