@@ -68,7 +68,7 @@ public class CapBankWebController {
 		                                                 additionInfo.getDrivingDirections());
 		        bankLocationList.add(location);
 		    } else {
-		        log.warn("Cap Bank Addition info missing for bank id: " + capBank.getCcId());
+		        log.warn("Cap Bank Additional info missing for bank id: " + capBank.getCcId());
 		    }
         }
 		
