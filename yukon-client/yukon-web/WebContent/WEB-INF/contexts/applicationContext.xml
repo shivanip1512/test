@@ -864,21 +864,29 @@
         <property name="attributeService" ref="attributeService" />
         <property name="dateFormattingService" ref="dateFormattingService" />
         <property name="supportedAttributeGraphSet">
-			<set>
+			<list>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="USAGE"/>
-					<property name="graphType" value="COLUMN"/>
-					<property name="converterType" value="NORMALIZED_DELTA"/>
-					<property name="label" value="Usage (Normalized)"/>
+					<property name="attribute" value="LOAD_PROFILE"/>
+					<property name="graphType" value="LINE"/>
+					<property name="converterType" value="RAW"/>
+					<property name="label" value="Load Profile"/>
 					<property name="description">
 						<value>
-							<![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
-							point on the graph is generated using the following formula: (reading - 
-							previousReading) / (days between readings)]]>
+							<![CDATA[Graph of raw Load Profile data.]]>
 						</value>
 					</property>
-					
 				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+                      <property name="attribute" value="VOLTAGE_PROFILE"/>
+                      <property name="graphType" value="LINE"/>
+                      <property name="converterType" value="RAW"/>
+                      <property name="label" value="Voltage Profile"/>
+                      <property name="description">
+                            <value>
+                                  <![CDATA[Graph of raw Voltage Profile data.]]>
+                            </value>
+                      </property>
+                </bean>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
 					<property name="attribute" value="DEMAND"/>
 					<property name="graphType" value="LINE"/>
@@ -891,17 +899,19 @@
 					</property>
 				</bean>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="LOAD_PROFILE"/>
-					<property name="graphType" value="LINE"/>
-					<property name="converterType" value="RAW"/>
-					<property name="label" value="Load Profile"/>
+					<property name="attribute" value="USAGE"/>
+					<property name="graphType" value="COLUMN"/>
+					<property name="converterType" value="NORMALIZED_DELTA"/>
+					<property name="label" value="Usage (Normalized)"/>
 					<property name="description">
 						<value>
-							<![CDATA[Graph of raw Load Profile data.]]>
+							<![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
+							point on the graph is generated using the following formula: (reading - 
+							previousReading) / (days between readings)]]>
 						</value>
 					</property>
 				</bean>
-        	</set>
+        	</list>
         </property>
     </bean>
  

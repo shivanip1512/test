@@ -2,7 +2,7 @@ package com.cannontech.web.widget;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -191,8 +191,8 @@ public class TrendWidget extends WidgetControllerBase {
     }
 
     @Required
-    public void setSupportedAttributeGraphSet(Set<AttributeGraphType> supportedAttributeGraphSet) {
-        supportedAttributeGraphMap = new HashMap<String, AttributeGraphType>();
+    public void setSupportedAttributeGraphSet(List<AttributeGraphType> supportedAttributeGraphSet) {
+        supportedAttributeGraphMap = new LinkedHashMap<String, AttributeGraphType>();
         for (AttributeGraphType agt : supportedAttributeGraphSet) {
             supportedAttributeGraphMap.put(agt.getLabel(), agt);
         }
