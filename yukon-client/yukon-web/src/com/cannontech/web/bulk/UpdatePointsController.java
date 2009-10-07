@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,8 +38,12 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", false);
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         mav.addObject("sharedPoints", sharedPoints);
         mav.addObject("maskExistingPoints", maskExistingPoints);
+        if(StringUtils.isNotBlank(errorMsg)){
+            mav.addObject("errorMsg", errorMsg);
+        }
         
         List<UpdatePointsFieldType> pointFields = Lists.newArrayList(UpdatePointsFieldType.values());
         mav.addObject("pointFields", pointFields);
@@ -97,6 +102,17 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         
         Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
         
+        if(pointTemplatesMap.isEmpty()){
+            ModelAndView home = redirectWithError("Error: Select at least one point to update.", deviceCollection);
+            return home;
+        } else {
+            String errorMsg = validateInput(updateField, setValue);
+            if(StringUtils.isNotBlank(errorMsg)){
+                ModelAndView home = redirectWithError(errorMsg, deviceCollection);
+                return home;
+            }
+        }
+        
         // create processor
         Processor<YukonDevice> updatePointsProcessor = null;
         if (updateField == UpdatePointsFieldType.ADJUSTED_MULTIPLIER){
@@ -118,8 +134,43 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         return mav;
     }
     
-    
-    
+    private String validateInput(UpdatePointsFieldType updateField, String setValue) {
+        String errorMsg = null;
+        switch (updateField) {
+        case EXPLICIT_MULTIPLIER :
+        case ADJUSTED_MULTIPLIER :
+            try {
+                Double.parseDouble(setValue);
+            } catch (NumberFormatException e){
+                errorMsg = "Error: Value must be a valid decimal number.";
+            }
+            break;
+            
+        case DECIMAL_PLACES :
+            try {
+                int intValue = Integer.parseInt(setValue);
+                if(intValue < 0){
+                    errorMsg = "Error: Value must be a number greater than zero.";
+                }
+            } catch (NumberFormatException e) {
+                errorMsg = "Error: Value must be a valid integer number.";
+            }
+            break;
+        default:
+            errorMsg = "Error: Unsupported update type: " + updateField.name();
+            break;
+        } 
+        
+        return errorMsg;
+    }
+
+    private ModelAndView redirectWithError(String errorMsg, DeviceCollection deviceCollection) {
+        ModelAndView mav = new ModelAndView("redirect:home");
+        mav.addAllObjects(deviceCollection.getCollectionParameters());
+        mav.addObject("errorMsg", errorMsg);
+        return mav;
+    }
+
     // VIEW RESULTS
     public ModelAndView updatePointsResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
