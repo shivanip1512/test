@@ -1,23 +1,24 @@
-package com.cannontech.dr.loadgroup.model;
+package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
-public class LoadGroupLoadCapacityField extends LoadGroupBackingFieldBase {
+public class ProgramStateField extends ProgramBackingFieldBase {
 
     @Override
     public String getFieldName() {
-        return "LOAD_CAPACITY";
+        return "STATE";
     }
     
     @Override
-    public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
-        return buildResolvable(getFieldName(), new Double(0.0));
+    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
+        ProgramState state = ProgramState.valueOf(program.getProgramStatus());
+        return buildResolvable(getFieldName()  + "." + state.name());
     }
-    
+
     @Override
     public Comparator<DisplayablePao> getSorter(final boolean isDescending,
                                                 YukonUserContext userContext) {
@@ -25,22 +26,22 @@ public class LoadGroupLoadCapacityField extends LoadGroupBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                LMDirectGroupBase group1 = getGroupFromYukonPao(pao1);
-                LMDirectGroupBase group2 = getGroupFromYukonPao(pao2);
-                if (group1 == group2) {
+                LMProgramBase program1 = getProgramFromYukonPao(pao1);
+                LMProgramBase program2 = getProgramFromYukonPao(pao2);
+                if (program1 == program2) {
                     return 0;
                 }
-                if (group1 == null) {
+                if (program1 == null) {
                     return isDescending ? -1 : 1;
                 }
-                if (group2 == null) {
+                if (program2 == null) {
                     return isDescending ? 1 : -1;
                 }
-                Double state1 = 0.0;  // TO BE DETERMINED
-                Double state2 = 0.0;
+                Integer state1 = program1.getProgramStatus();
+                Integer state2 = program2.getProgramStatus();
                 int retVal = state1.compareTo(state2);
                 return isDescending ? (0 - retVal) : retVal;
             }};
-    }       
+    }
 
 }

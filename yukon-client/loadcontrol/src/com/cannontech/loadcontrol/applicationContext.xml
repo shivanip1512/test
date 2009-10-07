@@ -39,9 +39,21 @@
 
     <bean id="drControlAreaService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaServiceImpl"/>
     <bean id="drScenarioService" class="com.cannontech.dr.scenario.service.impl.ScenarioServiceImpl"/>
+
     <bean id="drProgramService" class="com.cannontech.dr.program.service.impl.ProgramServiceImpl"/>
+    <bean id="drProgramFieldService" class="com.cannontech.dr.program.service.impl.ProgramFieldServiceImpl"/>
+    <bean id="drProgramNameField" class="com.cannontech.dr.program.model.ProgramNameField"/>
+    <bean id="drProgramStateField" class="com.cannontech.dr.program.model.ProgramStateField"/>
+    <bean id="drProgramStartField" class="com.cannontech.dr.program.model.ProgramStartField"/>
+    <bean id="drProgramStopField" class="com.cannontech.dr.program.model.ProgramStopField"/>
+    <bean id="drProgramReductionField" class="com.cannontech.dr.program.model.ProgramReductionField"/>
+    <bean id="drProgramCurrentGearField" class="com.cannontech.dr.program.model.ProgramCurrentGearField"/>
+    <bean id="drProgramLoadCapacityField" class="com.cannontech.dr.program.model.ProgramLoadCapacityField"/>
+    <bean id="drProgramStateClassnameField" class="com.cannontech.dr.program.model.ProgramStateClassnameField"/>
+    <bean id="drProgramShowAction" class="com.cannontech.dr.program.model.ProgramShowActionField"/>
+    <bean id="drProgramPriority" class="com.cannontech.dr.program.model.ProgramPriorityField"/>
+
     <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
-    
     <bean id="drLoadGroupFieldService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupFieldServiceImpl"/>
     <bean id="drLoadGroupNameField" class="com.cannontech.dr.loadgroup.model.LoadGroupNameField"/>
     <bean id="drLoadGroupStateField" class="com.cannontech.dr.loadgroup.model.LoadGroupStateField"/>

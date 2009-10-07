@@ -2,11 +2,9 @@ package com.cannontech.web.dr;
 
 import java.beans.PropertyEditor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +20,19 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
+import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.PriorityFilter;
 import com.cannontech.dr.program.filter.StartStopFilter;
 import com.cannontech.dr.program.filter.StateFilter;
-import com.cannontech.dr.program.model.ProgramDisplayField;
+import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Maps;
 
 public class ProgramControllerHelper {
     public static class ProgramListBackingBean extends ListBackingBean {
@@ -90,6 +86,7 @@ public class ProgramControllerHelper {
     private ProgramService programService = null;
     private PaoAuthorizationService paoAuthorizationService;
     private DatePropertyEditorFactory datePropertyEditorFactory;
+    private ProgramFieldService programFieldService;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         PropertyEditor fullDateTimeEditor =
@@ -152,10 +149,14 @@ public class ProgramControllerHelper {
             filters.add(new PriorityFilter(programService, backingBean.getPriority()));
         }
 
-        ProgramDisplayField sortField = StringUtils.isEmpty(backingBean.getSort())
-            ? ProgramDisplayField.NAME : ProgramDisplayField.valueOf(backingBean.getSort());
-        Comparator<DisplayablePao> sorter =
-            sortField.getSorter(programService, userContext, backingBean.getDescending());
+        // Name is the default sort field
+        DemandResponseBackingField<LMProgramBase> sortField = 
+            programFieldService.getBackingField("NAME");
+        if(!StringUtils.isEmpty(backingBean.getSort())) {
+            sortField = programFieldService.getBackingField(backingBean.getSort());
+        }
+        Comparator<DisplayablePao> sorter = 
+            sortField.getSorter(backingBean.getDescending(), userContext);
 
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
@@ -180,5 +181,10 @@ public class ProgramControllerHelper {
     @Autowired
     public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
         this.datePropertyEditorFactory = datePropertyEditorFactory;
+    }
+    
+    @Autowired
+    public void setProgramFieldService(ProgramFieldService programFieldService) {
+        this.programFieldService = programFieldService;
     }
 }

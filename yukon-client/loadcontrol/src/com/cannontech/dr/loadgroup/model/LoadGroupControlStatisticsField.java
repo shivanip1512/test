@@ -2,8 +2,6 @@ package com.cannontech.dr.loadgroup.model;
 
 import java.util.Comparator;
 
-import org.springframework.context.MessageSourceResolvable;
-
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -17,7 +15,7 @@ public class LoadGroupControlStatisticsField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public MessageSourceResolvable getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
+    public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
         Object[] result = {
                 CtiUtilities.decodeSecondsToTime(group.getCurrentHoursDaily()),
                 CtiUtilities.decodeSecondsToTime(group.getCurrentHoursMonthly()),

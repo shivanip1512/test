@@ -6,16 +6,18 @@ import java.util.List;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
-public interface ProgramService
-    extends ObjectMapper<DisplayablePao, LMProgramBase>, ProgramDao {
+public interface ProgramService {
 
+    public DisplayablePao getProgram(int programId);
+    
+    public LMProgramBase getProgramForPao(YukonPao from);
+    
     public DatedObject<LMProgramBase> findDatedProgram(int programId);
 
     public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 
@@ -64,4 +66,5 @@ public interface ProgramService
     public void changeGear(int programId, int gearNumber);
 
     public void setEnabled(int programId, boolean isEnabled);
+
 }

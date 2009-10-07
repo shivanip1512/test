@@ -13,21 +13,22 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
-import com.cannontech.dr.program.model.ProgramDisplayField;
 import com.cannontech.dr.program.service.ConstraintViolations;
+import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
@@ -49,6 +50,7 @@ public class ProgramServiceImpl implements ProgramService {
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
+    private ProgramFieldService programFieldService;
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -74,7 +76,7 @@ public class ProgramServiceImpl implements ProgramService {
         };
 
     @Override
-    public LMProgramBase map(DisplayablePao from) throws ObjectMappingException {
+    public LMProgramBase getProgramForPao(YukonPao from) {
         DatedObject<LMProgramBase> datedProgram =
             loadControlClientConnection.getDatedProgram(from.getPaoIdentifier().getPaoId());
         return datedProgram == null ? null : datedProgram.getObject();
@@ -102,7 +104,9 @@ public class ProgramServiceImpl implements ProgramService {
                                                        int startIndex, int count,
                                                        YukonUserContext userContext) {
 
-        Comparator<DisplayablePao> defaultSorter = ProgramDisplayField.NAME.getSorter(this, userContext, false);
+        DemandResponseBackingField<LMProgramBase> nameField = 
+            programFieldService.getBackingField("NAME");
+        Comparator<DisplayablePao> defaultSorter = nameField.getSorter(false, userContext);
         if (sorter == null) {
             sorter = defaultSorter;
         } else {
@@ -330,6 +334,11 @@ public class ProgramServiceImpl implements ProgramService {
     public void setDemandResponseEventLogService(
             DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
+    }
+    
+    @Autowired
+    public void setProgramFieldService(ProgramFieldService programFieldService) {
+        this.programFieldService = programFieldService;
     }
 
     private LMManualControlRequest getManualControlMessage(

@@ -1,4 +1,4 @@
-package com.cannontech.web.updater.dr.loadGroup;
+package com.cannontech.web.updater.dr;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -7,30 +7,31 @@ import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
-import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingServiceBase;
 
-public class LoadGroupBackingService extends UpdateBackingServiceBase<LMGroupBase> {
+public class LoadGroupBackingService extends UpdateBackingServiceBase<LMDirectGroupBase> {
     private LoadGroupService loadGroupService = null;
     private LoadGroupFieldService loadGroupFieldService;
 
     @Override
-    public DatedObject<LMGroupBase> getDatedObject(int loadGroupId) {
-        DatedObject<LMGroupBase> datedGroup = loadGroupService.findDatedGroup(loadGroupId);
+    public DatedObject<LMDirectGroupBase> getDatedObject(int loadGroupId) {
+        @SuppressWarnings("unchecked")
+        DatedObject<LMDirectGroupBase> datedGroup = 
+            (DatedObject<LMDirectGroupBase>) loadGroupService.findDatedGroup(loadGroupId);
         return datedGroup;
     }
     
     @Override
-    public Object getValue(DatedObject<LMGroupBase> datedObject, String[] idBits,
+    public Object getValue(DatedObject<LMDirectGroupBase> datedObject, String[] idBits,
                            YukonUserContext userContext) {
 
         String fieldName = idBits[1];
 
-        DemandResponseBackingField<LMGroupBase> backingField = 
+        DemandResponseBackingField<LMDirectGroupBase> backingField = 
             loadGroupFieldService.getBackingField(fieldName);
         
-        LMGroupBase group = null;
+        LMDirectGroupBase group = null;
         if (datedObject != null && (datedObject.getObject() instanceof LMDirectGroupBase)) {
             group = datedObject.getObject();
         }

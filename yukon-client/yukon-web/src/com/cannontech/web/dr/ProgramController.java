@@ -456,7 +456,7 @@ public class ProgramController {
 
         modelMap.addAttribute("program", program);
 
-        LMProgramBase programBase = programService.map(program);
+        LMProgramBase programBase = programService.getProgramForPao(program);
         LMProgramDirectGear gear =
             ((IGearProgram) programBase).getDirectGearVector().get(backingBean.getGearNumber() - 1);
 
@@ -1082,7 +1082,7 @@ public class ProgramController {
         Map<Integer, List<LMProgramDirectGear>> gearsByProgramId = Maps.newHashMap();
         for (DisplayablePao program : programs) {
             List<LMProgramDirectGear> gears = Collections.emptyList();
-            LMProgramBase programBase = programService.map(program);
+            LMProgramBase programBase = programService.getProgramForPao(program);
             if (programBase instanceof IGearProgram) {
                 gears = ((IGearProgram) programBase).getDirectGearVector();
             }
@@ -1095,7 +1095,7 @@ public class ProgramController {
         // TODO:  I don't know how to create programs that aren't LMProgramDirect
         // programs so I don't know how to test them.
         List<LMProgramDirectGear> gears = Collections.emptyList();
-        LMProgramBase programBase = programService.map(program);
+        LMProgramBase programBase = programService.getProgramForPao(program);
         if (programBase instanceof IGearProgram) {
             gears = ((IGearProgram) programBase).getDirectGearVector();
         }

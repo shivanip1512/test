@@ -4,7 +4,7 @@
 
 <!-- General Demand Response -->
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
-<entry key="yukon.web.modules.dr.blankField">----</entry>
+<entry key="yukon.web.modules.dr.blankField">N/A</entry>
 
 
 <entry key="yukon.web.modules.dr.paging.viewing">Viewing {0}-{1} of {2}</entry>
@@ -83,8 +83,8 @@
 <entry key="yukon.web.modules.dr.program.value.STATE.STOPPING">Stopping</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.NON_CONTROL">Non Control</entry>
 <entry key="yukon.web.modules.dr.program.value.STATE.TIMED_ACTIVE">Timed Active</entry>
-<entry key="yukon.web.modules.dr.program.value.START">{0,date,MM/dd/yyyy HH:mm zz}</entry>
-<entry key="yukon.web.modules.dr.program.value.STOP">{0,date,MM/dd/yyyy HH:mm zz}</entry>
+<entry key="yukon.web.modules.dr.program.value.START">{date|DATEHM}</entry>
+<entry key="yukon.web.modules.dr.program.value.STOP">{date|DATEHM}</entry>
 <entry key="yukon.web.modules.dr.program.value.CURRENT_GEAR">{0}</entry>
 <entry key="yukon.web.modules.dr.program.value.PRIORITY">{0}</entry>
 <entry key="yukon.web.modules.dr.program.value.REDUCTION">{0,number,0.0}</entry>
@@ -463,15 +463,15 @@
 <entry key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled">This program must be Manually Active to change gears</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon.alt">Change Gears</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.enable">Enable Program</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon">/WebConfig/yukon/Icons/enable.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon.hover">/WebConfig/yukon/Icons/enable_over.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon.disabled">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon.alt">Enable Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon">/WebConfig/yukon/Icons/disable.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon.hover">/WebConfig/yukon/Icons/disable_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.enableIcon.alt">This Program is Disabled, Click to Enable</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.disable">Disable Program</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon">/WebConfig/yukon/Icons/disable.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.hover">/WebConfig/yukon/Icons/disable_over.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.disabled">/WebConfig/yukon/Icons/disable_disabled.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.alt">Disable Program</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon">/WebConfig/yukon/Icons/enable.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.hover">/WebConfig/yukon/Icons/enable_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.disabled">/WebConfig/yukon/Icons/enable_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.alt">This Program is Enabled, Click to Disable</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 

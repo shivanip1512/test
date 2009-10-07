@@ -7,14 +7,13 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.dr.program.service.ProgramService;
 
 public class LoadCapacityFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMProgramBase> mapper;
+    private ProgramService programService;
 
-    public LoadCapacityFilter(ObjectMapper<DisplayablePao, LMProgramBase> mapper) {
-        this.mapper = mapper;
+    public LoadCapacityFilter(ProgramService programService) {
+        this.programService = programService;
     }
 
     @Override

@@ -7,18 +7,17 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.Range;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class PriorityFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMProgramBase> mapper;
+    private ProgramService programService;
 
     private Range<Integer> filter;
 
-    public PriorityFilter(ObjectMapper<DisplayablePao, LMProgramBase> mapper,
-            Range<Integer> filter) {
-        this.mapper = mapper;
+    public PriorityFilter(ProgramService programService, Range<Integer> filter) {
+        this.programService = programService;
         this.filter = filter;
     }
 
@@ -30,7 +29,7 @@ public class PriorityFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMProgramBase program = mapper.map(pao);
+                LMProgramBase program = programService.getProgramForPao(pao);
                 // TODO:  this logic is duplicated in ProgramDisplayField
                 return program != null && filter.intersects(program.getStartPriority() <= 0
                                                             ? 1 : program.getStartPriority());

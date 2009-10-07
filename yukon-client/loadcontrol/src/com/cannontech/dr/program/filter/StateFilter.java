@@ -7,19 +7,18 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class StateFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMProgramBase> mapper;
+    private ProgramService programService;
 
     // we either show active (or similar) or show inactive
     // if the filter is off, we don't create an instance of this class at all
     private boolean showActive;
 
-    public StateFilter(ObjectMapper<DisplayablePao, LMProgramBase> mapper,
-            boolean showActive) {
-        this.mapper = mapper;
+    public StateFilter(ProgramService programService, boolean showActive) {
+        this.programService = programService;
         this.showActive = showActive;
     }
 
@@ -31,7 +30,7 @@ public class StateFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMProgramBase program = mapper.map(pao);
+                LMProgramBase program = programService.getProgramForPao(pao);
                 return program != null
                     && (program.isActive() && showActive
                     || !program.isActive() && !showActive);

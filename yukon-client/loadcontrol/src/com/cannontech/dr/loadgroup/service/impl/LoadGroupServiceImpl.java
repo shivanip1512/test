@@ -52,7 +52,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }
 
     @Override
-    public DatedObject<LMGroupBase> findDatedGroup(int loadGroupId) {
+    public DatedObject<? extends LMGroupBase> findDatedGroup(int loadGroupId) {
         return loadControlClientConnection.getDatedGroup(loadGroupId);
     }
 
@@ -66,7 +66,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        DemandResponseBackingField<LMGroupBase> loadGroupNameField = 
+        DemandResponseBackingField<LMDirectGroupBase> loadGroupNameField = 
             loadGroupFieldService.getBackingField("NAME");
         Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(false, userContext);
         if (sorter == null) {

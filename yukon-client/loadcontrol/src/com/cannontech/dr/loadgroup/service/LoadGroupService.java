@@ -16,7 +16,7 @@ public interface LoadGroupService {
     public DisplayablePao getLoadGroup(int loadGroupId);
     public LMDirectGroupBase getGroupForPao(YukonPao from);
     
-    public DatedObject<LMGroupBase> findDatedGroup(int loadGroupId);
+    public DatedObject<? extends LMGroupBase> findDatedGroup(int loadGroupId);
 
     public SearchResult<DisplayablePao> filterGroups(
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,

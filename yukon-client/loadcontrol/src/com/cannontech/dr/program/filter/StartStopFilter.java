@@ -8,19 +8,19 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.Range;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class StartStopFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMProgramBase> mapper;
+    private ProgramService programService;
 
     private Range<Date> filter;
     private boolean isStart;
 
-    public StartStopFilter(ObjectMapper<DisplayablePao, LMProgramBase> mapper,
+    public StartStopFilter(ProgramService programService,
             Range<Date> filter, boolean isStart) {
-        this.mapper = mapper;
+        this.programService = programService;
         this.filter = filter;
         this.isStart = isStart;
     }
@@ -33,7 +33,7 @@ public class StartStopFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMProgramBase program = mapper.map(pao);
+                LMProgramBase program = programService.getProgramForPao(pao);
                 boolean retVal = program != null && filter.intersects((isStart
                         ? program.getStartTime() : program.getStopTime()).getTime());
                 return retVal;

@@ -30,7 +30,7 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupLoadCapacityFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
-import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupControllerHelper {
@@ -113,7 +113,7 @@ public class LoadGroupControllerHelper {
         }
 
         // Name is the default sort field
-        DemandResponseBackingField<LMGroupBase> sortField = 
+        DemandResponseBackingField<LMDirectGroupBase> sortField = 
             loadGroupFieldService.getBackingField("NAME");
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             sortField = loadGroupFieldService.getBackingField(backingBean.getSort());

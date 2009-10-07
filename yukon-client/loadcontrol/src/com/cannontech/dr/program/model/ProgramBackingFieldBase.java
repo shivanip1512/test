@@ -1,4 +1,4 @@
-package com.cannontech.dr.loadgroup.model;
+package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
@@ -8,34 +8,34 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.DemandResponseBackingField;
-import com.cannontech.dr.loadgroup.service.LoadGroupService;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
 /**
- * Abstract Base Class for load group backing fields 
+ * Abstract Base Class for program backing fields 
  */
-public abstract class LoadGroupBackingFieldBase implements DemandResponseBackingField<LMDirectGroupBase> {
+public abstract class ProgramBackingFieldBase implements DemandResponseBackingField<LMProgramBase> {
 
-    private final static String baseKey = "yukon.web.modules.dr.loadGroup.value";
+    private final static String baseKey = "yukon.web.modules.dr.program.value";
     protected final static MessageSourceResolvable blankFieldResolvable = 
         new YukonMessageSourceResolvable("yukon.web.modules.dr.blankField");
     
-    private LoadGroupService loadGroupService;
+    private ProgramService programService;
     
     /**
-     * Method to get the field value from the given group
-     * @param group - Group to get value for
+     * Method to get the field value from the given program
+     * @param program - Program to get value for
      * @param userContext - Current userContext
-     * @return Value of this field for the given group
+     * @return Value of this field for the given program
      */
-    public abstract Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext);
+    public abstract Object getProgramValue(LMProgramBase program, YukonUserContext userContext);
 
     @Override
-    public Object getValue(LMDirectGroupBase group, YukonUserContext userContext) {
-        if(group != null || handleNull()) {
-            return getGroupValue(group, userContext);
+    public Object getValue(LMProgramBase program, YukonUserContext userContext) {
+        if(program != null || handleNull()) {
+            return getProgramValue((LMProgramBase) program, userContext);
         } else {
             return blankFieldResolvable;
         }
@@ -47,8 +47,8 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
         return null;
     }
     
-    protected LMDirectGroupBase getGroupFromYukonPao(YukonPao from){
-        return loadGroupService.getGroupForPao(from);
+    protected LMProgramBase getProgramFromYukonPao(YukonPao from){
+        return programService.getProgramForPao(from);
     }
     
     protected MessageSourceResolvable buildResolvable(String name, Object... args) {
@@ -64,8 +64,8 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
     }
     
     @Autowired
-    public void setLoadGroupService(LoadGroupService loadGroupService) {
-        this.loadGroupService = loadGroupService;
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
     }
     
 }

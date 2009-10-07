@@ -1,65 +1,50 @@
 package com.cannontech.web.updater.dr;
 
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.dr.program.model.ProgramDisplayField;
+import com.cannontech.dr.DemandResponseBackingField;
+import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.updater.UpdateBackingService;
+import com.cannontech.web.updater.UpdateBackingServiceBase;
 
-public class ProgramBackingService implements UpdateBackingService {
+public class ProgramBackingService extends UpdateBackingServiceBase<LMProgramBase> {
     private ProgramService programService = null;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    private ProgramFieldService programFieldService;
 
     @Override
-    public String getLatestValue(String identifier, long afterDateLong,
-            YukonUserContext userContext) {
-        String[] idBits = identifier.split("\\/");
-        int programId = Integer.parseInt(idBits[0]);
-        ProgramDisplayField displayField =
-            ProgramDisplayField.valueOf(idBits[1]);
-
-        DatedObject<LMProgramBase> datedProgram =
-            programService.findDatedProgram(programId);
-
-        MessageSource messageSource = messageSourceResolver.getMessageSource(userContext);
-        if (datedProgram == null) {
-            if (displayField.isCssClass()) {
-                return "not_in_control_area";
-            }
-            return messageSource.getMessage("yukon.web.modules.dr.fieldNotInLoadManagement",
-                                            null,
-                                            userContext.getLocale());
-        }
-
-        Date afterDate = new Date(afterDateLong);
-        if (!datedProgram.getDate().before(afterDate)) {
-            return messageSource.getMessage(displayField.getValue(datedProgram.getObject()),
-                                            userContext.getLocale());
-        }
-
-        return null;
+    public DatedObject<LMProgramBase> getDatedObject(int programId) {
+        DatedObject<LMProgramBase> datedProgram = programService.findDatedProgram(programId);
+        return datedProgram;
     }
-
+    
     @Override
-    public boolean isValueAvailableImmediately(String identifier,
-            long afterDate, YukonUserContext userContext) {
-        return true;
-    }
+    public Object getValue(DatedObject<LMProgramBase> datedObject, String[] idBits,
+                           YukonUserContext userContext) {
 
+        String fieldName = idBits[1];
+
+        DemandResponseBackingField<LMProgramBase> backingField = 
+            programFieldService.getBackingField(fieldName);
+        
+        LMProgramBase program = null;
+        if (datedObject != null && (datedObject.getObject() instanceof LMProgramBase)) {
+            program = datedObject.getObject();
+        }
+        
+        return backingField.getValue(program, userContext);
+    }
+    
     @Autowired
     public void setProgramService(ProgramService programService) {
         this.programService = programService;
     }
 
     @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
+    public void setProgramFieldService(ProgramFieldService programFieldService) {
+        this.programFieldService = programFieldService;
     }
 }
+

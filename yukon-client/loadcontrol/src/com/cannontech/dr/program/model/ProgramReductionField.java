@@ -1,12 +1,12 @@
-package com.cannontech.dr.loadgroup.model;
+package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
-public class LoadGroupReductionField extends LoadGroupBackingFieldBase {
+public class ProgramReductionField extends ProgramBackingFieldBase {
 
     @Override
     public String getFieldName() {
@@ -14,10 +14,10 @@ public class LoadGroupReductionField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
-        return buildResolvable(getFieldName(), group.getReduction());
+    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
+        return buildResolvable(getFieldName(), program.getReductionTotal());
     }
-    
+
     @Override
     public Comparator<DisplayablePao> getSorter(final boolean isDescending,
                                                 YukonUserContext userContext) {
@@ -25,19 +25,19 @@ public class LoadGroupReductionField extends LoadGroupBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                LMDirectGroupBase group1 = getGroupFromYukonPao(pao1);
-                LMDirectGroupBase group2 = getGroupFromYukonPao(pao2);
-                if (group1 == group2) {
+                LMProgramBase program1 = getProgramFromYukonPao(pao1);
+                LMProgramBase program2 = getProgramFromYukonPao(pao2);
+                if (program1 == program2) {
                     return 0;
                 }
-                if (group1 == null || group1.getReduction() == null) {
+                if (program1 == null) {
                     return isDescending ? -1 : 1;
                 }
-                if (group2 == null || group2.getReduction() == null) {
+                if (program2 == null) {
                     return isDescending ? 1 : -1;
                 }
-                Double reduction1 = group1.getReduction();
-                Double reduction2 = group2.getReduction();
+                Double reduction1 = program1.getReductionTotal();
+                Double reduction2 = program2.getReductionTotal();
                 int retVal = reduction1.compareTo(reduction2);
                 return isDescending ? (0 - retVal) : retVal;
             }};
