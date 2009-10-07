@@ -12,7 +12,6 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
 
 <script type="text/javascript">
     function updateChangeGearEnabled(data) {

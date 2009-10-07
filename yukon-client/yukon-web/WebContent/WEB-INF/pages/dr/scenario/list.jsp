@@ -99,34 +99,32 @@
                             <a href="${scenarioUrl}"><spring:escapeBody htmlEscape="true">${scenario.name}</spring:escapeBody></a>
                         </td>
                         <td style="white-space: nowrap;">
-                            <span id="actionSpan_${scenarioId}">
-                                <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
-                                    <cti:url var="startScenarioUrl" value="/spring/dr/program/startMultipleProgramsDetails">
-                                        <cti:param name="scenarioId" value="${scenarioId}"/>
-                                    </cti:url>
-                                    <a id="startLink_${scenarioId}" href="javascript:void(0)"
-                                        onclick="openSimpleDialog('drDialog', '${startScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
-                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
-                                    </a>
-
-                                    <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
-                                        <cti:param name="scenarioId" value="${scenarioId}"/>
-                                    </cti:url>
-                                    <a id="stopLink_${scenarioId}" href="javascript:void(0)"
-                                        onclick="openSimpleDialog('drDialog', '${stopScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
-                                    </a>
-                                </cti:checkPaoAuthorization>
-                                <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">
-                                    <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>
-                                    <span title="${noScenarioControl}">
-                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.disabled"/>
-                                    </span>
-                                    <span title="${noScenarioControl}">
-                                        <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled"/>
-                                    </span>
-                                </cti:checkPaoAuthorization>
-                            </span>
+                            <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
+                                <cti:url var="startScenarioUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+                                    <cti:param name="scenarioId" value="${scenarioId}"/>
+                                </cti:url>
+                                <a id="startLink_${scenarioId}" href="javascript:void(0)"
+                                    onclick="openSimpleDialog('drDialog', '${startScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
+                                </a>
+    
+                                <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                                    <cti:param name="scenarioId" value="${scenarioId}"/>
+                                </cti:url>
+                                <a id="stopLink_${scenarioId}" href="javascript:void(0)"
+                                    onclick="openSimpleDialog('drDialog', '${stopScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
+                                </a>
+                            </cti:checkPaoAuthorization>
+                            <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">
+                                <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>
+                                <span title="${noScenarioControl}">
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.disabled"/>
+                                </span>
+                                <span title="${noScenarioControl}">
+                                    <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled"/>
+                                </span>
+                            </cti:checkPaoAuthorization>
                         </td>
                     </tr>
                 </c:forEach>

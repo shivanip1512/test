@@ -6,8 +6,6 @@
 <cti:standardPage module="dr" page="programList">
     <cti:standardMenu menuSelection="details|programs"/>
     
-    <cti:includeScript link="/JavaScript/demandResponseAction.js"/>
-
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
