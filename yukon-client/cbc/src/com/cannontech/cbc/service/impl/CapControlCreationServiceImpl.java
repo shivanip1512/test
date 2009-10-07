@@ -234,7 +234,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public boolean createFeeder(Feeder feeder) {
 		boolean success = feederDao.add(feeder);
 		
-		if (!success) {
+		if (success) {
 			sendDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
 		}
 		
