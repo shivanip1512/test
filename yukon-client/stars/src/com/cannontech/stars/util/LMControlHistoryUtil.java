@@ -325,10 +325,13 @@ public class LMControlHistoryUtil {
 		
 		try {
 			if (liteCfg.getExpressCom() != null) {
-				String sql = "SELECT LMGroupID, addr1.Address, addr2.Address, addr3.Address, ZipCodeAddress, UDAddress, addr4.Address, SplinterAddress, AddressUsage, RelayUsage"
-						+ " FROM LMGroupExpresscom, LMGroupExpresscomAddress addr1, LMGroupExpresscomAddress addr2, LMGroupExpresscomAddress addr3, LMGroupExpresscomAddress addr4, LMGroupExpresscomAddress addr5"
-						+ " WHERE SerialNumber = 0 AND ServiceProviderID = addr5.AddressID AND addr5.Address = " + liteCfg.getExpressCom().getServiceProvider()
-						+ " AND GeoID = addr1.AddressID AND SubstationID = addr2.AddressID AND FeederID = addr3.AddressID AND ProgramID = addr4.AddressID";
+				String sql = "SELECT LMGroupID, geo.Address, ss.Address, fdr.Address, zip.Address, usr.Address, pgm.Address, spl.Address, AddressUsage, RelayUsage "
+						+ " FROM LMGroupExpresscom, LMGroupExpresscomAddress sp, LMGroupExpresscomAddress geo, LMGroupExpresscomAddress ss, LMGroupExpresscomAddress fdr, " 
+						+ " LMGroupExpresscomAddress zip, LMGroupExpresscomAddress usr, LMGroupExpresscomAddress pgm, LMGroupExpresscomAddress spl "
+						+ " WHERE SerialNumber = 0 AND ServiceProviderID = sp.AddressID AND sp.Address = " + liteCfg.getExpressCom().getServiceProvider()
+						+ " AND GeoID = geo.AddressID AND SubstationID = ss.AddressID AND FeederID = fdr.AddressID " 
+						+ " AND ZipID = zip.AddressID AND UserID = usr.AddressID AND ProgramID = pgm.AddressID "
+				        + " AND SplinterID = spl.AddressID ";
 				
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -84,6 +85,9 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                                                           loadGroupName);
         } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("The load group name supplied does not exist.");
+
+        } catch(IncorrectResultSizeDataAccessException ex){
+            throw new IllegalArgumentException("The load group name supplied returned too many results");
         }
         
         loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));

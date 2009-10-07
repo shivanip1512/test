@@ -21,7 +21,7 @@ public class EnrollmentHelperServiceImplTest {
         List<ProgramEnrollment> programEnrollments = 
             enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
 
-        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false);
+        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
         Assert.assertEquals(5, programEnrollments.size());
         Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
@@ -37,7 +37,7 @@ public class EnrollmentHelperServiceImplTest {
         List<ProgramEnrollment> programEnrollments = 
             enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
 
-        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false);
+        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
         Assert.assertEquals(4, programEnrollments.size());
         Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
@@ -45,6 +45,24 @@ public class EnrollmentHelperServiceImplTest {
         Assert.assertEquals(47, programEnrollments.get(3).getLmGroupId());
     }
 
+    @Test
+    public void testAddProgramEnrollmentUpdateLoadGroupGre() throws Exception {
+
+        enrollmentHelperService = new EnrollmentHelperEndpointServiceMock();
+        
+        ProgramEnrollment newProgramEnrollment = new ProgramEnrollment(11, 0, false, 31, 47, 51, 0);
+        ProgramEnrollment newProgramEnrollmentTest = new ProgramEnrollment(11, 0, true, 31, 47, 51, 0);
+        List<ProgramEnrollment> programEnrollments = 
+            enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
+
+        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, true);
+
+        Assert.assertEquals(4, programEnrollments.size());
+        Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
+        Assert.assertEquals(47, programEnrollments.get(1).getLmGroupId());
+        Assert.assertEquals(41, programEnrollments.get(3).getLmGroupId());
+    }
+    
     @Test
     public void testAddProgramEnrollmentUpdateLoadProgram() throws Exception {
 
@@ -55,7 +73,7 @@ public class EnrollmentHelperServiceImplTest {
         List<ProgramEnrollment> programEnrollments = 
             enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
 
-        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false);
+        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
         Assert.assertEquals(4, programEnrollments.size());
         Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
@@ -72,7 +90,7 @@ public class EnrollmentHelperServiceImplTest {
         List<ProgramEnrollment> programEnrollments = 
             enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
 
-        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, true);
+        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, true, false);
 
         Assert.assertEquals(5, programEnrollments.size());
         Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));

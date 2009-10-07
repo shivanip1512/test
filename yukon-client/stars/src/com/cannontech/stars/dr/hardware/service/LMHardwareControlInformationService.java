@@ -8,7 +8,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface LMHardwareControlInformationService {
     
-    public boolean startEnrollment(int inventoryId, int loadGroupID, int accountId, int relay, int programId, LiteYukonUser currentUser);
+    public boolean startEnrollment(int inventoryId, int loadGroupID, int accountId,
+            int relay, int programId, LiteYukonUser currentUser, boolean useHardwardAddressing);
     
     public boolean stopEnrollment(int inventoryId, int loadGroupID, int accountId, int relay, int programId, LiteYukonUser currentUser);
     

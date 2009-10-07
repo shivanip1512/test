@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
@@ -19,7 +18,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
@@ -33,26 +31,28 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
+import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SULMProgram;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUpResponse;
@@ -111,17 +111,7 @@ public class ProgramSignUpAction implements ActionBase {
                         }
                         else
                             program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
-                        String notOperator = req.getParameter("notOperator");
-                        if(notOperator != null && notOperator.compareTo("true") == 0)
-                        {
-                            /*Going to need to do some guesswork since consumers aren't allowed
-                             * to choose load groups.  At this point, we will need to require
-                             * that the switch or stat has been configured or enrolled previously from the
-                             * operator side.  If it has not, there may not be an entry in the configuration tables
-                             */
-                            program.setAddressingGroupID(ServerUtils.ADDRESSING_GROUP_NOT_FOUND);
-                               
-                        }
+
                         programs.addSULMProgram( program );
 					}
 				}
@@ -172,17 +162,21 @@ public class ProgramSignUpAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
             
 			LiteStarsCustAccountInformation liteAcctInfo = null;
+			boolean accountInSession = false;
 			if (progSignUp.getAccountNumber() != null) {
-                            liteAcctInfo = energyCompany.searchAccountByAccountNo( progSignUp.getAccountNumber() );
+			    liteAcctInfo = energyCompany.searchAccountByAccountNo( progSignUp.getAccountNumber() );
 			} else {
 			    LiteStarsCustAccountInformation tempAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-	                    int accountID = tempAcctInfo.getAccountID();
-	                    if (accountID > 0) {
-			        StarsCustAccountInformationDao starsCustAccountInformationDao = 
-			            YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-			        liteAcctInfo = starsCustAccountInformationDao.getById(accountID, energyCompanyID);
+			    if (tempAcctInfo == null || tempAcctInfo.getAccountID() <= 0) {
+                    respOper.setStarsFailure(StarsFactory.newStarsFailure(StarsConstants.FAILURE_CODE_SESSION_INVALID,
+                                                                          "Session invalidated, please login again"));
+                    return SOAPUtil.buildSOAPMessage(respOper);
 			    }
-                            session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
+                StarsCustAccountInformationDao starsCustAccountInformationDao = 
+                    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+                liteAcctInfo = starsCustAccountInformationDao.getById(tempAcctInfo.getAccountID(), energyCompanyID);			    
+			    session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
+			    accountInSession = true;
 			}
 			
 			if (progSignUp.getStarsSULMPrograms() == null) {
@@ -190,97 +184,41 @@ public class ProgramSignUpAction implements ActionBase {
 				respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo) );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
-            
-			String progEnrBefore = null;
-			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) 
-            {
-				LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(i);
-				String progName = StarsUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
-				if (progEnrBefore == null)
-					progEnrBefore = progName;
-				else
-					progEnrBefore += ", " + progName;
-			}
 			
-            /*Going to need to do some guesswork since consumers aren't allowed
-             * to choose load groups. 
-             * --If the program has more than one group, we will take the first one in the list.  Could be
-             * A DANGEROUS ASSUMPTION.  TODO: Track groups better.
-             * --At this point, we will need to require that the switch or stat has been configured or enrolled 
-             * previously from the operator side.  If it has not, there may not be a groupID set.
-             */
+            CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+            CustomerAccount customerAccount = customerAccountDao.getById(liteAcctInfo.getAccountID());
             
+            List<ProgramEnrollment> requests = new ArrayList<ProgramEnrollment>();
             for(int j = 0; j < progSignUp.getStarsSULMPrograms().getSULMProgramCount(); j++)
             {
-                if(progSignUp.getStarsSULMPrograms().getSULMProgram(j).getAddressingGroupID() == ServerUtils.ADDRESSING_GROUP_NOT_FOUND)
-                {
-                    int progID = progSignUp.getStarsSULMPrograms().getSULMProgram(j).getProgramID();
-                    LiteLMProgramWebPublishing webProg = energyCompany.getProgram(progID);
-                    int grpID = webProg.getDefaultGroupId();
-                    if(!webProg.isVirtualProgram() && grpID <= 0)
-                    {
-                        throw new WebClientException("Program not defined correctly.  Contact your administrator.");
-                    }
-                    progSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
-                }
+                SULMProgram program = progSignUp.getStarsSULMPrograms().getSULMProgram(j);
+                ProgramEnrollment enrollment = new ProgramEnrollment();
+                enrollment.setProgramId(program.getProgramID());
+                enrollment.setApplianceCategoryId(program.getApplianceCategoryID());
+                enrollment.setInventoryId(program.getInventoryID());
+                enrollment.setLmGroupId(program.getAddressingGroupID());
+                enrollment.setRelay(program.getLoadNumber());
+                
+                requests.add(enrollment);
             }
             
-			String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-			boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
-	        
-			StarsInventories starsInvs = new StarsInventories();
-			
-			try {
-				List<LiteStarsLMHardware> hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany, liteUser );
-				
-				// Send out the config/disable command
-				for (int i = 0; i < hwsToConfig.size(); i++) {
-					LiteStarsLMHardware liteHw = hwsToConfig.get(i);
-					boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );
-					
-					if (toConfig) {
-						// Send the reenable command if hardware status is unavailable,
-						// whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-						if (!useHardwareAddressing
-							&& (StarsUtils.isOperator(user.getYukonUser()) && DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
-								|| StarsUtils.isResidentialCustomer(user.getYukonUser()) && DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))) {
-							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
-                        }
-						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
-                        }
-					}
-					else {
-						// Send disable command to hardware
-						YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
-					}
-					
-					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-					starsInvs.addStarsInventory( starsInv );
-				}
-			}
-			catch (WebClientException e) {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
-	        
-			// Log activity
-			String progEnrNow = null;
-			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
-				LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(i);
-				String progName = StarsUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
-				if (progEnrNow == null)
-					progEnrNow = progName;
-				else
-					progEnrNow += ", " + progName;
-			}
-			
-			String logMsg = "Program Enrolled Before:" + ((progEnrBefore != null)? progEnrBefore : "(None)") +
-					"; Now:" + ((progEnrNow != null)? progEnrNow : "(Not Enrolled)");
-			ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
-					ActivityLogActions.PROGRAM_ENROLLMENT_ACTION, logMsg );
+            // Update program enrollments here
+            ProgramEnrollmentService programEnrollmentService = YukonSpringHook.getBean("starsProgramEnrollmentService", ProgramEnrollmentService.class);            
+            ProgramEnrollmentResultEnum enrollmentResult = programEnrollmentService.applyEnrollmentRequests(customerAccount, requests, liteUser);            
+            if (enrollmentResult.equals(ProgramEnrollmentResultEnum.FAILURE) || 
+                    enrollmentResult.equals(ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY)) {
+                respOper.setStarsFailure(StarsFactory.newStarsFailure(StarsConstants.FAILURE_CODE_OPERATION_FAILED,
+                                                                      "Program enrollment update failed"));
+                return SOAPUtil.buildSOAPMessage(respOper);
+            }
             
+            // refresh account info, after update program enrollment
+            if (accountInSession) {
+                StarsCustAccountInformationDao starsCustAccountInformationDao = 
+                    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+                liteAcctInfo = starsCustAccountInformationDao.getById(liteAcctInfo.getAccountID(), energyCompanyID);
+                session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);                    
+            }
 			if (user == null) {	// Probably from the sign up wizard?
 				StarsSuccess success = new StarsSuccess();
 				respOper.setStarsSuccess( success );
@@ -288,12 +226,9 @@ public class ProgramSignUpAction implements ActionBase {
 			}
             
 			StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
-			resp.setStarsInventories( starsInvs );
-			resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
-			resp.setStarsAppliances( StarsLiteFactory.createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
 			
 			String desc = "Program enrollment updated successfully.";
-			if (useHardwareAddressing)
+			if (enrollmentResult.equals(ProgramEnrollmentResultEnum.SUCCESS_HARDWARE_CONFIG))
 				desc += " Please go to the hardware configuration page and update the addressing information.";
 			resp.setDescription( desc );
 			
@@ -339,31 +274,7 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user != null) {
-				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-				
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
-				
-				if (resp.getStarsLMPrograms() != null)
-					accountInfo.setStarsLMPrograms( resp.getStarsLMPrograms() );
-				
-				if (resp.getStarsAppliances() != null && accountInfo.getStarsAppliances() != null)
-					accountInfo.setStarsAppliances( resp.getStarsAppliances() );
-				
-				if (resp.getStarsInventories() != null && accountInfo.getStarsInventories() != null) {
-					for (int i = 0; i < resp.getStarsInventories().getStarsInventoryCount(); i++) {
-						StarsInventory starsInv = resp.getStarsInventories().getStarsInventory(i);
-						
-						StarsInventories inventories = accountInfo.getStarsInventories();
-						for (int j = 0; j < inventories.getStarsInventoryCount(); j++) {
-							StarsInventory inv = inventories.getStarsInventory(j);
-							if (inv.getInventoryID() == starsInv.getInventoryID()) {
-								inventories.setStarsInventory(j, starsInv);
-								break;
-							}
-						}
-					}
-				}
 			}
 			else {
 				if (operation.getStarsSuccess() == null)
@@ -604,24 +515,28 @@ public class ProgramSignUpAction implements ActionBase {
 				if (!newProgList.contains( liteStarsProg ))
 					newProgList.add( liteStarsProg );
 			    
+                LiteStarsLMHardware liteHw = null;
+                if (program.getInventoryID() > 0) {
+                    try {
+                        liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(program.getInventoryID());
+                    }
+                    catch (NotFoundException e) {
+                        //not found ok, leave as null and continue
+                    }
+                }
 				int groupID = program.getAddressingGroupID();
                 int relay = program.getLoadNumber();
-				if (!program.hasAddressingGroupID() && !useHardwareAddressing && starsProg.getAddressingGroupCount() > 1)
+                if (useHardwareAddressing) {
+                    if (liteHw != null && liteHw.getLMConfiguration() != null) {
+                        int[] grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), relay);
+                        if (grpIDs != null && grpIDs.length >= 1){
+                            groupID = grpIDs[0];
+                        }
+                    }
+                } else if (groupID == 0 && starsProg.getAddressingGroupCount() >= 1) {
 					groupID = starsProg.getAddressingGroup(0).getEntryID();
-                if(groupID == 0) {
-                    groupID = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(program.getProgramID());
                 }
 				liteStarsProg.setGroupID( groupID );
-        		
-				LiteStarsLMHardware liteHw = null;
-				if (program.getInventoryID() > 0) {
-				    try {
-				        liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(program.getInventoryID());
-				    }
-				    catch (NotFoundException e) {
-				        //not found ok, leave as null and continue
-				    }
-				}
     			
     			LiteStarsAppliance liteApp = 
     					progHwAppMap.get(new Integer(program.getProgramID())).get(program.getInventoryID());
@@ -738,7 +653,7 @@ public class ProgramSignUpAction implements ActionBase {
 					}
 					else {
 						/* The appliance is enrolled in the same program, update the load group if necessary.
-						 * If liteInv is not null, it's from the import program or hardware configuration page;
+						 * If liteInv is not null, it's from the hardware configuration page;
 						 * in the later case, update the group of all loads assigned to this program if necessary.
 						 */
 						if (liteHw != null && 
@@ -791,7 +706,7 @@ public class ProgramSignUpAction implements ActionBase {
 							
 							// Checks to see if there are any hardware that are enrolled in this program already and updated their 
 							// addressing group to the new supplied address group.
-							if (liteInv != null) {
+							if (liteInv != null && !useHardwareAddressing) {
 								for (int j = 0; j < appList.size(); j++) {
 									LiteStarsAppliance lApp = appList.get(j);
 									if (lApp.getProgramID() == program.getProgramID() && lApp.getInventoryID() != program.getInventoryID()) {
@@ -951,7 +866,7 @@ public class ProgramSignUpAction implements ActionBase {
     		
 			liteAcctInfo.setAppliances( newAppList );
 			liteAcctInfo.setPrograms( newProgList );
-            
+			
             /* New enrollment, opt out, and control history tracking
              *-------------------------------------------------------------------------------
              */
@@ -980,7 +895,8 @@ public class ProgramSignUpAction implements ActionBase {
                                                                                      currentEnrollmentInfo[ACCT], 
                                                                                      currentEnrollmentInfo[RELAY],
                                                                                      currentEnrollmentInfo[PROG],
-                                                                                     currentUser);
+                                                                                     currentUser,
+                                                                                     useHardwareAddressing);
                 if(!success) {
                     CTILogger.error( "Enrollment START occurred for InventoryId: " + currentEnrollmentInfo[INV] + 
                                      " LMGroupId: " + currentEnrollmentInfo[GROUP] + 

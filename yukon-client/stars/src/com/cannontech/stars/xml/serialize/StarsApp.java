@@ -9,6 +9,8 @@ public abstract class StarsApp {
     private boolean hasInventoryID;
     private int programID;
     private boolean hasProgramID;
+    private boolean hasAddressingGroupID;
+    private int addressingGroupID;
     private int loadNumber;
     private boolean hasLoadNumber;
     private int yearManufactured;
@@ -113,6 +115,10 @@ public abstract class StarsApp {
         return this.KWCapacity;
     }
 
+    public int getAddressingGroupID() {
+        return this.addressingGroupID;
+    }
+    
     public int getLoadNumber() {
         return this.loadNumber;
     }
@@ -173,6 +179,10 @@ public abstract class StarsApp {
         return this.hasKWCapacity;
     }
 
+    public boolean hasAddressingGroupID() {
+        return this.hasAddressingGroupID;
+    }
+    
     public boolean hasLoadNumber() {
         return this.hasLoadNumber;
     }
@@ -234,6 +244,11 @@ public abstract class StarsApp {
         this.hasKWCapacity = true;
     }
 
+    public void setAddressingGroupID(int addressingGroupID) {
+        this.addressingGroupID = addressingGroupID;
+        this.hasAddressingGroupID = true;
+    }
+    
     public void setLoadNumber(int loadNumber) {
         this.loadNumber = loadNumber;
         this.hasLoadNumber = true;

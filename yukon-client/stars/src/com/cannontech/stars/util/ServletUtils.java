@@ -271,26 +271,16 @@ public class ServletUtils {
 		/*
          * GRE and similar systems
 		 */
-		
-		StarsInventoryBaseDao starsInventoryBaseDao = YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
         if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
 			List<Integer> groupIDs = new ArrayList<Integer>();
-			
+			if (program.getGroupID() > 0) {
+			    groupIDs.add( program.getGroupID()); 
+			}
 			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 				StarsAppliance app = appliances.getStarsAppliance(i);
-				if (app.getProgramID() == program.getProgramID() && app.getInventoryID() > 0) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(app.getInventoryID());
-					int[] grpIDs = null;
-					if (liteHw.getLMConfiguration() != null)
-						grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );
-					else if (program.getGroupID() > 0)
-						grpIDs = new int[] { program.getGroupID() };
-					
-					if (grpIDs != null) {
-						for (int j = 0; j < grpIDs.length; j++) {
-							Integer groupID = new Integer( grpIDs[j] );
-							if (!groupIDs.contains(groupID)) groupIDs.add( groupID );
-						}
+				if (app.getProgramID() == program.getProgramID() && app.getInventoryID() > 0 && app.getAddressingGroupID() > 0) {
+					if (!groupIDs.contains(app.getAddressingGroupID())) {
+					    groupIDs.add( app.getAddressingGroupID() );
 					}
 				}
 			}

@@ -25,13 +25,16 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
@@ -39,8 +42,6 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
-import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -338,34 +339,39 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		LiteStarsCustAccountInformation liteAcctInfo = null;
 		List<LiteStarsLMHardware> hwsToConfig = null;
 		
+		// save configuration first, so its available to compute groupID later on
+        if (updateHwConfig.getStarsLMConfiguration() != null) {
+            updateLMConfiguration( updateHwConfig.getStarsLMConfiguration(), liteHw, energyCompany );
+            
+            hwsToConfig = new ArrayList<LiteStarsLMHardware>();
+            hwsToConfig.add( liteHw );
+        }
+        
 		if (liteHw.getAccountID() > 0) {
-			liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
-			
-			StarsProgramSignUp progSignUp = new StarsProgramSignUp();
-			progSignUp.setStarsSULMPrograms( new StarsSULMPrograms() );
-			
+            CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+            CustomerAccount customerAccount = customerAccountDao.getById(liteHw.getAccountID());
+            
+            List<ProgramEnrollment> requests = new ArrayList<ProgramEnrollment>();
 			for (int i = 0; i < updateHwConfig.getStarsLMHardwareConfigCount(); i++) {
 				StarsLMHardwareConfig starsConfig = updateHwConfig.getStarsLMHardwareConfig(i);
 				
-				SULMProgram suProg = new SULMProgram();
-				suProg.setProgramID( starsConfig.getProgramID() );
-				suProg.setAddressingGroupID( starsConfig.getGroupID() );
-				suProg.setLoadNumber( starsConfig.getLoadNumber() );
-				progSignUp.getStarsSULMPrograms().addSULMProgram( suProg );
+				ProgramEnrollment enrollment = new ProgramEnrollment();
+				enrollment.setInventoryId(liteHw.getInventoryID());
+				enrollment.setProgramId( starsConfig.getProgramID() );
+				enrollment.setLmGroupId( starsConfig.getGroupID() );
+				enrollment.setRelay( starsConfig.getLoadNumber() );
+				requests.add( enrollment );
 			}
 			
             LiteYukonUser currentUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
-			hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, energyCompany, currentUser );
+            
+            ProgramEnrollmentService programEnrollmentService = YukonSpringHook.getBean("starsProgramEnrollmentService", ProgramEnrollmentService.class);            
+			hwsToConfig = programEnrollmentService.applyEnrollmentRequests(customerAccount, requests, liteHw, currentUser);
 			
 			if (!hwsToConfig.contains( liteHw ))
 				hwsToConfig.add( 0, liteHw );
-		}
-		
-		if (updateHwConfig.getStarsLMConfiguration() != null) {
-			updateLMConfiguration( updateHwConfig.getStarsLMConfiguration(), liteHw, energyCompany );
-			
-			hwsToConfig = new ArrayList<LiteStarsLMHardware>();
-			hwsToConfig.add( liteHw );
+            // refresh account info, after update program enrollment			
+            liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );			
 		}
 		
 		StarsInventories starsInvs = new StarsInventories();

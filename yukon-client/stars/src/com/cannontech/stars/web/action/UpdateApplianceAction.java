@@ -425,7 +425,6 @@ public class UpdateApplianceAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
 		try {
 			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -436,31 +435,6 @@ public class UpdateApplianceAction implements ActionBase {
 			StarsSuccess success = operation.getStarsSuccess();
 			if (success == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			
-			StarsAppliance appliance = (StarsAppliance)
-					StarsFactory.newStarsApp(reqOper.getStarsUpdateAppliance(), StarsAppliance.class);
-			
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-
-			boolean done = false;
-			StarsAppliances appliances = accountInfo.getStarsAppliances();
-			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-				if (appliances.getStarsAppliance(i).getApplianceID() == appliance.getApplianceID()) {
-					appliances.setStarsAppliance(i, appliance);
-					done = true;
-					break;
-				}
-			}
-			if (!done) {
-	            appliances = accountInfo.getUnassignedStarsAppliances();
-	            for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-	                if (appliances.getStarsAppliance(i).getApplianceID() == appliance.getApplianceID()) {
-	                    appliances.setStarsAppliance(i, appliance);
-	                    break;
-	                }
-	            }
-			}
 			
 			return 0;
 		}
@@ -515,14 +489,18 @@ public class UpdateApplianceAction implements ActionBase {
 		if (updateApp.hasEfficiencyRating())
 			appDB.setEfficiencyRating( new Double(updateApp.getEfficiencyRating()) );
         
-        appConfig.setLoadNumber(new Integer(updateApp.getLoadNumber()));
-    	if(appConfig.getAddressingGroupID().intValue() == 0 && updateApp.getProgramID() > 0) {
-            Integer groupID = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(updateApp.getProgramID());
-            appConfig.setAddressingGroupID(groupID);
-        }
+		if (appConfig.getInventoryID() != null) {
+		    appConfig.setLoadNumber(new Integer(updateApp.getLoadNumber()));
+		    if(appConfig.getAddressingGroupID().intValue() == 0 && updateApp.getProgramID() > 0) {
+		        Integer groupID = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(updateApp.getProgramID());
+		        appConfig.setAddressingGroupID(groupID);
+		    }
+		}
     	
 		Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
-        Transaction.createTransaction(Transaction.UPDATE, appConfig).execute();
+		if (appConfig.getInventoryID() != null) {
+		    Transaction.createTransaction(Transaction.UPDATE, appConfig).execute();
+		}
         StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
 		
 		if (updateApp.getAirConditioner() != null) {

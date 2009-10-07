@@ -111,6 +111,8 @@ public class StarsFactory {
 			starsApp.setApplianceCategoryID( app.getApplianceCategoryID() );
 			starsApp.setProgramID( app.getProgramID() );
 			starsApp.setInventoryID( app.getInventoryID() );
+			starsApp.setAddressingGroupID( app.getAddressingGroupID() );
+			starsApp.setLoadNumber( app.getLoadNumber() );
 			
 			starsApp.setManufacturer( app.getManufacturer() );
 			starsApp.setLocation( app.getLocation() );

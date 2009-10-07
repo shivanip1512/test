@@ -18,7 +18,6 @@ import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.stars.dr.program.dao.ProgramDao;
        
 public class LMHardwareControlInformationServiceImpl implements LMHardwareControlInformationService {
     
@@ -27,10 +26,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
 	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 	private OptOutEventDao optOutEventDao;
 	private OptOutService optOutService;
-	private ProgramDao programDao;
     
     /*@SuppressWarnings("unused")*/
-    public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, int programId, LiteYukonUser currentUser) {
+    public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId,
+            int relay, int programId, LiteYukonUser currentUser, boolean useHardwardAddressing) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         List<LMHardwareControlGroup> controlInformationList;
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
@@ -63,7 +62,9 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             controlInformation.setGroupEnrollStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
             
-            adjustLoadGroupsForExistingEnrollments(inventoryId, loadGroupId, accountId, programId, currentUser);
+            if (!useHardwardAddressing) {
+                adjustLoadGroupsForExistingEnrollments(inventoryId, loadGroupId, accountId, programId, currentUser);
+            }
 
             return true;
         } catch (Exception e) {
@@ -98,7 +99,6 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                 if(currentEnrollment.getProgramId() == programId && currentEnrollment.getRelay() == relay) {
                     endEnrollment(currentEnrollment, currentUser);
                     enrollmentEnded = true;
-                    break;
                 }
             }
             /*
@@ -260,9 +260,4 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     public void setOptOutService(OptOutService optOutService) {
     	this.optOutService = optOutService;
     }
-
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-
 }

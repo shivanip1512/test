@@ -14,6 +14,7 @@ import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,34 +35,35 @@ import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
 import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.ImportManagerUtil;
@@ -222,6 +224,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
 	private final StarsControllableDeviceHelper starsControllableDeviceHelper = 
 		YukonSpringHook.getBean("starsControllableDeviceHelper", StarsControllableDeviceHelper.class);
+	private final EnrollmentHelperService enrollmentHelperService = 
+        YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);	
+	private final ProgramService programService = 
+	    YukonSpringHook.getBean("starsProgramService", ProgramService.class);
 	
 	public ImportCustAccountsTask() {
 		
@@ -724,19 +730,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if (!preScan) {
 							try {
                                 LiteInventoryBase liteInv = null;
-								if(ImportManagerUtil.isValidLocationForImport(energyCompany, true) && 
-                                        hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                                    for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-                                        int invID = liteAcctInfo.getInventories().get(i);
-                                        LiteInventoryBase lInv = starsInventoryBaseDao.getByInventoryId(invID);
-                                        if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManagerUtil.IDX_SERIAL_NO])) {
-                                            liteInv = lInv;
-                                            break;
-                                        }
-                                    }
-                                    if(liteInv != null)
-                                        programSignUp( new int[0][0], appFields, liteAcctInfo, liteInv, energyCompany );
-                                }
                                 
 								// IMPORT HARDWARE
 								liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
@@ -744,10 +737,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 										&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
 								{
-									int[][] programs = getEnrolledProgram( hwFields, energyCompany );
-									if (programs != null) {
-										programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
-									}
+									programSignUp(hwFields, appFields, liteAcctInfo, liteInv, energyCompany);
 								}
 							} catch (WebClientException e) {
 								custFileErrors++;
@@ -1024,11 +1014,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 									&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
 							{
-
-								int[][] programs = getEnrolledProgram( hwFields, energyCompany );
-								if (programs != null) {
-									programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
-								}
+								programSignUp( hwFields, appFields, liteAcctInfo, liteInv, energyCompany );
 							}
 						} catch (WebClientException e) {
 							hwFileErrors++;
@@ -1277,69 +1263,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             fields[ImportManagerUtil.IDX_RELAY_NUM] = columns[ colIdx[COL_APP_RELAY_NUMBER] ];
 	}
 	
-	private int[][] getEnrolledProgram(String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
-        boolean matchedProg = false;
-        
-        if(UNENROLL_CASE.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
-            return new int[0][0];
-        }
-        
-		for (LiteLMProgramWebPublishing liteProg : energyCompany.getAllPrograms()) {
-            String progName = CtiUtilities.STRING_NONE;
-            
-            if (liteProg.getDeviceID() > 0) {
-                try {
-                    progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
-                    matchedProg = progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] );
-                }
-                catch(NotFoundException e) {
-                    CTILogger.error(e.getMessage(), e);
-                }
-            }
-            
-            if(!matchedProg) {
-                LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
-                if (liteConfig != null) {
-                    String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
-                    if (dispNames.length > 0 && dispNames[0].length() > 0)
-                        progName = dispNames[0];
-                }
-            }
-            
-			if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
-				int[] suProg = new int[4];
-				suProg[0] = liteProg.getProgramID();
-				suProg[1] = -1;	// ApplianceCategoryID (optional)
-				suProg[2] = -1;	// GroupID (optional)
-				suProg[3] = -1;	// LoadNumber (optional)
-				
-				if (fields[ImportManagerUtil.IDX_ADDR_GROUP].trim().length() > 0) {
-					for (int j = 0; j < liteProg.getGroupIDs().length; j++) 
-                    {
-                        try
-                        {
-                            if (DaoFactory.getPaoDao().getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( fields[ImportManagerUtil.IDX_ADDR_GROUP] )) 
-                            {
-                                suProg[2] = liteProg.getGroupIDs()[j];
-                                break;
-                            }
-                        }
-                        catch(NotFoundException e) {}
-					}
-					
-					if (!liteProg.isVirtualProgram() && suProg[2] == -1)
-						throw new WebClientException( "The group '" + fields[ImportManagerUtil.IDX_ADDR_GROUP] + "' doesn't belong to program '" + progName + "'" );
-				}
-				
-				return new int[][] { suProg };
-			}
-		}
-		
-		throw new WebClientException( "Program '" + fields[ImportManagerUtil.IDX_PROGRAM_NAME] + "' is not found in the published programs" );
-	}
-	
 	private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-		throws Exception
+		throws WebClientException
 	{
 		LiteInventoryBase liteInv = null;
 		
@@ -1395,13 +1320,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				
 				numHwUpdated++;
 			}
-		
-		} catch (Exception e) {
-			if (automatedImport) {
-				importLog.println(e.getMessage());
-			} else {
-				throw e;
-			}
+		} catch (StarsClientRequestException e) {
+		    automationCheck(e.getMessage());
+		} catch (ParseException e) {
+		    automationCheck(e.getMessage());
 		}
 		
 		numHwImported++;
@@ -1457,125 +1379,49 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		return liteAcctInfo;
 	}
 	
-	private void programSignUp(int[][] programs, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception
-	{
-        //it's a forced UNENROLL!
-	    boolean forcedUnenroll = programs.length < 1;
-        
-        int relay = -1;
-        int currentNumberOfAppliances = liteAcctInfo.getAppliances().size();
+    private void programSignUp(String[] hwFields, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo, 
+            LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception {
         if(appFields == null)
             appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-        if(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim().length() > 0 )
-        {
-            relay = Integer.parseInt(appFields[ImportManagerUtil.IDX_RELAY_NUM]);
-            if(!forcedUnenroll) {
-                programs[0][3] = relay; // LoadNumber (optional)
-            }
+        
+        EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
+        EnrollmentEnum enrollType = EnrollmentEnum.ENROLL;
+        enrollmentHelper.setAccountNumber(liteAcctInfo.getCustomerAccount().getAccountNumber());
+        enrollmentHelper.setSerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
+        if(UNENROLL_CASE.equalsIgnoreCase( hwFields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
+            enrollType = EnrollmentEnum.UNENROLL;
+            // leave programName blank, to unenroll from all programs for the Inventory
+        } else {
+            enrollmentHelper.setProgramName(hwFields[ImportManagerUtil.IDX_PROGRAM_NAME]);    
+        }
+        enrollmentHelper.setLoadGroupName(hwFields[ImportManagerUtil.IDX_ADDR_GROUP].trim());
+        enrollmentHelper.setRelay(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim());
+
+        try {
+            enrollmentHelperService.doEnrollment(enrollmentHelper, enrollType, this.currentUser);
+        } catch(NotFoundException e) {
+            automationCheck(e.getMessage());
+        } catch(IllegalArgumentException e) {
+            automationCheck(e.getMessage());
+        } catch(DuplicateEnrollmentException e) {
+            automationCheck(e.getMessage());
         }
         
-        ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
-        List<int[]> programList = new ArrayList<int[]>();
-        boolean addedThroughExistingEnrollment = false;
-        
-        for (int i = 0; i < currentNumberOfAppliances; i++) {
-            LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
-            if(liteApp.getInventoryID() == liteInv.getInventoryID() && !forcedUnenroll) {
-            	Program existingProgram = programDao.getByProgramId(liteApp.getProgramID());
-                Program program = programDao.getByProgramId(programs[0][0]);
-                if(existingProgram.getApplianceCategoryId() == program.getApplianceCategoryId()){
-                    if((liteApp.getLoadNumber() == relay || relay == -1)) {
-	                    if (liteApp.getProgramID() == program.getProgramId()) {
-	                    	if(liteApp.getAddressingGroupID() == programs[0][2] || programs[0][2] == -1) {
-	                    		return;
-	                    	} else {
-	                    		int[] previousEnrollment;
-	                    		if (relay != -1) {
-	                                int[] temp = {liteApp.getProgramID(),
-                                                  liteApp.getApplianceCategoryID(),
-                                                  programs[0][2],
-                                                  programs[0][3]};
-	                                previousEnrollment = temp;
-	                    		} else {
-	                    			int[] temp = {liteApp.getProgramID(),
-                                                  liteApp.getApplianceCategoryID(),
-                                                  programs[0][2],
-                                                  0};
-	                                previousEnrollment = temp;
-	                    		}
-                    			programList.add(previousEnrollment);
-                    			addedThroughExistingEnrollment = true;
-                    			continue;
-	                    	}
-	           		    } else {
-	           		    	if (liteApp.getLoadNumber() == relay || 
-	           		    		(relay == -1 && liteApp.getLoadNumber() == 0)) {
-	           		    		
-	           		    		int[] previousEnrollment;
-	                    		if (relay != -1) {
-	                                int[] temp = {program.getProgramId(),
-                                                  liteApp.getApplianceCategoryID(),
-                                                  programs[0][2],
-                                                  programs[0][3]};
-	                                previousEnrollment = temp;
-	                    		} else {
-	                    			int[] temp = {program.getProgramId(),
-                                                  liteApp.getApplianceCategoryID(),
-                                                  programs[0][2],
-                                                  0};
-	                                previousEnrollment = temp;
-	                    		}
-                    			programList.add(previousEnrollment);
-                    			addedThroughExistingEnrollment = true;
-                    			continue;
-	           		    	}
-	                    }
-                    } else {
-                    	if (liteApp.getProgramID() == program.getProgramId()) {
-	                    	int[] previousEnrollment = {liteApp.getProgramID(),
-                                                        liteApp.getApplianceCategoryID(),
-                                                        programs[0][2],
-                                                        programs[0][3]};
-                            programList.add(previousEnrollment);
-                            addedThroughExistingEnrollment = true;
-                			continue;
-	           		    }
+        // refresh account info, after update program enrollment
+        liteAcctInfo = starsCustAccountInformationDao.getById(liteAcctInfo.getAccountID(), energyCompany.getEnergyCompanyID());
+        if (!enrollType.equals(EnrollmentEnum.UNENROLL)) {
+            if (appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
+                int appID = -1;
+                Program program = programService.getByProgramName(hwFields[ImportManagerUtil.IDX_PROGRAM_NAME], energyCompany);                
+                for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+                    LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
+                    if (liteApp.getProgramID() == program.getProgramId() && liteApp.getInventoryID() == liteInv.getInventoryID()) {
+                        appID = liteApp.getApplianceID();
+                        break;
                     }
                 }
-                int[] existingEnrollment = {liteApp.getProgramID(),
-                		                    liteApp.getApplianceCategoryID(),
-                		                    liteApp.getAddressingGroupID(),
-                		                    liteApp.getLoadNumber()};
-                programList.add(existingEnrollment);
+                ImportManagerUtil.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
             }
-        }
-		
-        if(!addedThroughExistingEnrollment && !forcedUnenroll){
-        	programList.add(programs[0]);
-        }
-        
-        int[][] enrollmentPrograms = new int[programList.size()][4];
-        for (int i = 0; i < programList.size(); i++) {
-        	enrollmentPrograms[i] = programList.get(i);
-        }
-        
-
-        ImportManagerUtil.programSignUp( enrollmentPrograms, liteAcctInfo, liteInv, energyCompany, this.currentUser, automatedImport );
-		
-        if (!forcedUnenroll) {
-			if (appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
-				int appID = -1;
-				for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-					LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
-					if (liteApp.getProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID()) {
-						appID = liteApp.getApplianceID();
-						break;
-					}
-				}
-				
-				ImportManagerUtil.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
-			}
         }
 	}
 	

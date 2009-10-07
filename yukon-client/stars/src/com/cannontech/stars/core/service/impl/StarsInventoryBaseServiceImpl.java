@@ -391,6 +391,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             boolean deleteFromInventory, LiteStarsEnergyCompany energyCompany,
             LiteYukonUser user) {
         
+        // Unenroll the inventory from all its programs
+        unenrollHardware(liteInv, user);
+        
         if (deleteFromInventory) {
             starsInventoryBaseDao.deleteInventoryBase(liteInv.getInventoryID());
         } else {
@@ -400,9 +403,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
             liteInv.setRemoveDate(removeDate);
 
-            // Unenroll the inventory from all its programs
-            unenrollHardware(liteInv, user);
-            
             // add UnInstall hardware event
             addUnInstallHardwareEvent(liteInv, energyCompany, user);
 

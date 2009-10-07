@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.NotFoundException;
@@ -17,6 +16,7 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -28,11 +28,11 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 
@@ -44,7 +44,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
-    private ProgramDao programDao;
+    private ProgramService programService;
     private ProgramEnrollmentService programEnrollmentService;
     private StarsDatabaseCache starsDatabaseCache;
     private StarsSearchDao starsSearchDao;    
@@ -55,11 +55,15 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                                                                 user);
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
-
+        
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);        
+        String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
+        boolean useHardwareAddressing = Boolean.parseBoolean(trackHwAddr);
+        
         ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, customerAccount, user, enrollmentEnum);
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
+            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), useHardwareAddressing);
         }
         if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
             removeProgramEnrollment(enrollmentData, programEnrollment);
@@ -149,17 +153,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 	         * methods also take care of the validation for these three types and
 	         * includes checking to see if they belong to one another.
 	         */
-        	Program program; 
-        	try {
-                program = programDao.getByProgramName(enrollmentHelper.getProgramName(),
-                                                      energyCompanyIds);
-        	} catch(IllegalArgumentException e) {
-                /* Since we couldn't find the program by the program name lets try finding the program
-                 * by its alternate name.
-                 */
-            	program = programDao.getByAlternateProgramName(enrollmentHelper.getProgramName(),
-                                                               energyCompanyIds);
-            }
+        	Program program = programService.getByProgramName(enrollmentHelper.getProgramName(), energyCompany); 
+
 	        ApplianceCategory applianceCategory = getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), 
 	                                                                         program,
 	                                                                         energyCompanyIds);
@@ -193,7 +188,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
     protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
                                         ProgramEnrollment newProgramEnrollment,
-                                        boolean seasonalLoad){
+                                        boolean seasonalLoad, boolean useHardwareAddressing){
         boolean isProgramEnrollmentEnrolled = false;
        
         for (ProgramEnrollment programEnrollment : programEnrollments) {
@@ -221,7 +216,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                             isProgramEnrollmentEnrolled = true;
                         }
                     }
-                } else {
+                } else if (!useHardwareAddressing) {
                     if(programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()){
                         programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
                         programEnrollment.setEnroll(true);
@@ -328,10 +323,10 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     public void setApplianceDao(ApplianceDao applianceDao) {
         this.applianceDao = applianceDao;
     }
-
-    @Required
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
+    
+    @Autowired
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
     }
 
     @Autowired

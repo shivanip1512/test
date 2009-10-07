@@ -905,51 +905,6 @@ public class ImportManagerUtil {
 		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
 	}
 	
-	/**
-	 * @param programs Array of (ProgramID, ApplianceCategoryID, GroupID, LoadNumber).
-	 * The ApplianceCategoryID, GroupID, and LoadNumber are optional, set them to -1 if you don't want to provide the value.
-	 * @param liteInv The hardware the programs are attached to
-	 * @param currentUser TODO
-	 * @param automatedImport TODO
-	 */
-	public static void programSignUp(int[][] programs, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser, boolean automatedImport) throws Exception
-	{
-		// Build request message
-		StarsSULMPrograms suPrograms = new StarsSULMPrograms();
-		for (int i = 0; i < programs.length; i++) {
-			SULMProgram suProg = new SULMProgram();
-			suProg.setProgramID( programs[i][0] );
-			if (programs[i][1] != -1)
-				suProg.setApplianceCategoryID( programs[i][1] );
-			if (programs[i][2] != -1)
-				suProg.setAddressingGroupID( programs[i][2] );
-			if (programs[i][3] != -1)
-				suProg.setLoadNumber( programs[i][3] );
-			suPrograms.addSULMProgram( suProg );
-		}
-		
-		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
-		progSignUp.setStarsSULMPrograms( suPrograms );
-	    
-		List<LiteStarsLMHardware> hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
-
-		//Send out the config/disable command  
-		for (int i = 0; i < hwsToConfig.size(); i++) {  
-		    LiteStarsLMHardware liteHw = hwsToConfig.get(i);  
-		    boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );  
-		
-		    if (toConfig) {  
-		        // Send the reenable command if hardware status is unavailable,  
-		        // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property  
-		    	YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, null );  
-		    } else {  
-		        // Send disable command to hardware  
-		        YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, null );  
-            }  
-        }  
-	}
-	
     public static boolean isValidLocationForImport(LiteStarsEnergyCompany energyCompany, boolean automatedTask) {
         String locationCheckString = DaoFactory.getRoleDao().getGlobalPropertyValue(ConfigurationRole.CUSTOMER_INFO_IMPORTER_FILE_LOCATION);
         return (automatedTask && locationCheckString != null && locationCheckString.length() > 3);

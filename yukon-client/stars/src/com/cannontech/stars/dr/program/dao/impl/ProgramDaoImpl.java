@@ -188,7 +188,7 @@ public class ProgramDaoImpl implements ProgramDao {
                                                      alternateProgramName+",%",
                                                      "%,"+alternateProgramName);
         } catch(IncorrectResultSizeDataAccessException ex){
-            throw new IllegalArgumentException("The alternate program name supplied returned too many results.");            
+            throw new IllegalArgumentException("The alternate program name supplied returned too many results or none at all.");            
         }
     }
 

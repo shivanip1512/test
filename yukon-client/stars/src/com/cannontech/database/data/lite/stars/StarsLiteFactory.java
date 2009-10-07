@@ -2082,6 +2082,7 @@ public class StarsLiteFactory {
 		starsApp.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
 		starsApp.setInventoryID( liteApp.getInventoryID() );
 		starsApp.setProgramID( liteApp.getProgramID() );
+		starsApp.setAddressingGroupID( liteApp.getAddressingGroupID() );
 		starsApp.setLoadNumber( liteApp.getLoadNumber() );
 		
 		starsApp.setNotes( StarsUtils.forceNotNull(liteApp.getNotes()) );
