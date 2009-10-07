@@ -216,7 +216,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
         }
         else
         {
-            if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) && (program != 0 || splinter != 0) )
+            if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) && (serial != 0))
             {
                 parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
             }
