@@ -4,18 +4,17 @@ package com.cannontech.dbeditor.menu;
  * This type was created by Cannon Technologies Inc.
  */
 import java.awt.KeyboardFocusManager;
+
 import java.awt.event.KeyEvent;
 
 import javax.swing.JMenuItem;
 
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
-import com.cannontech.common.gui.util.CommandableMenuItem;
 
 public class HelpMenu extends javax.swing.JMenu 
 {
 	public JMenuItem helpTopicMenuItem;
 	public JMenuItem aboutMenuItem;
-	public CommandableMenuItem ptOffsetLegendMenuItem;
 
 	/**
 	 * HelpMenu constructor comment.
@@ -45,16 +44,11 @@ public class HelpMenu extends javax.swing.JMenu
 														java.awt.event.KeyEvent.VK_B,
 														java.awt.Event.CTRL_MASK));
 														
-		ptOffsetLegendMenuItem = new CommandableMenuItem("Point Offset Legend");
-		ptOffsetLegendMenuItem.setFont( font );
-		ptOffsetLegendMenuItem.setMnemonic('o');
-	
 		setText("Help");
 		setFont( font );
 		setMnemonic('h');
 	
 		add( helpTopicMenuItem );
-		add(ptOffsetLegendMenuItem);	
 		add( aboutMenuItem );	
 		
 

@@ -88,7 +88,6 @@ import com.cannontech.dbeditor.menu.LMCreateMenu;
 import com.cannontech.dbeditor.menu.SystemCreateMenu;
 import com.cannontech.dbeditor.menu.ToolsMenu;
 import com.cannontech.dbeditor.menu.ViewMenu;
-import com.cannontech.dbeditor.offsets.PointOffsetLegend;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel;
 import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
@@ -343,8 +342,6 @@ public void actionPerformed(ActionEvent event)
 		executeFindButton_ActionPerformed( event );
 	} else if ( item == toolsMenu.regenerateMenuItem ) {
 		executeRegenerateButton_ActionPerformed( event);
-	} else if ( item == helpMenu.ptOffsetLegendMenuItem ) {
-		executePointOffsetLegend_ActionPerformed( event );
 	} else if( item == viewMenu.refreshMenuItem ) {
 		viewMenuRefreshAction();
 	} else if( item == viewMenu.showMessageLogButton ) {
@@ -1256,36 +1253,6 @@ public void executeRegenerateButton_ActionPerformed(ActionEvent event) {
 
 return;
 	
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (5/31/2002 11:02:30 AM)
- */
-private void executePointOffsetLegend_ActionPerformed( ActionEvent event ) 
-{
-	java.awt.Frame f = getParentFrame();
-	java.awt.Cursor savedCursor = f.getCursor();
-	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-	
-	try
-	{
-		final PointOffsetLegend ptLegend = new PointOffsetLegend();
-		OkCancelDialog diag = new OkCancelDialog(
-			f, "Point Offset Legend", true, ptLegend );
-
-		diag.setCancelButtonVisible( false );
-		diag.setResizable( true );
-		diag.setSize( 640, 500 );
-		diag.setLocationRelativeTo( f );
-
-		diag.show();	
-	}
-	finally
-	{
-		f.setCursor(savedCursor);
-	}
-
 }
 
 /**
