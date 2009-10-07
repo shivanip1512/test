@@ -4,16 +4,18 @@ import java.util.Comparator;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
-public interface ControlAreaService
-    extends ObjectMapper<DisplayablePao, LMControlArea> {
+public interface ControlAreaService {
 
+    
+    public LMControlArea getControlAreaForPao(YukonPao from);
+    
     public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId);
 
     public ControlArea findControlAreaForProgram(YukonUserContext userContext, int programId);

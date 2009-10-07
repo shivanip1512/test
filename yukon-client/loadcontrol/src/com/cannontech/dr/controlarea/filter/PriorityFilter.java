@@ -7,18 +7,17 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.Range;
+import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.loadcontrol.data.LMControlArea;
 
 public class PriorityFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMControlArea> mapper;
+    private ControlAreaService controlAreaService;
 
     private Range<Integer> filter;
 
-    public PriorityFilter(ObjectMapper<DisplayablePao, LMControlArea> mapper,
-            Range<Integer> filter) {
-        this.mapper = mapper;
+    public PriorityFilter(ControlAreaService controlAreaService, Range<Integer> filter) {
+        this.controlAreaService = controlAreaService;
         this.filter = filter;
     }
 
@@ -30,7 +29,7 @@ public class PriorityFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMControlArea controlArea = mapper.map(pao);
+                LMControlArea controlArea = controlAreaService.getControlAreaForPao(pao);
                 return controlArea != null
                     && filter.intersects(controlArea.getCurrentPriority() <= 0
                                          ? 1 : controlArea.getCurrentPriority());

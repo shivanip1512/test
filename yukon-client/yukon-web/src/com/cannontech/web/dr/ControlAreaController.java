@@ -29,10 +29,11 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.DurationFormattingService.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
-import com.cannontech.dr.controlarea.model.ControlAreaDisplayField;
+import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
@@ -87,6 +88,7 @@ public class ControlAreaController {
     private LoadControlClientConnection loadControlClientConnection;
     private DurationFormattingService durationFormattingService;
     private DemandResponseEventLogService demandResponseEventLogService;
+    private ControlAreaFieldService controlAreaFieldService;
 
     @RequestMapping("/controlArea/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
@@ -114,11 +116,15 @@ public class ControlAreaController {
             filters.add(new PriorityFilter(controlAreaService, backingBean.getPriority()));
         }
 
-        ControlAreaDisplayField sortField = StringUtils.isEmpty(backingBean.getSort())
-            ? ControlAreaDisplayField.NAME : ControlAreaDisplayField.valueOf(backingBean.getSort());
-        Comparator<DisplayablePao> sorter =
-            sortField.getSorter(controlAreaService, userContext,
-                                backingBean.getDescending());
+        // Name is the default sort field
+        DemandResponseBackingField<LMControlArea> sortField = 
+            controlAreaFieldService.getBackingField("NAME");
+        if(!StringUtils.isEmpty(backingBean.getSort())) {
+            sortField = controlAreaFieldService.getBackingField(backingBean.getSort());
+        }
+        
+        Comparator<DisplayablePao> sorter = 
+            sortField.getSorter(backingBean.getDescending(), userContext);
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         SearchResult<ControlArea> searchResult =
@@ -440,5 +446,10 @@ public class ControlAreaController {
     @Autowired
     public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
+    }
+    
+    @Autowired
+    public void setControlAreaFieldService(ControlAreaFieldService controlAreaFieldService) {
+        this.controlAreaFieldService = controlAreaFieldService;
     }
 }

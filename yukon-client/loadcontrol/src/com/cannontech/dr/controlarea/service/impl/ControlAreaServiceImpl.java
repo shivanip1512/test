@@ -16,20 +16,21 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.filter.ForProgramFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
-import com.cannontech.dr.controlarea.model.ControlAreaDisplayField;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
+import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -47,6 +48,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     private LoadControlClientConnection loadControlClientConnection;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
+    private ControlAreaFieldService controlAreaFieldService;
 
     private static class TriggerRowMapper implements RowMapperWithBaseQuery<ControlAreaTrigger> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId = Maps.newHashMap();
@@ -168,7 +170,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public LMControlArea map(DisplayablePao from) throws ObjectMappingException {
+    public LMControlArea getControlAreaForPao(YukonPao from) {
         DatedObject<LMControlArea> datedControlArea =
             loadControlClientConnection.getDatedControlArea(from.getPaoIdentifier().getPaoId());
         return datedControlArea == null ? null : datedControlArea.getObject();
@@ -211,8 +213,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
 
-        Comparator<DisplayablePao> defaultSorter =
-            ControlAreaDisplayField.NAME.getSorter(this, userContext, false);
+        
+        DemandResponseBackingField<LMControlArea> nameField = 
+            controlAreaFieldService.getBackingField("NAME");
+        Comparator<DisplayablePao> defaultSorter = nameField.getSorter(false, userContext);
         if (sorter == null) {
             sorter = defaultSorter;
         } else {
@@ -395,5 +399,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     public void setDemandResponseEventLogService(
                                  DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
+    }
+    
+    @Autowired
+    public void setControlAreaFieldService(ControlAreaFieldService controlAreaFieldService) {
+        this.controlAreaFieldService = controlAreaFieldService;
     }
 }

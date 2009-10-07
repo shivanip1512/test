@@ -32,7 +32,7 @@ public class LoadGroupBackingService extends UpdateBackingServiceBase<LMDirectGr
             loadGroupFieldService.getBackingField(fieldName);
         
         LMDirectGroupBase group = null;
-        if (datedObject != null && (datedObject.getObject() instanceof LMDirectGroupBase)) {
+        if (datedObject != null) {
             group = datedObject.getObject();
         }
         

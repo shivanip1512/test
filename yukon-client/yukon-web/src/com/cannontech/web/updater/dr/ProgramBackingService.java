@@ -30,7 +30,7 @@ public class ProgramBackingService extends UpdateBackingServiceBase<LMProgramBas
             programFieldService.getBackingField(fieldName);
         
         LMProgramBase program = null;
-        if (datedObject != null && (datedObject.getObject() instanceof LMProgramBase)) {
+        if (datedObject != null) {
             program = datedObject.getObject();
         }
         

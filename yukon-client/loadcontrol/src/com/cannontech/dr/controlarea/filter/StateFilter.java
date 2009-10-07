@@ -7,19 +7,18 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.loadcontrol.data.LMControlArea;
 
 public class StateFilter implements UiFilter<DisplayablePao> {
-    private ObjectMapper<DisplayablePao, LMControlArea> mapper;
+    private ControlAreaService controlAreaService;
 
     // we either show active (or similar) or show inactive
     // if the filter is off, we don't create an instance of this class at all
     private boolean showActive;
 
-    public StateFilter(ObjectMapper<DisplayablePao, LMControlArea> mapper,
-            boolean showActive) {
-        this.mapper = mapper;
+    public StateFilter(ControlAreaService controlAreaService, boolean showActive) {
+        this.controlAreaService = controlAreaService;
         this.showActive = showActive;
     }
 
@@ -31,7 +30,7 @@ public class StateFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMControlArea controlArea = mapper.map(pao);
+                LMControlArea controlArea = controlAreaService.getControlAreaForPao(pao);
                 return controlArea != null
                     && (controlArea.getControlAreaState() != LMControlArea.STATE_INACTIVE && showActive
                     || controlArea.getControlAreaState() == LMControlArea.STATE_INACTIVE && !showActive);
