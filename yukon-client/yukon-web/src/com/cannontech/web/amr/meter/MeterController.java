@@ -18,9 +18,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.model.FilterBy;
-import com.cannontech.amr.meter.search.model.FilterByGenerator;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.attribute.model.Attribute;
@@ -41,6 +41,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
@@ -60,6 +61,7 @@ public class MeterController extends MultiActionController {
     private PointUpdateBackingService pointUpdateBackingService = null;
     private RolePropertyDao rolePropertyDao = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
+    private MspMeterSearchService mspMeterSearchService;
 
     public MeterController() {
         super();
@@ -112,6 +114,11 @@ public class MeterController extends MultiActionController {
 		this.deviceDefinitionDao = deviceDefinitionDao;
 	}
     
+    @Autowired
+    public void setMspMeterSearchService(MspMeterSearchService mspMeterSearchService) {
+		this.mspMeterSearchService = mspMeterSearchService;
+	}
+    
     public ModelAndView start(HttpServletRequest request, HttpServletResponse response) {
         return new ModelAndView("start.jsp");
     }
@@ -140,17 +147,18 @@ public class MeterController extends MultiActionController {
         MeterSearchField defaultField = isQuickSearch ? MeterSearchField.METERNUMBER : MeterSearchField.PAONAME;
 
         // Get the order by field
-        String orderByField = ServletRequestUtils.getStringParameter(request,
-                                                                     "orderBy",
-                                                                     defaultField.toString());
-        OrderBy orderBy = new OrderBy(orderByField,
-                                      ServletRequestUtils.getBooleanParameter(request,
-                                                                              "descending",
-                                                                              false));
+        String orderByField = ServletRequestUtils.getStringParameter(request, "orderBy", defaultField.toString());
+        OrderBy orderBy = new OrderBy(orderByField, ServletRequestUtils.getBooleanParameter(request, "descending", false));
 
-        // Build up filter by list
-        List<FilterBy> filterByList = FilterByGenerator.getFilterByList();
+        // all filters
+        List<FilterBy> filterByList = new ArrayList<FilterBy>();
+        filterByList.addAll(StandardFilterByGenerator.getStandardFilterByList());
+        filterByList.addAll(mspMeterSearchService.getMspFilterByList());
+        
+        // query filter
         List<FilterBy> queryFilter = MeterSearchUtils.getQueryFilter(request, filterByList);
+        
+        // filter string
         String filterByString = MeterSearchUtils.getFilterByString(queryFilter);
 
         // Perform the search

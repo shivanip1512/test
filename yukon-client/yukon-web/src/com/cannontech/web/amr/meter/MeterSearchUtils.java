@@ -12,7 +12,7 @@ import com.cannontech.amr.meter.search.model.FilterBy;
 
 public class MeterSearchUtils {
 
-    public static List<FilterBy> getQueryFilter(HttpServletRequest request, List<FilterBy> filterByList) {
+    public static List<FilterBy> getQueryFilter(HttpServletRequest request, List<? extends FilterBy> filterByList) {
         
         List<FilterBy> queryFilter = new ArrayList<FilterBy>();
         for (FilterBy filterBy : filterByList) {

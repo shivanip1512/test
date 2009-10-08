@@ -3,6 +3,7 @@ package com.cannontech.multispeak.dao.impl;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -262,6 +263,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
             CTILogger.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
         }
+        
+        if (objects == null) {
+        	return Collections.emptyList();
+        }
+        
         return Arrays.asList(objects);
     }
     

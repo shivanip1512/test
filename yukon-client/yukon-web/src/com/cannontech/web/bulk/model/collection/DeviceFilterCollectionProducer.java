@@ -15,10 +15,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
-import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.FilterBy;
-import com.cannontech.amr.meter.search.model.FilterByGenerator;
+import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.RangeBasedDeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -27,14 +27,21 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 
 public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase implements DeviceFilterCollectionHelper {
     private MeterSearchDao meterSearchDao;
+    private MspMeterSearchService mspMeterSearchService;
     
     @Autowired
     public void setMeterSearchDao(MeterSearchDao meterSearchDao) {
         this.meterSearchDao = meterSearchDao;
     }
+    
+    @Autowired
+    public void setMspMeterSearchService(MspMeterSearchService mspMeterSearchService) {
+		this.mspMeterSearchService = mspMeterSearchService;
+	}
 
     @Override
     public String getSupportedType() {
@@ -53,9 +60,13 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
         OrderBy orderBy = new OrderBy(orderByField,
                                       orderByDescending);
         
-        List<FilterBy> filterByList = FilterByGenerator.getFilterByList();
+        // all filters
+        List<FilterBy> filterByList = new ArrayList<FilterBy>();
+        filterByList.addAll(StandardFilterByGenerator.getStandardFilterByList());
+        filterByList.addAll(mspMeterSearchService.getMspFilterByList());
+        
+        // query filter
         List<FilterBy> queryFilter = new ArrayList<FilterBy>();
-
         for (FilterBy filterBy : filterByList) {
             String filterValue = ServletRequestUtils.getStringParameter(request, getParameterName(filterBy.getName()), "").trim();
             if (!StringUtils.isBlank(filterValue)) {
@@ -66,7 +77,7 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
         
         return createDeviceGroupCollection(queryFilter, orderBy);
     }
-
+    
     @Override
     public DeviceCollection createDeviceGroupCollection(final List<FilterBy> filterBys, final OrderBy orderBy) {
         return new RangeBasedDeviceCollection() {

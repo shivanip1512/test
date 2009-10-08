@@ -1163,4 +1163,11 @@
     
     <bean id="attributeSelectorHelperService" class="com.cannontech.web.util.AttributeSelectorHelperServiceImpl"/>
     
+    <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImpl"/>
+    
+    <bean id="eaLocationMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProvider"/>
+    <bean id="facilityIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.FacilityIdMspMeterSearchMethodResultProvider"/>
+    <bean id="accountNumberMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProvider"/>
+    <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
+    
 </beans>
