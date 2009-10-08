@@ -34,6 +34,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
+import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -60,6 +61,7 @@ public class ProgramController {
     private LoadGroupControllerHelper loadGroupControllerHelper;
     private RolePropertyDao rolePropertyDao;
     private DemandResponseEventLogService demandResponseEventLogService;
+    private DemandResponseFavoritesDao favoritesDao;
 
     public static class GearAdjustmentTimeSlot {
         private Date startTime;
@@ -397,7 +399,8 @@ public class ProgramController {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE);
-        
+
+        favoritesDao.detailPageViewed(programId);
         modelMap.addAttribute("program", program);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
@@ -1166,5 +1169,10 @@ public class ProgramController {
     @Autowired
     public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
+    }
+
+    @Autowired
+    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+        this.favoritesDao = favoritesDao;
     }
 }

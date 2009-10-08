@@ -16,6 +16,8 @@
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.searchResults.breadcrumb.home"/></cti:crumbLink>
     </cti:breadCrumbs>
 
+    <dr:favoriteIconJS/>
+
     <c:if test="${searchResult.hitCount == 0}">
         <cti:msg key="yukon.web.modules.dr.searchResults.noResults"/>
     </c:if>
@@ -26,6 +28,7 @@
         <tags:abstractContainer type="box" title="${searchTitle}">
             <table class="compactResultsTable">
                 <tr>
+                    <th></th>
                     <th>
                         <cti:msg key="yukon.web.modules.dr.searchResults.nameHeader"></cti:msg>
                     </th>
@@ -35,13 +38,14 @@
                 </tr>
                 <c:forEach var="pao" items="${searchResult.resultList}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"/></td>
                         <td>
                             <cti:paoDetailUrl yukonPao="${pao}">
                                 <spring:escapeBody>${pao.name}</spring:escapeBody>
                             </cti:paoDetailUrl>
                         </td>
                         <td>
-                            <cti:msg key="yukon.web.modules.dr.searchResults.paoType.${pao.paoIdentifier.paoType}"/>
+                            <cti:msg key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}"/>
                         </td>
                     </tr>
                 </c:forEach>

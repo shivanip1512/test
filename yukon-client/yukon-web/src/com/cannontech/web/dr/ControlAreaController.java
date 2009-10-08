@@ -35,6 +35,7 @@ import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
+import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -89,6 +90,7 @@ public class ControlAreaController {
     private DurationFormattingService durationFormattingService;
     private DemandResponseEventLogService demandResponseEventLogService;
     private ControlAreaFieldService controlAreaFieldService;
+    private DemandResponseFavoritesDao favoritesDao;
 
     @RequestMapping("/controlArea/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
@@ -147,7 +149,8 @@ public class ControlAreaController {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      controlArea, 
                                                      Permission.LM_VISIBLE);
-        
+
+        favoritesDao.detailPageViewed(controlAreaId);
         modelMap.addAttribute("controlArea", controlArea);
 
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
@@ -451,5 +454,10 @@ public class ControlAreaController {
     @Autowired
     public void setControlAreaFieldService(ControlAreaFieldService controlAreaFieldService) {
         this.controlAreaFieldService = controlAreaFieldService;
+    }
+
+    @Autowired
+    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+        this.favoritesDao = favoritesDao;
     }
 }

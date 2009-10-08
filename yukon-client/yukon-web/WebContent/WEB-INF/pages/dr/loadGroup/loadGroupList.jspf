@@ -110,6 +110,7 @@
 <tags:abstractContainer type="box" title="${loadGroupTitle}">
     <table id="loadGroupList" class="compactResultsTable rowHighlighting">
         <tr>
+            <th></th>
             <th>
                 <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.name"
                     baseUrl="${baseUrl}" fieldName="NAME"/>        
@@ -144,6 +145,7 @@
                 <c:param name="loadGroupId" value="${loadGroupId}"/>
             </c:url>
             <tr id="loadGroupRow${loadGroupId}" class="<tags:alternateRow odd="" even="altRow"/>">
+                <td><dr:favoriteIcon paoId="${loadGroupId}"/></td>
                 <td>
                     <%-- TODO:  in phase 3, update cti:classUpdater to be able to
                      update the class of the row instead --%>
@@ -151,62 +153,12 @@
                         <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${loadGroup.name}</spring:escapeBody></a>
                     </cti:classUpdater>
                 </td>
-                <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/></td>
-                <td style="white-space: nowrap;">
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
-                        <tags:dynamicChoose updaterString="DR_LOADGROUP/${loadGroupId}/SHOW_ACTION" suffix="${loadGroupId}">
-                            <tags:dynamicChooseOption optionId="unknown">
-                                <cti:msg var="loadGroupUnknown" key="yukon.web.modules.dr.loadGroupDetail.unknown"/>
-                                <span title="${loadGroupUnknown}">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
-                                </span>
-                                <span class="subtleGray" title="${loadGroupUnknown}">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
-                                </span>
-                            </tags:dynamicChooseOption>
-                            <tags:dynamicChooseOption optionId="enabled">
-                                <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
-                                    <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon"/>
-                                </a>
-                
-                                <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
-                                    <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon"/>
-                                </a>
-                            </tags:dynamicChooseOption>
-                            <tags:dynamicChooseOption optionId="disabled">
-                                <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
-                                    <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                    <cti:param name="isEnabled" value="true"/>
-                                </cti:url>
-                                <a id="enableLink_${loadGroupId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.enableIcon"/>
-                                </a>
-                            </tags:dynamicChooseOption>
-                        </tags:dynamicChoose><br>
-                    </cti:checkPaoAuthorization>
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
-                        <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
-                        <span class="subtleGray" title="${noLoadGroupControl}">
-                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
-                        </span>
-                        <span class="subtleGray" title="${noLoadGroupControl}">
-                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
-                        </span>
-                    </cti:checkPaoAuthorization>
-                </td>
-                <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/></td>
-                <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/></td>
-                <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/></td>
-                <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/></td>
+                <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/></td>
+                <td class="nonwrapping"><dr:loadGroupListActions pao="${loadGroup}"/></td>
+                <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/></td>
+                <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/></td>
+                <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/></td>
+                <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/></td>
             </tr>
         </c:forEach>
     </table>

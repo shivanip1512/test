@@ -21,6 +21,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.model.DisplayablePaoComparator;
@@ -34,6 +35,7 @@ public class ScenarioController {
     private ScenarioService scenarioService;
     private PaoAuthorizationService paoAuthorizationService;
     private ProgramControllerHelper programControllerHelper;
+    private DemandResponseFavoritesDao favoritesDao;
 
     @RequestMapping("/scenario/list")
     public String list(ModelMap modelMap, 
@@ -79,7 +81,8 @@ public class ScenarioController {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      scenario, 
                                                      Permission.LM_VISIBLE);
-        
+
+        favoritesDao.detailPageViewed(scenarioId);
         modelMap.addAttribute("scenario", scenario);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
@@ -108,5 +111,10 @@ public class ScenarioController {
     public void setProgramControllerHelper(
             ProgramControllerHelper programControllerHelper) {
         this.programControllerHelper = programControllerHelper;
+    }
+
+    @Autowired
+    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+        this.favoritesDao = favoritesDao;
     }
 }

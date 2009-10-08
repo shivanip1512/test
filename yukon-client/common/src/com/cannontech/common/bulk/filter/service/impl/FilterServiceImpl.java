@@ -16,6 +16,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentCollection;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 public class FilterServiceImpl implements FilterService {
@@ -47,7 +48,11 @@ public class FilterServiceImpl implements FilterService {
             sql.append(whereClause);
         }
 
-        
+        SqlFragmentSource orderByClause = rowMapper.getOrderBy();
+        if (orderByClause != null) {
+            sql.append(orderByClause);
+        }
+
         SearchResult<T> retVal = new SearchResult<T>();
 
         List<T> objectsFromDb = simpleJdbcTemplate.query(sql.getSql(),

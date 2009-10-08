@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.dr.loadGroupDetail.pageTitle" argument="${loadGroup.name}"/>
 <cti:standardPage module="dr" page="loadGroupDetail" title="${pageTitle}">
@@ -12,6 +13,7 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+    <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -119,9 +121,9 @@
                                     onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
                                     <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.enableIcon"/>
                                     <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
-                                </a>
+                                </a><br>
                             </tags:dynamicChooseOption>
-                        </tags:dynamicChoose><br>
+                        </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
                         <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
@@ -138,6 +140,7 @@
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                         </div>
                     </cti:checkPaoAuthorization>
+                    <dr:favoriteIcon paoId="${loadGroupId}" includeText="true"/><br>
                 </tags:abstractContainer>
             </td>
         </tr>

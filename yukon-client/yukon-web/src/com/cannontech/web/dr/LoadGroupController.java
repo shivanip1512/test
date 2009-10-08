@@ -19,6 +19,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
@@ -30,7 +31,8 @@ public class LoadGroupController {
     private ProgramService programService;
     private LoadGroupControllerHelper loadGroupControllerHelper;
     private DemandResponseEventLogService demandResponseEventLogService;
-    
+    private DemandResponseFavoritesDao favoritesDao;
+
     private final static Map<Integer, String> shedTimeOptions;
     static {
         // TODO:  make this immutable...can we update google collections so
@@ -70,7 +72,8 @@ public class LoadGroupController {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE);
-        
+
+        favoritesDao.detailPageViewed(loadGroupId);
         modelMap.addAttribute("loadGroup", loadGroup);
         modelMap.addAttribute("parentPrograms",
                               programService.findProgramsForLoadGroup(loadGroupId, userContext));
@@ -215,5 +218,10 @@ public class LoadGroupController {
     @Autowired
     public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
+    }
+
+    @Autowired
+    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+        this.favoritesDao = favoritesDao;
     }
 }

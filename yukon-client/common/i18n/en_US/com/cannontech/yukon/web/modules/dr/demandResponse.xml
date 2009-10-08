@@ -17,6 +17,30 @@
 <entry key="yukon.web.modules.dr.paging.next">next</entry>
 <entry key="yukon.web.modules.dr.paging.last">last</entry>
 
+<entry key="yukon.web.modules.dr.actions.addFavorite">Add To Favorites</entry>
+<entry key="yukon.web.modules.dr.actions.addFavoriteIcon">/WebConfig/yukon/Icons/star_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.actions.addFavoriteIcon.hover">/WebConfig/yukon/Icons/star.gif</entry>
+<entry key="yukon.web.modules.dr.actions.addFavoriteIcon.alt">Add to favorites</entry>
+<entry key="yukon.web.modules.dr.actions.removeFavorite">Remove From Favorites</entry>
+<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon">/WebConfig/yukon/Icons/star.gif</entry>
+<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon.hover">/WebConfig/yukon/Icons/star_over.gif</entry>
+<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon.alt">Remove from favorites</entry>
+
+<entry key="yukon.web.modules.dr.paoType.LM_SCENARIO">Scenario</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_CONTROL_AREA">Control Area</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_DIRECT_PROGRAM">Program</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_EMETCON">Emetcon Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_GOLAY">Golay Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_INTEGRATION">Integration Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_MCT">MCT Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_POINT">Point Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_RIPPLE">Ripple Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_SA205">SA205 Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_SA305">SA305 Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_SADIGITAL">SA Digital Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_VERSACOM">Versacom Group</entry>
+<entry key="yukon.web.modules.dr.paoType.MACRO_GROUP">Macro Group</entry>
 
 <!--  Control Area Field Values -->
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.ACTIVE">Active</entry>
@@ -237,31 +261,25 @@
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
 <entry key="yukon.web.modules.dr.home.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.modules.dr.home.breadcrumb.home">Demand Response</entry>
+<entry key="yukon.web.modules.dr.home.noFavorites">No Favorites</entry>
+<entry key="yukon.web.modules.dr.home.favorites">Favorites</entry>
+<entry key="yukon.web.modules.dr.home.nameHeader">Name</entry>
+<entry key="yukon.web.modules.dr.home.typeHeader">Type</entry>
+<entry key="yukon.web.modules.dr.home.noRecents">No Recently Viewed Items</entry>
+<entry key="yukon.web.modules.dr.home.recents">Recently Viewed Items</entry>
+<entry key="yukon.web.modules.dr.home.nameHeader">Name</entry>
+<entry key="yukon.web.modules.dr.home.typeHeader">Type</entry>
+<entry key="yukon.web.modules.dr.home.stateHeader">State</entry>
+<entry key="yukon.web.modules.dr.home.actionsHeader">Actions</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>
 <entry key="yukon.web.modules.dr.searchResults.breadcrumb.operationsHome">Operations Home</entry>
 <entry key="yukon.web.modules.dr.searchResults.breadcrumb.home">Quick Search</entry>
 <entry key="yukon.web.modules.dr.searchResults.searchResult">Search Results for &quot;{0}&quot;</entry>
-<entry key="yukon.web.modules.dr.searchResults.noResults">No scenarios matched.</entry>
+<entry key="yukon.web.modules.dr.searchResults.noResults">No items matched.</entry>
 <entry key="yukon.web.modules.dr.searchResults.nameHeader">Name</entry>
 <entry key="yukon.web.modules.dr.searchResults.typeHeader">Type</entry>
-
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_SCENARIO">Scenario</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_CONTROL_AREA">Control Area</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_DIRECT_PROGRAM">Program</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_EMETCON">Emetcon Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_GOLAY">Golay Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_INTEGRATION">Integration Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_MCT">MCT Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_POINT">Point Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_RIPPLE">Ripple Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_SA205">SA205 Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_SA305">SA305 Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_SADIGITAL">SA Digital Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.LM_GROUP_VERSACOM">Versacom Group</entry>
-<entry key="yukon.web.modules.dr.searchResults.paoType.MACRO_GROUP">Macro Group</entry>
 
 
 <!-- Scenario List -->

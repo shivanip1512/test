@@ -7,31 +7,32 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
-       
+
        default-lazy-init="true">
 
-   <bean id="loadControlClientConnectionFactory" class="com.cannontech.loadcontrol.LoadControlClientConnectionFactory" />
-   <bean id="loadControlClientConnection" factory-bean="loadControlClientConnectionFactory" 
+    <bean id="loadControlClientConnectionFactory" class="com.cannontech.loadcontrol.LoadControlClientConnectionFactory"/>
+    <bean id="loadControlClientConnection" factory-bean="loadControlClientConnectionFactory" 
          factory-method="createConnection" scope="singleton" destroy-method="disconnect"/>
          
-   <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementProxy" 
-         scope="singleton">
-        <property name="loadControlClientConnection" ref="loadControlClientConnection" />
-        <property name="serverRequest" ref="serverRequest" />
-   </bean>
-   
-   <bean id="loadGroupDao" class="com.cannontech.loadcontrol.loadgroup.dao.impl.LoadGroupDaoImpl" />
-   
-   <bean id="loadControlProgramDao" class="com.cannontech.loadcontrol.dao.impl.LoadControlProgramDaoImpl" />
-    
-   <bean id="loadControlService" class="com.cannontech.loadcontrol.service.impl.LoadControlServiceImpl" />
-   
-   <bean id="loadControlCommandService" class="com.cannontech.loadcontrol.service.impl.LoadControlCommandServiceImpl" />
+    <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementProxy" 
+        scope="singleton">
+        <property name="loadControlClientConnection" ref="loadControlClientConnection"/>
+        <property name="serverRequest" ref="serverRequest"/>
+    </bean>
 
-   <bean id="drControlAreaDao" class="com.cannontech.dr.controlarea.dao.impl.ControlAreaDaoImpl"/>
-   <bean id="drScenarioDao" class="com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl"/>
-   <bean id="drProgramDao" class="com.cannontech.dr.program.dao.impl.ProgramDaoImpl"/>
-   <bean id="drLoadGroupDao" class="com.cannontech.dr.loadgroup.dao.impl.LoadGroupDaoImpl"/>
+    <bean id="loadGroupDao" class="com.cannontech.loadcontrol.loadgroup.dao.impl.LoadGroupDaoImpl"/>
+   
+    <bean id="loadControlProgramDao" class="com.cannontech.loadcontrol.dao.impl.LoadControlProgramDaoImpl"/>
+    
+    <bean id="loadControlService" class="com.cannontech.loadcontrol.service.impl.LoadControlServiceImpl"/>
+   
+    <bean id="loadControlCommandService" class="com.cannontech.loadcontrol.service.impl.LoadControlCommandServiceImpl"/>
+
+    <bean id="drControlAreaDao" class="com.cannontech.dr.controlarea.dao.impl.ControlAreaDaoImpl"/>
+    <bean id="drScenarioDao" class="com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl"/>
+    <bean id="drProgramDao" class="com.cannontech.dr.program.dao.impl.ProgramDaoImpl"/>
+    <bean id="drLoadGroupDao" class="com.cannontech.dr.loadgroup.dao.impl.LoadGroupDaoImpl"/>
+    <bean id="drFavoritesDao" class="com.cannontech.dr.dao.impl.DemandResponseFavoritesDaoImpl"/>
 
     <bean id="drControlAreaService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaServiceImpl"/>
     <bean id="drControlAreaFieldService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaFieldServiceImpl"/>

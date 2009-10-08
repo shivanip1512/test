@@ -3,11 +3,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="loadGroupList">
     <cti:standardMenu menuSelection="details|loadGroups"/>
 
     <tags:simpleDialog id="drDialog"/>
+    <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
