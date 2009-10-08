@@ -23,6 +23,10 @@ public enum BuiltInAttribute implements Attribute {
     MINIMUM_VOLTAGE("Minimum Voltage"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
+    POWER_FAIL_FLAG("Power Fail Flag"),
+    TAMPER_FLAG("Tamper Flag"),
+    ZERO_USAGE_FLAG("Zero Usage Flag"),
+    REVERSE_POWER_FLAG("Reverse Power Flag"),
     PHASE("Phase"),
     ;
     

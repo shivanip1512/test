@@ -1374,10 +1374,6 @@
                 <name>Zero Usage (24 Hours)</name>
                 <stategroup value="TrueFalse"/>
             </point>
-      		<point type="Status" offset="47">
-               <name>Reverse Power</name>
-               <stategroup value="TrueFalse"/>
-           </point>
             <point type="Status" offset="2000">
                 <name>Comm Status</name>
                 <stategroup value="SystemState"/>
@@ -1561,6 +1557,7 @@
 				<name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
         		<cmd text="getconfig intervals"/>
         	</command>
+        	<!--  This command is overloaded by some 410 meters to handle Reverse Power differently -->
         	<command id="READ_INTERNAL_STATUS">
         		<name>Read General Info</name>
         		<cmd text="getstatus internal"/>
@@ -1568,7 +1565,6 @@
         		<pointRef name="Power Fail"/>
         		<pointRef name="Tamper Flag Set"/>
         		<pointRef name="Zero Usage (24 Hours)"/>
-        		<pointRef name="Reverse Power"/>
         	</command>
 
         </commands>
@@ -1633,18 +1629,96 @@
             <attribute name="PHASE">
                 <basicLookup point="Phase" />
             </attribute>
+            <attribute name="GENERAL_ALARM_FLAG">
+            	<basicLookup point="General Alarm" />
+            </attribute>
+            <attribute name="POWER_FAIL_FLAG">
+            	<basicLookup point="Power Fail" />
+            </attribute>
+            <attribute name="TAMPER_FLAG">
+            	<basicLookup point="Tamper Flag Set" />
+            </attribute>
+            <attribute name="ZERO_USAGE_FLAG">
+            	<basicLookup point="Zero Usage (24 Hours)" />
+            </attribute>
         </attributes>
 	</device>
         
     <!-- MCT 410s -->
     <device id="MCT410IL" inherits="MCT_410_BASE">
         <displayName>MCT-410IL</displayName>
+        <points>
+       		<point type="Status" offset="47">
+               <name>Reverse Power</name>
+               <stategroup value="TrueFalse"/>
+	        </point>
+		</points>     
+		<commands>   
+        	<command id="READ_INTERNAL_STATUS">
+        		<name>Read General Info</name>
+        		<cmd text="getstatus internal"/>
+        		<pointRef name="General Alarm"/>
+        		<pointRef name="Power Fail"/>
+        		<pointRef name="Tamper Flag Set"/>
+        		<pointRef name="Zero Usage (24 Hours)"/>
+        		<pointRef name="Reverse Power"/>
+        	</command>
+        </commands>
+        <attributes>
+        	<attribute name="REVERSE_POWER_FLAG">
+        		<basicLookup point="Reverse Power"/>
+        	</attribute>
+        </attributes>
     </device>
     <device id="MCT410CL" inherits="MCT_410_BASE">
         <displayName>MCT-410CL</displayName>
+		<points>
+       		<point type="Status" offset="47">
+               <name>Reverse Power</name>
+               <stategroup value="TrueFalse"/>
+	        </point>
+		</points>
+		<commands>   
+        	<command id="READ_INTERNAL_STATUS">
+        		<name>Read General Info</name>
+        		<cmd text="getstatus internal"/>
+        		<pointRef name="General Alarm"/>
+        		<pointRef name="Power Fail"/>
+        		<pointRef name="Tamper Flag Set"/>
+        		<pointRef name="Zero Usage (24 Hours)"/>
+        		<pointRef name="Reverse Power"/>
+        	</command>
+        </commands>
+        <attributes>
+        	<attribute name="REVERSE_POWER_FLAG">
+        		<basicLookup point="Reverse Power"/>
+        	</attribute>
+        </attributes>
     </device>
     <device id="MCT410FL" inherits="MCT_410_BASE">
         <displayName>MCT-410FL</displayName>
+        <points>
+			<point type="Status" offset="23">
+                <name>Reverse Power</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+		</points>
+		<commands>   
+        	<command id="READ_INTERNAL_STATUS">
+        		<name>Read General Info</name>
+        		<cmd text="getstatus internal"/>
+        		<pointRef name="General Alarm"/>
+        		<pointRef name="Power Fail"/>
+        		<pointRef name="Tamper Flag Set"/>
+        		<pointRef name="Zero Usage (24 Hours)"/>
+        		<pointRef name="Reverse Power"/>
+        	</command>
+        </commands>
+        <attributes>
+        	<attribute name="REVERSE_POWER_FLAG">
+        		<basicLookup point="Reverse Power"/>
+        	</attribute>
+        </attributes>
     </device>
     <device id="MCT410GL" inherits="MCT_410_BASE" enabled="false">
         <displayName>MCT-410GL</displayName>
