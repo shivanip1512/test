@@ -13,24 +13,6 @@
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
-<script type="text/javascript">
-    function updateChangeGearEnabled(data) {
-    
-        var enabledSpan = $('changeGearEnabled');
-        var disabledSpan = $('changeGearDisabled');
-        
-        if(data.state == 'true') {
-            // enabled
-            $(enabledSpan).show();
-            $(disabledSpan).hide();
-        } else {
-            // disabled
-            $(enabledSpan).hide();
-            $(disabledSpan).show();
-        }
-    }
-</script>
-
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
             <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome"/>
