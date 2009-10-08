@@ -182,6 +182,8 @@
 
 <!-- Support Module -->
 <entry key="yukon.web.menu.config.support.information">Information</entry>
+<entry key="yukon.web.menu.config.support.information.system">System</entry>
+<entry key="yukon.web.menu.config.support.information.deviceDef">Device Definitions</entry>
 
 <entry key="yukon.web.menu.config.support.logs">Logs</entry>
 
