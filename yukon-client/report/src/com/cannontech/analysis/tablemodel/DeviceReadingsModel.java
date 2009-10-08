@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
@@ -19,7 +20,7 @@ import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCollections;
@@ -29,7 +30,9 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.core.dynamic.PointValueBuilder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.point.PointTypes;
@@ -38,13 +41,13 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
 public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadingsModel.ModelRow> {
-    
+
     private Logger log = YukonLogManager.getLogger(DeviceReadingsModel.class);
-    
+
     // dependencies
     private SimpleJdbcOperations simpleJdbcTemplate;
     private AttributeService attributeService;
-    
+
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Attribute attribute;
@@ -69,17 +72,17 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         public String date;
         public String value;
     }
-    
+
     @Override
     protected ModelRow getRow(int rowIndex) {
         return data.get(rowIndex);
     }
-    
+
     @Override
     protected Class<ModelRow> getRowClass() {
         return ModelRow.class;
     }
-    
+
     public String getTitle() {
         return "Device Readings Report";
     }
@@ -100,44 +103,54 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
             }
         }
         ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoCollections.mapPaoPointIdentifiers(identifiers);
-        
+
         for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){
-            final String sql = buildSQLStatement(pointIdentifier);
             List<Integer> deviceIds = Lists.newArrayList();
             for(PaoIdentifier paoIdentifier :  paoPointIdentifiersMap.get(pointIdentifier)){
                 deviceIds.add(paoIdentifier.getPaoId());
             }
-            
+
             ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
-            
+
             SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
                 @Override
                 public SqlFragmentSource generate(List<Integer> subList) {
-                    SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(sql);
+                    SqlStatementBuilder sql = new SqlStatementBuilder();
                     if(getAll){
-                        sqlBuilder.append("and rph.Timestamp > ").appendArgument(getStartDate()).append(" and rph.Timestamp <= ").appendArgument(getStopDate());
-                        sqlBuilder.append("and yp.PAObjectID in (");
-                        sqlBuilder.appendArgumentList(subList);
-                        sqlBuilder.append(") order by deviceName, date desc");
+                        sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
+                        sql.append("  rph.Timestamp date, p.PointType pointType, p.PointId pointId ");
+                        sql.append("from YukonPAObject yp");
+                        sql.append("  join Point p on p.PAObjectID = yp.PAObjectID");
+                        sql.append("  join RawPointHistory rph on p.PointId = rph.PointId");
+                        sql.append("where p.PointOffset = ").appendArgument(pointIdentifier.getOffset());
+                        sql.append("  and p.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
+                        sql.append("  and rph.Timestamp > ").appendArgument(getStartDate());
+                        sql.append("  and rph.Timestamp <= ").appendArgument(getStopDate());
+                        sql.append("  and yp.PAObjectID in (").appendArgumentList(subList).append(") ");
+                        sql.append("order by deviceName, date desc");
                     }else {
-                        sqlBuilder.append("and yp.PAObjectID in (");
-                        sqlBuilder.appendArgumentList(subList);
-                        sqlBuilder.append(") group by yp.PAOName, p.PointType, p.PointId");
-                        sqlBuilder.append(") holderTable,");
-                        sqlBuilder.append("(select DISTINCT yp.PAOName deviceName, yp.Type type, rph.Value value,");
-                        sqlBuilder.append("p.PointType pointType, p.PointId pointId,");
-                        sqlBuilder.append("rph.Timestamp date from YukonPAObject yp");
-                        sqlBuilder.append("join Point p on p.PAObjectID = yp.PAObjectID");
-                        sqlBuilder.append("join RawPointHistory rph on p.PointId = rph.PointId");
-                        sqlBuilder.append("where p.PointOffset = " + pointIdentifier.getOffset() + " and p.PointType = '" + PointTypes.getType(pointIdentifier.getType()) + "'");
-                        sqlBuilder.append(") attributeValues");
-                        sqlBuilder.append("where holderTable.deviceName = attributeValues.deviceName"); 
-                        sqlBuilder.append("and holderTable.date = attributeValues.date;");
+                        sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
+                        sql.append("    p.PointType pointType, p.PointId pointId, rph.Timestamp date ");
+                        sql.append("from (");
+                        sql.append("  select p.PointId pointId, max(rph.Timestamp) date"); 
+                        sql.append("  from YukonPAObject yp");
+                        sql.append("    join Point p on p.PAObjectID = yp.PAObjectID"); 
+                        sql.append("    join RawPointHistory rph on p.PointId = rph.PointId");
+                        sql.append("  where p.PointOffset = ").appendArgument(pointIdentifier.getOffset());
+                        sql.append("    and p.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
+                        sql.append("    and yp.PAObjectID in (").appendArgumentList(subList).append(")");
+                        sql.append("  group by p.PointId");
+                        sql.append(") lastReading");
+                        sql.append("  join RawPointHistory rph on lastReading.pointId = rph.pointId and lastReading.date = rph.TIMESTAMP");
+                        sql.append("  join Point p on rph.POINTID = p.POINTID");
+                        sql.append("  join YukonPAObject yp on yp.PAObjectID = p.PAObjectID");
                     }
-                    return sqlBuilder;
+                    return sql;
                 }
             };
             
+            final CachingPointFormattingService cachingPointFormattingService = pointFormattingService.getCachedInstance();
+
             List<ModelRow> rows = template.query(gen, deviceIds, new ParameterizedRowMapper<ModelRow>() {
                 @Override
                 public ModelRow mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -148,48 +161,27 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                     String pointtype = rs.getString("pointType");
                     Double doubleValue = Double.parseDouble(value);
                     row.date = rs.getString("date");
-                    
-                    SimplePointValue pvh = new SimplePointValue(rs.getInt("pointId"), rs.getDate("date"), PointTypes.getType(pointtype), doubleValue.doubleValue());
-                    row.value = pointFormattingService.getValueString(pvh, Format.SHORT, yukonUserContext);
+
+                    PointValueBuilder builder = PointValueBuilder.create();
+                    builder.withPointId(rs.getInt("pointId"));
+                    builder.withTimeStamp(rs.getDate("date"));
+                    builder.withType(PointTypes.getType(pointtype));
+                    builder.withValue(doubleValue.doubleValue());
+                    PointValueQualityHolder pointValueQualityHolder = builder.build();
+                    row.value = cachingPointFormattingService.getValueString(pointValueQualityHolder, Format.SHORT, yukonUserContext);
                     return row;
                 }
             });
             data.addAll(rows);
         }
-            
+
         log.info("Report Records Collected from Database: " + data.size());
     }
-    
-    private String buildSQLStatement(PointIdentifier pointIdentifier) {
-        if(getAll){
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
-            sql.append("rph.Timestamp date, p.PointType pointType, p.PointId pointId from YukonPAObject yp");
-            sql.append("join Point p on p.PAObjectID = yp.PAObjectID");
-            sql.append("join RawPointHistory rph on p.PointId = rph.PointId");
-            sql.append("where p.PointOffset = " + pointIdentifier.getOffset() + " and p.PointType = '" + PointTypes.getType(pointIdentifier.getType()) + "'");
-            return sql.toString();
-        } else {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select attributeValues.* from (");
-            sql.append("select distinct yp.PAOName deviceName, p.PointType pointType, p.PointId pointId,");
-            sql.append("max(rph.Timestamp) date from YukonPAObject yp");
-            sql.append("join Point p on p.PAObjectID = yp.PAObjectID ");
-            sql.append("join RawPointHistory rph on p.PointId = rph.PointId");
-            sql.append("where p.PointOffset = " + pointIdentifier.getOffset() + " and p.PointType = '" + PointTypes.getType(pointIdentifier.getType()) + "'");
-            return sql.toString();
-        }
-    }
-    
+
+
     private List<SimpleDevice> getDeviceList() {
-        if(groupsFilter != null && !groupsFilter.isEmpty()){
-            List<StoredDeviceGroup> groups = Lists.newArrayList();
-            for(String groupName : groupsFilter){
-                StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
-                if(group != null){
-                    groups.add(group);
-                }
-            }
+        if (groupsFilter != null && !groupsFilter.isEmpty()) {
+            Set<? extends DeviceGroup> groups = deviceGroupService.resolveGroupNames(groupsFilter);
             return Lists.newArrayList(deviceGroupService.getDevices(groups));
         } else if (deviceFilter != null && !deviceFilter.isEmpty()) {
             List<SimpleDevice> devices = Lists.newArrayList();
@@ -205,7 +197,7 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         } else {
             /* If they didn't pick anything to filter on, assume all devices. */
             /* Use contents of SystemGroupEnum.DEVICETYPES. */
-            StoredDeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
+            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
             return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
         }
     }
@@ -221,44 +213,44 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
     public void setRetrieveAll(boolean all) {
         this.getAll = all;
     }
-    
+
     public void setGroupsFilter(List<String> namesList) {
         this.groupsFilter = namesList;
     }
-    
+
     public void setDeviceFilter(List<String> idsSet) {
         this.deviceFilter = idsSet;
     }
-    
+
     public void setYukonUserContext(YukonUserContext context){
         this.yukonUserContext = context;
     }
-    
+
     @Required
     public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-    
+
     @Required
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
-    
+
     @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
-    
+
     @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
-    
+
     @Required
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
-    
+
     @Required
     public void setPointFormattingService(PointFormattingService pointFormattingService){
         this.pointFormattingService = pointFormattingService;
