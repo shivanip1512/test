@@ -13,7 +13,7 @@
 	<c:if test="${orderBy.descending}">
 		<c:param name="descending" value="true"/>
 	</c:if>
-	<c:forEach var="filter" items="${filterByList}">
+	<c:forEach var="filter" items="${pageScope.filterByList}">
 		<c:param name="${filter.name}" value="${filter.filterValue}" />
 	</c:forEach>
 </c:url>
@@ -37,7 +37,7 @@
 						startIndex="0" 
 						count="${results.count}"
 						selected="false"
-						filterByList="${filterByList}">
+						filterByList="${pageScope.filterByList}">
 							First
 					</amr:searchNavigationLink>						    	  
 					| 
@@ -46,7 +46,7 @@
 						startIndex="${results.previousStartIndex}" 
 						count="${results.count}"
 						selected="false"
-						filterByList="${filterByList}">
+						filterByList="${pageScope.filterByList}">
 							Previous
 					</amr:searchNavigationLink>						    	  
 				</c:when>
@@ -63,7 +63,7 @@
 						startIndex="${results.endIndex}" 
 						count="${results.count}"
 						selected="false"
-						filterByList="${filterByList}">
+						filterByList="${pageScope.filterByList}">
 							Next
 					</amr:searchNavigationLink>
 					| 
@@ -72,7 +72,7 @@
 						startIndex="${results.lastStartIndex}" 
 						count="${results.count}"
 						selected="false"
-						filterByList="${filterByList}">
+						filterByList="${pageScope.filterByList}">
 							Last
 					</amr:searchNavigationLink>
 				</c:when>
@@ -100,7 +100,7 @@
         <td>
             <span class="navLink">
                 <cti:link href="/spring/bulk/collectionActions" key="yukon.web.metering.deviceSelection.performCollectionAction">
-                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                    <cti:mapParam value="${pageScope.deviceCollection.collectionParameters}"/>
                 </cti:link>
             </span>
         
@@ -113,7 +113,7 @@
 				startIndex="0" 
 				count="10"
 				selected="${results.count == 10}"
-				filterByList="${filterByList}">
+				filterByList="${pageScope.filterByList}">
 					10
 			</amr:searchNavigationLink>
 			| 
@@ -122,7 +122,7 @@
 				startIndex="0" 
 				count="25"
 				selected="${results.count == 25}"
-				filterByList="${filterByList}">
+				filterByList="${pageScope.filterByList}">
 					25
 			</amr:searchNavigationLink>
 			| 
@@ -131,7 +131,7 @@
 				startIndex="0" 
 				count="50"
 				selected="${results.count == 50}"
-				filterByList="${filterByList}">
+				filterByList="${pageScope.filterByList}">
 					50
 			</amr:searchNavigationLink>
 		</td>

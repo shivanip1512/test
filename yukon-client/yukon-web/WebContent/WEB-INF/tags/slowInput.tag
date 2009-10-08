@@ -15,14 +15,14 @@
     <input id="slowInputButton${uniqueId}" 
     	   type="button" 
     	   value="${label}" 
-    	   <c:if test="${not empty width}">style="width:${width};"</c:if>
+    	   <c:if test="${not empty pageScope.width}">style="width:${pageScope.width};"</c:if>
     	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}');" >
     	   
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none;"> 
         <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting"> 
-        <c:if test="${not empty description}">
+        <c:if test="${not empty pageScope.description}">
 	        <br>
-	        <span class="internalSectionHeader${uniqueId}">${description}</span>
+	        <span class="internalSectionHeader${uniqueId}">${pageScope.description}</span>
         </c:if>
     </span> 
 </span>

@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<c:set var="widgetContainerParams" value="${widgetAttributes}" scope="request"/>
+<c:set var="widgetContainerParams" value="${pageScope.widgetAttributes}" scope="request"/>
 
 
 

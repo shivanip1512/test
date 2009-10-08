@@ -12,28 +12,28 @@
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="dateInputCalendarId_"/>
-<c:if test="${springInput}">
+<c:if test="${pageScope.springInput}">
     <c:set var="uniqueId" value="${fieldName}" />
 </c:if>
-<c:if test="${!springInput && not empty fieldId}">
-    <c:set var="uniqueId" value="${fieldId}" />
+<c:if test="${!pageScope.springInput && not empty pageScope.fieldId}">
+    <c:set var="uniqueId" value="${pageScope.fieldId}" />
 </c:if>
 
 <c:set var="disabledStr" value=""/>
-<c:if test="${disabled}">
+<c:if test="${pageScope.disabled}">
     <c:set var="disabledStr" value=" disabled"/>
     <script type="text/javascript">disabledCalendars['${uniqueId}'] = true;</script>
 </c:if>
 
 <span style="white-space:nowrap;">
 
-<c:if test="${springInput}">
+<c:if test="${pageScope.springInput}">
     <form:input path="${fieldName}"
         size="10" maxlength="10" cssStyle="width:70px;"/>&nbsp;
 </c:if>
-<c:if test="${!springInput}">
+<c:if test="${!pageScope.springInput}">
     <input id="${uniqueId}" name="${fieldName}"${disabledStr} type="text"
-        size="10" maxlength="10" value="${fieldValue}" style="width:70px;">&nbsp;
+        size="10" maxlength="10" value="${pageScope.fieldValue}" style="width:70px;">&nbsp;
 </c:if>
 
 <cti:msg key="yukon.common.calendarcontrol.months" var="months"/>

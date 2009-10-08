@@ -75,7 +75,7 @@
         }
         
         $('${fieldId}').value = nodeValues_${id}.join(',');
-        ${submitCallback}
+        ${pageScope.submitCallback}
         closeWindow_${id}();
     }
     

@@ -7,8 +7,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <!--  Component: ${name}  -->
-<c:set var="componentParameters" value="${cti:combineWidgetParams(paramMap,null)}" scope="request"/>
-<c:set var="componentParameters" value="${cti:combineWidgetParams(componentParameters,componentAttributes)}" scope="request"/>
+<c:set var="componentParameters" value="${cti:combineWidgetParams(pageScope.paramMap,null)}" scope="request"/>
+<c:set var="componentParameters" value="${cti:combineWidgetParams(componentParameters,pageScope.componentAttributes)}" scope="request"/>
 <cti:uniqueIdentifier var="componentId" prefix="component_"/>
 <c:set target="${componentParameters}" property="componentId" value="${componentId}"/>
 

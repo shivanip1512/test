@@ -46,8 +46,8 @@
 <cti:includeCss link="/JavaScript/extjs/resources/css/ext-all.css"/>
 <cti:includeCss link="/JavaScript/extjs/resources/css/xtheme-gray.css"/>
 <c:choose>
-    <c:when test="${not empty treeCss}">
-        <cti:includeCss link="${treeCss}"/>
+    <c:when test="${not empty pageScope.treeCss}">
+        <cti:includeCss link="${pageScope.treeCss}"/>
     </c:when>
     <c:otherwise>
         <cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/>
@@ -78,16 +78,16 @@
         // fetch JSON data from a URL when dataUrl parameter is used
         // use local JSON expected in dataJson parameter otherwise
         <c:choose>
-            <c:when test="${not empty dataUrl}">
+            <c:when test="${not empty pageScope.dataUrl}">
             
                 var treeLoader = new Ext.tree.TreeLoader({
-                        dataUrl:"${dataUrl}"
-                        <c:if test="${not empty baseParams}">
-                            , baseParams:${baseParams}
+                        dataUrl:"${pageScope.dataUrl}"
+                        <c:if test="${not empty pageScope.baseParams}">
+                            , baseParams:${pageScope.baseParams}
                         </c:if>
                     })
                     
-                var rootAttributes = $H(${rootAttributes});
+                var rootAttributes = $H(${pageScope.rootAttributes});
                 rootAttributes['id'] = "${treeId}_root";
                 var root = new Ext.tree.AsyncTreeNode(rootAttributes);
                     
@@ -95,7 +95,7 @@
             <c:otherwise>
             
                 var treeLoader = new Ext.tree.TreeLoader();
-                var root = new Ext.tree.AsyncTreeNode(${dataJson});
+                var root = new Ext.tree.AsyncTreeNode(${pageScope.dataJson});
                 
             </c:otherwise>
         </c:choose>
@@ -126,8 +126,8 @@
         treeState.restoreState(tree.root.getPath());
         
         // tree callbacks
-        <c:if test="${not empty treeCallbacks}">
-            tree.on(${treeCallbacks});
+        <c:if test="${not empty pageScope.treeCallbacks}">
+            tree.on(${pageScope.treeCallbacks});
         </c:if>
      
         
@@ -136,15 +136,15 @@
         
         // submit button handler
         function submitHandler() {
-            ${submitHandler}
-            <c:if test="${empty closeOnSubmit || closeOnSubmit}">
+            ${pageScope.submitHandler}
+            <c:if test="${empty pageScope.closeOnSubmit || pageScope.closeOnSubmit}">
                 win.hide();
             </c:if>
         }
         
         // close button handler
         function closeHandler() {
-            ${closeHandler}
+            ${pageScope.closeHandler}
             win.hide();
         }
         

@@ -10,7 +10,7 @@
  <tr>
     <td style="vertical-align: top;padding-right: 10px;padding-bottom: 10px;">
         <form method="get" action="${action}">
-            <input type="hidden" name="${inputName}" value="${inputValue}" />
+            <input type="hidden" name="${pageScope.inputName}" value="${pageScope.inputValue}" />
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             <input type="submit" value="${buttonValue}" style="width:140px;"/>
         </form>

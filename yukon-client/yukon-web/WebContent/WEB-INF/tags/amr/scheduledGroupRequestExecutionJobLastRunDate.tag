@@ -11,7 +11,7 @@
 
 <cti:uniqueIdentifier var="id" prefix="scheduledGroupRequestExecutionJobLastRunDateTagId_"/>
 
-<c:if test="${empty showInfoPopup}">
+<c:if test="${empty pageScope.showInfoPopup}">
 	<c:set var="showInfoPopup" value="true"/>
 </c:if>
 
@@ -60,7 +60,7 @@
 				<cti:dataUpdaterValue type="JOB" identifier="${jobId}/LAST_RUN_DATE"/>
 			</a>
 			
-			<c:if test="${showInfoPopup}">	
+			<c:if test="${pageScope.showInfoPopup}">	
 			
 				<tags:helpInfoPopup title="Last Run">
 					<br>

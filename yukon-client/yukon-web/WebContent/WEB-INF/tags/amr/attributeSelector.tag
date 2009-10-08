@@ -7,18 +7,18 @@
 <%@ attribute name="includeDummyOption" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="multipleSize" required="false" type="java.lang.Integer"%>
 
-<c:if test="${empty includeDummyOption}">
+<c:if test="${empty pageScope.includeDummyOption}">
 	<c:set var="includeDummyOption" value="false"/>
 </c:if>
 
-<c:if test="${not empty multipleSize}">
+<c:if test="${not empty pageScope.multipleSize}">
 	<c:set var="includeDummyOption" value="false"/>
 </c:if>
 
 
 <cti:uniqueIdentifier var="uniqueId" prefix="attributeSelector_"/>
 
-<select id="${uniqueId}" name="${fieldName}" <c:if test="${not empty multipleSize}">multiple size="${multipleSize}"</c:if>>
+<select id="${uniqueId}" name="${fieldName}" <c:if test="${not empty pageScope.multipleSize}">multiple size="${pageScope.multipleSize}"</c:if>>
 
 	<c:if test="${includeDummyOption}">
 		<cti:msg var="selectOneLabel" key="yukon.common.device.commander.selector.selectOne"/>
@@ -29,7 +29,7 @@
 	
 		<c:set var="selected" value=""/>
 		<c:set var="break" value="false"/>
-		<c:forEach var="selectedAttribute" items="${selectedAttributes}">
+		<c:forEach var="selectedAttribute" items="${pageScope.selectedAttributes}">
 			<c:if test="${!break && selectedAttribute == attr}">
 				<c:set var="selected" value="selected"/>
 				<c:set var="break" value="true"/>

@@ -111,14 +111,14 @@
         <select name="${fieldName}" id="${fieldId}" style="display:none;" multiple></select>
     </c:when>
     <c:otherwise>
-        <input type="hidden" name="${fieldName}" id="${fieldId}" value="${fieldValue}">
+        <input type="hidden" name="${fieldName}" id="${fieldId}" value="${pageScope.fieldValue}">
     </c:otherwise>
 </c:choose>
 
 <%-- INLINE TREE --%>
 <ext:inlineTree  id="${id}"
                     treeCss="/JavaScript/extjs_cannon/resources/css/deviceGroup-tree.css"
-                    treeAttributes="${treeAttributes}"
+                    treeAttributes="${pageScope.treeAttributes}"
                     treeCallbacks="{'beforeclick':recordNameValue_${id}}"
                     
                     dataJson="${dataJson}"
@@ -126,4 +126,4 @@
                     divId="selectDeviceGRoupNameTreeDiv_${id}"
                     width="${width}"
                     height="${height}"
-                    highlightNodePath="${highlightNodePath}" />
+                    highlightNodePath="${pageScope.highlightNodePath}" />

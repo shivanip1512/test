@@ -4,7 +4,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<c:if test="${!skipToggle}">
+<c:if test="${!pageScope.skipToggle}">
     <c:set var="alternate" value="${!alternate}" scope="request"/>
 </c:if>
 

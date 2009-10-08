@@ -7,7 +7,7 @@
 
 <%--Note this code is duplicated in TitledContainerTag.java --%>
 
-<div class="titledContainer roundedContainer ${styleClass}" <c:if test="${!empty id}" >id="${id}"</c:if>>
+<div class="titledContainer roundedContainer ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
     <span class="top">
     <span class="t1"></span>
     <span class="t2"></span>
@@ -17,7 +17,7 @@
     <span class="t6"></span>
     </span>
     <div class="titleBar roundedContainer_titleBar">
-    <div class="title roundedContainer_title">${title}</div>
+    <div class="title roundedContainer_title">${pageScope.title}</div>
     </div>
     <div class="content roundedContainer_content">
 

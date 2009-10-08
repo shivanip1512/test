@@ -16,11 +16,11 @@
 
 <script type="text/javascript">
 
-	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(linkParameters)});
+	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 
 	widgetActionRefreshImageConfirm_${uniqueId} = function() {
 
-		var confirmText = '${cti:escapeJavaScript(confirmText)}';
+		var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
 		var confirmed = true;
 		if (confirmText != null && confirmText.strip() != '') {
 			var confirmed = confirm(confirmText);

@@ -31,7 +31,7 @@
   
   
 		<c:choose>
-			<c:when test="${rowHighlight}">
+			<c:when test="${pageScope.rowHighlight}">
 				<tr class="highlighted ${indentStyle}" id="${trId}">
 			</c:when>
 			<c:when test="${altRowOn && altRow}">
@@ -43,7 +43,7 @@
 		</c:choose>
 		<c:set var="altRow" value="${!altRow}" scope="request"/>
 
-			<td class="name" <c:if test="${not empty nameColumnWidth}">style="width:${nameColumnWidth};"</c:if>>${name}${(not empty name)? ':':'&nbsp;'}</td>
+			<td class="name" <c:if test="${not empty pageScope.nameColumnWidth}">style="width:${pageScope.nameColumnWidth};"</c:if>>${name}${(not empty name)? ':':'&nbsp;'}</td>
 			<td class="value"><jsp:doBody/></td>
 		</tr>
 	</c:when>

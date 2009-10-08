@@ -11,10 +11,10 @@
 <%-- define the maximum number of page links to show on either side of the
      unlinked number representing this page --%>
 <c:set var="linksOnEitherSideOfThis" value="2"/>
-<c:if test="${!empty pageLinksToShow}">
+<c:if test="${!empty pageScope.pageLinksToShow}">
     <%-- rounding down because this page is included in the links to show but
          not in "either side" --%>
-    <c:set var="linksOnEitherSideOfThis" value="${pageLinksToShow / 2}"/>
+    <c:set var="linksOnEitherSideOfThis" value="${pageScope.pageLinksToShow / 2}"/>
 </c:if>
 <c:set var="currentPage" value="${param.page}"/>
 <c:if test="${empty currentPage}">
@@ -38,8 +38,8 @@
                     baseUrl="${baseUrl}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </td>
 
-        <c:if test="${!empty filter}">
-            <td class="filter"><a href="javascript:void(0)" onclick="${filter}"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a></td>
+        <c:if test="${!empty pageScope.filter}">
+            <td class="filter"><a href="javascript:void(0)" onclick="${pageScope.filter}"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a></td>
         </c:if>
 
         <td class="pages">

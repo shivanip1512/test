@@ -30,6 +30,6 @@
 
 <cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})" initialize="true" completedCount="${countKey}" />
 
-<c:if test="${not empty isAbortedKey}">
-    <cti:dataUpdaterCallback function="abortProgressBar('${pbarId}')" initialize="true" isAborted="${isAbortedKey}"/>
+<c:if test="${not empty pageScope.isAbortedKey}">
+    <cti:dataUpdaterCallback function="abortProgressBar('${pbarId}')" initialize="true" isAborted="${pageScope.isAbortedKey}"/>
 </c:if>

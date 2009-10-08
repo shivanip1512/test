@@ -8,11 +8,11 @@
 
 
 <label>
-<input type="checkbox" id="${id}">
+<input type="checkbox" id="${pageScope.id}">
 <jsp:doBody/>
 </label>
 
 <script type="text/javascript">
-stickyCheckboxes_setup('${id}', ${defaultValue});
+stickyCheckboxes_setup('${pageScope.id}', ${defaultValue});
 </script>
 	

@@ -16,10 +16,10 @@
 
 <%--<!--  Set name of amCharts program to use (amline or amcolumn) use to form name of swf and jsp to be used -->--%>
 <c:choose>
-	<c:when test="${graphType == 'LINE'}">
+	<c:when test="${pageScope.graphType == 'LINE'}">
 		<c:set var="amChartsProduct" value="amline"/>
 	</c:when>
-	<c:when test="${graphType == 'COLUMN'}">
+	<c:when test="${pageScope.graphType == 'COLUMN'}">
 		<c:set var="amChartsProduct" value="amcolumn"/>
 	</c:when>
 </c:choose>
@@ -35,14 +35,14 @@
 	<c:param name="endDate" value="${endDate}" />
 	<c:param name="interval" value="${interval}" />
     
-    <c:if test="${not empty reloadInterval}">
-        <c:param name="reloadInterval" value="${reloadInterval}" />
+    <c:if test="${not empty pageScope.reloadInterval}">
+        <c:param name="reloadInterval" value="${pageScope.reloadInterval}" />
     </c:if>
     
     <!-- to set the charts y min/max values -->
-    <c:if test="${not empty min && not empty max}">
-        <c:param name="yMin" value="${min}" />
-        <c:param name="yMax" value="${max}" />
+    <c:if test="${not empty pageScope.min && not empty pageScope.max}">
+        <c:param name="yMin" value="${pageScope.min}" />
+        <c:param name="yMax" value="${pageScope.max}" />
     </c:if>
     
 </c:url>
@@ -53,7 +53,7 @@
 	<c:param name="startDate" value="${startDate}" />
 	<c:param name="endDate" value="${endDate}" />
 	<c:param name="interval" value="${interval}" />
-	<c:param name="graphType" value="${graphType}" />
+	<c:param name="graphType" value="${pageScope.graphType}" />
 	<c:param name="converterType" value="${converterType}" />
 </c:url>
 
@@ -88,12 +88,12 @@
 <c:set var="swfWidth" value="100%"/>
 <c:set var="swfHeight" value="100%"/>
 
-<c:if test="${not empty width}">
-    <c:set var="swfWidth" value="${width}"/>
+<c:if test="${not empty pageScope.width}">
+    <c:set var="swfWidth" value="${pageScope.width}"/>
 </c:if>
 
-<c:if test="${not empty height}">
-    <c:set var="swfHeight" value="${height}"/>
+<c:if test="${not empty pageScope.height}">
+    <c:set var="swfHeight" value="${pageScope.height}"/>
 </c:if>
 
 <script type="text/javascript">

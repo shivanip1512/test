@@ -92,11 +92,11 @@
             <form id="selectDevicesForm" method="get" action="${action}">
                 <input type="hidden" id="deviceIds" name="idList.ids" />
                 <input type="hidden" name="collectionType" value="idList" />
-                <tags:mapToHiddenInputs values="${extraInputs}"/>
+                <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
             </form>
             
             <cti:msg var="selectDevicesLabel" key="yukon.common.device.bulk.deviceSelection.selectDevices" />
-            <cti:multiPaoPicker constraint="${pickerConstraint}" paoIdField="deviceIds" finalTriggerAction="selectDevices" selectionLinkName="Select Devices" asButton="true">${selectDevicesLabel}</cti:multiPaoPicker>
+            <cti:multiPaoPicker constraint="${pageScope.pickerConstraint}" paoIdField="deviceIds" finalTriggerAction="selectDevices" selectionLinkName="Select Devices" asButton="true">${selectDevicesLabel}</cti:multiPaoPicker>
         </td>
         
         <td>
@@ -124,7 +124,7 @@
             <form id="selectDevicesByGroupForm" method="get" action="${action}">
                 
                 <input type="hidden" name="collectionType" value="group" />
-                <tags:mapToHiddenInputs values="${extraInputs}"/>
+                <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
             
                 <ext:nodeValueSelectingPopupTree    fieldId="group.name"
                                                     fieldName="group.name"
@@ -180,7 +180,7 @@
                     <br>
                     <cti:msg var="selectDevicesPopupButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText" />
                     <tags:slowInput myFormId="addByAddressForm" labelBusy="${selectDevicesPopupButtonText}" label="${selectDevicesPopupButtonText}" />
-                    <tags:mapToHiddenInputs values="${extraInputs}"/>
+                    <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
                 
                 </form>
                 
@@ -246,7 +246,7 @@
                     <br>
                     <cti:msg var="selectDevicesPopupButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText" />
                     <tags:slowInput myFormId="addByFileUploadForm" labelBusy="${selectDevicesPopupButtonText}" label="${selectDevicesPopupButtonText}" />
-                    <tags:mapToHiddenInputs values="${extraInputs}"/>
+                    <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
                     
                 
                 </form>

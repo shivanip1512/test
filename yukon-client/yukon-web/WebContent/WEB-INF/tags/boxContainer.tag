@@ -17,10 +17,10 @@
 
 <cti:uniqueIdentifier prefix="titledContainer_" var="thisId"/>
 
-<div class="titledContainer boxContainer ${styleClass}" <c:if test="${!empty id}" >id="${id}"</c:if>>
+<div class="titledContainer boxContainer ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
 
 	<div class="titleBar boxContainer_titleBar">
-			<c:if test="${(hideEnabled == null) || hideEnabled}">
+			<c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
 		      <div class="controls" id="${thisId}_control">
 				<img 
 					class="minMax" 
@@ -35,9 +35,9 @@
 		      </div>
 			</c:if>
 		<div class="title boxContainer_title">
-			${title}
+			${pageScope.title}
 			
-			<c:if test="${not empty helpText}">
+			<c:if test="${not empty pageScope.helpText}">
 				<a href="javascript:void(0);" onclick="$('boxContainerInfoPopup_${thisId}').toggle();" >
             	<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
             	</a>
@@ -51,18 +51,18 @@
 	</div>    
 	            
 </div>
-<c:if test="${empty showInitially}">
+<c:if test="${empty pageScope.showInitially}">
   <c:set var="showInitially" value="${true}"/> <%-- show by default --%>
 </c:if>
 
-<c:if test="${(hideEnabled == null) || hideEnabled}">
+<c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
 	<script type="text/javascript">
-        hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${showInitially ? true : false}, '${cti:jsSafe(title)}');
+        hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${pageScope.showInitially ? true : false}, '${cti:jsSafe(pageScope.title)}');
 	</script>
 </c:if>
 
-<c:if test="${not empty helpText}">
-	<tags:simplePopup id="boxContainerInfoPopup_${thisId}" title="${title}">
+<c:if test="${not empty pageScope.helpText}">
+	<tags:simplePopup id="boxContainerInfoPopup_${thisId}" title="${pageScope.title}">
      	${helpText}
 	</tags:simplePopup>	
 </c:if>

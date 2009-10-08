@@ -128,7 +128,7 @@
         </td>
         
         <td>
-            <input id="${id}_email" value="${email}" type="text" size="20">
+            <input id="${id}_email" value="${pageScope.email}" type="text" size="20">
         </td>
         
         <td>

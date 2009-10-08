@@ -25,11 +25,11 @@
 <cti:msg var="cancelButtonText" key="yukon.web.deviceGroups.deviceGroupPicker.cancelButton"/>
 <cti:uniqueIdentifier var="uniqueId" prefix="deviceGroupNameSelectorTag_"/>
 
-<c:if test="${empty linkGroupName}">
+<c:if test="${empty pageScope.linkGroupName}">
 	<c:set var="linkGroupName" value="false"/>
 </c:if>
 
-<c:if test="${empty showSelectedDevicesIcon}">
+<c:if test="${empty pageScope.showSelectedDevicesIcon}">
 	<c:set var="showSelectedDevicesIcon" value="true"/>
 </c:if>
 
@@ -38,16 +38,16 @@
 
 	function setSelectedGroupName_${uniqueId}() {
 		
-		<c:if test="${empty fieldValue}">
+		<c:if test="${empty pageScope.fieldValue}">
 			$('noGroupSelectedTextSpan_${uniqueId}').hide();
 		</c:if>
 		$('deviceGroupNameSpan_${uniqueId}').innerHTML = $('${fieldName}').value;
 
-		if (${showSelectedDevicesIcon}) {
+		if (${pageScope.showSelectedDevicesIcon}) {
 			$('viewDevicesIconSpan_${uniqueId}').show();
 		}
 		
-		if (${linkGroupName}) {
+		if (${pageScope.linkGroupName}) {
 			$('deviceGroupLinkSpan_${uniqueId}').show();
 		}
 	}
@@ -70,8 +70,8 @@
 </script>
 
 <%-- NO GROUP SELECTED TEXT --%>
-<c:if test="${empty fieldValue}">
-	<c:if test="${empty noGroupSelectedText}">
+<c:if test="${empty pageScope.fieldValue}">
+	<c:if test="${empty pageScope.noGroupSelectedText}">
 		<c:set var="noGroupSelectedText" value="${defaultNoGroupSelectedText}"/>
 	</c:if>
 	<span id="noGroupSelectedTextSpan_${uniqueId}" class="subtleGray" style="font-style:italic;">${defaultNoGroupSelectedText}</span>
@@ -81,16 +81,16 @@
 <c:choose>
 
 	<%-- PLAIN GROUP NAME --%>
-	<c:when test="${not linkGroupName}">
-		<span id="deviceGroupNameSpan_${uniqueId}">${fieldValue}</span>&nbsp;
+	<c:when test="${not pageScope.linkGroupName}">
+		<span id="deviceGroupNameSpan_${uniqueId}">${pageScope.fieldValue}</span>&nbsp;
 	</c:when>
 
 	<%-- LINKED GROUP NAME --%>
 	<c:otherwise>
 	
-		<span id="deviceGroupLinkSpan_${uniqueId}" <c:if test="${empty fieldValue}">style="display:none;"</c:if>>
+		<span id="deviceGroupLinkSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
 			<a href="javascript:void(0);" onclick="viewDeviceGroup_${uniqueId}();">
-				<span id="deviceGroupNameSpan_${uniqueId}">${fieldValue}</span>
+				<span id="deviceGroupNameSpan_${uniqueId}">${pageScope.fieldValue}</span>
 			</a>
 		</span>&nbsp;
 	
@@ -105,11 +105,11 @@
 </a>	
 
 <%-- MAGNIFIER ICON --%>
-<c:if test="${showSelectedDevicesIcon}">
+<c:if test="${pageScope.showSelectedDevicesIcon}">
 <cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
 <cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 		
-<span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty fieldValue}">style="display:none;"</c:if>>
+<span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
 <a href="javascript:void(0);" title="${popupTitle}"  onclick="viewDevices_${uniqueId}($('mag_${uniqueId}'));" >
 	<img id="mag_${uniqueId}" src="${mag}" onmouseover="javascript:this.src='${magOver}'" onmouseout="javascript:this.src='${mag}'">
 </a>&nbsp;
@@ -124,11 +124,11 @@
 <%-- PICKER TREE TAG --%>	
 <ext:nodeValueSelectingPopupTree fieldId="${fieldName}"
                                 fieldName="${fieldName}"
-                                fieldValue="${fieldValue}"
+                                fieldValue="${pageScope.fieldValue}"
                                 nodeValueName="groupName"
                                 submitButtonText="${selectButtonText}"
                                 cancelButtonText="${cancelButtonText}"
-                                submitCallback="setSelectedGroupName_${uniqueId}();${submitCallback}"
+                                submitCallback="setSelectedGroupName_${uniqueId}();${pageScope.submitCallback}"
                                 
                                 id="selectGroupTree_${uniqueId}"
                                 treeAttributes="{}"

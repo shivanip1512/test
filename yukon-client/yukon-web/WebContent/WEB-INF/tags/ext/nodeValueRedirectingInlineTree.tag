@@ -38,7 +38,7 @@
 <%-- INLINE TREE --%>
 <ext:inlineTree id="${id}"
                 treeCss="/JavaScript/extjs_cannon/resources/css/deviceGroup-tree.css"
-                treeAttributes="${treeAttributes}"
+                treeAttributes="${pageScope.treeAttributes}"
                 treeCallbacks="{'beforeclick':redirectToNameValue_${id}}"
                 
                 dataJson="${dataJson}"
@@ -46,4 +46,4 @@
                 divId="selectDeviceGRoupNameTreeDiv_${id}"
                 width="${width}"
                 height="${height}"
-                highlightNodePath="${highlightNodePath}" />
+                highlightNodePath="${pageScope.highlightNodePath}" />

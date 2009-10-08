@@ -21,7 +21,7 @@
             <c:if test="${deviceType > 0}">
             	<cti:msg var="viewDefinitionDetailPopupTitle" key="yukon.common.device.bulk.addRemovePointsHome.viewDefinitionDetailPopupTitle"/>
             	<cti:url var="definitionUrl" value="/spring/common/deviceDefinition.xml">	
-            		<cti:param name="deviceType" value="${deviceTypeEnum}"/>
+            		<cti:param name="deviceType" value="${pageScope.deviceTypeEnum}"/>
             	</cti:url>
             	
             	<a href="${definitionUrl}" title="${viewDefinitionDetailPopupTitle} style="text-decoration:none;">
@@ -29,8 +29,8 @@
 				</a>
             	
            	</c:if>
-           	<c:if test="${not empty deviceTypeDeviceCollection}">
-            	<tags:selectedDevicesPopup  deviceCollection="${deviceTypeDeviceCollection}" />
+           	<c:if test="${not empty pageScope.deviceTypeDeviceCollection}">
+            	<tags:selectedDevicesPopup  deviceCollection="${pageScope.deviceTypeDeviceCollection}" />
            	</c:if>
         </div>
     </div>

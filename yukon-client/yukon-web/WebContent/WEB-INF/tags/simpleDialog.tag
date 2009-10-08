@@ -11,8 +11,8 @@
 
 <%-- if the title is going to be specified when popping up the dialog,
      it doesn't matter what it is for now --%>
-<c:if test="${empty title}">
+<c:if test="${empty pageScope.title}">
     <c:set var="title" value="title not specified"/>
 </c:if>
 
-<tags:simplePopup id="${id}" title="${title}" onClose="${onClose}"/>
+<tags:simplePopup id="${id}" title="${pageScope.title}" onClose="${pageScope.onClose}"/>

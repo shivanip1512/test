@@ -5,7 +5,7 @@
 
 <c:choose>
 	<c:when test="${nameValueContainter}">
-		<tr <c:if test="${not empty gapHeight}">style="height:${gapHeight};"</c:if>>
+		<tr <c:if test="${not empty pageScope.gapHeight}">style="height:${pageScope.gapHeight};"</c:if>>
 			<td colspan="2"></td>
 		</tr>
 	</c:when>

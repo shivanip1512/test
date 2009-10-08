@@ -13,13 +13,13 @@
 	<c:if test="${orderBy.descending}">
 		<c:param name="descending" value="true"/>
 	</c:if>
-	<c:forEach var="filter" items="${filterByList}">
+	<c:forEach var="filter" items="${pageScope.filterByList}">
 		<c:param name="${filter.name}" value="${filter.filterValue}" />
 	</c:forEach>
 </c:url>
 
 <c:choose>
-	<c:when test="${selected}">
+	<c:when test="${pageScope.selected}">
 		<span class="navLink selected"><jsp:doBody/></span>
 	</c:when>
 	<c:otherwise>

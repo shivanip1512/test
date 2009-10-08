@@ -29,7 +29,7 @@
 
     var selectedNodeId_${id} = null;
     var selectedNode_${id} = null;
-    var saveValue_${id} = '${fieldValue}';
+    var saveValue_${id} = '${pageScope.fieldValue}';
 
     function recordNameValue_${id}(node, event) {
     
@@ -52,9 +52,9 @@
     
     function submitNodeSelection_${id}() {
     
-        if (selectedNodeId_${id} == null && '${noSelectionAlertText}' != '') {
+        if (selectedNodeId_${id} == null && '${pageScope.noSelectionAlertText}' != '') {
             
-            alert('${noSelectionAlertText}');
+            alert('${pageScope.noSelectionAlertText}');
             return false;
         }
 
@@ -62,7 +62,7 @@
         
         closeWindow_${id}();
         
-        ${submitCallback}
+        ${pageScope.submitCallback}
     }
     
     function cancelNodeSelection_${id}() {
@@ -84,7 +84,7 @@
 </script>
 
 <%-- VALUE HIDDEN FIELD --%>
-<input type="hidden" name="${fieldName}" id="${fieldId}" value="${fieldValue}">
+<input type="hidden" name="${fieldName}" id="${fieldId}" value="${pageScope.fieldValue}">
 
 <%-- POPUP TREE --%>
 <ext:popupTree  id="${id}"
@@ -92,7 +92,7 @@
                 treeAttributes="{}"
                 treeCallbacks="{'beforeclick':recordNameValue_${id}}"
                 triggerElement="${triggerElement}"
-                highlightNodePath="${highlightNodePath}"
+                highlightNodePath="${pageScope.highlightNodePath}"
                 
                 dataJson="${dataJson}"
                 

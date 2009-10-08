@@ -9,13 +9,13 @@
 
 <cti:uniqueIdentifier prefix="groupHierarchy_" var="thisId"/>
 
-<c:if test="${empty indentLevel}">
+<c:if test="${empty pageScope.indentLevel}">
 	<c:set var="indentLevel" value="0" />
 </c:if>
 	
 <tr class="<tags:alternateRow odd="" even="altRow"/> ${(hierarchy.group.fullName == selectedGroup)?'highlighted':''}">
 	<td style="border: none;">
-		<div title="${fn:escapeXml(hierarchy.group.fullName)}" style="padding-left: ${indentLevel * 12}px">
+		<div title="${fn:escapeXml(hierarchy.group.fullName)}" style="padding-left: ${pageScope.indentLevel * 12}px">
 			<div style="float: left;">
 				<c:if test="${not empty hierarchy.group.name}">
 					<img src="<c:url value="/WebConfig/yukon/Icons/arrow_down_right.gif"/>">
@@ -44,7 +44,7 @@
 		 --%>
 		<c:set var="hierarchy" value="${childHierarchy}" scope="request" />
 		<c:set var="selectedGroup" value="${selectedGroup}" scope="request" />
-		<c:set var="indentLevel" value="${indentLevel + 1}" scope="request" />
+		<c:set var="indentLevel" value="${pageScope.indentLevel + 1}" scope="request" />
 		<jsp:include page="${tagUrl}" />
 	</c:forEach>
 </c:if>

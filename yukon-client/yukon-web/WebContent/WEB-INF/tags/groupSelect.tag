@@ -22,12 +22,12 @@
 	
 	function groupSelected(selectedDiv, groupName) {
 
-		<c:if test="${not empty fieldName}">
-			$('${fieldName}').value = groupName;
+		<c:if test="${not empty pageScope.fieldName}">
+			$('${pageScope.fieldName}').value = groupName;
 		</c:if>
 	
-		<c:if test="${not empty onSelect}">
-			${onSelect}(groupName);
+		<c:if test="${not empty pageScope.onSelect}">
+			${pageScope.onSelect}(groupName);
 		</c:if>
 	}
 
@@ -43,6 +43,6 @@
 	
 </div>
 
-<c:if test="${not empty fieldName}">
-	<input type="hidden" id="${fieldName}" name="${fieldName}" />
+<c:if test="${not empty pageScope.fieldName}">
+	<input type="hidden" id="${pageScope.fieldName}" name="${pageScope.fieldName}" />
 </c:if>

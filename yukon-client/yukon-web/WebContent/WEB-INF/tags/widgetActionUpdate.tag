@@ -9,12 +9,12 @@
 
 <%@ tag  dynamic-attributes="linkParameters" %>
 
-<c:if test="${!hide}">
+<c:if test="${!pageScope.hide}">
 	<cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
 	<cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
 	
 	<script type="text/javascript">
-		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(linkParameters)});
+		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 	</script>
 	
 	

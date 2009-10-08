@@ -18,8 +18,8 @@
 </cti:url>
 
 <c:set var="linkText" value="${pageNumber}"/>
-<c:if test="${!empty key}">
-    <c:set var="linkText"><cti:msg key="${key}"/></c:set>
+<c:if test="${!empty pageScope.key}">
+    <c:set var="linkText"><cti:msg key="${pageScope.key}"/></c:set>
 </c:if>
 
 <c:if test="${currentPage != pageNumber}">

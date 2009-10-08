@@ -12,13 +12,13 @@
 
 <cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
 
-<div class="titledContainer sectionContainer ${styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
+<div class="titledContainer sectionContainer ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
     
     <div class="titleBar sectionContainer_titleBar">
         <div class="titleBar sectionContainer_title">
-            ${title} 
+            ${pageScope.title} 
             
-            <c:if test="${not empty helpText}">
+            <c:if test="${not empty pageScope.helpText}">
             	<a href="javascript:void(0);" onclick="$('sectionContainerInfoPopup_${thisId}').toggle();">
             	<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
             	</a>

@@ -8,8 +8,8 @@
 <c:if test="${result.anyErrorOrException}">
 <div style="max-height: 240px; overflow: auto">
     <c:choose>
-        <c:when test="${not empty errorMsg}">
-            <span class="errorRed">${errorMsg}</span>
+        <c:when test="${not empty pageScope.errorMsg}">
+            <span class="errorRed">${pageScope.errorMsg}</span>
         </c:when>
         <c:otherwise>
             <span class="errorRed">There was an error reading the meter:</span>
@@ -33,8 +33,8 @@
 <c:if test="${!result.anyErrorOrException}">
   <span title="${result.lastResultString}">
     <c:choose>
-        <c:when test="${not empty successMsg}">
-            ${successMsg}
+        <c:when test="${not empty pageScope.successMsg}">
+            ${pageScope.successMsg}
         </c:when>
         <c:otherwise>
             Successful Read

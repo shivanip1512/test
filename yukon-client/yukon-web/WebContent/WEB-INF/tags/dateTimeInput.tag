@@ -8,18 +8,18 @@
 
 <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
 
-<c:if test="${!empty fieldValue}">
+<c:if test="${!empty pageScope.fieldValue}">
     <%-- are these the best way to format these?  (Will DATE always work with the calendar?) --%>
-    <cti:formatDate var="datePart" value="${fieldValue}" type="DATE"/>
-    <cti:formatDate var="timePart" value="${fieldValue}" type="TIME24H"/>
+    <cti:formatDate var="datePart" value="${pageScope.fieldValue}" type="DATE"/>
+    <cti:formatDate var="timePart" value="${pageScope.fieldValue}" type="TIME24H"/>
 </c:if>
 
     <c:set var="disabledStr" value=""/>
-<c:if test="${!empty disabled}">
+<c:if test="${!empty pageScope.disabled}">
     <c:set var="disabledStr" value=" disabled"/>
 </c:if>
 
 <%-- TODO:  localize and consider merging into dateInputCalendar.tag, turning on via attributes --%>
 <input type="hidden" id="${fieldId}" name="${fieldId}" value="${datePart} ${timePart}"/>
-Date: <tags:dateInputCalendar fieldId="${fieldId}DatePart" fieldName="${fieldId}DatePart" fieldValue="${datePart}" disabled="${disabled}"/><br>
+Date: <tags:dateInputCalendar fieldId="${fieldId}DatePart" fieldName="${fieldId}DatePart" fieldValue="${datePart}" disabled="${pageScope.disabled}"/><br>
 Time: <input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text" size="5" value="${timePart}"${disabledStr}/>

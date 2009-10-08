@@ -21,11 +21,11 @@
 
 <cti:uniqueIdentifier var="gridDiv" prefix="gridId_"/>
 
-<c:if test="${empty showLoadMask}">
+<c:if test="${empty pageScope.showLoadMask}">
 	<c:set var="showLoadMask" value="true"/>
 </c:if>
 
-<c:if test="${empty refreshRate}">
+<c:if test="${empty pageScope.refreshRate}">
 	<c:set var="refreshRate" value="0"/>
 </c:if>
 
@@ -34,7 +34,7 @@
     Ext.onReady(function(){
     
         var gridMaker = new ExtGridMaker();
-        var grid = gridMaker.getReportGrid('${title}', ${height}, ${width}, ${cti:jsonString(columnInfo)}, '${cti:escapeJavaScript(dataUrl)}', '${cti:escapeJavaScript(csvUrl)}', '${cti:escapeJavaScript(pdfUrl)}', ${showLoadMask}, ${refreshRate});
+        var grid = gridMaker.getReportGrid('${title}', ${height}, ${width}, ${cti:jsonString(columnInfo)}, '${cti:escapeJavaScript(dataUrl)}', '${cti:escapeJavaScript(csvUrl)}', '${cti:escapeJavaScript(pdfUrl)}', ${pageScope.showLoadMask}, ${pageScope.refreshRate});
     
         grid.render('${gridDiv}');
     });

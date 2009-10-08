@@ -16,17 +16,17 @@
 <cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
 
 <script type="text/javascript">
-	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(linkParameters)});
+	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 </script>
 
 <span id="${thisId}">
 	<span class="widgetActionLink">
 		<c:choose>
-			<c:when test="${selected != null && selected}">
+			<c:when test="${pageScope.selected != null && pageScope.selected}">
 				<jsp:doBody/>
 			</c:when>
 			<c:otherwise>
-				<a title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}', '${container}')"><jsp:doBody/></a>
+				<a title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}', '${pageScope.container}')"><jsp:doBody/></a>
 			</c:otherwise>
 		</c:choose>
 	</span>

@@ -15,9 +15,9 @@
 <span class="normalBoldLabel"><cti:msg key="${progressLabelTextKey}" />: </span>
 
 <c:choose>
-	<c:when test="${not empty statusClassKey}">
-		<cti:classUpdater key="${statusClassKey}" type="COMMANDER">
-			<span cannonClassUpdater="${statusClassKey}" ><span id="progressStatus_${pDescId}"></span></span>
+	<c:when test="${not empty pageScope.statusClassKey}">
+		<cti:classUpdater key="${pageScope.statusClassKey}" type="COMMANDER">
+			<span cannonClassUpdater="${pageScope.statusClassKey}" ><span id="progressStatus_${pDescId}"></span></span>
 		</cti:classUpdater>
 	</c:when>
 	<c:otherwise>
@@ -27,7 +27,7 @@
 
 <div style="padding:10px;">
 
-    <tags:updateableProgressBar totalCount="${totalCount}" countKey="${countKey}" isAbortedKey="${isAbortedKey}" />
+    <tags:updateableProgressBar totalCount="${totalCount}" countKey="${countKey}" isAbortedKey="${pageScope.isAbortedKey}" />
 
     <jsp:doBody />
    

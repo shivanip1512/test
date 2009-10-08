@@ -13,21 +13,21 @@
     <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
     <table cellpadding="2">
     
-        <c:if test="${not empty deviceCollection}">
+        <c:if test="${not empty pageScope.deviceCollection}">
         <tr>
             <td valign="top" colspan="2" class="smallBoldLabel">
-                <tags:selectedDevices deviceCollection="${deviceCollection}" id="selectedDevices"/>
+                <tags:selectedDevices deviceCollection="${pageScope.deviceCollection}" id="selectedDevices"/>
             </td>
         </tr>
         </c:if>
         
         <%-- NOTE --%>
         <cti:msg var="noteLabel" key="${key}.noteLabel"/>
-        <cti:msg var="noteText" key="${key}.noteText" arguments="${noteTextArguments}" />
+        <cti:msg var="noteText" key="${key}.noteText" arguments="${pageScope.noteTextArguments}" />
         
         <c:if test="${not empty noteLabel && not empty noteText}">
             <tr>
-                <td valign="top" class="smallBoldLabel" <c:if test="${not empty noteLabelStyle}">style="${noteLabelStyle}"</c:if>>${noteLabel}</td>
+                <td valign="top" class="smallBoldLabel" <c:if test="${not empty pageScope.noteLabelStyle}">style="${pageScope.noteLabelStyle}"</c:if>>${noteLabel}</td>
                 <td style="font-size:11px;">
                     ${noteText}
                 </td>

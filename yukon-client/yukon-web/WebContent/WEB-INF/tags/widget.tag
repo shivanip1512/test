@@ -17,9 +17,9 @@
 <cti:checkUserChecker userChecker="${beanInst.roleAndPropertiesChecker}">
 
 <!--  Widget: ${beanInst.shortName}  -->
-<c:set var="widgetParameters" value="${cti:combineWidgetParams(paramMap,null)}" scope="request"/>
+<c:set var="widgetParameters" value="${cti:combineWidgetParams(pageScope.paramMap,null)}" scope="request"/>
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,widgetContainerParams)}" scope="request"/>
-<c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,widgetAttributes)}" scope="request"/>
+<c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,pageScope.widgetAttributes)}" scope="request"/>
 <cti:uniqueIdentifier var="widgetId" prefix="widget_"/>
 <c:set target="${widgetParameters}" property="widgetId" value="${widgetId}"/>
 <c:set target="${widgetParameters}" property="jsWidget" value="jsobj_${widgetParameters.widgetId}"/>
@@ -45,11 +45,11 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 <c:if test="${not showIdentity}">
 <c:set var="containerTitle" value="${beanInst.title}"/>
 </c:if>
-<c:if test="${not empty title}">
-    <c:set var="containerTitle" value="${title}"/>
+<c:if test="${not empty pageScope.title}">
+    <c:set var="containerTitle" value="${pageScope.title}"/>
 </c:if>
 
-<ct:abstractContainer type="box" title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty hideEnabled ? true : hideEnabled}" helpText="${helpText}">
+<ct:abstractContainer type="box" title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" helpText="${pageScope.helpText}">
 
 <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
 <c:choose>

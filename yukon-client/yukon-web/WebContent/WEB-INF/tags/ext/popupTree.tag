@@ -70,24 +70,24 @@
         //------------------------------------------------------------------------------------------
     
         // TREE STATIC SETUP
-        <c:if test="${empty dataUrl}">
+        <c:if test="${empty pageScope.dataUrl}">
         
             var treeMaker = new ExtTreeMaker('${id}', true);
-            treeMaker.setupStaticDataLoader(${dataJson});
+            treeMaker.setupStaticDataLoader(${pageScope.dataJson});
             
         </c:if>
         
         // TREE ASYNC SETUP
-        <c:if test="${not empty dataUrl}">
+        <c:if test="${not empty pageScope.dataUrl}">
         
             var treeMaker = new ExtTreeMaker('${id}', false);
-            treeMaker.setupAsyncDataLoader('${dataUrl}', ${baseParams}, $H(${rootAttributes}));
+            treeMaker.setupAsyncDataLoader('${pageScope.dataUrl}', ${pageScope.baseParams}, $H(${pageScope.rootAttributes}));
             
         </c:if>
         
         // SET TREE ATTRIBUTES
         // add additional attributes needed to embed it in a window
-        treeMaker.setAttributes($H(${treeAttributes}));
+        treeMaker.setAttributes($H(${pageScope.treeAttributes}));
         
         var treeRegionAttributes = $H({'region':'center','margins':'3 0 3 3','cmargins':'3 3 3 3'});
         treeMaker.setAttributes(treeRegionAttributes);
@@ -99,12 +99,12 @@
         
         
         // TREE CALLBACKS
-        <c:if test="${not empty treeCallbacks}">
-            tree_${id}.on(${treeCallbacks});
+        <c:if test="${not empty pageScope.treeCallbacks}">
+            tree_${id}.on(${pageScope.treeCallbacks});
         </c:if>
 
      	// HIGHLIGHT PATH
-        <c:if test="${not empty highlightNodePath}">
+        <c:if test="${not empty pageScope.highlightNodePath}">
 		
 			tree_${id}.on({'load':highlightNodeOnLoad_${id}});
 			
@@ -119,24 +119,24 @@
         windowMaker.setItems([tree_${id}]);
         
         // SET BUTTONS
-        windowMaker.setButtons(${buttonsList});
+        windowMaker.setButtons(${pageScope.buttonsList});
         
         // SET OTHER WINDOW ATTRIBUTES
-        windowMaker.setAttributes($H(${windowAttributes}));
+        windowMaker.setAttributes($H(${pageScope.windowAttributes}));
         
         // SHOW WINDOW
-        window_${id} = windowMaker.showWindow('${title}', ${width}, ${height});
+        window_${id} = windowMaker.showWindow('${pageScope.title}', ${width}, ${height});
         
         treeMaker.setState(tree_${id});
         
         
     });
 
-    <c:if test="${not empty highlightNodePath}">
+    <c:if test="${not empty pageScope.highlightNodePath}">
 
 		function highlightNodeOnLoad_${id}() {
 
-			var extSelectedNodePath = '${highlightNodePath}';
+			var extSelectedNodePath = '${pageScope.highlightNodePath}';
 			var pathParts = extSelectedNodePath.split('/')
 			var selectedNodeId = pathParts[pathParts.length - 1];
 			tree_${id}.expandPath(extSelectedNodePath);

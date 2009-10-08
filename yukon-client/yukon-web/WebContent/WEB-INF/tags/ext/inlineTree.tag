@@ -53,35 +53,35 @@
     Ext.onReady(function(){
     
         // TREE STATIC SETUP
-        <c:if test="${empty dataUrl}">
+        <c:if test="${empty pageScope.dataUrl}">
         
             var treeMaker = new ExtTreeMaker('${id}', true);
-            treeMaker.setupStaticDataLoader(${dataJson});
+            treeMaker.setupStaticDataLoader(${pageScope.dataJson});
             
         </c:if>
         
         // TREE ASYNC SETUP
-        <c:if test="${not empty dataUrl}">
+        <c:if test="${not empty pageScope.dataUrl}">
         
             var treeMaker = new ExtTreeMaker('${id}', false);
-            treeMaker.setupAsyncDataLoader('${dataUrl}', ${baseParams}, $H(${rootAttributes}));
+            treeMaker.setupAsyncDataLoader('${pageScope.dataUrl}', ${pageScope.baseParams}, $H(${pageScope.rootAttributes}));
             
         </c:if>
         
         // SET TREE ATTRIBUTES
-        treeMaker.setAttributes($H(${treeAttributes}));
+        treeMaker.setAttributes($H(${pageScope.treeAttributes}));
         
         // SHOW TREE
-        tree_${id} = treeMaker.showTree('${divId}');
+        tree_${id} = treeMaker.showTree('${pageScope.divId}');
         
         // TREE CALLBACKS
-        <c:if test="${not empty treeCallbacks}">
-            tree_${id}.on(${treeCallbacks});
+        <c:if test="${not empty pageScope.treeCallbacks}">
+            tree_${id}.on(${pageScope.treeCallbacks});
         </c:if>
 
         // HIGHLIGHT PATH
-        <c:if test="${not empty highlightNodePath}">
-	        var extSelectedNodePath = '${highlightNodePath}';
+        <c:if test="${not empty pageScope.highlightNodePath}">
+	        var extSelectedNodePath = '${pageScope.highlightNodePath}';
 			var pathParts = extSelectedNodePath.split('/')
 			var selectedNodeId = pathParts[pathParts.length - 1];
 	
@@ -123,6 +123,6 @@
     </div>
             
     <%-- ELEMENT TO RENDER TO --%>
-    <div id="${divId}" style="width:${width}px;height:${height}px;"></div>
+    <div id="${pageScope.divId}" style="width:${width}px;height:${height}px;"></div>
 
 </div>

@@ -4,7 +4,7 @@
 <%@ tag  dynamic-attributes="linkParameters" %>
 
 <script type="text/javascript">
-  <c:forEach items="${linkParameters}" var="link">
+  <c:forEach items="${pageScope.linkParameters}" var="link">
 	${widgetParameters.jsWidget}.setParameter("${link.key}", ${cti:jsonString(link.value)});
   </c:forEach>
 </script>

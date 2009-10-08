@@ -8,7 +8,7 @@
 <c:choose>
 
     <c:when test="${empty percentDone}">
-        <div id="progressMsg_${requestId}" style='color:#FF0000;font-weight:bold;'>Request Failed</div>${lastReturnMsg}
+        <div id="progressMsg_${requestId}" style='color:#FF0000;font-weight:bold;'>Request Failed</div>${pageScope.lastReturnMsg}
     </c:when>
 
     <c:when test="${percentDone >= 100.0}">

@@ -9,13 +9,13 @@
 
 <%@ tag  dynamic-attributes="linkParameters" %>
 
-<c:if test="${!hide}">
+<c:if test="${!pageScope.hide}">
 	<cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
 	<cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
 	<cti:uniqueIdentifier var="buttonId" prefix="widgetRefreshButton_"/>
 	
 	<script type="text/javascript">
-		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(linkParameters)});
+		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 	</script>
 	
 	<span id="${thisId}">
@@ -23,7 +23,7 @@
 	<script type="text/javascript">
 		
 		$("${buttonId}").observe("click", function() {
-			var confirmText = '${cti:escapeJavaScript(confirmText)}';
+			var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
 			var confirmed = true;
 			if (confirmText != null && confirmText.strip() != '') {
 				confirmed = confirm(confirmText);
