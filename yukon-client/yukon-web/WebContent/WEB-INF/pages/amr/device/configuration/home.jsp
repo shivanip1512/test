@@ -24,52 +24,60 @@
 		<cti:getProperty property="AdministratorRole.ADMIN_EDIT_CONFIG"/>
 	</c:set>
 
-	<h2>Device Configuration</h2>
+	<h2>Device Configuration Setup</h2>
+    <br>
 	
 	<c:if test="${!empty param.message}">
 		${fn:escapeXml(param.message)}
 	</c:if>
 	
-	<c:if test="${editConfig}">
-		<h4>Create new configurations</h4>
-		<form name="configTemplateForm" action="/spring/deviceConfiguration">
-		
-			<select name="configurationTemplate">
-				<c:forEach var="template" items="${configurationTemplateList}">
-					<option id="${template}">${template}</option>	
-				</c:forEach>
-			</select>
-			
-			<input type="submit" name="createConfig" value="Create" />
-		
-		</form>
-	</c:if>
+    <c:if test="${editConfig}">
+        <form name="configTemplateForm" action="/spring/deviceConfiguration">
+            <tags:sectionContainer title="Create New Configuration">
+                <tags:nameValueContainer style="width: 350px;">
+                    <tags:nameValue name="Configuration Type">
+                        <select name="configurationTemplate">
+                            <c:forEach var="template" items="${configurationTemplateList}">
+                                <option id="${template}">${template}</option>	
+                            </c:forEach>
+                        </select>
+                    </tags:nameValue>
+                </tags:nameValueContainer>
+            </tags:sectionContainer>
+            <input type="submit" name="createConfig" value="Create" />
+        </form>
+    </c:if>
 	
+    <br>
+    <br>
 	
-	<h4>${editConfig ? 'Manage' : 'View'} existing configurations</h4>
-
 	<c:choose>
 		<c:when test="${fn:length(existingConfigs) > 0}">
-			<form name="configForm" action="/spring/deviceConfiguration">
-			
-				<select id="configuration" name="configuration">
-					<c:forEach var="config" items="${existingConfigs}">
-						<option value="${config.id}">${fn:escapeXml(config.name)}</option>	
-					</c:forEach>
-				</select>
-				
-				<input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}"/>
-				<c:if test="${editConfig}">
-					<input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()"/>
-					<input type="submit" name="cloneConfig" value="Copy"/>
-				</c:if>
-			
-                <br/><br/>
-                <a href="/spring/bulk/bulkHome">Bulk Operations Home</a>
+            <form name="configForm" action="/spring/deviceConfiguration">
+                <tags:sectionContainer title="${editConfig ? 'Manage' : 'View'} Existing Configurations">
+                    <tags:nameValueContainer style="width: 380px;">
+                        <tags:nameValue name="Existing Configurations">
+            				<select id="configuration" name="configuration">
+            					<c:forEach var="config" items="${existingConfigs}">
+            						<option value="${config.id}">${fn:escapeXml(config.name)}</option>	
+            					</c:forEach>
+            				</select>
+    				    </tags:nameValue>
+                    </tags:nameValueContainer>
+                    <br>
+                    <a href="/spring/bulk/deviceSelection">Manage Device Configuration Assignments</a>
+                </tags:sectionContainer>
+                <input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}"/>
+                <c:if test="${editConfig}">
+                    <input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()"/>
+                    <input type="submit" name="cloneConfig" value="Copy"/>
+                </c:if>
 			</form>
 		</c:when>
 		<c:otherwise>
-			There are no existing configurations.
+            <tags:sectionContainer title="${editConfig ? 'Manage' : 'View'} Existing Configurations">
+                There are no existing configurations.
+            </tags:sectionContainer>
 		</c:otherwise>
 	</c:choose>
 	

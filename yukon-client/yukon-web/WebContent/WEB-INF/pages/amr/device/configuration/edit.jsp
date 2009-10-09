@@ -37,7 +37,8 @@
 	</c:set>
 
 	<h2>Device Configuration</h2>
-	
+	<br>
+    <tags:sectionContainer title="Device Configuration Settings">
 	<spring:hasBindErrors name="deviceConfiguration">
 		   
 	   	<div style="color: red">
@@ -58,8 +59,8 @@
 			<div style="width: 600px; margin: 15px 10px; font-size: 12px;">
 				
 				<c:if test="${editConfig}">
-					<input type="submit" value="Save" />
-					<input type="button" value="Cancel" onclick="cancel()" /><br/><br/>
+					<input type="button" value="Cancel" onclick="cancel()" />
+					<input type="submit" value="Save" /><br/><br/>
 				</c:if>
 					
 				<tags:boxContainer title="Details" hideEnabled="false">
@@ -90,6 +91,7 @@
 				</c:forEach>
 	
 				<c:if test="${editConfig}">
+                    <input type="button" value="Cancel" onclick="cancel()" />
 					<input type="submit" value="Save" />
 				</c:if>
 				
@@ -97,4 +99,5 @@
 		</spring:nestedPath>
 		
 	</form>
+    </tags:sectionContainer>
 </cti:standardPage>
