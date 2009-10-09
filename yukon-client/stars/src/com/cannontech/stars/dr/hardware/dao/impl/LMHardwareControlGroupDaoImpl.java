@@ -150,6 +150,39 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public void resetEntriesForProgram(int programId, LiteYukonUser user) {
+     
+        //Reset historic Enrollment and OptOut entries
+        SqlStatementBuilder histEnrollOptOutSql = new SqlStatementBuilder();
+        histEnrollOptOutSql.append("UPDATE LMHardwareControlGroup ");
+        histEnrollOptOutSql.append("SET ProgramId =").appendArgument(0);
+        histEnrollOptOutSql.append(", UserIDSecondAction =").appendArgument(user.getUserID());
+        histEnrollOptOutSql.append("WHERE ProgramId =").appendArgument(programId);
+        histEnrollOptOutSql.append("AND (GroupEnrollStop IS NOT NULL OR OptOutStop IS NOT NULL)");
+        simpleJdbcTemplate.update(histEnrollOptOutSql.toString(), histEnrollOptOutSql.getArguments());        
+
+        //Reset current OptOut entries        
+        SqlStatementBuilder currentOptOutSql = new SqlStatementBuilder();
+        currentOptOutSql.append("UPDATE LMHardwareControlGroup ");
+        currentOptOutSql.append("SET ProgramId =").appendArgument(0);
+        currentOptOutSql.append(", UserIDSecondAction =").appendArgument(user.getUserID());
+        currentOptOutSql.append(", OptOutStop =").appendArgument(new Date());
+        currentOptOutSql.append("WHERE ProgramId =").appendArgument(programId);
+        currentOptOutSql.append("AND OptOutStart IS NOT NULL AND OptOutStop IS NULL");
+        simpleJdbcTemplate.update(currentOptOutSql.toString(), currentOptOutSql.getArguments());
+        
+        //Reset current Enrollment entries        
+        SqlStatementBuilder currentEnrollSql = new SqlStatementBuilder();
+        currentEnrollSql.append("UPDATE LMHardwareControlGroup ");
+        currentEnrollSql.append("SET ProgramId =").appendArgument(0);
+        currentEnrollSql.append(", UserIDSecondAction =").appendArgument(user.getUserID());
+        currentEnrollSql.append(", GroupEnrollStop =").appendArgument(new Date());
+        currentEnrollSql.append("WHERE ProgramId =").appendArgument(programId);
+        currentEnrollSql.append("AND GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NULL");
+        simpleJdbcTemplate.update(currentEnrollSql.toString(), currentEnrollSql.getArguments());        
+    }
+    
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Date stopDate) {
         
         SqlStatementBuilder optOutSQL = new SqlStatementBuilder();

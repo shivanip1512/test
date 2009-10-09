@@ -19,6 +19,7 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class UpdateApplianceCategoryController extends StarsAdminActionController {
@@ -173,21 +174,8 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
             for (int i = 0; i < pubProgList.size(); i++) {
                 LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) pubProgList.get(i);
 
-                // Delete all events of this program
-                com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents( liteProg.getProgramID() );
-
-                // Set ProgramID = 0 for all appliances assigned to this program
-                com.cannontech.database.db.stars.appliance.ApplianceBase.resetAppliancesByProgram( liteProg.getProgramID() );
-
-                com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
-                    new com.cannontech.database.data.stars.LMProgramWebPublishing();
-                pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
-                pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
-
-                Transaction.createTransaction( Transaction.DELETE, pubProg ).execute();
-
-                energyCompany.deleteProgram( liteProg.getProgramID() );
-                this.starsDatabaseCache.deleteWebConfiguration( liteProg.getWebSettingsID() );
+                // Delete Stars LMProgramWebPublishing
+                StarsAdminUtil.deleteLMProgramWebPublishing(liteProg.getProgramID(), energyCompany, user.getYukonUser());
             }
 
             if (newAppCat)

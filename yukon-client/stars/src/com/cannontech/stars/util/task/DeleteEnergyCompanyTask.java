@@ -259,22 +259,24 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			currentAction = "Deleting appliance categories";
 			
 			for (LiteApplianceCategory liteAppCat : energyCompany.getApplianceCategories()) {
-				
-				com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
-						new com.cannontech.database.data.stars.appliance.ApplianceCategory();
-				StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
-				
-				Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
-				StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
-				
+			    // Delete programs
 				for (LiteLMProgramWebPublishing liteProg : liteAppCat.getPublishedPrograms()) {
-					com.cannontech.database.db.web.YukonWebConfiguration cfg =
-							new com.cannontech.database.db.web.YukonWebConfiguration();
-					cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
-					
-					Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
-					StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
+			        com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
+			            new com.cannontech.database.data.stars.LMProgramWebPublishing();
+			        pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
+			        pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
+			        Transaction.createTransaction( Transaction.DELETE, pubProg ).execute();
+
+			        energyCompany.deleteProgram( liteProg.getProgramID() );
+			        StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
 				}
+    	        com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+    	                new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+    	        StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
+    	        Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
+    	        
+    	        energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
+    	        StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );			
 			}
 			
 			// Delete all interview questions

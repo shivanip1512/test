@@ -99,7 +99,7 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                         }
                         
                         // update appliance/config, if groupId is different
-                        if (groupId > 0 && app.getAddressingGroupID() != groupId ) {
+                        if ( app.getAddressingGroupID() != groupId ) {
                             app.setAddressingGroupID( groupId );
                             LMHardwareConfiguration config = new LMHardwareConfiguration(app.getInventoryID(),
                                                                                          app.getApplianceID(),

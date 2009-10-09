@@ -54,7 +54,6 @@ import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.stars.event.LMProgramEvent;
 import com.cannontech.database.data.stars.hardware.LMHardwareBase;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -70,6 +69,7 @@ import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -273,20 +273,21 @@ public class StarsAdminUtil {
 		return liteAppCat;
 	}
 	
-	public static void deleteApplianceCategory(int appCatID, LiteStarsEnergyCompany energyCompany)
+	public static void deleteApplianceCategory(int appCatID, LiteStarsEnergyCompany energyCompany, LiteYukonUser user)
 		throws TransactionException
 	{
 		LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory(appCatID);
-		
-		// Delete all program events in the category
+
+        // Delete all appliances in the category
+        com.cannontech.database.db.stars.appliance.ApplianceBase.deleteAppliancesByCategory( appCatID );
+        
+		// Delete all programs in the category
 		Iterable<LiteLMProgramWebPublishing> publishedPrograms = liteAppCat.getPublishedPrograms();
 		for (LiteLMProgramWebPublishing program : publishedPrograms) {
-			LMProgramEvent.deleteAllLMProgramEvents(program.getProgramID());
+		    deleteLMProgramWebPublishing(program.getProgramID(), energyCompany, user);
 		}
 		
-		// Delete all appliances in the category
-		com.cannontech.database.db.stars.appliance.ApplianceBase.deleteAppliancesByCategory( appCatID );
-		
+		// Delete the appCategory
 		com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
 				new com.cannontech.database.data.stars.appliance.ApplianceCategory();
 		StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
@@ -294,25 +295,39 @@ public class StarsAdminUtil {
 		
 		energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
 		StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
-		
-		for (LiteLMProgramWebPublishing liteProg : publishedPrograms) {
-			
-			com.cannontech.database.db.web.YukonWebConfiguration cfg =
-					new com.cannontech.database.db.web.YukonWebConfiguration();
-			cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
-			Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
-			
-			StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
-		}
 	}
 	
-	public static void deleteAllApplianceCategories(LiteStarsEnergyCompany energyCompany)
+	public static void deleteAllApplianceCategories(LiteStarsEnergyCompany energyCompany, LiteYukonUser user)
 		throws TransactionException
 	{
         Iterable<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
-		for (LiteApplianceCategory liteAppCat : appCats) {
-			deleteApplianceCategory( liteAppCat.getApplianceCategoryID(), energyCompany );
-		}
+        for (LiteApplianceCategory liteAppCat : appCats) {
+            deleteApplianceCategory( liteAppCat.getApplianceCategoryID(), energyCompany, user );
+        }
+	}
+	
+	public static void deleteLMProgramWebPublishing(int programID, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) 
+	    throws TransactionException {
+	    LiteLMProgramWebPublishing liteProg = energyCompany.getProgram(programID);
+        // Delete all events of this program
+        com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents( liteProg.getProgramID() );
+
+        // Set ProgramID = 0 for all appliances assigned to this program
+        com.cannontech.database.db.stars.appliance.ApplianceBase.resetAppliancesByProgram( liteProg.getProgramID() );
+
+        // Reset Enrollment, OptOut entries for the program
+        LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
+        lmHardwareControlGroupDao.resetEntriesForProgram(programID, user);
+        
+        com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
+            new com.cannontech.database.data.stars.LMProgramWebPublishing();
+        pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
+        pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
+
+        Transaction.createTransaction( Transaction.DELETE, pubProg ).execute();
+
+        energyCompany.deleteProgram( liteProg.getProgramID() );
+        StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );	    
 	}
 	
 	public static LiteServiceCompany createServiceCompany(String companyName, LiteStarsEnergyCompany energyCompany)

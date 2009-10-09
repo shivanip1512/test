@@ -23,7 +23,7 @@ public class DeleteApplianceCategoryController extends StarsAdminActionControlle
         try {
             int appCatID = ServletRequestUtils.getIntParameter(request, "AppCatID");
             if (appCatID == -1) {
-                StarsAdminUtil.deleteAllApplianceCategories( energyCompany );
+                StarsAdminUtil.deleteAllApplianceCategories( energyCompany, user.getYukonUser() );
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance categories have been deleted successfully");
             }
             else {
@@ -33,7 +33,7 @@ public class DeleteApplianceCategoryController extends StarsAdminActionControlle
                     response.sendRedirect(redirect);
                     return;
                 }                
-                StarsAdminUtil.deleteApplianceCategory( appCatID, energyCompany );
+                StarsAdminUtil.deleteApplianceCategory( appCatID, energyCompany, user.getYukonUser() );
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category has been deleted successfully");
             }
         }

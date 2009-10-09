@@ -19,6 +19,8 @@ public interface LMHardwareControlGroupDao {
     
     public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Date stopDate);    
     
+    public void resetEntriesForProgram(int programId, LiteYukonUser user);    
+    
     public LMHardwareControlGroup getById(int controlEntryId);
     
     public List<LMHardwareControlGroup> getByLMGroupId(int groupId);
