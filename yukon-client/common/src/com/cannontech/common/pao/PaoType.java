@@ -175,16 +175,16 @@ public enum PaoType {
     /**
      * Looks up the PaoType based on its Java constant ID.
      * 
-     * @param deviceTypeId
+     * @param paoTypeId
      * @return
      * @throws IllegalArgumentException - if no match
      */
-    public static PaoType getForId(int deviceTypeId) throws IllegalArgumentException {
-        PaoType deviceType = lookupById.get(deviceTypeId);
-        Validate.notNull(deviceType, Integer.toString(deviceTypeId));
+    public static PaoType getForId(int paoTypeId) throws IllegalArgumentException {
+        PaoType deviceType = lookupById.get(paoTypeId);
+        Validate.notNull(deviceType, Integer.toString(paoTypeId));
         return deviceType;
     }
-    
+
     /**
      * Looks up the the PaoType based on the string that is stored in the PAObject table.
      * 
