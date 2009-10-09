@@ -99,53 +99,53 @@
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopProgramUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <br>
 
                                 <cti:url var="changeGearsUrl" value="/spring/dr/program/getChangeGearValue">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${changeGearsUrl}', '<cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${changeGearsUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
                                 
                                 <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
-                                <a id="disableLink_${programId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendDisableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendDisableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.disableIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.disable"/>
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="enabled">
                                 <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${startProgramUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
     
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopProgramUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <br>
 
                                 <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
@@ -159,64 +159,64 @@
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
-                                <a id="disableLink_${programId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendDisableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendDisableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.disableIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.disable"/>
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="runningDisabled">
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopProgramUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <br>
 
                                 <cti:url var="changeGearsUrl" value="/spring/dr/program/getChangeGearValue">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${changeGearsUrl}', '<cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${changeGearsUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
 
                                 <cti:url var="sendEnableUrl" value="/spring/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
-                                <a id="enableLink_${programId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendEnableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.enableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendEnableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.enableIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.enable"/>
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="disabled">
                                 <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${startProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.startProgram.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${startProgramUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
 
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopProgramUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopProgram.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopProgramUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <br>
 
                                 <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>

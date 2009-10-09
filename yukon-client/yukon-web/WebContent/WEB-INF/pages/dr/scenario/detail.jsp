@@ -47,21 +47,21 @@
                         <cti:url var="startScenarioUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                             <cti:param name="scenarioId" value="${scenarioId}"/>
                         </cti:url>
-                        <a href="javascript:void(0)" class="simpleLink"
-                            onclick="openSimpleDialog('drDialog', '${startScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
-                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
-                            <cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start"/>
-                        </a>
+                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${startScenarioUrl}" 
+                                                       logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"
+                                                       labelKey="yukon.web.modules.dr.scenarioDetail.actions.start"/>
                         <br>
 
                         <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                             <cti:param name="scenarioId" value="${scenarioId}"/>
                         </cti:url>
-                        <a href="javascript:void(0)" class="simpleLink"
-                            onclick="openSimpleDialog('drDialog', '${stopScenarioUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                            <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
-                            <cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
-                        </a>
+                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopScenarioUrl}" 
+                                                       logoKey="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
                         <br>
                     </cti:checkPaoAuthorization>
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}" invert="true">

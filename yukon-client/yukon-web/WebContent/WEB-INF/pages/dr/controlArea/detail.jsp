@@ -96,21 +96,21 @@
                                 <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${startControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${startControlAreaUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 <br>
 
                                 <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopControlAreaUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
                                 <br>
 
                                 <c:choose>
@@ -118,11 +118,11 @@
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendTriggerChangeUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
@@ -137,33 +137,33 @@
                                 <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendChangeTimeWindowUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendChangeTimeWindowUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
 
                                 <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
-                                <a id="disableLink_${controlAreaId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendDisableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
                                 <c:choose>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendResetPeakUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
@@ -179,11 +179,11 @@
                                 <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopControlAreaUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
                                 <br>
 
                                 <c:choose>
@@ -191,11 +191,11 @@
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendTriggerChangeUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
@@ -210,33 +210,33 @@
                                 <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendChangeTimeWindowUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendChangeTimeWindowUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
 
                                 <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
-                                <a id="disableLink_${controlAreaId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendDisableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendDisableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
                                 <c:choose>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendResetPeakUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
@@ -252,20 +252,20 @@
                                 <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${startControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
-                                </a>
-    
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${startControlAreaUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                <br>
                                 <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopControlAreaUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
                                 <br>
 
                                 <c:choose>
@@ -273,11 +273,11 @@
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendTriggerChangeUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
@@ -292,33 +292,33 @@
                                 <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendChangeTimeWindowUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendChangeTimeWindowUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
                                 
                                 <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
-                                <a id="enableLink_${controlAreaId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendEnableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendEnableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
                                 <c:choose>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendResetPeakUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
@@ -334,11 +334,11 @@
                                 <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${stopControlAreaUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
                                 <br>
     
                                 <c:choose>
@@ -346,11 +346,11 @@
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendTriggerChangeUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendTriggerChangeUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
@@ -365,33 +365,33 @@
                                 <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
-                                <a href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendChangeTimeWindowUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendChangeTimeWindowUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
                                 
                                 <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
-                                <a id="enableLink_${controlAreaId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendEnableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendEnableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
+                                                       labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
                                 <c:choose>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
-                                        <a href="javascript:void(0)" class="simpleLink"
-                                            onclick="openSimpleDialog('drDialog', '${sendResetPeakUrl}', '<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"/>')">
-                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"/>
-                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
-                                        </a>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title" 
+                                                               dialogId="drDialog" 
+                                                               actionUrl="${sendResetPeakUrl}" 
+                                                               logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                                               labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>

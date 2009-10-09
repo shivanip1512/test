@@ -20,30 +20,30 @@
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="enabled">
             <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
-                <cti:param name="paoId" value="${paoId}"/>
+                <cti:param name="loadGroupId" value="${paoId}"/>
             </cti:url>
-            <a href="javascript:void(0)" class="simpleLink"
-                onclick="openSimpleDialog('drDialog', '${sendShedUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${sendShedUrl}" 
+                                   logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon"/>
 
             <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
-                <cti:param name="paoId" value="${paoId}"/>
+                <cti:param name="loadGroupId" value="${paoId}"/>
             </cti:url>
-            <a href="javascript:void(0)" class="simpleLink"
-                onclick="openSimpleDialog('drDialog', '${sendRestoreUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${sendRestoreUrl}" 
+                                   logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="disabled">
             <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
-                <cti:param name="paoId" value="${paoId}"/>
+                <cti:param name="loadGroupId" value="${paoId}"/>
                 <cti:param name="isEnabled" value="true"/>
             </cti:url>
-            <a id="enableLink_${paoId}" href="javascript:void(0)" class="simpleLink"
-                onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.enableIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${sendEnableUrl}" 
+                                   logoKey="yukon.web.modules.dr.loadGroupDetail.actions.enableIcon"/>
         </tags:dynamicChooseOption>
     </tags:dynamicChoose>
 </cti:checkPaoAuthorization>

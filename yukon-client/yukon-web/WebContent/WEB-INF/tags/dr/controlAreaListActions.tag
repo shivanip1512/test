@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
@@ -12,53 +13,53 @@
             <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
-            <a id="startLink_${paoId}" href="javascript:void(0)"
-                onclick="openSimpleDialog('drDialog', '${startControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
-            </a>
-
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${startControlAreaUrl}" 
+                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+            
             <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
-            <a id="stopLink_${paoId}" href="javascript:void(0)"
-                onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${stopControlAreaUrl}" 
+                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="fullyActiveEnabled">
             <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
-            <a id="stopLink_${paoId}" href="javascript:void(0)"
-                onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${stopControlAreaUrl}" 
+                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="disabled">
             <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
-            <a id="startLink_${paoId}" href="javascript:void(0)"
-                onclick="openSimpleDialog('drDialog', '${startControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${startControlAreaUrl}" 
+                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
 
             <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
-            <a id="stopLink_${paoId}" href="javascript:void(0)"
-                onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${stopControlAreaUrl}" 
+                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="fullyActiveDisabled">
             <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
-            <a id="stopLink_${paoId}" href="javascript:void(0)"
-                onclick="openSimpleDialog('drDialog', '${stopControlAreaUrl}', '<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.title"/>')">
-                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
-            </a>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${stopControlAreaUrl}" 
+                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
     </tags:dynamicChoose>
 </cti:checkPaoAuthorization>
