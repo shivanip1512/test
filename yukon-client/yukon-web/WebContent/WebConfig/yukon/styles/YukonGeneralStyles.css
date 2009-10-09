@@ -265,10 +265,15 @@ div.boxContainer table.compactResultsTable {
 	width: 100%;
 }
 
+/* This keeps nested tables from double-shrinking the text and double-padding. */
+table.compactResultsTable th th {
+    font-size: 100%;
+}
+
 table.compactResultsTable th {
 	border-bottom: 1px solid #CCCCCC;
 	color: 	#000000;
-	font-size: .8em;
+	font-size: 80%;
 	font-weight: 600;
 	text-align:left;
 	vertical-align:bottom;
@@ -280,9 +285,14 @@ table.compactResultsTable th a {
     color: #000000;
 }
 
+table.compactResultsTable td td {
+    padding: 0px 0px;
+    font-size: 100%;
+}
+
 table.compactResultsTable td {
     padding: 2px 2px;
-    font-size: .7em;
+    font-size: 70%;
     padding-top:3px;
     vertical-align: top;
 }
