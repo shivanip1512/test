@@ -564,9 +564,9 @@ private javax.swing.JComboBox getJComboBoxWhenChange() {
 		try {
 			ivjJComboBoxWhenChange = new javax.swing.JComboBox();
 			ivjJComboBoxWhenChange.setName("JComboBoxWhenChange");
-			ivjJComboBoxWhenChange.setPreferredSize(new java.awt.Dimension(170, 23));
+			ivjJComboBoxWhenChange.setPreferredSize(new java.awt.Dimension(170, 20));
 			ivjJComboBoxWhenChange.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJComboBoxWhenChange.setMinimumSize(new java.awt.Dimension(0, 0));
+			ivjJComboBoxWhenChange.setMinimumSize(new java.awt.Dimension(170, 20));
 			// user code begin {1}
 			ivjJComboBoxWhenChange.addItem("Manually Only");
 			ivjJComboBoxWhenChange.addItem("After a Duration");
@@ -591,9 +591,10 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldChangeDuration() {
 		try {
 			ivjJCSpinFieldChangeDuration = new com.klg.jclass.field.JCSpinField();
 			ivjJCSpinFieldChangeDuration.setName("JCSpinFieldChangeDuration");
-			ivjJCSpinFieldChangeDuration.setPreferredSize(new java.awt.Dimension(45, 20));
+			ivjJCSpinFieldChangeDuration.setPreferredSize(new java.awt.Dimension(66, 20));
 			ivjJCSpinFieldChangeDuration.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJCSpinFieldChangeDuration.setMaximumSize(new java.awt.Dimension(40, 20));
+			ivjJCSpinFieldChangeDuration.setMaximumSize(new java.awt.Dimension(66, 20));
+			ivjJCSpinFieldChangeDuration.setMinimumSize(new java.awt.Dimension(66, 20));
 			// user code begin {1}
 			ivjJCSpinFieldChangeDuration.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
@@ -623,9 +624,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldChangePriority() {
 		try {
 			ivjJCSpinFieldChangePriority = new com.klg.jclass.field.JCSpinField();
 			ivjJCSpinFieldChangePriority.setName("JCSpinFieldChangePriority");
-			ivjJCSpinFieldChangePriority.setPreferredSize(new java.awt.Dimension(35, 30));
 			ivjJCSpinFieldChangePriority.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJCSpinFieldChangePriority.setMaximumSize(new java.awt.Dimension(40, 30));
 			// user code begin {1}
 			ivjJCSpinFieldChangePriority.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
@@ -658,6 +657,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldChangeTriggerNumber() {
 			ivjJCSpinFieldChangeTriggerNumber.setPreferredSize(new java.awt.Dimension(35, 20));
 			ivjJCSpinFieldChangeTriggerNumber.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJCSpinFieldChangeTriggerNumber.setMaximumSize(new java.awt.Dimension(40, 20));
+			ivjJCSpinFieldChangeTriggerNumber.setMinimumSize(new java.awt.Dimension(40, 20));
 			// user code begin {1}
 			ivjJCSpinFieldChangeTriggerNumber.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
@@ -687,9 +687,9 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldPercentReduction() {
 		try {
 			ivjJCSpinFieldPercentReduction = new com.klg.jclass.field.JCSpinField();
 			ivjJCSpinFieldPercentReduction.setName("JCSpinFieldPercentReduction");
-			ivjJCSpinFieldPercentReduction.setPreferredSize(new java.awt.Dimension(88, 22));
-			ivjJCSpinFieldPercentReduction.setMaximumSize(new java.awt.Dimension(88, 22));
-			ivjJCSpinFieldPercentReduction.setMinimumSize(new java.awt.Dimension(0, 0));
+			ivjJCSpinFieldPercentReduction.setPreferredSize(new java.awt.Dimension(88, 20));
+			ivjJCSpinFieldPercentReduction.setMaximumSize(new java.awt.Dimension(88, 20));
+			ivjJCSpinFieldPercentReduction.setMinimumSize(new java.awt.Dimension(88, 20));
 			// user code begin {1}
 			ivjJCSpinFieldPercentReduction.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
@@ -790,10 +790,7 @@ private javax.swing.JLabel getJLabelChangeDuration() {
 			ivjJLabelChangeDuration.setName("JLabelChangeDuration");
 			ivjJLabelChangeDuration.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJLabelChangeDuration.setText("Change Duration:");
-			ivjJLabelChangeDuration.setMaximumSize(new java.awt.Dimension(103, 14));
-			ivjJLabelChangeDuration.setPreferredSize(new java.awt.Dimension(103, 14));
 			ivjJLabelChangeDuration.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelChangeDuration.setMinimumSize(new java.awt.Dimension(103, 14));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -816,10 +813,7 @@ private javax.swing.JLabel getJLabelChangePriority() {
 			ivjJLabelChangePriority.setName("JLabelChangePriority");
 			ivjJLabelChangePriority.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJLabelChangePriority.setText("Change Priority:");
-			ivjJLabelChangePriority.setMaximumSize(new java.awt.Dimension(103, 14));
-			ivjJLabelChangePriority.setPreferredSize(new java.awt.Dimension(103, 14));
 			ivjJLabelChangePriority.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelChangePriority.setMinimumSize(new java.awt.Dimension(103, 14));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1016,10 +1010,7 @@ private javax.swing.JLabel getJLabelPercentReduction() {
 			ivjJLabelPercentReduction.setName("JLabelPercentReduction");
 			ivjJLabelPercentReduction.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJLabelPercentReduction.setText("Group Capacity Reduction %:");
-			ivjJLabelPercentReduction.setMaximumSize(new java.awt.Dimension(112, 14));
-			ivjJLabelPercentReduction.setPreferredSize(new java.awt.Dimension(112, 14));
 			ivjJLabelPercentReduction.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelPercentReduction.setMinimumSize(new java.awt.Dimension(112, 14));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1140,10 +1131,7 @@ private javax.swing.JLabel getJLabelRampOutInterval() {
 			ivjJLabelRampOutInterval.setName("JLabelRampOutInterval");
 			ivjJLabelRampOutInterval.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJLabelRampOutInterval.setText("Ramp Out Interval: ");
-			ivjJLabelRampOutInterval.setMaximumSize(new java.awt.Dimension(182, 125));
-			ivjJLabelRampOutInterval.setPreferredSize(new java.awt.Dimension(182, 125));
 			ivjJLabelRampOutInterval.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelRampOutInterval.setMinimumSize(new java.awt.Dimension(182, 125));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1166,10 +1154,7 @@ private javax.swing.JLabel getJLabelRampOutPercent() {
 			ivjJLabelRampOutPercent.setName("JLabelRampOutPercent");
 			ivjJLabelRampOutPercent.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJLabelRampOutPercent.setText("Ramp Out Percent: ");
-			ivjJLabelRampOutPercent.setMaximumSize(new java.awt.Dimension(182, 125));
-			ivjJLabelRampOutPercent.setPreferredSize(new java.awt.Dimension(182, 125));
 			ivjJLabelRampOutPercent.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelRampOutPercent.setMinimumSize(new java.awt.Dimension(182, 125));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1332,15 +1317,16 @@ private javax.swing.JPanel getJPanelChangeMethod() {
 			ivjJPanelChangeMethod.setName("JPanelChangeMethod");
 			ivjJPanelChangeMethod.setLayout(new java.awt.GridBagLayout());
 			ivjJPanelChangeMethod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJPanelChangeMethod.setMaximumSize(new java.awt.Dimension(360, 90));
-			ivjJPanelChangeMethod.setPreferredSize(new java.awt.Dimension(330, 87));
+			ivjJPanelChangeMethod.setMaximumSize(new java.awt.Dimension(360, 100));
+			ivjJPanelChangeMethod.setPreferredSize(new java.awt.Dimension(330, 100));
 			ivjJPanelChangeMethod.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjJPanelChangeMethod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 
 			java.awt.GridBagConstraints constraintsJLabelChangeDuration = new java.awt.GridBagConstraints();
 			constraintsJLabelChangeDuration.gridx = 1; constraintsJLabelChangeDuration.gridy = 2;
 			constraintsJLabelChangeDuration.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJLabelChangeDuration.ipadx = -5;
+			constraintsJLabelChangeDuration.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJLabelChangeDuration.weightx = .5;
 			constraintsJLabelChangeDuration.ipady = 6;
 			constraintsJLabelChangeDuration.insets = new java.awt.Insets(1, 5, 3, 5);
 			getJPanelChangeMethod().add(getJLabelChangeDuration(), constraintsJLabelChangeDuration);
@@ -1348,64 +1334,61 @@ private javax.swing.JPanel getJPanelChangeMethod() {
 			java.awt.GridBagConstraints constraintsJCSpinFieldChangeDuration = new java.awt.GridBagConstraints();
 			constraintsJCSpinFieldChangeDuration.gridx = 2; constraintsJCSpinFieldChangeDuration.gridy = 2;
 			constraintsJCSpinFieldChangeDuration.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJCSpinFieldChangeDuration.ipadx = 34;
-			constraintsJCSpinFieldChangeDuration.ipady = 19;
 			constraintsJCSpinFieldChangeDuration.insets = new java.awt.Insets(1, 5, 3, 1);
 			getJPanelChangeMethod().add(getJCSpinFieldChangeDuration(), constraintsJCSpinFieldChangeDuration);
 
 			java.awt.GridBagConstraints constraintsJLabelMinutesChDur = new java.awt.GridBagConstraints();
 			constraintsJLabelMinutesChDur.gridx = 3; constraintsJLabelMinutesChDur.gridy = 2;
 			constraintsJLabelMinutesChDur.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJLabelMinutesChDur.ipadx = 5;
-			constraintsJLabelMinutesChDur.ipady = -2;
+			constraintsJLabelMinutesChDur.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJLabelMinutesChDur.insets = new java.awt.Insets(5, 1, 5, 2);
 			getJPanelChangeMethod().add(getJLabelMinutesChDur(), constraintsJLabelMinutesChDur);
 
 			java.awt.GridBagConstraints constraintsJLabelChangePriority = new java.awt.GridBagConstraints();
-			constraintsJLabelChangePriority.gridx = 4; constraintsJLabelChangePriority.gridy = 2;
+			constraintsJLabelChangePriority.gridx = 1; constraintsJLabelChangePriority.gridy = 2;
 			constraintsJLabelChangePriority.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJLabelChangePriority.ipadx = -13;
+			constraintsJLabelChangePriority.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJLabelChangePriority.weightx = .5;
 			constraintsJLabelChangePriority.ipady = 6;
 			constraintsJLabelChangePriority.insets = new java.awt.Insets(1, 3, 3, 2);
 			getJPanelChangeMethod().add(getJLabelChangePriority(), constraintsJLabelChangePriority);
 
 			java.awt.GridBagConstraints constraintsJCSpinFieldChangePriority = new java.awt.GridBagConstraints();
-			constraintsJCSpinFieldChangePriority.gridx = 5; constraintsJCSpinFieldChangePriority.gridy = 2;
+			constraintsJCSpinFieldChangePriority.gridx = 2; constraintsJCSpinFieldChangePriority.gridy = 2;
 			constraintsJCSpinFieldChangePriority.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJCSpinFieldChangePriority.ipadx = 34;
-			constraintsJCSpinFieldChangePriority.ipady = 19;
+			constraintsJCSpinFieldChangePriority.weightx = .5;
 			constraintsJCSpinFieldChangePriority.insets = new java.awt.Insets(1, 3, 3, 8);
 			getJPanelChangeMethod().add(getJCSpinFieldChangePriority(), constraintsJCSpinFieldChangePriority);
 
 			java.awt.GridBagConstraints constraintsJLabelChangeTriggerNumber = new java.awt.GridBagConstraints();
 			constraintsJLabelChangeTriggerNumber.gridx = 1; constraintsJLabelChangeTriggerNumber.gridy = 3;
 			constraintsJLabelChangeTriggerNumber.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJLabelChangeTriggerNumber.ipadx = -45;
+			constraintsJLabelChangeTriggerNumber.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJLabelChangeTriggerNumber.weightx = .5;
 			constraintsJLabelChangeTriggerNumber.ipady = 6;
-			constraintsJLabelChangeTriggerNumber.insets = new java.awt.Insets(4, 5, 15, 5);
+			constraintsJLabelChangeTriggerNumber.insets = new java.awt.Insets(4, 5, 3, 5);
 			getJPanelChangeMethod().add(getJLabelChangeTriggerNumber(), constraintsJLabelChangeTriggerNumber);
 
 			java.awt.GridBagConstraints constraintsJLabelChangeTriggerOffset = new java.awt.GridBagConstraints();
-			constraintsJLabelChangeTriggerOffset.gridx = 4; constraintsJLabelChangeTriggerOffset.gridy = 3;
+			constraintsJLabelChangeTriggerOffset.gridx = 3; constraintsJLabelChangeTriggerOffset.gridy = 3;
 			constraintsJLabelChangeTriggerOffset.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJLabelChangeTriggerOffset.ipadx = -63;
-			constraintsJLabelChangeTriggerOffset.insets = new java.awt.Insets(8, 3, 17, 12);
+			constraintsJLabelChangeTriggerOffset.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsJLabelChangeTriggerOffset.weightx = .5;
+			constraintsJLabelChangeTriggerOffset.insets = new java.awt.Insets(8, 3, 3, 12);
 			getJPanelChangeMethod().add(getJLabelChangeTriggerOffset(), constraintsJLabelChangeTriggerOffset);
 
 			java.awt.GridBagConstraints constraintsJTextFieldChangeTriggerOffset = new java.awt.GridBagConstraints();
-			constraintsJTextFieldChangeTriggerOffset.gridx = 5; constraintsJTextFieldChangeTriggerOffset.gridy = 3;
+			constraintsJTextFieldChangeTriggerOffset.gridx = 4; constraintsJTextFieldChangeTriggerOffset.gridy = 3;
 			constraintsJTextFieldChangeTriggerOffset.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJTextFieldChangeTriggerOffset.weightx = 1.0;
-			constraintsJTextFieldChangeTriggerOffset.ipadx = 31;
-			constraintsJTextFieldChangeTriggerOffset.insets = new java.awt.Insets(4, 3, 15, 8);
+			constraintsJTextFieldChangeTriggerOffset.ipadx = 4;
+			constraintsJTextFieldChangeTriggerOffset.insets = new java.awt.Insets(4, 3, 3, 8);
 			getJPanelChangeMethod().add(getJTextFieldChangeTriggerOffset(), constraintsJTextFieldChangeTriggerOffset);
 
 			java.awt.GridBagConstraints constraintsJCSpinFieldChangeTriggerNumber = new java.awt.GridBagConstraints();
 			constraintsJCSpinFieldChangeTriggerNumber.gridx = 2; constraintsJCSpinFieldChangeTriggerNumber.gridy = 3;
 			constraintsJCSpinFieldChangeTriggerNumber.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			constraintsJCSpinFieldChangeTriggerNumber.ipadx = 34;
-			constraintsJCSpinFieldChangeTriggerNumber.ipady = 19;
-			constraintsJCSpinFieldChangeTriggerNumber.insets = new java.awt.Insets(4, 5, 15, 1);
+			constraintsJCSpinFieldChangeTriggerNumber.ipadx = 4;
+			constraintsJCSpinFieldChangeTriggerNumber.insets = new java.awt.Insets(4, 5, 3, 1);
 			getJPanelChangeMethod().add(getJCSpinFieldChangeTriggerNumber(), constraintsJCSpinFieldChangeTriggerNumber);
 
 			java.awt.GridBagConstraints constraintsJLabelWhenChange = new java.awt.GridBagConstraints();
@@ -1417,12 +1400,12 @@ private javax.swing.JPanel getJPanelChangeMethod() {
 			getJPanelChangeMethod().add(getJLabelWhenChange(), constraintsJLabelWhenChange);
 
 			java.awt.GridBagConstraints constraintsJComboBoxWhenChange = new java.awt.GridBagConstraints();
-			constraintsJComboBoxWhenChange.gridx = 3; constraintsJComboBoxWhenChange.gridy = 1;
+			constraintsJComboBoxWhenChange.gridx = 2; constraintsJComboBoxWhenChange.gridy = 1;
 			constraintsJComboBoxWhenChange.gridwidth = 3;
 			constraintsJComboBoxWhenChange.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			constraintsJComboBoxWhenChange.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxWhenChange.weightx = 1.0;
-			constraintsJComboBoxWhenChange.ipadx = 170;
-			constraintsJComboBoxWhenChange.ipady = 23;
+			constraintsJComboBoxWhenChange.ipadx = 4;
 			constraintsJComboBoxWhenChange.insets = new java.awt.Insets(0, 3, 1, 8);
 			getJPanelChangeMethod().add(getJComboBoxWhenChange(), constraintsJComboBoxWhenChange);
 			// user code begin {1}
@@ -1449,6 +1432,7 @@ private javax.swing.JTextField getJTextFieldChangeTriggerOffset() {
 			ivjJTextFieldChangeTriggerOffset.setPreferredSize(new java.awt.Dimension(35, 20));
 			ivjJTextFieldChangeTriggerOffset.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJTextFieldChangeTriggerOffset.setMaximumSize(new java.awt.Dimension(40, 20));
+			ivjJTextFieldChangeTriggerOffset.setMinimumSize(new java.awt.Dimension(40, 20));
 			// user code begin {1}
 			ivjJTextFieldChangeTriggerOffset.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(-99999.9999, 99999.9999, 4) );
 
@@ -1554,7 +1538,10 @@ public Object getValue(Object o)
 	if(getJCheckBoxRampIn().isSelected())
 	{
 		gear.setRampInPercent(new Integer(((Number)getJCSpinFieldRampInPercent().getValue()).intValue()));
-		gear.setRampInInterval(new Integer(getJTextFieldRampInInterval().getText()));
+        if( org.apache.commons.lang.StringUtils.isBlank(getJTextFieldRampInInterval().getText())) {
+            getJTextFieldRampInInterval().setText("0");
+        }
+        gear.setRampInInterval(new Integer(getJTextFieldRampInInterval().getText()));	            
 	}
 
 	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
@@ -1699,10 +1686,8 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJLabelPercentReduction = new java.awt.GridBagConstraints();
 		constraintsJLabelPercentReduction.gridx = 1; constraintsJLabelPercentReduction.gridy = 13;
-		constraintsJLabelPercentReduction.gridwidth = 2;
-		constraintsJLabelPercentReduction.ipadx = 53;
-		constraintsJLabelPercentReduction.ipady = 3;
-		constraintsJLabelPercentReduction.insets = new java.awt.Insets(5, 10, 8, 9);
+		constraintsJLabelPercentReduction.ipadx = 4;
+		constraintsJLabelPercentReduction.insets = new java.awt.Insets(9, 10, 3, 1);
 		add(getJLabelPercentReduction(), constraintsJLabelPercentReduction);
 
 		java.awt.GridBagConstraints constraintsJComboBoxHowToStop = new java.awt.GridBagConstraints();
@@ -1715,10 +1700,12 @@ private void initialize() {
 		add(getJComboBoxHowToStop(), constraintsJComboBoxHowToStop);
 
 		java.awt.GridBagConstraints constraintsJCSpinFieldPercentReduction = new java.awt.GridBagConstraints();
-		constraintsJCSpinFieldPercentReduction.gridx = 3; constraintsJCSpinFieldPercentReduction.gridy = 13;
-		constraintsJCSpinFieldPercentReduction.ipadx = 88;
-		constraintsJCSpinFieldPercentReduction.ipady = 20;
-		constraintsJCSpinFieldPercentReduction.insets = new java.awt.Insets(5, 9, 5, 121);
+		constraintsJCSpinFieldPercentReduction.gridx = 2; constraintsJCSpinFieldPercentReduction.gridy = 13;
+		constraintsJCSpinFieldPercentReduction.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		constraintsJCSpinFieldPercentReduction.weightx = 1.0;
+		constraintsJCSpinFieldPercentReduction.gridwidth = 2;
+		constraintsJCSpinFieldPercentReduction.ipadx = 2;
+		constraintsJCSpinFieldPercentReduction.insets = new java.awt.Insets(4, 1, 1, 58);
 		add(getJCSpinFieldPercentReduction(), constraintsJCSpinFieldPercentReduction);
 
 		java.awt.GridBagConstraints constraintsJPanelChangeMethod = new java.awt.GridBagConstraints();
@@ -1733,18 +1720,17 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJComboBoxSendRateDigits = new java.awt.GridBagConstraints();
 		constraintsJComboBoxSendRateDigits.gridx = 2; constraintsJComboBoxSendRateDigits.gridy = 4;
-		constraintsJComboBoxSendRateDigits.gridwidth = 2;
 		constraintsJComboBoxSendRateDigits.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxSendRateDigits.weightx = 1.0;
+		constraintsJComboBoxSendRateDigits.weightx = .5;
 		constraintsJComboBoxSendRateDigits.ipadx = 5;
-		constraintsJComboBoxSendRateDigits.insets = new java.awt.Insets(3, 1, 2, 250);
+		constraintsJComboBoxSendRateDigits.insets = new java.awt.Insets(3, 1, 2, 1);
 		add(getJComboBoxSendRateDigits(), constraintsJComboBoxSendRateDigits);
 
 		java.awt.GridBagConstraints constraintsJComboBoxSendRateUnits = new java.awt.GridBagConstraints();
 		constraintsJComboBoxSendRateUnits.gridx = 3; constraintsJComboBoxSendRateUnits.gridy = 4;
 		constraintsJComboBoxSendRateUnits.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxSendRateUnits.weightx = 1.0;
-		constraintsJComboBoxSendRateUnits.insets = new java.awt.Insets(3, 42, 2, 74);
+		constraintsJComboBoxSendRateUnits.weightx = .5;
+		constraintsJComboBoxSendRateUnits.insets = new java.awt.Insets(3, 1, 2, 58);
 		add(getJComboBoxSendRateUnits(), constraintsJComboBoxSendRateUnits);
 
 		java.awt.GridBagConstraints constraintsJComboBoxCycleCountSndType = new java.awt.GridBagConstraints();
@@ -1764,44 +1750,44 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJCSpinFieldRampOutPercent = new java.awt.GridBagConstraints();
 		constraintsJCSpinFieldRampOutPercent.gridx = 2; constraintsJCSpinFieldRampOutPercent.gridy = 11;
-		constraintsJCSpinFieldRampOutPercent.gridwidth = 2;
+        constraintsJCSpinFieldRampOutPercent.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsJCSpinFieldRampOutPercent.weightx = .5;
 		constraintsJCSpinFieldRampOutPercent.ipadx = 3;
-		constraintsJCSpinFieldRampOutPercent.insets = new java.awt.Insets(3, 1, 2, 175);
+		constraintsJCSpinFieldRampOutPercent.insets = new java.awt.Insets(3, 1, 2, 1);
 		add(getJCSpinFieldRampOutPercent(), constraintsJCSpinFieldRampOutPercent);
 
 		java.awt.GridBagConstraints constraintsJLabelRampOutPercent = new java.awt.GridBagConstraints();
 		constraintsJLabelRampOutPercent.gridx = 1; constraintsJLabelRampOutPercent.gridy = 11;
-		constraintsJLabelRampOutPercent.ipadx = -57;
-		constraintsJLabelRampOutPercent.ipady = -111;
-		constraintsJLabelRampOutPercent.insets = new java.awt.Insets(7, 10, 4, 22);
+        constraintsJLabelRampOutPercent.insets = new java.awt.Insets(6, 10, 4, 28);
 		add(getJLabelRampOutPercent(), constraintsJLabelRampOutPercent);
 
 		java.awt.GridBagConstraints constraintsJLabelRampOutPercentSign = new java.awt.GridBagConstraints();
 		constraintsJLabelRampOutPercentSign.gridx = 3; constraintsJLabelRampOutPercentSign.gridy = 11;
 		constraintsJLabelRampOutPercentSign.ipadx = 4;
-		constraintsJLabelRampOutPercentSign.insets = new java.awt.Insets(7, 42, 2, 161);
+        constraintsJLabelRampOutPercentSign.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsJLabelRampOutPercentSign.weightx = .5;
+        constraintsJLabelRampOutPercentSign.insets = new java.awt.Insets(3, 1, 2, 58);
 		add(getJLabelRampOutPercentSign(), constraintsJLabelRampOutPercentSign);
 
 		java.awt.GridBagConstraints constraintsJTextFieldRampOutInterval = new java.awt.GridBagConstraints();
 		constraintsJTextFieldRampOutInterval.gridx = 2; constraintsJTextFieldRampOutInterval.gridy = 12;
-		constraintsJTextFieldRampOutInterval.gridwidth = 2;
 		constraintsJTextFieldRampOutInterval.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJTextFieldRampOutInterval.weightx = 1.0;
+		constraintsJTextFieldRampOutInterval.weightx = .5;
 		constraintsJTextFieldRampOutInterval.ipadx = 3;
-		constraintsJTextFieldRampOutInterval.insets = new java.awt.Insets(3, 1, 5, 175);
+		constraintsJTextFieldRampOutInterval.insets = new java.awt.Insets(3, 1, 2, 1);
 		add(getJTextFieldRampOutInterval(), constraintsJTextFieldRampOutInterval);
 
 		java.awt.GridBagConstraints constraintsJLabelRampOutSec = new java.awt.GridBagConstraints();
 		constraintsJLabelRampOutSec.gridx = 3; constraintsJLabelRampOutSec.gridy = 12;
-		constraintsJLabelRampOutSec.ipadx = 55;
-		constraintsJLabelRampOutSec.insets = new java.awt.Insets(5, 42, 7, 98);
+		constraintsJLabelRampOutSec.ipadx = 4;
+        constraintsJLabelRampOutSec.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsJLabelRampOutSec.weightx = .5;
+        constraintsJLabelRampOutSec.insets = new java.awt.Insets(3, 1, 2, 58);
 		add(getJLabelRampOutSec(), constraintsJLabelRampOutSec);
 
 		java.awt.GridBagConstraints constraintsJLabelRampOutInterval = new java.awt.GridBagConstraints();
 		constraintsJLabelRampOutInterval.gridx = 1; constraintsJLabelRampOutInterval.gridy = 12;
-		constraintsJLabelRampOutInterval.ipadx = -57;
-		constraintsJLabelRampOutInterval.ipady = -111;
-		constraintsJLabelRampOutInterval.insets = new java.awt.Insets(5, 10, 9, 22);
+		constraintsJLabelRampOutInterval.insets = new java.awt.Insets(6, 10, 7, 28);
 		add(getJLabelRampOutInterval(), constraintsJLabelRampOutInterval);
 
 		java.awt.GridBagConstraints constraintsJCheckBoxRampIn = new java.awt.GridBagConstraints();
@@ -1818,30 +1804,34 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJTextFieldRampInInterval = new java.awt.GridBagConstraints();
 		constraintsJTextFieldRampInInterval.gridx = 2; constraintsJTextFieldRampInInterval.gridy = 8;
-		constraintsJTextFieldRampInInterval.gridwidth = 2;
 		constraintsJTextFieldRampInInterval.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJTextFieldRampInInterval.weightx = 1.0;
+		constraintsJTextFieldRampInInterval.weightx = .5;
 		constraintsJTextFieldRampInInterval.ipadx = 3;
-		constraintsJTextFieldRampInInterval.insets = new java.awt.Insets(3, 1, 4, 175);
+		constraintsJTextFieldRampInInterval.insets = new java.awt.Insets(3, 1, 2, 1);
 		add(getJTextFieldRampInInterval(), constraintsJTextFieldRampInInterval);
 
 		java.awt.GridBagConstraints constraintsJLabelRampInSec = new java.awt.GridBagConstraints();
 		constraintsJLabelRampInSec.gridx = 3; constraintsJLabelRampInSec.gridy = 8;
-		constraintsJLabelRampInSec.ipadx = 45;
-		constraintsJLabelRampInSec.insets = new java.awt.Insets(5, 42, 6, 108);
+		constraintsJLabelRampInSec.ipadx = 4;
+		constraintsJLabelRampInSec.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		constraintsJLabelRampInSec.weightx = .5;
+		constraintsJLabelRampInSec.insets = new java.awt.Insets(3, 1, 2, 58);
 		add(getJLabelRampInSec(), constraintsJLabelRampInSec);
 
 		java.awt.GridBagConstraints constraintsJLabelRampInPercentSign = new java.awt.GridBagConstraints();
 		constraintsJLabelRampInPercentSign.gridx = 3; constraintsJLabelRampInPercentSign.gridy = 7;
 		constraintsJLabelRampInPercentSign.ipadx = 4;
-		constraintsJLabelRampInPercentSign.insets = new java.awt.Insets(4, 42, 4, 161);
+		constraintsJLabelRampInPercentSign.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsJLabelRampInPercentSign.weightx = .5;
+		constraintsJLabelRampInPercentSign.insets = new java.awt.Insets(3, 1, 2, 58);
 		add(getJLabelRampInPercentSign(), constraintsJLabelRampInPercentSign);
 
 		java.awt.GridBagConstraints constraintsJCSpinFieldRampInPercent = new java.awt.GridBagConstraints();
 		constraintsJCSpinFieldRampInPercent.gridx = 2; constraintsJCSpinFieldRampInPercent.gridy = 7;
-		constraintsJCSpinFieldRampInPercent.gridwidth = 2;
+		constraintsJCSpinFieldRampInPercent.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		constraintsJCSpinFieldRampInPercent.weightx = .5;
 		constraintsJCSpinFieldRampInPercent.ipadx = 3;
-		constraintsJCSpinFieldRampInPercent.insets = new java.awt.Insets(2, 1, 2, 175);
+		constraintsJCSpinFieldRampInPercent.insets = new java.awt.Insets(3, 1, 2, 1);
 		add(getJCSpinFieldRampInPercent(), constraintsJCSpinFieldRampInPercent);
 
 		java.awt.GridBagConstraints constraintsJLabelRampInPercent = new java.awt.GridBagConstraints();
@@ -1851,18 +1841,17 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJComboBoxShedTimeDigits = new java.awt.GridBagConstraints();
 		constraintsJComboBoxShedTimeDigits.gridx = 2; constraintsJComboBoxShedTimeDigits.gridy = 2;
-		constraintsJComboBoxShedTimeDigits.gridwidth = 2;
 		constraintsJComboBoxShedTimeDigits.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxShedTimeDigits.weightx = 1.0;
+		constraintsJComboBoxShedTimeDigits.weightx = 1;
 		constraintsJComboBoxShedTimeDigits.ipadx = 5;
-		constraintsJComboBoxShedTimeDigits.insets = new java.awt.Insets(3, 1, 2, 250);
+		constraintsJComboBoxShedTimeDigits.insets = new java.awt.Insets(3, 1, 2, 1);
 		add(getJComboBoxShedTimeDigits(), constraintsJComboBoxShedTimeDigits);
 
 		java.awt.GridBagConstraints constraintsJComboBoxShedTimeUnits = new java.awt.GridBagConstraints();
 		constraintsJComboBoxShedTimeUnits.gridx = 3; constraintsJComboBoxShedTimeUnits.gridy = 2;
 		constraintsJComboBoxShedTimeUnits.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxShedTimeUnits.weightx = 1.0;
-		constraintsJComboBoxShedTimeUnits.insets = new java.awt.Insets(3, 42, 2, 74);
+		constraintsJComboBoxShedTimeUnits.weightx = 1;
+		constraintsJComboBoxShedTimeUnits.insets = new java.awt.Insets(3, 1, 2, 58);
 		add(getJComboBoxShedTimeUnits(), constraintsJComboBoxShedTimeUnits);
 
 		java.awt.GridBagConstraints constraintsJComboBoxStopOrder = new java.awt.GridBagConstraints();
