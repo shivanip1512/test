@@ -313,7 +313,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         dynamicDataSource.putValue(pointData);
     }
 
-    private Phase parsePhase(String porterResultString) {
+    public static Phase parsePhase(String porterResultString) {
         Phase phaseDetected;
         if(porterResultString.contains("Phase = A")){
             phaseDetected = Phase.A;
@@ -327,7 +327,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         return phaseDetected;
     }
     
-    private PhaseDetectVoltageReading parseVoltageReading(String value) {
+    public static PhaseDetectVoltageReading parseVoltageReading(String value) {
         String[] words = value.split(" ");
         String initialVoltage = "";
         String lastVoltage = "";
