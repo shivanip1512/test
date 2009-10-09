@@ -1,9 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:verifyRolesAndProperties value="
-	BULK_IMPORT_OPERATION,
-	BULK_UPDATE_OPERATION"/>
+<cti:compareRolePropertyValue property="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" expectedValue="true"/>
 
 <html>
 <head>

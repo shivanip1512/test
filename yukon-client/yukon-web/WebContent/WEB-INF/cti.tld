@@ -1078,6 +1078,22 @@
   </tag>
   
   <tag>
+    <name>compareRolePropertyValue</name>
+    <tag-class>com.cannontech.web.util.CompareRolePropertyValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>property</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>expectedValue</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>verifyGlobalRolesAndProperties</name>
     <tag-class>com.cannontech.web.util.VerifyGlobalRolesAndPropertiesTag</tag-class>
     <body-content>empty</body-content>

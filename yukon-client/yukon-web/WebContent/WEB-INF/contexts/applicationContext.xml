@@ -824,6 +824,10 @@
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     
+    <bean id="compareRolePropertyValueTagPrototype" class="com.cannontech.web.util.CompareRolePropertyValueTag">
+    	<property name="rolePropertyDao" ref="rolePropertyDao"/>
+    </bean>
+    
     <bean id="verifyGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyGlobalRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>

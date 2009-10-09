@@ -1,4 +1,8 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+
+<cti:compareRolePropertyValue property="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" expectedValue="EnrollMigration"/>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
