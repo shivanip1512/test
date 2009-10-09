@@ -22,6 +22,16 @@ INSERT INTO YukonServices VALUES (8, 'PointInjector', 'classpath:com/cannontech/
 INSERT INTO YukonServices VALUES (9, 'Monitors', 'classpath:com/cannontech/services/monitors/monitorsContext.xml', '(none)', '(none)', 'ServiceManager');
 /* End YUK-7904 */
 
+/* Start YUK-7910 */
+DELETE FROM DeviceTypeCommand
+WHERE DeviceCommandId = -12;
+
+UPDATE DeviceTypeCommand
+SET DeviceType = 'Device Group'
+WHERE DeviceType = 'CollectionGroup'
+OR DeviceType = 'TestCollectionGroup';
+/* End YUK-7910 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
