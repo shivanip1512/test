@@ -133,7 +133,7 @@
                 <td>
                     <c:choose>
                         <c:when test="${d.routeUpdated}">
-                            <amr:routeLocateRouteUpdateInfo oldRouteName="${d.initialRouteName}" newRouteName="${d.routeName}" />
+                            <amr:routeLocateRouteUpdateInfo newRouteName="${d.routeName}" />
                         </c:when>
                         <c:otherwise>
                             <div id="${d.id}">
