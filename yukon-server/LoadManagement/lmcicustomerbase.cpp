@@ -73,7 +73,7 @@ const string& CtiLMCICustomerBase::getCurtailmentAgreement() const
 
 const string& CtiLMCICustomerBase::getTimeZone() const
 {
-    return (const std::string &) _timezone;
+    return _time_zone;
 }
 
 LONG CtiLMCICustomerBase::getCustomerOrder() const
@@ -117,21 +117,7 @@ CtiLMCICustomerBase& CtiLMCICustomerBase::setCurtailmentAgreement(const string& 
 CtiLMCICustomerBase& CtiLMCICustomerBase::setTimeZone(const string& timezone)
 {
 
-    char * timezone_cstr;
-
-    //string str2 ("Please split this phrase into tokens");
-
-    timezone_cstr = new char [timezone.size()+1];
-    strcpy (timezone_cstr, timezone.c_str());
-
-    // timezone_cstrnow contains a c-string copy of timezone
-
-    char end_ptr_CHAR =  '\0'; 
-    char * end_ptr = (&(end_ptr_CHAR));
-    const int DECIMAL_BASE = 10; 
-    long long_timezone = strtol(timezone_cstr, &end_ptr, DECIMAL_BASE);
-
-    _timezone = long_timezone;
+    _time_zone = timezone;
     return *this;
 }
 
@@ -157,7 +143,7 @@ void CtiLMCICustomerBase::restoreGuts(RWvistream& istrm)
           >> _customerdemandlevel
           >> _curtailamount
           >> _curtailmentagreement
-          >> _timezone
+          >> _time_zone
           >> _customerorder;
 }
 
@@ -175,7 +161,7 @@ void CtiLMCICustomerBase::saveGuts(RWvostream& ostrm ) const
           << _customerdemandlevel
           << _curtailamount
           << _curtailmentagreement
-          << _timezone
+          << _time_zone
           << _customerorder;
 
     return;
@@ -232,7 +218,7 @@ void CtiLMCICustomerBase::restore(RWDBReader& rdr)
     rdr["customerdemandlevel"] >> _customerdemandlevel;
     rdr["curtailamount"] >> _curtailamount;
     rdr["curtailmentagreement"] >> _curtailmentagreement;
-    rdr["timezone"] >> _timezone;
+    rdr["timezone"] >> _time_zone;
     rdr["customerorder"] >> _customerorder;
 }
 
