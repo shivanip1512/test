@@ -1,15 +1,22 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.statistic.StatisticData;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -27,8 +34,9 @@ import com.cannontech.database.data.pao.PAOGroups;
  * 				statType - DynamicPaoStatistics.statisticType
  * @author snebben
  */
-public class StatisticModel extends ReportModelBase
-{
+public class StatisticModel extends ReportModelBase {
+    Logger log = YukonLogManager.getLogger(StatisticModel.class);
+    
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 5;
 	
@@ -121,69 +129,46 @@ public class StatisticModel extends ReportModelBase
 		super();
 		setStatPeriodType(statPeriodType_);
 		setStatType(statType_);
+		setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.METER,
+                ReportFilter.DEVICE,
+                ReportFilter.GROUPS}
+                );
 	}
 
 	@Override
 	public void collectData()
 	{
-		//Reset all objects, new data being collected!
-		setData(null);
-				
-		int rowCount = 0;
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				if(getStatPeriodType() == null || !getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING))
-				{
-					pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-					CTILogger.info("START DATE > " + getStartDate());
-				}	
-				rset = pstmt.executeQuery();
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-			}
-		}
-				
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
+	    
+	  //Reset all objects, new data being collected!
+        setData(null);
+                
+        SqlFragmentSource sql = buildSQLStatement();
+        log.info(sql.toString()); 
+        log.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
+        
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                addDataRow(rs);
+            }
+        });
+        
+        log.info("Report Records Collected from Database: " + getData().size());
 	}
 		 
 	/**
 	 * Build the SQL statement to retrieve <StatisticDeviceDataBase> data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement()
+	public SqlFragmentSource buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT PAO.PAOName, DPS.ATTEMPTS, DPS.COMMERRORS, DPS.COMPLETIONS, DPS.REQUESTS, " +
-		" DPS.SYSTEMERRORS, DPS.PROTOCOLERRORS " + 
-		" FROM DYNAMICPAOSTATISTICS DPS, YUKONPAOBJECT PAO " +
-		" WHERE DPS.PAOBJECTID = PAO.PAOBJECTID ");
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT PAO.PAOName, DPS.ATTEMPTS, DPS.COMMERRORS, DPS.COMPLETIONS, DPS.REQUESTS, ");
+	    sql.append(" DPS.SYSTEMERRORS, DPS.PROTOCOLERRORS ");
+	    sql.append(" FROM DYNAMICPAOSTATISTICS DPS, YUKONPAOBJECT PAO ");
+	    sql.append(" WHERE DPS.PAOBJECTID = PAO.PAOBJECTID ");
 		if(getPaoIDs() != null)
 		{
 			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
@@ -194,19 +179,33 @@ public class StatisticModel extends ReportModelBase
 			}
 			sql.append(")");
 		}
-
+        
 		if( getPaoClass() != null )
 			sql.append(" AND PAOCLASS = '" + getPaoClass() +"' ");
 		if (getCategory() != null)
 			sql.append(" AND PAO.CATEGORY = '" + getCategory() + "' "); 
 		if (getStatPeriodType() != null )
 			sql.append(" AND DPS.STATISTICTYPE='" + getStatPeriodType() + "' ");
-			
-		if(getStatPeriodType() != null && getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING))
-			sql.append(" ORDER BY PAO.PAOName");
-		else
-			sql.append(" AND (STARTDATETIME >= ? ) ORDER BY PAO.PAOName");
-			
+		
+		// RESTRICT BY DEVICE/METER PAOID (if any)
+        String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
+        if (!StringUtils.isBlank(paoIdWhereClause)) {
+            sql.append(" AND " + paoIdWhereClause);
+        }
+        
+        // RESTRICT BY GROUPS (if any)
+        final String[] groups = getBillingGroups();
+        if (groups != null && groups.length > 0) {
+            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND ", deviceGroupSqlWhereClause);
+        }
+		  
+        if(getStatPeriodType() != null && getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING)) {
+            sql.append(" ORDER BY PAO.PAOName");
+        } else {
+            sql.append(" AND (STARTDATETIME >= ").appendArgument(getStartDate()).append(") ORDER BY PAO.PAOName");
+        }
+        
 		return sql;
 		
 	}
