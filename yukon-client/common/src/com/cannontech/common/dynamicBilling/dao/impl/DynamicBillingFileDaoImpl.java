@@ -195,7 +195,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 			field.setFormatId(rs.getInt("FormatID"));
 			field.setName(rs.getString("FieldName"));
 			field.setOrder(rs.getInt("FieldOrder"));
-			if (field.getName().equals("Plain Text")) {  //take string value literally
+			if (field.getName().equals("Plain Text")) {  //take string value literally.  We accept the fact that "" is now " ".
 			    field.setFormat(rs.getString("FieldFormat"));
 			} else {
 			    field.setFormat(SqlUtils.convertDbValueToString(rs.getString("FieldFormat")));
