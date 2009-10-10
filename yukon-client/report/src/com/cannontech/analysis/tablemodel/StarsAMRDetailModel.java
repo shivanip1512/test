@@ -24,6 +24,8 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -262,9 +264,14 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             }
             return devices;
         } else {
-            return Lists.newArrayList();
+            /* If they didn't pick anything to filter on, assume all devices. */
+            /* Use contents of SystemGroupEnum.DEVICETYPES. */
+            DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
+            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
+            return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
         }
     }
+    
     @Override
     public String getDateRangeString()
     {
