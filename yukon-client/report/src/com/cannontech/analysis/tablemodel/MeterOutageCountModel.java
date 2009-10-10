@@ -3,27 +3,45 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Lists;
 
-public class MeterOutageCountModel extends ReportModelBase
+public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel.OutageCountRow>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 6;
@@ -59,7 +77,7 @@ public class MeterOutageCountModel extends ReportModelBase
     private boolean incompleteDataReport = false;
     /** Map of PaObjectId to GrandTotalOutageCount for each pao **/
     private Map<Integer, Integer> paoIdToGrandOutageTotalMap = new HashMap<Integer, Integer>();
-    private Vector allData = new Vector();
+    private Vector<OutageCountRow> allData = new Vector<OutageCountRow>();
     
     static public class OutageCountRow
     {	
@@ -113,68 +131,12 @@ public class MeterOutageCountModel extends ReportModelBase
                 );
 		
 	}
-	/**
-	 * Add MissedMeter objects to data, retrieved from rset.
-	 * @param ResultSet rset
-	 * @throws SQLException 
-	 */
-	@SuppressWarnings("unchecked")
-    public void addDataRow(ResultSet rset) throws SQLException
-	{
-	    OutageCountRow outageCountRow;
-	    String paoName = rset.getString(1);
-	    String pointName = rset.getString(2);
-	    Timestamp timestamp = rset.getTimestamp(3);
-	    Integer reading = new Integer(rset.getInt(4));
-	    Integer paobjectId = new Integer(rset.getInt(5));
-
-	    if( previousPaobjectId != null) {
-
-	        if( previousPaobjectId.intValue() != paobjectId.intValue()) {
-	            // new device
-	            if( timestamp == null )	//data from the outer join was returned
-	                outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
-	            else 
-	                outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
-
-	            previousReading = reading;
-	            previousPaobjectId = paobjectId;
-	            totalOutageCount = 0; //reset the total                    
-	        }else {
-	            //same device
-	            int intervalDif = reading - previousReading;
-	            totalOutageCount += intervalDif;
-
-	            outageCountRow = new OutageCountRow( paobjectId, paoName, pointName, 
-	                                                 new Date(timestamp.getTime()),
-	                                                 reading, intervalDif);
-
-	            //put the "new" grand total in the map every time we have more than one entry.
-	            paoIdToGrandOutageTotalMap.put(paobjectId, totalOutageCount);
-	            previousReading = reading;
-	            previousPaobjectId = paobjectId;
-	        }
-	    }else {
-	        // first result
-	        if( timestamp == null )	//data from the outer join was returned
-	            outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
-	        else 
-	            outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
-
-	        previousReading = reading;
-	        previousPaobjectId = paobjectId;
-	        //Don't have an intervalDif to calculate...can't add it to lookup map
-	    }
-
-	    allData.add(outageCountRow);
-	}
     
     /**
      * This method will load data based on the minimumDifference selected by the user.
      * The First AND Last entry for each Device pair will be added to the list.
      * Any intermediate entries will be added to the list IF their IntervalDifference is >= minimumDifferenc. 
      */
-    @SuppressWarnings("unchecked")
     public void loadOutageCountData() {
         
         for (OutageCountRow outageCountRow : (Vector<OutageCountRow>)allData) {
@@ -187,7 +149,6 @@ public class MeterOutageCountModel extends ReportModelBase
         }
     }
     
-    @SuppressWarnings("unchecked")
     public void loadIncompleteData() {
 
         for (OutageCountRow outageCountRow : (Vector<OutageCountRow>)allData) {
@@ -245,70 +206,164 @@ public class MeterOutageCountModel extends ReportModelBase
             setIncompleteDataReport(param != null);
         }
     }
-    
-    /**
-	 * Build the SQL statement to retrieve PowerFail data.
-	 * @return StringBuffer  an sqlstatement
-	 */
-	public SqlFragmentSource buildSQLStatement()
-	{
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE, PAO.PAOBJECTID ");
-        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, ");
-        sql.append(" POINT P ");
-        sql.append((isIncompleteDataReport() ? " left outer " : ""));
-        sql.append(" join RAWPOINTHISTORY RPH ");
-        sql.append(" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ").appendArgument(getStartDate());
-        sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate()); //this is the join clause
-        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID ");
-        sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
-        sql.append(" AND P.POINTOFFSET = 20 ");
-        sql.append(" AND P.POINTTYPE = 'PulseAccumulator' ");
-			
-		// RESTRICT BY DEVICE/METER PAOID (if any)
-		String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
-		if (!StringUtils.isBlank(paoIdWhereClause)) {
-		    sql.append(" AND ", paoIdWhereClause);
-		}
-		
-		// RESTRICT BY GROUPS (if any)
-        final String[] groups = getBillingGroups();
-        if (groups != null && groups.length > 0) {
-            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND ", deviceGroupSqlWhereClause);
-        }
-					
-		sql.append("ORDER BY PAO.PAONAME, P.POINTNAME, TIMESTAMP");
-		return sql;
-	
-	}
-	
+
 	@Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
 		setData(null);
-
-        SqlFragmentSource sql = buildSQLStatement();
-        CTILogger.info(sql.toString()); 
-        CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
-        
-        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
-        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                addDataRow(rs);
-            }
-        });
-        
-		if (isIncompleteDataReport())
-			loadIncompleteData();
-		else
-			loadOutageCountData();
 		
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
-	}
+		List<SimpleDevice> devices = getDeviceList();
+        List<PaoPointIdentifier> identifiers = Lists.newArrayList();
+        for(SimpleDevice device : devices) {
+            try {
+                AttributeService attributeService = YukonSpringHook.getBean("attributeService", AttributeService.class);
+                PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(device, BuiltInAttribute.BLINK_COUNT);
+                identifiers.add(identifier);
+            } catch (IllegalArgumentException e) {
+                continue;  /* This device does not support the choosen attribute. */
+            }
+        }
+        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoCollections.mapPaoPointIdentifiers(identifiers);
+
+        SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+        for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){
+            List<Integer> deviceIds = Lists.newArrayList();
+            for(PaoIdentifier paoIdentifier :  paoPointIdentifiersMap.get(pointIdentifier)){
+                deviceIds.add(paoIdentifier.getPaoId());
+            }
+
+            ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+
+            SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
+                @Override
+                public SqlFragmentSource generate(List<Integer> subList) {
+                    SqlStatementBuilder sql = new SqlStatementBuilder();
+             
+                    sql.append("SELECT DISTINCT PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE, PAO.PAOBJECTID ");
+                    sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, ");
+                    sql.append(" POINT P ");
+                    sql.append((isIncompleteDataReport() ? " left outer " : ""));
+                    sql.append(" join RAWPOINTHISTORY RPH ");
+                    sql.append(" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ").appendArgument(getStartDate());
+                    sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate()); //this is the join clause
+                    sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID ");
+                    sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+
+                    sql.append(" AND P.PointOffset = ").appendArgument(pointIdentifier.getOffset());
+                    sql.append(" AND P.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
+
+                    // RESTRICT BY DEVICE/METER PAOID (if any)
+                    sql.append("  AND PAO.PAObjectID in (").appendArgumentList(subList).append(") ");
+                    
+                    // RESTRICT BY GROUPS (if any)
+                    final String[] groups = getBillingGroups();
+                    if (groups != null && groups.length > 0) {
+                        SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+                        sql.append(" AND ", deviceGroupSqlWhereClause);
+                    }
+                    sql.append("ORDER BY PAO.PAONAME, P.POINTNAME, TIMESTAMP");
+
+                    CTILogger.info("SQL for StarsAMRDetailModel: (" + pointIdentifier.toString() + " - " + sql.toString());
+                    CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+
+                    return sql;
+                }
+            };
+
+            List<OutageCountRow> rows = template.query(gen, deviceIds, new ParameterizedRowMapper<OutageCountRow>() {
+                @Override
+                public OutageCountRow mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    
+                    OutageCountRow outageCountRow;
+                    String paoName = rs.getString(1);
+                    String pointName = rs.getString(2);
+                    Timestamp timestamp = rs.getTimestamp(3);
+                    Integer reading = new Integer(rs.getInt(4));
+                    Integer paobjectId = new Integer(rs.getInt(5));
+
+                    if( previousPaobjectId != null) {
+
+                        if( previousPaobjectId.intValue() != paobjectId.intValue()) {
+                            // new device
+                            if( timestamp == null ) //data from the outer join was returned
+                                outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
+                            else 
+                                outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
+
+                            previousReading = reading;
+                            previousPaobjectId = paobjectId;
+                            totalOutageCount = 0; //reset the total                    
+                        }else {
+                            //same device
+                            int intervalDif = reading - previousReading;
+                            totalOutageCount += intervalDif;
+
+                            outageCountRow = new OutageCountRow( paobjectId, paoName, pointName, 
+                                                                 new Date(timestamp.getTime()),
+                                                                 reading, intervalDif);
+
+                            //put the "new" grand total in the map every time we have more than one entry.
+                            paoIdToGrandOutageTotalMap.put(paobjectId, totalOutageCount);
+                            previousReading = reading;
+                            previousPaobjectId = paobjectId;
+                        }
+                    }else {
+                        // first result
+                        if( timestamp == null ) //data from the outer join was returned
+                            outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
+                        else 
+                            outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
+
+                        previousReading = reading;
+                        previousPaobjectId = paobjectId;
+                        //Don't have an intervalDif to calculate...can't add it to lookup map
+                    }
+                    return outageCountRow;
+                }
+            });
+            allData.addAll(rows);
+        }
+        
+        if (isIncompleteDataReport()) {
+            loadIncompleteData();
+        } else {
+            loadOutageCountData();
+        }
+        
+        CTILogger.info("Report Records Collected from Database: " + getData().size());
+        return;
+    }
+    
+    private List<SimpleDevice> getDeviceList() {
+        
+        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
+
+        final String[] groups = getBillingGroups();
+        
+        if (groups != null && groups.length > 0 ) {
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(groups));
+            return Lists.newArrayList(deviceGroupService.getDevices(deviceGroups));
+        } else if (getPaoIDs() != null && getPaoIDs().length > 0) {
+            List<SimpleDevice> devices = Lists.newArrayList();
+            for(int paoId : getPaoIDs()){
+                try {
+                    devices.add(deviceDao.getYukonDevice(paoId));
+                } catch (DataAccessException e) {
+                    CTILogger.error("Unable to find device with id: " + paoId + ". This device will be skipped.");
+                    continue;
+                }
+            }
+            return devices;
+        } else {
+            /* If they didn't pick anything to filter on, assume all devices. */
+            /* Use contents of SystemGroupEnum.DEVICETYPES. */
+            DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
+            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
+            return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
+        }
+    }
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
