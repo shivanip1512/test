@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,6 +29,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ExpireLRUMap;
@@ -79,18 +81,25 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     }
 
     public class OutageData {
+        public String outageLogIndex = "-";
         public PointValueHolder timestamp;
         public String duration;
-        public OutageData(PointValueHolder timestamp, String duration ) {
+        public OutageData(String outageLogIndex, PointValueHolder timestamp, String duration ) {
             super();
             this.timestamp = timestamp;
             this.duration = duration;
+            if (StringUtils.isNumeric(outageLogIndex)) {
+                this.outageLogIndex = outageLogIndex;
+            }
         }
         public PointValueHolder getTimestamp() {
             return timestamp;
         }
         public String getDuration() {
             return duration;
+        }
+        public String getOutageLogIndex() {
+            return outageLogIndex;
         }
     }
     
@@ -193,7 +202,13 @@ public class MeterOutagesWidget extends WidgetControllerBase {
             if( holder.getId() == litePoint.getPointID()) {
                 String duration = TimeUtil.convertSecondsToTimeString(holder.getValue());
                 PointValueHolder timestamp = holder;
-                OutageData od = new OutageData(timestamp, duration);
+
+                // based on the string returned from porter, parse out the outage index
+                int outageStrIndex = ((PointData)holder).getStr().indexOf("/ Outage ");
+                int beginIndex = outageStrIndex + 9;   // 9 = num chars from "/ Outage " to the log index in the log
+                String outageLogIndex = ((PointData)holder).getStr().substring(beginIndex, beginIndex+1);
+                
+                OutageData od = new OutageData(outageLogIndex, timestamp, duration);
                 outageData.add(od);
             }
         }

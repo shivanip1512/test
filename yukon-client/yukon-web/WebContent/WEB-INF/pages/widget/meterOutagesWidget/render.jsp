@@ -37,6 +37,7 @@
 	<div class="widgetInternalSection">
 	<table class="miniResultsTable">
 	  <tr>
+	  	<th>Log</th>
 	    <th>Time</th>
 	    <th>Duration</th>
 	  </tr>
@@ -51,6 +52,7 @@
 	  <c:if test="${not empty data.outageData}">
 	  <c:forEach items="${data.outageData}" var="outage">
 	  <tr class="<ct:alternateRow odd="" even="altRow"/>">
+		<td>${outage.outageLogIndex}</td>
 		<td>
 			<cti:formatDate value="${outage.timestamp.pointDataTimeStamp}" type="BOTH" var="formattedTimestamp" />
 			${formattedTimestamp}
