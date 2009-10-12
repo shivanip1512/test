@@ -1124,6 +1124,9 @@
         <property name="optOutStatusService" ref="optOutStatusService" />
     </bean>
     <bean id="drOptOutMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseOptOutMenuOptionProducer"/>
+    <bean id="drDetailsMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseDetailsMenuOptionProducer">
+        <property name="rolePropertyDao" ref="rolePropertyDao" />
+    </bean>
 
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>
     <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"/>

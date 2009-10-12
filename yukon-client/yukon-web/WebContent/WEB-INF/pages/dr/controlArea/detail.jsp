@@ -38,45 +38,59 @@
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.info"/>
 	            <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.state"/>
-                        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STATE"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.priority"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.startStop"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
-                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.separator"/>
-                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
-                        </tags:nameValue>
+                        <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.state"/>
+                            <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STATE"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.priority"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.startStop"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.separator"/>
+                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
 
 	                    <c:if test="${!empty controlArea.triggers}">
                             <c:forEach var="trigger" items="${controlArea.triggers}">
-                                <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
-    	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.trigger" argument="${triggerNumber}"/>
-    	                        <tags:nameValue name="${fieldName}">
-                                    <cti:msg var="thresholdTitle" key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/>
-                                    <tags:nameValue name="${thresholdTitle}">
-                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
+                                <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD,CONTROL_AREA_PEAK_PROJECTION,CONTROL_AREA_ATKU">
+                                    <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
+        	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.trigger" argument="${triggerNumber}"/>
+        	                        <tags:nameValue name="${fieldName}">
+                                        <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
+                                            <cti:msg var="thresholdTitle" key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/>
+                                            <tags:nameValue name="${thresholdTitle}">
+                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
+                                            </tags:nameValue>
+                                        </cti:checkRolesAndProperties>
+                                        <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
+                                            <cti:msg var="peakTitle" key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/>
+                                            <tags:nameValue name="${peakTitle}">
+                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
+                                            </tags:nameValue>
+                                        </cti:checkRolesAndProperties>
+                                        <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
+                                            <cti:msg var="atkuTitle" key="yukon.web.modules.dr.controlAreaDetail.info.atku"/>
+                                            <tags:nameValue name="${atkuTitle}">
+                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
+                                            </tags:nameValue>
+                                        </cti:checkRolesAndProperties>
                                     </tags:nameValue>
-    
-                                    <cti:msg var="peakTitle" key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/>
-                                    <tags:nameValue name="${peakTitle}">
-                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
-                                    </tags:nameValue>
-    
-                                    <cti:msg var="atkuTitle" key="yukon.web.modules.dr.controlAreaDetail.info.atku"/>
-                                    <tags:nameValue name="${atkuTitle}">
-                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
-                                    </tags:nameValue>
-                                </tags:nameValue>
+                                </cti:checkRolesAndProperties>
                             </c:forEach>                     
 	                    </c:if>
                     </tags:nameValueContainer>

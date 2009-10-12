@@ -39,34 +39,48 @@
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.info"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.state"/>
-                        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-                            <cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.start"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.stop"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.currentGear"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.priority"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.reduction"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.loadCapacity"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/>
-                        </tags:nameValue>
+                        <cti:checkRolesAndProperties value="PROGRAM_STATE">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.state"/>
+                            <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+                                <cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="PROGRAM_START">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.start"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="PROGRAM_STOP">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.stop"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.currentGear"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.priority"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.reduction"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.loadCapacity"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
                     </tags:nameValueContainer>
                 </tags:abstractContainer>
             </td>
@@ -270,29 +284,49 @@
     <%@ include file="../loadGroup/loadGroupList.jspf" %>
     <br>
 
-    <c:if test="${empty parentControlArea}">
-        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
-    </c:if>
-    <c:if test="${!empty parentControlArea}">
-        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
-        <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
-            <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
-        </c:url>
-        <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
-    </c:if>
-    <br>
+    <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
+        <c:if test="${empty parentControlArea}">
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
+        </c:if>
+        <c:if test="${!empty parentControlArea}">
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
+            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}">
+                <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
+                    <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
+                </c:url>
+                <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
+            </cti:checkPaoAuthorization>
+            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}" invert="true">
+                <cti:msg var="noParentPermission" key="yukon.web.modules.dr.programDetail.parents.noControlAreaPermission"/>
+                <span title="${noParentPermission}">
+                    <spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody>
+                </span>
+            </cti:checkPaoAuthorization>
+        </c:if>
+        <br>
+    </cti:checkRolesAndProperties>
 
-    <c:if test="${empty parentScenarios}">
-        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
-    </c:if>
-    <c:if test="${!empty parentScenarios}">
-        <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
-        <c:forEach var="parentScenario" items="${parentScenarios}">
-            <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
-                <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
-            </c:url>
-            <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
-        </c:forEach>
-    </c:if>
+    <cti:checkRolesAndProperties value="SHOW_SCENARIOS">
+        <c:if test="${empty parentScenarios}">
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
+        </c:if>
+        <c:if test="${!empty parentScenarios}">
+            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
+            <c:forEach var="parentScenario" items="${parentScenarios}">
+                <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentScenario}">
+                    <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
+                        <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
+                    </c:url>
+                    <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
+                </cti:checkPaoAuthorization>
+                <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentScenario}" invert="true">
+                    <cti:msg var="noParentPermission" key="yukon.web.modules.dr.programDetail.parents.noScenarioPermission"/>
+                    <span title="${noParentPermission}">
+                        <spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody>
+                    </span>
+                </cti:checkPaoAuthorization>
+            </c:forEach>
+        </c:if>
+    </cti:checkRolesAndProperties>
 
 </cti:standardPage>

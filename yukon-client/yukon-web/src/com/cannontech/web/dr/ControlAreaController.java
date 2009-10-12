@@ -26,6 +26,7 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.DurationFormattingService.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -43,8 +44,10 @@ import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.SHOW_CONTROL_AREAS)
 public class ControlAreaController {
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;

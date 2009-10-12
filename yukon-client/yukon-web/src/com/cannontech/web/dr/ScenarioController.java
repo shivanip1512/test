@@ -21,6 +21,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
@@ -29,8 +30,10 @@ import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.SHOW_SCENARIOS)
 public class ScenarioController {
     private ScenarioService scenarioService;
     private PaoAuthorizationService paoAuthorizationService;

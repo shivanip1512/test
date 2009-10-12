@@ -40,25 +40,35 @@
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.state"/>
-                        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-                            <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.lastAction"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.reduction"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/>
-                        </tags:nameValue>
-                        <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity"/>
-                        <tags:nameValue name="${fieldName}">
-                            <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/>
-                        </tags:nameValue>
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
+                            <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+                                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.lastAction"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LAST_ACTION"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/CONTROL_STATISTICS"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.reduction"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
+                            <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity"/>
+                            <tags:nameValue name="${fieldName}">
+                                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/>
+                            </tags:nameValue>
+                        </cti:checkRolesAndProperties>
                     </tags:nameValueContainer>
                 </tags:abstractContainer>
             </td>
@@ -157,10 +167,18 @@
     <c:if test="${!empty parentPrograms}">
         <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.programs"/></p>
         <c:forEach var="parentProgram" items="${parentPrograms}">
-            <c:url var="programURL" value="/spring/dr/program/detail">
-                <c:param name="programId" value="${parentProgram.paoIdentifier.paoId}"/>
-            </c:url>
-            <a href="${programURL}"><spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody></a><br>
+            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentProgram}">
+                <c:url var="programURL" value="/spring/dr/program/detail">
+                    <c:param name="programId" value="${parentProgram.paoIdentifier.paoId}"/>
+                </c:url>
+                <a href="${programURL}"><spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody></a><br>
+            </cti:checkPaoAuthorization>
+            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentProgram}" invert="true">
+                <cti:msg var="noParentPermission" key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission"/>
+                <span title="${noParentPermission}">
+                    <spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody>
+                </span>
+            </cti:checkPaoAuthorization>
         </c:forEach>
     </c:if>
 </cti:standardPage>

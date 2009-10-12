@@ -505,6 +505,8 @@
 <entry key="yukon.web.modules.dr.programDetail.parents.noScenarios">
     This program is not included in any scenarios.
 </entry>
+<entry key="yukon.web.modules.dr.programDetail.parents.noScenarioPermission">You do not have permission to view this scenario.</entry>
+<entry key="yukon.web.modules.dr.programDetail.parents.noControlAreaPermission">You do not have permission to view this control area.</entry>
 
 
 <!-- Load Group List -->
@@ -578,5 +580,6 @@
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms">
     This load group is not included in any programs.
 </entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission">You do not have permission to view this program.</entry>
 
 </properties>
