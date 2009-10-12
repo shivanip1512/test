@@ -41,7 +41,8 @@ $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib
 
 CAPCTRLTESTOBJS= \
-test_ccsubstationbus.obj
+test_ccsubstationbus.obj \
+test_ccFeeder.obj
 
 CAPCTRLBASEOBJS= \
 $(OBJ)\ccservice.obj \

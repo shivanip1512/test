@@ -16,7 +16,6 @@
 #include "dbaccess.h"
 #include "msg_signal.h"
 
-#include "ccsubstationbus.h"
 #include "ccid.h"
 #include "cccapbank.h"
 #include "ccfeeder.h"
@@ -31,7 +30,7 @@
 #include "utility.h"
 #include "msg_lmcontrolhistory.h"
 #include "tbl_pt_alarm.h"
-
+#include "ccsubstationbus.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -110,7 +109,6 @@ CtiCCConfirmationStats& CtiCCFeeder::getConfirmationStats()
 {
     return _confirmationStats;
 }
-
 
 /*---------------------------------------------------------------------------
     getPAOId
@@ -2006,41 +2004,132 @@ CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(BOOL flag)
 
     .
 ---------------------------------------------------------------------------*/
-CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMultiMsg_vec& pointChanges)
+CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMultiMsg_vec& pointChanges, double leadLevel, double lagLevel, double currentVarValue)
 {
     CtiCCCapBank* returnCapBank = NULL;
-    int i = 0;
     CtiTime currentTime = CtiTime();
+    BankOperation solution;
+    bool endOnTrip = false;
+    std::vector<CtiCCCapBank*> banks;
 
-    if( kvarSolution < 0.0 )
+    if (kvarSolution == 0.0)
     {
-        //sort according to CloseOrder..
+        return NULL;
+    }
+    else if (kvarSolution < 0.0)
+    {
+        solution = Close;
+        // Sort according to CloseOrder.
         CtiCCCapBank_SCloseVector closeCaps;
-        for (i = 0; i < _cccapbanks.size(); i++)
-            closeCaps.insert(_cccapbanks[i]);
-
-        for(i=0;i<closeCaps.size();i++)
+        for (int i = 0; i < _cccapbanks.size(); i++)
         {
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)closeCaps[i];
+            closeCaps.insert(_cccapbanks[i]);
+        }
+        banks = closeCaps.get_container();
+    }
+    else
+    {
+        solution = Open;
+        // Sort according to TripOrder..
+        CtiCCCapBank_STripVector tripCaps;
+        for (int i = 0; i < _cccapbanks.size(); i++)
+        {
+            tripCaps.insert(_cccapbanks[i]);
+        }
+        banks = tripCaps.get_container();
+    }
 
-            if( currentCapBank->getIgnoreFlag() &&
-                currentTime >= CtiTime(currentCapBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60)) )
-                currentCapBank->setIgnoreFlag(FALSE);
+    for (int i = 0; i < banks.size(); i++)
+    {
+        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)banks[i];
 
-            if( !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
-                !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
-                ( currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
-                  currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
-                  currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ) &&
-                !currentCapBank->getIgnoreFlag()  )
+        if (currentCapBank->getIgnoreFlag() &&
+            currentTime >= CtiTime(currentCapBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60)))
+        {
+            currentCapBank->setIgnoreFlag(FALSE);
+        }
+
+        long controlStatus = currentCapBank->getControlStatus();
+        bool correctControlStatus;
+
+        if (solution == Close)
+        {
+            correctControlStatus = (controlStatus == CtiCCCapBank::Open || controlStatus == CtiCCCapBank::OpenQuestionable || controlStatus == CtiCCCapBank::OpenPending);
+        }
+        else
+        {
+            correctControlStatus = (controlStatus == CtiCCCapBank::Close || controlStatus == CtiCCCapBank::CloseQuestionable || controlStatus == CtiCCCapBank::ClosePending);
+        }
+
+        if (!currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
+            !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
+            correctControlStatus && !currentCapBank->getIgnoreFlag())
+        {
+            //Before anything, make sure this bank will not push past a threshold.
+            if (!((leadLevel == 0) && (lagLevel == 0) && (currentVarValue == 0)))
             {
-                //have we went past the max daily ops
-                if( currentCapBank->getMaxDailyOps() > 0 &&
-                    !currentCapBank->getMaxDailyOpsHitFlag() &&
-                    currentCapBank->getCurrentDailyOperations() >= currentCapBank->getMaxDailyOps() )//only send once
+                int bankSize = currentCapBank->getBankSize();
+                if (solution == Close)
                 {
-                    currentCapBank->setMaxDailyOpsHitFlag(TRUE);
-                    string text = string("CapBank Exceeded Max Daily Operations");
+                    int newValue = currentVarValue - bankSize;
+                    if ((newValue <= leadLevel))
+                    {
+                        //This would cause another operation, so try a different bank.
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPAOName() << " Id: " << currentCapBank->getPAOId() << " size: " << currentCapBank->getBankSize() << endl;
+                        }
+                        continue;
+                    }
+                }
+                else
+                {
+                    int newValue = currentVarValue + bankSize;
+                    if ((newValue >= lagLevel))
+                    {
+                        //This would cause another operation, so try a different bank.
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPAOName() << " Id: " << currentCapBank->getPAOId() << " size: " << currentCapBank->getBankSize() << endl;
+                        }
+                        continue;
+                    }
+                }
+            }
+
+            // Check max daily ops.
+            if (currentCapBank->getMaxDailyOps() > 0 &&
+                !currentCapBank->getMaxDailyOpsHitFlag() &&
+                currentCapBank->getCurrentDailyOperations() >= currentCapBank->getMaxDailyOps())
+            {
+                currentCapBank->setMaxDailyOpsHitFlag(true);
+                string text = string("CapBank Exceeded Max Daily Operations");
+                string additional = string("CapBank: ");
+                additional += getPAOName();
+                if (_LOG_MAPID_INFO)
+                {
+                    additional += " MapID: ";
+                    additional += currentCapBank->getMapLocationId();
+                    additional += " (";
+                    additional += currentCapBank->getPAODescription();
+                    additional += ")";
+                }
+
+                if (currentCapBank->getOperationAnalogPointId() > 0)
+                {
+                    CtiSignalMsg* pSig = new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
+                                                                        TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, currentCapBank->getCurrentDailyOperations() );
+                    pSig->setCondition(CtiTablePointAlarming::highReasonability);
+                    pointChanges.push_back(pSig);
+                }
+
+                // We should disable bank if the flag says so
+                if (currentCapBank->getMaxOpsDisableFlag())
+                {
+                    currentCapBank->setDisableFlag(TRUE);
+                    CtiCCSubstationBusStore::getInstance()->UpdateCapBankDisableFlagInDB(currentCapBank);
+
+                    string text = string("CapBank Disabled");
                     string additional = string("CapBank: ");
                     additional += getPAOName();
                     if (_LOG_MAPID_INFO)
@@ -2054,166 +2143,49 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                     if (currentCapBank->getOperationAnalogPointId() > 0)
                     {
                         CtiSignalMsg* pSig = new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
-                                                                            TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, currentCapBank->getCurrentDailyOperations() );
+                                                              TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, currentCapBank->getCurrentDailyOperations() );
                         pSig->setCondition(CtiTablePointAlarming::highReasonability);
                         pointChanges.push_back(pSig);
                     }
-                    //we should disable feeder if the flag says so
-                    if( currentCapBank->getMaxOpsDisableFlag() )
+
+                    if (_END_DAY_ON_TRIP && (solution == Open))
                     {
-                        currentCapBank->setDisableFlag(TRUE);
-                        CtiCCSubstationBusStore::getInstance()->UpdateCapBankDisableFlagInDB(currentCapBank);
-
-                   //     setBusUpdatedFlag(TRUE);
-                        string text = string("CapBank Disabled");
-                        string additional = string("CapBank: ");
-                        additional += getPAOName();
-                        if (_LOG_MAPID_INFO)
-                        {
-                            additional += " MapID: ";
-                            additional += currentCapBank->getMapLocationId();
-                            additional += " (";
-                            additional += currentCapBank->getPAODescription();
-                            additional += ")";
-                        }
-                        if (currentCapBank->getOperationAnalogPointId() > 0)
-                        {
-                            CtiSignalMsg* pSig = new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
-                                                                                TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, currentCapBank->getCurrentDailyOperations() );
-                            pSig->setCondition(CtiTablePointAlarming::highReasonability);
-                            pointChanges.push_back(pSig);
-                        }
-
+                        // We need this to return this bank (since we disabled it).
+                        endOnTrip = true;
+                    }
+                    else
+                    {
+                        // Skip this the break statement, lets try the next bank since we disabled this one.
+                        continue;
                     }
                 }
-
-
-                if( !currentCapBank->getDisableFlag() )
-                    returnCapBank = currentCapBank;
-                break;
             }
-        }
-        if (returnCapBank == NULL && _RETRY_FAILED_BANKS)
-        {
-            for(i=0;i<closeCaps.size();i++)
+
+            if (!currentCapBank->getDisableFlag() || endOnTrip)
             {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)closeCaps[i];
-
-                if( !currentCapBank->getRetryCloseFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
-                    !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
-                    (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
-                     currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail) )
-                {
-                    returnCapBank = currentCapBank;
-                    currentCapBank->setRetryCloseFailedFlag(TRUE);
-                    break;
-                }
+                returnCapBank = currentCapBank;
             }
+
+            break;
         }
     }
-    else if( kvarSolution > 0.0 )
+
+    if (returnCapBank == NULL && _RETRY_FAILED_BANKS)
     {
-        //sort according to TripOrder..
-        CtiCCCapBank_STripVector tripCaps;
-        for (i = 0; i < _cccapbanks.size(); i++)
-            tripCaps.insert(_cccapbanks[i]);
-
-
-        for(i=0; i < tripCaps.size();i++)
+        for (int i = 0; i < banks.size(); i++)
         {
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tripCaps[i];
-            if( currentCapBank->getIgnoreFlag() &&
-                currentTime >= CtiTime(currentCapBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60)) )
-                currentCapBank->setIgnoreFlag(FALSE);
+            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)banks[i];
 
-
-            if( !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
-                !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
-                ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-                  currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
-                  currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ) &&
-                !currentCapBank->getIgnoreFlag())
+            if (!currentCapBank->getRetryCloseFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
+                !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+                (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
+                 currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail))
             {
-                //have we went past the max daily ops
-                if( currentCapBank->getMaxDailyOps() > 0 &&
-                    !currentCapBank->getMaxDailyOpsHitFlag() &&
-                    currentCapBank->getCurrentDailyOperations() >= currentCapBank->getMaxDailyOps() )//only send once
-                {
-                    currentCapBank->setMaxDailyOpsHitFlag(TRUE);
-
-                    string text("CapBank Exceeded Max Daily Operations");
-                    string additional("CapBank: ");
-                    additional += getPAOName();
-                    if (_LOG_MAPID_INFO)
-                    {
-                        additional += " MapID: ";
-                        additional += currentCapBank->getMapLocationId();
-                        additional += " (";
-                        additional += currentCapBank->getPAODescription();
-                        additional += ")";
-                    }
-                    if (currentCapBank->getOperationAnalogPointId() > 0)
-                    {
-                        CtiSignalMsg* pSig = new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
-                                                                                TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, currentCapBank->getCurrentDailyOperations() );
-                        pSig->setCondition(CtiTablePointAlarming::highReasonability);
-                        pointChanges.push_back(pSig);
-                    }
-
-                    //we should disable feeder if the flag says so
-                    if( currentCapBank->getMaxOpsDisableFlag() )
-                    {
-                        currentCapBank->setDisableFlag(TRUE);
-                        CtiCCSubstationBusStore::getInstance()->UpdateCapBankDisableFlagInDB(currentCapBank);
-                   //     setBusUpdatedFlag(TRUE);
-                        string text = string("CapBank Disabled");
-                        string additional = string("CapBank: ");
-                        additional += getPAOName();
-                        if (_LOG_MAPID_INFO)
-                        {
-                            additional += " MapID: ";
-                            additional += currentCapBank->getMapLocationId();
-                            additional += " (";
-                            additional += currentCapBank->getPAODescription();
-                            additional += ")";
-                        }
-                        if (currentCapBank->getOperationAnalogPointId() > 0)
-                        {
-                            CtiSignalMsg* pSig = new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
-                                                                                TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, currentCapBank->getCurrentDailyOperations() );
-                            pSig->setCondition(CtiTablePointAlarming::highReasonability);
-                            pointChanges.push_back(pSig);
-                        }
-                    }
-                }
-
-                if( !currentCapBank->getDisableFlag() ||
-                    ( currentCapBank->getDisableFlag() &&
-                      currentCapBank->getMaxDailyOpsHitFlag() && _END_DAY_ON_TRIP &&
-                     (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() ||
-                      currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() + 1)))
-                    returnCapBank = currentCapBank;
+                returnCapBank = currentCapBank;
+                currentCapBank->setRetryCloseFailedFlag(TRUE);
                 break;
             }
         }
-        if (returnCapBank == NULL && _RETRY_FAILED_BANKS)
-        {
-            for(i=0; i < tripCaps.size();i++)
-            {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tripCaps[i];
-
-                if( !currentCapBank->getRetryOpenFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
-                    !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
-                    (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
-                    currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail) )
-                {
-                    returnCapBank = currentCapBank;
-                    currentCapBank->setRetryOpenFailedFlag(TRUE);
-                    break;
-                }
-            }
-        }
-
     }
 
     return returnCapBank;
@@ -3154,7 +3126,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             }
                         }
 
-                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
 
                         if( capBank != NULL &&
                             capBank->getRecloseDelay() > 0 &&
@@ -3209,7 +3181,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             }
                         }
 
-                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                        CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
 
                         //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
@@ -3270,7 +3242,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     dout << CtiTime() << " - Attempting to Decrease Var level in feeder: " << getPAOName() << endl;
                 }
 
-                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                 if( capBank != NULL )
                 {
                     if( capBank->getRecloseDelay() > 0 &&
@@ -3319,7 +3291,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     dout << CtiTime() << " - Attempting to Increase Var level in feeder: " << getPAOName() << endl;
                 }
 
-                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                 if( capBank != NULL )
                 {
                     DOUBLE adjustedBankKVARIncrease = -(leadLevel/100.0)*((DOUBLE)capBank->getBankSize());

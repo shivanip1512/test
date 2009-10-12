@@ -95,10 +95,12 @@ private:
 
 class CtiCCSubstationBusStore
 {
-public:   
+public:
 
     CtiCCSubstationBusStore();
-    typedef enum 
+    virtual ~CtiCCSubstationBusStore();
+
+    typedef enum
     {
         Unknown = 0,
         CapBank,
@@ -135,6 +137,7 @@ public:
 
     static CtiCCSubstationBusStore* getInstance(bool startThreads=true);
     static void deleteInstance();
+    static void setInstance(CtiCCSubstationBusStore* substationBusStore);
 
     void dumpAllDynamicData();
     BOOL isValid();
@@ -158,7 +161,7 @@ public:
     bool UpdateSubstationDisableFlagInDB(CtiCCSubstation* station);
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
-    bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank);
+    virtual bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
@@ -186,7 +189,7 @@ public:
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
     CtiCCStrategyPtr findStrategyByStrategyID(long strategy_id);
-    
+
     long findAreaIDbySubstationID(long substationId);
     long findSpecialAreaIDbySubstationID(long substationId);
     long findSubstationIDbySubBusID(long subBusId);
@@ -221,37 +224,37 @@ public:
                                    map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                    map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                    multimap< long, CtiCCCapBankPtr > *pointid_capbank_map);
-    void reloadFeederFromDatabase(long feederId, map< long, CtiCCStrategyPtr > *strategy_map, 
+    void reloadFeederFromDatabase(long feederId, map< long, CtiCCStrategyPtr > *strategy_map,
                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                  multimap< long, CtiCCFeederPtr > *pointid_feeder_map, 
+                                  multimap< long, CtiCCFeederPtr > *pointid_feeder_map,
                                   map< long, long> *feeder_subbus_map);
-    void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
+    void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                   map< long, CtiCCSubstationPtr > *paobject_substation_map,
-                                  multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
+                                  multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map,
                                   multimap<long, long> *altsub_sub_idmap,
                                   map< long, long> *subbus_substation_map,
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
     void reloadSubstationFromDatabase(long substationId, map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                       map <long, CtiCCAreaPtr> *paobject_area_map,
                                       map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
-                                      multimap< long, CtiCCSubstationPtr > *pointid_station_map, 
+                                      multimap< long, CtiCCSubstationPtr > *pointid_station_map,
                                       map< long, long> *substation_area_map,
                                       map< long, long> *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
-    void reloadAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
+    void reloadAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map,
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
                                   multimap< long, CtiCCAreaPtr > *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas);
-    void reloadSpecialAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
+    void reloadSpecialAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map,
                                   map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
                                   multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
     void reloadTimeOfDayStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadMiscFromDatabase();
-    void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,  
+    void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,
                                       map< long, long> *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
     void reloadOperationStatsFromDatabase(RWDBConnection& conn, long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
@@ -268,24 +271,24 @@ public:
     void reCalculateAllStats( );
 
 
-    template<class T> 
+    template<class T>
     void setOperationSuccessPercents(const T &object, CCStatsObject userDef, CCStatsObject daily, CCStatsObject weekly, CCStatsObject monthly)
     {
-        object->getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() ); 
+        object->getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() );
         object->getOperationStats().setUserDefOpCount( userDef.getOpCount() );
         object->getOperationStats().setUserDefConfFail( userDef.getFailCount() );
         object->getOperationStats().setDailyOpSuccessPercent(  daily.getAverage() );
-        object->getOperationStats().setDailyOpCount( daily.getOpCount() );    
-        object->getOperationStats().setDailyConfFail( daily.getFailCount() );    
+        object->getOperationStats().setDailyOpCount( daily.getOpCount() );
+        object->getOperationStats().setDailyConfFail( daily.getFailCount() );
         object->getOperationStats().setWeeklyOpSuccessPercent( weekly.getAverage() );
-        object->getOperationStats().setWeeklyOpCount( weekly.getOpCount() );   
-        object->getOperationStats().setWeeklyConfFail( weekly.getFailCount() );   
-        object->getOperationStats().setMonthlyOpSuccessPercent( monthly.getAverage() ); 
+        object->getOperationStats().setWeeklyOpCount( weekly.getOpCount() );
+        object->getOperationStats().setWeeklyConfFail( weekly.getFailCount() );
+        object->getOperationStats().setMonthlyOpSuccessPercent( monthly.getAverage() );
         object->getOperationStats().setMonthlyOpCount( monthly.getOpCount() );
         object->getOperationStats().setMonthlyConfFail( monthly.getFailCount() );
     };
-    
-    template<class T> 
+
+    template<class T>
     void setConfirmationSuccessPercents(const T &object, CCStatsObject userDef, CCStatsObject daily, CCStatsObject weekly, CCStatsObject monthly)
     {
         object->getConfirmationStats().setUserDefCommSuccessPercent( userDef.getAverage() );
@@ -304,12 +307,12 @@ public:
     };
     template<class T>
     void incrementConfirmationPercentTotals(const T &object, CCStatsObject &userDef, CCStatsObject &daily,
-                                                          CCStatsObject &weekly, CCStatsObject &monthly) 
+                                                          CCStatsObject &weekly, CCStatsObject &monthly)
     {
-    
+
         if (object->getConfirmationStats().getUserDefCommCount() > 0)
         {
-            userDef.incrementTotal( object->getConfirmationStats().getUserDefCommSuccessPercent()); 
+            userDef.incrementTotal( object->getConfirmationStats().getUserDefCommSuccessPercent());
             userDef.incrementOpCount(1);
         }
         if (object->getConfirmationStats().getDailyCommCount() > 0)
@@ -330,11 +333,11 @@ public:
     };
     template<class T>
     void incrementOperationPercentTotals(const T &object, CCStatsObject &userDef, CCStatsObject &daily,
-                                                          CCStatsObject &weekly, CCStatsObject &monthly) 
+                                                          CCStatsObject &weekly, CCStatsObject &monthly)
     {
         if (object->getOperationStats().getUserDefOpCount() > 0)
         {
-            userDef.incrementTotal(object->getOperationStats().getUserDefOpSuccessPercent()); 
+            userDef.incrementTotal(object->getOperationStats().getUserDefOpSuccessPercent());
             userDef.incrementOpCount(1);
         }
         if (object->getOperationStats().getDailyOpCount() > 0)
@@ -345,7 +348,7 @@ public:
         if (object->getOperationStats().getWeeklyOpCount() > 0)
         {
             weekly.incrementTotal(object->getOperationStats().getWeeklyOpSuccessPercent());
-            weekly.incrementOpCount(1);  
+            weekly.incrementOpCount(1);
         }
         if (object->getOperationStats().getMonthlyOpCount() > 0)
         {
@@ -355,14 +358,14 @@ public:
     };
 
     void cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId);
-    
-    
+
+
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);
     BOOL isFeederOrphan(long feederId);
     void removeFromOrphanList(long ccId);
-    
+
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     list <CtiCCCapBankPtr> getUnsolicitedCapBankList() {return _unsolicitedCapBanks;};
@@ -393,7 +396,7 @@ public:
     void setLinkStatusFlag(BOOL flag);
     BOOL getLinkStatusFlag(void);
 
-    BOOL getVoltReductionSystemDisabled(); 
+    BOOL getVoltReductionSystemDisabled();
     void setVoltReductionSystemDisabled(BOOL disableFlag);
     LONG getVoltDisabledCount();
     void setVoltDisabledCount(LONG value);
@@ -433,9 +436,7 @@ private:
     /* Relating to Max Kvar Cparm */
     long isKVARAvailable( long kvarNeeded );
 
-    virtual ~CtiCCSubstationBusStore();
-    
-    void startThreads(); 
+    void startThreads();
     void reset();
     //bool CtiCCSubstationBusStore::findPointId(long pointId);
     void checkAMFMSystemForUpdates();
@@ -526,10 +527,10 @@ private:
 
     map< long, CtiCCStrategyPtr > _strategyid_strategy_map;
 
-    map< long, long > _substation_specialarea_map; 
-    map< long, long > _substation_area_map; 
-    map< long, long > _subbus_substation_map; 
-    map< long, long > _feeder_subbus_map; 
+    map< long, long > _substation_specialarea_map;
+    map< long, long > _substation_area_map;
+    map< long, long > _subbus_substation_map;
+    map< long, long > _feeder_subbus_map;
     map< long, long > _capbank_subbus_map;
     map< long, long > _capbank_feeder_map;
     map< long, long > _cbc_capbank_map;

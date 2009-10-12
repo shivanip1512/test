@@ -140,7 +140,7 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 
 
 
-void CtiCCSubstationBusStore::startThreads() 
+void CtiCCSubstationBusStore::startThreads()
 {
     //Start the reset thread
     RWThreadFunction func = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doResetThr );
@@ -170,7 +170,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
     {
         return _ccSubstationBuses;
     }
-    
+
     if( (!_isvalid) && (secondsFrom1901 >= _lastdbreloadtime.seconds()+30) )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
@@ -253,7 +253,7 @@ CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(ULONG secondsFrom
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     if (!checkReload)
-    {   
+    {
         return _ccSubstations;
     }
 
@@ -2305,7 +2305,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
     string str;
     char var[128];
     string amfm_interface = "NONE";
-    
+
     std::strcpy(var, "CAP_CONTROL_AMFM_INTERFACE");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
@@ -2501,6 +2501,21 @@ void CtiCCSubstationBusStore::deleteInstance()
         delete _instance;
         _instance = NULL;
     }
+}
+
+/*---------------------------------------------------------------------------
+    setInstance
+
+    Sets the instance to the passed instance. This should only be used in Unit Tests.
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::setInstance(CtiCCSubstationBusStore* substationBusStore)
+{
+    if (_instance != NULL)
+    {
+        deleteInstance();
+    }
+    _instance = substationBusStore;
+
 }
 
 /*---------------------------------------------------------------------------
@@ -6399,17 +6414,17 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             myTempBus->figureAndSetTargetVarValue();
                         }
                     }
-    
+
                         {
                             RWDBSelector selector = db.selector();
                             selector << pointTable["paobjectid"]
                             << pointTable["pointid"]
                             << pointTable["pointoffset"]
                             << pointTable["pointtype"];
-    
+
                             selector.from(capControlSubstationBusTable);
                             selector.from(pointTable);
-    
+
                             if (subBusId > 0)
                             {
                                 selector.where(capControlSubstationBusTable["substationbusid"]==pointTable["paobjectid"] &&
@@ -6417,8 +6432,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             }
                             else
                                 selector.where(capControlSubstationBusTable["substationbusid"]==pointTable["paobjectid"]);
-    
-    
+
+
                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                             {
                                 string loggedSQLstring = selector.asString();
@@ -6427,26 +6442,26 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                                 }
                             }
-    
+
                             RWDBReader rdr = selector.reader(conn);
-    
+
                             RWDBNullIndicator isNull;
                             while ( rdr() )
                             {
                                 long currentSubBusId;
-    
+
                                 rdr["paobjectid"] >> currentSubBusId;
                                 CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-    
-    
+
+
                                 rdr["pointid"] >> isNull;
                                 if ( !isNull )
                                 {
                                     long tempPointId = -1000;
                                     long tempPointOffset = -1000;
                                     string tempPointType = "(none)";
-                                
-                        
+
+
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
                                 rdr["pointtype"] >> tempPointType;
@@ -6514,7 +6529,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                                      &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
 
-                    
+
 
                 }
 
@@ -7102,10 +7117,10 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                             {
                                 CtiCCSubstationBusPtr myTempBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
                                 if(myTempBus != NULL)
-                                {    
+                                {
                                     currentCCFeeder->figureAndSetTargetVarValue(myTempBus->getControlMethod(), myTempBus->getControlUnits(), myTempBus->getPeakTimeFlag());
                                 }
-                                                                   
+
                             }
                         }
                     }

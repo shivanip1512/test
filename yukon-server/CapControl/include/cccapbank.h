@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  cccapbank.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiCCCapBank
                         CtiCCCapBank maintains the state and handles
                         the persistence of cap banks for Cap Control.
 
         Initial Date:  8/30/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 
@@ -19,7 +19,7 @@
 #include <rw/vstream.h>
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 #include <list>
 
 #include "msg_cmd.h"
@@ -61,6 +61,11 @@ typedef enum
     CC_Temperature = 7
 } CtiCCLastControlReason;
 
+typedef enum
+{
+    Close = 0,
+    Open = 1
+} BankOperation;
 
 namespace capcontrol
 {
@@ -79,6 +84,7 @@ public:
 
   RWDECLARE_COLLECTABLE( CtiCCCapBank )
 
+    CtiCCCapBank();
     CtiCCCapBank(RWDBReader& rdr);
     CtiCCCapBank(const CtiCCCapBank& cap);
 
@@ -293,7 +299,7 @@ public:
     static const string FixedOperationalState;
     static const string UninstalledState;
     static const string StandAloneState;
-    
+
     //Possible states
     static const int Open;
     static const int Close;
@@ -326,7 +332,7 @@ private:
     BOOL _disableflag;
     LONG _parentId; //feederId
     BOOL _alarminhibitflag;
-    BOOL _controlinhibitflag; 
+    BOOL _controlinhibitflag;
     LONG _maxdailyops;
     LONG _currentdailyoperations;
     BOOL _maxopsdisableflag;
@@ -358,7 +364,7 @@ private:
     string _additionalFlags;
     LONG _verificationControlStatus;
     int _vCtrlIndex; //1,2, or 3
-    BOOL _retryFlag;                 
+    BOOL _retryFlag;
     LONG _prevVerificationControlStatus;
     int _assumedOrigCapBankPos;
     BOOL _verificationFlag;
@@ -381,7 +387,7 @@ private:
     BOOL _controlRecentlySentFlag;
     BOOL _porterRetFailFlag;
     BOOL _unsolicitedPendingFlag;
-    
+
     CtiCCTwoWayPoints* _twoWayPoints;
     string _ipAddress;
     LONG _udpPortNumber;
@@ -406,7 +412,7 @@ private:
     CtiCCConfirmationStats _confirmationStats;
 
     LONG _actionId;
-    
+
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
@@ -416,7 +422,6 @@ private:
                                                     // than one monitor point attached to a capbank!!!
     std::vector <CtiCCPointResponse*> _pointResponses;
 
-    CtiCCCapBank();
     void restore(RWDBReader& rdr);
 };
 

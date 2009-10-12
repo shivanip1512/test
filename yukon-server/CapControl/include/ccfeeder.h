@@ -23,6 +23,7 @@
 #include <rw/sortvec.h>
 #include <list>
 
+
 #include "dbaccess.h"
 #include "connection.h"
 #include "types.h"
@@ -330,9 +331,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setLastVoltPointTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setRetryIndex(LONG value);
 
-
     void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag);
-    CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution, CtiMultiMsg_vec& pointChanges);
+    CtiCCCapBank* findCapBankToChangeVars(double kvarSolution, CtiMultiMsg_vec& pointChanges,
+                                          double leadLevel = 0, double lagLevel = 0, double currentVarValue = 0);
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
@@ -591,7 +592,6 @@ private:
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
-
 
     //don't stream
     BOOL _insertDynamicDataFlag;

@@ -2934,7 +2934,7 @@ BOOL CtiCCSubstationBus::maxOperationsHitDisableBus()
        pSig->setCondition(CtiTablePointAlarming::highReasonability);
        CtiCapController::getInstance()->sendMessageToDispatch(pSig);
    }
-   
+
    return FALSE;
 }
 
@@ -3325,7 +3325,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                     }
                     iterations++;
                 }
@@ -3410,7 +3410,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                     }
                     iterations++;
                 }
@@ -3478,7 +3478,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                     }
                     iterations++;
                 }
@@ -3555,7 +3555,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                     }
                     iterations++;
                 }
@@ -3689,7 +3689,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             {
                                 setKVARSolution(-1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                         }
                         else
                         {
@@ -3772,7 +3772,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             {
                                 setKVARSolution(1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                         }
                         else
                         {
@@ -3835,7 +3835,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                         }
                         else
                         {
@@ -3914,7 +3914,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue());
                         }
                         else
                         {
@@ -10734,11 +10734,11 @@ void CtiCCSubstationBus::createCannotControlBankText(string text, string command
 
     if (_CC_DEBUG & CC_DEBUG_EXTENDED)
     {
-  
+
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Can Not "<<text<<" level for substation bus: " << getPAOName()
         << " any further.  All cap banks are already in the "<<commandString <<" state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
-  
+
         try
         {
             CtiCCCapBank* currentCapBank = NULL;
@@ -10776,7 +10776,7 @@ void CtiCCSubstationBus::createCannotControlBankText(string text, string command
         store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
   }
-    
+
 
 }
 

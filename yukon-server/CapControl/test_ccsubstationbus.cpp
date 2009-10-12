@@ -32,18 +32,11 @@
 #include "ccexecutor.h"
 #include "ccmessage.h"
 
+#include "ccUnitTestUtil.h"
+
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-template <class T>
-T *create_object(long objectid, string name)
-{
-    T *object = new T();
-
-    object->setPAOId(objectid);
-    object->setPAOName(name);
-    return object;
-}
 void initialize_area(CtiCCSubstationBusStore* store, CtiCCArea* area)
 {
     store->addAreaToPaoMap(area);
@@ -60,7 +53,7 @@ void initialize_station(CtiCCSubstationBusStore* store, CtiCCSubstation* station
 void initialize_bus(CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
 {
     bus->setParentId(parentStation->getPAOId());
-    bus->setEventSequence(22);  
+    bus->setEventSequence(22);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     bus->setVerificationFlag(FALSE);
     parentStation->getCCSubIds()->push_back(bus->getPAOId());
@@ -89,7 +82,7 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     bus->setPAOId(1);
     bus->setPAOName("Test SubBus");
     bus->setParentId(2);
-    bus->setEventSequence(22);  
+    bus->setEventSequence(22);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     station->setParentId(1);
     station->setSaEnabledFlag(FALSE);
@@ -114,7 +107,7 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
 
 BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 {
-    
+
     CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
 
@@ -172,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders2[j-1];
         if (currentFeeder->getOriginalSubBusId() == bus1->getPAOId())
         {
-        
+
             CtiCCExecutorFactory f;
             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPAOId()));
             executor->Execute();
@@ -180,7 +173,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
         }
         j--;
     }
-  
+
     BOOST_CHECK_EQUAL(bus1->getCCFeeders().size(), 3);
     BOOST_CHECK_EQUAL(bus2->getCCFeeders().size(), 3);
 
