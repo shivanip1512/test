@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.NotSupportedException;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
@@ -25,7 +26,9 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cariboulake.db.schemacompare.app.SchemaCompare;
 import com.cariboulake.db.schemacompare.app.SchemaCompareConnection;
@@ -39,20 +42,27 @@ public class DatabaseValidationController implements ResourceLoaderAware {
     private ResourceLoader resourceLoader;
     private JdbcTemplate jdbcTemplate;
     private Semaphore running = new Semaphore(1);
-    
+    private Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
+        
     @RequestMapping(value="/database/validate/home")
     public String home(ModelMap map) {
         
         // Checks to see if the validation is currently running.
         if(running.availablePermits() == 0){
-            return null;
+            String msgError = "Someone is already running a database validation.  Please try again later.";
+            map.addAttribute("msgError", msgError);
+            log.error(msgError);
+            return "database/validate.jsp";
         }
         
+        // Checks to see if the database being checked is oracle or not.
         boolean displayOracleWarning = false;
         try{
             displayOracleWarning = isDatabaseOracle();
         }catch (MetaDataAccessException e) {
-            return null;
+            map.addAttribute("msgError", "Your system does not have access to the database metadata and therefore cannot validate your database.");
+            log.error(e.getStackTrace());
+            return "database/validate.jsp";
         }
         
         map.addAttribute("displayOracleWarning", displayOracleWarning);

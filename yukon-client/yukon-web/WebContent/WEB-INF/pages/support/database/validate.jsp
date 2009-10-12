@@ -10,17 +10,26 @@
     <cti:crumbLink>Database Validate</cti:crumbLink>
 </cti:breadCrumbs>
 
-<script>
-Event.observe(window, 'load', function() {
-	new Ajax.Updater('compareResults', '/spring/support/database/validate/results');
-});
-</script>
+<c:choose>
+	<c:when test="${not empty msgError}">
+		${msgError}
+	</c:when>
+	<c:otherwise>
 
-<div id="compareResults">
-<c:if test="${displayOracleWarning}">
-Validation of your database schema is in progress (this process may take several minutes).
-</c:if>
-<br>
-loading... <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
-</div>
+		<script>
+			Event.observe(window, 'load', function() {
+				new Ajax.Updater('compareResults', '/spring/support/database/validate/results');
+			});
+		</script>
+		
+		<div id="compareResults">
+			<c:if test="${displayOracleWarning}">
+				Validation of your database schema is in progress (this process may take several minutes).
+			</c:if>
+			<br>
+			loading... <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
+		</div>
+
+	</c:otherwise>
+</c:choose>
 </cti:standardPage>
