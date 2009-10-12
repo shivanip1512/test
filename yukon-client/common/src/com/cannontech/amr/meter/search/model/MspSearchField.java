@@ -2,6 +2,7 @@ package com.cannontech.amr.meter.search.model;
 
 public enum MspSearchField {
 
+	SERVICE_LOCATION("Service Location", "GetMeterByServLoc"),
 	EA_LOCATION("EA Location", "GetMetersByEALocation"),
 	FACILITY_ID("Facility ID", "GetMetersByFacilityId"),
 	ACCOUNT_NUMBER("Account Number", "GetMeterByAccountNumber"),
