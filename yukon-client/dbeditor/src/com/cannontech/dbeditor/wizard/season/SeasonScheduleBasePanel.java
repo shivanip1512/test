@@ -661,85 +661,16 @@ public boolean isInputValid()
 	    }
 	}
 
-	for( int i = 0; i < getJTableModel().getRowCount(); i++ )
-	{
-		com.cannontech.database.db.season.DateOfSeason d = getJTableModel().getRowAt(i);
-		int startMonth = d.getSeasonStartMonth().intValue();
-		int endMonth = d.getSeasonEndMonth().intValue();
-		int startDay = d.getSeasonStartDay().intValue();
-		int endDay = d.getSeasonEndDay().intValue();
-		
-		//if the days are in the same month, then doublecheck for proper chronology
- 		if(startMonth == endMonth && endDay < startDay)
-		{			
-			setErrorString("Row " + (i + 1) + " contains an improperly defined season.  The end day must be later than the start day.");
-			return false;
-		}
-		
-		for( int j = i + 1; j < getJTableModel().getRowCount(); j++ )
-		{
-			com.cannontech.database.db.season.DateOfSeason nextDate = getJTableModel().getRowAt(j);
-			int nextStartMonth = nextDate.getSeasonStartMonth().intValue();
-			int nextEndMonth = nextDate.getSeasonEndMonth().intValue();
-			int nextStartDay = nextDate.getSeasonStartDay().intValue();
-			int nextEndDay = nextDate.getSeasonEndDay().intValue();
-
-			//If the next season starts before this one ends, or if it is
-			//a December to January jump, then make sure there is no overlap
-			if(startMonth == nextStartMonth && endMonth == nextEndMonth && 
-			   startDay == nextStartDay && endDay == nextEndDay) {
-			    setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that are identical.  Seasons can't overlap in a season schedule." );
-                return false;
-			}
-			if(startMonth <= nextEndMonth && nextEndMonth < endMonth && startMonth > 1) {
-			    setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
-                return false;
-			}
-			
-			if(nextStartMonth < endMonth && endMonth <= nextEndMonth){
-				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
-				return false;
-			}
-			if(endMonth == nextStartMonth && endDay >= nextStartDay ){
-				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
-				return false;
-			}
-			
-			if(nextEndMonth == startMonth && startDay <= nextEndDay) {
-			    /* Check to see if one of these seasons is jumping the end of the year.
-			    We need to because the 'if(nextEndMonth == startMonth && startDay <= nextEndDay)'
-			    is valid for one scenario and invalid for another.
-			    
-			    Valid Example: this should be allowed
-			    Season 1: 1-1 to 1-2
-			    Season 2: 1-3 to 1-4
-			    
-			    Invalid Example: this should not be allowed
-			    Season 1: 1-5 to 12-something
-			    Season 2: 12-something + 1 to 1-6 */
-			    
-			    if(endMonth < startMonth || nextEndMonth < nextStartMonth) {
-			        setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
-			        return false;
-			    }
-			}
-			
-			if(nextEndMonth < nextStartMonth) {
-			    // season B jumps the end of the year
-			    if(nextEndMonth > startMonth) {
-			        setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
-                    return false;
-			    }else if(nextEndMonth == startMonth) {
-			        if(nextEndDay >= startDay) {
-			            setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
-	                    return false;
-			        }
-			    }
-			}
-		}
-		
-	}
-			
+	SeasonScheduleChecker overlapChecker = new SeasonScheduleChecker();
+    for( int i = 0; i < getJTableModel().getRowCount(); i++ ) {
+        DateOfSeason season = getJTableModel().getRowAt(i);
+        try{
+            overlapChecker.addSeason(season);
+        } catch (OverlappingSeasonException e){
+            setErrorString("Improperly defined season.  " + e.getMessage());
+            return false;
+        }
+    }
 	return true;
 
 }
