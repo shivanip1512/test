@@ -335,35 +335,6 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
         return;
     }
     
-    private List<SimpleDevice> getDeviceList() {
-        
-        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-        DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
-
-        final String[] groups = getBillingGroups();
-        
-        if (groups != null && groups.length > 0 ) {
-            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(groups));
-            return Lists.newArrayList(deviceGroupService.getDevices(deviceGroups));
-        } else if (getPaoIDs() != null && getPaoIDs().length > 0) {
-            List<SimpleDevice> devices = Lists.newArrayList();
-            for(int paoId : getPaoIDs()){
-                try {
-                    devices.add(deviceDao.getYukonDevice(paoId));
-                } catch (DataAccessException e) {
-                    CTILogger.error("Unable to find device with id: " + paoId + ". This device will be skipped.");
-                    continue;
-                }
-            }
-            return devices;
-        } else {
-            /* If they didn't pick anything to filter on, assume all devices. */
-            /* Use contents of SystemGroupEnum.DEVICETYPES. */
-            DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
-            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
-            return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
-        }
-    }
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)

@@ -5,8 +5,10 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -16,16 +18,23 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.jfree.report.modules.output.csv.CSVQuoter;
+import org.springframework.dao.DataAccessException;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -691,4 +700,41 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
         
         return sql;
     }
+
+    /**
+     * Converts getPaoIds and getBillingGroups into a List of SimpleDevices.
+     * NOTE:  This method returns a list of devices from the System Group DeviceTypes.  Caution should be used when selecting 
+     *   this method for reports that use DeviceGroups and want more than DeviceTypes group can provide.
+     * @return
+     */
+    protected List<SimpleDevice> getDeviceList() {
+        
+        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
+
+        final String[] groups = getBillingGroups();
+        
+        if (groups != null && groups.length > 0 ) {
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(groups));
+            return Lists.newArrayList(deviceGroupService.getDevices(deviceGroups));
+        } else if (getPaoIDs() != null && getPaoIDs().length > 0) {
+            List<SimpleDevice> devices = Lists.newArrayList();
+            for(int paoId : getPaoIDs()){
+                try {
+                    devices.add(deviceDao.getYukonDevice(paoId));
+                } catch (DataAccessException e) {
+                    CTILogger.error("Unable to find device with id: " + paoId + ". This device will be skipped.");
+                    continue;
+                }
+            }
+            return devices;
+        } else {
+            /* If they didn't pick anything to filter on, assume all devices. */
+            /* Use contents of SystemGroupEnum.DEVICETYPES. */
+            DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
+            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
+            return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
+        }
+    }
+
 }
