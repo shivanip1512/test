@@ -1286,11 +1286,11 @@ public void executeSortByOffsetButton_ActionPerformed(ActionEvent event)
 private void exit(){
 	//There may be events in the EventQueue up to this point,
 	// let them go first then we can Exit the program.
-    System.exit(0);
 	SwingUtilities.invokeLater( new Runnable()
 	{
 		public void run()
 		{
+		    System.exit(0);
 		}
 	});
 }
