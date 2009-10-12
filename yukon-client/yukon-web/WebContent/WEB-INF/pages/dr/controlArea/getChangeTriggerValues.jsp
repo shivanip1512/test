@@ -3,10 +3,10 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-    <p>
+    <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.instructions"
             argument="${controlArea.name}" />
-    </p>
+    </h1>
 
     <cti:url var="submitUrl" value="/spring/dr/controlArea/triggerChange"/>
     <form id="getChangeTimeWindowValues" action="${submitUrl}"

@@ -1,10 +1,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-    <p>
+    <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions"
             argument="${controlArea.name}" />
-    </p>
+    </h1>
 
     <c:if test="${!empty validWindow && !validWindow}">
         <div class="errorMessage">

@@ -1,10 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-    <p>
-        <cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.confirmQuestion"
-            argument="${loadGroup.name}"/>
-    </p>
+    <h1 class="dialogQuestion"><cti:msg key="yukon.web.modules.dr.loadGroup.sendShedConfirm.confirmQuestion"
+        argument="${loadGroup.name}"/></h1>
 
     <cti:url var="submitUrl" value="/spring/dr/loadGroup/sendShed"/>
     <form id="sendShedForm" action="${submitUrl}"

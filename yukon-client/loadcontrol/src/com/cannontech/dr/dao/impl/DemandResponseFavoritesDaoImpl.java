@@ -1,6 +1,8 @@
 package com.cannontech.dr.dao.impl;
 
+
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,19 +24,16 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.impl.DisplayablePaoRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.dao.DemandResponseFavoritesDao;
-import com.cannontech.dr.filter.AuthorizedFilter;
+import com.cannontech.dr.model.DisplayablePaoComparator;
 import com.google.common.collect.Lists;
 
 public class DemandResponseFavoritesDaoImpl implements DemandResponseFavoritesDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private FilterService filterService;
-    private PaoAuthorizationService paoAuthorizationService;
     private Map<Integer, DatedObject<Set<Integer>>> favoritesByUser =
         Collections.synchronizedMap(new HashMap<Integer, DatedObject<Set<Integer>>>());
 
@@ -63,6 +62,27 @@ public class DemandResponseFavoritesDaoImpl implements DemandResponseFavoritesDa
         }
     }
 
+    public static class FavoriteRowMapper extends DisplayablePaoRowMapper
+        implements RowMapperWithBaseQuery<DisplayablePao> {
+
+        @Override
+        public SqlFragmentSource getBaseQuery() {
+            SqlStatementBuilder retVal = new SqlStatementBuilder();
+            retVal.append("SELECT paoName, paobjectId, type FROM yukonPAObject");
+            return retVal;
+        }
+
+        @Override
+        public SqlFragmentSource getOrderBy() {
+            return null;
+        }
+
+        @Override
+        public boolean needsWhere() {
+            return true;
+        }
+    }
+
     private static class NotInFavoritesFilter implements UiFilter<DisplayablePao> {
         private int userId;
 
@@ -83,7 +103,36 @@ public class DemandResponseFavoritesDaoImpl implements DemandResponseFavoritesDa
                 public SqlFragmentSource getWhereClauseFragment() {
                     SqlStatementBuilder whereClause = new SqlStatementBuilder();
                     whereClause.append("yukonPaobject.paobjectId NOT IN" +
-                    		" (SELECT paobjectId FROM lmFavorites WHERE userId =");
+                            " (SELECT paobjectId FROM lmFavorites WHERE userId =");
+                    whereClause.appendArgument(userId);
+                    whereClause.append(")");
+                    return whereClause;
+                }});
+            return sqlFilter;
+        }
+    }
+
+    private static class IsFavoriteFilter implements UiFilter<DisplayablePao> {
+        private int userId;
+
+        private IsFavoriteFilter(int userId) {
+            this.userId = userId;
+        }
+
+        @Override
+        public Iterable<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
+            return null;
+        }
+
+        @Override
+        public Iterable<SqlFilter> getSqlFilters() {
+            List<SqlFilter> sqlFilter = Lists.newArrayList();
+            sqlFilter.add(new SqlFilter(){
+                @Override
+                public SqlFragmentSource getWhereClauseFragment() {
+                    SqlStatementBuilder whereClause = new SqlStatementBuilder();
+                    whereClause.append("paobjectId IN" +
+                            " (SELECT paobjectId FROM lmFavorites WHERE userId =");
                     whereClause.appendArgument(userId);
                     whereClause.append(")");
                     return whereClause;
@@ -105,11 +154,11 @@ public class DemandResponseFavoritesDaoImpl implements DemandResponseFavoritesDa
     }
 
     @Override
-    public List<DisplayablePao> getRecentlyViewed(LiteYukonUser user, int count) {
+    public List<DisplayablePao> getRecentlyViewed(LiteYukonUser user,
+            int count, UiFilter<DisplayablePao> filterIn) {
         List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
+        filters.add(filterIn);
         filters.add(new NotInFavoritesFilter(user.getUserID()));
-        filters.add(new AuthorizedFilter(paoAuthorizationService, user,
-                                         Permission.LM_VISIBLE));
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         RecentlyViewedRowMapper rowMapper = new RecentlyViewedRowMapper();
         SearchResult<DisplayablePao> searchResult =
@@ -163,11 +212,17 @@ public class DemandResponseFavoritesDaoImpl implements DemandResponseFavoritesDa
     }
 
     @Override
-    public List<DisplayablePao> getFavorites(LiteYukonUser user) {
-        return simpleJdbcTemplate.query("SELECT paoName, paobjectId, type" +
-        		" FROM yukonPAObject WHERE paobjectId in (" +
-        		"SELECT paobjectId FROM lmFavorites WHERE userId = ?)",
-        		new DisplayablePaoRowMapper(), user.getUserID());
+    public List<DisplayablePao> getFavorites(LiteYukonUser user,
+            UiFilter<DisplayablePao> filterIn) {
+        List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
+        filters.add(filterIn);
+        filters.add(new IsFavoriteFilter(user.getUserID()));
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+        FavoriteRowMapper rowMapper = new FavoriteRowMapper();
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator(false);
+        SearchResult<DisplayablePao> searchResult =
+            filterService.filter(filter, sorter, 0, Integer.MAX_VALUE, rowMapper);
+        return searchResult.getResultList();
     }
 
     @Autowired
@@ -178,11 +233,5 @@ public class DemandResponseFavoritesDaoImpl implements DemandResponseFavoritesDa
     @Autowired
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(
-            PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
     }
 }

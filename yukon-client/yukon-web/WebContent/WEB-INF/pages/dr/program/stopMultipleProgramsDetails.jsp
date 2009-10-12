@@ -40,7 +40,7 @@ singleProgramChecked = function(boxChecked) {
 }
 </script>
 
-<p>
+<h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.confirmQuestion.controlArea"
             argument="${controlArea.name}"/>
@@ -49,7 +49,7 @@ singleProgramChecked = function(boxChecked) {
         <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.confirmQuestion.scenario"
             argument="${scenario.name}"/>
     </c:if>
-</p><br>
+</h1>
 
 <cti:url var="submitUrl" value="/spring/dr/program/stopMultiplePrograms"/>
 <form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}"
@@ -57,17 +57,20 @@ singleProgramChecked = function(boxChecked) {
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
-    <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopTime"/><br>
-
-    <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
-    <label for="stopNowCheckbox">
-        <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow"/>
-    </label><br>
-
-    <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
-        disabled="true"/>
-
-    <br>
+    <table class="compactResultsTable">
+        <tr>
+            <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopTime"/></th>
+        </tr>
+        <tr><td>
+            <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
+            <label for="stopNowCheckbox">
+                <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow"/>
+            </label><br>
+        
+            <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
+                disabled="true"/>
+        </td></tr>
+    </table>
     <br>
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.stopMultiplePrograms.programs"/>

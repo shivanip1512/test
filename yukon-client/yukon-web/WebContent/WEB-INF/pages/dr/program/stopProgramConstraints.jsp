@@ -19,8 +19,10 @@ overrideConstraintsChecked = function() {
     <form:hidden path="useStopGear"/>
     <form:hidden path="gearNumber"/>
 
-    <p><cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
-        argument="${program.name}"/></p><br>
+    <h1 class="dialogQuestion">
+        <cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
+            argument="${program.name}"/>
+    </h1>
 
     <p>
     <c:if test="${backingBean.stopNow}">

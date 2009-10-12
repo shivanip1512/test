@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-    <p>
+    <h1 class="dialogQuestion">
         <c:choose>
             <c:when test="${isEnabled}">
                 <cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.confirmQuestion"
@@ -12,7 +12,7 @@
                     argument="${loadGroup.name}"/>
             </c:otherwise>
         </c:choose>
-    </p>
+    </h1>
 
     <cti:url var="submitUrl" value="/spring/dr/loadGroup/setEnabled"/>
     <form id="sendEnableForm" action="${submitUrl}"

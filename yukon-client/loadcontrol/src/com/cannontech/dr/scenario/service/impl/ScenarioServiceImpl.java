@@ -54,7 +54,7 @@ public class ScenarioServiceImpl implements ScenarioService {
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        Comparator<DisplayablePao> secondarySorter = new DisplayablePaoComparator(userContext, false);
+        Comparator<DisplayablePao> secondarySorter = new DisplayablePaoComparator(false);
         if (sorter == null) {
             sorter = secondarySorter;
         } else if (secondarySorter != null) {

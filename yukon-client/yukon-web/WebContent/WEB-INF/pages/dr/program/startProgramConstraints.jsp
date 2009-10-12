@@ -28,8 +28,8 @@ overrideConstraintsChecked = function() {
         </c:forEach>
     </c:if>
 
-    <p><cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
-        argument="${program.name}"/></p><br>
+    <h1 class="dialogQuestion"><cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
+        argument="${program.name}"/></h1>
 
     <p>
     <c:if test="${backingBean.startNow}">

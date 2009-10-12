@@ -7,10 +7,10 @@
 <script type="text/javascript">
 </script>
 
-<p>
+<h1 class="dialogQuestion">
     <cti:msg key="yukon.web.modules.dr.program.startProgram.enterdjustments"
         argument="${program.name}"/>
-</p><br>
+</h1>
 
 <cti:url var="submitUrl" value="/spring/dr/program/startProgramConstraints"/>
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"

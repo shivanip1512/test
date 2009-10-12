@@ -55,7 +55,7 @@ singleProgramChecked = function(boxChecked) {
 }
 </script>
 
-<p>
+<h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea"
             argument="${controlArea.name}"/>
@@ -64,7 +64,7 @@ singleProgramChecked = function(boxChecked) {
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.scenario"
             argument="${scenario.name}"/>
     </c:if>
-</p><br>
+</h1>
 
 <c:url var="submitUrl" value="/spring/dr/program/startMultipleProgramsConstraints"/>
 <form:form id="startMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
@@ -72,11 +72,13 @@ singleProgramChecked = function(boxChecked) {
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
-    <table width="100%">
+    <table class="compactResultsTable">
+        <tr>
+            <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startTime"/></th>
+            <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.stopTime"/></th>
+        </tr>
         <tr valign="top">
             <td width="25%">
-                <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startTime"/><br>
-
                 <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
                 <label for="startNowCheckbox">
                     <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startNow"/>
@@ -86,7 +88,6 @@ singleProgramChecked = function(boxChecked) {
                     disabled="true"/>
             </td>
             <td width="25%">
-                <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.stopTime"/><br>
                 <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
                 <label for="scheduleStopCheckbox">
                     <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.scheduleStop"/>
@@ -95,7 +96,6 @@ singleProgramChecked = function(boxChecked) {
             </td>
         </tr>
     </table>
-    <br>
     <br>
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.startMultiplePrograms.programs"/>

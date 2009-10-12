@@ -22,7 +22,7 @@ public class ControlAreaNameField extends ControlAreaBackingFieldBase {
     @Override
     public Comparator<DisplayablePao> getSorter(boolean isDescending,
                                                 YukonUserContext userContext) {
-        return new DisplayablePaoComparator(userContext, isDescending);
+        return new DisplayablePaoComparator(isDescending);
     }
 
 }

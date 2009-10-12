@@ -8,6 +8,10 @@
 <cti:standardPage module="dr" page="home">
     <cti:standardMenu menuSelection="home"/>
 
+    <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>

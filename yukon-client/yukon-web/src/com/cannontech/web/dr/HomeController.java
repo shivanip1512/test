@@ -1,6 +1,5 @@
 package com.cannontech.web.dr;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -16,7 +17,10 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.dao.DemandResponseFavoritesDao;
+import com.cannontech.dr.filter.AuthorizedFilter;
+import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 
 @Controller
 public class HomeController {
@@ -27,47 +31,31 @@ public class HomeController {
     @RequestMapping("/home")
     public String home(ModelMap model, YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
-        List<DisplayablePao> favorites = favoritesDao.getFavorites(user);
-        favorites = filterControlAreasAndScenarios(favorites, user);
-        model.addAttribute("favorites", favorites);
-        
-        List<DisplayablePao> recentlyViewed = favoritesDao.getRecentlyViewed(user, 20);
-        recentlyViewed = filterControlAreasAndScenarios(recentlyViewed, user);
-        model.addAttribute("recents", recentlyViewed);
-        return "dr/home.jsp";
-    }
-    
-    /**
-     * Helper method to filter out control areas and/or scenarios if the user cannot see them
-     * @param paoList - List of paos to filter
-     * @param user - Current user
-     * @return Filtered list of paos
-     */
-    private List<DisplayablePao> filterControlAreasAndScenarios(List<DisplayablePao> paoList, 
-                                                                LiteYukonUser user) {
-        
-        List<DisplayablePao> filteredPaoList = new ArrayList<DisplayablePao>();
-        
+
+        List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
+        filters.add(new AuthorizedFilter(paoAuthorizationService, user,
+                                         Permission.LM_VISIBLE));
+
         boolean showControlAreas = 
             rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
+        if (!showControlAreas) {
+            filters.add(new NotPaoTypeFilter(PaoType.LM_CONTROL_AREA));
+        }
         boolean showScenarios = 
             rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_SCENARIOS, user);
-
-        for(DisplayablePao pao : paoList) {
-            PaoType paoType = pao.getPaoIdentifier().getPaoType();
-            if((!paoType.equals(PaoType.LM_CONTROL_AREA) && !paoType.equals(PaoType.LM_SCENARIO)) ||
-                    (paoType.equals(PaoType.LM_CONTROL_AREA) && showControlAreas) ||
-                    (paoType.equals(PaoType.LM_SCENARIO) && showScenarios)) {
-
-                boolean authorized = 
-                    paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, pao);
-                if(authorized) {
-                    filteredPaoList.add(pao);
-                }
-            }
+        if (!showScenarios) {
+            filters.add(new NotPaoTypeFilter(PaoType.LM_SCENARIO));
         }
 
-        return filteredPaoList;
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+
+        List<DisplayablePao> favorites = favoritesDao.getFavorites(user, filter);
+        model.addAttribute("favorites", favorites);
+
+        List<DisplayablePao> recentlyViewed = favoritesDao.getRecentlyViewed(user, 20, filter);
+        model.addAttribute("recents", recentlyViewed);
+
+        return "dr/home.jsp";
     }
 
     @RequestMapping("/addFavorite")
@@ -84,12 +72,12 @@ public class HomeController {
     public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
     }
-    
+
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
-    
+
     @Autowired
     public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
         this.paoAuthorizationService = paoAuthorizationService;

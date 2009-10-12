@@ -2,9 +2,10 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
-    <p>
+    <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.instructions" argument="${program.name}"/>
-    </p>
+    </h1>
+
     <form id="sendEnableForm" action="/spring/dr/program/changeGear">
         <input type="hidden" name="programId" value="${program.paoIdentifier.paoId}"/>
         <cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.gearSelect"/>

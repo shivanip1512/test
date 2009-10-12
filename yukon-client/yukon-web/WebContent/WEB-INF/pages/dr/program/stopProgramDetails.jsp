@@ -34,10 +34,10 @@ updateComponentAvailability = function() {
 }
 </script>
 
-<p>
+<h1 class="dialogQuestion">
     <cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
         argument="${program.name}"/>
-</p><br>
+</h1>
 
 <form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="programId"/>
@@ -46,11 +46,15 @@ updateComponentAvailability = function() {
         <form:hidden path="gearNumber"/>
     </c:if>
 
-    <table width="100%">
+    <table class="compactResultsTable">
+        <tr>
+            <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopTime"/></th>
+            <c:if test="${stopGearAllowed}">
+                <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopGear"/></th>
+            </c:if>
+        </tr>
         <tr valign="top">
             <td width="50%">
-                <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopTime"/><br>
-
                 <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
                 <label for="stopNowCheckbox">
                     <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopNow"/>

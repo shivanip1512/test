@@ -55,18 +55,22 @@ updateSubmitButtons = function() {
 }
 </script>
 
-<p>
+<h1 class="dialogQuestion">
     <cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
         argument="${program.name}"/>
-</p><br>
+</h1>
 
 <form:form id="startProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="programId"/>
 
-    <table width="100%">
+    <table class="compactResultsTable">
+        <tr>
+            <th><cti:msg key="yukon.web.modules.dr.program.startProgram.gear"/></th>
+            <th><cti:msg key="yukon.web.modules.dr.program.startProgram.startTime"/></th>
+            <th><cti:msg key="yukon.web.modules.dr.program.startProgram.stopTime"/></th>
+        </tr>
         <tr valign="top">
             <td width="33%">
-                <cti:msg key="yukon.web.modules.dr.program.startProgram.gear"/><br>
                 <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
                     <c:forEach var="gear" varStatus="status" items="${gears}">
                         <form:option value="${status.index + 1}">${gear.gearName}</form:option>
@@ -85,8 +89,6 @@ updateSubmitButtons = function() {
                 </div>
             </td>
             <td width="33%">
-                <cti:msg key="yukon.web.modules.dr.program.startProgram.startTime"/><br>
-
                 <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
                 <label for="startNowCheckbox">
                     <cti:msg key="yukon.web.modules.dr.program.startProgram.startNow"/>
@@ -96,7 +98,6 @@ updateSubmitButtons = function() {
                     disabled="true"/>
             </td>
             <td width="33%">
-                <cti:msg key="yukon.web.modules.dr.program.startProgram.stopTime"/><br>
                 <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
                 <label for="scheduleStopCheckbox">
                     <cti:msg key="yukon.web.modules.dr.program.startProgram.scheduleStop"/>

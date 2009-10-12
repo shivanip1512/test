@@ -35,9 +35,11 @@
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
+            <%-- Scenarios don't have any info right now.
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.info"/>
-	            <tags:abstractContainer type="box" title="${boxTitle}">
-            	</tags:abstractContainer>
+                <tags:abstractContainer type="box" title="${boxTitle}">
+                </tags:abstractContainer>
+            --%>
             </td>
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">

@@ -15,7 +15,12 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.dr.model.DisplayablePaoComparator;
 import com.cannontech.dr.quicksearch.QuickSearchFilter;
 import com.cannontech.dr.quicksearch.QuickSearchRowMapper;
@@ -26,19 +31,30 @@ import com.cannontech.user.YukonUserContext;
  * Controller for DR quick search
  */
 public class QuickSearchController {
-
     private FilterService filterService;
-    
+    private RolePropertyDao rolePropertyDao;
+
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String search(ModelMap modelMap, YukonUserContext userContext, 
                          @ModelAttribute("quickSearchBean") ListBackingBean quickSearchBean) {
+        LiteYukonUser user = userContext.getYukonUser();
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
-        
+        boolean showControlAreas = 
+            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
+        if (!showControlAreas) {
+            filters.add(new NotPaoTypeFilter(PaoType.LM_CONTROL_AREA));
+        }
+        boolean showScenarios = 
+            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_SCENARIOS, user);
+        if (!showScenarios) {
+            filters.add(new NotPaoTypeFilter(PaoType.LM_SCENARIO));
+        }
+
         String searchText = quickSearchBean.getName();
         filters.add(new QuickSearchFilter(searchText));
-        
-        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator(userContext, false);
+
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator(false);
 
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (quickSearchBean.getPage() - 1) * quickSearchBean.getItemsPerPage();
@@ -58,5 +74,9 @@ public class QuickSearchController {
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
     }
-    
+
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }

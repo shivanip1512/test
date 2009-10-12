@@ -1,10 +1,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-    <p>
+    <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.confirmQuestion"
             argument="${controlArea.name}" />
-    </p>
+    </h1>
 
     <cti:url var="submitUrl" value="/spring/dr/controlArea/resetPeak"/>
     <form id="sendResetPeakForm" action="${submitUrl}"

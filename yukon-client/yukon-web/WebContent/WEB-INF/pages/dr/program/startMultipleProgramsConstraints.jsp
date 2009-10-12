@@ -40,14 +40,16 @@ singleOverrideChecked = function(boxChecked) {
     <form:hidden path="stopDate"/>
     <form:hidden path="autoObserveConstraints"/>
 
-    <p><c:if test="${!empty controlArea}">
+    <h1 class="dialogQuestion">
+    <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea"
             argument="${controlArea.name}"/>
     </c:if>
     <c:if test="${!empty scenario}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.scenario"
             argument="${scenario.name}"/>
-    </c:if></p><br>
+    </c:if>
+    </h1>
 
 <!-- TODO:  combine with similar code from startProgramConstraints.jsp -->
     <p>

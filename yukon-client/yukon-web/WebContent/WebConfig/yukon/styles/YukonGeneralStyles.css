@@ -720,3 +720,7 @@ table.rowHighlighting tr:hover td {
 #startMultipleProgramsOverridePrograms .override {
 	white-space: nowrap;
 }
+
+h1.dialogQuestion {
+	padding-bottom: 10px;
+}

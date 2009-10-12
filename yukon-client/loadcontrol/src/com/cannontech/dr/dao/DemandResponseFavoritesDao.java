@@ -3,12 +3,15 @@ package com.cannontech.dr.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface DemandResponseFavoritesDao {
     public void detailPageViewed(int paoId);
-    public List<DisplayablePao> getRecentlyViewed(LiteYukonUser user, int max);
+
+    public List<DisplayablePao> getRecentlyViewed(LiteYukonUser user, int max,
+            UiFilter<DisplayablePao> filter);
 
     public void addFavorite(int paoId, LiteYukonUser user);
     public void removeFavorite(int paoId, LiteYukonUser user);
@@ -22,5 +25,7 @@ public interface DemandResponseFavoritesDao {
      * @return
      */
     public Boolean isFavorite(int paoId, LiteYukonUser user, Date afterDate);
-    public List<DisplayablePao> getFavorites(LiteYukonUser user);
+
+    public List<DisplayablePao> getFavorites(LiteYukonUser user,
+            UiFilter<DisplayablePao> filter);
 }

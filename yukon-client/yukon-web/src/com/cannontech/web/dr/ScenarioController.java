@@ -59,7 +59,7 @@ public class ScenarioController {
         }
 
         Comparator<DisplayablePao> sorter =
-            new DisplayablePaoComparator(userContext, backingBean.getDescending());
+            new DisplayablePaoComparator(backingBean.getDescending());
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         SearchResult<DisplayablePao> searchResult =

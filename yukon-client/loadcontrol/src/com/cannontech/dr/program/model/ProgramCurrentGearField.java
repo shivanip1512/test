@@ -7,8 +7,11 @@ import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.NaturalOrderComparator;
 
 public class ProgramCurrentGearField extends ProgramBackingFieldBase {
+    private final static NaturalOrderComparator comparator =
+        new NaturalOrderComparator();
 
     @Override
     public String getFieldName() {
@@ -55,7 +58,7 @@ public class ProgramCurrentGearField extends ProgramBackingFieldBase {
                 if (gear2 == null) {
                     return isDescending ? 1 : -1;
                 }
-                int retVal = gear1.getGearName().compareTo(gear2.getGearName());
+                int retVal = comparator.compare(gear1.getGearName(), gear2.getGearName());
                 return isDescending ? (0 - retVal) : retVal;
             }};
     }
