@@ -62,12 +62,12 @@ public class DatabaseValidationController implements ResourceLoaderAware {
     @RequestMapping(value = "/database/validate/results", method = RequestMethod.POST)
     public String validate(HttpServletResponse response) throws Exception {
 
+        boolean isRunnable = running.tryAcquire();
+        
+        if (!isRunnable){
+            return null;
+        }
         try{
-            boolean isRunnable = running.tryAcquire();
-            
-            if (!isRunnable){
-                return null;
-            }
             
             Resource databaseSnapshot = getDatabaseXMLFile();
             File xmlCompareFile = convertToTempFile(databaseSnapshot);
