@@ -493,26 +493,34 @@ bool CtiDeviceGroupExpresscom::compareAddressValues(USHORT addressing, CtiDevice
     bool retVal = true;
     if( expGroup != NULL )
     {
-        if(addressing & CtiProtocolExpresscom::atSpid)
-            retVal &= (getExpresscomGroup().getServiceProvider() == expGroup->getExpresscomGroup().getServiceProvider());
-        if(addressing & CtiProtocolExpresscom::atGeo)
-            retVal &= (getExpresscomGroup().getGeo() == expGroup->getExpresscomGroup().getGeo());
-        if(addressing & CtiProtocolExpresscom::atSubstation)
-            retVal &= (getExpresscomGroup().getSubstation() == expGroup->getExpresscomGroup().getSubstation());
-        if(addressing & CtiProtocolExpresscom::atFeeder)
-            retVal &= (getExpresscomGroup().getFeeder() == expGroup->getExpresscomGroup().getFeeder());
-        if(addressing & CtiProtocolExpresscom::atZip)
-            retVal &= (getExpresscomGroup().getZip() == expGroup->getExpresscomGroup().getZip());
-        if(addressing & CtiProtocolExpresscom::atUser)
-            retVal &= (getExpresscomGroup().getUda() == expGroup->getExpresscomGroup().getUda());
-        if(addressing & CtiProtocolExpresscom::atProgram)
-            retVal &= (getExpresscomGroup().getProgram() == expGroup->getExpresscomGroup().getProgram());
-        if(addressing & CtiProtocolExpresscom::atSplinter)
-            retVal &= (getExpresscomGroup().getSplinter() == expGroup->getExpresscomGroup().getSplinter());
-        if(addressing & CtiProtocolExpresscom::atIndividual)
+        int serial = (int)(getExpresscomGroup().getSerial());
+
+        // However horrible this is, this is what is currently expected as seen above in executeRequest
+        if(serial != 0)
+        {
             retVal &= (getExpresscomGroup().getSerial() == expGroup->getExpresscomGroup().getSerial());
-        if(addressing & CtiProtocolExpresscom::atLoad)
-            retVal &= (getExpresscomGroup().getLoadMask() == expGroup->getExpresscomGroup().getLoadMask());
+        }
+        else
+        {
+            if(addressing & CtiProtocolExpresscom::atSpid)
+                retVal &= (getExpresscomGroup().getServiceProvider() == expGroup->getExpresscomGroup().getServiceProvider());
+            if(addressing & CtiProtocolExpresscom::atGeo)
+                retVal &= (getExpresscomGroup().getGeo() == expGroup->getExpresscomGroup().getGeo());
+            if(addressing & CtiProtocolExpresscom::atSubstation)
+                retVal &= (getExpresscomGroup().getSubstation() == expGroup->getExpresscomGroup().getSubstation());
+            if(addressing & CtiProtocolExpresscom::atFeeder)
+                retVal &= (getExpresscomGroup().getFeeder() == expGroup->getExpresscomGroup().getFeeder());
+            if(addressing & CtiProtocolExpresscom::atZip)
+                retVal &= (getExpresscomGroup().getZip() == expGroup->getExpresscomGroup().getZip());
+            if(addressing & CtiProtocolExpresscom::atUser)
+                retVal &= (getExpresscomGroup().getUda() == expGroup->getExpresscomGroup().getUda());
+            if(addressing & CtiProtocolExpresscom::atProgram)
+                retVal &= (getExpresscomGroup().getProgram() == expGroup->getExpresscomGroup().getProgram());
+            if(addressing & CtiProtocolExpresscom::atSplinter)
+                retVal &= (getExpresscomGroup().getSplinter() == expGroup->getExpresscomGroup().getSplinter());
+            if(addressing & CtiProtocolExpresscom::atLoad)
+                retVal &= (getExpresscomGroup().getLoadMask() == expGroup->getExpresscomGroup().getLoadMask());
+        }
     }
     else
     {

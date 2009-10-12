@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     parentGrpPtr->getExpresscomGroup().setFeeder(10);
     parentGrpPtr->getExpresscomGroup().setId(9);
     parentGrpPtr->getExpresscomGroup().setRouteId(8);
-    parentGrpPtr->getExpresscomGroup().setSerial(7);
+    parentGrpPtr->getExpresscomGroup().setSerial(0);
     parentGrpPtr->getExpresscomGroup().setServiceProvider(6);
     parentGrpPtr->getExpresscomGroup().setGeo(5);
     parentGrpPtr->getExpresscomGroup().setSubstation(4);
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     childGrpPtr->getExpresscomGroup().setFeeder(10);
     childGrpPtr->getExpresscomGroup().setId(9);
     childGrpPtr->getExpresscomGroup().setRouteId(8);
-    childGrpPtr->getExpresscomGroup().setSerial(7);
+    childGrpPtr->getExpresscomGroup().setSerial(0);
     childGrpPtr->getExpresscomGroup().setServiceProvider(6);
     childGrpPtr->getExpresscomGroup().setGeo(5);
     childGrpPtr->getExpresscomGroup().setSubstation(4);
@@ -202,6 +202,50 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::OPERAND_IS_PARENT, child->compareAddressing(parent));
 
     parentGrpPtr->getExpresscomGroup().setAddressUsage(0xFF);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
+
+    parentGrpPtr->getExpresscomGroup().setAddressUsage(CtiProtocolExpresscom::atIndividual);
+    childGrpPtr->getExpresscomGroup().setAddressUsage(CtiProtocolExpresscom::atIndividual);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
+
+    parentGrpPtr->getExpresscomGroup().setSerial(7);
+    childGrpPtr->getExpresscomGroup().setSerial(8);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, child->compareAddressing(parent));
+
+    parentGrpPtr->getExpresscomGroup().setSerial(8);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
+
+    //Very bad stuff below. In current code, SERIAL overrides everything! As of this writing,
+    //the dbeditor assigns a spid when serial is chosen, and addressUsage says "spid" even 
+    //though it is really serial. This test is not "correct" but shows current behavior as a 
+    //warning to anyone who changes this behavior.
+
+    parentGrpPtr->getExpresscomGroup().setAddressUsage(CtiProtocolExpresscom::atSpid);
+    childGrpPtr->getExpresscomGroup().setAddressUsage(CtiProtocolExpresscom::atSpid);
+    parentGrpPtr->getExpresscomGroup().setServiceProvider(7);
+    childGrpPtr->getExpresscomGroup().setServiceProvider(8);
+    // We have a spid, they are different, but we also have a serial so we ignore spid!
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
+
+    parentGrpPtr->getExpresscomGroup().setSerial(7);
+    childGrpPtr->getExpresscomGroup().setSerial(8);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, child->compareAddressing(parent));
+
+    parentGrpPtr->getExpresscomGroup().setSerial(0);
+    childGrpPtr->getExpresscomGroup().setSerial(0);
+    parentGrpPtr->getExpresscomGroup().setServiceProvider(7);
+    childGrpPtr->getExpresscomGroup().setServiceProvider(8);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, child->compareAddressing(parent));
+
+    parentGrpPtr->getExpresscomGroup().setServiceProvider(8);
+    childGrpPtr->getExpresscomGroup().setServiceProvider(8);
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
 }
