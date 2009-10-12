@@ -46,8 +46,8 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         return this.hasPermissionForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
     }
 
-    public void addPermission(LiteYukonUser user, YukonPao pao, Permission permission, boolean allow) {
-        this.addPermission(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission, allow);
+    public void addPermission(LiteYukonUser user, int paoId, Permission permission, boolean allow) {
+        this.addPermission(user.getUserID(), paoId, permission, allow);
     }
 
     public void removePermission(LiteYukonUser user, YukonPao pao, Permission permission) {

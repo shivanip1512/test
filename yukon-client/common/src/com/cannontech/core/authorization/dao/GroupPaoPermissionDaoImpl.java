@@ -76,8 +76,8 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         return this.isHasPermissionForPao(idList, pao.getPaoIdentifier().getPaoId(), permission);
     }
 
-    public void addPermission(LiteYukonGroup group, YukonPao pao, Permission permission, boolean allow) {
-        this.addPermission(group.getGroupID(), pao.getPaoIdentifier().getPaoId(), permission, allow);
+    public void addPermission(LiteYukonGroup group, int paoId, Permission permission, boolean allow) {
+        this.addPermission(group.getGroupID(), paoId, permission, allow);
     }
 
     public void removePermission(LiteYukonGroup group, YukonPao pao, Permission permission) {

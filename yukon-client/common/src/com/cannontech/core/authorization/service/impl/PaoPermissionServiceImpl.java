@@ -68,7 +68,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
     public void addPermission(LiteYukonUser user, YukonPao pao, Permission permission, boolean allow) {
         validatePermission(permission);
-        userPaoPermissionDao.addPermission(user, pao, permission, allow);
+        userPaoPermissionDao.addPermission(user, pao.getPaoIdentifier().getPaoId(), permission, allow);
     }
 
     public void removePermission(LiteYukonUser user, YukonPao pao, Permission permission) {
@@ -100,7 +100,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     public void addGroupPermission(LiteYukonGroup group, YukonPao pao,
             Permission permission, boolean allow) {
         validatePermission(permission);
-        groupPaoPermissionDao.addPermission(group, pao, permission, allow);
+        groupPaoPermissionDao.addPermission(group, pao.getPaoIdentifier().getPaoId(), permission, allow);
     }
 
     public List<PaoPermission> getGroupPermissions(LiteYukonGroup group) {

@@ -3,7 +3,6 @@ package com.cannontech.core.authorization.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.service.PaoPermissionEditorService;
@@ -49,7 +48,7 @@ public class PaoPermissionEditorServiceImpl<T> implements PaoPermissionEditorSer
 
         // Add new pao permissions
         for (Integer id : idList) {
-            permissionDao.addPermission(group, new PaoIdentifier(id, null), permission, allow);
+            permissionDao.addPermission(group, id, permission, allow);
         }
 
         return true;
@@ -58,7 +57,7 @@ public class PaoPermissionEditorServiceImpl<T> implements PaoPermissionEditorSer
 
         // Add new pao permissions
         for (Integer id : idList) {
-            permissionDao.addPermission(group, new PaoIdentifier(id, null), permission, allow);
+            permissionDao.addPermission(group, id, permission, allow);
         }
 
         return true;
