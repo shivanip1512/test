@@ -1392,7 +1392,7 @@
 		<row><td>IDS__DialogId_12006_ControlId_12</td><td>1033</td><td>&lt; &amp;Back</td><td>0</td><td/><td>-2003205489</td></row>
 		<row><td>IDS__DialogId_12006_ControlId_1200</td><td>1033</td><td>@10550,10551;1;0;;0,128,128   </td><td>0</td><td/><td>-2003205489</td></row>
 		<row><td>IDS__DialogId_12006_ControlId_2</td><td>1033</td><td>C</td><td>0</td><td/><td>-2003205489</td></row>
-		<row><td>IDS__DialogId_12006_ControlId_50</td><td>1033</td><td>Welcome to the Cannon Technologies Setup Program for Yukon.</td><td>0</td><td/><td>-2003223889</td></row>
+		<row><td>IDS__DialogId_12006_ControlId_50</td><td>1033</td><td>Welcome to the Cooper Power Systems Setup Program for Yukon.</td><td>0</td><td/><td>1830648428</td></row>
 		<row><td>IDS__DialogId_12006_ControlId_710</td><td>1033</td><td>This program will install the Yukon software on your machine. </td><td>0</td><td/><td>-2003230001</td></row>
 		<row><td>IDS__DialogId_12006_ControlId_9</td><td>1033</td><td>Cancel</td><td>0</td><td/><td>-2003205489</td></row>
 		<row><td>IDS__DialogId_12030</td><td>1033</td><td>InstallShield Wizard</td><td>0</td><td/><td>-761715725</td></row>
