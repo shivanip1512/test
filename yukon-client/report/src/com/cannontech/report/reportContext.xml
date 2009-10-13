@@ -23,6 +23,21 @@
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
     
+    <!-- LCR 3102 Data -->
+    <bean id="lcr3102DataModel" class="com.cannontech.analysis.tablemodel.LCR3102DataModel"
+    scope="prototype">
+        <property name="jdbcOps" ref="jdbcTemplate"/>
+        <property name="deviceGroupService" ref="deviceGroupService" />
+        <property name="deviceDao" ref="deviceDao" />
+    </bean>
+    
+    <bean id="lcr3102DataDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="lcr3102DataModel"/></property>
+        <property name="reportLayoutData">
+           <bean class="com.cannontech.simplereport.reportlayoutdata.LCR3102DataReportLayoutData"/>
+        </property>
+    </bean>
+    
     <!-- Cap Control Strategy Assignment -->
     <bean id="strategyAssignmentModel" class="com.cannontech.analysis.tablemodel.StrategyAssignmentModel"
     scope="prototype">
