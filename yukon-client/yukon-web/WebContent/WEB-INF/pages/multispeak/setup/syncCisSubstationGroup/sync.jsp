@@ -3,14 +3,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:set var="pageTitle" value="Sync CIS Substation Device Group"/>
+<c:set var="pageTitle" value="Sync CIS Substation Device Group Results"/>
 	
 <cti:standardPage title="${pageTitle}" module="multispeak">
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
 	    <cti:crumbLink url="/msp_setup.jsp" title="MultiSpeak"  />
-	    <cti:crumbLink title="${pageTitle}"/>
+	    <cti:crumbLink url="/spring/multispeak/setup/syncCisSubstationGroup/home" title="Sync CIS Substation Device Group"  />
+	    <cti:crumbLink title="Results"/>
 	</cti:breadCrumbs>
 	
 	<cti:standardMenu menuSelection="sync|sync_cis_substation_group"/>
