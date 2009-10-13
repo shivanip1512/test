@@ -17,5 +17,9 @@ public abstract class SimpleMenuOption extends BaseMenuOption {
     }
 
     public abstract String getUrl();
+    
+    public boolean isNewWindow() {
+        return false;
+    }
 
 }

@@ -139,6 +139,10 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                     String url = StringEscapeUtils.escapeHtml(ServletUtil.createSafeUrl(httpServletRequest,
                                                                                         optionLink.getUrl()));
                     link.setHref(url);
+                    
+                    if(optionLink.isNewWindow()) {
+                        link.setTarget("blank");
+                    }
 
                     optionDiv.addElement(link);
                 } else {

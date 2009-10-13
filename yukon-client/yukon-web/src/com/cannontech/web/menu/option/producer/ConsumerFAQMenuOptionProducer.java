@@ -7,10 +7,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -23,7 +23,7 @@ public class ConsumerFAQMenuOptionProducer extends DynamicMenuOptionProducer {
     private static final String defaultLink = "/spring/stars/consumer/faq";
     private static final String labelKey = "faq";
     private static final String menuTextKey = "yukon.web.menu.config.consumer.questions.faq";
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private CustomerAccountDao customerAccountDao;
     private ECMappingDao ecMappingDao;
     
@@ -31,19 +31,22 @@ public class ConsumerFAQMenuOptionProducer extends DynamicMenuOptionProducer {
     public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
         final LiteYukonUser user = userContext.getYukonUser();
         
-        String link = authDao.getRolePropertyValue(user, ResidentialCustomerRole.WEB_LINK_FAQ);
+        String link = 
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, user);
         
+        SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(labelKey, menuTextKey);
         if (isEmpty(link)) {
-
             link = defaultLink;
-            
         } else if (isInherited(link)) {
-            
             link = getInheritedLink(user);
-            
+
+            // Custom link - open in new window
+            menuOption.setNewWindow(true);
+        } else {
+            // Custom link - open in new window
+            menuOption.setNewWindow(true);
         }
         
-        final SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(labelKey, menuTextKey);
         menuOption.setLinkUrl(link);
         
         return Arrays.<MenuOption>asList(menuOption);
@@ -79,8 +82,8 @@ public class ConsumerFAQMenuOptionProducer extends DynamicMenuOptionProducer {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
     
     @Autowired

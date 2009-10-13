@@ -9,6 +9,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 public class SimpleMenuOptionLink extends SimpleMenuOption {
 
     private String linkUrl = "";
+    private boolean newWindow = false;
 
     public SimpleMenuOptionLink(String id, YukonMessageSourceResolvable menuText) {
         super(id, menuText);
@@ -24,6 +25,14 @@ public class SimpleMenuOptionLink extends SimpleMenuOption {
 
     public void setLinkUrl(String linkUrl) {
         this.linkUrl = linkUrl;
+    }
+    
+    public boolean isNewWindow() {
+        return newWindow;
+    }
+    
+    public void setNewWindow(boolean newWindow) {
+        this.newWindow = newWindow;
     }
 
 }
