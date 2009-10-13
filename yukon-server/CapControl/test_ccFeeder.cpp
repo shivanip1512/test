@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setCurrentDailyOperations(2);
     capBank4->setMaxDailyOperation(2);
     capBank4->setOperationAnalogPointId(1);
-    capBank1->setMaxOpsDisableFlag(true);
+    capBank4->setMaxOpsDisableFlag(true);
     bank = feeder->findCapBankToChangeVars(550,pointChanges,-500,500,-600);
     BOOST_CHECK_EQUAL(pointChanges.size(),2);
     delete_container(pointChanges);
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setCurrentDailyOperations(0);
     capBank4->setMaxDailyOperation(0);
     capBank4->setOperationAnalogPointId(0);
-    capBank1->setMaxOpsDisableFlag(false);
+    capBank4->setMaxOpsDisableFlag(false);
     _END_DAY_ON_TRIP = false;
 
     delete feeder;
