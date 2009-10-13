@@ -328,9 +328,9 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     //Test Hitting Max Daily Ops Code
     capBank4->setMaxDailyOperation(5);
     capBank4->setMaxDailyOpsHitFlag(false);
+    capBank4->setMaxOpsDisableFlag(true);
     capBank4->setCurrentDailyOperations(5);
     capBank4->setOperationAnalogPointId(1);
-    capBank1->setMaxOpsDisableFlag(true);
     bank = feeder->findCapBankToChangeVars(550,pointChanges,-500,500,-600);
     //We should skip the first bank based on max ops and return the second bank.
     BOOST_CHECK_EQUAL(pointChanges.size(),2);
@@ -346,7 +346,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setCurrentDailyOperations(0);
     capBank4->setOperationAnalogPointId(0);
     capBank4->setDisableFlag(false);
-    capBank1->setMaxOpsDisableFlag(false);
+    capBank4->setMaxOpsDisableFlag(false);
 
     _END_DAY_ON_TRIP = true;
     capBank4->setDisableFlag(false);
