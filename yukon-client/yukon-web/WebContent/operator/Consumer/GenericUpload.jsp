@@ -1,7 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:compareRolePropertyValue property="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" expectedValue="upload"/>
+<cti:verifyRolePropertyValue property="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" expectedValue="upload"/>
 
 <html>
 <head>

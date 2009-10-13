@@ -1078,8 +1078,8 @@
   </tag>
   
   <tag>
-    <name>compareRolePropertyValue</name>
-    <tag-class>com.cannontech.web.util.CompareRolePropertyValueTag</tag-class>
+    <name>verifyRolePropertyValue</name>
+    <tag-class>com.cannontech.web.util.VerifyRolePropertyValueTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <name>property</name>

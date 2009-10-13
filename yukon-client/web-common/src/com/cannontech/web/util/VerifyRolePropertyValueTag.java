@@ -11,8 +11,8 @@ import com.cannontech.web.taglib.YukonTagSupport;
  * Checks that the value of the specified 
  * YukonRoleProperty matches the expected String value.
  */
-@Configurable("compareRolePropertyValueTagPrototype")
-public class CompareRolePropertyValueTag extends YukonTagSupport {
+@Configurable("verifyRolePropertyValueTagPrototype")
+public class VerifyRolePropertyValueTag extends YukonTagSupport {
     private String property;
     private String expectedValue;
     
@@ -24,7 +24,7 @@ public class CompareRolePropertyValueTag extends YukonTagSupport {
         YukonRoleProperty roleProperty = YukonRoleProperty.valueOf(property);
         String value = rolePropertyDao.getPropertyStringValue(roleProperty, getYukonUser());
         if(!value.equals(expectedValue)){
-            throw new NotAuthorizedException("Incorrect value for property " + property + ". Value: " + value + ", Requires: " + expectedValue);
+            throw new NotAuthorizedException("Incorrect value for property " + property);
         }
     }
     
