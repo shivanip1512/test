@@ -367,11 +367,15 @@
 %>
               <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_METERS %>" defaultvalue="Meters"/></span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <%
-			for (int i = 0; i < meterLabels.size(); i++) {
+<%
+            // Get the METER_MCT_BASE_DESIGNATION role property using the ec user
+            LiteYukonUser ecUser = liteEC.getUser();
+            String meterMCTBaseDesignation = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, ecUser);
+
+            for (int i = 0; i < meterLabels.size(); i++) {
 				String[] linkFields = (String[]) meterLabels.get(i);
 				String connImg = (i == meterLabels.size() - 1)? connImgBtm : connImgMid;
-				if((DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0) 
+				if(meterMCTBaseDesignation.compareTo(StarsUtils.METER_BASE_DESIGNATION) == 0) 
 				{
 %>
                 	<tr onmouseover="hardwareMenuAppear(event, this, 'nonYukonMeterMenu', <%= linkFields[0] %>)">
@@ -506,7 +510,11 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 </cti:checkProperty>
 <%
 	}
-	if((DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0) 
+    // Get the METER_MCT_BASE_DESIGNATION role property using the ec user
+    LiteYukonUser ecUser = liteEC.getUser();
+    String meterMCTBaseDesignation = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, ecUser);
+
+	if(meterMCTBaseDesignation.compareTo(StarsUtils.METER_BASE_DESIGNATION) == 0) 
 	{
 		for (int i = 0; i < meterLabels.size(); i++) {
 			int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );

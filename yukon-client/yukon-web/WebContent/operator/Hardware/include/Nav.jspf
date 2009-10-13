@@ -44,8 +44,12 @@
          <%
             YukonListEntry entry = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT); 
          
+            // Get the METER_MCT_BASE_DESIGNATION role property using the ec user
+            LiteYukonUser ecUser = liteEC.getUser();
+            String meterMCTBaseDesignation = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, ecUser);
+         
           	if (entry != null && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT &&
-          		(DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) != 0) { %>
+          	      meterMCTBaseDesignation.compareTo(StarsUtils.METER_BASE_DESIGNATION) != 0) { %>
 	          <tr> 
 	            <td width="10"><%= ((String[]) links.get("CreateMCT.jsp"))[0] %></td>
 	            <td style="padding:1"><%= ((String[]) links.get("CreateMCT.jsp"))[1] %></td>

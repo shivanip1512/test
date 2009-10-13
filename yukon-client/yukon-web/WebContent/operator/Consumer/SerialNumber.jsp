@@ -2,6 +2,10 @@
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
+<%@ page import="com.cannontech.stars.util.StarsUtils" %>
+<%@page import="com.cannontech.core.dao.DaoFactory"%>
+<%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
 	String action = request.getParameter("action");
@@ -222,7 +226,11 @@ function init() {
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= referer %>">
                 Please select a device from the current inventory (Select Inventory),<br>
-<%String meterBase = DaoFactory.getAuthDao().getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION);
+<%
+//Get the METER_MCT_BASE_DESIGNATION role property using the ec user
+LiteYukonUser ecUser = liteEC.getUser();
+String meterBase = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, ecUser);
+
 if (account != null && meterBase != null && meterBase.compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
 {%>
 				create a new Meter (Create New Meter),<br>
