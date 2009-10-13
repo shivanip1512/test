@@ -1,6 +1,7 @@
 package com.cannontech.amr.meter.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -232,6 +233,27 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     	});
     	
     	return result;
+    }
+    
+    @Override
+    public List<Meter> getMetersForMeterNumbers(final List<String> meterNumbers) {
+
+    	if (meterNumbers.size() == 0) {
+    		return Collections.emptyList();
+    	}
+    	
+    	ChunkingSqlTemplate<String> template = new ChunkingSqlTemplate<String>(simpleJdbcTemplate);
+    	
+    	List<Meter> meters = template.query(new SqlFragmentGenerator<String>() {
+    		public SqlFragmentSource generate(List<String> subList) {
+    			SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
+    			sql.append("WHERE DeviceMeterGroup.MeterNumber IN (").appendArgumentList(subList).append(")");
+    			return sql;
+    		}
+    	}, meterNumbers, meterRowMapper);
+    	
+    	
+    	return meters;
     }
 
     /**

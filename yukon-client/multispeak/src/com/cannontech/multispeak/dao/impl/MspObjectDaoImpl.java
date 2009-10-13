@@ -5,7 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.soap.Name;
+
+import org.apache.axis.client.Stub;
+import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
@@ -107,27 +113,82 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<com.cannontech.multispeak.deploy.service.Meter> getAllMspMeters(String lastReceived, MultispeakVendor mspVendor) {
-        List<com.cannontech.multispeak.deploy.service.Meter> mspMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+    public List<com.cannontech.multispeak.deploy.service.Meter> getAllMspMeters(MultispeakVendor mspVendor) {
+    
+    	List<com.cannontech.multispeak.deploy.service.Meter> allMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+    
+    	boolean firstGet = true;
+		String lastReceived = null;
+		
+		while (firstGet || lastReceived != null) {
+			
+			CTILogger.info("Calling getMoreMspMeters, lastReceived = " + lastReceived);
+			lastReceived = getMoreMspMeters(allMeters, lastReceived, mspVendor);
+			firstGet = false;
+		}
+    
+		return allMeters;
+	}
+    
+    private String getMoreMspMeters(List<com.cannontech.multispeak.deploy.service.Meter> allMeters, String lastReceived, MultispeakVendor mspVendor) {
+    	
+    	String lastSent = null;
+        
         try {
+        	
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
+            	
                 com.cannontech.multispeak.deploy.service.Meter[] meters = port.getAllMeters(lastReceived);
+                
+                List<com.cannontech.multispeak.deploy.service.Meter> mspMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
                 if( meters != null) {
                     mspMeters = Arrays.asList(meters);
                 }
+                allMeters.addAll(mspMeters);
+                
+                int objectsRemaining = Integer.valueOf(getAttributeValue(port, "objectsRemaining"));
+                if (objectsRemaining != 0) {
+        			lastSent = getAttributeValue(port, "lastSent");
+        			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
+        		} else {
+        			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
+        		}
+                
             } else {
                 CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
             }
+            
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getAllMeters (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for Meter");
        }
-       return mspMeters;
+       
+       return lastSent;
     }
-
+    
+    @SuppressWarnings("unchecked")
+    private String getAttributeValue(Stub port, String name) {
+    	
+    	String value = null;
+    	SOAPHeaderElement[] responseHeaders = port.getResponseHeaders();
+        for (SOAPHeaderElement headerElement : responseHeaders) {
+        	Iterator<Name> attributeNamesItr = headerElement.getAllAttributes();
+        	while(attributeNamesItr.hasNext()) {
+				Name attributeName = attributeNamesItr.next();
+				if (attributeName.getLocalName().equalsIgnoreCase(name)) {
+					value = headerElement.getAttributeValue(attributeName);
+					if (!org.apache.commons.lang.StringUtils.isBlank(value)) {
+						break;
+					}
+				}
+			}
+        }
+        return value;
+    }
+    
     @Override
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor) {
     	return getMspMetersByServiceLocation(mspServiceLocation.getObjectID(), mspVendor);    	

@@ -55,6 +55,8 @@
 	
 	<bean id="lmMappingsController" class="com.cannontech.web.multispeak.LMMappingsController">
 	</bean>
+	
+	<bean class="com.cannontech.web.multispeak.syncCisSubstationGroup.SyncCisSubstationGroupController" />
 
 	<bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
 		<property name="methodParamNames">

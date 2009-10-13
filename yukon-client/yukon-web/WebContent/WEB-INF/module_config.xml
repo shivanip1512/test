@@ -618,9 +618,10 @@
     <skin name="standard"/>
     <css file="setupStyle.css"/>
     
-    
     <links>
-    <option id="multispeak">
+    
+      <option id="multispeak">
+      	<link>/msp_setup.jsp?init</link>
     	<links>
     	  <option id="interfaces">
     		<link>/msp_setup.jsp?init</link>
@@ -634,7 +635,18 @@
     	  </option>
     	</links>
       </option>
+      
+      <option id="sync">
+      	<link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
+      	<links>
+      	  <option id="sync_cis_substation_group">
+    		<link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
+    	  </option>
+    	</links>
+      </option>
+      
     </links>
+    
   </module>
         
   <module name="debug">

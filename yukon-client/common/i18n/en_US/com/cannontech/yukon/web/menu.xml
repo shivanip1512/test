@@ -170,6 +170,9 @@
 <entry key="yukon.web.menu.config.multispeak.multispeak.route_mappings">Substation To Route Mappings</entry>
 <entry key="yukon.web.menu.config.multispeak.multispeak.lm_mappings">LM Mappings</entry>
 
+<entry key="yukon.web.menu.config.multispeak.sync">Synchronization</entry>
+<entry key="yukon.web.menu.config.multispeak.sync.sync_cis_substation_group">CIS Substation Device Group</entry>
+
 <!-- Debug Module -->
 <entry key="yukon.web.menu.config.debug.loadControlService">Load Control Service</entry>
 <entry key="yukon.web.menu.config.debug.loadControlService.inputs">Inputs</entry>

@@ -21,6 +21,8 @@ public interface MeterDao extends StandardDaoOperations<Meter> {
 
     public Meter getForYukonDevice(YukonDevice yukonDevice);
     
+    public List<Meter> getMetersForMeterNumbers(List<String> meterNumbers);
+    
     public List<Meter> getMetersByMeterNumber(String lastReceived, int maxRecordCount);
     
     public List<Meter> getMetersByPaoName(String lastReceived, int maxRecordCount);

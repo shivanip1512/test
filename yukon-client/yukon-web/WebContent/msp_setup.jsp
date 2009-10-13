@@ -67,8 +67,8 @@
 
 	</script>
     
-	<br>
 	<h2>MultiSpeak Setup</h2>
+	<br>
 
 	<h4 class='ErrorMsg'><c:out value="${sessionScope.ERROR_MESSAGE}" default=""/></h4>
 	
