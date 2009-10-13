@@ -67,6 +67,9 @@ pointer pEnv;
 string szCmdLine, szPath, szKey, szTitle, szMsg, szMsg2, szTextCont, szTextIg, szMsgWait;
 number dirSearch, foundVal, moveNext;
 BOOL bvCheckCont, bvCheckIg; 
+
+string szGrepFileName, szGrepSearchStr, svGrepReturnLine, szReplaceStr;
+number nvGrepLineNumber, nGrepResult;
  
 begin
     
@@ -140,7 +143,47 @@ Dlg_SdComponentTree:
             nResult = SdFeatureTree(szTitle, szMsg, szTargetdir, szComponents, nLevel);
             if (nResult = BACK) goto Dlg_SdAskDestPath;
     endif; 
-
+ 
+ //replaces old DB connection cparms (pre-5.0) if they exist in the master.cfg
+ ReplaceOldDBCparms:
+ 	szGrepFileName = TARGETDIR + "\\Server\\Config\\master.cfg";
+ 	//replace DB_RWDBDLL with DB_TYPE
+ 	szGrepSearchStr = "DB_RWDBDLL";
+ 	szReplaceStr = "DB_TYPE";
+ 	nGrepResult = 1;
+ 	while(nGrepResult >= 0)
+	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
+	    if(nGrepResult >= 0) then
+	    	//return >0 means we found a match
+	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
+	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
+	    endif;
+    endwhile;
+    //replace msq15d.dll with mssql
+    szGrepSearchStr = "msq15d.dll";
+    szReplaceStr = "mssql";
+    nGrepResult = 1;
+    while(nGrepResult >= 0)
+	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
+	    if(nGrepResult >= 0) then
+	    	//return >0 means we found a match
+	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
+	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
+	    endif;
+    endwhile;
+    //replace ora15d.dll with oracle
+    szGrepSearchStr = "ora15d.dll";
+    szReplaceStr = "oracle";
+    nGrepResult = 1;
+    while(nGrepResult >= 0)
+	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
+	    if(nGrepResult >= 0) then
+	    	//return >0 means we found a match
+	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
+	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
+	    endif;
+    endwhile;
+ 
 	// setup default status
     SetStatusWindow(0, "");
     Enable(STATUSEX);
