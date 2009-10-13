@@ -21,5 +21,5 @@
 
 <%-- TODO:  localize and consider merging into dateInputCalendar.tag, turning on via attributes --%>
 <input type="hidden" id="${fieldId}" name="${fieldId}" value="${datePart} ${timePart}"/>
-Date: <tags:dateInputCalendar fieldId="${fieldId}DatePart" fieldName="${fieldId}DatePart" fieldValue="${datePart}" disabled="${pageScope.disabled}"/><br>
-Time: <input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text" size="5" value="${timePart}"${disabledStr}/>
+<cti:msg key="yukon.common.calendarcontrol.date"/><tags:dateInputCalendar fieldId="${fieldId}DatePart" fieldName="${fieldId}DatePart" fieldValue="${datePart}" disabled="${pageScope.disabled}"/><br>
+<cti:msg key="yukon.common.calendarcontrol.time"/><input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text" size="5" value="${timePart}"${disabledStr}/>

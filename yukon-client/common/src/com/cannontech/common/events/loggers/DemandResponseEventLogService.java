@@ -18,12 +18,10 @@ public interface DemandResponseEventLogService {
     // Control Area logging
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void controlAreaStarted(String controlAreaName, 
-                                   Boolean manual,
                                    Date startDate);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void controlAreaStopped(String controlAreaName, 
-                                   Boolean manual,
                                    Date stopDate);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
@@ -78,22 +76,22 @@ public interface DemandResponseEventLogService {
     public void threeTierProgramScheduled(LiteYukonUser yukonUser, String name, Date startDate);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programScheduled(String programName, Boolean overrideConstraints, String gearName, 
-                                 Boolean manual, Date startDate, Boolean stopScheduled, 
-                                 Date stopDate);
+    public void programScheduled(String programName,
+            Boolean overrideConstraints, String gearName, Date startDate,
+            Boolean stopScheduled, Date stopDate);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
     public void threeTierProgramStopped(LiteYukonUser user, String name, Date stopDate);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programStopped(String programName, Boolean manual, Date stopDate, String gearName);
+    public void programStopped(String programName, Date stopDate, String gearName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
     public void threeTierProgramStopScheduled(LiteYukonUser user, String name, Date stopDate);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
-    public void programStopScheduled(String programName, Boolean manual, Date stopDate, 
-                                     String gearName);
+    public void programStopScheduled(String programName, Date stopDate,
+            String gearName);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.program")
     public void threeTierProgramChangeGear(LiteYukonUser yukonUser, String name);

@@ -1,6 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <script type="text/javascript">
@@ -109,14 +110,14 @@ singleOverrideChecked = function(boxChecked) {
                             <c:if test="${!empty violationsForProgram}">
                                     <ul>
                                         <c:forEach var="violation" items="${violationsForProgram.violations}">
-                                            <li>${violation}</li>
+                                            <li><spring:escapeBody>${violation}</spring:escapeBody></li>
                                         </c:forEach>
                                     </ul>
                             </c:if>
                         </td>
                     </c:if>
                     <c:if test="${!constraintsViolated}">
-                        <td>${program.name}</td>
+                        <td><spring:escapeBody>${program.name}</spring:escapeBody></td>
                     </c:if>
                 </tr>
                 <c:set var="index" value="${index + 1}"/>

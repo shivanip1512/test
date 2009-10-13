@@ -2,6 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 
@@ -114,10 +115,10 @@ singleProgramChecked = function(boxChecked) {
                 <form:checkbox path="programStartInfo[${status.index}].startProgram"
                     id="startProgramCheckbox${status.index}"
                     onclick="singleProgramChecked(this);"/>
-                <label for="startProgramCheckbox${status.index}">${program.name}</label></td>
+                <label for="startProgramCheckbox${status.index}"><spring:escapeBody>${program.name}</spring:escapeBody></label></td>
                 <td><form:select path="programStartInfo[${status.index}].gearNumber">
                     <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
-                        <form:option value="${gearStatus.index + 1}">${gear.gearName}</form:option>
+                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
                     </c:forEach>
                 </form:select></td>
                 <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>

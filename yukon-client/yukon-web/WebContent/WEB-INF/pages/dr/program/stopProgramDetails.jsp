@@ -1,6 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 
@@ -72,7 +73,7 @@ updateComponentAvailability = function() {
 
                 <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
                     <c:forEach var="gear" varStatus="status" items="${gears}">
-                        <form:option value="${status.index + 1}">${gear.gearName}</form:option>
+                        <form:option value="${status.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
                     </c:forEach>
                 </form:select><br>
                 <script type="text/javascript">updateComponentAvailability();</script>

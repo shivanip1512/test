@@ -9,4 +9,6 @@
     <entry key="yukon.common.calendarcontrol.clear">Clear</entry>
     <entry key="yukon.common.calendarcontrol.close">Close</entry>
 
+    <entry key="yukon.common.calendarcontrol.date">Date:</entry>
+    <entry key="yukon.common.calendarcontrol.time">Time:</entry>
 </properties>

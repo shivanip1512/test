@@ -162,9 +162,8 @@ public class ProgramServiceImpl implements ProgramService {
 
         demandResponseEventLogService.programScheduled(program.getYukonName(),
                                                        overrideConstraints,
-                                                       gearName, true,
-                                                       startDate, stopScheduled,
-                                                       stopDate);
+                                                       gearName, startDate,
+                                                       stopScheduled, stopDate);
     }
 
     private String getGearNameForProgram(LMProgramBase program, int gearNumber) {
@@ -185,7 +184,7 @@ public class ProgramServiceImpl implements ProgramService {
         loadControlClientConnection.write(controlRequest);
 
         demandResponseEventLogService.programStopScheduled(program.getYukonName(),
-                                                           true, stopDate, null);
+                                                           stopDate, null);
     }
 
     @Override
@@ -197,7 +196,8 @@ public class ProgramServiceImpl implements ProgramService {
                                           LMManualControlRequest.CONSTRAINTS_FLAG_USE);
         loadControlClientConnection.write(controlRequest);
 
-        demandResponseEventLogService.programStopped(program.getYukonName(), true, stopDate, null);
+        demandResponseEventLogService.programStopped(program.getYukonName(),
+                                                     stopDate, null);
     }
 
     @Override
@@ -237,7 +237,7 @@ public class ProgramServiceImpl implements ProgramService {
         serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
 
         demandResponseEventLogService.programStopped(program.getYukonName(),
-                                                     true, stopDate, gearName);
+                                                     stopDate, gearName);
     }
 
     private ConstraintViolations makeServerRequest(LMManualControlRequest controlRequest) {

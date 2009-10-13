@@ -31,14 +31,14 @@
     <!-- Program -->
     <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {1} start scheduled at {10} by user {0} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramStopped">Program {1} was stopped at {10} by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled">Program {1} was scheduled to stop at {2} by user {0} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled">Program {1} was scheduled to stop at {10} by user {0} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramChangeGear">Program {1} changed gears by user {0} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramEnabled">Program {1} was enabled by user {0} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramDisabled">Program {1} was disabled by user {0} via 3-Tier</entry>
 
     <entry key="yukon.common.events.dr.program.programScheduled">Program {0} start scheduled at {10} with gear {2}; stop scheduled {3}</entry>
     <entry key="yukon.common.events.dr.program.programStopped">Program {0} was stopped at {10}</entry>
-    <entry key="yukon.common.events.dr.program.programStopScheduled">Program {0} was scheduled to stop at {4}</entry>
+    <entry key="yukon.common.events.dr.program.programStopScheduled">Program {0} was scheduled to stop at {10}</entry>
     <entry key="yukon.common.events.dr.program.programChangeGear">Program {0} changed gears to {1}</entry>
     <entry key="yukon.common.events.dr.program.programEnabled">Program {0} was enabled</entry>
     <entry key="yukon.common.events.dr.program.programDisabled">Program {0} was disabled</entry>
