@@ -49,7 +49,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
         
         // Checks to see if the validation is currently running.
         if(running.availablePermits() == 0){
-            String msgError = "Someone is already running a database validation.  Please try again later.";
+            String msgError = "Database validation process is already running.  Please try again later.";
             map.addAttribute("msgError", msgError);
             log.error(msgError);
             return "database/validate.jsp";
@@ -60,7 +60,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
         try{
             displayOracleWarning = isDatabaseOracle();
         }catch (MetaDataAccessException e) {
-            map.addAttribute("msgError", "Your system does not have access to the database metadata and therefore cannot validate your database.");
+            map.addAttribute("msgError", "System does not have access to database metadata.  Database validation cannot be completed.");
             log.error(e.getStackTrace());
             return "database/validate.jsp";
         }
