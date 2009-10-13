@@ -165,11 +165,6 @@ public class PointDataIntervalModel extends ReportModelBase
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID ");
 	    sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
-
-	    if (getBillingGroups() != null && getBillingGroups().length > 0 ) {
-            sql.append(", DEVICEMETERGROUP DMG ");
-        }
-
 	    sql.append(" WHERE P.POINTID = RPH.POINTID ");
 	    sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 	    sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
@@ -179,8 +174,6 @@ public class PointDataIntervalModel extends ReportModelBase
 	    final String[] groups = getBillingGroups();
 
 	    if (groups != null && groups.length > 0) {
-	        sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
-
 	        SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
 	        sql.append(" AND ", deviceGroupSqlWhereClause);
 	    }
