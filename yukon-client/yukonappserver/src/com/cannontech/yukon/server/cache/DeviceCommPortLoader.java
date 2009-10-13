@@ -10,7 +10,8 @@ public class DeviceCommPortLoader {
 
     
 
-    public static List getDevicesByCommPort(int portId) {
+    @SuppressWarnings("unchecked")
+    public static List<Integer> getDevicesByCommPort(int portId) {
         String stmt =
             "SELECT DeviceId FROM DeviceDirectCommSettings WHERE PortId = ?";
         
@@ -20,7 +21,8 @@ public class DeviceCommPortLoader {
 
     }
 
-    public static List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+    @SuppressWarnings("unchecked")
+    public static List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
         String sqlStmt = "SELECT DeviceId FROM DeviceAddress WHERE MasterAddress = ?  AND SlaveAddress = ?";  
         
         

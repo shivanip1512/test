@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
@@ -242,7 +242,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         try{
             parentID = jdbcOps.queryForInt(sql, new Integer[] {id});
         }
-        catch (DataAccessException dae)
+        catch (EmptyResultDataAccessException dae)
         {
             CTILogger.debug("Could not find parent for cbc:" + id);
         }
@@ -255,7 +255,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         try{
             parentID = jdbcOps.queryForInt(sql, new Integer[] {id});
         }
-        catch (DataAccessException dae)
+        catch (EmptyResultDataAccessException dae)
         {
             CTILogger.debug("Could not find parent for cbc:" + id);
         }

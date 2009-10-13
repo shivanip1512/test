@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -131,7 +129,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public InventoryBase getById(final int inventoryId) throws DataAccessException {
+    public InventoryBase getById(final int inventoryId) {
         InventoryBase inventoryBase = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, inventoryId);
         return inventoryBase;
     }
@@ -203,34 +201,22 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getByInstallationCompanyId(final int companyId) {
-        try {
-            List<InventoryBase> list = simpleJdbcTemplate.query(selectByInstallationCompanyIdSql, rowMapper, companyId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<InventoryBase> list = simpleJdbcTemplate.query(selectByInstallationCompanyIdSql, rowMapper, companyId);
+        return list;
     }
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getByCategoryId(final int categoryId) {
-        try {
-            List<InventoryBase> list = simpleJdbcTemplate.query(selectByCategoryIdSql, rowMapper, categoryId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<InventoryBase> list = simpleJdbcTemplate.query(selectByCategoryIdSql, rowMapper, categoryId);
+        return list;
     }
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getAll() {
-        try {
-            List<InventoryBase> list = simpleJdbcTemplate.query(selectAllSql, rowMapper);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<InventoryBase> list = simpleJdbcTemplate.query(selectAllSql, rowMapper);
+        return list;
     }
     
     @Override

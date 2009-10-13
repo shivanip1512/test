@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.program.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,51 +195,39 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
-            sql.append(" FROM LMProgramDirectGroup LMPDG ");
-            sql.append(" WHERE LMPDG.DeviceId in (", programIds, ") ");
-            
-            List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
-            return list;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return Collections.emptyList();
-        } 
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
+        sql.append(" FROM LMProgramDirectGroup LMPDG ");
+        sql.append(" WHERE LMPDG.DeviceId in (", programIds, ") ");
+        
+        List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
+        return list;
     }
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByProgramIds(final Set<Integer> programIds) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
-            sql.append(" FROM LMProgramDirectGroup LMPDG ");
-            sql.append(" WHERE LMPDG.DeviceId in (SELECT LMPWP.DeviceId ");
-            sql.append("                          FROM LMProgramWebPublishing LMPWP ");
-            sql.append("                          WHERE LMPWP.ProgramId in (", programIds, ")) ");
-            
-            List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
-            return list;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return Collections.emptyList();
-        } 
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId "); 
+        sql.append(" FROM LMProgramDirectGroup LMPDG ");
+        sql.append(" WHERE LMPDG.DeviceId in (SELECT LMPWP.DeviceId ");
+        sql.append("                          FROM LMProgramWebPublishing LMPWP ");
+        sql.append("                          WHERE LMPWP.ProgramId in (", programIds, ")) ");
+        
+        List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
+        return list;
     }
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctProgramIdsByGroupIds(final Set<Integer> groupIds) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(" SELECT Distinct LMPDG.DeviceId"); 
-            sql.append(" FROM LMProgramDirectGroup LMPDG ");
-            sql.append(" WHERE LMPDG.LMGroupDeviceId in (", groupIds, ") ");
-            
-            List<Integer> list = simpleJdbcTemplate.query(sql.toString(), programIdRowMapper);
-            return list;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return Collections.emptyList();
-        } 
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(" SELECT Distinct LMPDG.DeviceId"); 
+        sql.append(" FROM LMProgramDirectGroup LMPDG ");
+        sql.append(" WHERE LMPDG.LMGroupDeviceId in (", groupIds, ") ");
+        
+        List<Integer> list = simpleJdbcTemplate.query(sql.toString(), programIdRowMapper);
+        return list;
     }
     
     @Override

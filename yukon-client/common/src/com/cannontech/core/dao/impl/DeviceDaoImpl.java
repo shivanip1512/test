@@ -2,7 +2,6 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,9 +9,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -60,7 +57,6 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " + 
         "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
 
-    private final RowMapper litePaoRowMapper = new LitePaoRowMapper();
     private YukonDeviceRowMapper yukonDeviceRowMapper = null;
 
     private JdbcOperations jdbcOps;
@@ -180,7 +176,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
      */
     public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID)
     {
-        List allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
+        List<LiteDeviceMeterNumber> allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
 
         LiteDeviceMeterNumber ldmn = null;
         for (int i = 0; i < allDevMtrGrps.size(); i++)
@@ -197,7 +193,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
      */
     public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNumber)
     {
-        List allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
+        List<LiteDeviceMeterNumber> allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
 
         LiteDeviceMeterNumber ldmn = null;
         for (int i = 0; i < allDevMtrGrps.size(); i++)
@@ -222,7 +218,8 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         sql.append("left outer join devicemetergroup dmg on y.paobjectid=dmg.deviceid " +
                    "where dmg.meternumber = ?");
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sql.toString(), new Object[] {meterNumber}, litePaoRowMapper);
+        List<LiteYukonPAObject> paos = 
+            simpleJdbcTemplate.query(sql.toString(), new LitePaoRowMapper(), meterNumber);
 
         return paos;
     }
@@ -232,7 +229,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
      */
     public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName)
     {
-        List allDevices = databaseCache.getAllDevices();
+        List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
 
         LiteYukonPAObject lPao = null;
         for (int i = 0; i < allDevices.size(); i++)
@@ -249,7 +246,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
      */
     public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category, int paoClass, int type)
     {
-        List allDevices = databaseCache.getAllDevices();
+        List<LiteYukonPAObject> allDevices = databaseCache.getAllDevices();
         for (Object obj : allDevices) {
             LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
             boolean foundMatch = true;
@@ -278,17 +275,17 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DeviceDao#getDevicesByPort(int)
      */
-    public List getDevicesByPort(int portId)
+    public List<Integer> getDevicesByPort(int portId)
     {
-        List devices = databaseCache.getDevicesByCommPort(portId);
+        List<Integer> devices = databaseCache.getDevicesByCommPort(portId);
         return devices;
     }
     
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DeviceDao#getDevicesByDeviceAddress(java.lang.Integer, java.lang.Integer)
      */
-    public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-        List devicesByAddress = databaseCache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
+    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+        List<Integer> devicesByAddress = databaseCache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
         return devicesByAddress;
     }
 
@@ -299,12 +296,8 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
                         + "JOIN Device d ON yp.PAObjectId = d.DeviceId "
                         + "JOIN DeviceRoutes dr ON d.DeviceId = dr.DeviceId "
                         + "WHERE dr.RouteId = ?";
-        try{
-            List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] {routeId}, new YukonDeviceRowMapper(paoGroupsWrapper));
-            return devices;
-        } catch (IncorrectResultSizeDataAccessException e){
-            return Collections.emptyList();
-        }
+        List<SimpleDevice> devices = jdbcOps.query(sql, new Integer[] {routeId}, new YukonDeviceRowMapper(paoGroupsWrapper));
+        return devices;
     }
     
     @Override

@@ -2,7 +2,6 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,52 +136,32 @@ public class AddressDaoImpl implements AddressDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteAddress> getAll() {
-        try {
-            List<LiteAddress> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LiteAddress> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        return list;
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteAddress> getByCityName(final String cityName) {
-        try {
-            List<LiteAddress> list = simpleJdbcTemplate.query(selectByCityName, rowMapper, cityName);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LiteAddress> list = simpleJdbcTemplate.query(selectByCityName, rowMapper, cityName);
+        return list;
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteAddress> getByCounty(final String county) {
-        try {
-            List<LiteAddress> list = simpleJdbcTemplate.query(selectByCounty, rowMapper, county);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LiteAddress> list = simpleJdbcTemplate.query(selectByCounty, rowMapper, county);
+        return list;
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteAddress> getByStateCode(final String stateCode) {
-        try {
-            List<LiteAddress> list = simpleJdbcTemplate.query(selectByStateCode, rowMapper, stateCode);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LiteAddress> list = simpleJdbcTemplate.query(selectByStateCode, rowMapper, stateCode);
+        return list;
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteAddress> getByZipCode(final String zipCode) {
-        try {
-            List<LiteAddress> list = simpleJdbcTemplate.query(selectByZipCode, rowMapper, zipCode);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LiteAddress> list = simpleJdbcTemplate.query(selectByZipCode, rowMapper, zipCode);
+        return list;
     }
 
     private static final ParameterizedRowMapper<LiteAddress> createRowMapper() {

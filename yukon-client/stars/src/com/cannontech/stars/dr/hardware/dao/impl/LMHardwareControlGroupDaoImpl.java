@@ -3,13 +3,10 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -202,121 +199,73 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByLMGroupId(final int groupId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByLMGroupId, rowMapper, groupId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByLMGroupId, rowMapper, groupId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByInventoryId(final int inventoryId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryId, rowMapper, inventoryId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }       
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryId, rowMapper, inventoryId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByAccountId(final int accountId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByAccountId, rowMapper, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByAccountId, rowMapper, accountId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByAccountId(final int accountId) {
-        try {
-            List<Integer> list = simpleJdbcTemplate.query(selectDistinctGroupIdByAccountId, groupIdRowMapper, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<Integer> list = simpleJdbcTemplate.query(selectDistinctGroupIdByAccountId, groupIdRowMapper, accountId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByEnrollmentStartDateRange(Date first, Date second) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByEnrollStartRange, rowMapper, first, second);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByEnrollStartRange, rowMapper, first, second);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByEnrollmentStopDateRange(Date first, Date second) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByEnrollStopRange, rowMapper, first, second);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByEnrollStopRange, rowMapper, first, second);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByOptOutStartDateRange(Date first, Date second) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByOptOutStartRange, rowMapper, first, second);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByOptOutStartRange, rowMapper, first, second);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByOptOutStopDateRange(Date first, Date second) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByOptOutStopRange, rowMapper, first, second);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByOptOutStopRange, rowMapper, first, second);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByLMGroupIdAndAccountIdAndType(int lmGroupId, int accountId, int type) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByLMGroupIdAndAccountIdAndType, rowMapper, lmGroupId, accountId, type);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByLMGroupIdAndAccountIdAndType, rowMapper, lmGroupId, accountId, type);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, int accountId, int type) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndAccountIdAndType, rowMapper, inventoryId, accountId, type);
-            return list;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndAccountIdAndType, rowMapper, inventoryId, accountId, type);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountId, rowMapper, inventoryId, lmGroupId, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountId, rowMapper, inventoryId, lmGroupId, accountId);
+        return list;
     }
     
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountIdAndType, rowMapper, inventoryId, lmGroupId, accountId, type);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountIdAndType, rowMapper, inventoryId, lmGroupId, accountId, type);
+        return list;
     }
 
     public List<LMHardwareControlGroup> getCurrentEnrollmentByAccountId(int accountId) {
@@ -331,61 +280,35 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByProgramIdAndAccountId, rowMapper, programId, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByProgramIdAndAccountId, rowMapper, programId, accountId);
+        return list;
     }      
 
     public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
+        return list;
     }    
     
     public List<LMHardwareControlGroup> getCurrentOptOutByProgramIdAndAccountId(int programId, int accountId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByProgramIdAndAccountId, rowMapper, programId, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-            
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByProgramIdAndAccountId, rowMapper, programId, accountId);
+        return list;
     }
     
     public List<LMHardwareControlGroup> getCurrentOptOutByInventoryIdProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-            
-        }
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
+        return list;
     }    
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getAll() {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getAllByEnergyCompanyId(int energyCompanyId) {
-        try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllByEnergyCompanyId, rowMapper, energyCompanyId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllByEnergyCompanyId, rowMapper, energyCompanyId);
+        return list;
     }
     
     private static final ParameterizedRowMapper<LMHardwareControlGroup> createRowMapper() {
@@ -468,22 +391,14 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId) {
-        try {
-            List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryConfigInfo, oldControlInfoRowMapper, inventoryId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryConfigInfo, oldControlInfoRowMapper, inventoryId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId) {
-        try {
-            List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryLoadGroupConfigInfo, oldControlInfoRowMapper, inventoryId, lmGroupId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryLoadGroupConfigInfo, oldControlInfoRowMapper, inventoryId, lmGroupId);
+        return list;
     }
 
     public void afterPropertiesSet() throws Exception {

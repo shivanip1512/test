@@ -3,7 +3,6 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -61,42 +60,26 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao, Initializin
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getByPAObjectId(final int paObjectId) {
-        try {
-            List<LMControlHistory> list = simpleJdbcTemplate.query(selectByPAObjectId, rowMapper, paObjectId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMControlHistory> list = simpleJdbcTemplate.query(selectByPAObjectId, rowMapper, paObjectId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getByPAObjectIdAndStartDateRange(final int paObjectId, Date firstDate, Date secondDate) {
-        try {
-            List<LMControlHistory> list = simpleJdbcTemplate.query(selectByPAObjectIdAndStartRange, rowMapper, paObjectId, firstDate, secondDate);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMControlHistory> list = simpleJdbcTemplate.query(selectByPAObjectIdAndStartRange, rowMapper, paObjectId, firstDate, secondDate);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getByStartDateRange(Date firstDate, Date secondDate) {
-        try {
-            List<LMControlHistory> list = simpleJdbcTemplate.query(selectByStartRange, rowMapper, firstDate, secondDate);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMControlHistory> list = simpleJdbcTemplate.query(selectByStartRange, rowMapper, firstDate, secondDate);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getAll() {
-        try {
-            List<LMControlHistory> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMControlHistory> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        return list;
     }
     
     private static final ParameterizedRowMapper<LMControlHistory> createRowMapper() {

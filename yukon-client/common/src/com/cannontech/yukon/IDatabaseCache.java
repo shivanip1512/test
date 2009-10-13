@@ -236,8 +236,8 @@ public interface IDatabaseCache {
 
     public void releaseUserContactMap();
 
-    public List getDevicesByCommPort(int portId);
+    public List<Integer> getDevicesByCommPort(int portId);
 
-    public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
+    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
 
 }

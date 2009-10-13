@@ -35,7 +35,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -172,20 +172,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         String pointTypeString = PointTypes.getType(pointType);
 
         throw new NotFoundException("Point template not found for device type: " + deviceType + ", point type: " + pointTypeString + ", offset: " + offset);
-    }
-    
-    private PointTemplate getPointTemplate(PaoType deviceType, String pointName) {
-    	if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
-        	Set<PointTemplate> templates = this.deviceAllPointTemplateMap.get(deviceType);
-
-        	for (PointTemplate template : templates) {
-            	if( template.getName().equals(pointName))
-            		return template;
-            }
-            throw new NotFoundException("Device type " + deviceType + " does not support point " + pointName + ".");
-        } else {
-            throw new IllegalArgumentException("Device type " + deviceType + " is not supported.");
-        }
     }
     
     public Set<PointTemplate> getAllPointTemplates(PaoType deviceType) {
@@ -808,7 +794,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                 LiteUnitMeasure unitMeasure = null;
                 try {
                     unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
-                } catch (DataAccessException e) {
+                } catch (EmptyResultDataAccessException e) {
                     throw new NotFoundException("Unit of measure does not exist: "
                             + unitOfMeasureName + ". Check the deviceDefinition.xml file ", e);
                 }

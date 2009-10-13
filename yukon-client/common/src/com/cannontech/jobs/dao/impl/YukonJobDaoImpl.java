@@ -1,7 +1,7 @@
 package com.cannontech.jobs.dao.impl;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
@@ -26,12 +26,10 @@ public class YukonJobDaoImpl extends JobDaoBase implements YukonJobDao {
         // return a specific type of YukonJob (ScheduledOneTimeJob or ScheduledRepeatingJob).
         try {
             job = scheduledOneTimeJobDao.getById(id);
-            
-            
-        } catch (DataAccessException e1) {
+        } catch (EmptyResultDataAccessException e1) {
             try {
                 job = scheduledRepeatingJobDao.getById(id);
-            } catch (DataAccessException e2) {
+            } catch (EmptyResultDataAccessException e2) {
                 throw new NotFoundException("Unknown job id " + id); 
             }
         }

@@ -3010,14 +3010,14 @@ public synchronized void adjustUserMappings(int userID)
     return;
 }
 
-public synchronized List getDevicesByCommPort(int portId) 
+public synchronized List<Integer> getDevicesByCommPort(int portId) 
 {
     
     return DeviceCommPortLoader.getDevicesByCommPort(portId);
     
 }
 
-public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
     return DeviceCommPortLoader.getDevicesByDeviceAddress(masterAddress, slaveAddress);
     
 }

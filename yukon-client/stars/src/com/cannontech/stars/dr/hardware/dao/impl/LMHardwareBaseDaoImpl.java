@@ -2,11 +2,9 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -66,13 +64,13 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public LMHardwareBase getById(final int inventoryId) throws DataAccessException {
+    public LMHardwareBase getById(final int inventoryId) {
         LMHardwareBase hardwareBase = simpleJdbcTemplate.queryForObject(selectById, rowMapper, inventoryId);
         return hardwareBase;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public LMHardwareBase getBySerialNumber(final String serialNumber) throws DataAccessException {
+    public LMHardwareBase getBySerialNumber(final String serialNumber) {
         try {
             return simpleJdbcTemplate.queryForObject(selectBySerialNumber, rowMapper, serialNumber);
         } catch(EmptyResultDataAccessException ex) {
@@ -82,42 +80,26 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getByLMHardwareTypeId(final int typeId) {
-        try {
-            List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByLMHwardTypeId, rowMapper, typeId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByLMHwardTypeId, rowMapper, typeId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getByRouteId(final int routeId) {
-        try {
-            List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByRouteId, rowMapper, routeId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }       
+        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByRouteId, rowMapper, routeId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getByConfigurationId(final int configurationId) {
-        try {
-            List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByConfigurationId, rowMapper, configurationId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectByConfigurationId, rowMapper, configurationId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareBase> getAll() {
-        try {
-            List<LMHardwareBase> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        } 
+        List<LMHardwareBase> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        return list;
     }
     
     @Transactional

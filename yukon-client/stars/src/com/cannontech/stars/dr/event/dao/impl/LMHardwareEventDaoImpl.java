@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -83,10 +82,9 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteLMHardwareEvent> getByInventoryId(final int inventoryId) {
 
-        List<LiteLMHardwareEvent> eventList = Collections.emptyList();
-        eventList = simpleJdbcTemplate.query(selecyByInventoryIdSql,
-                                             rowMapper,
-                                             inventoryId);
+        List<LiteLMHardwareEvent>  eventList = simpleJdbcTemplate.query(selecyByInventoryIdSql,
+                                                                        rowMapper,
+                                                                        inventoryId);
         return eventList;
     }
 
@@ -95,11 +93,10 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     public List<LiteLMHardwareEvent> getByInventoryAndActionId(int inventoryId,
             int actionId) {
 
-        List<LiteLMHardwareEvent> eventList = Collections.emptyList();
-        eventList = simpleJdbcTemplate.query(selecyByInventoryAndActionIdSql,
-                                             rowMapper,
-                                             inventoryId,
-                                             actionId);
+        List<LiteLMHardwareEvent> eventList = simpleJdbcTemplate.query(selecyByInventoryAndActionIdSql,
+                                                                       rowMapper,
+                                                                       inventoryId,
+                                                                       actionId);
         return eventList;
     }
 

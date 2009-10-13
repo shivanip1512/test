@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -119,7 +119,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
                                                             meterRowMapper,
                                                             meterNumber);
             return meter;
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown meter number " + meterNumber);
         }
     }
@@ -130,7 +130,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
                                                             meterRowMapper,
                                                             address);
             return meter;
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown physical address " + address);
         }
     }
@@ -141,7 +141,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
                                                             meterRowMapper,
                                                             paoName);
             return meter;
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown pao name " + paoName);
         }
     }

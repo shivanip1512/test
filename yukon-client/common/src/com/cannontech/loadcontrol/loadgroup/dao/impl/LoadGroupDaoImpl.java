@@ -2,7 +2,6 @@ package com.cannontech.loadcontrol.loadgroup.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,13 +132,9 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         loadGroupProgramIdsQuery.append("WHERE LMPDG.LMGroupDeviceId = ?");
         loadGroupProgramIdsQuery.append("AND LMPDG.deviceId = LMPWP.deviceId");
     
-        try {
-            return simpleJdbcTemplate.query(loadGroupProgramIdsQuery.toString(),
-                                            new IntegerRowMapper(),
-                                            loadGroup.getLoadGroupId());
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        }
+        return simpleJdbcTemplate.query(loadGroupProgramIdsQuery.toString(),
+                                        new IntegerRowMapper(),
+                                        loadGroup.getLoadGroupId());
     }
     
     

@@ -2,6 +2,7 @@ package com.cannontech.core.authentication.dao.impl;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -39,7 +40,7 @@ public class YukonUserPasswordDaoImpl implements YukonUserPasswordDao {
             
             if (pwd.equals(password))
             	return true;
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return false;
         }
         return false;
