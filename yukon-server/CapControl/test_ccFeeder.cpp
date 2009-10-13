@@ -212,6 +212,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     //Test Hitting Max Daily Ops Code
     capBank1->setMaxDailyOperation(5);
     capBank1->setMaxDailyOpsHitFlag(false);
+    capBank1->setMaxOpsDisableFlag(true);
     capBank1->setCurrentDailyOperations(5);
     capBank1->setOperationAnalogPointId(1);
     bank = feeder->findCapBankToChangeVars(-550,pointChanges,-500,500,600);
@@ -226,6 +227,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(capBank1->getDisableFlag(),true);
     capBank1->setMaxDailyOperation(0);
     capBank1->setMaxDailyOpsHitFlag(false);
+    capBank1->setMaxOpsDisableFlag(false);
     capBank1->setCurrentDailyOperations(0);
     capBank1->setOperationAnalogPointId(0);
     capBank1->setDisableFlag(false);
@@ -328,6 +330,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setMaxDailyOpsHitFlag(false);
     capBank4->setCurrentDailyOperations(5);
     capBank4->setOperationAnalogPointId(1);
+    capBank1->setMaxOpsDisableFlag(true);
     bank = feeder->findCapBankToChangeVars(550,pointChanges,-500,500,-600);
     //We should skip the first bank based on max ops and return the second bank.
     BOOST_CHECK_EQUAL(pointChanges.size(),2);
@@ -343,6 +346,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setCurrentDailyOperations(0);
     capBank4->setOperationAnalogPointId(0);
     capBank4->setDisableFlag(false);
+    capBank1->setMaxOpsDisableFlag(false);
 
     _END_DAY_ON_TRIP = true;
     capBank4->setDisableFlag(false);
@@ -350,6 +354,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setCurrentDailyOperations(2);
     capBank4->setMaxDailyOperation(2);
     capBank4->setOperationAnalogPointId(1);
+    capBank1->setMaxOpsDisableFlag(true);
     bank = feeder->findCapBankToChangeVars(550,pointChanges,-500,500,-600);
     BOOST_CHECK_EQUAL(pointChanges.size(),2);
     delete_container(pointChanges);
@@ -361,6 +366,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setCurrentDailyOperations(0);
     capBank4->setMaxDailyOperation(0);
     capBank4->setOperationAnalogPointId(0);
+    capBank1->setMaxOpsDisableFlag(false);
     _END_DAY_ON_TRIP = false;
 
     delete feeder;
