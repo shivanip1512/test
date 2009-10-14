@@ -169,6 +169,10 @@ WHERE RolePropertyId = -21200;
 INSERT INTO YukonRoleProperty VALUES (-21201,-212,'Manage Schedules','true','Controls access to create, delete, or update scheduled reads. If false, access is view only.');
 /* End YUK-7903 */
 
+/* Start YUK-7934 */
+DROP TABLE TOUAttributeMapping;
+/* End YUK-7934 */
+
 /* Start YUK-7902 */
 IF 0 < (SELECT COUNT(*)
            FROM LMHardwareControlGroup

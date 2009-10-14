@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/14/2009 5:28:46 PM                        */
+/* Created on:     10/14/2009 5:49:11 PM                        */
 /*==============================================================*/
 
 
@@ -882,8 +882,6 @@ drop table SubstationToRouteMapping cascade constraints;
 drop table TEMPLATE cascade constraints;
 
 drop table TEMPLATECOLUMNS cascade constraints;
-
-drop table TOUATTRIBUTEMAPPING cascade constraints;
 
 drop table TOUDay cascade constraints;
 
@@ -7689,22 +7687,6 @@ insert into templatecolumns values( 3, 'Value', 9, 2, 85 );
 insert into templatecolumns values( 3, 'Quality', 10, 3, 80 );
 insert into templatecolumns values( 3, 'Time', 11, 4, 135 );
 insert into templatecolumns values( 3, 'State', 13, 5, 80 );
-
-/*==============================================================*/
-/* Table: TOUATTRIBUTEMAPPING                                   */
-/*==============================================================*/
-create table TOUATTRIBUTEMAPPING  (
-   touid                NUMBER(6)                       not null,
-   displayname          VARCHAR2(50)                    not null,
-   peakAttribute        VARCHAR2(50)                    not null,
-   usageAttribute       VARCHAR2(50)                    not null,
-   constraint PK_TOUATTRIBUTEMAPPING primary key (touid)
-);
-
-INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
-INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
-INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
-INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
 /*==============================================================*/
 /* Table: TOUDay                                                */
