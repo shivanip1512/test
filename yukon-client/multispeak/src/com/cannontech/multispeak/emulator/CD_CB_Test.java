@@ -13,10 +13,12 @@ import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.multispeak.deploy.service.CDDevice;
 import com.cannontech.multispeak.deploy.service.CD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
+import com.cannontech.multispeak.deploy.service.Module;
 
 /**
  * @author stacey
@@ -41,7 +43,7 @@ public class CD_CB_Test {
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 0;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
+			int todo = 1;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
 			
 			if (todo==0) {
 			    ConnectDisconnectEvent[] cdEvents = new ConnectDisconnectEvent[1];
@@ -57,6 +59,23 @@ public class CD_CB_Test {
                     }
                 } else {
                     CTILogger.info("initiate Successful");
+                }
+			} else if (todo==1) {
+				CDDevice cdDevice = new CDDevice();
+				cdDevice.setObjectID("meterNumber");
+				cdDevice.setMeterBaseID("meterNumber");
+		        Module discModule = new Module();
+		        discModule.setObjectID("disconnectCollarAddress");
+		        cdDevice.setModuleList(new Module[]{discModule});
+		        
+		        ErrorObject[] objects = instance.CDDeviceAddNotification(new CDDevice[]{cdDevice});
+			    if (objects != null && objects != null) {
+                    for (int i = 0; i < objects.length; i++) {
+                        ErrorObject obj = objects[i];
+                        CTILogger.info("CDDeviceAddNotification" + i + ": " + obj.getErrorString());
+                    }
+                } else {
+                    CTILogger.info("CDDeviceAddNotification Successful");
                 }
 			}
 		} catch (Exception e) {

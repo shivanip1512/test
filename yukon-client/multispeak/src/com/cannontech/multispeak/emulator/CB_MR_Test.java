@@ -9,6 +9,8 @@ package com.cannontech.multispeak.emulator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.axis.client.Service;
 import org.apache.axis.message.SOAPHeaderElement;
@@ -17,6 +19,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.DomainMember;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.Meter;
 
@@ -35,15 +38,17 @@ public class CB_MR_Test {
 //			endpointURL = "http://209.101.158.56/mspamrintegration/CB_MR.asmx";  //SEDC Test Server
 			endpointURL = "http://209.101.158.56:8080/mspamrintegration/CB_MR.asmx";  //SEDC Test Server and TCPTrace
 		  	endpointURL = "http://10.106.36.146:8081";
+		  	endpointURL = "http://127.0.0.1:8002/soap/CB_ServerSoap";
+		  	endpointURL = "http://moproxy.nisc.coop/cisMultispeak1/CB_MRSoap";
 			CB_ServerSoap_BindingStub instance = new CB_ServerSoap_BindingStub(new URL(endpointURL), new Service());
 			
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            msgHeader.setPwd("cannon");
-            msgHeader.setUserID("cannon");
+            msgHeader.setPwd("CANN");
+            msgHeader.setUserID("CANN");
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 2;	//0=meterByServLoc, 1=getMethods, 2=pingURL
+			int todo = 1;	//0=meterByServLoc, 1=getMethods, 2=pingURL
 			
 			if (todo==0)
 			{
@@ -100,8 +105,20 @@ public class CB_MR_Test {
                 {
                     CTILogger.info("******   NULL CUSTOMER  **********");
                 }
-			}
+			} else if( todo == 4) {
+                DomainMember[] domainMembers = instance.getDomainMembers("substationCode");    //1068048 whe, 1010156108 sn_head/amr_demo
+
+                List<String> substationNames = new ArrayList<String>();
+                if( domainMembers != null) {
+                    for (DomainMember domainMember : domainMembers) {
+                        substationNames.add(domainMember.getDescription());
+                    }
+                }
+                System.out.println(substationNames.toString());
+            }
+
 		} catch (RemoteException e) {
+		    
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
 		    e.printStackTrace();

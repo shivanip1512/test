@@ -21,6 +21,7 @@ import com.cannontech.multispeak.deploy.service.EaLoc;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.MR_CBSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.Nameplate;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
@@ -36,11 +37,12 @@ public class MR_CB_Test {
 
 	public static void main(String [] args)
 	{
+		ErrorObject[] objects = null;
 		try {
 			String endpointURL = "http://localhost:8080/soap/MR_CBSoap";
 //			endpointURL = "http://demo.cannontech.com/soap/MR_CBSoap";
 //			endpointURL = "http://10.100.10.25:80/soap/MR_CBSoap";
-			endpointURL = "http://10.106.36.79:8080/soap/MR_CBSoap";  //Mike's computer
+//			endpointURL = "http://10.106.36.79:8080/soap/MR_CBSoap";  //Mike's computer
 		  	MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
 			
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
@@ -49,8 +51,8 @@ public class MR_CB_Test {
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 4;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
-			
+			int todo = 8;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
+				
 			if (todo==0) {
 			    MeterRead mr = instance.getLatestReadingByMeterNo("10620108");	//1068048 whe, 1010156108 sn_head/amr_demo
 				if( mr != null) {
@@ -71,15 +73,7 @@ public class MR_CB_Test {
 				}
 			}
 			else if (todo == 2) {
-			    ErrorObject[] objects = instance.pingURL();
-				if (objects != null && objects != null) {
-					for (int i = 0; i < objects.length; i++) {
-						ErrorObject obj = objects[i];
-						CTILogger.info("Ping" + i + ": " + obj.getErrorString());
-					}
-				} else {
-				    CTILogger.info("PingURL Successful");
-	            }
+			    objects = instance.pingURL();
 			}
 			else if( todo == 3) {
 				GregorianCalendar cal = new GregorianCalendar();
@@ -113,18 +107,37 @@ public class MR_CB_Test {
 			    nameplate.setTransponderID("320819");   //This is the Physical Address
 			    meter.setNameplate(nameplate);
 			    
-			    ErrorObject[] objects = instance.meterAddNotification(new Meter[]{meter});
-                if (objects != null && objects != null) {
-                    for (int i = 0; i < objects.length; i++) {
-                        ErrorObject obj = objects[i];
-                        CTILogger.info("Add Meter Error-" + i + ": " + obj.getErrorString());
-                    }
-                } else {
-                    CTILogger.info("MeterAddNotification Successful");
-                }
+			    objects = instance.meterAddNotification(new Meter[]{meter});
+			}
+			else if (todo ==8 ) {
+				MeterGroup meterGroup = new MeterGroup();
+				String[] meterList = new String[4];
+				meterList[0] = "50000011";
+				meterList[1] = "50000012";
+				meterList[2] = "7888";
+				meterList[3] = "787";
+				
+				meterGroup.setMeterList(meterList);
+				String groupName = "/Meters/Test/Stacey";
+				meterGroup.setGroupName(groupName);
+				
+//				objects = instance.establishMeterGroup(meterGroup);
+//				objects = instance.insertMeterInMeterGroup(meterList, groupName);
+//				instance.deleteMeterGroup(groupName);
+				objects = instance.removeMetersFromMeterGroup(meterList, groupName);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+        if (objects != null && objects != null) {
+            for (int i = 0; i < objects.length; i++) {
+                ErrorObject obj = objects[i];
+                CTILogger.info("Error-" + i + ": " + obj.getErrorString());
+            }
+        } else {
+            CTILogger.info("Successful");
+        }
+
 	}
 }
