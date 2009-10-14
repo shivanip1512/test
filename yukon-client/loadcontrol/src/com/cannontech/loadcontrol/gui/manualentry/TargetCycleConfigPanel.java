@@ -14,7 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.dr.service.DemandResponseService;
+import com.cannontech.spring.YukonSpringHook;
 
 public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     Date startTime = null;
@@ -136,7 +137,7 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
 
     public int getTimeSlots() {
         if (timeSlots < 0 ) {
-            timeSlots = LCUtils.getTimeSlotsForTargetCycle(stopTime, startTime, period);
+            timeSlots = YukonSpringHook.getBean(DemandResponseService.class).getTimeSlotsForTargetCycle(stopTime, startTime, period);
         }
         return timeSlots;
     }

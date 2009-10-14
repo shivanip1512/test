@@ -41,7 +41,7 @@ import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
-import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -62,6 +62,7 @@ public class ProgramController {
     private RolePropertyDao rolePropertyDao;
     private DemandResponseEventLogService demandResponseEventLogService;
     private DemandResponseFavoritesDao favoritesDao;
+    private DemandResponseService drService;
 
     public static class GearAdjustmentTimeSlot {
         private Date startTime;
@@ -475,9 +476,9 @@ public class ProgramController {
         timeSlotStartCal.set(Calendar.MINUTE, 0);
         timeSlotStartCal.set(Calendar.SECOND, 0);
         timeSlotStartCal.set(Calendar.MILLISECOND, 0);
-        int numTimeSlots = LCUtils.getTimeSlotsForTargetCycle(backingBean.getStopDate(),
-                                                              backingBean.getStartDate(),
-                                                              gear.getMethodPeriod());
+        int numTimeSlots = drService.getTimeSlotsForTargetCycle(backingBean.getStopDate(),
+                                                                backingBean.getStartDate(),
+                                                                gear.getMethodPeriod());
         backingBean.numAdjustments = numTimeSlots;
         backingBean.gearAdjustments.clear();
         GearAdjustmentTimeSlot[] timeSlots = new GearAdjustmentTimeSlot[numTimeSlots];
@@ -1174,5 +1175,10 @@ public class ProgramController {
     @Autowired
     public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
+    }
+
+    @Autowired
+    public void setDrService(DemandResponseService drService) {
+        this.drService = drService;
     }
 }

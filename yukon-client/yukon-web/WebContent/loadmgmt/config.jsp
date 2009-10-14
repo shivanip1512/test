@@ -2,7 +2,8 @@
 <%@ page import="java.util.GregorianCalendar" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="com.cannontech.loadcontrol.LCUtils" %>
+<%@ page import="com.cannontech.dr.service.DemandResponseService" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ include file="lm_header.jsp" %>
 
 <script type="text/javascript">
@@ -22,7 +23,7 @@ c.setTimeInMillis(( Date.parse(start)));
 
 Date sp = new Date(Date.parse (stop));
 Date st = new Date (Date.parse(start));
-int timeSlots = LCUtils.getTimeSlotsForTargetCycle(sp, st, gearPeriod);
+int timeSlots = YukonSpringHook.getBean(DemandResponseService.class).getTimeSlotsForTargetCycle(sp, st, gearPeriod);
 
 %>
 <html>

@@ -34,6 +34,8 @@
     <bean id="drLoadGroupDao" class="com.cannontech.dr.loadgroup.dao.impl.LoadGroupDaoImpl"/>
     <bean id="drFavoritesDao" class="com.cannontech.dr.dao.impl.DemandResponseFavoritesDaoImpl"/>
 
+    <bean id="drService" class="com.cannontech.dr.service.impl.DemandResponseServiceImpl"/>
+
     <bean id="drControlAreaService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaServiceImpl"/>
     <bean id="drControlAreaFieldService" class="com.cannontech.dr.controlarea.service.impl.ControlAreaFieldServiceImpl"/>
     <bean id="drControlAreaNameField" class="com.cannontech.dr.controlarea.model.ControlAreaNameField"/>
