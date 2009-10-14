@@ -136,6 +136,16 @@ CREATE INDEX INDX_EventType ON EventLog (
 );
 /* End YUK-7826 */
 
+/* Start YUK-7926 */
+UPDATE YukonPAObject 
+SET Type='UDP'
+WHERE PAObjectId IN (SELECT PAObjectId
+                     FROM YukonPAObject PAO, PortTerminalServer PTS
+                     WHERE PAO.PAObjectId = PTS.PortId
+                     AND PAO.Type = 'Terminal Server' 
+                     AND PTS.IPAddress = 'UDP');
+/* End YUK-7926 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
