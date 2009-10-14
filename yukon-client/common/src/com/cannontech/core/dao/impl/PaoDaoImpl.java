@@ -58,7 +58,7 @@ public final class PaoDaoImpl implements PaoDao {
 	private static final String yukonPaoSql = "SELECT y.PAObjectID, y.Category, y.Type " 
         + "FROM yukonpaobject y ";
     
-    private static final String litePaoSql = "SELECT y.PAObjectID, y.PAOName, " 
+    private static final String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, " 
         + "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " 
         + "FROM yukonpaobject y "
         + "left outer join devicedirectcommsettings d ON y.paobjectid = d.deviceid "
