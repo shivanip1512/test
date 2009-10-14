@@ -137,6 +137,22 @@ WHERE PAObjectId IN (SELECT PAObjectId
                      AND PTS.IPAddress = 'UDP');
 /* End YUK-7926 */
 
+/* Start YUK-7902 */
+/* @start-block */
+DECLARE
+    errorFlagCount int;
+BEGIN
+     SELECT COUNT(*) INTO errorFlagCount 
+     FROM LMHardwareControlGroup 
+     WHERE ProgramId = -9999;
+     IF 0 < errorFlagCount THEN
+          RAISE_APPLICATION_ERROR(-20001,'The database update has encountered a data integrity issue. Please refer to YUK-7902 for more information on how to manually update the data to resolve this issue.');
+     END IF;
+END;
+/
+/* @end-block */
+/* End YUK-7902 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
