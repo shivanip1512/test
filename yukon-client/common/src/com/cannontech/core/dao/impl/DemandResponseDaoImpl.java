@@ -18,7 +18,7 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         int programId = program.getPaoIdentifier().getPaoId();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT y.PAObjectID, y.Category, y.Type"); 
+        sql.append("SELECT y.PAObjectID, y.Type"); 
         sql.append("FROM yukonpaobject y");
         sql.append("WHERE paObjectId IN (");
         sql.append("    SELECT deviceId FROM lmControlAreaProgram WHERE lmProgramDeviceId =");
@@ -39,7 +39,7 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
     public List<YukonPao> getProgramsForGroup(YukonPao group) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT y.PAObjectID, y.Category, y.Type"); 
+        sql.append("SELECT y.PAObjectID, y.Type"); 
         sql.append("FROM yukonpaobject y");
         sql.append("WHERE paObjectId IN (");
         sql.append("    SELECT deviceId FROM lmProgramDirectGroup WHERE lmGroupDeviceId =");
