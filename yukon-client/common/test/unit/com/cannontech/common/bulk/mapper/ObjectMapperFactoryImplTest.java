@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -338,6 +339,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 		@Override
 		public PaoLoader<DisplayablePao> getDisplayablePaoLoader() {
 		    throw new UnsupportedOperationException("Method not implemented");
+		}
+		
+		@Override
+		public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds) {
+			throw new UnsupportedOperationException("Method not implemented");
 		}
     }
 
