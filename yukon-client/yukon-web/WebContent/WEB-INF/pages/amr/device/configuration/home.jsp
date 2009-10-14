@@ -29,6 +29,8 @@
 	
 	<c:if test="${!empty param.message}">
 		${fn:escapeXml(param.message)}
+        <br>
+        <br>
 	</c:if>
 	
     <c:if test="${editConfig}">
