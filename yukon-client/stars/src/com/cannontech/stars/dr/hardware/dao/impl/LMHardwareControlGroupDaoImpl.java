@@ -156,7 +156,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         histEnrollOptOutSql.append(", UserIDSecondAction =").appendArgument(user.getUserID());
         histEnrollOptOutSql.append("WHERE ProgramId =").appendArgument(programId);
         histEnrollOptOutSql.append("AND (GroupEnrollStop IS NOT NULL OR OptOutStop IS NOT NULL)");
-        simpleJdbcTemplate.update(histEnrollOptOutSql.toString(), histEnrollOptOutSql.getArguments());        
+        simpleJdbcTemplate.update(histEnrollOptOutSql.getSql(), histEnrollOptOutSql.getArguments());        
 
         //Reset current OptOut entries        
         SqlStatementBuilder currentOptOutSql = new SqlStatementBuilder();
@@ -166,7 +166,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         currentOptOutSql.append(", OptOutStop =").appendArgument(new Date());
         currentOptOutSql.append("WHERE ProgramId =").appendArgument(programId);
         currentOptOutSql.append("AND OptOutStart IS NOT NULL AND OptOutStop IS NULL");
-        simpleJdbcTemplate.update(currentOptOutSql.toString(), currentOptOutSql.getArguments());
+        simpleJdbcTemplate.update(currentOptOutSql.getSql(), currentOptOutSql.getArguments());
         
         //Reset current Enrollment entries        
         SqlStatementBuilder currentEnrollSql = new SqlStatementBuilder();
@@ -176,7 +176,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         currentEnrollSql.append(", GroupEnrollStop =").appendArgument(new Date());
         currentEnrollSql.append("WHERE ProgramId =").appendArgument(programId);
         currentEnrollSql.append("AND GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NULL");
-        simpleJdbcTemplate.update(currentEnrollSql.toString(), currentEnrollSql.getArguments());        
+        simpleJdbcTemplate.update(currentEnrollSql.getSql(), currentEnrollSql.getArguments());        
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
