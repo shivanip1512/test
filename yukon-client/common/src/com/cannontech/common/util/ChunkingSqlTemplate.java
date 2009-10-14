@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 public class ChunkingSqlTemplate<E> {
     public static final int DEFAULT_SIZE = 1000;
