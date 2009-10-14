@@ -8,7 +8,6 @@ import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -50,11 +49,6 @@ public class OptOutServiceAdapter implements OptOutService {
 	@Override
 	public void changeOptOutEnabledStateForToday(LiteYukonUser user,
 			boolean optOutsEnabled) {
-		throw new UnsupportedOperationException("not implemented");
-	}
-
-	@Override
-	public List<OptOutLimit> getAllOptOutLimits(LiteYukonGroup group) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
