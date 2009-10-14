@@ -28,6 +28,7 @@ import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupLastActionFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupLoadCapacityFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
+import com.cannontech.dr.loadgroup.model.LoadGroupNameField;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -63,6 +64,7 @@ public class LoadGroupControllerHelper {
     private PaoAuthorizationService paoAuthorizationService;
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private LoadGroupFieldService loadGroupFieldService;
+    private LoadGroupNameField loadGroupNameField;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         // Since Range uses generics, spring can't determine the type of the
@@ -113,8 +115,7 @@ public class LoadGroupControllerHelper {
         }
 
         // Name is the default sort field
-        DemandResponseBackingField<LMDirectGroupBase> sortField = 
-            loadGroupFieldService.getBackingField("NAME");
+        DemandResponseBackingField<LMDirectGroupBase> sortField = loadGroupNameField;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             sortField = loadGroupFieldService.getBackingField(backingBean.getSort());
         }
@@ -151,5 +152,10 @@ public class LoadGroupControllerHelper {
     @Autowired
     public void setLoadGroupFieldService(LoadGroupFieldService loadGroupFieldService) {
         this.loadGroupFieldService = loadGroupFieldService;
+    }
+    
+    @Autowired
+    public void setLoadGroupNameField(LoadGroupNameField loadGroupNameField) {
+        this.loadGroupNameField = loadGroupNameField;
     }
 }

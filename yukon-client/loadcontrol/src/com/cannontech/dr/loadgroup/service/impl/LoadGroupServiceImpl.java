@@ -21,9 +21,8 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
-import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
+import com.cannontech.dr.loadgroup.model.LoadGroupNameField;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -38,7 +37,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private LoadGroupFieldService loadGroupFieldService;
+    private LoadGroupNameField loadGroupNameField;
     
     @Override
     public LMDirectGroupBase getGroupForPao(YukonPao from) {
@@ -66,8 +65,6 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        DemandResponseBackingField<LMDirectGroupBase> loadGroupNameField = 
-            loadGroupFieldService.getBackingField("NAME");
         Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(false, userContext);
         if (sorter == null) {
             sorter = defaultSorter;
@@ -173,8 +170,8 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }
     
     @Autowired
-    public void setLoadGroupFieldService(LoadGroupFieldService loadGroupFieldService) {
-        this.loadGroupFieldService = loadGroupFieldService;
+    public void setLoadGroupNameField(LoadGroupNameField loadGroupNameField) {
+        this.loadGroupNameField = loadGroupNameField;
     }
     
 }

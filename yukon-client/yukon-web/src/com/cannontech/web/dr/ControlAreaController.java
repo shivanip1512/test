@@ -33,6 +33,7 @@ import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
+import com.cannontech.dr.controlarea.model.ControlAreaNameField;
 import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.dr.dao.DemandResponseFavoritesDao;
@@ -91,6 +92,7 @@ public class ControlAreaController {
     private DemandResponseEventLogService demandResponseEventLogService;
     private ControlAreaFieldService controlAreaFieldService;
     private DemandResponseFavoritesDao favoritesDao;
+    private ControlAreaNameField controlAreaNameField;
 
     @RequestMapping("/controlArea/list")
     public String list(ModelMap modelMap, YukonUserContext userContext,
@@ -119,8 +121,7 @@ public class ControlAreaController {
         }
 
         // Name is the default sort field
-        DemandResponseBackingField<LMControlArea> sortField =
-            controlAreaFieldService.getBackingField("NAME");
+        DemandResponseBackingField<LMControlArea> sortField = controlAreaNameField;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             sortField = controlAreaFieldService.getBackingField(backingBean.getSort());
         }
@@ -449,5 +450,10 @@ public class ControlAreaController {
     @Autowired
     public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
+    }
+    
+    @Autowired
+    public void setControlAreaNameField(ControlAreaNameField controlAreaNameField) {
+        this.controlAreaNameField = controlAreaNameField;
     }
 }

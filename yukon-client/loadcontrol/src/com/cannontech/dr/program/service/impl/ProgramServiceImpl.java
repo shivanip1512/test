@@ -24,11 +24,10 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
+import com.cannontech.dr.program.model.ProgramNameField;
 import com.cannontech.dr.program.service.ConstraintViolations;
-import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
@@ -50,7 +49,7 @@ public class ProgramServiceImpl implements ProgramService {
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private ProgramFieldService programFieldService;
+    private ProgramNameField programNameField;
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -104,9 +103,7 @@ public class ProgramServiceImpl implements ProgramService {
                                                        int startIndex, int count,
                                                        YukonUserContext userContext) {
 
-        DemandResponseBackingField<LMProgramBase> nameField = 
-            programFieldService.getBackingField("NAME");
-        Comparator<DisplayablePao> defaultSorter = nameField.getSorter(false, userContext);
+        Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(false, userContext);
         if (sorter == null) {
             sorter = defaultSorter;
         } else {
@@ -337,8 +334,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     @Autowired
-    public void setProgramFieldService(ProgramFieldService programFieldService) {
-        this.programFieldService = programFieldService;
+    public void setProgramNameField(ProgramNameField programNameField) {
+        this.programNameField = programNameField;
     }
 
     private LMManualControlRequest getManualControlMessage(

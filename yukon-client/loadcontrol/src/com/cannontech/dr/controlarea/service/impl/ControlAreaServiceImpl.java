@@ -25,12 +25,11 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.filter.ForProgramFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
+import com.cannontech.dr.controlarea.model.ControlAreaNameField;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
-import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -48,7 +47,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     private LoadControlClientConnection loadControlClientConnection;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private ControlAreaFieldService controlAreaFieldService;
+    private ControlAreaNameField controlAreaNameField;
 
     private static class TriggerRowMapper implements RowMapperWithBaseQuery<ControlAreaTrigger> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId = Maps.newHashMap();
@@ -212,11 +211,8 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         TriggerRowMapper triggerRowMapper = new TriggerRowMapper();
         filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
-
         
-        DemandResponseBackingField<LMControlArea> nameField = 
-            controlAreaFieldService.getBackingField("NAME");
-        Comparator<DisplayablePao> defaultSorter = nameField.getSorter(false, userContext);
+        Comparator<DisplayablePao> defaultSorter = controlAreaNameField.getSorter(false, userContext);
         if (sorter == null) {
             sorter = defaultSorter;
         } else {
@@ -402,7 +398,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
     
     @Autowired
-    public void setControlAreaFieldService(ControlAreaFieldService controlAreaFieldService) {
-        this.controlAreaFieldService = controlAreaFieldService;
+    public void setControlAreaNameField(ControlAreaNameField controlAreaNameField) {
+        this.controlAreaNameField = controlAreaNameField;
     }
 }

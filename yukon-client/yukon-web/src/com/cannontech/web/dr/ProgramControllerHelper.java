@@ -29,6 +29,7 @@ import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.PriorityFilter;
 import com.cannontech.dr.program.filter.StartStopFilter;
 import com.cannontech.dr.program.filter.StateFilter;
+import com.cannontech.dr.program.model.ProgramNameField;
 import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -87,6 +88,7 @@ public class ProgramControllerHelper {
     private PaoAuthorizationService paoAuthorizationService;
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private ProgramFieldService programFieldService;
+    private ProgramNameField programNameField;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         PropertyEditor fullDateTimeEditor =
@@ -150,8 +152,7 @@ public class ProgramControllerHelper {
         }
 
         // Name is the default sort field
-        DemandResponseBackingField<LMProgramBase> sortField = 
-            programFieldService.getBackingField("NAME");
+        DemandResponseBackingField<LMProgramBase> sortField = programNameField;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             sortField = programFieldService.getBackingField(backingBean.getSort());
         }
@@ -186,5 +187,10 @@ public class ProgramControllerHelper {
     @Autowired
     public void setProgramFieldService(ProgramFieldService programFieldService) {
         this.programFieldService = programFieldService;
+    }
+    
+    @Autowired
+    public void setProgramNameField(ProgramNameField programNameField) {
+        this.programNameField = programNameField;
     }
 }
