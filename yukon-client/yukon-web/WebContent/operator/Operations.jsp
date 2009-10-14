@@ -155,7 +155,7 @@
 		</cti:checkRole>
 		<cti:checkRole role="OddsForControlRole.ROLEID"> 
             <tags:sectionLink>
-            	<a href="Consumer/Odds.jsp">Odds for Control</a>
+            	<a href="Consumer/Odds.jsp"><cti:getProperty property="com.cannontech.roles.operator.ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL" defaultvalue="Odds for Control" /></a>
             </tags:sectionLink>
 		</cti:checkRole>
 		<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT"> 

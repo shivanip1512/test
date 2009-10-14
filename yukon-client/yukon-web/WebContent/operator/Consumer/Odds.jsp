@@ -36,7 +36,7 @@
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
              
               <div align="center"><span class="MainText">Check the appropriate 
-                <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control"/> 
+                <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="Odds for Control"/> 
 				for each program.</span><br>
               </div>
 			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
@@ -46,7 +46,7 @@
                     <td width="390" class="HeaderCell" align="center" colspan="2">Program 
                       Enrollment </td>
                     <td width="148" class="HeaderCell" align="center">
-					  <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control" format="all_capital"/>
+					  <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="Odds for Control"/>
                     </td>
                   </tr>
                   <%
