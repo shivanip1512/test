@@ -12,6 +12,7 @@ import javax.xml.soap.Name;
 
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
+import org.apache.commons.lang.math.NumberUtils;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
@@ -147,7 +148,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 }
                 allMeters.addAll(mspMeters);
                 
-                int objectsRemaining = Integer.valueOf(getAttributeValue(port, "objectsRemaining"));
+                int objectsRemaining = 0;
+                String objectsRemainingStr = getAttributeValue(port, "objectsRemaining");
+                if (NumberUtils.isDigits(objectsRemainingStr)) {
+                	objectsRemaining = Integer.valueOf(objectsRemainingStr);
+                }
+                
                 if (objectsRemaining != 0) {
         			lastSent = getAttributeValue(port, "lastSent");
         			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);

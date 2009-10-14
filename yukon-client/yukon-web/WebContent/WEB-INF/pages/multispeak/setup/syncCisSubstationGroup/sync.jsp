@@ -23,33 +23,13 @@
     
     	<c:set var="meterCount" value="${fn:length(meterAndSubsList)}"/>
 		<c:set var="scrollIfOver" value="20"/>
-    
-    	<c:choose>
-    		<c:when test="${meterCount == 1}">
-    		
-    			${meterCount} meter was synchronized with it's CIS Substation Device Group.
-		    	<br><br>
-		    	<div style="font-size:11px;">
-		    	&bull; ${totalNoChange} remained in it's existing group, displayed in black.<br>
-				&bull; ${totalAdded} added to a group, displayed in <span class="okGreen">green</span>.<br>
-				&bull; ${totalRemoved} removed from one or more groups, displayed in <span class="errorRed">red</span>.<br>
-				</div>
-				
-    		</c:when>
-    
-    		<c:otherwise>
-    		
-    			${meterCount} meters were synchronized with CIS Substation Device Groups.
-		    	<br><br>
-		    	<div style="font-size:11px;">
-		    	&bull; ${totalNoChange} remained in their existing group, displayed in black.<br>
-				&bull; ${totalAdded} added to a group, displayed in <span class="okGreen">green</span>.<br>
-				&bull; ${totalRemoved} removed from one or more groups, displayed in <span class="errorRed">red</span>.<br>
-				</div>
-    		
-    		</c:otherwise>
-    	</c:choose>
-        
+  			${meterCount} synchronized with CIS Substation Device Group. 
+    	<br><br>
+    	<div style="font-size:11px;">
+    	&bull; ${totalNoChange} remained in existing group, displayed in black.<br>
+		&bull; ${totalAdded} added to a group, displayed in <span class="okGreen">green</span>.<br>
+		&bull; ${totalRemoved} removed from one or more groups, displayed in <span class="errorRed">red</span>.<br>
+		</div>
                     
 	    <br>
 	    <c:if test="${meterCount > scrollIfOver}">

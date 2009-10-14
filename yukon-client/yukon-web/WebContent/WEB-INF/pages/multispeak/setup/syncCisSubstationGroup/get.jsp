@@ -25,7 +25,7 @@
 	    	<br><br>
 	    	&bull; If a meter already exists in a CIS Substation device group that does not correspond to the Substation Name received from the Primary CIS Vendor, then the meter will be removed from that device group and will be placed in the updated CIS Substation device group.
 	    	<br><br>
-	    	&bull; After synchronization is complete, you will be shown a results listing.
+	    	&bull; Results will display after synchronization is complete.
 	    	
 	    	<br><br>
 	    	<span class="errorRed" style="font-weight:bold;">Note:</span> 
