@@ -28,7 +28,8 @@ public abstract class ProgramBackingFieldBase implements DemandResponseBackingFi
      * Method to get the field value from the given program
      * @param program - Program to get value for
      * @param userContext - Current userContext
-     * @return Value of this field for the given program
+     * @return Value of this field for the given program (Should be one of: String, 
+     *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
     public abstract Object getProgramValue(LMProgramBase program, YukonUserContext userContext);
 

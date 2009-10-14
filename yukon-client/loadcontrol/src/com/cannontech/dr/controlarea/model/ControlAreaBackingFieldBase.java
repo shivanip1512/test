@@ -28,7 +28,8 @@ public abstract class ControlAreaBackingFieldBase implements DemandResponseBacki
      * Method to get the field value from the given control area
      * @param controlArea - Control area to get value for
      * @param userContext - Current userContext
-     * @return Value of this field for the given control area
+     * @return Value of this field for the given control area(Should be one of: String, 
+     *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
     public abstract Object getControlAreaValue(LMControlArea controlArea, 
                                                YukonUserContext userContext);

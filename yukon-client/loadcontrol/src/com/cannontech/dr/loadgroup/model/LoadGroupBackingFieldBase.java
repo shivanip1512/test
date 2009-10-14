@@ -28,7 +28,8 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
      * Method to get the field value from the given group
      * @param group - Group to get value for
      * @param userContext - Current userContext
-     * @return Value of this field for the given group
+     * @return Value of this field for the given group (Should be one of: String, 
+     *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
     public abstract Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext);
 
