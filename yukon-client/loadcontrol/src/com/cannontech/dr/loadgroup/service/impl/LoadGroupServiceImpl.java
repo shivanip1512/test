@@ -22,7 +22,6 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
-import com.cannontech.dr.loadgroup.model.LoadGroupNameField;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -30,14 +29,12 @@ import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.message.util.Message;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Ordering;
 
 public class LoadGroupServiceImpl implements LoadGroupService {
     private LoadGroupDao loadGroupDao = null;
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private LoadGroupNameField loadGroupNameField;
     
     @Override
     public LMDirectGroupBase getGroupForPao(YukonPao from) {
@@ -65,12 +62,6 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(false, userContext);
-        if (sorter == null) {
-            sorter = defaultSorter;
-        } else {
-            sorter = Ordering.from(sorter).compound(defaultSorter);
-        }
         SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
@@ -167,11 +158,6 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Autowired
     public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
-    }
-    
-    @Autowired
-    public void setLoadGroupNameField(LoadGroupNameField loadGroupNameField) {
-        this.loadGroupNameField = loadGroupNameField;
     }
     
 }

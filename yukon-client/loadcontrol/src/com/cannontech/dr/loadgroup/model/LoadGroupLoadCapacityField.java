@@ -19,8 +19,7 @@ public class LoadGroupLoadCapacityField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public Comparator<DisplayablePao> getSorter(final boolean isDescending,
-                                                YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {
 
             @Override
@@ -31,15 +30,15 @@ public class LoadGroupLoadCapacityField extends LoadGroupBackingFieldBase {
                     return 0;
                 }
                 if (group1 == null) {
-                    return isDescending ? -1 : 1;
+                    return 1;
                 }
                 if (group2 == null) {
-                    return isDescending ? 1 : -1;
+                    return -1;
                 }
                 Double state1 = 0.0;  // TO BE DETERMINED
                 Double state2 = 0.0;
                 int retVal = state1.compareTo(state2);
-                return isDescending ? (0 - retVal) : retVal;
+                return retVal;
             }};
     }       
 

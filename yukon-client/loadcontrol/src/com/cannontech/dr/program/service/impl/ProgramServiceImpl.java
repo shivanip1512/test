@@ -26,7 +26,6 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
-import com.cannontech.dr.program.model.ProgramNameField;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -42,14 +41,12 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Ordering;
 
 public class ProgramServiceImpl implements ProgramService {
     private ProgramDao programDao = null;
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private ProgramNameField programNameField;
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -103,12 +100,6 @@ public class ProgramServiceImpl implements ProgramService {
                                                        int startIndex, int count,
                                                        YukonUserContext userContext) {
 
-        Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(false, userContext);
-        if (sorter == null) {
-            sorter = defaultSorter;
-        } else {
-            sorter = Ordering.from(sorter).compound(defaultSorter);
-        }
         SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
@@ -331,11 +322,6 @@ public class ProgramServiceImpl implements ProgramService {
     public void setDemandResponseEventLogService(
             DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
-    }
-    
-    @Autowired
-    public void setProgramNameField(ProgramNameField programNameField) {
-        this.programNameField = programNameField;
     }
 
     private LMManualControlRequest getManualControlMessage(

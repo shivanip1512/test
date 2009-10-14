@@ -20,9 +20,8 @@ public class ControlAreaNameField extends ControlAreaBackingFieldBase {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(boolean isDescending,
-                                                YukonUserContext userContext) {
-        return new DisplayablePaoComparator(isDescending);
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
+        return new DisplayablePaoComparator();
     }
 
 }

@@ -54,7 +54,7 @@ public class QuickSearchController {
         String searchText = quickSearchBean.getName();
         filters.add(new QuickSearchFilter(searchText));
 
-        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator(false);
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
 
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (quickSearchBean.getPage() - 1) * quickSearchBean.getItemsPerPage();

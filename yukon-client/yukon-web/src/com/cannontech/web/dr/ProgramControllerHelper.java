@@ -2,6 +2,7 @@ package com.cannontech.web.dr;
 
 import java.beans.PropertyEditor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,7 @@ import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Ordering;
 
 public class ProgramControllerHelper {
     public static class ProgramListBackingBean extends ListBackingBean {
@@ -151,14 +153,26 @@ public class ProgramControllerHelper {
             filters.add(new PriorityFilter(programService, backingBean.getPriority()));
         }
 
-        // Name is the default sort field
-        DemandResponseBackingField<LMProgramBase> sortField = programNameField;
+        // Sorting - name is default sorter
+        Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(userContext);
+        Comparator<DisplayablePao> sorter = defaultSorter;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
-            sortField = programFieldService.getBackingField(backingBean.getSort());
+            // If there is a custom sorter, add it
+            
+            DemandResponseBackingField<LMProgramBase> sortField = 
+                programFieldService.getBackingField(backingBean.getSort());
+            
+            sorter = sortField.getSorter(userContext);
+            if(backingBean.getDescending()) {
+                sorter = Collections.reverseOrder(sorter);
+            }
+            
+            // Don't double sort if name is the sort field
+            if(programNameField != sortField) {
+                sorter = Ordering.from(sorter).compound(defaultSorter);
+            }
         }
-        Comparator<DisplayablePao> sorter = 
-            sortField.getSorter(backingBean.getDescending(), userContext);
-
+        
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         SearchResult<DisplayablePao> searchResult =

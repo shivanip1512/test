@@ -1,6 +1,7 @@
 package com.cannontech.web.dr;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -58,8 +59,11 @@ public class ScenarioController {
             filters.add(new NameFilter(backingBean.getName()));
         }
 
-        Comparator<DisplayablePao> sorter =
-            new DisplayablePaoComparator(backingBean.getDescending());
+        // Sorting - name is default sorter
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
+        if(backingBean.getDescending()) {
+            sorter = Collections.reverseOrder(sorter);
+        }
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         SearchResult<DisplayablePao> searchResult =

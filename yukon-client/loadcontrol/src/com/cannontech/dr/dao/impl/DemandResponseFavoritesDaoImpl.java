@@ -219,7 +219,7 @@ public class DemandResponseFavoritesDaoImpl implements DemandResponseFavoritesDa
         filters.add(new IsFavoriteFilter(user.getUserID()));
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         FavoriteRowMapper rowMapper = new FavoriteRowMapper();
-        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator(false);
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, 0, Integer.MAX_VALUE, rowMapper);
         return searchResult.getResultList();

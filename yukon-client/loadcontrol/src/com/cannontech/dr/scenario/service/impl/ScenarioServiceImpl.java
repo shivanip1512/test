@@ -18,11 +18,9 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dr.model.DisplayablePaoComparator;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Ordering;
 
 public class ScenarioServiceImpl implements ScenarioService {
     private ScenarioDao scenarioDao = null;
@@ -54,12 +52,6 @@ public class ScenarioServiceImpl implements ScenarioService {
             YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        Comparator<DisplayablePao> secondarySorter = new DisplayablePaoComparator(false);
-        if (sorter == null) {
-            sorter = secondarySorter;
-        } else if (secondarySorter != null) {
-            sorter = Ordering.from(sorter).compound(secondarySorter);
-        }
         SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;

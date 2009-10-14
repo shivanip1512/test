@@ -20,8 +20,7 @@ public class ProgramStateField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(final boolean isDescending,
-                                                YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {
 
             @Override
@@ -32,15 +31,15 @@ public class ProgramStateField extends ProgramBackingFieldBase {
                     return 0;
                 }
                 if (program1 == null) {
-                    return isDescending ? -1 : 1;
+                    return 1;
                 }
                 if (program2 == null) {
-                    return isDescending ? 1 : -1;
+                    return -1;
                 }
                 Integer state1 = program1.getProgramStatus();
                 Integer state2 = program2.getProgramStatus();
                 int retVal = state1.compareTo(state2);
-                return isDescending ? (0 - retVal) : retVal;
+                return retVal;
             }};
     }
 

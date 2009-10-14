@@ -28,7 +28,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.filter.ForProgramFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
-import com.cannontech.dr.controlarea.model.ControlAreaNameField;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -40,14 +39,12 @@ import com.cannontech.message.util.Message;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
 
 public class ControlAreaServiceImpl implements ControlAreaService {
     private ControlAreaDao controlAreaDao;
     private LoadControlClientConnection loadControlClientConnection;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private ControlAreaNameField controlAreaNameField;
 
     private static class TriggerRowMapper implements RowMapperWithBaseQuery<ControlAreaTrigger> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId = Maps.newHashMap();
@@ -212,12 +209,6 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
         
-        Comparator<DisplayablePao> defaultSorter = controlAreaNameField.getSorter(false, userContext);
-        if (sorter == null) {
-            sorter = defaultSorter;
-        } else {
-            sorter = Ordering.from(sorter).compound(defaultSorter);
-        }
         SearchResult<ControlArea> searchResult =
             filterService.filter(filter, sorter, startIndex, count,
                                  new ControlAreaRowMapper(triggerRowMapper.triggersByControlAreaId));
@@ -397,8 +388,4 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         this.demandResponseEventLogService = demandResponseEventLogService;
     }
     
-    @Autowired
-    public void setControlAreaNameField(ControlAreaNameField controlAreaNameField) {
-        this.controlAreaNameField = controlAreaNameField;
-    }
 }

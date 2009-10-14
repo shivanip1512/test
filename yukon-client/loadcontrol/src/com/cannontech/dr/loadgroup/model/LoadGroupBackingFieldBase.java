@@ -43,7 +43,7 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
     }
     
     @Override
-    public Comparator<DisplayablePao> getSorter(boolean isDescending, YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         // Default implementation to return NO sorter
         return null;
     }

@@ -43,8 +43,7 @@ public class ControlAreaStopField extends ControlAreaBackingFieldBase {
     }
     
     @Override
-    public Comparator<DisplayablePao> getSorter(final boolean isDescending,
-                                                YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {
 
             @Override
@@ -55,15 +54,15 @@ public class ControlAreaStopField extends ControlAreaBackingFieldBase {
                     return 0;
                 }
                 if (controlArea1 == null) {
-                    return isDescending ? -1 : 1;
+                    return 1;
                 }
                 if (controlArea2 == null) {
-                    return isDescending ? 1 : -1;
+                    return -1;
                 }
                 Integer state1 = controlArea1.getDailyStopTime();
                 Integer state2 = controlArea2.getDailyStopTime();
                 int retVal = state1.compareTo(state2);
-                return isDescending ? (0 - retVal) : retVal;
+                return retVal;
             }};
     }
 

@@ -20,8 +20,7 @@ public class ControlAreaPriorityField extends ControlAreaBackingFieldBase {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(final boolean isDescending,
-                                                YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {
 
             @Override
@@ -32,17 +31,17 @@ public class ControlAreaPriorityField extends ControlAreaBackingFieldBase {
                     return 0;
                 }
                 if (controlArea1 == null) {
-                    return isDescending ? -1 : 1;
+                    return 1;
                 }
                 if (controlArea2 == null) {
-                    return isDescending ? 1 : -1;
+                    return -1;
                 }
                 Integer priority1 = controlArea1.getCurrentPriority() <= 0
                     ? 1 : controlArea1.getCurrentPriority();
                 Integer priority2 = controlArea2.getCurrentPriority() <= 0
                     ? 1 : controlArea2.getCurrentPriority();
                 int retVal = priority1.compareTo(priority2);
-                return isDescending ? (0 - retVal) : retVal;
+                return retVal;
             }};
     }
 

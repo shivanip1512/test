@@ -31,8 +31,7 @@ public class ProgramCurrentGearField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(final boolean isDescending,
-                                                YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {
 
             @Override
@@ -53,13 +52,13 @@ public class ProgramCurrentGearField extends ProgramBackingFieldBase {
                     return 0;
                 }
                 if (gear1 == null) {
-                    return isDescending ? - 1 : 1;
+                    return 1;
                 }
                 if (gear2 == null) {
-                    return isDescending ? 1 : -1;
+                    return -1;
                 }
                 int retVal = comparator.compare(gear1.getGearName(), gear2.getGearName());
-                return isDescending ? (0 - retVal) : retVal;
+                return retVal;
             }};
     }
 

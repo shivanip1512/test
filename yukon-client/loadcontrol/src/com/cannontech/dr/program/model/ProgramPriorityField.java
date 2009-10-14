@@ -21,8 +21,7 @@ public class ProgramPriorityField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(final boolean isDescending,
-                                                YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {
 
             @Override
@@ -33,17 +32,17 @@ public class ProgramPriorityField extends ProgramBackingFieldBase {
                     return 0;
                 }
                 if (program1 == null) {
-                    return isDescending ? -1 : 1;
+                    return 1;
                 }
                 if (program2 == null) {
-                    return isDescending ? 1 : -1;
+                    return -1;
                 }
                 Integer priority1 = program1.getStartPriority() <= 0
                     ? 1 : program1.getStartPriority();
                 Integer priority2 = program2.getStartPriority() <= 0
                     ? 1 : program2.getStartPriority();
                 int retVal = priority1.compareTo(priority2);
-                return isDescending ? (0 - retVal) : retVal;
+                return retVal;
             }};
     }
 

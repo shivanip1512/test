@@ -22,8 +22,7 @@ public class LoadGroupLastActionField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public Comparator<DisplayablePao> getSorter(final boolean isDescending,
-                                                YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new Comparator<DisplayablePao>() {
 
             @Override
@@ -34,13 +33,13 @@ public class LoadGroupLastActionField extends LoadGroupBackingFieldBase {
                     return 0;
                 }
                 if (group1 == null || group1.getGroupTime() == null) {
-                    return isDescending ? -1 : 1;
+                    return 1;
                 }
                 if (group2 == null || group2.getGroupTime() == null) {
-                    return isDescending ? 1 : -1;
+                    return -1;
                 }
                 int retVal = group1.getGroupTime().compareTo(group2.getGroupTime());
-                return isDescending ? (0 - retVal) : retVal;
+                return retVal;
             }};
     }        
 

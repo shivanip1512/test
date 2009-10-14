@@ -1,6 +1,7 @@
 package com.cannontech.web.dr;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
@@ -44,6 +45,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Ordering;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.SHOW_CONTROL_AREAS)
@@ -119,15 +121,27 @@ public class ControlAreaController {
         if (!backingBean.getPriority().isUnbounded()) {
             filters.add(new PriorityFilter(controlAreaService, backingBean.getPriority()));
         }
-
-        // Name is the default sort field
-        DemandResponseBackingField<LMControlArea> sortField = controlAreaNameField;
+        
+        // Sorting - name is default sorter
+        Comparator<DisplayablePao> defaultSorter = controlAreaNameField.getSorter(userContext);
+        Comparator<DisplayablePao> sorter = defaultSorter;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
-            sortField = controlAreaFieldService.getBackingField(backingBean.getSort());
+            // If there is a custom sorter, add it
+            
+            DemandResponseBackingField<LMControlArea> sortField = 
+                controlAreaFieldService.getBackingField(backingBean.getSort());
+            
+            sorter = sortField.getSorter(userContext);
+            if(backingBean.getDescending()) {
+                sorter = Collections.reverseOrder(sorter);
+            }
+            
+            // Don't double sort if name is the sort field
+            if(controlAreaNameField != sortField) {
+                sorter = Ordering.from(sorter).compound(defaultSorter);
+            }
         }
 
-        Comparator<DisplayablePao> sorter =
-            sortField.getSorter(backingBean.getDescending(), userContext);
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         SearchResult<ControlArea> searchResult =

@@ -2,6 +2,7 @@ package com.cannontech.web.dr;
 
 import java.beans.PropertyEditor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,7 @@ import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Ordering;
 
 public class LoadGroupControllerHelper {
     public static class LoadGroupListBackingBean extends ListBackingBean {
@@ -114,14 +116,25 @@ public class LoadGroupControllerHelper {
             filters.add(new LoadGroupLoadCapacityFilter(loadGroupService, backingBean.getLoadCapacity()));
         }
 
-        // Name is the default sort field
-        DemandResponseBackingField<LMDirectGroupBase> sortField = loadGroupNameField;
+        // Sorting - name is default sorter
+        Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(userContext);
+        Comparator<DisplayablePao> sorter = defaultSorter;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
-            sortField = loadGroupFieldService.getBackingField(backingBean.getSort());
+            // If there is a custom sorter, add it
+            
+            DemandResponseBackingField<LMDirectGroupBase> sortField = 
+                loadGroupFieldService.getBackingField(backingBean.getSort());
+            
+            sorter = sortField.getSorter(userContext);
+            if(backingBean.getDescending()) {
+                sorter = Collections.reverseOrder(sorter);
+            }
+            
+            // Don't double sort if name is the sort field
+            if(loadGroupNameField != sortField) {
+                sorter = Ordering.from(sorter).compound(defaultSorter);
+            }
         }
-        
-        Comparator<DisplayablePao> sorter = 
-            sortField.getSorter(backingBean.getDescending(), userContext);
         
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
