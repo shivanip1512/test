@@ -8,7 +8,6 @@ import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -90,13 +89,6 @@ public interface OptOutService {
 	 */
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId);
 
-	/**
-	 * Method to get all opt out limits for a given group
-	 * @param group - Group to get limits for
-	 * @return List of current opt out limits
-	 */
-	public List<OptOutLimit> getAllOptOutLimits(LiteYukonGroup group);
-	
    /**
      * Method to get allowed Opt out periods for a given user based on the
      * OptOutPeriod role property. Defaults to 1 day if role property value is

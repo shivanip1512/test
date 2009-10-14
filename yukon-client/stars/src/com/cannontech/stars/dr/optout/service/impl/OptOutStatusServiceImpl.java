@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.optout.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -14,7 +13,6 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
@@ -25,7 +23,6 @@ import com.cannontech.stars.util.StarsUtils;
  */
 public class OptOutStatusServiceImpl implements OptOutStatusService {
 
-	private AuthDao authDao;
 	private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
 	private EnergyCompanyDao energyCompanyDao;
 	private StarsDatabaseCache starsDatabaseCache;
@@ -42,7 +39,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 			optOutCounts = optOutTemporaryOverrideDao.getOptOutCounts(energyCompany);
 		} catch (NoTemporaryOverrideException e) {
 			// Opt out counts is not temporarily overridden today - get role property value
-			optOutCounts = roleDao.checkGlobalRoleProperty(ConfigurationRole.OPT_OUTS_COUNT);
+			optOutCounts = rolePropertyDao.checkProperty(YukonRoleProperty.OPT_OUTS_COUNT, null);
 		}
 		
 		return optOutCounts;
@@ -90,11 +87,6 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		}
 		
 		return optOutEnabled;
-	}
-	
-	@Autowired
-	public void setAuthDao(AuthDao authDao) {
-		this.authDao = authDao;
 	}
 	
 	@Autowired

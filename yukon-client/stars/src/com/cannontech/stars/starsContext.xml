@@ -284,25 +284,6 @@
         class="com.cannontech.stars.util.task.ImportCustAccountsSchedulerTask"
         scope="prototype" />
 
-    <!-- Opt Out Job -->    
-    <bean id="optOutSchedulerJob"
-        class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
-        <property name="taskName">
-            <idref local="optOutTask" />
-        </property>
-        <property name="title" value="Opt Out Job" />
-    </bean>
-    
-    <!--  Opt Out Task -->
-    <bean id="optOutTask" class="com.cannontech.stars.util.task.OptOutTask" scope="prototype">
-        <property name="customerAccountDao" ref="customerAccountDao"/>
-        <property name="ecMappingDao" ref="ecMappingDao"/>
-        <property name="enrollmentDao" ref="enrollmentDao"/>
-        <property name="optOutEventDao" ref="optOutEventDao"/>
-        <property name="optOutService" ref="optOutService"/>
-        <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao"/>
-    </bean>
-    
     <bean 
         id="commandRequestHardwareExecutor" 
         class="com.cannontech.stars.dr.hardware.service.impl.CommandRequestHardwareExecutorImpl">

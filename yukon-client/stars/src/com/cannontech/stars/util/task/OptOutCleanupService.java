@@ -4,17 +4,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -26,14 +31,15 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.user.UserUtils;
 
 /**
- * Task used to start scheduled opt outs and clean up any opt outs that have just
+ * Service used to start scheduled opt outs and clean up any opt outs that have just
  * completed
  */
-public class OptOutTask extends YukonTaskBase {
+public class OptOutCleanupService implements InitializingBean {
 
-    private Logger logger = YukonLogManager.getLogger(OptOutTask.class);
+    private Logger logger = YukonLogManager.getLogger(OptOutCleanupService.class);
 	
 	private OptOutEventDao optOutEventDao;
 	private OptOutService optOutService;
@@ -41,32 +47,38 @@ public class OptOutTask extends YukonTaskBase {
 	private EnrollmentDao enrollmentDao;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private ECMappingDao ecMappingDao;
+	private ScheduledExecutor executor;
 	
 	@Override
-	public void start() {
+	public void afterPropertiesSet() throws Exception {
     	
-        logger.debug("Starting opt out task.");
+	    executor.scheduleWithFixedDelay(new Runnable() {
+            public void run() {
+                logger.debug("Starting opt out task.");
+
+                LiteYukonUser user = UserUtils.getAdminYukonUser();
+
+                List<OptOutEvent> optOutsToStart = optOutEventDao.getScheduledOptOutsToBeStarted();
+                startOptOuts(optOutsToStart, user);
+
+                // Get a list of all currently opted out inventory (according to the LMHardwareControlGroup
+                // table)
+                List<Integer> inventoryIds = enrollmentDao.getCurrentlyOptedOutInventory();
+                List<LiteStarsLMHardware> optedOutInventory = getOptedOutInventory(inventoryIds);
+                cleanUpCompletedOptOuts(optedOutInventory, user);
         
-        LiteYukonUser user = getYukonUser();
-
-        List<OptOutEvent> optOutsToStart = optOutEventDao.getScheduledOptOutsToBeStarted();
-        this.startOptOuts(optOutsToStart, user);
-
-        // Get a list of all currently opted out inventory (according to the LMHardwareControlGroup
-        // table)
-        List<Integer> inventoryIds = enrollmentDao.getCurrentlyOptedOutInventory();
-        List<LiteStarsLMHardware> optedOutInventory = getOptedOutInventory(inventoryIds);
-        this.cleanUpCompletedOptOuts(optedOutInventory, user);
+            }
+        }, 1, 5, TimeUnit.MINUTES);
         
     }
 
-    public void startOptOuts(List<OptOutEvent> optOutsToStart, LiteYukonUser user) {
+    private void startOptOuts(List<OptOutEvent> optOutsToStart, LiteYukonUser user) {
     	
     	for(OptOutEvent event : optOutsToStart) {
         	
-        	OptOutRequest optOutRequest = this.createOptOutRequest(event);
+        	OptOutRequest optOutRequest = createOptOutRequest(event);
         	
-        	logger.info("Starting scheduled opt out event for inventory: " + event.getInventoryId() 
+        	logger.debug("Starting scheduled opt out event for inventory: " + event.getInventoryId() 
         			+ " and account: " + event.getCustomerAccountId());
         	try {
         		CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
@@ -79,7 +91,7 @@ public class OptOutTask extends YukonTaskBase {
         }
     }
     
-    public OptOutRequest createOptOutRequest(OptOutEvent event) {
+    private OptOutRequest createOptOutRequest(OptOutEvent event) {
     	
     	List<ScheduledOptOutQuestion> questionList = Collections.emptyList();
     	
@@ -95,7 +107,7 @@ public class OptOutTask extends YukonTaskBase {
     	return optOutRequest;
     }
     
-    public List<LiteStarsLMHardware> getOptedOutInventory(List<Integer> inventoryIds) {
+    private List<LiteStarsLMHardware> getOptedOutInventory(List<Integer> inventoryIds) {
     	
     	List<LiteStarsLMHardware> inventoryList = new ArrayList<LiteStarsLMHardware>();
     	for(Integer inventoryId : inventoryIds) {
@@ -116,9 +128,8 @@ public class OptOutTask extends YukonTaskBase {
     	return inventoryList;
     }
     
-    public void cleanUpCompletedOptOuts(
-    		List<LiteStarsLMHardware> optedOutInventory, 
-    		LiteYukonUser user) 
+    private void cleanUpCompletedOptOuts(List<LiteStarsLMHardware> optedOutInventory, 
+                                         LiteYukonUser user) 
     {
     	
     	for(LiteStarsLMHardware inventory : optedOutInventory) {
@@ -137,10 +148,9 @@ public class OptOutTask extends YukonTaskBase {
         }
     }
     
-    public void cancelOptOutEvent(
-    		LiteStarsLMHardware inventory, 
-    		OptOutEvent event, 
-    		LiteYukonUser user) 
+    private void cancelOptOutEvent(LiteStarsLMHardware inventory, 
+                                   OptOutEvent event, 
+                                   LiteYukonUser user) 
     {
     	Validate.notNull(event, "Event must not be null");
     	
@@ -149,7 +159,7 @@ public class OptOutTask extends YukonTaskBase {
     	CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
     	LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
     	
-    	logger.info("Cleaning up opt out event for inventory: " + event.getInventoryId() 
+    	logger.debug("Cleaning up opt out event for inventory: " + event.getInventoryId() 
     			+ " and account: " + event.getCustomerAccountId());
     	
         try {
@@ -162,31 +172,40 @@ public class OptOutTask extends YukonTaskBase {
 		}
     }
     
-    // Injected Dependencies
-    
+    @Autowired
     public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
 		this.optOutEventDao = optOutEventDao;
 	}
 
+    @Autowired
     public void setOptOutService(OptOutService optOutService) {
 		this.optOutService = optOutService;
 	}
     
+    @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
 		this.customerAccountDao = customerAccountDao;
 	}
     
+    @Autowired
     public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
 		this.enrollmentDao = enrollmentDao;
 	}
 
+    @Autowired
     public void setStarsInventoryBaseDao(
 			StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
     
+    @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
 		this.ecMappingDao = ecMappingDao;
 	}
+    
+    @Resource(name="globalScheduledExecutor")
+    public void setExecutor(ScheduledExecutor executor) {
+        this.executor = executor;
+    }
     
 }

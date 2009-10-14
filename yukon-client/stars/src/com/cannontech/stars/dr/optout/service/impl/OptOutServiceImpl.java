@@ -35,7 +35,6 @@ import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -44,20 +43,16 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
@@ -101,9 +96,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private OptOutStatusService optOutStatusService;
 	private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
 	private LMHardwareControlInformationService lmHardwareControlInformationService;
-	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 	private CustomerDao customerDao;
-	private RoleDao roleDao;
 	private ProgramDao programDao;
 	private EnergyCompanyDao energyCompanyDao;
 	private EnrollmentDao enrollmentDao;
@@ -465,18 +458,6 @@ public class OptOutServiceImpl implements OptOutService {
 		holder.setRemainingOptOuts(remainingOptOuts);
 		
 		return holder;
-	}
-	
-
-	@Override
-	public List<OptOutLimit> getAllOptOutLimits(LiteYukonGroup group) {
-
-		String optOutLimitString = 
-			roleDao.getRolePropValueGroup(group, ResidentialCustomerRole.OPT_OUT_LIMITS, "");
-		
-		List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
-		
-		return optOutLimits;
 	}
 	
 	@Override
@@ -1056,19 +1037,8 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Autowired
-	public void setLmHardwareControlGroupDao(
-			LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-		this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-	}
-	
-	@Autowired
 	public void setCustomerDao(CustomerDao customerDao) {
 		this.customerDao = customerDao;
-	}
-	
-	@Autowired
-	public void setRoleDao(RoleDao roleDao) {
-		this.roleDao = roleDao;
 	}
 	
 	@Autowired
