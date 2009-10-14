@@ -144,6 +144,18 @@ WHERE PAOClass = 'TRANSMITTER'
 AND Type = 'Integration';
 /* End YUK-7840 */
 
+/* Start YUK-7932 */
+DELETE FROM JobScheduledRepeating
+WHERE JobId IN (Select JobId
+                FROM JOB
+                WHERE BeanName = 'optOutSchedulerJob');
+
+DELETE FROM JOB
+WHERE BeanName = 'optOutSchedulerJob';
+
+INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optOut/optOutContext.xml', '(none)', '(none)', 'ServiceManager');
+/* Start YUK-7932 */
+
 /* Start YUK-7902 */
 /* @start-block */
 DECLARE

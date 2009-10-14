@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/14/2009 3:45:16 PM                        */
+/* Created on:     10/14/2009 4:56:08 PM                        */
 /*==============================================================*/
 
 
@@ -8321,8 +8321,6 @@ create table JOB (
 )
 go
 
-INSERT INTO Job VALUES(1, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' ');
-
 /*==============================================================*/
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
@@ -8354,8 +8352,6 @@ create table JOBSCHEDULEDREPEATING (
    constraint PK_JobScheduledRepeating primary key (JobID)
 )
 go
-
-INSERT INTO JobScheduledRepeating VALUES(1, '0 0/5 * * * ?');
 
 /*==============================================================*/
 /* Table: JOBSTATUS                                             */
@@ -12701,6 +12697,7 @@ INSERT INTO YukonServices VALUES (-6, 'Price_Server', 'com.cannontech.jmx.servic
 INSERT INTO YukonServices VALUES (7, 'ActiveMQ', 'classpath:com/cannontech/services/jms/activemq.xml', '(none)', '(none)', 'ServiceManager');
 INSERT INTO YukonServices VALUES (8, 'PointInjector', 'classpath:com/cannontech/services/points/pointInjectionContext.xml', '(none)', '(none)', 'ServiceManager');
 INSERT INTO YukonServices VALUES (9, 'Monitors', 'classpath:com/cannontech/services/monitors/monitorsContext.xml', '(none)', '(none)', 'ServiceManager');
+INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optOut/optOutContext.xml', '(none)', '(none)', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */

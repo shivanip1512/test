@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/14/2009 3:51:51 PM                        */
+/* Created on:     10/14/2009 4:48:46 PM                        */
 /*==============================================================*/
 
 
@@ -5567,8 +5567,6 @@ create table JOB  (
    constraint PK_JOB primary key (JobID)
 );
 
-INSERT INTO Job VALUES(1, 'optOutSchedulerJob', 'N', -1, 'en_US', ' ', ' ');
-
 /*==============================================================*/
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
@@ -5597,8 +5595,6 @@ create table JOBSCHEDULEDREPEATING  (
    CronString           VARCHAR2(100)                   not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
-
-INSERT INTO JobScheduledRepeating VALUES(1, '0 0/5 * * * ?');
 
 /*==============================================================*/
 /* Table: JOBSTATUS                                             */
@@ -9750,6 +9746,7 @@ INSERT INTO YukonServices VALUES (-6, 'Price_Server', 'com.cannontech.jmx.servic
 INSERT INTO YukonServices VALUES (7, 'ActiveMQ', 'classpath:com/cannontech/services/jms/activemq.xml', '(none)', '(none)', 'ServiceManager');
 INSERT INTO YukonServices VALUES (8, 'PointInjector', 'classpath:com/cannontech/services/points/pointInjectionContext.xml', '(none)', '(none)', 'ServiceManager');
 INSERT INTO YukonServices VALUES (9, 'Monitors', 'classpath:com/cannontech/services/monitors/monitorsContext.xml', '(none)', '(none)', 'ServiceManager');
+INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optOut/optOutContext.xml', '(none)', '(none)', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */

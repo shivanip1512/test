@@ -146,6 +146,18 @@ WHERE PAObjectId IN (SELECT PAObjectId
                      AND PTS.IPAddress = 'UDP');
 /* End YUK-7926 */
 
+/* Start YUK-7932 */
+DELETE FROM JobScheduledRepeating
+WHERE JobId IN (Select JobId
+                FROM JOB
+                WHERE BeanName = 'optOutSchedulerJob');
+
+DELETE FROM JOB
+WHERE BeanName = 'optOutSchedulerJob';
+
+INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optOut/optOutContext.xml', '(none)', '(none)', 'ServiceManager');
+/* Start YUK-7932 */
+
 /* Start YUK-7840 */
 UPDATE YukonPAObject
 SET Type = 'INTEGRATION'
