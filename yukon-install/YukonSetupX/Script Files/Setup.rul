@@ -154,7 +154,7 @@ Dlg_SdComponentTree:
  	while(nGrepResult >= 0)
 	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
 	    if(nGrepResult >= 0) then
-	    	//return >0 means we found a match
+	    	//non-negative return means we found a match
 	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
 	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
 	    endif;
@@ -166,7 +166,7 @@ Dlg_SdComponentTree:
     while(nGrepResult >= 0)
 	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
 	    if(nGrepResult >= 0) then
-	    	//return >0 means we found a match
+	    	//non-negative return means we found a match
 	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
 	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
 	    endif;
@@ -178,7 +178,7 @@ Dlg_SdComponentTree:
     while(nGrepResult >= 0)
 	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
 	    if(nGrepResult >= 0) then
-	    	//return >0 means we found a match
+	    	//non-negative return means we found a match
 	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
 	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
 	    endif;
