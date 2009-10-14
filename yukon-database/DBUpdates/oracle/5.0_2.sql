@@ -101,6 +101,31 @@ ALTER TABLE PAOProperty
    ADD CONSTRAINT FK_PAOProp_YukonPAO FOREIGN KEY (PAObjectId)
       REFERENCES YukonPAObject (PAObjectId);
 /* End YUK-7922 */
+
+/* Start YUK-7826 */
+CREATE TABLE EventLog (
+   EventLogId           NUMBER                          NOT NULL,
+   EventType            VARCHAR2(250)                   NOT NULL,
+   EventTime            DATE,
+   String1              VARCHAR2(2000),
+   String2              VARCHAR2(2000),
+   String3              VARCHAR2(2000),
+   String4              VARCHAR2(2000),
+   String5              VARCHAR2(2000),
+   String6              VARCHAR2(2000),
+   Int7                 NUMBER,
+   Int8                 NUMBER,
+   Int9                 NUMBER,
+   Int10                NUMBER,
+   Date11               DATE,
+   Date12               DATE,
+   CONSTRAINT PK_EventLog PRIMARY KEY (EventLogId)
+);
+
+CREATE INDEX INDX_EventType ON EventLog (
+   EventType ASC
+);
+/* End YUK-7826 */
       
 /**************************************************************/
 /* VERSION INFO                                               */

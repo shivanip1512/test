@@ -110,6 +110,32 @@ ALTER TABLE PAOProperty
 GO
 /* End YUK-7922 */
 
+/* Start YUK-7826 */
+CREATE TABLE EventLog (
+   EventLogId           NUMERIC              NOT NULL,
+   EventType            VARCHAR(250)         NOT NULL,
+   EventTime            DATETIME             NULL,
+   String1              VARCHAR(2000)        NULL,
+   String2              VARCHAR(2000)        NULL,
+   String3              VARCHAR(2000)        NULL,
+   String4              VARCHAR(2000)        NULL,
+   String5              VARCHAR(2000)        NULL,
+   String6              VARCHAR(2000)        NULL,
+   Int7                 NUMERIC              NULL,
+   Int8                 NUMERIC              NULL,
+   Int9                 NUMERIC              NULL,
+   Int10                NUMERIC              NULL,
+   Date11               DATETIME             NULL,
+   Date12               DATETIME             NULL,
+   CONSTRAINT PK_EventLog PRIMARY KEY (EventLogId)
+);
+GO
+
+CREATE INDEX INDX_EventType ON EventLog (
+	EventType ASC
+);
+/* End YUK-7826 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

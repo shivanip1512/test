@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/14/2009 11:36:08 AM                       */
+/* Created on:     10/14/2009 1:03:54 PM                        */
 /*==============================================================*/
 
 
@@ -152,6 +152,8 @@ drop index INDX_ECToCustEventMap_EventId;
 drop index Indx_EnCmpName;
 
 drop index INDX_ECompCustList_CustId;
+
+drop index INDX_EventType;
 
 drop index Indx_FdrTransIntTyp;
 
@@ -586,6 +588,8 @@ drop table EventAccount cascade constraints;
 drop table EventBase cascade constraints;
 
 drop table EventInventory cascade constraints;
+
+drop table EventLog cascade constraints;
 
 drop table EventWorkOrder cascade constraints;
 
@@ -5125,6 +5129,35 @@ create table EventInventory  (
    EventID              NUMBER                          not null,
    InventoryID          NUMBER                          not null,
    constraint PK_EVENTINVENTORY primary key (EventID)
+);
+
+/*==============================================================*/
+/* Table: EventLog                                              */
+/*==============================================================*/
+create table EventLog  (
+   EventLogId           NUMBER                          not null,
+   EventType            VARCHAR2(250)                   not null,
+   EventTime            DATE,
+   String1              VARCHAR2(2000),
+   String2              VARCHAR2(2000),
+   String3              VARCHAR2(2000),
+   String4              VARCHAR2(2000),
+   String5              VARCHAR2(2000),
+   String6              VARCHAR2(2000),
+   Int7                 NUMBER,
+   Int8                 NUMBER,
+   Int9                 NUMBER,
+   Int10                NUMBER,
+   Date11               DATE,
+   Date12               DATE,
+   constraint PK_EventLog primary key (EventLogId)
+);
+
+/*==============================================================*/
+/* Index: INDX_EventType                                        */
+/*==============================================================*/
+create index INDX_EventType on EventLog (
+   EventType ASC
 );
 
 /*==============================================================*/

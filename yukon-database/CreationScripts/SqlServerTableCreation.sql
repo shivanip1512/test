@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/14/2009 11:22:17 AM                       */
+/* Created on:     10/14/2009 1:06:40 PM                        */
 /*==============================================================*/
 
 
@@ -597,6 +597,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index EnergyCompanyCustomerList.INDX_ECompCustList_CustId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('EventLog')
+            and   name  = 'INDX_EventType'
+            and   indid > 0
+            and   indid < 255)
+   drop index EventLog.INDX_EventType
 go
 
 if exists (select 1
@@ -2220,6 +2229,13 @@ if exists (select 1
            where  id = object_id('EventInventory')
             and   type = 'U')
    drop table EventInventory
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EventLog')
+            and   type = 'U')
+   drop table EventLog
 go
 
 if exists (select 1
@@ -7836,6 +7852,37 @@ create table EventInventory (
    EventID              numeric              not null,
    InventoryID          numeric              not null,
    constraint PK_EVENTINVENTORY primary key (EventID)
+)
+go
+
+/*==============================================================*/
+/* Table: EventLog                                              */
+/*==============================================================*/
+create table EventLog (
+   EventLogId           numeric              not null,
+   EventType            varchar(250)         not null,
+   EventTime            datetime             null,
+   String1              varchar(2000)        null,
+   String2              varchar(2000)        null,
+   String3              varchar(2000)        null,
+   String4              varchar(2000)        null,
+   String5              varchar(2000)        null,
+   String6              varchar(2000)        null,
+   Int7                 numeric              null,
+   Int8                 numeric              null,
+   Int9                 numeric              null,
+   Int10                numeric              null,
+   Date11               datetime             null,
+   Date12               datetime             null,
+   constraint PK_EventLog primary key (EventLogId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_EventType                                        */
+/*==============================================================*/
+create index INDX_EventType on EventLog (
+EventType ASC
 )
 go
 
