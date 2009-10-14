@@ -16,7 +16,7 @@ public class ProgramStateClassnameField extends ProgramBackingFieldBase {
     }
     
     @Override
-    protected boolean handleNull() {
+    protected boolean handlesNull() {
         return true;
     }
 

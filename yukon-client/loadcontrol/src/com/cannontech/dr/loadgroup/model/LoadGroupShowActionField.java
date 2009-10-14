@@ -27,7 +27,7 @@ public class LoadGroupShowActionField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    protected boolean handleNull() {
+    protected boolean handlesNull() {
         return true;
     }
 

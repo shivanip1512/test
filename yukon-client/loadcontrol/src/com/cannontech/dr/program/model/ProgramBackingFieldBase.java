@@ -35,7 +35,7 @@ public abstract class ProgramBackingFieldBase implements DemandResponseBackingFi
 
     @Override
     public Object getValue(LMProgramBase program, YukonUserContext userContext) {
-        if(program != null || handleNull()) {
+        if(program != null || handlesNull()) {
             return getProgramValue((LMProgramBase) program, userContext);
         } else {
             return blankFieldResolvable;
@@ -60,7 +60,7 @@ public abstract class ProgramBackingFieldBase implements DemandResponseBackingFi
         return baseKey + "." + suffix;
     }
     
-    protected boolean handleNull() {
+    protected boolean handlesNull() {
         return false;
     }
     

@@ -36,7 +36,7 @@ public abstract class ControlAreaBackingFieldBase implements DemandResponseBacki
 
     @Override
     public Object getValue(LMControlArea controlArea, YukonUserContext userContext) {
-        if(controlArea != null || handleNull()) {
+        if(controlArea != null || handlesNull()) {
             return getControlAreaValue((LMControlArea) controlArea, userContext);
         } else {
             return blankFieldResolvable;
@@ -61,7 +61,7 @@ public abstract class ControlAreaBackingFieldBase implements DemandResponseBacki
         return baseKey + "." + suffix;
     }
     
-    protected boolean handleNull() {
+    protected boolean handlesNull() {
         return false;
     }
     

@@ -35,7 +35,7 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
 
     @Override
     public Object getValue(LMDirectGroupBase group, YukonUserContext userContext) {
-        if(group != null || handleNull()) {
+        if(group != null || handlesNull()) {
             return getGroupValue(group, userContext);
         } else {
             return blankFieldResolvable;
@@ -60,7 +60,7 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
         return baseKey + "." + suffix;
     }
     
-    protected boolean handleNull() {
+    protected boolean handlesNull() {
         return false;
     }
     

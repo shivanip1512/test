@@ -34,7 +34,7 @@ public class ProgramShowActionField extends ProgramBackingFieldBase {
     }
     
     @Override
-    protected boolean handleNull() {
+    protected boolean handlesNull() {
         return true;
     }
 }

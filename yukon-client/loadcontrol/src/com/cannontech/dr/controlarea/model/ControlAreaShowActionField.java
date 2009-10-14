@@ -34,7 +34,7 @@ public class ControlAreaShowActionField extends ControlAreaBackingFieldBase {
     }
     
     @Override
-    protected boolean handleNull() {
+    protected boolean handlesNull() {
         return true;
     }
 }
