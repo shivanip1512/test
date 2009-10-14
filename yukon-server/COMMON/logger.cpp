@@ -34,7 +34,8 @@ CtiLogger::CtiLogger(const string& file, bool to_stdout) :
     _std_out(to_stdout),
     _path("..\\log"),
     _fill(' '),
-    _write_interval(5000)
+    _write_interval(5000),
+    _next_logfile_check(0)
 {
     _current_stream = new strstream;
     _current_stream->fill(_fill);
