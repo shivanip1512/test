@@ -24,7 +24,8 @@ public abstract class TriggerBackingFieldBase implements
      * Method to get the field value from the given trigger
      * @param trigger - Trigger to get value for
      * @param userContext - Current userContext
-     * @return Value of this field for the given trigger
+     * @return Value of this field for the given trigger (Should be one of: String, 
+     *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
     public abstract Object getTriggerValue(LMControlAreaTrigger trigger, 
                                            YukonUserContext userContext);
