@@ -137,6 +137,13 @@ WHERE PAObjectId IN (SELECT PAObjectId
                      AND PTS.IPAddress = 'UDP');
 /* End YUK-7926 */
 
+/* Start YUK-7840 */
+UPDATE YukonPAObject
+SET Type = 'INTEGRATION'
+WHERE PAOClass = 'TRANSMITTER'
+AND Type = 'Integration';
+/* End YUK-7840 */
+
 /* Start YUK-7902 */
 /* @start-block */
 DECLARE
