@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
@@ -18,6 +17,9 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
@@ -25,14 +27,17 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
+@CheckRole(YukonRole.SCHEDULER)
 public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
 	private JobManager jobManager;
+	private RolePropertyDao rolePropertyDao;
 	
 	@Override
 	public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -58,25 +63,16 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 		MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>(jobs, mapper);
 		mav.addObject("jobWrappers", jobWrappers);
 		
+		boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
+		mav.addObject("canManage", canManage);
+		
 		return mav;
 	}
 	
-	public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleEnabledJobId");
-		
-		YukonJob job = jobManager.getJob(jobId);
-		if (job.isDisabled()) {
-			jobManager.enableJob(job);
-		} else {
-			jobManager.disableJob(job);
-		}
-	
-		ModelAndView mav = render(request, response);
-        return mav;
-	}
-	
 	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+		rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
 		
 		int jobId = WidgetParameterHelper.getRequiredIntParameter(request, "jobId");
 		
@@ -101,5 +97,10 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 	@Resource(name="jobManager")
 	public void setJobManager(JobManager jobManager) {
 		this.jobManager = jobManager;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 }

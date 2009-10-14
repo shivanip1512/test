@@ -306,12 +306,14 @@
           </links>
 	    </option>
 	    <option id="commandRequestExecution">
+	      <requireRoleProperty value="SCHEDULER"/>
 		  <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
 		  <links>
 		  	<option id="scheduleLogs">
               <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
             </option>
 		    <option id="createSchedule">
+		      <requireRoleProperty value="MANAGE_SCHEDULES"/>
               <link>/spring/group/scheduledGroupRequestExecution/home</link>
             </option>
           </links>

@@ -13,18 +13,19 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.macs.message.Schedule;
-import com.cannontech.roles.operator.SchedulerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -43,8 +44,8 @@ public class MACSScheduleController extends MultiActionController {
     private static final Comparator<Schedule> reverseSortByStartDate;
     private static final Comparator<Schedule> reverseSortByStopDate;
     private MACSScheduleService<Schedule> service;
-    private AuthDao authDao;
     private DateFormattingService dateFormattingService;
+    private RolePropertyDao rolePropertyDao;
     
     static {
         sortByName = new Comparator<Schedule>() {
@@ -147,7 +148,7 @@ public class MACSScheduleController extends MultiActionController {
         if (descending == null) descending = false;
         
         sort(list, sortBy, descending);
-        List<MACSScheduleInfo> infoList = createScheduleInfoList(list, isEditable(user, SchedulerRole.ROLEID));
+        List<MACSScheduleInfo> infoList = createScheduleInfoList(list, isEditable(user));
         
         mav.setViewName("schedulesView.jsp");
         mav.addObject("list", infoList);
@@ -164,7 +165,7 @@ public class MACSScheduleController extends MultiActionController {
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
         
-        if (!isEditable(userContext.getYukonUser(), SchedulerRole.ROLEID)) return view(request, reponse);
+        if (!isEditable(userContext.getYukonUser())) return view(request, reponse);
         
         final Schedule schedule = service.getById(id);
         final Calendar cal = dateFormattingService.getCalendar(userContext);
@@ -219,7 +220,7 @@ public class MACSScheduleController extends MultiActionController {
         Date stop = dateFormattingService.flexibleDateParser(stopDate + " " + stopTime, yukonUserContext);
         Date start = null;
         
-        if (!isEditable(liteYukonUser, SchedulerRole.ROLEID)) return mav;
+        if (!isEditable(liteYukonUser)) return mav;
         
         if (time.equals("startnow")) {
             start = Calendar.getInstance(timeZone).getTime();
@@ -258,7 +259,7 @@ public class MACSScheduleController extends MultiActionController {
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        if (!isEditable(user, SchedulerRole.ROLEID)) return mav;
+        if (!isEditable(user)) return mav;
         
         Schedule schedule = service.getById(id);
         String currentState = schedule.getCurrentState();
@@ -273,13 +274,9 @@ public class MACSScheduleController extends MultiActionController {
         return mav;
     }
     
-    private boolean isEditable(LiteYukonUser user, int rolePropertyId) {
-        if (authDao.checkRole(user, rolePropertyId)) {
-            String value = authDao.getRolePropertyValue(user, SchedulerRole.ENABLE_DISABLE_SCHEDULE);
-            boolean result = Boolean.parseBoolean(value);
-            return result;
-        }
-        return false;
+    private boolean isEditable(LiteYukonUser user) {
+    	
+    	return rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS, user);
     }
     
     @SuppressWarnings("unchecked")
@@ -341,12 +338,13 @@ public class MACSScheduleController extends MultiActionController {
         this.service = service;
     }
     
-    public void setAuthDao(final AuthDao authDao) {
-        this.authDao = authDao;
-    }
-
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
     
 }

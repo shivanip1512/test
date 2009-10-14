@@ -19,9 +19,6 @@
 <cti:msg var="attributeWord" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.attributeOrCommand.attribute" />
 <cti:msg var="editScheduleTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.editSchedule" />
 <cti:msg var="viewScheduleDetailsTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails" />
-<cti:msg var="toggleEnabledTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.toggleEnabled" />
-<cti:msg var="toggleDisabledTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.toggleDisabled" />
-<cti:msg var="toggleDisabledTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.toggleDisabled" />
 <cti:msg var="deleteTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.delete" />
 <cti:msg var="deleteConfirmText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.deleteConfirm" />
 <cti:msg var="enabledText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.enabled" />
@@ -38,7 +35,14 @@
 <c:when test="${fn:length(jobWrappers) > 0}">
 
 <c:if test="${fn:length(jobWrappers) > 20}">
-	<div style="overflow:auto; height:500px;">
+	<c:choose>
+		<c:when test="${canManage}">
+			<div style="overflow:auto; height:500px;">
+		</c:when>
+		<c:otherwise>
+			<div style="overflow:auto; height:390px;">
+		</c:otherwise>
+	</c:choose>
 </c:if>
 <table class="compactResultsTable">
 	
@@ -47,7 +51,9 @@
 		<th>${scheduleNameText}</th>
 		<th>${scheduleDescriptionText}</th>
 		<th style="text-align:center;width:80px;">${enabledStatusText}</th>
-		<th style="text-align:right;width:20px;"></th>
+		<c:if test="${canManage}">
+			<th style="text-align:right;width:20px;"></th>
+		</c:if>
 	</tr>
 
 	<c:forEach var="jobWrapper" items="${jobWrappers}">
@@ -63,14 +69,16 @@
 			<td>
 
 				<%-- edit schedule --%>
-				<cti:url var="editScheduleUrl" value="/spring/group/scheduledGroupRequestExecution/home">
-					<cti:param name="editJobId" value="${jobWrapper.job.id}"/>
-				</cti:url>
-				
-				<a href="${editScheduleUrl}" title="${editScheduleTitleText} (${jobWrapper.name})" style="text-decoration:none;">
-					<img src="${pencil}" onmouseover="javascript:this.src='${pencilOver}'" onmouseout="javascript:this.src='${pencil}'">
-				</a>
-				&nbsp;&nbsp;
+				<c:if test="${canManage}">
+					<cti:url var="editScheduleUrl" value="/spring/group/scheduledGroupRequestExecution/home">
+						<cti:param name="editJobId" value="${jobWrapper.job.id}"/>
+					</cti:url>
+					
+					<a href="${editScheduleUrl}" title="${editScheduleTitleText} (${jobWrapper.name})" style="text-decoration:none;">
+						<img src="${pencil}" onmouseover="javascript:this.src='${pencilOver}'" onmouseout="javascript:this.src='${pencil}'">
+					</a>
+					&nbsp;&nbsp;
+				</c:if>
 			
 				<%-- view details --%>
 				<cti:url var="viewScheduleDetailsUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail" >
@@ -102,9 +110,11 @@
 			</td>
 			
 			<%-- delete --%>
-			<td class="${tdClass}" style="text-align:right;">
-				<tags:widgetActionRefreshImage jobId="${jobWrapper.job.id}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteTitleText} (${jobWrapper.name})" method="delete"/>
-			</td>
+			<c:if test="${canManage}">
+				<td class="${tdClass}" style="text-align:right;">
+					<tags:widgetActionRefreshImage jobId="${jobWrapper.job.id}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteTitleText} (${jobWrapper.name})" method="delete"/>
+				</td>
+			</c:if>
 				
 		</tr>
 	
@@ -122,9 +132,11 @@
 </c:otherwise>
 </c:choose>
 
-<div style="text-align:right;padding-top:5px;">
-	<tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
-</div>
+<c:if test="${canManage}">
+	<div style="text-align:right;padding-top:5px;">
+		<tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
+	</div>
+</c:if>
 
 
 

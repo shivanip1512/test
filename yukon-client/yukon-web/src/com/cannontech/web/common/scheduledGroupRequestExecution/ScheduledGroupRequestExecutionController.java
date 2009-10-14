@@ -48,8 +48,10 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.AttributeSelectorHelperService;
 
+@CheckRoleProperty(YukonRoleProperty.MANAGE_SCHEDULES)
 public class ScheduledGroupRequestExecutionController extends MultiActionController implements InitializingBean {
 
 	private CommandDao commandDao;

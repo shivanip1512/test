@@ -24,6 +24,9 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -31,13 +34,16 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
+import com.cannontech.web.security.annotation.CheckRole;
 
+@CheckRole(YukonRole.SCHEDULER)
 public class ScheduledGroupRequestExecutionResultsController extends MultiActionController {
 	
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	private DateFormattingService dateFormattingService;
 	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
+	private RolePropertyDao rolePropertyDao;
 	
 	// JOBS
 	public ModelAndView jobs(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -152,6 +158,9 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
         mav.addObject("lastCre", lastCre);
         
+        boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
+        mav.addObject("canManage", canManage);
+        
         return mav;
 		
 	}
@@ -177,5 +186,10 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	@Autowired
 	public void setScheduledGroupRequestExecutionJobWrapperFactory(ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
 		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 }

@@ -8,7 +8,8 @@ import com.cannontech.roles.OperatorRoleDefs;
 public interface SchedulerRole {
 	public static final int ROLEID = OperatorRoleDefs.SCHEDULER_ROLEID;	//-212
 	
-	public static final int ENABLE_DISABLE_SCHEDULE = OperatorRoleDefs.SCHEDULER_PROPERTYID_BASE - 0;	// -21200
+	public static final int ENABLE_DISABLE_SCRIPTS = OperatorRoleDefs.SCHEDULER_PROPERTYID_BASE - 0;	// -21200
+	public static final int MANAGE_SCHEDULES = OperatorRoleDefs.SCHEDULER_PROPERTYID_BASE - 1;	// -21201
 	
 	/* NOTE:  THESE PROPERTIES SHOULD BE SUPPORTED AT SOME TIME, BUT THE DATABASE STATEMENTS
 	 * HAVE NOT BEEN ADDED YET.  HERE THEY ARE FOR WHEN YOU ARE READY!

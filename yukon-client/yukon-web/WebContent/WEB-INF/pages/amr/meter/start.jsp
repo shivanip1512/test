@@ -30,8 +30,10 @@
 					<ct:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
-					<cti:msg var="scheduledGroupRequstExecutionWidgetPopupInfoText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.popupInfo"/>
-					<ct:widget bean="scheduledGroupRequstExecutionWidget" helpText="${scheduledGroupRequstExecutionWidgetPopupInfoText}"/>
+					<cti:checkRole role="SchedulerRole.ROLEID">
+						<cti:msg var="scheduledGroupRequstExecutionWidgetPopupInfoText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.popupInfo"/>
+						<ct:widget bean="scheduledGroupRequstExecutionWidget" helpText="${scheduledGroupRequstExecutionWidgetPopupInfoText}"/>
+					</cti:checkRole>
 					
 				</td>
 				

@@ -379,7 +379,8 @@ public enum YukonRoleProperty {
     
     ODDS_FOR_CONTROL_LABEL(ODDS_FOR_CONTROL, com.cannontech.roles.operator.OddsForControlRole.ODDS_FOR_CONTROL_LABEL, stringType()),
     
-    ENABLE_DISABLE_SCHEDULE(SCHEDULER, com.cannontech.roles.operator.SchedulerRole.ENABLE_DISABLE_SCHEDULE, stringType()),
+    ENABLE_DISABLE_SCRIPTS(SCHEDULER, com.cannontech.roles.operator.SchedulerRole.ENABLE_DISABLE_SCRIPTS, booleanType()),
+    MANAGE_SCHEDULES(SCHEDULER, com.cannontech.roles.operator.SchedulerRole.MANAGE_SCHEDULES, booleanType()),
     
     WORK_ORDER_SHOW_ALL(WORK_ORDER, com.cannontech.roles.operator.WorkOrderRole.WORK_ORDER_SHOW_ALL, booleanType()),
     WORK_ORDER_CREATE_NEW(WORK_ORDER, com.cannontech.roles.operator.WorkOrderRole.WORK_ORDER_CREATE_NEW, stringType()),
