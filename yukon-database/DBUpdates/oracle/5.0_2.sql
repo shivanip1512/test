@@ -59,6 +59,36 @@ INSERT INTO YukonRoleProperty VALUES (-90037,-900,'Load Group Reduction','true',
 INSERT INTO YukonRoleProperty VALUES (-90038,-900,'Load Group Load Capacity','true', 'Controls access to view Load Group Load Capacity'); 
 /* End YUK-7917 */
 
+/* Start YUK-7908 */
+CREATE TABLE PAOFavorites  (
+   UserId               NUMBER                          NOT NULL,
+   PAObjectId           NUMBER                          NOT NULL,
+   CONSTRAINT PK_PAOFavorites PRIMARY KEY (UserId, PAObjectId)
+);
+
+CREATE TABLE PAORecentViews  (
+   PAObjectId           NUMBER                          NOT NULL,
+   WhenViewed           DATE                            NOT NULL,
+   CONSTRAINT PK_PAORecentViews PRIMARY KEY (PAObjectId)
+);
+
+CREATE INDEX NDX_WhenViewed ON PAORecentViews (
+   WhenViewed ASC
+);
+
+ALTER TABLE PAOFavorites
+   ADD CONSTRAINT FK_PAOFav_YukonPAO FOREIGN KEY (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId);
+
+ALTER TABLE PAOFavorites
+   ADD CONSTRAINT FK_PAOFav_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserId);
+
+ALTER TABLE PAORecentViews
+   ADD CONSTRAINT FK_PAORecentViews_YukonPAO FOREIGN KEY (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId);
+/* End YUK-7908 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

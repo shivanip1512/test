@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/13/2009 5:40:52 PM                        */
+/* Created on:     10/14/2009 12:34:10 AM                       */
 /*==============================================================*/
 
 
@@ -831,6 +831,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index PAOExclusion.Indx_PAOExclus
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PAORecentViews')
+            and   name  = 'INDX_WhenViewed'
+            and   indid > 0
+            and   indid < 255)
+   drop index PAORecentViews.INDX_WhenViewed
 go
 
 if exists (select 1
@@ -2925,6 +2934,20 @@ if exists (select 1
            where  id = object_id('PAOExclusion')
             and   type = 'U')
    drop table PAOExclusion
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PAOFavorites')
+            and   type = 'U')
+   drop table PAOFavorites
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PAORecentViews')
+            and   type = 'U')
+   drop table PAORecentViews
 go
 
 if exists (select 1
@@ -9623,6 +9646,34 @@ ExcludedPaoID ASC
 go
 
 /*==============================================================*/
+/* Table: PAOFavorites                                          */
+/*==============================================================*/
+create table PAOFavorites (
+   UserId               numeric              not null,
+   PAObjectId           numeric              not null,
+   constraint PK_PAOFavorites primary key (UserId, PAObjectId)
+)
+go
+
+/*==============================================================*/
+/* Table: PAORecentViews                                        */
+/*==============================================================*/
+create table PAORecentViews (
+   PAObjectId           numeric              not null,
+   WhenViewed           datetime             not null,
+   constraint PK_PAORecentViews primary key (PAObjectId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_WhenViewed                                       */
+/*==============================================================*/
+create index INDX_WhenViewed on PAORecentViews (
+WhenViewed ASC
+)
+go
+
+/*==============================================================*/
 /* Table: PAOSchedule                                           */
 /*==============================================================*/
 create table PAOSchedule (
@@ -15350,6 +15401,21 @@ go
 
 alter table PAOExclusion
    add constraint FK_PAOEXCLU_REF_PAOEX_YUKONPAO foreign key (ExcludedPaoID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table PAOFavorites
+   add constraint FK_PAOFav_YukonPAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table PAOFavorites
+   add constraint FK_PAOFav_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+go
+
+alter table PAORecentViews
+   add constraint FK_PAORecentViews_YukonPAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
 go
 
