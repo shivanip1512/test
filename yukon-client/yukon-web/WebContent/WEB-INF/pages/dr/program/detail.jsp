@@ -36,6 +36,9 @@
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
+            
+                <%-- Program Info section --%>
+            
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.info"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
@@ -86,11 +89,24 @@
             </td>
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">
+            
+                <%-- 
+                    Program Actions section each action has a simpleDialogLink that
+                    pops open a dialog for the action.  The available actions are based
+                    on the dynamically updated SHOW_ACTION value
+                --%>
+            
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
+                        
+                        <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
+                    
                         <tags:dynamicChoose updaterString="DR_PROGRAM/${programId}/SHOW_ACTION" suffix="${programId}">
                             <tags:dynamicChooseOption optionId="unknown">
+                            
+                                <%-- Actions are disabled when Load Management doesn't know about the Program --%>
+                            
                                 <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
                                 <div class="subtleGray" title="${programUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
@@ -110,6 +126,9 @@
                                 </div>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="runningEnabled">
+                            
+                                <%-- Actions shown when the Program is manually active and enabled --%>
+                            
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
@@ -142,6 +161,9 @@
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="enabled">
+                            
+                                <%-- Actions shown when the Program is not manually active and enabled --%>
+                            
                                 <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
@@ -181,6 +203,9 @@
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="runningDisabled">
+                            
+                                <%-- Actions shown when the Program is manually active and disabled --%>
+                            
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
@@ -213,6 +238,9 @@
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="disabled">
+                            
+                                <%-- Actions shown when the Program is not manually active and disabled --%>
+                            
                                 <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
@@ -254,6 +282,9 @@
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>                    
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
+                    
+                        <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
+                    
                         <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
                         <div class="subtleGray" title="${noProgramControl}">
                             <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
@@ -279,10 +310,17 @@
     </table>
     <br>
 
+    <%-- Child Load Groups for the Program --%>
+
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
     <c:set var="baseUrl" value="/spring/dr/program/detail"/>
     <%@ include file="../loadGroup/loadGroupList.jspf" %>
     <br>
+
+    <%-- 
+        Parent Control Area for the Program - has a link to Control Area detail if
+        the user has permission to view the Control Area 
+    --%>
 
     <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
         <c:if test="${empty parentControlArea}">
@@ -305,6 +343,11 @@
         </c:if>
         <br>
     </cti:checkRolesAndProperties>
+
+    <%-- 
+        Parent Scenario(s) for the Program - has a link to Scenario detail if
+        the user has permission to view the Scenario 
+    --%>
 
     <cti:checkRolesAndProperties value="SHOW_SCENARIOS">
         <c:if test="${empty parentScenarios}">

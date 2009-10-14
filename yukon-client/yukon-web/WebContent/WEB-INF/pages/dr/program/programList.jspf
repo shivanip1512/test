@@ -31,6 +31,8 @@ function clearFilter() {
 }
 </script>
 
+<%-- Program filtering popup section --%>
+
 <cti:msg var="filterLabel" key="yukon.web.modules.dr.programList.filters"/>
 <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
@@ -133,6 +135,8 @@ function clearFilter() {
             onclick="javascript:clearFilter()"/>
     </form:form>
 </tags:simplePopup><br>
+
+<%-- Main Program list table section --%>
 
 <c:if test="${searchResult.hitCount == 0}">
     <cti:msg key="yukon.web.modules.dr.programList.noResults"/><br>

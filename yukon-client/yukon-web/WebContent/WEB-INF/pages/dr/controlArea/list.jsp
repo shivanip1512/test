@@ -42,6 +42,8 @@
     }
     </script>
 
+    <%-- Control Area filtering popup section --%>
+    
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.controlAreaList.filters"/>
     <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
@@ -114,6 +116,8 @@
     </form:form>
     </tags:simplePopup><br>
 
+    <%-- Main Control Area list table section --%>
+    
     <c:if test="${searchResult.hitCount == 0}">
         <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults"/><br>
         <a href="javascript:void(0)" onclick="$('filterPopup').show()"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a>
@@ -126,6 +130,9 @@
         <tags:abstractContainer type="box" title="${controlAreaTitle}">
             <table id="controlAreaList" class="compactResultsTable rowHighlighting">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    
+                    <%-- Table headers - columns are hidden/shown based on role props --%>
+                    
                     <th></th>
                     <th>
                         <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.name"
@@ -167,6 +174,9 @@
                     </cti:checkRolesAndProperties>
                 </tr>
                 <c:forEach var="controlArea" items="${controlAreas}">
+                    
+                    <%-- Table data section - columns are hidden/shown based on role props --%>
+                    
                     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
                     <c:url var="controlAreaUrl" value="/spring/dr/controlArea/detail">
                         <c:param name="controlAreaId" value="${controlAreaId}"/>

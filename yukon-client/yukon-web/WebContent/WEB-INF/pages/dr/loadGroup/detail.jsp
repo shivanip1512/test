@@ -36,6 +36,9 @@
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
+            
+                <%-- Load Group Info section --%>
+            
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.info"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
@@ -75,10 +78,23 @@
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.actions"/>
+                
+                <%-- 
+                    Load Group Actions section each action has a simpleDialogLink that
+                    pops open a dialog for the action.  The available actions are based
+                    on the dynamically updated SHOW_ACTION value
+                --%>
+                
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
+                        
+                        <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
+                    
                         <tags:dynamicChoose updaterString="DR_LOADGROUP/${loadGroupId}/SHOW_ACTION" suffix="${loadGroupId}">
                             <tags:dynamicChooseOption optionId="unknown">
+                            
+                                <%-- Actions are disabled when Load Management doesn't know about the Load group --%>
+                            
                                 <cti:msg var="loadGroupUnknown" key="yukon.web.modules.dr.loadGroupDetail.unknown"/>
                                 <div class="subtleGray" title="${loadGroupUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
@@ -94,6 +110,9 @@
                                 </div>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="enabled">
+                            
+                                <%-- Actions shown when the Load Group is enabled --%>
+                            
                                 <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 </cti:url>
@@ -126,6 +145,9 @@
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="disabled">
+                            
+                                <%-- Actions shown when the Load Group is disabled --%>
+                            
                                 <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                     <cti:param name="isEnabled" value="true"/>
@@ -140,6 +162,9 @@
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
+                    
+                        <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
+                    
                         <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
                         <div class="subtleGray" title="${noLoadGroupControl}">
                             <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
@@ -160,6 +185,8 @@
         </tr>
     </table>
     <br>
+
+    <%-- Parent Programs for the Load Group --%>
 
     <c:if test="${empty parentPrograms}">
         <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms"/></p>

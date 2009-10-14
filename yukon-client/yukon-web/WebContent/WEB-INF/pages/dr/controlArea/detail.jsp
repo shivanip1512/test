@@ -35,6 +35,9 @@
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
+                
+                <%-- Control Area Info section --%>
+            
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.info"/>
 	            <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
@@ -102,11 +105,24 @@
             </td>
             <td width="10">&nbsp;</td>
             <td width="50%" valign="top">
+            
+                <%-- 
+                    Control Area Actions section each action has a simpleDialogLink that
+                    pops open a dialog for the action.  The available actions are based
+                    on the dynamically updated SHOW_ACTION value
+                --%>
+            
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.actions"/>
             	<tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}">
+                        
+                        <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
+                    
                         <tags:dynamicChoose updaterString="DR_CONTROLAREA/${controlAreaId}/SHOW_ACTION" suffix="${controlAreaId}">
                             <tags:dynamicChooseOption optionId="enabled">
+                            
+                                <%-- Actions shown when the Control Area is enabled but not fully active --%>
+                            
                                 <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
@@ -128,6 +144,7 @@
                                 <br>
 
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -169,6 +186,7 @@
                                                        labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -190,6 +208,9 @@
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="fullyActiveEnabled">
+                                
+                                <%-- Actions shown when the Control Area is fully active and enabled --%>
+                            
                                 <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
@@ -201,6 +222,7 @@
                                 <br>
 
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -242,6 +264,7 @@
                                                        labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -263,6 +286,9 @@
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="disabled">
+                            
+                                <%-- Actions shown when the Control Area is disabled but not fully active --%>
+                            
                                 <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
@@ -283,6 +309,7 @@
                                 <br>
 
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -324,6 +351,7 @@
                                                        labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -345,6 +373,9 @@
                                 <br>
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="fullyActiveDisabled">
+                            
+                                <%-- Actions shown when the Control Area is fully active and disabled --%>
+                            
                                 <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
@@ -356,6 +387,7 @@
                                 <br>
     
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -397,6 +429,7 @@
                                                        labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
                                 <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
                                         <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
@@ -420,6 +453,9 @@
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}" invert="true">
+                    
+                        <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
+                    
                         <cti:msg var="noControlAreaControl" key="yukon.web.modules.dr.controlAreaDetail.noControl"/>
                         <div class="subtleGray" title="${noControlAreaControl}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
@@ -453,6 +489,8 @@
     </table>
     <br>
 
+    <%-- Child programs for the control area --%>
+    
     <c:set var="baseUrl" value="/spring/dr/controlArea/detail"/>
     <%@ include file="../program/programList.jspf" %>
 

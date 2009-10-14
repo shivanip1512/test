@@ -28,6 +28,8 @@
     }
 </script>
 
+<%-- Load Group filtering popup section --%>
+
 <cti:msg var="filterLabel" key="yukon.web.modules.dr.loadGroupList.filters"/>
 <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
@@ -104,6 +106,8 @@
             onclick="javascript:clearFilter()"/>
     </form:form>
 </tags:simplePopup>
+
+<%-- Main Load Group list table section --%>
 
 <c:if test="${searchResult.hitCount == 0}">
     <cti:msg key="yukon.web.modules.dr.loadGroupList.noResults"/><br>
