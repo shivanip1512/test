@@ -2347,10 +2347,27 @@ void CtiCCSubstationBusStore::doAMFMThr()
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        std::strcpy(var, "CAP_CONTROL_AMFM_DB_RWDBDLL");
+        std::strcpy(var, "CAP_CONTROL_AMFM_DB_TYPE");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            dbDll = str.c_str();
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            if(str == "oracle")
+            {
+                #ifdef _DEBUG
+                dbDll = "ora15d.dll";
+                #else
+                dbDll = "ora12d.dll";
+                #endif
+            }
+            else if(str == "mssql")
+            {
+                #ifdef _DEBUG
+                dbDll = "msq15d.dll";
+                #else
+                dbDll = "msq12d.dll";
+                #endif
+            }
+            
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
