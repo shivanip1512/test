@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/14/2009 1:03:54 PM                        */
+/* Created on:     10/14/2009 3:51:51 PM                        */
 /*==============================================================*/
 
 
@@ -6858,7 +6858,7 @@ create table PAOProperty  (
    PAObjectId           NUMBER                          not null,
    PropertyName         VARCHAR2(50)                    not null,
    PropertyValue        VARCHAR2(100)                   not null,
-   constraint PK_PAOProperty primary key (PAObjectId)
+   constraint PK_PAOProperty primary key (PAObjectId, PropertyName)
 );
 
 /*==============================================================*/

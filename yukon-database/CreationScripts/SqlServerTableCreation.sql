@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/14/2009 1:06:40 PM                        */
+/* Created on:     10/14/2009 3:45:16 PM                        */
 /*==============================================================*/
 
 
@@ -9716,7 +9716,7 @@ create table PAOProperty (
    PAObjectId           numeric              not null,
    PropertyName         varchar(50)          not null,
    PropertyValue        varchar(100)         not null,
-   constraint PK_PAOProperty primary key (PAObjectId)
+   constraint PK_PAOProperty primary key (PAObjectId, PropertyName)
 )
 go
 

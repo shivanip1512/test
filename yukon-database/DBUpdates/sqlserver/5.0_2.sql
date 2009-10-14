@@ -100,7 +100,7 @@ CREATE TABLE PAOProperty (
    PAObjectId           NUMERIC              NOT NULL,
    PropertyName         VARCHAR(50)          NOT NULL,
    PropertyValue        VARCHAR(100)         NOT NULL,
-   CONSTRAINT PK_PAOProperty PRIMARY KEY (PAObjectId)
+   CONSTRAINT PK_PAOProperty PRIMARY KEY (PAObjectId, PropertyName)
 );
 GO
 
