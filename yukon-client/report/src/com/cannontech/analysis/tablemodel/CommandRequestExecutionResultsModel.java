@@ -13,6 +13,7 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsF
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -24,6 +25,7 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private PaoLoadingService paoLoadingService;
+    private PaoDao paoDao;
     
     // inputs
     int commandRequestExecutionId;
@@ -50,19 +52,21 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     	List<CommandRequestExecutionResult> results = commandRequestExecutionResultDao.getResultsByExecutionId(this.commandRequestExecutionId, reportFilterType);
     	
     	// build PaoIdentifiers list
-    	List<PaoIdentifier> paoIdentifiers = new ArrayList<PaoIdentifier>(results.size());
+    	List<Integer> paoIds = new ArrayList<Integer>();
     	for (CommandRequestExecutionResult result : results) {
     	    
     	    Integer deviceId = result.getDeviceId();
     	    if (deviceId != null) {
-    	        paoIdentifiers.add(new PaoIdentifier(deviceId, null));
+    	    	paoIds.add(deviceId);
     	    }
     	    
     	    Integer routeId = result.getRouteId();
             if (routeId != null) {
-                paoIdentifiers.add(new PaoIdentifier(routeId, null));
+            	paoIds.add(routeId);
             }
     	}
+    	
+    	List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(paoIds);
     	
     	// load DisplayablePaos
     	List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(paoIdentifiers);
@@ -145,4 +149,9 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
         this.paoLoadingService = paoLoadingService;
     }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+		this.paoDao = paoDao;
+	}
 }
