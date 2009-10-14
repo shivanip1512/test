@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/14/2009 4:56:08 PM                        */
+/* Created on:     10/14/2009 5:09:26 PM                        */
 /*==============================================================*/
 
 
@@ -12433,7 +12433,8 @@ insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Add
 insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment'); 
 
 /* Scheduler Role Properties */
-INSERT INTO YukonRoleProperty VALUES (-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
+INSERT INTO YukonRoleProperty VALUES (-21200,-212,'Enable/Disable Scripts','true','Controls access to enable or disable a script.'); 
+INSERT INTO YukonRoleProperty VALUES (-21201,-212,'Manage Schedules','true','Controls access to create, delete, or update scheduled reads. If false, access is view only.');
 
 /* Device Actions Role Properties */
 INSERT INTO YukonRoleProperty VALUES (-21300,-213,'Bulk Import Operation','true','Controls access to bulk import operations'); 

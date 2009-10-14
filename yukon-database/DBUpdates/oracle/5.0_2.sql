@@ -156,6 +156,15 @@ WHERE BeanName = 'optOutSchedulerJob';
 INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optOut/optOutContext.xml', '(none)', '(none)', 'ServiceManager');
 /* Start YUK-7932 */
 
+/* Start YUK-7903 */
+UPDATE YukonRoleProperty
+SET KeyName = 'Enable/Disable Scripts',
+    Description = 'Controls access to enable or disable a script.'
+WHERE RolePropertyId = -21200;
+
+INSERT INTO YukonRoleProperty VALUES (-21201,-212,'Manage Schedules','true','Controls access to create, delete, or update scheduled reads. If false, access is view only.');
+/* End YUK-7903 */
+
 /* Start YUK-7902 */
 /* @start-block */
 DECLARE

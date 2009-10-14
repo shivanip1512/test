@@ -146,6 +146,13 @@ WHERE PAObjectId IN (SELECT PAObjectId
                      AND PTS.IPAddress = 'UDP');
 /* End YUK-7926 */
 
+/* Start YUK-7840 */
+UPDATE YukonPAObject
+SET Type = 'INTEGRATION'
+WHERE PAOClass = 'TRANSMITTER'
+AND Type = 'Integration';
+/* End YUK-7840 */
+
 /* Start YUK-7932 */
 DELETE FROM JobScheduledRepeating
 WHERE JobId IN (Select JobId
@@ -158,12 +165,14 @@ WHERE BeanName = 'optOutSchedulerJob';
 INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optOut/optOutContext.xml', '(none)', '(none)', 'ServiceManager');
 /* Start YUK-7932 */
 
-/* Start YUK-7840 */
-UPDATE YukonPAObject
-SET Type = 'INTEGRATION'
-WHERE PAOClass = 'TRANSMITTER'
-AND Type = 'Integration';
-/* End YUK-7840 */
+/* Start YUK-7903 */
+UPDATE YukonRoleProperty
+SET KeyName = 'Enable/Disable Scripts',
+    Description = 'Controls access to enable or disable a script.'
+WHERE RolePropertyId = -21200;
+
+INSERT INTO YukonRoleProperty VALUES (-21201,-212,'Manage Schedules','true','Controls access to create, delete, or update scheduled reads. If false, access is view only.');
+/* End YUK-7903 */
 
 /* Start YUK-7902 */
 IF 0 < (SELECT COUNT(*)
