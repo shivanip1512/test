@@ -2,16 +2,13 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -24,10 +21,6 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCollections;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -36,7 +29,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
@@ -123,9 +115,9 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
         
         List<SimpleDevice> devices = getDeviceList();
         List<PaoPointIdentifier> identifiers = Lists.newArrayList();
+        AttributeService attributeService = YukonSpringHook.getBean("attributeService", AttributeService.class);
         for(SimpleDevice device : devices) {
             try {
-                AttributeService attributeService = YukonSpringHook.getBean("attributeService", AttributeService.class);
                 PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(device, BuiltInAttribute.USAGE);
                 identifiers.add(identifier);
             } catch (IllegalArgumentException e) {
