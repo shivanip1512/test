@@ -45,6 +45,7 @@ static bool getToken (char** InBuffer, string &OutBuffer);
 static bool outputLogFile (vector<string> &aLog);
 static bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &aCmdVector);
 static bool decodeDsm2Lines( string &function, string &route,string &serialNum,string &cmd,RWCollectableString* programming);
+bool validateAndDecodeLine( string & line, int aProtocolFlag, RWCollectableString* programming, string aFileName);
 
 
 #endif

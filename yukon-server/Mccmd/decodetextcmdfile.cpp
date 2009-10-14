@@ -52,8 +52,6 @@ Function #  Comment in the file, will get moved to the exported file if needed
 // we seem to go back and forth as to whether 0 is valid so this lets me make the change easily
 #define XCOM_ADDRESS_START 0
 
-bool validateAndDecodeLine( string & line, int aProtocolFlag, RWCollectableString* programming, string aFileName);
-
 int decodeTextCommandFile(const string& fileName, 
                                 int aCommandsToPerform,
                                 int aProtocolFlag, 
@@ -1163,6 +1161,266 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                 {
                                     retCode = false;
                                 }
+                            }
+                            else
+                            {
+                                retCode = false;
+                            }
+                        }
+                        else
+                        {
+                            retCode = false;
+                        }
+                        break;
+                    }
+                    case 6:
+                    {
+                        /****************************
+                        * Format: 6,TARGET,spid #,geo #,sub #,feeder #,zip #,uda #,user #,program #,splinter #,serial #,ASSIGN, spid #,geo #,sub #,feeder #,zip #,uda #,user #,program #,splinter #, relay # 
+                        *
+                        * function is only valid for expresscom so it works with only
+                        * expresscom or no protocol specified flags
+                        *
+                        * This function is very similar to function 4. 
+                        * However function 6 can assign addressing to any other addressing level, not just serial. 
+                        * This function only allows for a single relay/program/splinter combination.
+                        * Addressing may be in any order, but TARGET must come before ASSIGN.
+                        * Relay may only be sent if either program or splinter are also sent.
+                        * Example: 6,TARGET,spid 2,geo 3,sub 4,ASSIGN,spid 3,geo 2,sub 5,program 3,relay 3 
+                        *****************************
+                        */
+                        string currentCmd;
+
+                        if ((aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL) ||
+                            (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM))
+                        {
+                            currentCmd = string("set MessagePriority 5 ; PutConfig xcom target");
+                            bool fail = false, foundTarget = false, foundAssign = false;
+                            USHORT feeder = 0; //Feeder is special
+                            CHAR buffer[20];
+                            int lastLoad=0;
+                            ULONG tmpAddress;
+
+                            memset (&buffer, '\0', 20);
+                            
+                            if (++tok_iter != cmdLine.end())
+                            {
+                                tempString1 = *tok_iter;
+                                bool continueFlag = true;
+                                while (continueFlag)
+                                {
+                                    tempString1 = trim(tempString1);
+
+                                    if (tempString1.find("target")!=string::npos)
+                                    {
+                                        foundTarget = true;
+                                    }
+                                    else if (tempString1.find("assign")!=string::npos)
+                                    {
+                                        if (feeder != 0)
+                                        {
+                                            currentCmd += " feeder " + CtiNumStr(feeder);
+                                        }
+                                        feeder = 0;
+                                        foundAssign = true;
+                                        currentCmd += " assign";
+                                    }
+                                    else if (tempString1.find("spid")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,5);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress <= XCOM_ADDRESS_START || tmpAddress > 65534)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " spid " + tempString1;
+                                        }
+                                    }
+                                    else if (tempString1.find("geo")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,4);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress <= XCOM_ADDRESS_START || tmpAddress > 65534)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " geo " + tempString1;
+                                        }
+
+                                    }
+                                    else if (tempString1.find("sub")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,4);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress <= XCOM_ADDRESS_START || tmpAddress > 65534)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " sub " + tempString1;
+                                        }
+
+                                    }
+                                    else if (tempString1.find("feeder")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,7);
+                                        tmpAddress = atoi (tempString1.c_str());
+                                        if ((tmpAddress < 1) || (tmpAddress > 16))
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            feeder |= (0x0001 << ((atoi (tempString1.c_str())-1)));
+                                        }
+
+                                    }
+                                    else if (tempString1.find("zip")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,4);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress <= XCOM_ADDRESS_START || tmpAddress > 16777214)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " zip " + tempString1;
+                                        }
+                                    }
+                                    else if (tempString1.find("user")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,5);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress <= XCOM_ADDRESS_START || tmpAddress > 65534)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " user " + tempString1;
+                                        }
+                                    }
+                                    else if (tempString1.find("uda")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,4);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress <= XCOM_ADDRESS_START || tmpAddress > 65534)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " uda " + tempString1;
+                                        }
+                                    }
+                                    else if (tempString1.find("program")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,8);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress < 1 || tmpAddress > 254)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " program " + tempString1;
+                                        }
+                                    }
+                                    else if (tempString1.find("splinter")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,9);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress < 1 || tmpAddress > 254)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " splinter " + tempString1;
+                                        }
+                                    }
+                                    else if (tempString1.find("relay")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,6);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (tmpAddress < 0 || tmpAddress > 15 || !foundAssign)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " relay " + tempString1;
+                                        }
+                                    }
+                                    else if (tempString1.find("serial")!=string::npos)
+                                    {
+                                        tempString1 = tempString1.erase (0,7);
+                                        tmpAddress = atoi(tempString1.c_str());
+                                        if (foundAssign)
+                                        {
+                                            fail = true;
+                                            continueFlag = false;
+                                        }
+                                        else
+                                        {
+                                            currentCmd += " serial " + tempString1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        fail = true;
+
+                                        CtiLockGuard< CtiLogger > guard(dout);
+                                        dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                        dout << " --- Unable to decode parameter: " << tempString1 << endl;
+                                    }
+
+                                    if (++tok_iter != cmdLine.end())
+                                    {
+                                        tempString1 = *tok_iter;
+                                    }
+                                    else
+                                    {
+                                        continueFlag = false;
+
+                                        if (feeder != 0)
+                                        {
+                                            currentCmd += " feeder " + CtiNumStr(feeder);
+                                        }
+                                        feeder = 0;
+                                    }
+                                }
+
+                                if (!fail && foundTarget && foundAssign)
+                                {
+                                    *programming = currentCmd.c_str();
+                                }
+                                else
+                                {
+                                    {
+                                        CtiLockGuard< CtiLogger > guard(dout);
+                                        dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName << endl;
+                                        dout << " --- " << input << endl;
+                                    }
+
+                                    retCode = false;
+                                }   
                             }
                             else
                             {

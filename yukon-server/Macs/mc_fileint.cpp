@@ -75,7 +75,7 @@ void CtiMCFileInterface::start()
 void CtiMCFileInterface::handleFile(const string& filename )
 {
     FILE* fptr;
-    char buf[MC_FILE_BUF_SIZE];
+    char buf[MC_FILE_BUF_SIZE] = {0};
     char* sep_ptr;
     int line = 0;
 

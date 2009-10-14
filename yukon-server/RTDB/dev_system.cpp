@@ -186,10 +186,12 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     case ProtocolExpresscomType:
                         {
                             int xcserial = parse.getiValue("serial");
+                            bool isGenericAddressing = parse.isKeyValid("xcgenericaddress");
 
                             parse.setValue("xc_serial", xcserial);
 
-                            if( INT_MIN == xcserial )
+
+                            if( INT_MIN == xcserial && !isGenericAddressing)
                             {
                                 string   problem;
 
