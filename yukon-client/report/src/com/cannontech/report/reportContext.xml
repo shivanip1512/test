@@ -88,6 +88,21 @@
         <property name="deviceDao" ref="deviceDao" />
     </bean>
     
+     <!-- Device Request Detail Model -->
+   <bean id="deviceRequestDetailModel" class="com.cannontech.analysis.tablemodel.DeviceRequestDetailModel" scope="prototype">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="deviceGroupService" ref="deviceGroupService" />
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="deviceDao" ref="deviceDao" />
+    </bean>
+    
+    <!-- Device Read Statistics Summary Model -->
+   <bean id="deviceReadStatisticsSummaryModel" class="com.cannontech.analysis.tablemodel.DeviceReadStatisticsSummaryModel" scope="prototype">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="attributeService" ref="attributeService" />
+        <property name="deviceGroupService" ref="deviceGroupService" />
+    </bean>
+    
    <!-- Cap Control Disabled Devices -->
    <bean id="capControlDisabledDevicesModel" class="com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel"
         scope="prototype">
