@@ -26,6 +26,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -518,14 +519,27 @@ public final class PaoDaoImpl implements PaoDao {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
+    @Override
+    public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds) {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ypo.PAObjectID, ypo.Type");
+    	sql.append("FROM YukonPAObject ypo");
+    	sql.append("WHERE ypo.PAObjectID IN (");
+    	sql.appendArgumentList(paoIds);
+    	sql.append(")");
+    	
+    	final ParameterizedRowMapper<PaoIdentifier> rowMapper = new ParameterizedRowMapper<PaoIdentifier>() {
+            public PaoIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
+            	int paoId = rs.getInt("PAObjectID");
+            	PaoType paoType = PaoType.getForDbString(rs.getString("Type"));
+            	PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+                return paoIdentifier;
+            }
+        };
+    	
+    	return yukonJdbcOperations.query(sql, rowMapper);
+    }
     
     
     @SuppressWarnings("unchecked")

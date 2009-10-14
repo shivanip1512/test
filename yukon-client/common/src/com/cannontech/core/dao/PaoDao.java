@@ -4,12 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.pao.YukonPAObject;
 
 public interface PaoDao {
 	
@@ -131,5 +130,7 @@ public interface PaoDao {
     public String getRouteNameForRouteId(int routeId);
     
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader();
+    
+    public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds);
     
 }
