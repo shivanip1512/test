@@ -274,10 +274,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     }
                 }
             } else {
-                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for DomainMember 'Substation'");
+                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for DomainMember 'substationCode'");
             }
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - getDomainMembers(" + mspVendor.getCompanyName() + ") for DomainMember 'Substation'");
+            CTILogger.error("TargetService: " + endpointURL + " - getDomainMembers(" + mspVendor.getCompanyName() + ") for DomainMember 'substationCode'");
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return substationNames;
