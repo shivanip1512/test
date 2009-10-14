@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/13/2009 11:22:51 PM                       */
+/* Created on:     10/14/2009 11:36:08 AM                       */
 /*==============================================================*/
 
 
@@ -792,6 +792,8 @@ drop table OutageMonitor cascade constraints;
 drop table PAOExclusion cascade constraints;
 
 drop table PAOFavorites cascade constraints;
+
+drop table PAOProperty cascade constraints;
 
 drop table PAORecentViews cascade constraints;
 
@@ -6817,6 +6819,16 @@ create table PAOFavorites  (
 );
 
 /*==============================================================*/
+/* Table: PAOProperty                                           */
+/*==============================================================*/
+create table PAOProperty  (
+   PAObjectId           NUMBER                          not null,
+   PropertyName         VARCHAR2(50)                    not null,
+   PropertyValue        VARCHAR2(100)                   not null,
+   constraint PK_PAOProperty primary key (PAObjectId)
+);
+
+/*==============================================================*/
 /* Table: PAORecentViews                                        */
 /*==============================================================*/
 create table PAORecentViews  (
@@ -11999,6 +12011,10 @@ alter table PAOFavorites
 alter table PAOFavorites
    add constraint FK_PAOFav_YukonUser foreign key (UserId)
       references YukonUser (UserID);
+
+alter table PAOProperty
+   add constraint FK_PAOProp_YukonPAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID);
 
 alter table PAORecentViews
    add constraint FK_PAORecentViews_YukonPAO foreign key (PAObjectId)

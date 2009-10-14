@@ -89,6 +89,19 @@ ALTER TABLE PAORecentViews
       REFERENCES YukonPAObject (PAObjectId);
 /* End YUK-7908 */
 
+/* Start YUK-7922 */
+CREATE TABLE PAOProperty  (
+   PAObjectId           NUMBER                          NOT NULL,
+   PropertyName         VARCHAR2(50)                    NOT NULL,
+   PropertyValue        VARCHAR2(100)                   NOT NULL,
+   CONSTRAINT PK_PAOProperty PRIMARY KEY (PAObjectId)
+);
+
+ALTER TABLE PAOProperty
+   ADD CONSTRAINT FK_PAOProp_YukonPAO FOREIGN KEY (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId);
+/* End YUK-7922 */
+      
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

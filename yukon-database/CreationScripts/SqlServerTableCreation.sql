@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/14/2009 12:34:10 AM                       */
+/* Created on:     10/14/2009 11:22:17 AM                       */
 /*==============================================================*/
 
 
@@ -2941,6 +2941,13 @@ if exists (select 1
            where  id = object_id('PAOFavorites')
             and   type = 'U')
    drop table PAOFavorites
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PAOProperty')
+            and   type = 'U')
+   drop table PAOProperty
 go
 
 if exists (select 1
@@ -9656,6 +9663,17 @@ create table PAOFavorites (
 go
 
 /*==============================================================*/
+/* Table: PAOProperty                                           */
+/*==============================================================*/
+create table PAOProperty (
+   PAObjectId           numeric              not null,
+   PropertyName         varchar(50)          not null,
+   PropertyValue        varchar(100)         not null,
+   constraint PK_PAOProperty primary key (PAObjectId)
+)
+go
+
+/*==============================================================*/
 /* Table: PAORecentViews                                        */
 /*==============================================================*/
 create table PAORecentViews (
@@ -15412,6 +15430,11 @@ go
 alter table PAOFavorites
    add constraint FK_PAOFav_YukonUser foreign key (UserId)
       references YukonUser (UserID)
+go
+
+alter table PAOProperty
+   add constraint FK_PAOProp_YukonPAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
 go
 
 alter table PAORecentViews
