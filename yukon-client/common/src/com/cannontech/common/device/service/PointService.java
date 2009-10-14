@@ -3,7 +3,7 @@ package com.cannontech.common.device.service;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -54,5 +54,8 @@ public interface PointService {
      */
     public abstract boolean pointExistsForDevice(YukonPao pao, PointIdentifier pointIdentifier);
     public abstract boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier);
+    
+    
+    public PreviousReadings fillInPreviousReadings(LitePoint lp);
 
 }

@@ -1,26 +1,22 @@
 package com.cannontech.web.widget;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.tou.dao.TouDao;
-import com.cannontech.amr.tou.model.TouAttributeMapping;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -34,7 +30,6 @@ public class TouWidget extends WidgetControllerBase {
     private AttributeService attributeService;
     private MeterDao meterDao;
     private MeterReadService meterReadService;
-    private TouDao touDao;
 
     /**
      * This method renders the default deviceGroupWidget
@@ -49,19 +44,26 @@ public class TouWidget extends WidgetControllerBase {
         
         ModelAndView mav = new ModelAndView("touWidget/render.jsp");
         Meter meter = getMeter(request);
-        
-        // Gets all the attributes that are needed to show time of use.
-        List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
-        Set<Attribute> touAttributes = getExistingAttributes(meter, touRatesList);
-        List<KeyValuePair> touRates = touAttributesToHash(touAttributes, touRatesList);
-
-        // Adds the group to the mav object
-        mav.addObject("meter", meter);
-        mav.addObject("rateTypes", touRates);
-        
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean readable = meterReadService.isReadable(meter, touAttributes, user);
+
+        // Finds the existing attributes for the supplied meter
+        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
+        Set<Attribute> existingTOUAttributes = getExistingTOUAttributes(allExistingAttributes);
+
+        boolean readable = meterReadService.isReadable(meter, existingTOUAttributes, user);
+
+        // Add objects to mav.
+        mav.addObject("meter", meter);
         mav.addObject("readable", readable);
+        
+        if (existingTOUAttributes.size() > 0) {
+            mav.addObject("touAttributesAvailable", true);
+            for (Attribute touAttribute : existingTOUAttributes) {
+                mav.addObject(touAttribute.getKey(), touAttribute);
+            }
+        } else {
+            mav.addObject("touAttributesAvailable", false);
+        }
         
         return mav;
     }
@@ -83,19 +85,46 @@ public class TouWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
-        Set<Attribute> existingAttributes = getExistingAttributes(meter, touRatesList);
+        // Finds the existing attributes for the supplied meter
+        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
+        Set<Attribute> existingTOUAttributes = getExistingTOUAttributes(allExistingAttributes);
 
-        CommandResultHolder result = meterReadService.readMeter(meter, existingAttributes, CommandRequestExecutionType.TOU_WIDGET_ATTRIBUTE_READ, user);
+        // Reads all the meters in the existing set
+        CommandResultHolder result = meterReadService.readMeter(meter, existingTOUAttributes, CommandRequestExecutionType.TOU_WIDGET_ATTRIBUTE_READ, user);
 
         mav.addObject("result", result);
         
-        boolean readable = meterReadService.isReadable(meter, existingAttributes, user);
+        boolean readable = meterReadService.isReadable(meter, existingTOUAttributes, user);
         mav.addObject("readable", readable);
+
+        if (existingTOUAttributes.size() > 0) {
+            mav.addObject("touAttributesAvailable", true);
+            for (Attribute touAttribute : existingTOUAttributes) {
+                mav.addObject(touAttribute.getKey(), touAttribute);
+            }
+        } else {
+            mav.addObject("touAttributesAvailable", false);
+        }
 
         return mav;
     }
     
+    /**
+     * This method takes in a list of allExistingAttributes for a meter 
+     * and returns only the TOU attributes.
+     * 
+     * @param allExistingAttributes
+     * @return
+     */
+    private Set<Attribute> getExistingTOUAttributes(Set<Attribute> allExistingAttributes) {
+        Set<Attribute> existingTOUAttributes = new HashSet<Attribute>();
+        for (Attribute attribute : allExistingAttributes) {
+            if(attribute.getKey().startsWith("TOU_RATE"))
+                existingTOUAttributes.add(attribute);
+        }
+        return existingTOUAttributes;
+    }
+
     /**
      * @param request
      * @return
@@ -107,129 +136,20 @@ public class TouWidget extends WidgetControllerBase {
         return meter;
     }
 
-    /**
-     * Returns a union of all the attributes int the touList and 
-     * the attributes that exist on the actual device
-     * 
-     * @param device
-     * @param touList
-     * @return
-     */
-    private Set<Attribute> getExistingAttributes(YukonDevice device,  List<TouAttributeMapping> touList){
-        List<Attribute> neededAttributes = new ArrayList<Attribute>();;
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
-
-        for (TouAttributeMapping touRate : touList) {
-            neededAttributes.addAll(touRate.getAllAttributes());
-        }
-        
-        allExistingAttributes.retainAll(neededAttributes);
-        
-        return allExistingAttributes;
-    }
-    
-    /**
-     * Checks against the existing attributes on the device and clears any attributes that does not
-     * exist on the device.
-     * 
-     * @param existingAttributes
-     * @param touList
-     * @return
-     */
-    public List<KeyValuePair> touAttributesToHash(
-            Set<Attribute> existingAttributes, List<TouAttributeMapping> touList) {
-
-        List<KeyValuePair> resultList = new ArrayList<KeyValuePair>();
-        
-        for (int i = 0; i < touList.size(); i++) {
-            TouAttributeMapping tou = touList.get(i);
-            if (existingAttributes.contains(tou.getUsage()) || existingAttributes.contains(tou.getPeak())) {
-                List<AttributeValuePair> attributeList = new ArrayList<AttributeValuePair>();
-                KeyValuePair keyValuePair = new KeyValuePair(tou.getDisplayName(), attributeList);
-                
-                resultList.add(keyValuePair);
-                
-                if (existingAttributes.contains(tou.getUsage())) {
-                    AttributeValuePair tempValuePair = new AttributeValuePair("Usage", tou.getUsage());
-                    attributeList.add(tempValuePair);
-                }
-                if (existingAttributes.contains(tou.getPeak())) {
-                    AttributeValuePair tempValuePair = new AttributeValuePair("Peak Demand", tou.getPeak());
-                    attributeList.add(tempValuePair);
-                }
-                
-            }
-        }
-        return resultList;
-    }
-    
-    @Required
+    @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
 
-    @Required
+    @Autowired
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
     }
 
-    @Required
+    @Autowired
     public void setMeterReadService(MeterReadService meterReadService) {
         this.meterReadService = meterReadService;
     }
 
-    @Required
-    public void setTouDao(TouDao touDao) {
-        this.touDao = touDao;
-    }
-
-    public class AttributeValuePair{
-        String label;
-        Attribute attribute;
-        
-        public AttributeValuePair(String label, Attribute attribute){
-            this.label = label;
-            this.attribute = attribute;
-        }
-        
-        public Attribute getAttribute() {
-            return attribute;
-        }
-        public void setAttribute(Attribute attribute) {
-            this.attribute = attribute;
-        }
-        public String getLabel() {
-            return label;
-        }
-        public void setLabel(String label) {
-            this.label = label;
-        }
-    }
-    
-    public class KeyValuePair{
-        String key;
-        List attributeValuePairList;
-        
-        public KeyValuePair(String key, List attributeValuePairList){
-            this.key = key;
-            this.attributeValuePairList = attributeValuePairList;
-        }
-        
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        public List getAttributeValuePairList() {
-            return attributeValuePairList;
-        }
-
-        public void setAttributeValuePairList(List attributeValuePairList) {
-            this.attributeValuePairList = attributeValuePairList;
-        }
-    }
 }
 

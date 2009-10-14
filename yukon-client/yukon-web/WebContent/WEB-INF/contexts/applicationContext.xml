@@ -184,10 +184,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
 	   	</property>
-        <property name="attributeService" ref="attributeService"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="meterReadService" ref="meterReadService"/>
-        <property name="touDao" ref="touDao"/>
     </bean>
     
     <bean id="configWidget"
@@ -346,10 +342,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
 	   	</property>
-        <property name="meterReadService" ref="meterReadService"/>
-        <property name="attributeService" ref="attributeService"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="rphDao" ref="rphDao"/>
         <property name="attributesToShow">
           <list>
             <value>USAGE</value>

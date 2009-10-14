@@ -2,6 +2,7 @@ package com.cannontech.web.amr.meter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,9 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
@@ -56,6 +59,7 @@ public class MeterController extends MultiActionController {
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
     private PointDao pointDao = null;
+    private PointService pointService = null;
     private DeviceFilterCollectionHelper filterCollectionHelper = null;
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
@@ -86,6 +90,11 @@ public class MeterController extends MultiActionController {
     public void setPointDao(PointDao pointDao) {
 		this.pointDao = pointDao;
 	}
+    
+    @Autowired
+    public void setPointService(PointService pointService) {
+        this.pointService = pointService;
+    }
     
     @Autowired
     public void setFilterCollectionHelper(DeviceFilterCollectionHelper filterCollectionHelper) {
@@ -309,4 +318,37 @@ public class MeterController extends MultiActionController {
         return mav;
     }
 
+    public ModelAndView touPopup(HttpServletRequest request,
+                                 HttpServletResponse response) throws ServletException {
+        ModelAndView mav = new ModelAndView("touPopup.jsp");
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+
+        // Find the existing TOU attributes
+        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
+        Set<Attribute> existingTOUAttributes = getExistingTOUAttributes(allExistingAttributes);
+
+        // Get the previous values for TOU points and set them to the mav.
+        if (existingTOUAttributes.size() > 0){
+            for (Attribute touAttribute : existingTOUAttributes) {
+                LitePoint touPoint = attributeService.getPointForAttribute(device, touAttribute);
+                PreviousReadings previousReadings = pointService.fillInPreviousReadings(touPoint);
+                previousReadings.setAttribute(touAttribute);
+                mav.addObject(touAttribute.getKey(), previousReadings);
+
+            }
+        }
+        
+        return mav;
+    }
+    
+    private Set<Attribute> getExistingTOUAttributes(Set<Attribute> allExistingAttributes) {
+        Set<Attribute> existingTOUAttributes = new HashSet<Attribute>();
+        for (Attribute attribute : allExistingAttributes) {
+            if(attribute.getKey().startsWith("TOU_RATE") && attribute.getKey().endsWith("USAGE"))
+                existingTOUAttributes.add(attribute);
+        }
+        return existingTOUAttributes;
+    }
+    
 }

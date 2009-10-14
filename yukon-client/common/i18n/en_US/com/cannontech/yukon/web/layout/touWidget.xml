@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="yukon.web.widget.touWidget.title">TOU Readings</entry>
+<entry key="yukon.web.widget.touWidget.rateA">A</entry>
+<entry key="yukon.web.widget.touWidget.rateB">B</entry>
+<entry key="yukon.web.widget.touWidget.rateC">C</entry>
+<entry key="yukon.web.widget.touWidget.rateD">D</entry>
+<entry key="yukon.web.widget.touWidget.popupLink">View Historical Readings</entry>
+<entry key="yukon.web.widget.touWidget.popup.total">Total Consumption</entry>
+<entry key="yukon.web.widget.touWidget.popup.currentReading">{0} Reading</entry>
+<entry key="yukon.web.widget.touWidget.popup.previousReadings">Previous {0} Readings</entry>
+
+</properties>

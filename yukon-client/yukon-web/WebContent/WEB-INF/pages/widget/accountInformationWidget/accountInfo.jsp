@@ -1,5 +1,6 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <c:choose>
@@ -33,22 +34,24 @@
     </tr>
 
     <tr>
-        <td width="30%" class="label">Name:</td>
-        <td>${mspCustomer.firstName} 
-            <c:if test="${not empty mspCustomer.MName}">${mspCustomer.MName}</c:if>
-            ${mspCustomer.lastName}
-        </td>
-    </tr>
-    <c:if test="${not empty mspCustomer.DBAName}">
-    <tr>
-        <td width="30%" class="label">DBA:</td>
-        <td>${mspCustomer.DBAName}</td>
-    </tr>
-    </c:if>
-    <tr valign="top">
-        <td class="label">Address:</td>
-        <td>
-            <tags:address address="${custAddress}" />
+    	<td>
+    		<ct:nameValueContainer altRowOn="true">
+	    		<ct:nameValue name="Name" nameColumnWidth="30%">
+					${mspCustomer.firstName} 
+            		<c:if test="${not empty mspCustomer.MName}">${mspCustomer.MName}</c:if>
+            		${mspCustomer.lastName}
+				</ct:nameValue>
+				<ct:nameValueGap gapHeight="6px" />
+			    <c:if test="${not empty mspCustomer.DBAName}">
+    	    		<ct:nameValue name="DBA" >
+					     ${mspCustomer.DBAName}
+			        </ct:nameValue>
+				    <ct:nameValueGap gapHeight="6px" />
+			    </c:if>
+   	    		<ct:nameValue name="Address" >
+				     <tags:address address="${custAddress}" />
+		        </ct:nameValue>
+    		</ct:nameValueContainer>
         </td>
     </tr>
     
@@ -64,38 +67,43 @@
         <th colspan="2" align="left">Service Location:</th>
     </tr>
 
-    <c:if test="${not empty mspServLoc.custID}">
     <tr>
-        <td width="30%" class="label">Customer Number:</td>
-        <td>${mspServLoc.custID}</td>
-    </tr>
-    </c:if>
-    
-    <c:if test="${not empty mspServLoc.accountNumber}">
-    <tr>
-        <td class="label">Account Number:</td>
-        <td>${mspServLoc.accountNumber}</td>
-    </tr>
-    </c:if>
-    
-    <c:if test="${not empty mspServLoc.siteID}">
-    <tr>
-        <td class="label">Site Number:</td>
-        <td>${mspServLoc.siteID}</td>
-    </tr>
-    </c:if>
-    
-    <c:if test="${not empty mspServLoc.gridLocation}">
-    <tr>
-        <td class="label">Map Location:</td>
-        <td>${mspServLoc.gridLocation}</td>
-    </tr>
-    </c:if>
-    
-    <tr valign="top">
-        <td class="label">Address:</td>
-        <td>
-            <tags:address address="${servLocAddress}" />
+    	<td>
+    		<ct:nameValueContainer altRowOn="true">
+			    <c:if test="${not empty mspServLoc.custID}">
+			    	<ct:nameValue name="Customer Number" nameColumnWidth="30%">
+			    		${mspServLoc.custID}
+			    	</ct:nameValue>
+			    	<ct:nameValueGap gapHeight="6px" />
+			    </c:if>
+			    
+			    <c:if test="${not empty mspServLoc.accountNumber}">
+			        <ct:nameValue name="Account Number">
+			    		${mspServLoc.accountNumber}
+			    	</ct:nameValue>
+			    	<ct:nameValueGap gapHeight="6px" />
+			    </c:if>
+			    
+			    <c:if test="${not empty mspServLoc.siteID}">
+  			        <ct:nameValue name="Site Number">
+			    		${mspServLoc.siteID}
+			    	</ct:nameValue>
+			    	<ct:nameValueGap gapHeight="6px" />
+			    </c:if>
+			    
+			    <c:if test="${not empty mspServLoc.gridLocation}">
+  			        <ct:nameValue name="Map Location">
+			    		${mspServLoc.gridLocation}
+			    	</ct:nameValue>
+			    	<ct:nameValueGap gapHeight="6px" />
+			    </c:if>
+
+		        <ct:nameValue name="Address">
+		    		<tags:address address="${servLocAddress}" />
+		    	</ct:nameValue>
+		    	<ct:nameValueGap gapHeight="6px" />
+			    
+	        </ct:nameValueContainer>
         </td>
     </tr>
     
