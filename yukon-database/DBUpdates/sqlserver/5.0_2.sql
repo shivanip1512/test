@@ -154,11 +154,6 @@ AND Type = 'Integration';
 /* End YUK-7840 */
 
 /* Start YUK-7932 */
-DELETE FROM JobScheduledRepeating
-WHERE JobId IN (Select JobId
-                FROM JOB
-                WHERE BeanName = 'optOutSchedulerJob');
-
 DELETE FROM JOB
 WHERE BeanName = 'optOutSchedulerJob';
 
