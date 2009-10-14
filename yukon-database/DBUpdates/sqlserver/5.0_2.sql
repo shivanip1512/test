@@ -64,34 +64,34 @@ CREATE TABLE PAOFavorites (
    UserId               NUMERIC              NOT NULL,
    PAObjectId           NUMERIC              NOT NULL,
    CONSTRAINT PK_PAOFavorites PRIMARY KEY (UserId, PAObjectId)
-)
+);
 GO
 
 CREATE TABLE PAORecentViews (
    PAObjectId           NUMERIC              NOT NULL,
    WhenViewed           DATETIME             NOT NULL,
-   CONSTRAINT PK_PAORecentViews PRIMARY KEY nonclustered (PAObjectId)
-)
+   CONSTRAINT PK_PAORecentViews PRIMARY KEY (PAObjectId)
+);
 GO
 
 CREATE INDEX INDX_WhenViewed ON PAORecentViews (
 	WhenViewed ASC
-)
+);
 GO
 
 ALTER TABLE PAOFavorites
    ADD CONSTRAINT FK_PAOFav_YukonPAO FOREIGN KEY (PAObjectId)
-      REFERENCES YukonPAObject (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId);
 GO
 
 ALTER TABLE PAOFavorites
    ADD CONSTRAINT FK_PAOFav_YukonUser FOREIGN KEY (UserId)
-      REFERENCES YukonUser (UserId)
+      REFERENCES YukonUser (UserId);
 GO
 
 ALTER TABLE PAORecentViews
    ADD CONSTRAINT FK_PAORecentViews_YukonPAO FOREIGN KEY (PAObjectId)
-      REFERENCES YukonPAObject (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId);
 GO
 /* End YUK-7908 */
 
