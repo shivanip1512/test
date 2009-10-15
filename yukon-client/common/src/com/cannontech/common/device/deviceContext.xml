@@ -129,8 +129,8 @@
         <property name="nextValueHelper" ref="nextValueHelper"/>
     </bean>
     
-    <bean id="disabledGroupProvider"
-        class="com.cannontech.common.device.groups.dao.impl.providers.DisabledGroupProvider">
+    <bean id="disabledMeterGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.DisabledMeterGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
         <property name="paoDao" ref="paoDao"/>
     </bean>
@@ -165,7 +165,7 @@
                 <entry key="METERS_SCANNING_VOLTAGE_PROFILE" value-ref="voltageProfileScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
-                <entry key="METERS_DISABLED" value-ref="disabledGroupProvider"/>
+                <entry key="METERS_DISABLED" value-ref="disabledMeterGroupProvider"/>
                 <entry key="METERS_DISCONNECT_COLLAR" value-ref="disconnectCollarGroupProvider"/>
                 <entry key="COMPOSED" value-ref="composedGroupProvider"/>
             </map>

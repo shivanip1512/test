@@ -10,7 +10,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
+public class DisabledMeterGroupProvider extends DeviceGroupProviderSqlBase {
     
     private PaoDao paoDao;
     private final static String disableFlag = "Y";
@@ -42,6 +42,7 @@ public class DisabledGroupProvider extends DeviceGroupProviderSqlBase {
         sql.append("SELECT ypo.PAObjectID ");
         sql.append("FROM YukonPAObject ypo ");
         sql.append("JOIN Device d ON ypo.PAObjectID = d.DEVICEID ");
+        sql.append("JOIN DeviceMeterGroup dmg ON d.deviceId = dmg.deviceId ");
         sql.append("WHERE ypo.DisableFlag = ").appendArgument(disableFlag).append(") ");
         return sql;
 	    
