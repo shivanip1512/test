@@ -92,6 +92,7 @@
                 <prop key="Channel 4 Last Interval Demand Resolution">channel4LastIntervalDemandResolution</prop>
 				
 				<prop key="Service Provider ID">serviceProviderId</prop>
+				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
 				<prop key="Configuration">configuration</prop>
 				
 <!--		   	<prop key="Load Profile Interval 2">loadProfileInterval2</prop> 
@@ -113,7 +114,6 @@
 				<prop key="Disconnect Cycling Mode">disconnectCyclingMode</prop>
 				<prop key="MCT-410d Rev E">mct410dRevE</prop>
 				<prop key="Daily Reporting">dailyReporting</prop>
-				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
 				<prop key="Options">options</prop>
 				<prop key="Outage Cycles">outageCycles</prop>
 				<prop key="Under VThreshold">underVThreshold</prop>
