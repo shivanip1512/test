@@ -2,6 +2,8 @@ package com.cannontech.common.pao;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.Validate;
+
 
 public final class PaoIdentifier implements YukonPao, Serializable {
 
@@ -11,6 +13,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     public PaoIdentifier(int paoId, PaoType paoType) {
         super();
         this.paoId = paoId;
+        Validate.notNull(paoType, "paoType must not be null");
         this.paoType = paoType;
     }
 
