@@ -328,7 +328,25 @@
       <option id="home">
         <link>/spring/dr/home</link>
       </option>
-      <dynamicOptions bean="drDetailsMenuOption"/>
+      <option id="details">
+        <link>/spring/dr/details</link>
+        <links>
+          <option id="scenarios">
+            <requireRoleProperty value="SHOW_SCENARIOS" />
+            <link>/spring/dr/scenario/list</link>
+          </option>
+          <option id="controlareas">
+            <requireRoleProperty value="SHOW_CONTROL_AREAS" />
+            <link>/spring/dr/controlArea/list</link>
+          </option>
+          <option id="programs">
+            <link>/spring/dr/program/list</link>
+          </option>
+          <option id="loadgroups">
+            <link>/spring/dr/loadGroup/list</link>
+          </option>
+        </links>
+      </option>
       <dynamicOptions bean="drOptOutMenuOption"/>
     </links>
     <search action="/spring/dr/search" method="get" fieldname="name"/>

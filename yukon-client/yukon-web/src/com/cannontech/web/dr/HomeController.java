@@ -57,6 +57,30 @@ public class HomeController {
 
         return "dr/home.jsp";
     }
+    
+    @RequestMapping("/details")
+    public String details(ModelMap model, YukonUserContext userContext) {
+        LiteYukonUser user = userContext.getYukonUser();
+        
+        boolean showControlAreas = 
+            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
+        boolean showScenarios = 
+            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_SCENARIOS, user);
+
+        // The Details link defaults to control area list, if control areas are hidden,
+        // goes to scenarios, if they are hidden goes to programs
+        
+        String link = "/spring/dr/controlArea/list";
+        if(!showControlAreas) {
+            if(showScenarios) {
+                link = "/spring/dr/scenario/list"; 
+            } else {
+                link = "/spring/dr/program/list";
+            }
+        }
+        
+        return "redirect:" + link;
+    }
 
     @RequestMapping("/addFavorite")
     public void addFavorite(int paoId, YukonUserContext userContext) {
