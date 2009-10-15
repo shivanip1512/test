@@ -1,14 +1,16 @@
-package com.cannontech.dr.model;
+package com.cannontech.common.pao;
 
 import java.util.Comparator;
 
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.util.NaturalOrderComparator;
 
 
 public class DisplayablePaoComparator implements Comparator<DisplayablePao> {
     private final static NaturalOrderComparator comparator =
         new NaturalOrderComparator();
+
+    public DisplayablePaoComparator() {
+    }
 
     @Override
     public int compare(DisplayablePao pao1, DisplayablePao pao2) {

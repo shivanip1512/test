@@ -12,7 +12,6 @@
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -79,7 +78,7 @@
                         </span>
                         <br>
                     </cti:checkPaoAuthorization>
-                    <dr:favoriteIcon paoId="${scenarioId}" includeText="true"/><br>
+                    <dr:favoriteIcon paoId="${scenarioId}" isFavorite="${isFavorite}" includeText="true"/><br>
     	        </tags:abstractContainer>
             </td>
         </tr>

@@ -20,7 +20,6 @@
         </cti:crumbLink>
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas"/></cti:crumbLink>
     </cti:breadCrumbs>
-    <dr:favoriteIconJS/>
 
     <c:set var="baseUrl" value="/spring/dr/controlArea/list"/>
     <cti:url var="submitUrl" value="${baseUrl}"/>
@@ -182,7 +181,7 @@
                         <c:param name="controlAreaId" value="${controlAreaId}"/>
                     </c:url>
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${controlAreaId}"/></td>
+                        <td><dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${favoritesByPaoId[controlAreaId]}"/></td>
                         <td>
                             <a href="${controlAreaUrl}"><spring:escapeBody htmlEscape="true">${controlArea.name}</spring:escapeBody></a>
                         </td>

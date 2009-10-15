@@ -12,7 +12,6 @@
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -48,7 +47,7 @@
                 </tr>
                 <c:forEach var="pao" items="${favorites}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"/></td>
+                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="true"/></td>
                         <td>
                             <cti:paoDetailUrl yukonPao="${pao}">
                                 <spring:escapeBody>${pao.name}</spring:escapeBody>
@@ -91,7 +90,7 @@
                 </tr>
                 <c:forEach var="pao" items="${recents}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"/></td>
+                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="false"/></td>
                         <td>
                             <cti:paoDetailUrl yukonPao="${pao}">
                                 <spring:escapeBody>${pao.name}</spring:escapeBody>

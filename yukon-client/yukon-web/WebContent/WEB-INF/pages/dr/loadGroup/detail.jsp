@@ -13,7 +13,6 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -179,7 +178,7 @@
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                         </div>
                     </cti:checkPaoAuthorization>
-                    <dr:favoriteIcon paoId="${loadGroupId}" includeText="true"/><br>
+                    <dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}" includeText="true"/><br>
                 </tags:abstractContainer>
             </td>
         </tr>

@@ -21,7 +21,6 @@ public enum DataType {
     DR_CA_TRIGGER,
     DR_PROGRAM,
     DR_LOADGROUP,
-    DR_FAVORITE,
     PHASE_DETECT
     ;
 }

@@ -9,7 +9,6 @@
     <cti:standardMenu menuSelection="details|loadGroups"/>
 
     <tags:simpleDialog id="drDialog"/>
-    <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">

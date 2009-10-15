@@ -2,6 +2,8 @@ package com.cannontech.web.dr;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.favorites.dao.FavoritesDao;
+import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -16,7 +20,6 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.user.YukonUserContext;
@@ -24,7 +27,8 @@ import com.google.common.collect.Lists;
 
 @Controller
 public class HomeController {
-    private DemandResponseFavoritesDao favoritesDao;
+    private FavoritesDao favoritesDao;
+    private FavoritesService favoritesService;
     private RolePropertyDao rolePropertyDao;
     private PaoAuthorizationService paoAuthorizationService;
 
@@ -49,15 +53,15 @@ public class HomeController {
 
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
 
-        List<DisplayablePao> favorites = favoritesDao.getFavorites(user, filter);
+        List<DisplayablePao> favorites = favoritesService.getFavorites(user, filter);
         model.addAttribute("favorites", favorites);
 
-        List<DisplayablePao> recentlyViewed = favoritesDao.getRecentlyViewed(user, 20, filter);
+        List<DisplayablePao> recentlyViewed = favoritesService.getRecentlyViewed(user, 20, filter);
         model.addAttribute("recents", recentlyViewed);
 
         return "dr/home.jsp";
     }
-    
+
     @RequestMapping("/details")
     public String details(ModelMap model, YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
@@ -83,18 +87,29 @@ public class HomeController {
     }
 
     @RequestMapping("/addFavorite")
-    public void addFavorite(int paoId, YukonUserContext userContext) {
+    public String addFavorite(HttpServletRequest request, int paoId,
+            YukonUserContext userContext) {
         favoritesDao.addFavorite(paoId, userContext.getYukonUser());
+        String referer = request.getHeader("Referer");
+        return "redirect:"+ referer;
     }
 
     @RequestMapping("/removeFavorite")
-    public void removeFavorite(int paoId, YukonUserContext userContext) {
+    public String removeFavorite(HttpServletRequest request, int paoId,
+            YukonUserContext userContext) {
         favoritesDao.removeFavorite(paoId, userContext.getYukonUser());
+        String referer = request.getHeader("Referer");
+        return "redirect:"+ referer;
     }
 
     @Autowired
-    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+    public void setFavoritesDao(FavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
+    }
+
+    @Autowired
+    public void setFavoritesService(FavoritesService favoritesService) {
+        this.favoritesService = favoritesService;
     }
 
     @Autowired

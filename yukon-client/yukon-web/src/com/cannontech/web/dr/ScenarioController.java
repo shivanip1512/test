@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +19,15 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
-import com.cannontech.dr.model.DisplayablePaoComparator;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
@@ -39,7 +40,7 @@ public class ScenarioController {
     private ScenarioService scenarioService;
     private PaoAuthorizationService paoAuthorizationService;
     private ProgramControllerHelper programControllerHelper;
-    private DemandResponseFavoritesDao favoritesDao;
+    private FavoritesDao favoritesDao;
 
     @RequestMapping("/scenario/list")
     public String list(ModelMap modelMap, 
@@ -72,6 +73,10 @@ public class ScenarioController {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("scenarios", searchResult.getResultList());
+        Map<Integer, Boolean> favoritesByPaoId =
+            favoritesDao.favoritesByPao(searchResult.getResultList(),
+                                        userContext.getYukonUser());
+        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
 
         return "dr/scenario/list.jsp";
     }
@@ -91,6 +96,9 @@ public class ScenarioController {
 
         favoritesDao.detailPageViewed(scenarioId);
         modelMap.addAttribute("scenario", scenario);
+        boolean isFavorite =
+            favoritesDao.isFavorite(scenarioId, userContext.getYukonUser());
+        modelMap.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
@@ -121,7 +129,7 @@ public class ScenarioController {
     }
 
     @Autowired
-    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+    public void setFavoritesDao(FavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
     }
 }

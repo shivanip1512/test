@@ -3,7 +3,7 @@ package com.cannontech.dr.loadgroup.model;
 import java.util.Comparator;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.dr.model.DisplayablePaoComparator;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 

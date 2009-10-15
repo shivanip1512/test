@@ -584,9 +584,6 @@
                 <entry key="DR_LOADGROUP">
                     <ref local="drLoadGroupBackingService"/>
                 </entry>
-                <entry key="DR_FAVORITE">
-                    <ref local="drFavoriteBackingService"/>
-                </entry>
                 <entry key="PHASE_DETECT">
                     <ref local="phaseDetectBackingService"/>
                 </entry>                
@@ -719,7 +716,6 @@
     <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
     <bean id="drLoadGroupBackingService" class="com.cannontech.web.updater.dr.LoadGroupBackingService"/>
-    <bean id="drFavoriteBackingService" class="com.cannontech.web.updater.dr.FavoriteBackingService"/>
 
     
     <!-- phase detect -->    
@@ -1116,9 +1112,6 @@
         <property name="optOutStatusService" ref="optOutStatusService" />
     </bean>
     <bean id="drOptOutMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseOptOutMenuOptionProducer"/>
-    <bean id="drDetailsMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseDetailsMenuOptionProducer">
-        <property name="rolePropertyDao" ref="rolePropertyDao" />
-    </bean>
 
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>
     <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"/>

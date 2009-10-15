@@ -198,4 +198,6 @@
   
   <bean id="tamperFlagMonitorDao" class="com.cannontech.amr.tamperFlagProcessing.dao.impl.TamperFlagMonitorDaoImpl"/>
   
+  <bean id="favoritesDao" class="com.cannontech.common.favorites.dao.impl.FavoritesDaoImpl"/>
+  <bean id="favoritesService" class="com.cannontech.common.favorites.service.impl.FavoritesServiceImpl"/>
 </beans>

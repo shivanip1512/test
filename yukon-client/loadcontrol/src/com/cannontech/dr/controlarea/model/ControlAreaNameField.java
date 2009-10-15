@@ -3,7 +3,7 @@ package com.cannontech.dr.controlarea.model;
 import java.util.Comparator;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.dr.model.DisplayablePaoComparator;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
@@ -23,5 +23,4 @@ public class ControlAreaNameField extends ControlAreaBackingFieldBase {
     public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new DisplayablePaoComparator();
     }
-
 }

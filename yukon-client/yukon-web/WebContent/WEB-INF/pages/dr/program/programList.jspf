@@ -207,7 +207,7 @@ function clearFilter() {
                 <c:param name="programId" value="${programId}"/>
             </c:url>
             <tr id="programRow${programId}" class="<tags:alternateRow odd="" even="altRow"/>">
-                <td><dr:favoriteIcon paoId="${programId}"/></td>
+                <td><dr:favoriteIcon paoId="${programId}" isFavorite="${favoritesByPaoId[programId]}"/></td>
                 <td>
                     <%-- TODO:  in phase 3, update cti:classUpdater to be able to
                      update the class of the row instead --%>

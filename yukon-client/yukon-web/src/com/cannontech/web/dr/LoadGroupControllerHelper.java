@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -67,6 +69,7 @@ public class LoadGroupControllerHelper {
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private LoadGroupFieldService loadGroupFieldService;
     private LoadGroupNameField loadGroupNameField;
+    private FavoritesDao favoritesDao;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         // Since Range uses generics, spring can't determine the type of the
@@ -143,6 +146,10 @@ public class LoadGroupControllerHelper {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("loadGroups", searchResult.getResultList());
+        Map<Integer, Boolean> favoritesByPaoId =
+            favoritesDao.favoritesByPao(searchResult.getResultList(),
+                                        userContext.getYukonUser());
+        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
     }
 
     @Autowired
@@ -170,5 +177,10 @@ public class LoadGroupControllerHelper {
     @Autowired
     public void setLoadGroupNameField(LoadGroupNameField loadGroupNameField) {
         this.loadGroupNameField = loadGroupNameField;
+    }
+
+    @Autowired
+    public void setFavoritesDao(FavoritesDao favoritesDao) {
+        this.favoritesDao = favoritesDao;
     }
 }

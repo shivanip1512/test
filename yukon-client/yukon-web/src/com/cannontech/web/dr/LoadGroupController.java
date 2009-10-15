@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
@@ -31,7 +31,7 @@ public class LoadGroupController {
     private ProgramService programService;
     private LoadGroupControllerHelper loadGroupControllerHelper;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private DemandResponseFavoritesDao favoritesDao;
+    private FavoritesDao favoritesDao;
 
     private final static Map<Integer, String> shedTimeOptions;
     static {
@@ -75,6 +75,9 @@ public class LoadGroupController {
 
         favoritesDao.detailPageViewed(loadGroupId);
         modelMap.addAttribute("loadGroup", loadGroup);
+        boolean isFavorite =
+            favoritesDao.isFavorite(loadGroupId, userContext.getYukonUser());
+        modelMap.addAttribute("isFavorite", isFavorite);
         modelMap.addAttribute("parentPrograms",
                               programService.findProgramsForLoadGroup(loadGroupId, userContext));
 
@@ -167,24 +170,23 @@ public class LoadGroupController {
     @RequestMapping("/loadGroup/setEnabled")
     public String setEnabled(ModelMap modelMap, int loadGroupId, boolean isEnabled,
             YukonUserContext userContext) {
-        
+
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
-        
+
         loadGroupService.setEnabled(loadGroupId, isEnabled);
-        
-        if(isEnabled) {
+
+        if (isEnabled) {
             demandResponseEventLogService.threeTierLoadGroupEnabled(yukonUser, loadGroup.getName());
         } else {
             demandResponseEventLogService.threeTierLoadGroupDisabled(yukonUser, loadGroup.getName());
         }
-        
+
         modelMap.addAttribute("popupId", "drDialog");
-        
         return "common/closePopup.jsp";
     }
     
@@ -221,7 +223,7 @@ public class LoadGroupController {
     }
 
     @Autowired
-    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+    public void setFavoritesDao(FavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
     }
 }

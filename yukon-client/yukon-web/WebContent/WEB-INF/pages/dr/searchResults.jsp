@@ -16,8 +16,6 @@
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.searchResults.breadcrumb.home"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <dr:favoriteIconJS/>
-
     <c:if test="${searchResult.hitCount == 0}">
         <cti:msg key="yukon.web.modules.dr.searchResults.noResults"/>
     </c:if>
@@ -38,7 +36,7 @@
                 </tr>
                 <c:forEach var="pao" items="${searchResult.resultList}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"/></td>
+                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}"/></td>
                         <td>
                             <cti:paoDetailUrl yukonPao="${pao}">
                                 <spring:escapeBody>${pao.name}</spring:escapeBody>

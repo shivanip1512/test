@@ -13,7 +13,6 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <dr:favoriteIconJS/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -97,7 +96,7 @@
                         <c:param name="scenarioId" value="${scenarioId}"/>
                     </c:url>
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${scenarioId}"/></td>
+                        <td><dr:favoriteIcon paoId="${scenarioId}" isFavorite="${favoritesByPaoId[scenarioId]}"/></td>
                         <td>
                             <a href="${scenarioUrl}"><spring:escapeBody htmlEscape="true">${scenario.name}</spring:escapeBody></a>
                         </td>

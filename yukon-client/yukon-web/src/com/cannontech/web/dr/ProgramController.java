@@ -26,6 +26,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -34,7 +35,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
-import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -61,7 +61,7 @@ public class ProgramController {
     private LoadGroupControllerHelper loadGroupControllerHelper;
     private RolePropertyDao rolePropertyDao;
     private DemandResponseEventLogService demandResponseEventLogService;
-    private DemandResponseFavoritesDao favoritesDao;
+    private FavoritesDao favoritesDao;
     private DemandResponseService drService;
 
     public static class GearAdjustmentTimeSlot {
@@ -403,6 +403,9 @@ public class ProgramController {
 
         favoritesDao.detailPageViewed(programId);
         modelMap.addAttribute("program", program);
+        boolean isFavorite =
+            favoritesDao.isFavorite(programId, userContext.getYukonUser());
+        modelMap.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
         loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
@@ -1173,7 +1176,7 @@ public class ProgramController {
     }
 
     @Autowired
-    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+    public void setFavoritesDao(FavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
     }
 

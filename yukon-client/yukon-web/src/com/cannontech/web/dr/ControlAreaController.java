@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -37,7 +39,6 @@ import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaNameField;
 import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
-import com.cannontech.dr.dao.DemandResponseFavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -93,7 +94,7 @@ public class ControlAreaController {
     private DurationFormattingService durationFormattingService;
     private DemandResponseEventLogService demandResponseEventLogService;
     private ControlAreaFieldService controlAreaFieldService;
-    private DemandResponseFavoritesDao favoritesDao;
+    private FavoritesDao favoritesDao;
     private ControlAreaNameField controlAreaNameField;
 
     @RequestMapping("/controlArea/list")
@@ -150,6 +151,10 @@ public class ControlAreaController {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("controlAreas", searchResult.getResultList());
+        Map<Integer, Boolean> favoritesByPaoId =
+            favoritesDao.favoritesByPao(searchResult.getResultList(),
+                                        userContext.getYukonUser());
+        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
 
         return "dr/controlArea/list.jsp";
     }
@@ -167,6 +172,9 @@ public class ControlAreaController {
 
         favoritesDao.detailPageViewed(controlAreaId);
         modelMap.addAttribute("controlArea", controlArea);
+        boolean isFavorite =
+            favoritesDao.isFavorite(controlAreaId, userContext.getYukonUser());
+        modelMap.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
@@ -462,7 +470,7 @@ public class ControlAreaController {
     }
 
     @Autowired
-    public void setFavoritesDao(DemandResponseFavoritesDao favoritesDao) {
+    public void setFavoritesDao(FavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
     }
     

@@ -166,7 +166,7 @@
                 <c:param name="loadGroupId" value="${loadGroupId}"/>
             </c:url>
             <tr id="loadGroupRow${loadGroupId}" class="<tags:alternateRow odd="" even="altRow"/>">
-                <td><dr:favoriteIcon paoId="${loadGroupId}"/></td>
+                <td><dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${favoritesByPaoId[loadGroupId]}"/></td>
                 <td>
                     <%-- TODO:  in phase 3, update cti:classUpdater to be able to
                      update the class of the row instead --%>

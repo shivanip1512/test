@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -91,6 +93,7 @@ public class ProgramControllerHelper {
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private ProgramFieldService programFieldService;
     private ProgramNameField programNameField;
+    private FavoritesDao favoritesDao;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         PropertyEditor fullDateTimeEditor =
@@ -181,6 +184,10 @@ public class ProgramControllerHelper {
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("programs", searchResult.getResultList());
+        Map<Integer, Boolean> favoritesByPaoId =
+            favoritesDao.favoritesByPao(searchResult.getResultList(),
+                                        userContext.getYukonUser());
+        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
     }
 
     @Autowired
@@ -206,5 +213,10 @@ public class ProgramControllerHelper {
     @Autowired
     public void setProgramNameField(ProgramNameField programNameField) {
         this.programNameField = programNameField;
+    }
+
+    @Autowired
+    public void setFavoritesDao(FavoritesDao favoritesDao) {
+        this.favoritesDao = favoritesDao;
     }
 }
