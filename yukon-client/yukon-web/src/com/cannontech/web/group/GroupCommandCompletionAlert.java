@@ -16,15 +16,32 @@ public class GroupCommandCompletionAlert extends SimpleAlert {
     
     private static ResolvableTemplate makeMessage(Date date, GroupCommandResult result) {
         
-        ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
-        int successCount = result.getResultHolder().getResultStrings().size();
-        resolvableTemplate.addData("successCount", successCount);
-        int failureCount = result.getResultHolder().getErrors().size();
-        resolvableTemplate.addData("failureCount", failureCount);
-        int total = failureCount + successCount;
-        resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
+    	ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion");
+    	if (result.isAborted()) {
+        	resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion.failed");
+        	if (result.isCanceled()) {
+        		resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion.canceled");
+        	}
+    	}
+        	
+    	int successCount = result.getResultHolder().getResultStrings().size();
+    	int failureCount = result.getResultHolder().getErrors().size();
+    	int completedCount = failureCount + successCount;
+    	
+        resolvableTemplate.addData("completedCount", completedCount);
+        resolvableTemplate.addData("percentSuccess", (float)successCount *100 / completedCount);
         resolvableTemplate.addData("command", result.getCommand());
         resolvableTemplate.addData("resultKey", result.getKey());
+        
+        if (result.isAborted()) {
+        	
+        	int deviceCount = (int)result.getDeviceCollection().getDeviceCount();
+        	int notCompletedCount = deviceCount - completedCount;
+        	String exceptionReason = result.getExceptionReason();
+        	
+        	resolvableTemplate.addData("notCompletedCount", notCompletedCount);
+        	resolvableTemplate.addData("exceptionReason", exceptionReason);
+        }
         
         return resolvableTemplate;
     }

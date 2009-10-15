@@ -106,6 +106,10 @@ div.groupEditorPopup {
   width: 765px;
 }
 
+#alertView table tbody tr {
+  vertical-align:top;
+}
+
 #alertView table tbody tr td {
   border-bottom: 1px solid #ccc;
 }

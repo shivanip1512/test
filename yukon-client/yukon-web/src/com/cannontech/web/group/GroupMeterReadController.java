@@ -154,13 +154,29 @@ public class GroupMeterReadController extends MultiActionController {
             	GroupMeterReadResultWrapper resultWrapper = new GroupMeterReadResultWrapper(result);
             	
             	// alert
-                ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.groupMeterReadCompletion");
+            	ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.groupMeterReadCompletion");
+            	if (result.isExceptionOccured()) {
+                	resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion.failed");
+            	}
+                	
+            	int successCount = result.getResultHolder().getResultStrings().size();
+            	int failureCount = result.getResultHolder().getErrors().size();
+            	int completedCount = failureCount + successCount;
+                
+                resolvableTemplate.addData("completedCount", completedCount);
+                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / completedCount);
                 resolvableTemplate.addData("attributesDescription", resultWrapper.getAttributesDescription());
-                int successCount = result.getResultHolder().getResultStrings().size();
-                int failureCount = result.getResultHolder().getErrors().size();
-                int total = failureCount + successCount;
-                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
                 resolvableTemplate.addData("resultKey", result.getKey());
+                
+                if (result.isExceptionOccured()) {
+                	
+                	int deviceCount = (int)result.getDeviceCollection().getDeviceCount();
+                	int notCompletedCount = deviceCount - completedCount;
+                	String exceptionReason = result.getExceptionReason();
+                	
+                	resolvableTemplate.addData("notCompletedCount", notCompletedCount);
+                	resolvableTemplate.addData("exceptionReason", exceptionReason);
+                }
                 
                 Alert groupMeterReadCompletionAlert = new BaseAlert(new Date(), resolvableTemplate) {
                     @Override
