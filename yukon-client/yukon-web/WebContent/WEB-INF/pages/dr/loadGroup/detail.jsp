@@ -32,6 +32,7 @@
     <br>
 
     <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
+    <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
@@ -184,6 +185,18 @@
         </tr>
     </table>
     <br>
+    </c:if>
+
+    <c:if test="${loadGroup.paoIdentifier.paoType == 'MACRO_GROUP'}">
+        <%-- Child Load Groups for the Macro Load Group --%>
+
+        <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.note.macroLoadGroup"/></p><br>
+
+        <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.loadGroups"/>
+        <c:set var="baseUrl" value="/spring/dr/loadGroup/detail"/>
+        <%@ include file="../loadGroup/loadGroupList.jspf" %>
+        <br>
+    </c:if>
 
     <%-- Parent Programs for the Load Group --%>
 
@@ -203,6 +216,28 @@
                 <cti:msg var="noParentPermission" key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission"/>
                 <span title="${noParentPermission}">
                     <spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody>
+                </span>
+            </cti:checkPaoAuthorization>
+        </c:forEach>
+    </c:if>
+    <br>
+
+    <c:if test="${empty parentLoadGroups}">
+        <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noLoadGroups"/></p>
+    </c:if>
+    <c:if test="${!empty parentLoadGroups}">
+        <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.loadGroups"/></p>
+        <c:forEach var="parentLoadGroup" items="${parentLoadGroups}">
+            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentLoadGroup}">
+                <c:url var="loadGroupURL" value="/spring/dr/loadGroup/detail">
+                    <c:param name="loadGroupId" value="${parentLoadGroup.paoIdentifier.paoId}"/>
+                </c:url>
+                <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${parentLoadGroup.name}</spring:escapeBody></a><br>
+            </cti:checkPaoAuthorization>
+            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentLoadGroup}" invert="true">
+                <cti:msg var="noParentPermission" key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission"/>
+                <span title="${noParentPermission}">
+                    <spring:escapeBody htmlEscape="true">${parentLoadGroup.name}</spring:escapeBody>
                 </span>
             </cti:checkPaoAuthorization>
         </c:forEach>

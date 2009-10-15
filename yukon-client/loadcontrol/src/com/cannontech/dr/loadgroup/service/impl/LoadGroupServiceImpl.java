@@ -3,6 +3,7 @@ package com.cannontech.dr.loadgroup.service.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,6 +23,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
+import com.cannontech.dr.loadgroup.filter.MacroLoadGroupForLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -53,14 +55,25 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }
 
     @Override
+    public List<DisplayablePao> findLoadGroupsForMacroLoadGroup(
+            int loadGroupId, YukonUserContext userContext) {
+        UiFilter<DisplayablePao> filter = new MacroLoadGroupForLoadGroupFilter(loadGroupId);
+
+        SearchResult<DisplayablePao> searchResult =
+            filterGroups(filter, null, 0, Integer.MAX_VALUE, userContext);
+
+        return searchResult.getResultList();
+    }
+
+    @Override
     public DisplayablePao getLoadGroup(int loadGroupId) {
         return loadGroupDao.getLoadGroup(loadGroupId);
     }
     
     @Override
     public SearchResult<DisplayablePao> filterGroups(
-            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
-            Comparator<DisplayablePao> sorter, int startIndex, int count) {
+            UiFilter<DisplayablePao> filter, Comparator<DisplayablePao> sorter,
+            int startIndex, int count, YukonUserContext userContext) {
 
         SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);

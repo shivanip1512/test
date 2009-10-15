@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
+import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
@@ -66,7 +68,8 @@ public class LoadGroupController {
 
     @RequestMapping("/loadGroup/detail")
     public String detail(int loadGroupId, ModelMap modelMap,
-            YukonUserContext userContext) {
+            @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
+            BindingResult result, SessionStatus status, YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
@@ -80,6 +83,13 @@ public class LoadGroupController {
         modelMap.addAttribute("isFavorite", isFavorite);
         modelMap.addAttribute("parentPrograms",
                               programService.findProgramsForLoadGroup(loadGroupId, userContext));
+        modelMap.addAttribute("parentLoadGroups",
+                              loadGroupService.findLoadGroupsForMacroLoadGroup(loadGroupId, userContext));
+
+        UiFilter<DisplayablePao> detailFilter =
+            new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
+        loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
+                                               result, status, detailFilter);
 
         return "dr/loadGroup/detail.jsp";
     }

@@ -142,7 +142,8 @@ public class LoadGroupControllerHelper {
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         SearchResult<DisplayablePao> searchResult =
-            loadGroupService.filterGroups(userContext, filter, sorter, startIndex, backingBean.getItemsPerPage());
+            loadGroupService.filterGroups(filter, sorter, startIndex,
+                                          backingBean.getItemsPerPage(), userContext);
 
         modelMap.addAttribute("searchResult", searchResult);
         modelMap.addAttribute("loadGroups", searchResult.getResultList());

@@ -1,6 +1,7 @@
 package com.cannontech.dr.loadgroup.service;
 
 import java.util.Comparator;
+import java.util.List;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
@@ -18,9 +19,12 @@ public interface LoadGroupService {
     
     public DatedObject<? extends LMGroupBase> findDatedGroup(int loadGroupId);
 
+    public List<DisplayablePao> findLoadGroupsForMacroLoadGroup(
+            int loadGroupId, YukonUserContext userContext);
+
     public SearchResult<DisplayablePao> filterGroups(
-            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
-            Comparator<DisplayablePao> sorter, int startIndex, int count);
+            UiFilter<DisplayablePao> filter, Comparator<DisplayablePao> sorter,
+            int startIndex, int count, YukonUserContext userContext);
 
     public void sendShed(int loadGroupId, int durationInSeconds);
     public void sendRestore(int loadGroupId);
