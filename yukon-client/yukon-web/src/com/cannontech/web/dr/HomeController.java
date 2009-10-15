@@ -14,14 +14,12 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.AuthorizedFilter;
-import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -39,17 +37,6 @@ public class HomeController {
         List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
         filters.add(new AuthorizedFilter(paoAuthorizationService, user,
                                          Permission.LM_VISIBLE));
-
-        boolean showControlAreas = 
-            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
-        if (!showControlAreas) {
-            filters.add(new NotPaoTypeFilter(PaoType.LM_CONTROL_AREA));
-        }
-        boolean showScenarios = 
-            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_SCENARIOS, user);
-        if (!showScenarios) {
-            filters.add(new NotPaoTypeFilter(PaoType.LM_SCENARIO));
-        }
 
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
 

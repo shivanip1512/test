@@ -226,8 +226,58 @@
                     <property name="permission" value="ALLOWED_COMMAND"/>
                 </bean>
 
-                <!-- Ignore pao permissions check -->
-                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                <!-- 
+                    Show Control Areas permissions check will return unauthorized for a Control Area 
+                    if the SHOW_CONTROL_AREAS role property is false and return Unknown otherwise so 
+                    that subsequent authorizers can determine authorization
+                -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleRejector">
+                    <property name="objectChecker" >
+                        <bean class="com.cannontech.core.authorization.support.pao.PaoCheckType">
+                            <property name="paoTypeList">
+                                <list>
+                                    <value>LM_CONTROL_AREA</value>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                            <constructor-arg value="SHOW_CONTROL_AREAS"/>
+                        </bean>
+                    </property>
+                    <property name="permission" value="LM_VISIBLE"/>
+                </bean>
+
+                <!-- 
+                    Show Scenarios permissions check will return unauthorized for a Scenario if the 
+                    SHOW_SCENARIOS role property is false and return Unknown otherwise so that 
+                    subsequent authorizers can determine authorization
+                -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleRejector">
+                    <property name="objectChecker" >
+                        <bean class="com.cannontech.core.authorization.support.pao.PaoCheckType">
+                            <property name="paoTypeList">
+                                <list>
+                                    <value>LM_SCENARIO</value>
+                                </list>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="roleChecker">
+                        <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                            <constructor-arg value="SHOW_SCENARIOS"/>
+                        </bean>
+                    </property>
+                    <property name="permission" value="LM_VISIBLE"/>
+                </bean>
+                
+                <!-- 
+                    Ignore pao permissions check will return Authorized for any pao if the
+                    IGNORE_PER_PAO_PERMISSIONS role property is set to true and return Unknown 
+                    otherwise so that subsequent authorizers can determine authorization
+                -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAcceptor">
                     <property name="objectChecker" ref="loadManagementPaoCheck" />
                     <property name="roleChecker">
                         <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -235,7 +285,6 @@
                         </bean>
                     </property>
                     <property name="permission" value="LM_VISIBLE"/>
-                    <property name="fallthroughIfNotAuthorized" value="true"/>
                 </bean>
 
         		<!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->

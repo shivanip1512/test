@@ -4,9 +4,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.support.PermissionRoleAuthorizationBase;
 
 /**
- * Place holder class which extends the generic PermissionRoleAuthorizationBase
- * class with a type. This class makes it easier to instantiate a
- * PaoAuthorization for LiteYukonPAObject using spring.
+ * PermissionRoleAuthorization class which can return Authorized, Unauthorized or Unknown
  */
 public class PaoPermissionRoleAuthorization extends
         PermissionRoleAuthorizationBase<YukonPao> implements PaoAuthorization {
