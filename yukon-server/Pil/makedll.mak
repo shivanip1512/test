@@ -162,11 +162,11 @@ pilserver.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
 		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h tbl_metergrp.h \
-		tbl_loadprofile.h tbl_dv_mctiedport.h CtiLocalConnect.h \
-		critical_section.h fifo_multiset.h porter.h dsm2err.h \
-		devicetypes.h queent.h pil_conmgr.h con_mgr.h pil_exefct.h \
-		executorfactory.h executor.h exe_cmd.h exe_reg.h pilserver.h \
-		server_b.h cmdopts.h argkey.h argval.h smartmap.h \
+		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
+		CtiLocalConnect.h critical_section.h fifo_multiset.h porter.h \
+		dsm2err.h devicetypes.h queent.h pil_conmgr.h con_mgr.h \
+		pil_exefct.h executorfactory.h executor.h exe_cmd.h exe_reg.h \
+		pilserver.h server_b.h cmdopts.h argkey.h argval.h smartmap.h \
 		readers_writer_lock.h mgr_device.h rtdb.h slctdev.h \
 		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h msg_cmd.h \
 		rte_ccu.h rte_xcu.h tbl_rtcarrier.h tbl_rtrepeater.h \

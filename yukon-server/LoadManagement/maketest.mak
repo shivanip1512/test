@@ -133,12 +133,12 @@ test_lmprogram.obj:	yukon.h precompiled.h ctidbgmem.h \
 		sorted_vector.h lmprogrambase.h dbmemobject.h observe.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h rwutil.h boost_time.h lmgroupbase.h \
-		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h \
+		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h ctidate.h \
+		logger.h thread.h mutex.h guard.h clrdump.h CtiPCPtrQueue.h \
 		lmprogramdirectgear.h lmcontrolarea.h connection.h exchange.h \
-		dllbase.h dsm2.h mutex.h guard.h clrdump.h cticonnect.h \
-		netports.h logger.h thread.h CtiPCPtrQueue.h msg_ptreg.h \
+		dllbase.h dsm2.h cticonnect.h netports.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
 		tbl_lmprogramhistory.h dbaccess.h sema.h \
-		lmprogramcontrolwindow.h
+		lmprogramcontrolwindow.h lmutility.h lmconstraint.h
 #ENDUPDATE#
 

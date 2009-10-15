@@ -480,9 +480,10 @@ tbl_loadprofile.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_loadprofile.h vcomdefs.h dlldefs.h dbmemobject.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h dbaccess.h \
-		sema.h resolvers.h pointtypes.h db_entry_defines.h logger.h \
-		thread.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
-		sorted_vector.h rwutil.h boost_time.h boostutil.h
+		sema.h resolvers.h pointtypes.h db_entry_defines.h \
+		da_load_profile.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
+		utility.h queues.h sorted_vector.h rwutil.h boost_time.h \
+		boostutil.h
 tbl_metergrp.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \

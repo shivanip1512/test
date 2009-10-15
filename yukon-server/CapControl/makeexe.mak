@@ -244,19 +244,18 @@ ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h \
 		msg_signal.h message.h collectable.h rwutil.h ctitime.h \
 		boost_time.h boostutil.h utility.h queues.h sorted_vector.h \
-		ccsubstationbus.h connection.h exchange.h logger.h thread.h \
-		CtiPCPtrQueue.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h observe.h ccfeeder.h ccmonitorpoint.h \
-		msg_cmd.h ctidate.h cccapbank.h ccpointresponse.h \
-		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		msg_pcrequest.h ccstrategy.h regression.h ccid.h \
-		capcontroller.h configparms.h ccsubstationbusstore.h ccarea.h \
-		ccsparea.h ccstate.h ccmessage.h ccsubstation.h \
-		ccstatsobject.h ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h \
-		mgr_holiday.h resolvers.h db_entry_defines.h \
-		msg_lmcontrolhistory.h tbl_pt_alarm.h dbmemobject.h \
-		desolvers.h
+		ccid.h cccapbank.h msg_cmd.h ccpointresponse.h observe.h \
+		ccmonitorpoint.h ctidate.h logger.h thread.h CtiPCPtrQueue.h \
+		cctwowaycbcpoints.h msg_ptreg.h ccoperationstats.h \
+		ccConfirmationStats.h ccfeeder.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h msg_pcrequest.h \
+		ccstrategy.h regression.h capcontroller.h configparms.h \
+		ccsubstationbusstore.h ccarea.h ccsubstationbus.h ccsparea.h \
+		ccstate.h ccmessage.h ccsubstation.h ccstatsobject.h \
+		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h mgr_holiday.h \
+		resolvers.h db_entry_defines.h msg_lmcontrolhistory.h \
+		tbl_pt_alarm.h dbmemobject.h desolvers.h
 ccmain.obj:	yukon.h precompiled.h ctidbgmem.h ccsubstationbusstore.h \
 		observe.h types.h dlldefs.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h ccarea.h \
@@ -503,6 +502,20 @@ pao_schedule.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		ccsubstation.h ccstatsobject.h ccexecutor.h ctdpcptrq.h \
 		ctibase.h ctinexus.h pao_schedule.h pao_event.h dbmemobject.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
+test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
+		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticonnect.h netports.h sema.h connection.h exchange.h \
+		logger.h thread.h CtiPCPtrQueue.h utility.h queues.h \
+		sorted_vector.h message.h collectable.h rwutil.h boost_time.h \
+		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h observe.h ccmonitorpoint.h msg_cmd.h ctidate.h \
+		cccapbank.h ccpointresponse.h cctwowaycbcpoints.h \
+		ccoperationstats.h ccConfirmationStats.h msg_pcrequest.h \
+		ccstrategy.h regression.h ccsubstationbus.h \
+		ccsubstationbusstore.h ccarea.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h ccsubstation.h ccstatsobject.h ccUnitTestUtil.h
 test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -514,6 +527,9 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		configval.h observe.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h cccapbank.h ccpointresponse.h cctwowaycbcpoints.h \
 		ccoperationstats.h ccConfirmationStats.h msg_pcrequest.h \
-		ccstrategy.h regression.h
+		ccstrategy.h regression.h ccsubstation.h ccarea.h \
+		ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h ccstatsobject.h ccexecutor.h ctdpcptrq.h \
+		ccUnitTestUtil.h
 #ENDUPDATE#
 

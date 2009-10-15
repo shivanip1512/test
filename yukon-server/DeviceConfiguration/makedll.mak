@@ -121,6 +121,13 @@ config_strings.obj:	yukon.h precompiled.h ctidbgmem.h \
 		config_data_cbc.h dllbase.h os2_2w32.h dlldefs.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		cticonnect.h netports.h config_data_mct.h
+da_lp_deviceconfig.obj:	yukon.h precompiled.h ctidbgmem.h \
+		da_lp_deviceconfig.h da_load_profile.h config_device.h \
+		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h sorted_vector.h logger.h thread.h \
+		mutex.h guard.h clrdump.h CtiPCPtrQueue.h dllbase.h dsm2.h \
+		cticonnect.h netports.h hashkey.h hash_functions.h \
+		config_data_mct.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h id_vinfo.h

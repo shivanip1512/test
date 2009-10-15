@@ -1140,7 +1140,7 @@ mgr_fdrpoint.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		mgr_fdrpoint.h smartmap.h boostutil.h utility.h ctitime.h \
 		queues.h sorted_vector.h readers_writer_lock.h \
 		critical_section.h fdrpoint.h fdrdestination.h logger.h \
-		thread.h CtiPCPtrQueue.h rwutil.h boost_time.h
+		thread.h CtiPCPtrQueue.h FdrException.h rwutil.h boost_time.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 telegyrcontrolcenter.obj:	yukon.h precompiled.h ctidbgmem.h \
 		telegyrcontrolcenter.h dlldefs.h fdr.h pointdefs.h \
