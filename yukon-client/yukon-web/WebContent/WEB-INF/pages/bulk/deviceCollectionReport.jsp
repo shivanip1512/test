@@ -30,13 +30,19 @@
     </cti:breadCrumbs>
     
     <h2>${pageTitle}</h2>
-    <br>
     
-    <cti:url var="dataUrl" value="/spring/bulk/deviceCollectionReportJsonData">
-        <c:forEach var="p" items="${deviceCollection.collectionParameters}">
-            <cti:param name="${p.key}" value="${p.value}"/>
-        </c:forEach>
-    </cti:url>
-    <tags:extBasicGrid height="350" width="1000" columnInfo="${columnInfo}" dataUrl="${dataUrl}" />
+    <cti:msg var="collectionDescription" key="${deviceCollection.description}"/>
+    
+    <cti:simpleReportUrlFromNameTag var="reportUrl"
+                                htmlOutput="true"
+                                viewType="htmlView"
+                                viewJsp="BODY"
+                                definitionName="deviceCollectionDefinition"
+                                tempGroupName="${tempGroupName}"
+                                collectionDescription="${collectionDescription}"
+                                showLoadMask="false"
+                                refreshRate="0" />
+                                
+	<jsp:include page="${reportUrl}" />
 
 </cti:standardPage>

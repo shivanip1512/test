@@ -402,6 +402,39 @@
         </property>
     </bean>
     
+    <!-- Device Collection -->
+    <bean id="deviceCollectionModel" class="com.cannontech.analysis.tablemodel.DeviceCollectionModel" scope="prototype" />
+    
+    <bean id="deviceCollectionDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="deviceCollectionModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="tempGroupName"/>
+                    <property name="displayName" value="Temp Group Name"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="collectionDescription"/>
+                    <property name="displayName" value="Device Collection Description"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupDevicesReportLayoutData"/>
+        </property>
+    </bean>
+    
+    
     <!-- Phase Detection -->
    <bean id="phaseDetectModel" class="com.cannontech.analysis.tablemodel.PhaseDetectModel" scope="prototype">
         <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>

@@ -32,11 +32,13 @@ import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -45,14 +47,11 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.reports.JsonReportDataUtils;
 
 /**
  * Spring controller class for bulk operations
@@ -63,9 +62,10 @@ public class BulkController extends BulkControllerBase {
     
     private PaoLoadingService paoLoadingService = null;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     private RolePropertyDao rolePropertyDao;
     private DeviceGroupService deviceGroupService;
+    private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     
     // BULK HOME
     public ModelAndView bulkHome(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -166,54 +166,13 @@ public class BulkController extends BulkControllerBase {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         mav.addObject("deviceCollection", deviceCollection);
         
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
-        mav.addObject("columnInfo", columnInfo);
+        StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup(null);
+        deviceGroupMemberEditorDao.addDevices(tempGroup, deviceCollection.getDeviceList());
+        
+        mav.addObject("tempGroupName", tempGroup.getFullName());
+        mav.addObject("deviceCollection", deviceCollection);
         
         return mav;
-    }
-    
-    public ModelAndView deviceCollectionReportJsonData(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        
-        List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
-        
-        List<List<String>> data = new ArrayList<List<String>>();
-        
-        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(deviceCollection);
-        
-        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
-
-            List<String> cols = new ArrayList<String>();
-            cols.add(device.getName());
-            cols.add(device.getMeterNumber());
-            cols.add(device.getType());
-            cols.add(device.getAddress());
-            cols.add(device.getRoute());
-            data.add(cols);
-        }
-        
-        JsonReportDataUtils.outputReportData(data, columnInfo, response.getOutputStream());
-        
-        return null;
-        
-    }
-    
-    private List<ColumnInfo> getDeviceCollectionReportColumnInfo(YukonUserContext userContext) {
-        
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
-        String keyBase = "yukon.common.device.bulk.collectionActions.deviceCollectionReport.headers.";
-        List<ColumnInfo> columnInfo = new ArrayList<ColumnInfo>();
-        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "deviceName"), 200, null));
-        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "meterNumber"), 150, null));
-        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "deviceType"), 150, null));
-        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "address"), 150, null));
-        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "route"), 150, null));
-        
-        return columnInfo;
     }
     
     // SELECTED DEVICES POPUP TBALE
@@ -420,12 +379,6 @@ public class BulkController extends BulkControllerBase {
     }
 
     @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
@@ -439,4 +392,14 @@ public class BulkController extends BulkControllerBase {
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
+    
+    @Autowired
+    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
+		this.temporaryDeviceGroupService = temporaryDeviceGroupService;
+	}
+    
+    @Autowired
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+	}
 }
