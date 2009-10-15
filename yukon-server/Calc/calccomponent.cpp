@@ -21,7 +21,9 @@ RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
 
 CtiCalcComponent::CtiCalcComponent( const string &componentType, long componentPointId,
                                     const string &operationType,
-                                    double constantValue, const string &functionName )
+                                    double constantValue, const string &functionName ) :
+_componentType(constant), _operationType(multiplication), _constantValue(0.0), _functionName(""),
+_calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
 {
     _valid = TRUE;
 
@@ -112,13 +114,13 @@ CtiCalcComponent::CtiCalcComponent( const string &componentType, long componentP
 CtiCalcComponent &CtiCalcComponent::operator=( const CtiCalcComponent &copyFrom )
 {
     _componentType = copyFrom._componentType;
-    _pointId = copyFrom._pointId;
-    _componentPointId = copyFrom._componentPointId;
     _operationType = copyFrom._operationType;
     _constantValue = copyFrom._constantValue;
     _functionName = copyFrom._functionName;
-    _pointUpdated = copyFrom._pointUpdated;
     _valid = copyFrom._valid;
+    _lastUseUpdateNum = copyFrom._lastUseUpdateNum;
+    _componentPointId = copyFrom._componentPointId;
+
     return *this;
 }
 

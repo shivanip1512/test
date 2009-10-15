@@ -831,7 +831,7 @@ void CtiCalculateThread::baselineThread( void )
                 }
                 else
                 {
-                    _auSelf.sleep( 5000 );//baseline doesnt do much almost all of the time, it can sleep for as long as we can wait on shutdown
+                    _auSelf.sleep( 2000 );//baseline doesnt do much almost all of the time, it can sleep for as long as we can wait on shutdown
                 }
 
             } while( !(rwnow >= nextCalcTime) && !interrupted );
@@ -2264,7 +2264,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
                 iter++;
             }
             curTime.addMinutes(60);
-            while( iter->first <= curTime && iter != data.end() )
+            while( iter != data.end() && iter->first <= curTime )
             {
                 value += iter->second.second;
                 count++;

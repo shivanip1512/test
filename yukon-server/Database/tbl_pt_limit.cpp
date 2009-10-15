@@ -91,7 +91,7 @@ CtiTablePointLimit::CtiTablePointLimit(long pointid, int limitnumber) :
 
 CtiTablePointLimit::CtiTablePointLimit(RWDBReader &rdr)
 {
-   rdr >> _pointID;
+   rdr["pointid"] >> _pointID;
    rdr >> _limitNumber;
    rdr >> _highLimit;
    rdr >> _lowLimit;

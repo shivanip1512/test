@@ -1266,7 +1266,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
         RWDBTable    limitTable     = db.table("POINTLIMITS");
         RWDBSelector limitSelector  = db.selector();
 
-        limitSelector << limitTable["POINTID"]
+        limitSelector << limitTable["pointid"]
         << limitTable["limitnumber"]
         << limitTable["highlimit"]
         << limitTable["lowlimit"]
@@ -1276,14 +1276,14 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
         limitSelector.from( componentTable );
         limitSelector.from( calcBaseTable );
 
-        limitSelector.where( limitTable["POINTID"] == componentTable["COMPONENTPOINTID"] || limitTable["POINTID"] == calcBaseTable["POINTID"] );
+        limitSelector.where( limitTable["pointid"] == componentTable["COMPONENTPOINTID"] || limitTable["pointid"] == calcBaseTable["POINTID"] );
         limitSelector.distinct();
 
         RWDBReader  limitReader = limitSelector.reader( conn );
 
         while( limitReader() )
         {
-            limitReader["POINTID"] >> pointid;
+            limitReader["pointid"] >> pointid;
 
             CtiHashKey pointHashKey(pointid);
             CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
@@ -1295,10 +1295,10 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
             {
                 long limitNum, hlim, llim, limitdur;
-                rdr["limitnumber"] >> limitNum;
-                rdr["highlimit"] >> hlim;
-                rdr["lowlimit"] >> llim;
-                rdr["limitduration"] >> limitdur;
+                limitReader["limitnumber"] >> limitNum;
+                limitReader["highlimit"] >> hlim;
+                limitReader["lowlimit"] >> llim;
+                limitReader["limitduration"] >> limitdur;
 
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Limits for calc Id " << pointid <<

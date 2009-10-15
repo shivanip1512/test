@@ -18,8 +18,7 @@ private:
         operation,
         constant,
         function
-    }                    _componentType;
-    long                 _pointId; // DO NOT USE!!!! Never Initialized!!!!
+    };
     enum opType
     {
         addition,
@@ -32,7 +31,7 @@ private:
         less,
         leq,
         modulo
-    }                    _operationType;
+    };
     enum limittype
     {
         HighLimit1 = 1,
@@ -40,13 +39,13 @@ private:
         LowLimit1,
         LowLimit2
     };
+    ptType               _componentType;
+    opType               _operationType;
     double               _constantValue;
     string               _functionName;
     CtiCalc              *_calcpoint;
-    int                  _pointUpdated;
     BOOL                 _valid;
     long                 _lastUseUpdateNum;
-    double               _curHistoricValue;
 
     double               _doFunction( string &, bool &validCalc );
     void                 primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &pointTime, int number);
@@ -58,14 +57,16 @@ public:
     RWDECLARE_COLLECTABLE( CtiCalcComponent );
 
     CtiCalcComponent( ) :
-    _componentType(constant), _pointId(-1), _componentPointId(-1), _operationType(multiplication),
-    _constantValue(0.0), _functionName(""), _valid(0), _lastUseUpdateNum(0), _calcpoint(NULL)
+    _componentType(constant), _operationType(multiplication), _constantValue(0.0), _functionName(""),
+    _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
     {};
 
     CtiCalcComponent( const string &componentType, long componentPointId, const string &operationType,
                       double constantValue, const string &functionName );
 
-    CtiCalcComponent( CtiCalcComponent const &copyFrom )  
+    CtiCalcComponent( CtiCalcComponent const &copyFrom ) :
+    _componentType(constant), _operationType(multiplication), _constantValue(0.0), _functionName(""),
+    _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
     {  
         *this = copyFrom; 
     }
