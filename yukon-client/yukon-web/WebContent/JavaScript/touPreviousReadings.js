@@ -1,4 +1,4 @@
-function calculateTotal(attributeName, readingValue){
+function calculatePreviousReadingDifference(attributeName, readingValue){
 	
 	var currentValueName = attributeName+"_latestReading";
 	var previousReadingsSelect = attributeName+"_previousReading"

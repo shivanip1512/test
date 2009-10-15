@@ -91,13 +91,7 @@
         <property name="peakReportService" ref="peakReportService" />
     </bean>
 
-
-    <bean id="touDao"
-        class="com.cannontech.amr.tou.dao.impl.TouDaoImpl">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-    </bean>
-    
-        <!-- Outage monitor Service -->
+    <!-- Outage monitor Service -->
     <bean id="outageMonitorService" class="com.cannontech.amr.outageProcessing.service.impl.OutageMonitorServiceImpl"/>
     
     <!-- Tamper flag monitor Service -->

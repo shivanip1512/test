@@ -7,10 +7,10 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class PreviousReadings {
-    Attribute attribute;
-    Date cutoffDate;
-    List<PointValueHolder> previous36;
-    List<PointValueHolder> previous3Months;
+    private Attribute attribute;
+    private Date cutoffDate;
+    private List<PointValueHolder> previous36;
+    private List<PointValueHolder> previous3Months;
     
     public PreviousReadings() {}
     public PreviousReadings(Attribute attribute,

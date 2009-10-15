@@ -56,6 +56,6 @@ public interface PointService {
     public abstract boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier);
     
     
-    public PreviousReadings fillInPreviousReadings(LitePoint lp);
+    public PreviousReadings getPreviousReadings(LitePoint lp);
 
 }

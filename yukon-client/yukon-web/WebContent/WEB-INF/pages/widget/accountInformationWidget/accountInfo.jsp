@@ -35,7 +35,7 @@
 
     <tr>
     	<td>
-    		<ct:nameValueContainer altRowOn="true">
+    		<ct:nameValueContainer>
 	    		<ct:nameValue name="Name" nameColumnWidth="30%">
 					${mspCustomer.firstName} 
             		<c:if test="${not empty mspCustomer.MName}">${mspCustomer.MName}</c:if>
@@ -69,7 +69,7 @@
 
     <tr>
     	<td>
-    		<ct:nameValueContainer altRowOn="true">
+    		<ct:nameValueContainer>
 			    <c:if test="${not empty mspServLoc.custID}">
 			    	<ct:nameValue name="Customer Number" nameColumnWidth="30%">
 			    		${mspServLoc.custID}

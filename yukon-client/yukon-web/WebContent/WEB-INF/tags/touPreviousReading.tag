@@ -6,8 +6,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:msg key="${headerKey}" var="headerName" />
-<cti:msg key="yukon.web.widget.touWidget.popup.currentReading" var="currentReading" argument="${attributeReadings.attribute.description}" />
-<cti:msg key="yukon.web.widget.touWidget.popup.previousReadings" var="previousReadings" argument="${attributeReadings.attribute.description}" />
+<cti:msg key="yukon.web.modules.widgets.touWidget.previousReadings.currentReading" var="currentReading" argument="${attributeReadings.attribute.description}" />
+<cti:msg key="yukon.web.modules.widgets.touWidget.previousReadings.previousReadings" var="previousReadings" argument="${attributeReadings.attribute.description}" />
 
 <style>
 <!--
@@ -26,7 +26,7 @@ table.compactResultsTable tr.vertical-middle td.name {
         </tr>
 		<tr class="vertical-middle">
 			<td>
-				<ct:nameValueContainer altRowOn="true">
+				<ct:nameValueContainer>
 					<ct:nameValue name="${currentReading}" nameColumnWidth="40%">
 						<span id="${attributeReadings.attribute.key}_latestReading"><cti:pointValueFormatter format="FULL"
 							                                                             value="${attributeReadings.previous36[0]}" /></span>
@@ -34,7 +34,7 @@ table.compactResultsTable tr.vertical-middle td.name {
 			 		<ct:nameValueGap gapHeight="6px" />
 					<ct:nameValue name="${previousReadings}" >
 					 	<select id="${attributeReadings.attribute.key}_previousReading" 
-					 	        onchange="calculateTotal('${attributeReadings.attribute.key}',${attributeReadings.previous36[0].value}) ">
+					 	        onchange="calculatePreviousReadingDifference('${attributeReadings.attribute.key}',${attributeReadings.previous36[0].value}) ">
 					        <cti:formatDate type="DATE" var="cutOff"
 							    value="${attributeReadings.cutoffDate}" />
 							<optgroup id="firstOptGroup" label="Recent Readings (since ${cutOff})">

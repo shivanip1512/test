@@ -63,7 +63,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         boolean usageAttributeExists = existingAttributes.containsKey(BuiltInAttribute.USAGE);
         if (usageAttributeExists) {
 	        LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
-	        PreviousReadings previousReadings = pointService.fillInPreviousReadings(lp);
+	        PreviousReadings previousReadings = pointService.getPreviousReadings(lp);
 	        
 	        mav.addObject("previousReadings_All", previousReadings.getPrevious36());
 	        mav.addObject("previousReadings_Daily", previousReadings.getPrevious3Months());

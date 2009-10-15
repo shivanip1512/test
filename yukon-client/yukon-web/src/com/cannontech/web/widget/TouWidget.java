@@ -1,6 +1,5 @@
 package com.cannontech.web.widget;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +13,7 @@ import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.AttributeHelper;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.google.common.collect.Sets;
 
 /**
  * Widget used to display basic device information
@@ -48,17 +49,18 @@ public class TouWidget extends WidgetControllerBase {
 
         // Finds the existing attributes for the supplied meter
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
-        Set<Attribute> existingTOUAttributes = getExistingTOUAttributes(allExistingAttributes);
+        Set<Attribute> existingTouAttributes =
+            Sets.intersection(allExistingAttributes,AttributeHelper.getTouAttributes());
 
-        boolean readable = meterReadService.isReadable(meter, existingTOUAttributes, user);
+        boolean readable = meterReadService.isReadable(meter, existingTouAttributes, user);
 
         // Add objects to mav.
         mav.addObject("meter", meter);
         mav.addObject("readable", readable);
         
-        if (existingTOUAttributes.size() > 0) {
+        if (existingTouAttributes.size() > 0) {
             mav.addObject("touAttributesAvailable", true);
-            for (Attribute touAttribute : existingTOUAttributes) {
+            for (Attribute touAttribute : existingTouAttributes) {
                 mav.addObject(touAttribute.getKey(), touAttribute);
             }
         } else {
@@ -87,19 +89,20 @@ public class TouWidget extends WidgetControllerBase {
         
         // Finds the existing attributes for the supplied meter
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
-        Set<Attribute> existingTOUAttributes = getExistingTOUAttributes(allExistingAttributes);
+        Set<Attribute> existingTouAttributes =
+            Sets.intersection(allExistingAttributes,AttributeHelper.getTouAttributes());
 
         // Reads all the meters in the existing set
-        CommandResultHolder result = meterReadService.readMeter(meter, existingTOUAttributes, CommandRequestExecutionType.TOU_WIDGET_ATTRIBUTE_READ, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, existingTouAttributes, CommandRequestExecutionType.TOU_WIDGET_ATTRIBUTE_READ, user);
 
         mav.addObject("result", result);
         
-        boolean readable = meterReadService.isReadable(meter, existingTOUAttributes, user);
+        boolean readable = meterReadService.isReadable(meter, existingTouAttributes, user);
         mav.addObject("readable", readable);
 
-        if (existingTOUAttributes.size() > 0) {
+        if (existingTouAttributes.size() > 0) {
             mav.addObject("touAttributesAvailable", true);
-            for (Attribute touAttribute : existingTOUAttributes) {
+            for (Attribute touAttribute : existingTouAttributes) {
                 mav.addObject(touAttribute.getKey(), touAttribute);
             }
         } else {
@@ -109,22 +112,6 @@ public class TouWidget extends WidgetControllerBase {
         return mav;
     }
     
-    /**
-     * This method takes in a list of allExistingAttributes for a meter 
-     * and returns only the TOU attributes.
-     * 
-     * @param allExistingAttributes
-     * @return
-     */
-    private Set<Attribute> getExistingTOUAttributes(Set<Attribute> allExistingAttributes) {
-        Set<Attribute> existingTOUAttributes = new HashSet<Attribute>();
-        for (Attribute attribute : allExistingAttributes) {
-            if(attribute.getKey().startsWith("TOU_RATE"))
-                existingTOUAttributes.add(attribute);
-        }
-        return existingTOUAttributes;
-    }
-
     /**
      * @param request
      * @return

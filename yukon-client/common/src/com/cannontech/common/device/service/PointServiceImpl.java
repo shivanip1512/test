@@ -158,7 +158,7 @@ public class PointServiceImpl implements PointService {
      * @param mav
      * @param lp
      */
-    public PreviousReadings fillInPreviousReadings(LitePoint lp) {
+    public PreviousReadings getPreviousReadings(LitePoint lp) {
 
         PreviousReadings previousReadings = new PreviousReadings();
         

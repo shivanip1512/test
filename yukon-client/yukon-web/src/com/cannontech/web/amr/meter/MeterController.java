@@ -2,7 +2,6 @@ package com.cannontech.web.amr.meter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +24,7 @@ import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.AttributeHelper;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
@@ -48,6 +48,7 @@ import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
+import com.google.common.collect.Sets;
 
 /**
  * Spring controller class
@@ -318,21 +319,22 @@ public class MeterController extends MultiActionController {
         return mav;
     }
 
-    public ModelAndView touPopup(HttpServletRequest request,
-                                 HttpServletResponse response) throws ServletException {
-        ModelAndView mav = new ModelAndView("touPopup.jsp");
+    public ModelAndView touPreviousReadings(HttpServletRequest request,
+                                            HttpServletResponse response) throws ServletException {
+        ModelAndView mav = new ModelAndView("touPreviousReadings.jsp");
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
         // Find the existing TOU attributes
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
-        Set<Attribute> existingTOUAttributes = getExistingTOUAttributes(allExistingAttributes);
-
+        Set<Attribute> existingTouAttributes =
+            Sets.intersection(allExistingAttributes,AttributeHelper.getTouUsageAttributes());
+         
         // Get the previous values for TOU points and set them to the mav.
-        if (existingTOUAttributes.size() > 0){
-            for (Attribute touAttribute : existingTOUAttributes) {
+        if (existingTouAttributes.size() > 0){
+            for (Attribute touAttribute : existingTouAttributes) {
                 LitePoint touPoint = attributeService.getPointForAttribute(device, touAttribute);
-                PreviousReadings previousReadings = pointService.fillInPreviousReadings(touPoint);
+                PreviousReadings previousReadings = pointService.getPreviousReadings(touPoint);
                 previousReadings.setAttribute(touAttribute);
                 mav.addObject(touAttribute.getKey(), previousReadings);
 
@@ -340,15 +342,6 @@ public class MeterController extends MultiActionController {
         }
         
         return mav;
-    }
-    
-    private Set<Attribute> getExistingTOUAttributes(Set<Attribute> allExistingAttributes) {
-        Set<Attribute> existingTOUAttributes = new HashSet<Attribute>();
-        for (Attribute attribute : allExistingAttributes) {
-            if(attribute.getKey().startsWith("TOU_RATE") && attribute.getKey().endsWith("USAGE"))
-                existingTOUAttributes.add(attribute);
-        }
-        return existingTOUAttributes;
     }
     
 }

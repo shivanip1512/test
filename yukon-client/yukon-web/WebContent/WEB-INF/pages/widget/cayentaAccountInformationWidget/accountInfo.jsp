@@ -20,7 +20,7 @@
 		
 		    <tr>
 		    	<td>
-		    		<ct:nameValueContainer altRowOn="true">
+		    		<ct:nameValueContainer>
 				    	<ct:nameValue name="Account Number" nameColumnWidth="30%">
 				    		${meterInfo.accountNumber}
 				    	</ct:nameValue>

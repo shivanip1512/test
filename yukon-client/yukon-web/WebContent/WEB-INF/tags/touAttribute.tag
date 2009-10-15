@@ -15,7 +15,7 @@
         </tr>
 		<tr>
 			<td>
-				<ct:nameValueContainer altRowOn="true">
+				<ct:nameValueContainer>
 					<c:if test="${not empty usageAttribute}" >
 						<ct:nameValue name="${usageAttribute.description}" nameColumnWidth="200px">
 							<ct:attributeValue device="${meter}" attribute="${usageAttribute}" />
