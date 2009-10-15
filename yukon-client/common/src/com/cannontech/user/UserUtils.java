@@ -67,7 +67,7 @@ public final class UserUtils
 	}
 	
 	public static LiteYukonUser getAdminYukonUser() {
-	    return new LiteYukonUser(USER_ADMIN_ID, "yukon", STATUS_ENABLED);
+	    return new LiteYukonUser(USER_ADMIN_ID, "admin", STATUS_ENABLED);
 	}
 
 }
