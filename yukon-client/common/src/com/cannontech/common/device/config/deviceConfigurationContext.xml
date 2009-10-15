@@ -5213,7 +5213,7 @@
 										<property name="field" value="time" />
 										<property name="type">
 											<bean class="com.cannontech.web.input.type.DateType">
-												<property name="format" value="hh:mm" />
+												<property name="format" value="HH:mm" />
 												<property name="renderer" value="plainTextType.jsp" />
 											</bean>
 										</property>
@@ -5271,7 +5271,7 @@
 						<property name="field" value="time" />
 						<property name="type">
 							<bean class="com.cannontech.web.input.type.DateType">
-								<property name="format" value="hh:mm" />
+								<property name="format" value="HH:mm" />
 								<property name="renderer" value="timeType.jsp" />
 							</bean>
 						</property>
