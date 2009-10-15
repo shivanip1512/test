@@ -30,7 +30,6 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestBase;
@@ -339,7 +338,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         final LiteYukonUser user = parameterDto.getUser();
         final boolean noqueue = parameterDto.isNoqueue();
         // This method also handles the overriding of command priorities. 
-        final int priority = MasterConfigHelper.getConfiguration().getInteger("OVERRIDE_PRIORITY_"+parameterDto.getType(), parameterDto.getPriority());
+        final int priority = configurationSource.getInteger("OVERRIDE_PRIORITY_"+parameterDto.getType(), parameterDto.getPriority());
         
         // create CommandRequestExection record
         CommandRequestExecutionContextId contextId = parameterDto.getContextId();
