@@ -161,7 +161,7 @@ INT CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser 
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Couldn't come up with an operatgridadvisor for device " << getName() << endl;
+            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
             dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
         }
 

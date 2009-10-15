@@ -19,7 +19,7 @@
 
 #include "cparms.h"
 #include "logger.h"
-#include "port_tcpip.h"
+#include "port_tcpipdirect.h"
 #include "utility.h"
 
 #include "boost/scoped_array.hpp"
@@ -30,10 +30,7 @@ CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
 _dialable(0),
 _socket(INVALID_SOCKET),
 _open(false),
-_connected(false),
-_failed(false),
-_busy(false),
-_baud(0)
+_connected(false)
 {
 }
 
@@ -41,10 +38,7 @@ CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialable *dial) :
 _dialable(dial),
 _socket(INVALID_SOCKET),
 _open(false),
-_connected(false),
-_failed(false),
-_busy(false),
-_baud(0)
+_connected(false)
 {
     if(_dialable != 0)
     {
@@ -204,7 +198,6 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 }
 
                 _connected   = true;
-                _baud        = getBaudRate();
             }
 
             if((status = reset(true)) != NORMAL)
@@ -1004,20 +997,3 @@ CtiPort& CtiPortTCPIPDirect::setShouldDisconnect(BOOL b)
     return *this;
 }
 
-
-string& CtiPortTCPIPDirect::traceASCII(string &str, BYTE *Message, ULONG Length)
-{
-    INT status = NORMAL;
-    ULONG i;
-    ULONG offset = 0;
-
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    /* loop through all of the characters */
-    for(i = 0; i < Length; i++)
-    {
-        dout << (char)(Message[i]) << " ";
-    }
-    dout << " (done) " << __LINE__ << endl;
-
-    return str;
-}

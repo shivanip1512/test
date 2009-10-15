@@ -4,35 +4,36 @@
 #include "encryption_lantronix.h"
 #include "encryption_noop.h"
 
-#include "utility.h"
+#include "port_udp.h"
+
+namespace Cti {
 
 //These need to change if the database change. Match the client
 const string EncodingFilterFactory::NoFilterType = "none";
 const string EncodingFilterFactory::LantronrixUdpAES = "AES";
 
 /**
- *  Returns an Encoding Filter for the given port id. This
- *  function has two db hits.
+ *  Returns an Encoding Filter for the given port.
  */
-EncodingFilterFactory::EncodingFilterSPtr EncodingFilterFactory::getEncodingFilter(int portId)
+EncodingFilterFactory::EncodingFilterSPtr EncodingFilterFactory::getEncodingFilter(const Ports::UdpPortSPtr &port)
 {
-	/* Db hit*/
-	string type = getEncodingTypeForPort(portId);
+    string encodingType = port->getEncodingType();
 
-	if (!LantronrixUdpAES.compare(type))
-	{
-		/* Db hit*/
-		string encode = getEncodingKeyForPort(portId);
-		LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
-		filter->setKey(encode);
+    if (!LantronrixUdpAES.compare(encodingType))
+    {
+        LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
 
-		return EncodingFilterSPtr(filter);
-	}
-	else
-	{
-		//return a no-op filter
-		return EncodingFilterSPtr(new NoOpEncryption());
-	}
+        filter->setKey(port->getEncodingKey());
+
+        return EncodingFilterSPtr(filter);
+    }
+    else
+    {
+        //return a no-op filter
+        return EncodingFilterSPtr(new NoOpEncryption());
+    }
+
+}
 
 }
 

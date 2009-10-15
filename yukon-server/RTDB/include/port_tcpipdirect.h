@@ -38,9 +38,6 @@ private:
 
    bool                 _open;
    bool                 _connected;
-   bool                 _failed;
-   bool                 _busy;
-   INT                  _baud;
 
    CtiPortDialable      *_dialable;
 
@@ -87,10 +84,8 @@ public:
    virtual INT readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead);
 
    INT shutdownClose(PCHAR Label = NULL, ULONG Line = 0);
-   INT queryBytesAvailable();
    INT receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength);
    INT sendData(PBYTE Message, ULONG Length, PULONG Written);
-   string& traceASCII(string &str, BYTE *Message, ULONG Length);
 };
 
 typedef shared_ptr< CtiPortTCPIPDirect > CtiPortTCPIPDirectSPtr;

@@ -59,7 +59,7 @@
 #include "guard.h"
 #include "utility.h"
 
-#include "port_udp.h"
+#include "port_thread_udp.h"
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
@@ -67,7 +67,7 @@ CtiConnection VanGoghConnection;
 
 namespace Cti { namespace Porter {
 
-    extern UDPMessenger UDPInterfaceQueue;
+    extern UnsolicitedMessenger UnsolicitedPortsQueue;
 }
 }
 
@@ -164,7 +164,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                             }
 
                             //  the UDP thread needs to reload each item individually, so we can't ever discard any
-                            Cti::Porter::UDPInterfaceQueue.push_back(MsgPtr->replicateMessage());
+                            Cti::Porter::UnsolicitedPortsQueue.sendMessageToClients(MsgPtr->replicateMessage());
                         }
 
                         if(pChg)

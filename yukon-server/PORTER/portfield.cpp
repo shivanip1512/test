@@ -14,39 +14,6 @@
 #include "yukon.h"
 #include <string.h>
 
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        PORTPORT.C
-
-    Purpose:
-        Following Routines form a subsystem that take requests off of the
-        by port queue's and process them out to the ports to field devices
-        stolen from dsm2's portport.c
-
-    The following procedures are contained in this module:
-        PortThread
-        RemoteReset
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        8-25-93     Added code to load routes if flag set         WRO
-        9-7-93      Converted to 32 bit                           WRO
-        11-1-93     Modified to keep stats temporarily in memory  TRH
-        11-30-93    Added startup code for TCP/IP interface       WRO
-        2-2-94      Added support for SES 92                      WRO
-        9-2-94      Changed intialize to note 711's and default   WRO
-
-        12-99       NT and functionalized                         CGP
-
-   -------------------------------------------------------------------- */
 #include <process.h>
 #include <iostream>
 #include <iomanip>
@@ -121,6 +88,8 @@
 #include "tbl_paoexclusion.h"
 #include "utility.h"
 
+#include "portfield.h"
+
 using namespace std;
 
 extern CtiPorterVerification PorterVerificationThread;
@@ -135,53 +104,7 @@ extern HCTIQUEUE* QueueHandle(LONG pid);
 extern void commFail(CtiDeviceSPtr &Device);
 extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
-bool isTimedOut( const CtiTime &start_time, const unsigned int &duration_seconds);
-bool deviceCanSurviveThisStatus(INT status);
-BOOL isTAPTermPort(LONG PortNumber);
-INT RequeueReportError(INT status, OUTMESS *OutMessage);
-INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device);
-INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device);
-INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
-INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage);
-INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
-INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
-INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
-void processPreloads(CtiPortSPtr Port);
-INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
-INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device);
-INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
-INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
-INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
-
-INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, list< CtiMessage* > &traceList);
-INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, list< CtiMessage* > &traceList);
-INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList);
-INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList);
-INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList);
-
-void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
-INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
-BOOL findNonExclusionOutMessage(void *data, void* d);
-BOOL findExclusionFreeOutMessage(void *data, void* d);
-bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device );
-static INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
-INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device);
-INT ProcessPortPooling(CtiPortSPtr Port);
-INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device);
-INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
-INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
-
-static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion);
-
-CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
-BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
-bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
-void getNextExpirationTime(LONG timesPerDay, CtiTime &time);
-UINT purgeExpiredQueueEntries(CtiPortSPtr port);
-
-//  we are Porter
 using namespace Cti;
-using namespace Cti::Porter;
 
 
 /* Threads that handle each port for communications */
@@ -207,15 +130,6 @@ VOID PortThread(void *pid)
 
     CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-    }
-
-    string thread_name = "Port " + CtiNumStr(Port->getPortID()).zpad(4);
-
-    SetThreadName(-1, thread_name.c_str());
-
     /* make it clear who is the boss */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
@@ -231,16 +145,17 @@ VOID PortThread(void *pid)
             dout << CtiTime() << " **** Checkpoint - Port == 0 in PortThread() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    else if( Port->isTCPIPPort() &&
-             !stringCompareIgnoreCase(boost::static_pointer_cast<CtiPortTCPIPDirect>(Port)->getIPAddress(), "udp") )
-    {
-        //  perhaps this should be created by a PortFactory... ?
-        UDPInterface udp_interface(boost::static_pointer_cast<CtiPortTCPIPDirect>(Port));
-
-        udp_interface.run();
-    }
     else
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
+        }
+
+        string thread_name = "Port " + CtiNumStr(Port->getPortID()).zpad(4);
+
+        SetThreadName(-1, thread_name.c_str());
+
         /* and wait for something to come in */
         for(;!PorterQuit;)
         {
@@ -4277,23 +4192,10 @@ struct commFailDevice
 INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
-    INT initFails = 0;
 
     if( NORMAL != (status = ResetCommsChannel(Port, Device)) )
     {
-        if(initFails++ > PorterPortInitQueuePurgeDelay)  // Every 5 minutes (default, can be CPARM'd), we will purge the queue entries.
-        {
-            initFails = 0;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << Port->getName() << " will not init. Queue entries are being purged." << endl;
-            }
-
-            PortManager.apply( applyPortQueuePurge, (void*)Port->getPortID() );
-
-            //  !!!  MUST RESET LGRPQ STUFF FOR CCU'S PINFO  !!!
-        }
-        else if(!Port->isInhibited())
+        if(!Port->isInhibited())
         {
             if(PorterDebugLevel & PORTER_DEBUG_COMMFAIL)
             {

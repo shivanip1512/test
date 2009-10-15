@@ -1098,6 +1098,14 @@ INT resolvePortType(const string& _str)
     {
         nRet = PortTypeTServerDirect;
     }
+    else if(str == "tcp")
+    {
+        nRet = PortTypeTcp;
+    }
+    else if(str == "udp")
+    {
+        nRet = PortTypeUdp;
+    }
     else if(str == "terminal server dialup")
     {
         nRet = PortTypeTServerDialup;

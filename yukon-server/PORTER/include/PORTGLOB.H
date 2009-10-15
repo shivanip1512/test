@@ -66,7 +66,6 @@ extern IM_EX_PORTGLOB UINT          PorterDebugLevel;
 extern IM_EX_PORTGLOB BOOL          PorterQuit;
 extern IM_EX_PORTGLOB HANDLE        hPorterEvents[];
 extern IM_EX_PORTGLOB bool          gIgnoreTCU5X00QueFull;
-extern IM_EX_PORTGLOB UINT          PorterPortInitQueuePurgeDelay;
 
 
 

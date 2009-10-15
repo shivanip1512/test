@@ -81,7 +81,7 @@ string desolveDeviceWindowType( LONG aType )
             break;
         }
     }
-    
+
     return Ret;
 }
 
@@ -136,7 +136,7 @@ string desolveDeviceType( INT aType )
 
     switch( aType )
     {
-        case TYPE_CCU721:       Ret = "ccu-721";        break;       
+        case TYPE_CCU721:       Ret = "ccu-721";        break;
         case TYPE_CCU711:       Ret = "ccu-711";        break;
         case TYPE_CCU710:       Ret = "ccu-710a";       break;
         case TYPE_CCU700:       Ret = "ccu-700";        break;
@@ -154,18 +154,18 @@ string desolveDeviceType( INT aType )
         case TYPE_ION7330:      Ret = "ion-7330";       break;
         case TYPE_ION7700:      Ret = "ion-7700";       break;
         case TYPE_ION8300:      Ret = "ion-8300";       break;
-                                
+
         case TYPE_LCU415:       Ret = "lcu-415";        break;
         case TYPE_LCU415LG:     Ret = "lcu-lg";         break;
         case TYPE_LCU415ER:     Ret = "lcu-eastriver";  break;
         case TYPE_LCUT3026:     Ret = "lcu-t026";       break;
         case TYPE_TCU5000:      Ret = "tcu-5000";       break;
         case TYPE_TCU5500:      Ret = "tcu-5500";       break;
-                      
+
         case TYPE_XML_XMIT:     Ret = "integration"; break;
-                  
+
         case TYPE_TDMARKV:      Ret = "transdata mark-v";   break;
-                                
+
         case TYPE_DAVIS:        Ret = "davisweather";       break;
 
         case TYPE_ALPHA_PPLUS:  Ret = "alpha power plus";   break;
@@ -232,7 +232,7 @@ string desolveDeviceType( INT aType )
         case TYPEVERSACOMCBC:           Ret = "cbc versacom";       break;
         case TYPEEXPRESSCOMCBC:         Ret = "cbc expresscom";     break;
         case TYPEFISHERPCBC:            Ret = "cbc fp-2800";        break;
-                                                                    
+
         case TYPECBC6510:               Ret = "cbc 6510";           break;
         case TYPECBC7010:               Ret = "cbc 7010";           break;
         case TYPECBC7020:               Ret = "cbc 7020";           break;
@@ -242,7 +242,7 @@ string desolveDeviceType( INT aType )
         case TYPE_SNPP:                 Ret = "snpp terminal";      break;
         case TYPE_TNPP:                 Ret = "tnpp terminal";      break;
         case TYPE_WCTP:                 Ret = "wctp terminal";      break;
-                                                                    
+
         case TYPE_PAGING_RECEIVER:      Ret = "page receiver";      break;
 
         case TYPE_LMPROGRAM_DIRECT:         Ret = "lm direct program";  break;
@@ -251,7 +251,7 @@ string desolveDeviceType( INT aType )
         case TYPE_LM_CONTROL_AREA:          Ret = "lm control area";    break;
         case TYPE_CI_CUSTOMER:              Ret = "ci customer";        break;
         case TYPE_VIRTUAL_SYSTEM:           Ret = "virtual system";         break;
-        
+
         default:
         {
             {
@@ -336,6 +336,8 @@ string desolvePortType( INT aType )
         case PortTypeLocalDirect:       Ret = "local serial port";      break;
         case PortTypeLocalDialup:       Ret = "local dialup";           break;
         case PortTypeLocalDialBack:     Ret = "local dialback";         break;
+        case PortTypeTcp:               Ret = "tcp";                    break;
+        case PortTypeUdp:               Ret = "udp";                    break;
         case PortTypeTServerDirect:     Ret = "terminal server";        break;
         case PortTypeTServerDialup:     Ret = "terminal server dialup"; break;
         case PortTypeTServerDialBack:   Ret = "terminal server dialback";   break;
@@ -373,7 +375,7 @@ string desolveRouteType( INT aType )
         case RouteTypeTap:          Ret = "tap paging"; break;
         case RouteTypeXML:          Ret = "integration route"; break;
         case RouteTypeWCTP:         Ret = "wctp terminal route";    break;
-        //paging? 
+        //paging?
         case RouteTypeSNPP:         Ret = "snpp terminal route";  break;
         case RouteTypeRTC:          Ret = "rtc route";    break;
         case RouteTypeSeriesVLMI:   Ret = "series 5 lmi";   break;
@@ -436,9 +438,9 @@ string desolveCapControlType( INT aType )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Unsupported cap control type in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
-    
+
             Ret = "invalid";
-    
+
         break;
         }
     }

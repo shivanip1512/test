@@ -20,12 +20,17 @@
 #include "port_dialin.h"
 #include "port_direct.h"
 #include "port_pool_out.h"
-#include "port_tcpip.h"
+#include "port_tcpipdirect.h"
+#include "port_tcp.h"
+#include "port_udp.h"
 
 #include "devicetypes.h"
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "slctprt.h"
+
+using namespace Cti;
+using namespace Ports;
 
 DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
 {
@@ -62,6 +67,16 @@ DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
    case PortTypeTServerDirect:
       {
          pPort = (CtiPort*) CTIDBG_new CtiPortTCPIPDirect;
+         break;
+      }
+   case PortTypeTcp:
+      {
+         pPort = (CtiPort*) CTIDBG_new TcpPort;
+         break;
+      }
+   case PortTypeUdp:
+      {
+         pPort = (CtiPort*) CTIDBG_new UdpPort;
          break;
       }
    case PortTypeTServerDialup:

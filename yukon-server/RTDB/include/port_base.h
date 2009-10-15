@@ -160,7 +160,6 @@ public:
     INT getType() const;
     LONG getPortID() const;
     INT isDialup() const;
-    bool isDialin() const;
     string getName() const;
     bool isInhibited() const;
     bool isSimulated() const;
@@ -353,8 +352,6 @@ inline INT CtiPort::getSharedSocketNumber() const   { return _tblPortBase.getSha
 inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();}
 
 inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup || getType() == PortTypePoolDialout)); }
-inline bool CtiPort::isDialin() const { return ((getType() == PortTypeLocalDialBack || getType() == PortTypeTServerDialBack)); }
-inline bool CtiPort::isTCPIPPort() const { return ((getType() == PortTypeTServerDirect) || (getType() == PortTypeTServerDialup)); }
 
 inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }
 inline INT CtiPort::setPortWriteTimeOut(USHORT timeout) { return NORMAL; }

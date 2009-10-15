@@ -363,6 +363,8 @@ enum CtiPort_t
     PortTypeLocalDialBack,
     PortTypeTServerDialBack,
     PortTypePoolDialout,
+    PortTypeTcp,
+    PortTypeUdp,
 
     PortTypeInvalid
 };

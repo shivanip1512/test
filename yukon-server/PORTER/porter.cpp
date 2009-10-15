@@ -58,6 +58,9 @@
 #include "mgr_config.h"
 #include "mgr_point.h"
 
+#include "port_thread_udp.h"
+#include "port_thread_tcp.h"
+
 #include "port_base.h"
 #include "port_shr.h"
 #include "port_shr_ip.h"
@@ -1737,16 +1740,6 @@ void LoadPorterGlobals(void)
 
     }
 
-    if(!(Temp = gConfigParms.getValueAsString("PORTER_PORTINIT_QPURGE_DELAY")).empty())
-    {
-        if(!(PorterPortInitQueuePurgeDelay = ::abs(atoi(Temp.c_str()))))
-        {
-            /* Unable to convert so assume default of 5 minutes (20 * 15s) */
-            PorterPortInitQueuePurgeDelay = 20;
-        }
-    }
-
-
     if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1824,6 +1817,16 @@ CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
 
     switch(porttype)
     {
+    case PortTypeTcp:
+        {
+            fptr = Cti::Porter::PortTcpThread;
+            break;
+        }
+    case PortTypeUdp:
+        {
+            fptr = Cti::Porter::PortUdpThread;
+            break;
+        }
     case PortTypeLocalDialBack:
         {
             fptr = PortDialbackThread;

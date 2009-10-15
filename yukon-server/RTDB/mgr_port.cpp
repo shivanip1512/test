@@ -24,7 +24,9 @@
 #include "port_direct.h"
 #include "port_dialout.h"
 #include "port_pool_out.h"
-#include "port_tcpip.h"
+#include "port_tcpipdirect.h"
+#include "port_tcp.h"
+#include "port_udp.h"
 
 
 /* SQL to get every column used */
@@ -524,8 +526,11 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
              */
 
             //  Save off the TCP settings in case they changed - we may need to reconnect
-            if( tempPort->getType() == PortTypeTServerDirect )
+            if( tempPort->getType() == PortTypeTServerDirect ||
+                tempPort->getType() == PortTypeUdp )
             {
+                //  handle TCP and UDP port reloads...  but for devices... ?
+
                 tempPortTCP = boost::static_pointer_cast<CtiPortTCPIPDirect>(tempPort);
 
                 oldIP   = tempPortTCP->getIPAddress();

@@ -494,6 +494,16 @@ prot_fpcbc.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h \
 		master.h msg_pcrequest.h message.h collectable.h rwutil.h \
 		boost_time.h boostutil.h prot_fpcbc.h
+prot_gpuff.obj:	yukon.h precompiled.h ctidbgmem.h prot_gpuff.h \
+		dlldefs.h msg_pdata.h pointdefs.h pointtypes.h message.h \
+		collectable.h rwutil.h ctitime.h boost_time.h boostutil.h \
+		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		sorted_vector.h pt_base.h dbmemobject.h resolvers.h \
+		db_entry_defines.h pt_dyn_base.h tbl_pt_base.h dllbase.h \
+		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
+		dbaccess.h sema.h desolvers.h tbl_pt_property.h \
+		tbl_pt_trigger.h cparms.h configkey.h configval.h logger.h \
+		thread.h CtiPCPtrQueue.h
 prot_idlc.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \

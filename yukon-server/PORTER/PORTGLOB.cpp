@@ -54,8 +54,6 @@ IM_EX_PORTGLOB UINT           PorterDebugLevel = 0x00000000;
 IM_EX_PORTGLOB bool           gIgnoreTCU5X00QueFull = false;
 IM_EX_PORTGLOB BOOL           PorterQuit = FALSE;
 
-IM_EX_PORTGLOB UINT           PorterPortInitQueuePurgeDelay = 20;
-
 IM_EX_PORTGLOB string      gDelayDatFile("..\\CONFIG\\DELAY.DAT");
 
 

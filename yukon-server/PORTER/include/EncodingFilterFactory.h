@@ -1,22 +1,23 @@
-#ifndef __ENCODINGFILTERFACTORY__
-#define __ENCODINGFILTERFACTORY__
+#pragma once
 
 #include <string>
 #include <boost/shared_ptr.hpp>
 #include "EncodingFilter.h"
+#include "port_udp.h"
 
-using std::string;
+namespace Cti {
 
 class EncodingFilterFactory
 {
-	public:
-		typedef boost::shared_ptr<EncodingFilter> EncodingFilterSPtr;
+private:
+    static const std::string NoFilterType;
+    static const std::string LantronrixUdpAES;
 
-		static EncodingFilterSPtr getEncodingFilter(int portId);
+public:
+    typedef boost::shared_ptr<EncodingFilter> EncodingFilterSPtr;
 
-		static const string NoFilterType;
-		static const string LantronrixUdpAES;
-
+    static EncodingFilterSPtr getEncodingFilter(const Ports::UdpPortSPtr &port);
 };
 
-#endif
+}
+
