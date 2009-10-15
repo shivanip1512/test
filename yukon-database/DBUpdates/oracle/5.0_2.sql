@@ -184,3 +184,4 @@ END;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('5.0', 'Matt K', '15-OCT-2009', 'Latest Update', 2);
