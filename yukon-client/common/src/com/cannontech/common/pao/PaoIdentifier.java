@@ -14,7 +14,6 @@ public final class PaoIdentifier implements YukonPao, Serializable {
         super();
         Validate.notNull(paoType, "paoType must not be null");
         this.paoId = paoId;
-        Validate.notNull(paoType, "paoType must not be null");
         this.paoType = paoType;
     }
 
