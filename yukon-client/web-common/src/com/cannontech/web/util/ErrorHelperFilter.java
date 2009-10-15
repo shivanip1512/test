@@ -64,11 +64,17 @@ public class ErrorHelperFilter  implements Filter {
 			Set parameterNames = httpReq.getParameterMap().keySet();
 			for (Iterator iter = parameterNames.iterator(); iter.hasNext();) {
 				String key = (String) iter.next();
-				String values = StringUtils.join(httpReq.getParameterValues(key), ",");
-				parameterList.add(key + "={" + values + "}");
+				String values;
+				if(key.equals("PASSWORD")){
+                    values = "password removed";
+                } else {
+                    values = StringUtils.join(httpReq.getParameterValues(key), ",");
+                }
+                parameterList.add(key + "={" + values + "}");
 			}
 			
 			String parameters = StringUtils.join(parameterList.iterator(), ",");
+			    
 			String remoteAddr = httpReq.getRemoteAddr();
 			String queryString = httpReq.getQueryString();
 			return "contextPath=" + contextPath +
