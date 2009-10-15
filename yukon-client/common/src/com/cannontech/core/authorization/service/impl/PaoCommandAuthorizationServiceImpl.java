@@ -1,9 +1,11 @@
 package com.cannontech.core.authorization.service.impl;
 
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
-import com.cannontech.core.authorization.support.AuthorizationService;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
@@ -15,7 +17,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizationService {
 
-    private AuthorizationService<LiteYukonPAObject> authorizationService = null;
+    private PaoAuthorizationService authorizationService = null;
     private CommandPermissionConverter converter = null;
     private PaoDao paoDao = null;
     
@@ -23,7 +25,7 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
         this.converter = converter;
     }
 
-    public void setAuthorizationService(AuthorizationService<LiteYukonPAObject> authorizationService) {
+    public void setAuthorizationService(PaoAuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
     }
     
@@ -36,24 +38,14 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
     	return isAuthorized(user, command, pao);
     }
 
-    public void verifyAuthorized(LiteYukonUser user, String command, YukonPao device) throws PaoAuthorizationException {
-    	LiteYukonPAObject pao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
-    	verifyAuthorized(user, command, pao);
-    }
-    	
-    public boolean isAuthorized(LiteYukonUser user, String command, LiteYukonPAObject pao) {
-        Permission permission = converter.getPermission(command);
-        boolean authorized = authorizationService.isAuthorized(user, permission, pao);
-        return authorized;
-    }
-    
+    @Deprecated
     public boolean isAuthorized(LiteYukonUser user, String command) {
         Permission permission = converter.getPermission(command);
-        boolean authorized = authorizationService.isAuthorized(user, permission, new LiteYukonPAObject(-1));
+        boolean authorized = authorizationService.isAuthorized(user, permission, new SimpleDevice(-1, PaoType.MCT410IL));
         return authorized;
     }
     
-    public void verifyAuthorized(LiteYukonUser user, String command, LiteYukonPAObject pao) throws PaoAuthorizationException {
+    public void verifyAuthorized(LiteYukonUser user, String command, YukonPao pao) throws PaoAuthorizationException {
         Permission permission = converter.getPermission(command);
         boolean authorized = authorizationService.isAuthorized(user, permission, pao);
         if (!authorized) {
