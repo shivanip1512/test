@@ -7,7 +7,6 @@
         <tr style="font-size: 0.8em;">
             <th><cti:msg key="yukon.web.alerts.table.type"/></th>
             <th><cti:msg key="yukon.web.alerts.table.message"/></th>
-            <th>&nbsp;</th>
             <th><cti:msg key="yukon.web.alerts.table.date"/></th>
             <th></th>
         </tr> 
@@ -16,8 +15,7 @@
         <c:forEach var="alert" items="${alerts}">
             <tr id="alertTableRow_${alert.id}">
                 <td width="20%"><cti:msg key="${alert.type}"/></td>
-                <td><cti:formatTemplate message="${alert.message}" /></td>
-                <td><div style="width:20px;"></div></td>
+                <td id="msg"><cti:formatTemplate message="${alert.message}" /></td>
                 <td><cti:formatDate type="BOTH" value="${alert.date}"/></td>
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">

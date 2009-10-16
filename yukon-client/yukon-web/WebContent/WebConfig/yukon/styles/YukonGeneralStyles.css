@@ -114,6 +114,10 @@ div.groupEditorPopup {
   border-bottom: 1px solid #ccc;
 }
 
+#alertView table tbody tr td#msg {
+  padding-right:20px;
+}
+
 #alertView th {
   border-bottom: 2px solid #bbb;
   font-size: 1.2em;
