@@ -109,7 +109,8 @@ public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataIn
     private javax.swing.JLabel tcpPortLabel = null;
     private javax.swing.JTextField tcpPortTextField = null;
 	
-	
+    int deviceType;
+    
 	private javax.swing.JPanel jPanelMCTSettings = null;
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -474,7 +475,9 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
 		getDialupSettingsPanel().setVisible(
 			com.cannontech.database.data.pao.PAOGroups.isDialupPort(type) );
 		
-		boolean tcpport = (type == PAOGroups.TCP);
+		boolean tcpport = (type == PAOGroups.TCP) && (deviceType == PAOGroups.RTU_DNP || 
+                                    	              deviceType == PAOGroups.FAULT_CI ||
+                                    	              deviceType == PAOGroups.NEUTRAL_MONITOR);
 		
 		getTcpIpAddressTextField().setVisible(tcpport);
 		getTcpIpAddressLabel().setVisible(tcpport);
@@ -2730,7 +2733,7 @@ public void setValue(Object val)
 {
 	deviceBase = (DeviceBase)val;
 
-	int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
+	deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
 	String typeStr = deviceBase.getPAOType();
 	//Override defalut type string for TapTerminal
 	if (deviceType == PAOGroups.TAPTERMINAL) {

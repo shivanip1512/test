@@ -23,16 +23,16 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
     static {
-        insertSql = "INSERT INTO PaoProperty (PaoID, PropertyName, PropertyValue) VALUES (?,?,?)";
+        insertSql = "INSERT INTO PaoProperty (PaObjectID, PropertyName, PropertyValue) VALUES (?,?,?)";
         
-        removeSql = "DELETE FROM PaoProperty WHERE PaoID = ?";
+        removeSql = "DELETE FROM PaoProperty WHERE PaObjectID = ?";
         
         updateSql = "UPDATE PaoProperty SET PropertyName = ?," + 
-        "PropertyValue = ? WHERE PaoID = ?";
+        "PropertyValue = ? WHERE PaObjectID = ?";
         
-        selectAllSql = "SELECT PaoID,PropertyName,PropertyValue FROM PaoProperty";
+        selectAllSql = "SELECT PaObjectID,PropertyName,PropertyValue FROM PaoProperty";
         
-        selectByIdSql = selectAllSql + " WHERE PaoID = ?";
+        selectByIdSql = selectAllSql + " WHERE PaObjectID = ?";
         
         rowMapper = PaoPropertyDaoImpl.createRowMapper();
     }
@@ -41,7 +41,7 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
         ParameterizedRowMapper<PaoProperty> rowMapper = new ParameterizedRowMapper<PaoProperty>() {
             public PaoProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoProperty property = new PaoProperty();
-                property.setPaoId(rs.getInt("PaoID"));
+                property.setPaoId(rs.getInt("PaObjectID"));
                 property.setPropertyName(rs.getString("PropertyName"));
                 property.setPropertyValue(rs.getString("PropertyValue"));
 
