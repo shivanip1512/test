@@ -1150,7 +1150,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
    }
    catch (Exception e)
    {
-	  handleException( e );
+       handleException( e );
    }
    finally
    {

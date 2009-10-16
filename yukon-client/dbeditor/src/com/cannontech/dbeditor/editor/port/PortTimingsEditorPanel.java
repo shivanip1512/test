@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.port;
  */
 
 import com.cannontech.database.data.port.LocalSharedPort;
+import com.cannontech.database.data.port.TcpPort;
 import com.cannontech.database.data.port.TerminalServerSharedPort;
 import com.cannontech.database.db.port.PortTiming;
  
@@ -394,17 +395,17 @@ private com.klg.jclass.field.JCSpinField getRTSToTxWaitSpinner() {
  * @param val java.lang.Object
  */
 public Object getValue(Object val) {
-	PortTiming pt;
-	
-	try
-	{
-		pt = ((LocalSharedPort) val).getPortTiming();
-	}
-	catch( ClassCastException cce )
-	{
-		//don't try/catch this one
-		pt = ((TerminalServerSharedPort) val).getPortTiming();
-	}
+    PortTiming pt;
+    if (val instanceof TcpPort) {
+        pt = ((TcpPort) val).getPortTiming();
+    } else {
+        try {
+            pt = ((LocalSharedPort) val).getPortTiming();
+        } catch (ClassCastException cce) {
+            // don't try/catch this one
+            pt = ((TerminalServerSharedPort) val).getPortTiming();
+        }
+    }
 
 	Integer preTxWait = null;
 	Object preTxWaitSpinVal = getPreTxWaitSpinner().getValue();
@@ -622,6 +623,8 @@ public void setValue(Object val) {
 	else if( val instanceof TerminalServerSharedPort )
 	{
 		pt = ((TerminalServerSharedPort) val).getPortTiming();
+	}else if ( val instanceof TcpPort ) {
+	    pt = ((TcpPort) val).getPortTiming();
 	}
 
 	

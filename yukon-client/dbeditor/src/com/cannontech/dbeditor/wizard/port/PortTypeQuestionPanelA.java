@@ -10,6 +10,7 @@ public class PortTypeQuestionPanelA extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JRadioButton ivjLocalSerialPortRadioButton = null;
 	private javax.swing.JRadioButton ivjTCPTerminalServerRadioButton = null;
     private javax.swing.JRadioButton ivjUDPTerminalServerRadioButton = null;
+    private javax.swing.JRadioButton tcpPortRadioButton = null;
 	private javax.swing.ButtonGroup ivjPortTypeButtonGroup = null;
 public PortTypeQuestionPanelA() {
 	super();
@@ -67,6 +68,15 @@ private void connEtoM2() {
 		handleException(ivjExc);
 	}
 }
+
+private void connEtoM5() {
+    try {
+        getPortTypeButtonGroup().add(getTcpPortRadioButton());
+    } catch (java.lang.Throwable ivjExc) {
+        handleException(ivjExc);
+    }
+}
+
 /**
  * connEtoM3:  (PortTypeQuestionPanelA.initialize() --> PortTypeButtonGroup.setSelected(Ljavax.swing.ButtonModel;Z)V)
  */
@@ -164,6 +174,23 @@ private javax.swing.JRadioButton getTCPTerminalServerRadioButton() {
 	}
 	return ivjTCPTerminalServerRadioButton;
 }
+
+private javax.swing.JRadioButton getTcpPortRadioButton() {
+    if (tcpPortRadioButton == null) {
+        try {
+            tcpPortRadioButton = new javax.swing.JRadioButton();
+            tcpPortRadioButton.setName("TcpPortRadioButton");
+            tcpPortRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
+            tcpPortRadioButton.setText("TCP Port");
+            tcpPortRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+            tcpPortRadioButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return tcpPortRadioButton;
+}
+
 /**
  * Return the TerminalServerRadioButton property value.
  * @return javax.swing.JRadioButton
@@ -206,6 +233,7 @@ private void handleException(Throwable exception) {
  */
 private void initConnections() throws java.lang.Exception {
 	getLocalSerialPortRadioButton().addActionListener(this);
+	getTcpPortRadioButton().addActionListener(this);
 	getTCPTerminalServerRadioButton().addActionListener(this);
     getUDPTerminalServerRadioButton().addActionListener(this);
     
@@ -234,17 +262,23 @@ private void initialize() {
         constraintsTCPTerminalServerRadioButton.gridx = 0; constraintsTCPTerminalServerRadioButton.gridy = 2;
         constraintsTCPTerminalServerRadioButton.anchor = java.awt.GridBagConstraints.WEST;
 		add(getTCPTerminalServerRadioButton(), constraintsTCPTerminalServerRadioButton);
-        
+		
         java.awt.GridBagConstraints constraintsUDPTerminalServerRadioButton = new java.awt.GridBagConstraints();
         constraintsUDPTerminalServerRadioButton.gridx = 0; constraintsUDPTerminalServerRadioButton.gridy = 3;
         constraintsUDPTerminalServerRadioButton.anchor = java.awt.GridBagConstraints.WEST;
         add(getUDPTerminalServerRadioButton(), constraintsUDPTerminalServerRadioButton);
-        
+
+        java.awt.GridBagConstraints constraintsTcpPortRadioButton = new java.awt.GridBagConstraints();
+        constraintsTcpPortRadioButton.gridx = 0; constraintsTcpPortRadioButton.gridy = 4;
+        constraintsTcpPortRadioButton.anchor = java.awt.GridBagConstraints.WEST;
+        add(getTcpPortRadioButton(), constraintsTcpPortRadioButton);
+
 		initConnections();
 		connEtoM1();
 		connEtoM2();
 		connEtoM3();
         connEtoM4();
+        connEtoM5();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -259,6 +293,14 @@ public boolean isLocalSerialPort() {
 
 public boolean isTCPTerminalServerPort() {
     return (getTCPTerminalServerRadioButton().isSelected() );
+}
+
+public boolean isUDPTerminalServerPort() {
+    return (getUDPTerminalServerRadioButton().isSelected() );
+}
+
+public boolean isTcpPort() {
+    return (getTcpPortRadioButton().isSelected() );
 }
 
 /**

@@ -27,12 +27,12 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
 			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK,
-			PortTypes.DIALOUT_POOL
+			PortTypes.DIALOUT_POOL, PortTypes.TCP
 		},
 		{		//1	- PortTimingsEditorPanel
 			PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO, PortTypes.LOCAL_DIALUP, 
 			PortTypes.TSERVER_SHARED, PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP,
-			PortTypes.LOCAL_DIALBACK
+			PortTypes.LOCAL_DIALBACK, PortTypes.TCP
 		},
 		{		//2 - PortModemEditorPanel
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK

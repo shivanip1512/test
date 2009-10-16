@@ -133,6 +133,17 @@ public static DirectPort createPort( int typeOfPort )
 			tp.getPortTiming().setExtraTimeOut(new Integer(0));
 			port = tp;
 			break;
+		case PortTypes.TCP:
+		    TcpPort tcp = new TcpPort();
+		    
+		    tcp.setPortType( PortTypes.STRING_TCP );
+		    tcp.getPortTiming().setPreTxWait(new Integer(25));
+		    tcp.getPortTiming().setRtsToTxWait(new Integer(0));
+		    tcp.getPortTiming().setPostTxWait(new Integer(0));
+		    tcp.getPortTiming().setReceiveDataWait(new Integer(0));
+		    tcp.getPortTiming().setExtraTimeOut(new Integer(0));
+		    port = tcp;
+		    break;
 		default:
 			return null;
 	}

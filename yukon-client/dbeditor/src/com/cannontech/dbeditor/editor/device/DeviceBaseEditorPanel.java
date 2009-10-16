@@ -5,6 +5,9 @@ import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
@@ -13,7 +16,10 @@ import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.JTextFieldComboEditor;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
@@ -45,6 +51,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
@@ -97,6 +104,12 @@ public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataIn
 	private javax.swing.JLabel ivjSenderLabel = null;
 	private javax.swing.JTextField ivjSenderTextField = null;
 
+	private javax.swing.JLabel tcpIpAddressLabel = null;
+	private javax.swing.JTextField tcpIpAddressTextField = null;
+    private javax.swing.JLabel tcpPortLabel = null;
+    private javax.swing.JTextField tcpPortTextField = null;
+	
+	
 	private javax.swing.JPanel jPanelMCTSettings = null;
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -130,6 +143,10 @@ class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.even
 				connEtoC13(e);
 			if (e.getSource() == DeviceBaseEditorPanel.this.getSecurityCodeTextField()) 
 				connEtoC15(e);
+			if (e.getSource() == getTcpIpAddressTextField())
+			    fireInputUpdate();
+			if (e.getSource() == getTcpPortTextField())
+			    fireInputUpdate();
 		};
 	};
 /**
@@ -162,6 +179,10 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC7(e);
 	if (e.getSource() == getJComboBoxAmpUseType()) 
 		connEtoC9(e);
+	if (e.getSource() == getTcpIpAddressTextField())
+        this.fireInputUpdate();
+    if (e.getSource() == getTcpPortTextField())
+        this.fireInputUpdate();
 	// user code begin {2}
 	// user code end
 }
@@ -181,6 +202,10 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 		connEtoC8(e);
 	if (e.getSource() == getPasswordTextField()) 
 		connEtoC13(e);
+	if (e.getSource() == getTcpIpAddressTextField())
+	    this.fireInputUpdate();
+	if (e.getSource() == getTcpPortTextField())
+        this.fireInputUpdate();
 	// user code begin {2}
 
 	if( e.getSource() instanceof com.cannontech.common.gui.util.JTextFieldComboEditor )
@@ -445,8 +470,16 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
 		// user code end
 		this.fireInputUpdate();
 		// user code begin {2}
+		int type = ((LiteYukonPAObject)getPortComboBox().getSelectedItem()).getType();
 		getDialupSettingsPanel().setVisible(
-			com.cannontech.database.data.pao.PAOGroups.isDialupPort( ((com.cannontech.database.data.lite.LiteYukonPAObject)getPortComboBox().getSelectedItem()).getType()) );
+			com.cannontech.database.data.pao.PAOGroups.isDialupPort(type) );
+		
+		boolean tcpport = (type == PAOGroups.TCP);
+		
+		getTcpIpAddressTextField().setVisible(tcpport);
+		getTcpIpAddressLabel().setVisible(tcpport);
+		getTcpPortTextField().setVisible(tcpport);
+		getTcpPortLabel().setVisible(tcpport);
 		
 		revalidate();
 		repaint();
@@ -559,6 +592,11 @@ private javax.swing.JPanel getCommunicationPanel() {
 			GridBagConstraints senderTextFieldConstraint = new GridBagConstraints();
 			GridBagConstraints securityCodeTextFieldConstraint = new GridBagConstraints();
 			GridBagConstraints securityCodeLabelConstraint = new GridBagConstraints();
+			GridBagConstraints tcpIpAddressLabelContraint = new GridBagConstraints();
+			GridBagConstraints tcpIpAdressTextFieldConstraint = new GridBagConstraints();
+			GridBagConstraints tcpPortLabelConstraint = new GridBagConstraints();
+			GridBagConstraints tcpPortTextFieldConstraint = new GridBagConstraints();
+			
 			
 			waitLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
 			waitLabelConstraint.gridy = 2;
@@ -681,8 +719,25 @@ private javax.swing.JPanel getCommunicationPanel() {
 			ccuAmpUseTypeLabelConstraint.gridx = 0;
 			communicationPanel.add(getJLabelCCUAmpUseType(), ccuAmpUseTypeLabelConstraint);
 			
-			
-			
+			tcpIpAddressLabelContraint.insets = new java.awt.Insets(5,5,5,5);
+			tcpIpAddressLabelContraint.gridy = 6;
+			tcpIpAddressLabelContraint.gridx = 0;
+			communicationPanel.add(getTcpIpAddressLabel(), tcpIpAddressLabelContraint);
+
+			tcpIpAdressTextFieldConstraint.insets = new java.awt.Insets(5,5,5,5);
+			tcpIpAdressTextFieldConstraint.gridy = 6;
+			tcpIpAdressTextFieldConstraint.gridx = 1;
+            communicationPanel.add(getTcpIpAddressTextField(), tcpIpAdressTextFieldConstraint);
+      
+            tcpPortLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+            tcpPortLabelConstraint.gridy = 7;
+            tcpPortLabelConstraint.gridx = 0;
+            communicationPanel.add(getTcpPortLabel(), tcpPortLabelConstraint);
+            
+            tcpPortTextFieldConstraint.insets = new java.awt.Insets(5,5,5,5);
+            tcpPortTextFieldConstraint.gridy = 7;
+            tcpPortTextFieldConstraint.gridx = 1;
+            communicationPanel.add(getTcpPortTextField(), tcpPortTextFieldConstraint);
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -1440,6 +1495,78 @@ private javax.swing.JLabel getSenderLabel() {
 	return ivjSenderLabel;
 }
 
+private javax.swing.JLabel getTcpIpAddressLabel() {
+    if (tcpIpAddressLabel == null) {
+        try {
+            tcpIpAddressLabel = new javax.swing.JLabel();
+            tcpIpAddressLabel.setName("IpAddressLabel");
+            tcpIpAddressLabel.setText("Ip Address:");
+            tcpIpAddressLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            tcpIpAddressLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            tcpIpAddressLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            tcpIpAddressLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            tcpIpAddressLabel.setVisible(false);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return tcpIpAddressLabel;
+}
+
+private javax.swing.JLabel getTcpPortLabel() {
+    if (tcpPortLabel == null) {
+        try {
+            tcpPortLabel = new javax.swing.JLabel();
+            tcpPortLabel.setName("PortLabel");
+            tcpPortLabel.setText("Port:");
+            tcpPortLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            tcpPortLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            tcpPortLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            tcpPortLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            tcpPortLabel.setVisible(false);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return tcpPortLabel;
+}
+
+private javax.swing.JTextField getTcpIpAddressTextField() {
+    if (tcpIpAddressTextField == null) {
+        try {
+            tcpIpAddressTextField = new javax.swing.JTextField();
+            tcpIpAddressTextField.setName("TcpIpAddressTextField");
+            tcpIpAddressTextField.setMaximumSize(new java.awt.Dimension(2147483647, 20));
+            tcpIpAddressTextField.setColumns(0);
+            tcpIpAddressTextField.setPreferredSize(new java.awt.Dimension(157,24));
+            tcpIpAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
+            tcpIpAddressTextField.setMinimumSize(new java.awt.Dimension(120, 20));
+            tcpIpAddressTextField.setVisible(false);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return tcpIpAddressTextField;
+}
+
+private javax.swing.JTextField getTcpPortTextField() {
+    if (tcpPortTextField == null) {
+        try {
+            tcpPortTextField = new javax.swing.JTextField();
+            tcpPortTextField.setName("TcpPortTextField");
+            tcpPortTextField.setMaximumSize(new java.awt.Dimension(2147483647, 20));
+            tcpPortTextField.setColumns(0);
+            tcpPortTextField.setPreferredSize(new java.awt.Dimension(157,24));
+            tcpPortTextField.setFont(new java.awt.Font("sansserif", 0, 14));
+            tcpPortTextField.setMinimumSize(new java.awt.Dimension(120, 20));
+            tcpPortTextField.setVisible(false);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return tcpPortTextField;
+}
+
 /**
  * Return the SenderTextField property value.
  * @return javax.swing.JTextField
@@ -1623,7 +1750,23 @@ public Object getValue(Object val)
 		d.getDevice().setControlInhibit( new Character( 'Y' ) );
 	else
 		d.getDevice().setControlInhibit( new Character( 'N' ) );*/
-
+    LiteYukonPAObject port2 = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
+    
+    PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
+    propertyDao.remove(new PaoProperty(deviceBase.getPAObjectID(),"",""));
+    
+    int porttype = port2.getType();
+    if (PortTypes.TCP == porttype && 
+        (devType == PAOGroups.RTU_DNP || 
+         devType == PAOGroups.FAULT_CI ||
+         devType == PAOGroups.NEUTRAL_MONITOR))
+    {      
+        int id = deviceBase.getPAObjectID();
+        
+        propertyDao.add(new PaoProperty(id,"tcp ip address",getTcpIpAddressTextField().getText()));
+        propertyDao.add(new PaoProperty(id,"tcp port",getTcpPortTextField().getText()));        
+    }
+	
 	//This is a little bit ugly
 	//The address could be coming from three distinct
 	//types of devices - yet all devices have an address
@@ -1672,10 +1815,10 @@ public Object getValue(Object val)
 		Integer postCommWait = null;
 
 		LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
-
+		
 		portID = new Integer(port.getYukonID());
 		dDirect.setPortID( portID );
-
+		
 		Object postCommWaitSpinVal = getPostCommWaitSpinner().getValue();
 		if( postCommWaitSpinVal instanceof Long ) {
 			postCommWait = new Integer( ((Long)postCommWaitSpinVal).intValue() );
@@ -1831,7 +1974,7 @@ public Object getValue(Object val)
 			carrierBase.getDeviceRoutes().setRouteID( routeId);
 		}
 	}
-	
+    
 	return val;
 }
 /**
@@ -1897,6 +2040,8 @@ private void initConnections() throws java.lang.Exception {
 	getPasswordTextField().addCaretListener(ivjEventHandler);
 	getSenderTextField().addCaretListener(ivjEventHandler);
 	getSecurityCodeTextField().addCaretListener(ivjEventHandler);
+	getTcpIpAddressTextField().addCaretListener(ivjEventHandler);
+	getTcpPortTextField().addCaretListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -2600,7 +2745,7 @@ public void setValue(Object val)
 		RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
 		getPhysicalAddressTextField().setDocument( new LongRangeDocument(0L, rangeBase.getUpperRange()) );
 	}
-
+	
 	//This is a bit ugly
 	//The address could come from one of three different types of
 	//devices even though they all have one
@@ -2637,7 +2782,44 @@ public void setValue(Object val)
     } else {
 		setNonRemBaseValue( val );		
 	}
-
+    LiteYukonPAObject port2 = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
+    
+    PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
+    
+    int porttype = port2.getType();
+    if (PortTypes.TCP == porttype && 
+        (deviceType == PAOGroups.RTU_DNP || 
+         deviceType == PAOGroups.FAULT_CI ||
+         deviceType == PAOGroups.NEUTRAL_MONITOR))
+    {      
+        int id = deviceBase.getPAObjectID();
+        String value = null;
+        try{
+            PaoProperty prop = propertyDao.getByIdAndName(id,"tcp ip address");
+            value = prop.getPropertyValue();
+        } catch (EmptyResultDataAccessException e) {
+            value = CtiUtilities.STRING_NONE;
+        }
+        getTcpIpAddressTextField().setText(value);
+        
+        try{
+            PaoProperty prop = propertyDao.getByIdAndName(id,"tcp port");
+            value = prop.getPropertyValue();
+        } catch (EmptyResultDataAccessException e) {
+            value = CtiUtilities.STRING_NONE;
+        }
+        getTcpPortTextField().setText(value);
+        
+        getTcpIpAddressLabel().setVisible(true);
+        getTcpIpAddressTextField().setVisible(true);
+        getTcpPortLabel().setVisible(true);
+        getTcpPortTextField().setVisible(true);
+    } else {
+        getTcpIpAddressLabel().setVisible(false);
+        getTcpIpAddressTextField().setVisible(false);
+        getTcpPortLabel().setVisible(false);
+        getTcpPortTextField().setVisible(false);
+    }
 }
 /**
  * Method to handle events for the JCValueListener interface.

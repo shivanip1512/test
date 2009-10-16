@@ -8,6 +8,7 @@ package com.cannontech.dbeditor.editor.port;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPort;
 import com.cannontech.database.data.port.PooledPort;
+import com.cannontech.database.data.port.TcpPort;
 import com.cannontech.database.data.port.TerminalServerDirectPort;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
@@ -468,13 +469,13 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsPhysicalPortLabel.gridx = 1; constraintsPhysicalPortLabel.gridy = 3;
 			constraintsPhysicalPortLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsPhysicalPortLabel.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getPhysicalPortLabel(), constraintsPhysicalPortLabel);
+			ivjConfigurationPanel.add(getPhysicalPortLabel(), constraintsPhysicalPortLabel);
 
 			java.awt.GridBagConstraints constraintsBaudRateLabel = new java.awt.GridBagConstraints();
 			constraintsBaudRateLabel.gridx = 1; constraintsBaudRateLabel.gridy = 4;
 			constraintsBaudRateLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsBaudRateLabel.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getBaudRateLabel(), constraintsBaudRateLabel);
+			ivjConfigurationPanel.add(getBaudRateLabel(), constraintsBaudRateLabel);
 
 			java.awt.GridBagConstraints constraintsPhysicalPortComboBox = new java.awt.GridBagConstraints();
 			constraintsPhysicalPortComboBox.gridx = 2; constraintsPhysicalPortComboBox.gridy = 3;
@@ -482,48 +483,48 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsPhysicalPortComboBox.weightx = 1.0;
 			constraintsPhysicalPortComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsPhysicalPortComboBox.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getPhysicalPortComboBox(), constraintsPhysicalPortComboBox);
+			ivjConfigurationPanel.add(getPhysicalPortComboBox(), constraintsPhysicalPortComboBox);
 
 			java.awt.GridBagConstraints constraintsBaudRateComboBox = new java.awt.GridBagConstraints();
 			constraintsBaudRateComboBox.gridx = 2; constraintsBaudRateComboBox.gridy = 4;
 			constraintsBaudRateComboBox.gridwidth = 2;
 			constraintsBaudRateComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsBaudRateComboBox.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getBaudRateComboBox(), constraintsBaudRateComboBox);
+			ivjConfigurationPanel.add(getBaudRateComboBox(), constraintsBaudRateComboBox);
 
 			java.awt.GridBagConstraints constraintsCarrierDetectWaitLabel = new java.awt.GridBagConstraints();
 			constraintsCarrierDetectWaitLabel.gridx = 1; constraintsCarrierDetectWaitLabel.gridy = 7;
 			constraintsCarrierDetectWaitLabel.gridwidth = 1;
 			constraintsCarrierDetectWaitLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCarrierDetectWaitLabel.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getCarrierDetectWaitLabel(), constraintsCarrierDetectWaitLabel);
+			ivjConfigurationPanel.add(getCarrierDetectWaitLabel(), constraintsCarrierDetectWaitLabel);
 
 			java.awt.GridBagConstraints constraintsCarrierDetectWaitTextField = new java.awt.GridBagConstraints();
 			constraintsCarrierDetectWaitTextField.gridx = 2; constraintsCarrierDetectWaitTextField.gridy = 7;
 			constraintsCarrierDetectWaitTextField.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCarrierDetectWaitTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsCarrierDetectWaitTextField.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getCarrierDetectWaitTextField(), constraintsCarrierDetectWaitTextField);
+			ivjConfigurationPanel.add(getCarrierDetectWaitTextField(), constraintsCarrierDetectWaitTextField);
 
 			java.awt.GridBagConstraints constraintsMsecsLabel = new java.awt.GridBagConstraints();
 			constraintsMsecsLabel.gridx = 3; constraintsMsecsLabel.gridy = 7;
 			constraintsMsecsLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsMsecsLabel.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getMsecsLabel(), constraintsMsecsLabel);
+			ivjConfigurationPanel.add(getMsecsLabel(), constraintsMsecsLabel);
 
 			java.awt.GridBagConstraints constraintsCarrierDetectCheckBox = new java.awt.GridBagConstraints();
 			constraintsCarrierDetectCheckBox.gridx = 1; constraintsCarrierDetectCheckBox.gridy = 6;
 			constraintsCarrierDetectCheckBox.gridwidth = 3;
 			constraintsCarrierDetectCheckBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCarrierDetectCheckBox.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getCarrierDetectCheckBox(), constraintsCarrierDetectCheckBox);
+			ivjConfigurationPanel.add(getCarrierDetectCheckBox(), constraintsCarrierDetectCheckBox);
 
 	        java.awt.GridBagConstraints constraintsEncryptionCheckBox = new java.awt.GridBagConstraints();
 	        constraintsEncryptionCheckBox.gridx = 1; constraintsEncryptionCheckBox.gridy = 8;
 	        constraintsEncryptionCheckBox.gridwidth = 3;
 	        constraintsEncryptionCheckBox.anchor = java.awt.GridBagConstraints.WEST;
 	        constraintsEncryptionCheckBox.insets = new java.awt.Insets(2,5,2,2);
-            getConfigurationPanel().add(getEncodingCheckBox(), constraintsEncryptionCheckBox);
+	        ivjConfigurationPanel.add(getEncodingCheckBox(), constraintsEncryptionCheckBox);
 			
             java.awt.GridBagConstraints constraintsEncryptionTextField = new java.awt.GridBagConstraints();
             constraintsEncryptionTextField.gridx = 2; constraintsEncryptionTextField.gridy = 9;
@@ -531,33 +532,33 @@ private javax.swing.JPanel getConfigurationPanel() {
             constraintsEncryptionTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsEncryptionTextField.gridwidth = 2;
             constraintsEncryptionTextField.insets = new java.awt.Insets(2,5,2,2);
-            getConfigurationPanel().add(getEncodingTextField(), constraintsEncryptionTextField);
+            ivjConfigurationPanel.add(getEncodingTextField(), constraintsEncryptionTextField);
             
             java.awt.GridBagConstraints constraintsEncryptionLabel = new java.awt.GridBagConstraints();
             constraintsEncryptionLabel.gridx = 1; constraintsEncryptionLabel.gridy = 9;
             constraintsEncryptionLabel.gridwidth = 1;
             constraintsEncryptionLabel.anchor = java.awt.GridBagConstraints.WEST;
             constraintsEncryptionLabel.insets = new java.awt.Insets(2,5,2,2);
-            getConfigurationPanel().add(getEncryptionLabel(), constraintsEncryptionLabel);
+            ivjConfigurationPanel.add(getEncryptionLabel(), constraintsEncryptionLabel);
             
 			java.awt.GridBagConstraints constraintsCommonProtocolComboBox = new java.awt.GridBagConstraints();
 			constraintsCommonProtocolComboBox.gridx = 2; constraintsCommonProtocolComboBox.gridy = 5;
 			constraintsCommonProtocolComboBox.gridwidth = 2;
 			constraintsCommonProtocolComboBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCommonProtocolComboBox.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getCommonProtocolComboBox(), constraintsCommonProtocolComboBox);
+			ivjConfigurationPanel.add(getCommonProtocolComboBox(), constraintsCommonProtocolComboBox);
 
 			java.awt.GridBagConstraints constraintsCommonProtocolLabel = new java.awt.GridBagConstraints();
 			constraintsCommonProtocolLabel.gridx = 1; constraintsCommonProtocolLabel.gridy = 5;
 			constraintsCommonProtocolLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsCommonProtocolLabel.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getCommonProtocolLabel(), constraintsCommonProtocolLabel);
+			ivjConfigurationPanel.add(getCommonProtocolLabel(), constraintsCommonProtocolLabel);
 
 			java.awt.GridBagConstraints constraintsIPAddressLabel = new java.awt.GridBagConstraints();
 			constraintsIPAddressLabel.gridx = 1; constraintsIPAddressLabel.gridy = 1;
 			constraintsIPAddressLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsIPAddressLabel.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getIPAddressLabel(), constraintsIPAddressLabel);
+			ivjConfigurationPanel.add(getIPAddressLabel(), constraintsIPAddressLabel);
 
 			java.awt.GridBagConstraints constraintsIPAddressTextField = new java.awt.GridBagConstraints();
 			constraintsIPAddressTextField.gridx = 2; constraintsIPAddressTextField.gridy = 1;
@@ -566,7 +567,7 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsIPAddressTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsIPAddressTextField.weightx = 1.0;
 			constraintsIPAddressTextField.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getIPAddressTextField(), constraintsIPAddressTextField);
+			ivjConfigurationPanel.add(getIPAddressTextField(), constraintsIPAddressTextField);
 
 			java.awt.GridBagConstraints constraintsPortNumberTextField = new java.awt.GridBagConstraints();
 			constraintsPortNumberTextField.gridx = 2; constraintsPortNumberTextField.gridy = 2;
@@ -574,13 +575,13 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsPortNumberTextField.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsPortNumberTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsPortNumberTextField.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getPortNumberTextField(), constraintsPortNumberTextField);
+			ivjConfigurationPanel.add(getPortNumberTextField(), constraintsPortNumberTextField);
 
 			java.awt.GridBagConstraints constraintsPortNumberLabel = new java.awt.GridBagConstraints();
 			constraintsPortNumberLabel.gridx = 1; constraintsPortNumberLabel.gridy = 2;
 			constraintsPortNumberLabel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsPortNumberLabel.insets = new java.awt.Insets(2,5,2,2);
-			getConfigurationPanel().add(getPortNumberLabel(), constraintsPortNumberLabel);
+			ivjConfigurationPanel.add(getPortNumberLabel(), constraintsPortNumberLabel);
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -1158,6 +1159,28 @@ public void setValue(Object val)
 	else if( val instanceof PooledPort )
 	{
 		getConfigurationPanel().setVisible( false );
+	}
+	else if (val instanceof TcpPort)
+	{
+        TcpPort pts = (TcpPort) dp;
+       
+        getCarrierDetectWaitTextField().setText("0");
+        getCarrierDetectWaitTextField().setVisible(false);
+        getIPAddressLabel().setVisible(false);
+        getIPAddressTextField().setVisible(false);
+        getPortNumberLabel().setVisible(false);
+        getPortNumberTextField().setVisible(false);
+        getPhysicalPortLabel().setVisible(false);
+        getPhysicalPortComboBox().setVisible(false);
+
+        getCommonProtocolLabel().setVisible(false);
+        getCommonProtocolComboBox().setVisible(false);
+        getCarrierDetectCheckBox().setVisible(false);
+        getEncodingCheckBox().setVisible(false);
+        getEncodingTextField().setVisible(false);
+        getCarrierDetectWaitLabel().setVisible(false);
+        getMsecsLabel().setVisible(false);
+        getEncryptionLabel().setVisible(false);
 	}
 
 	getTypeLabelField().setText(portType);

@@ -9,6 +9,7 @@ public class PortWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private PortTypeQuestionPanelA portTypeQuestionPanelA;
 	private LocalPortTypeQuestionPanel localPortTypeQuestionPanel;
 	private TerminalServerTypeQuestionPanel terminalServerTypeQuestionPanel;
+	private TcpTypeQuestionPanel tcpTypeQuestionPanel;
 	private SimpleLocalPortSettingsPanel simpleLocalPortSettingsPanel;
 	private SimpleTerminalServerSettingsPanel simpleTerminalServerSettingsPanel;
 	private SimpleDialupModemPanel simpleDialupModemPanel;
@@ -58,35 +59,38 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
         getPortTypeQuestionPanelA().setFirstFocus();
         return getPortTypeQuestionPanelA();
 	}
-	else
-	if( currentInputPanel == getPortTypeQuestionPanelA() )
+	else if( currentInputPanel == getPortTypeQuestionPanelA() )
 	{
-		if( ((PortTypeQuestionPanelA) currentInputPanel).isLocalSerialPort() )
+		if (((PortTypeQuestionPanelA) currentInputPanel).isLocalSerialPort() )
 		{
             getLocalPortTypeQuestionPanel().setFirstFocus();
             return getLocalPortTypeQuestionPanel();
 		}
-		else if( ((PortTypeQuestionPanelA) currentInputPanel).isTCPTerminalServerPort())
+		else if (((PortTypeQuestionPanelA) currentInputPanel).isTCPTerminalServerPort()) 
 		{
             getTerminalServerTypeQuestionPanel().setFirstFocus();
             getTerminalServerTypeQuestionPanel().setAsTCP();
             return getTerminalServerTypeQuestionPanel();
-		}else
-        {
+		}
+		else if (((PortTypeQuestionPanelA) currentInputPanel).isUDPTerminalServerPort()) 
+		{
             getTerminalServerTypeQuestionPanel().setFirstFocus();
             getTerminalServerTypeQuestionPanel().setAsUDP();
             return getTerminalServerTypeQuestionPanel();
         }
+		else
+		{
+		    getTcpTypeQuestionPanel().setFirstFocus();
+		    return getTcpTypeQuestionPanel();
+		}
 	}
-	else
-	if( currentInputPanel == getLocalPortTypeQuestionPanel() ||
-		 currentInputPanel == getTerminalServerTypeQuestionPanel() )
+	else if( currentInputPanel == getLocalPortTypeQuestionPanel() ||
+	         currentInputPanel == getTerminalServerTypeQuestionPanel() )
 	{
 		if( getPortTypeQuestionPanelA().isLocalSerialPort() )
 		{
 			//set some items to show or not
-			getSimpleLocalPortSettingsPanel().setDisplayItems(
-					getLocalPortTypeQuestionPanel().isDialoutPool() );
+			getSimpleLocalPortSettingsPanel().setDisplayItems(getLocalPortTypeQuestionPanel().isDialoutPool());
             
             getSimpleLocalPortSettingsPanel().setFirstFocus();
 
@@ -106,11 +110,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
             return getSimpleTerminalServerSettingsPanel();
 		}
 	}
-	else
-	if( currentInputPanel == getSimpleLocalPortSettingsPanel() || 
-		currentInputPanel == getSimpleTerminalServerSettingsPanel() )
+	else if( currentInputPanel == getSimpleLocalPortSettingsPanel() || 
+		     currentInputPanel == getSimpleTerminalServerSettingsPanel() )
 	{
-
 		if( getPortTypeQuestionPanelA().isLocalSerialPort() )
 		{
 	
@@ -202,6 +204,14 @@ protected TerminalServerTypeQuestionPanel getTerminalServerTypeQuestionPanel() {
 	
 	return terminalServerTypeQuestionPanel;
 }
+
+protected TcpTypeQuestionPanel getTcpTypeQuestionPanel() {
+    if( tcpTypeQuestionPanel == null )
+        tcpTypeQuestionPanel = new TcpTypeQuestionPanel();
+    
+    return tcpTypeQuestionPanel;
+}
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -220,6 +230,7 @@ protected boolean isLastInputPanel(DataInputPanel panel) {
 					 !getPortTypeQuestionPanelA().isLocalSerialPort() &&
 					 !getTerminalServerTypeQuestionPanel().isDialup())
 				|| (panel == getPooledPortListPanel())
+				|| (panel == getTcpTypeQuestionPanel())
 			);	
 }
 

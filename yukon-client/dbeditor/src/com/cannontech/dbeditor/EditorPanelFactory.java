@@ -10,6 +10,7 @@ package com.cannontech.dbeditor;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.database.data.device.lm.LMScenario;
+import com.cannontech.database.data.port.TcpPort;
 import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.DBPersistent;
@@ -97,6 +98,8 @@ public final class EditorPanelFactory
 		
 	{TOUSchedule.class,
 		TOUEditorPanel.class},
+		
+	{TcpPort.class, com.cannontech.dbeditor.editor.port.PortEditorPanel.class},
         
 	};
 

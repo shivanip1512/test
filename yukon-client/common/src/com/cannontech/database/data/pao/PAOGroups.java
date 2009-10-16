@@ -1,5 +1,7 @@
 package com.cannontech.database.data.pao;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.message.macs.message.Schedule;
 
 //import com.cannontech.database.data.customer.*;
@@ -795,6 +797,10 @@ public final static int getPortType(String typeString)
 	else	if( typeString.equalsIgnoreCase(PortTypes.STRING_DIALOUT_POOL) )
 	{
 		return DIALOUT_POOL;
+	}
+	else if (typeString.equalsIgnoreCase(PortTypes.STRING_TCP))
+	{
+	    return TCP;
 	}
 	else
 		return INVALID;

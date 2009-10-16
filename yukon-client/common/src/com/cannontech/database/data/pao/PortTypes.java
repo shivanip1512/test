@@ -18,6 +18,7 @@ public interface PortTypes extends TypeBase
 	public final static int TSERVER_DIALUP      = PORT_OFFSET + 7;
 	public final static int LOCAL_DIALBACK      = PORT_OFFSET + 8;
 	public final static int DIALOUT_POOL		  = PORT_OFFSET + 9;
+	public final static int TCP         = PORT_OFFSET + 10;
 
 
 	//Strings of port types
@@ -32,5 +33,6 @@ public interface PortTypes extends TypeBase
 	public final static String STRING_TERM_SERVER_RADIO	= "Terminal Server Radio";
 	public final static String STRING_TERM_SERVER_DIALUP	= "Terminal Server Dialup";
 	public final static String STRING_DIALOUT_POOL			= "Dialout Pool";
+	public final static String STRING_TCP         = "TCP";
 
 }
