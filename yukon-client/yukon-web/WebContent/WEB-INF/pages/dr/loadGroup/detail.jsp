@@ -45,7 +45,7 @@
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.state"/>
                         <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
                             <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-                                <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/>
+                                <dr:loadGroupState loadGroupId="${loadGroupId}"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">

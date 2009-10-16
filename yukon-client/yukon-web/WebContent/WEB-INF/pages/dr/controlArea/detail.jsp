@@ -43,7 +43,7 @@
                         <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.state"/>
                             <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STATE"/>
+                                <dr:controlAreaState controlAreaId="${controlAreaId}"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">

@@ -9,15 +9,15 @@ public class LoadGroupStateClassnameField extends LoadGroupBackingFieldBase {
     public String getFieldName() {
         return "STATE_CLASSNAME";
     }
-    
+
     @Override
     public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
-        return "";
-    }
-    
-    @Override
-    protected boolean handlesNull() {
-        return true;
+        LoadGroupState state = LoadGroupState.valueOf(group.getGroupControlState());
+        return "LOADGROUP_STATE_" + state.toString();
     }
 
+    @Override
+    protected boolean handlesNull() {
+        return false;
+    }
 }

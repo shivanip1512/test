@@ -187,7 +187,7 @@
                         </td>
                         <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                             <td>
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STATE"/>
+                                <dr:controlAreaState controlAreaId="${controlAreaId}"/>
                             </td>
                         </cti:checkRolesAndProperties>
                         <td style="white-space: nowrap;">

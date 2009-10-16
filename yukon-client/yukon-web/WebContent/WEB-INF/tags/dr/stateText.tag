@@ -3,17 +3,19 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
+<c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
 <c:choose>
     <c:when test="${pao.paoIdentifier.paoType == 'LM_SCENARIO'}">
     </c:when>
     <c:when test="${pao.paoIdentifier.paoType == 'LM_CONTROL_AREA'}">
-        <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${pao.paoIdentifier.paoId}/STATE"/>
+        <dr:controlAreaState controlAreaId="${paoId}"/>
     </c:when>
     <c:when test="${pao.paoIdentifier.paoType == 'LM_DIRECT_PROGRAM'}">
-        <cti:dataUpdaterValue type="DR_PROGRAM" identifier="${pao.paoIdentifier.paoId}/STATE"/>
+        <dr:programState programId="${paoId}"/>
     </c:when>
     <c:otherwise>
-        <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${pao.paoIdentifier.paoId}/STATE"/>
+        <dr:loadGroupState loadGroupId="${paoId}"/>
     </c:otherwise>
 </c:choose>

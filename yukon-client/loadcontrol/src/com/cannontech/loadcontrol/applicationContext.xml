@@ -40,6 +40,8 @@
     <bean id="drControlAreaNameField" class="com.cannontech.dr.controlarea.model.ControlAreaNameField"/>
     <bean id="drControlAreaStateField" class="com.cannontech.dr.controlarea.model.ControlAreaStateField"/>
     <bean id="drControlAreaStateClassnameField" class="com.cannontech.dr.controlarea.model.ControlAreaStateClassnameField"/>
+    <bean id="drControlAreaEnabledField" class="com.cannontech.dr.controlarea.model.ControlAreaEnabledField"/>
+    <bean id="drControlAreaEnabledClassnameField" class="com.cannontech.dr.controlarea.model.ControlAreaEnabledClassnameField"/>
     <bean id="drControlAreaPriorityField" class="com.cannontech.dr.controlarea.model.ControlAreaPriorityField"/>
     <bean id="drControlAreaStartField" class="com.cannontech.dr.controlarea.model.ControlAreaStartField"/>
     <bean id="drControlAreaStopField" class="com.cannontech.dr.controlarea.model.ControlAreaStopField"/>
@@ -63,6 +65,8 @@
     <bean id="drProgramCurrentGearField" class="com.cannontech.dr.program.model.ProgramCurrentGearField"/>
     <bean id="drProgramLoadCapacityField" class="com.cannontech.dr.program.model.ProgramLoadCapacityField"/>
     <bean id="drProgramStateClassnameField" class="com.cannontech.dr.program.model.ProgramStateClassnameField"/>
+    <bean id="drProgramEnabledField" class="com.cannontech.dr.program.model.ProgramEnabledField"/>
+    <bean id="drProgramEnabledClassnameField" class="com.cannontech.dr.program.model.ProgramEnabledClassnameField"/>
     <bean id="drProgramShowAction" class="com.cannontech.dr.program.model.ProgramShowActionField"/>
     <bean id="drProgramPriority" class="com.cannontech.dr.program.model.ProgramPriorityField"/>
 
@@ -75,5 +79,7 @@
     <bean id="drLoadGroupReductionField" class="com.cannontech.dr.loadgroup.model.LoadGroupReductionField"/>
     <bean id="drLoadGroupLoadCapacityField" class="com.cannontech.dr.loadgroup.model.LoadGroupLoadCapacityField"/>
     <bean id="drLoadGroupStateClassnameField" class="com.cannontech.dr.loadgroup.model.LoadGroupStateClassnameField"/>
+    <bean id="drLoadGroupEnabledField" class="com.cannontech.dr.loadgroup.model.LoadGroupEnabledField"/>
+    <bean id="drLoadGroupEnabledClassnameField" class="com.cannontech.dr.loadgroup.model.LoadGroupEnabledClassnameField"/>
     <bean id="drLoadGroupShowAction" class="com.cannontech.dr.loadgroup.model.LoadGroupShowActionField"/>
 </beans>

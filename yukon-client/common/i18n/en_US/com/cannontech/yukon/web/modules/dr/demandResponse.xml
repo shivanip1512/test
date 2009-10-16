@@ -52,6 +52,8 @@
 <entry key="yukon.web.modules.dr.controlArea.value.START">{date|TIME_TZ}</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.STOP">{date|TIME_TZ}</entry>
 <entry key="yukon.web.modules.dr.controlArea.value.LOAD_CAPACITY">{0,number,0.0}</entry>
+<entry key="yukon.web.modules.dr.controlArea.value.ENABLED"></entry>
+<entry key="yukon.web.modules.dr.controlArea.value.DISABLED">Disabled:</entry>
 
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.STATUS.VALUE_THRESHOLD">{state} / {threshold}</entry>
 <entry key="yukon.web.modules.dr.controlAreaTrigger.value.THRESHOLD.VALUE_THRESHOLD">{value|2} / {threshold|2}</entry>
@@ -115,6 +117,8 @@
 <entry key="yukon.web.modules.dr.program.value.REDUCTION">{0,number,0.0}</entry>
 <entry key="yukon.web.modules.dr.program.value.LOAD_CAPACITY">{0,number,0.0}</entry>
 <entry key="yukon.web.modules.dr.program.value.REDUCTION"></entry>
+<entry key="yukon.web.modules.dr.program.value.ENABLED"></entry>
+<entry key="yukon.web.modules.dr.program.value.DISABLED">Disabled:</entry>
 
 <entry key="yukon.web.modules.dr.program.startProgram.title">Start Program</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.confirmQuestion">Are you sure you want to start the program {0}?</entry>
@@ -235,6 +239,8 @@
 <entry key="yukon.web.modules.dr.loadGroup.value.CONTROL_STATISTICS">{0} / {1} / {2} / {3}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.REDUCTION">{0,number,#.#}</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.LOAD_CAPACITY">{0,number,#.#}</entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.ENABLED"></entry>
+<entry key="yukon.web.modules.dr.loadGroup.value.DISABLED">Disabled:</entry>
 
 <!-- sendShedConfirm.jsp -->
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.title">Send Shed</entry>

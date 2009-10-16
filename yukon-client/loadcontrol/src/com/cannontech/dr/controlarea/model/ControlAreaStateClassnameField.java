@@ -9,15 +9,15 @@ public class ControlAreaStateClassnameField extends ControlAreaBackingFieldBase 
     public String getFieldName() {
         return "STATE_CLASSNAME";
     }
-    
+
     @Override
     public Object getControlAreaValue(LMControlArea controlArea, YukonUserContext userContext) {
-        return "";
-    }
-    
-    @Override
-    protected boolean handlesNull() {
-        return true;
+        ControlAreaState state = ControlAreaState.valueOf(controlArea.getControlAreaState());
+        return "CONTROLAREA_STATE_" + state.toString();
     }
 
+    @Override
+    protected boolean handlesNull() {
+        return false;
+    }
 }

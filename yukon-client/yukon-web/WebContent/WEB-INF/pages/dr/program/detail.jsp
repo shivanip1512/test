@@ -44,7 +44,7 @@
                         <cti:checkRolesAndProperties value="PROGRAM_STATE">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.state"/>
                             <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-                                <cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
+                                <dr:programState programId="${programId}"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="PROGRAM_START">

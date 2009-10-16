@@ -211,12 +211,12 @@ function clearFilter() {
                 <td>
                     <%-- TODO:  in phase 3, update cti:classUpdater to be able to
                      update the class of the row instead --%>
-                    <cti:classUpdater identifier="${programId}/STATE_CLASSNAME" type="DR_PROGRAM">
-                        <a href="${programURL}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></a>
-                    </cti:classUpdater>
+                    <a href="${programURL}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></a>
                 </td>
                 <cti:checkRolesAndProperties value="PROGRAM_STATE">
-                    <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                    <td>
+                        <dr:programState programId="${programId}"/>
+                    </td>
                 </cti:checkRolesAndProperties>
                 <td style="white-space: nowrap;">
                     <dr:programListActions pao="${program}"/>

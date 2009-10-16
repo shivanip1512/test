@@ -168,14 +168,14 @@
             <tr id="loadGroupRow${loadGroupId}" class="<tags:alternateRow odd="" even="altRow"/>">
                 <td><dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${favoritesByPaoId[loadGroupId]}"/></td>
                 <td>
-                    <%-- TODO:  in phase 3, update cti:classUpdater to be able to
-                     update the class of the row instead --%>
-                    <cti:classUpdater type="DR_LOADGROUP" identifier="${loadGroupId}/STATE_CLASSNAME" >
-                        <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${loadGroup.name}</spring:escapeBody></a>
-                    </cti:classUpdater>
+                    <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${loadGroup.name}</spring:escapeBody></a>
                 </td>
                 <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                    <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/STATE"/></td>
+                    <%-- TODO:  in phase 3, update cti:classUpdater to be able to
+                     update the class of the row instead --%>
+                    <td class="nonwrapping">
+                        <dr:loadGroupState loadGroupId="${loadGroupId}"/>
+                    </td>
                 </cti:checkRolesAndProperties>
                 <td class="nonwrapping"><dr:loadGroupListActions pao="${loadGroup}"/></td>
                 <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
