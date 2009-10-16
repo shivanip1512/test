@@ -2,33 +2,27 @@ package com.cannontech.analysis.tablemodel;
 
 import java.util.LinkedHashMap;
 
+import org.apache.commons.lang.BooleanUtils;
+
 import com.cannontech.user.YukonUserContext;
 
-public class DeviceCollectionModel extends DeviceGroupModelBase {
+public class DeviceGroupModel extends DeviceGroupModelBase {
     
-	private String collectionDescription;
-	
 	@Override
 	public String getTitle() {
-		return "Device Collection Report";
+		return "Device Group Report";
 	}
 	
     @Override
     public boolean isIncludeSubGroups() {
-    	return true;
+    	return false;
     }
     
     @Override
     public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
-        info.put("Collection Description", collectionDescription);
+        info.put("Group", deviceGroup.getFullName());
+        info.put("Include Sub Groups", BooleanUtils.toStringYesNo(isIncludeSubGroups()));
         return info;
     }
-    
-    public String getCollectionDescription() {
-		return collectionDescription;
-	}
-    public void setCollectionDescription(String collectionDescription) {
-		this.collectionDescription = collectionDescription;
-	}
 }

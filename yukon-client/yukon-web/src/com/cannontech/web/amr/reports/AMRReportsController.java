@@ -3,21 +3,27 @@ package com.cannontech.web.amr.reports;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.simplereport.YukonReportDefinition;
+import com.cannontech.simplereport.YukonReportDefinitionFactory;
 
 public class AMRReportsController extends MultiActionController  {
     
     private PointDao pointDao;
     private SimpleReportService simpleReportService;
+    private DeviceGroupService deviceGroupService;
+    private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     
     /**
      * For viewing the Archived Data report crumbs back to high bill complaint page
@@ -120,18 +126,15 @@ public class AMRReportsController extends MultiActionController  {
      */
     public ModelAndView groupDevicesReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-        // mav
         ModelAndView mav = new ModelAndView("reports/htmlGroupDevicesReportView.jsp");
         
-        // model stuff
-        String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
+        // group
         String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
-        
-        mav.addObject("definitionName", definitionName);
-        mav.addObject("groupName", groupName);
+        DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(groupName);
+        mav.addObject("deviceGroup", deviceGroup);
         
         // report title
-        YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
+        YukonReportDefinition<BareReportModel> reportDefinition = reportDefinitionFactory.getReportDefinition("deviceGroupDefinition");
         BareReportModel reportModel = reportDefinition.createBean();
         mav.addObject("reportTitle", reportModel.getTitle());
         
@@ -148,9 +151,13 @@ public class AMRReportsController extends MultiActionController  {
         this.simpleReportService = simpleReportService;
     }
     
-  
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+		this.deviceGroupService = deviceGroupService;
+	}
     
-    
-  
-
+    @Autowired
+    public void setReportDefinitionFactory(YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory) {
+        this.reportDefinitionFactory = reportDefinitionFactory;
+    }
 }

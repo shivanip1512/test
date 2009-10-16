@@ -166,11 +166,11 @@ public class BulkController extends BulkControllerBase {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         mav.addObject("deviceCollection", deviceCollection);
         
-        StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup(null);
-        deviceGroupMemberEditorDao.addDevices(tempGroup, deviceCollection.getDeviceList());
+        StoredDeviceGroup tempDeviceGroup = temporaryDeviceGroupService.createTempGroup(null);
+        deviceGroupMemberEditorDao.addDevices(tempDeviceGroup, deviceCollection.getDeviceList());
         
-        mav.addObject("tempGroupName", tempGroup.getFullName());
-        mav.addObject("deviceCollection", deviceCollection);
+        mav.addObject("tempDeviceGroup", tempDeviceGroup);
+        mav.addObject("collectionDescriptionResovlable", deviceCollection.getDescription());
         
         return mav;
     }
@@ -202,6 +202,7 @@ public class BulkController extends BulkControllerBase {
         ModelAndView mav = new ModelAndView("selectedDevicesPopup.jsp");
         
         List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
+        Collections.sort(deviceCollectionReportDevices);
         
         List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
         for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {

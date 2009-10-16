@@ -372,25 +372,20 @@
         </property>
     </bean>
     
-    <!-- Group Devices -->
-   <bean id="groupDevicesModel" class="com.cannontech.analysis.tablemodel.GroupDevicesModel"
-         scope="prototype">
-        <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="deviceGroupProviderDao" ref="deviceGroupDao"/>
-        <property name="paoLoadingService" ref="paoLoadingService"/>
-    </bean>
-    
-    <bean id="groupDevicesDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
-        <property name="reportModelName"><idref local="groupDevicesModel"/></property>
+    <!-- Device Group Report -->
+    <bean id="deviceGroupModel" class="com.cannontech.analysis.tablemodel.DeviceGroupModel" scope="prototype"/>
+
+    <bean id="deviceGroupDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="deviceGroupModel"/></property>
         <property name="inputs">
           <bean class="com.cannontech.web.input.InputRoot">
             <property name="inputList">
               <list>
                 <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="groupName"/>
-                    <property name="displayName" value="Group Name"/>
+                    <property name="field" value="deviceGroup" />
+                    <property name="displayName" value="Device Group" />
                     <property name="type">
-                      <bean class="com.cannontech.web.input.type.StringType"/>
+                        <bean class="com.cannontech.web.input.type.DeviceGroupType" />
                     </property>
                 </bean>
               </list>
@@ -402,9 +397,9 @@
         </property>
     </bean>
     
-    <!-- Device Collection -->
-    <bean id="deviceCollectionModel" class="com.cannontech.analysis.tablemodel.DeviceCollectionModel" scope="prototype" />
-    
+    <!-- Device Collection Report -->
+    <bean id="deviceCollectionModel" class="com.cannontech.analysis.tablemodel.DeviceCollectionModel" scope="prototype"/>
+
     <bean id="deviceCollectionDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref local="deviceCollectionModel"/></property>
         <property name="inputs">
@@ -412,10 +407,10 @@
             <property name="inputList">
               <list>
                 <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="tempGroupName"/>
-                    <property name="displayName" value="Temp Group Name"/>
+                    <property name="field" value="deviceGroup" />
+                    <property name="displayName" value="Temp Device Group" />
                     <property name="type">
-                      <bean class="com.cannontech.web.input.type.StringType"/>
+                        <bean class="com.cannontech.web.input.type.DeviceGroupType" />
                     </property>
                 </bean>
                 <bean class="com.cannontech.web.input.InputBase">
@@ -433,7 +428,6 @@
             <bean class="com.cannontech.simplereport.reportlayoutdata.GroupDevicesReportLayoutData"/>
         </property>
     </bean>
-    
     
     <!-- Phase Detection -->
    <bean id="phaseDetectModel" class="com.cannontech.analysis.tablemodel.PhaseDetectModel" scope="prototype">

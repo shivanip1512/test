@@ -407,16 +407,15 @@
                     <div class="groupEditorContentDetail">
                     
                     <cti:url value="/spring/amr/reports/groupDevicesReport" var="htmlUrl">
-                        <cti:param name="def" value="groupDevicesDefinition"/>
                         <cti:param name="groupName" value="${group.fullName}"/>
                     </cti:url>
                     <c:choose>
                         <c:when test="${childDeviceCount > 0}">
                             <a href="${htmlUrl}">HTML</a>
                             |
-                            <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="csvView" groupName="${group.fullName}">CSV</cti:simpleReportLinkFromNameTag>
+                            <cti:simpleReportLinkFromNameTag definitionName="deviceGroupDefinition" viewType="csvView" deviceGroup="${group}">CSV</cti:simpleReportLinkFromNameTag>
                             |
-                            <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="pdfView" groupName="${group.fullName}">PDF</cti:simpleReportLinkFromNameTag>
+                            <cti:simpleReportLinkFromNameTag definitionName="deviceGroupDefinition" viewType="pdfView" deviceGroup="${group}">PDF</cti:simpleReportLinkFromNameTag>
                        
                         </c:when>
                         <c:otherwise>

@@ -6,8 +6,9 @@ import com.cannontech.common.pao.YukonDevice;
 /**
  * This class is more meter-specific than it should be, but 
  * I want to preserve existing functionality.
+ * Sorts on name.
  */
-public class DeviceCollectionReportDevice implements YukonDevice {
+public class DeviceCollectionReportDevice implements YukonDevice, Comparable<DeviceCollectionReportDevice> {
     private PaoIdentifier paoIdentifier;
     private String name = "";
     private String meterNumber = "";
@@ -63,4 +64,8 @@ public class DeviceCollectionReportDevice implements YukonDevice {
         return paoIdentifier;
     }
 
+    @Override
+    public int compareTo(DeviceCollectionReportDevice o) {
+    	return this.getName().compareTo(o.getName());
+    }
 }

@@ -31,14 +31,14 @@
     
     <h2>${pageTitle}</h2>
     
-    <cti:msg var="collectionDescription" key="${deviceCollection.description}"/>
+    <cti:msg var="collectionDescription" key="${collectionDescriptionResovlable}"/>
     
     <cti:simpleReportUrlFromNameTag var="reportUrl"
                                 htmlOutput="true"
                                 viewType="htmlView"
                                 viewJsp="BODY"
                                 definitionName="deviceCollectionDefinition"
-                                tempGroupName="${tempGroupName}"
+                                deviceGroup="${tempDeviceGroup}"
                                 collectionDescription="${collectionDescription}"
                                 showLoadMask="false"
                                 refreshRate="0" />

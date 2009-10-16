@@ -121,7 +121,6 @@
 			<br><br>
 			<cti:url var="outagesGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
 				<cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
-				<cti:param name="def" value="groupDevicesDefinition"/>
 			</cti:url>
 			<a href="${outagesGroupReportUrl}">${outagesGroupReportText}</a>
 			

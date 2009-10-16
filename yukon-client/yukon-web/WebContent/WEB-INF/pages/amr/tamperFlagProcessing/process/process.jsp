@@ -116,7 +116,6 @@
 			<br><br>
 			<cti:url var="tamperFlagGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
 				<cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
-				<cti:param name="def" value="groupDevicesDefinition"/>
 			</cti:url>
 			<a href="${tamperFlagGroupReportUrl}">${tamperFlagGroupReportText}</a>
 			
