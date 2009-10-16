@@ -65,6 +65,7 @@ public class ErrorHelperFilter  implements Filter {
 			for (Iterator iter = parameterNames.iterator(); iter.hasNext();) {
 				String key = (String) iter.next();
 				String values;
+				//avoid printing password values to the log
 				if(key.equals("PASSWORD")){
                     values = "password removed";
                 } else {
@@ -77,6 +78,9 @@ public class ErrorHelperFilter  implements Filter {
 			    
 			String remoteAddr = httpReq.getRemoteAddr();
 			String queryString = httpReq.getQueryString();
+			//avoid printing password values to the log
+			queryString = queryString.replaceAll("PASSWORD=.*&", "PASSWORD=<password removed>&");
+			
 			return "contextPath=" + contextPath +
 			    "; pathInfo=" + pathInfo + 
 				"; parameters=" + parameters + 
