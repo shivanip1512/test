@@ -257,7 +257,7 @@ function confirmCancel() {
                                 if (fieldReceiveDate == null) {
                                     fieldReceiveDate = "";
                                     if (inventory.getReceiveDate() != null) {
-                                        fieldReceiveDate = dateFormattingService.formatDate(inventory.getReceiveDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+                                        fieldReceiveDate = dateFormattingService.format(inventory.getReceiveDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
                                     }
                                 }
                                 %>
@@ -274,7 +274,7 @@ function confirmCancel() {
                                 if (fieldRemoveDate == null) {
                                     fieldRemoveDate = "";
                                     if (inventory.getReceiveDate() != null) {
-                                        fieldRemoveDate = dateFormattingService.formatDate(inventory.getRemoveDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+                                        fieldRemoveDate = dateFormattingService.format(inventory.getRemoveDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
                                     }
                                 }
                                 %>
@@ -328,7 +328,7 @@ function confirmCancel() {
                                   <div align="right">Field Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldInstallDate" maxlength="30" size="24" value="<%= (savedInstDate != null)? savedInstDate : dateFormattingService.formatDate(inventory.getInstallDate(), DateFormattingService.DateFormatEnum.DATE, userContext)%>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldInstallDate" maxlength="30" size="24" value="<%= (savedInstDate != null)? savedInstDate : dateFormattingService.format(inventory.getInstallDate(), DateFormattingService.DateFormatEnum.DATE, userContext)%>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 

@@ -23,7 +23,7 @@
 		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(liteInv.getDeviceID());
 		Properties savedReq = new Properties();
 		savedReq.setProperty("DeviceLabel", liteInv.getDeviceLabel());
-		savedReq.setProperty("ReceiveDate", dateFormattingService.formatDate(new Date(liteInv.getReceiveDate()), DateFormatEnum.DATE, userContext));
+		savedReq.setProperty("ReceiveDate", dateFormattingService.format(new Date(liteInv.getReceiveDate()), DateFormatEnum.DATE, userContext));
 		savedReq.setProperty("Voltage", String.valueOf(liteInv.getVoltageID()));
 		savedReq.setProperty("ServiceCompany", String.valueOf(liteInv.getInstallationCompanyID()));
 		savedReq.setProperty("Notes", liteInv.getNotes().replaceAll("<br>", System.getProperty("line.separator")));
