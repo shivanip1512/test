@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.operator.thermostat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,6 +10,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -58,8 +58,8 @@ public class ThermostatOperatorScheduleController
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
     
-	private DateFormattingService dateFormattingService;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
+	private DateFormattingService dateFormattingService;
     
     @RequestMapping(value = "/operator/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
@@ -243,13 +243,14 @@ public class ThermostatOperatorScheduleController
     		schedule.getSeason().getSeasonEntries(scheduleTimeOfWeek);
     	
     	for(ThermostatSeasonEntry entry : seasonEntries) {
-    		Date startDate = entry.getStartDate();
+    		
+            LocalTime startTime = entry.getStartTime();
+            String startDateString = 
+            	dateFormattingService.format(startTime, DateFormatEnum.TIME, yukonUserContext);
+    		
     		Integer coolTemperature = entry.getCoolTemperature();
     		Integer heatTemperature = entry.getHeatTemperature();
     		
-    		String startDateString = 
-    			dateFormattingService.formatDate(startDate, DateFormatEnum.TIME, yukonUserContext);
-
     		// Temperatures are only -1 if this is a 2 time temp thermostat type - ignore if -1
     		if(coolTemperature != -1 && heatTemperature != -1) {
 	    		argumentList.add(startDateString);
@@ -504,15 +505,14 @@ public class ThermostatOperatorScheduleController
     }
     
     @Autowired
-    public void setDateFormattingService(
-			DateFormattingService dateFormattingService) {
-		this.dateFormattingService = dateFormattingService;
-	}
-    
-    @Autowired
     public void setMessageSourceResolver(
             YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
+    
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+		this.dateFormattingService = dateFormattingService;
+	}
     
 }

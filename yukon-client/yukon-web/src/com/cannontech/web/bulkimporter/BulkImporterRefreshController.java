@@ -74,7 +74,7 @@ public class BulkImporterRefreshController implements Controller  {
         	Map<String, String> item = new HashMap<String, String>();
             item.put("failName", failure.getName());
             item.put("errorString", failure.getErrorMsg());
-            item.put("failTime", dateFormattingService.formatDate(failure.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, userContext));
+            item.put("failTime", dateFormattingService.format(failure.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, userContext));
             failures.add(item);
         }
         
@@ -92,7 +92,7 @@ public class BulkImporterRefreshController implements Controller  {
             item.put("routeName", failedComm.getRouteName());
             item.put("substationName", failedComm.getSubstationName());
             item.put("errorString", failedComm.getErrorMsg());
-            item.put("failTime", dateFormattingService.formatDate(failedComm.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, userContext));
+            item.put("failTime", dateFormattingService.format(failedComm.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, userContext));
             failedComms.add(item);
         }
         

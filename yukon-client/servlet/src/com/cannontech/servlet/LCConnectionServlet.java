@@ -420,7 +420,7 @@ private Map<String, Object> getOptionalParams( HttpServletRequest req )
         tempCal.set( GregorianCalendar.SECOND, 0 );
         tempCal.setTimeZone(userTimeZone);
         
-        String dateFormat = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
+        String dateFormat = dateFormattingService.format(tempCal.getTime(), DateFormatEnum.DATE, userContext);
 
         try {
             gcStart.setTime( dateFormattingService.flexibleDateParser(dateFormat, userContext));
@@ -476,7 +476,7 @@ private Map<String, Object> getOptionalParams( HttpServletRequest req )
         tempCal.set( GregorianCalendar.SECOND, 0 );
         tempCal.setTimeZone(userTimeZone);
 	        
-        String dateFormat = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
+        String dateFormat = dateFormattingService.format(tempCal.getTime(), DateFormatEnum.DATE, userContext);
 
         try {
             gcStop.setTime( dateFormattingService.flexibleDateParser(dateFormat, userContext));

@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -460,12 +461,14 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                                                                    timeOfWeek.getDefinitionId());
 
             // Start time is seconds from midnight in db
-            Integer startTime = entry.getStartTime() * 60;
+            LocalTime localTime = entry.getStartTime();
+            Integer startTimeSeconds = 
+            	(localTime.getHourOfDay() * 60 * 60) + (localTime.getMinuteOfHour() * 60);
 
             simpleJdbcTemplate.update(entrySql.toString(),
                                       seasonId,
                                       timeOfWeekId,
-                                      startTime,
+                                      startTimeSeconds,
                                       entry.getCoolTemperature(),
                                       entry.getHeatTemperature(),
                                       entryId);
@@ -494,24 +497,24 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     	timeOfWeekList.add(TimeOfWeek.SATURDAY);
     	timeOfWeekList.add(TimeOfWeek.SUNDAY);
     	
-    	List<Integer> timeOfDayList = new ArrayList<Integer>();
+    	List<LocalTime> timeOfDayList = new ArrayList<LocalTime>();
     	// 6:00 am
-    	timeOfDayList.add(360);
+    	timeOfDayList.add(new LocalTime(6, 0));
     	// 8:30 am
-    	timeOfDayList.add(510);
+    	timeOfDayList.add(new LocalTime(8, 30));
     	// 5:00 pm
-    	timeOfDayList.add(1020);
+    	timeOfDayList.add(new LocalTime(5, 0));
     	// 9:00 pm
-    	timeOfDayList.add(1260);
+    	timeOfDayList.add(new LocalTime(9, 0));
     	
     	// Add season entries for each time of week
     	for(TimeOfWeek timeOfWeek : timeOfWeekList) {
     		// Add season entries for each time of day
-    		for(Integer minutesFromMidnight : timeOfDayList) {
+    		for(LocalTime time : timeOfDayList) {
 
     			ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
     			entry.setTimeOfWeek(timeOfWeek);
-    			entry.setStartTime(minutesFromMidnight);
+    			entry.setStartTime(time);
     			entry.setCoolTemperature(72);
     			entry.setHeatTemperature(72);
     			season.addSeasonEntry(entry);
@@ -625,7 +628,13 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
             entry.setTimeOfWeek(timeOfWeek);
 
 			// Start time is seconds from midnight in db
-            entry.setStartTime(startTime / 60);
+            int startMinutes = startTime / 60;
+            int startTimeHours = startMinutes / 60;
+            int startTimeMinutes = startMinutes % 60;
+            if(startTimeMinutes < 0) {
+            	startTimeMinutes = 0;
+            }
+            entry.setStartTime(new LocalTime(startTimeHours, startTimeMinutes));
           	entry.setCoolTemperature(coolTemperature);
           	entry.setHeatTemperature(heatTemperature);
 

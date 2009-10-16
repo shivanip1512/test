@@ -80,7 +80,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         if (data instanceof Date) {
             if (dateFormats.contains(format)) {
                 DateFormatEnum enumValue = DateFormattingService.DateFormatEnum.valueOf(format);
-                formattedData = dateFormattingService.formatDate((Date) data,
+                formattedData = dateFormattingService.format((Date) data,
                                                                  enumValue,
                                                                  userContext);
             } else {

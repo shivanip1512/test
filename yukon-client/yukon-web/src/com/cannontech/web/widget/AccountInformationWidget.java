@@ -424,7 +424,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         }
         
         private String formatDate(Date date, YukonUserContext userContext) {
-            return dateFormattingService.formatDate(date, DateFormattingService.DateFormatEnum.DATE, userContext);
+            return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
         }
 
         public String getLabel() {

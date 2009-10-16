@@ -77,7 +77,7 @@ public class BulkImportResultsModel extends BareReportModelBase<BulkImportResult
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
 
         info.put("Report Type", BulkImportResultstReportType.valueOf(reportType).getReportDecription());
-        info.put("Generated", dateFormattingService.formatDate(new Date(), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Generated", dateFormattingService.format(new Date(), DateFormattingService.DateFormatEnum.BOTH, userContext));
         return info;
     }
 

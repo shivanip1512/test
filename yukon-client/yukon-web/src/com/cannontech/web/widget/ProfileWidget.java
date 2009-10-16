@@ -171,7 +171,7 @@ public class ProfileWidget extends WidgetControllerBase {
     private void addFutureScheduleDateToMav(ModelAndView mav, YukonUserContext userContext) {
         
         mav.addObject("futureScheduleDate",
-                      dateFormattingService.formatDate(DateUtils.addDays(new Date(),
+                      dateFormattingService.format(DateUtils.addDays(new Date(),
                                                                          7),
                                                        DateFormattingService.DateFormatEnum.DATE,
                                                        userContext));
@@ -226,12 +226,12 @@ public class ProfileWidget extends WidgetControllerBase {
         // initialize past profile dates
         if (StringUtils.isBlank(startDateStr) && StringUtils.isBlank(stopDateStr)) {
             mav.addObject("startDateStr",
-                          dateFormattingService.formatDate(DateUtils.addDays(new Date(),
+                          dateFormattingService.format(DateUtils.addDays(new Date(),
                                                                              -5),
                                                            DateFormattingService.DateFormatEnum.DATE,
                                                            userContext));
             mav.addObject("stopDateStr",
-                          dateFormattingService.formatDate(new Date(),
+                          dateFormattingService.format(new Date(),
                                                            DateFormattingService.DateFormatEnum.DATE,
                                                            userContext));
         }
@@ -303,7 +303,7 @@ public class ProfileWidget extends WidgetControllerBase {
             } else {
 
                 //TEM DateUtils.round() should do this for you
-                String todayStr = dateFormattingService.formatDate(new Date(),
+                String todayStr = dateFormattingService.format(new Date(),
                                                                    DateFormattingService.DateFormatEnum.DATE,
                                                                    userContext);
                 Date today = dateFormattingService.flexibleDateParser(todayStr,
@@ -608,7 +608,7 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                  userContext);
         stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
         stopDate = DateUtils.addDays(stopDate, 1);
-        reportStopDateStr = dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
+        reportStopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
         
         // build query
         Map<String, String> propertiesMap = new HashMap<String, String>();

@@ -28,7 +28,7 @@ public class FormatMillisTag extends YukonTagSupport {
             
             if( value > 0) {   //0 is "epoch time", treat as a null value.
                 final Date valueDate = new Date(value);
-                formattedDate = dateFormattingService.formatDate(valueDate,
+                formattedDate = dateFormattingService.format(valueDate,
                                                              enumValue,
                                                              getUserContext());
             }

@@ -8,6 +8,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
+import org.joda.time.LocalTime;
 import org.springframework.stereotype.Controller;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -50,11 +51,11 @@ public class AbstractThermostatOperatorScheduleController extends AbstractThermo
 	            // Default the time to 0 seconds past midnight and the temp to
 	            // -1
 	            ThermostatSeasonEntry firstEntry = entryList.get(0);
-	            firstEntry.setStartTime(0);
+	            firstEntry.setStartTime(new LocalTime(0, 0));
 	            firstEntry.setCoolTemperature(-1);
 	            firstEntry.setHeatTemperature(-1);
 	            ThermostatSeasonEntry lastEntry = entryList.get(1);
-	            lastEntry.setStartTime(0);
+	            lastEntry.setStartTime(new LocalTime(0, 0));
 	            lastEntry.setCoolTemperature(-1);
 	            lastEntry.setHeatTemperature(-1);
 	        }
@@ -97,7 +98,7 @@ public class AbstractThermostatOperatorScheduleController extends AbstractThermo
             List<ThermostatSeasonEntry> entryList = seasonEntryMap.get(timeOfWeek);
 
             for (ThermostatSeasonEntry entry : entryList) {
-                Integer time = entry.getStartTime();
+                Integer time = entry.getStartTime().getMillisOfDay() / 1000 / 60;
                 Integer coolTemperature = entry.getCoolTemperature();
                 Integer heatTemperature = entry.getHeatTemperature();
 
@@ -193,7 +194,7 @@ public class AbstractThermostatOperatorScheduleController extends AbstractThermo
                 }
 
                 ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
-                entry.setStartTime(time);
+                entry.setStartTime(LocalTime.fromMillisOfDay(time * 60 * 1000));
                 entry.setCoolTemperature(coolTemperature);
                 entry.setHeatTemperature(heatTemperature);
                 entry.setTimeOfWeek(timeOfWeek);

@@ -166,7 +166,7 @@ public class UpdateUtil {
     					text += " ";
     
     				Date lastUpdate = pData.getPointDataTimeStamp();
-    				text += dateFormattingService.formatDate(lastUpdate, DateFormattingService.DateFormatEnum.BOTH, userContext);
+    				text += dateFormattingService.format(lastUpdate, DateFormattingService.DateFormatEnum.BOTH, userContext);
      				prev = true;
     			}
     		}	

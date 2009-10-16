@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.format.DateTimeFormatter;
+
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -59,15 +61,15 @@ public interface DateFormattingService {
     };
 
     /**
-     * Convert a date to a string using the userContext for locale and timezone information.
+     * Convert an object to a string using the userContext for locale and timezone information.
      * The type dictates a suggested style, but not a specific format.
      * 
-     * @param date
+     * @param object - Object to format. Must be one of: Date, ReadableInstant, ReadablePartial
      * @param type
      * @param userContext
      * @return
      */
-    public String formatDate(Date date, DateFormatEnum type, YukonUserContext userContext);
+    public String format(Object object, DateFormatEnum type, YukonUserContext userContext);
 
     /**
      * This method is provided for completeness, but shouldn't not be used for regular code.
@@ -76,6 +78,14 @@ public interface DateFormattingService {
      * @return
      */
     public DateFormat getDateFormatter(DateFormatEnum type, YukonUserContext userContext);
+
+    /**
+     * Method to get a Joda DateTimeFormatter for the given format type 
+     * @param type - Format to get
+     * @param userContext - Current user context
+     * @return Joda formatter
+     */
+    public DateTimeFormatter getDateTimeFormatter(DateFormatEnum type, YukonUserContext userContext);
 
     public Date flexibleDateParser(String dateStr, DateOnlyMode mode,
                                    YukonUserContext userContext) throws ParseException;

@@ -131,8 +131,8 @@ public class TrendWidget extends WidgetControllerBase {
         
 
         // GET DATES STRINGS
-        String startDateStr = dateFormattingService.formatDate(startDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-        String stopDateStr = dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
+        String startDateStr = dateFormattingService.format(startDate, DateFormattingService.DateFormatEnum.DATE, userContext);
+        String stopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
         
         // CHART SYTLE (LINE/COLUMN)
         String defaultGraphType = attributeGraphType.getGraphType().toString();

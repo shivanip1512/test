@@ -1,11 +1,11 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +15,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -55,8 +56,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private ThermostatScheduleDao thermostatScheduleDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
     private RolePropertyDao rolePropertyDao;
-
-    private SimpleDateFormat SCHEDULE_START_TIME_FORMAT = new SimpleDateFormat("HH:mm");
+    private SystemDateFormattingService systemDateFormattingService;
 
     @Autowired
     public void setCustomerEventDao(CustomerEventDao customerEventDao) {
@@ -88,6 +88,12 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
+	}
+    
+    @Autowired
+    public void setSystemDateFormattingService(
+    		SystemDateFormattingService systemDateFormattingService) {
+		this.systemDateFormattingService = systemDateFormattingService;
 	}
 
     @Override
@@ -402,7 +408,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         int count = 1;
         for (ThermostatSeasonEntry entry : seasonEntries) {
 
-            Date startDate = entry.getStartDate();
+            LocalTime startTime = entry.getStartTime();
 
             Integer coolTemperature = entry.getCoolTemperature();
             Integer heatTemperature = entry.getHeatTemperature();
@@ -415,8 +421,9 @@ public class ThermostatServiceImpl implements ThermostatService {
                 commandString.append("ff");
 
             } else {
-
-                String startTimeString = SCHEDULE_START_TIME_FORMAT.format(startDate);
+            	DateTimeFormatter timeFormatter = 
+            		systemDateFormattingService.getCommandTimeFormatter();
+                String startTimeString = timeFormatter.print(startTime);
                 commandString.append(startTimeString + ",");
                 commandString.append(heatTemperature + ",");
                 commandString.append(coolTemperature);
@@ -547,7 +554,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             ThermostatSeasonEntry entry = updatedEntries.get(i);
             ThermostatSeasonEntry originalEntry = entries.get(i);
 
-            Integer startTime = entry.getStartTime();
+            LocalTime startTime = entry.getStartTime();
             originalEntry.setStartTime(startTime);
 
             Integer coolTemperature = entry.getCoolTemperature();
@@ -618,20 +625,21 @@ public class ThermostatServiceImpl implements ThermostatService {
 
         ThermostatSeason season = schedule.getSeason();
         List<ThermostatSeasonEntry> entryList = season.getSeasonEntries(timeOfWeek);
+        DateTimeFormatter timeFormatter = systemDateFormattingService.getCommandTimeFormatter();
 
         if (HardwareType.COMMERCIAL_EXPRESSSTAT.equals(thermostat.getType())) {
 
             ThermostatSeasonEntry occupiedEntry = entryList.get(0);
-            Date occupiedStart = occupiedEntry.getStartDate();
-            String occupiedDate = SCHEDULE_START_TIME_FORMAT.format(occupiedStart);
+            LocalTime occupiedStart = occupiedEntry.getStartTime();
+            String occupiedDate = timeFormatter.print(occupiedStart);
             Integer coolOccupiedTemp = occupiedEntry.getCoolTemperature();
             Integer heatOccupiedTemp = occupiedEntry.getHeatTemperature();
             logMessage.append("Occupied:" + occupiedDate + "," + coolOccupiedTemp + tempUnit + 
                         "," + heatOccupiedTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry unOccupiedEntry = entryList.get(3);
-            Date unOccupiedStart = unOccupiedEntry.getStartDate();
-            String unOccupiedDate = SCHEDULE_START_TIME_FORMAT.format(unOccupiedStart);
+            LocalTime unOccupiedStart = unOccupiedEntry.getStartTime();
+            String unOccupiedDate = timeFormatter.print(unOccupiedStart);
             Integer coolUnOccupiedTemp = unOccupiedEntry.getCoolTemperature();
             Integer heatUnOccupiedTemp = unOccupiedEntry.getHeatTemperature();
             logMessage.append("Unoccupied:" + unOccupiedDate + "," + coolUnOccupiedTemp + tempUnit +
@@ -640,32 +648,32 @@ public class ThermostatServiceImpl implements ThermostatService {
         } else {
 
             ThermostatSeasonEntry wakeEntry = entryList.get(0);
-            Date wakeStart = wakeEntry.getStartDate();
-            String wakeDate = SCHEDULE_START_TIME_FORMAT.format(wakeStart);
+            LocalTime wakeStart = wakeEntry.getStartTime();
+            String wakeDate = timeFormatter.print(wakeStart);
             Integer wakeCoolTemp = wakeEntry.getCoolTemperature();
             Integer wakeHeatTemp = wakeEntry.getHeatTemperature();
             logMessage.append("Wake:" + wakeDate + "," + wakeCoolTemp + tempUnit + 
                         "," + wakeHeatTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry leaveEntry = entryList.get(1);
-            Date leaveStart = leaveEntry.getStartDate();
-            String leaveDate = SCHEDULE_START_TIME_FORMAT.format(leaveStart);
+            LocalTime leaveStart = leaveEntry.getStartTime();
+            String leaveDate = timeFormatter.print(leaveStart);
             Integer leaveCoolTemp = leaveEntry.getCoolTemperature();
             Integer leaveHeatTemp = leaveEntry.getHeatTemperature();
             logMessage.append("Leave:" + leaveDate + "," + leaveCoolTemp + tempUnit + 
                         "," + leaveHeatTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry returnEntry = entryList.get(2);
-            Date returnStart = returnEntry.getStartDate();
-            String returnDate = SCHEDULE_START_TIME_FORMAT.format(returnStart);
+            LocalTime returnStart = returnEntry.getStartTime();
+            String returnDate = timeFormatter.print(returnStart);
             Integer returnCoolTemp = returnEntry.getCoolTemperature();
             Integer returnHeatTemp = returnEntry.getHeatTemperature();
             logMessage.append("Return:" + returnDate + "," + returnCoolTemp + tempUnit + 
                         "," + returnHeatTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry sleepEntry = entryList.get(3);
-            Date sleepStart = sleepEntry.getStartDate();
-            String sleepDate = SCHEDULE_START_TIME_FORMAT.format(sleepStart);
+            LocalTime sleepStart = sleepEntry.getStartTime();
+            String sleepDate = timeFormatter.print(sleepStart);
             Integer sleepCoolTemp = sleepEntry.getCoolTemperature();
             Integer sleepHeatTemp = sleepEntry.getHeatTemperature();
             logMessage.append("Sleep:" + sleepDate + "," + sleepCoolTemp + tempUnit + 

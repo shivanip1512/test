@@ -22,7 +22,7 @@ public class StopTimeCommandExecutionUpdaterHandler implements CommandRequestExe
 		
 		String dateStr = "In Progress";
 		if (stopTime != null) {
-			dateStr = dateFormattingService.formatDate(stopTime, DateFormatEnum.DATEHM, userContext);
+			dateStr = dateFormattingService.format(stopTime, DateFormatEnum.DATEHM, userContext);
 		}
 		
 		return dateStr;

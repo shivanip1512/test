@@ -40,7 +40,7 @@ public class DatePropertyEditorFactory {
             DateFormatEnum dateFormat = dateOnlyMode == DateOnlyMode.START_OF_DAY
                 ? DateFormatEnum.DATE : DateFormatEnum.DATE_MIDNIGHT_PREV;
             return date == null
-                ? "" : dateFormattingService.formatDate(date, dateFormat, userContext);
+                ? "" : dateFormattingService.format(date, dateFormat, userContext);
         }
     }
 
@@ -66,7 +66,7 @@ public class DatePropertyEditorFactory {
         public String getAsText() {
             Date date = (Date) getValue();
             return date == null
-                ? "" : dateFormattingService.formatDate(date, dateFormat, userContext);
+                ? "" : dateFormattingService.format(date, dateFormat, userContext);
         }
     }
 

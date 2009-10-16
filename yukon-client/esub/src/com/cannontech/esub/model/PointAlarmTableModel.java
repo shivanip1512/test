@@ -69,7 +69,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
         }
         public String getTimeStamp()
         {
-            String str = dateFormattingService.formatDate(timeStamp, DateFormattingService.DateFormatEnum.BOTH, getUserContext());
+            String str = dateFormattingService.format(timeStamp, DateFormattingService.DateFormatEnum.BOTH, getUserContext());
             return str;
         }
     }

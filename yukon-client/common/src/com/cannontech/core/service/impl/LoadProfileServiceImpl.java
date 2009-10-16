@@ -537,11 +537,11 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             }
             data.put("email", email);
             data.put("from",
-                     dateFormattingService.formatDate(info.from,
+                     dateFormattingService.format(info.from,
                                                       DateFormattingService.DateFormatEnum.DATE,
                                                       userContext));
             data.put("to",
-                     dateFormattingService.formatDate(DateUtils.addDays(info.to,
+                     dateFormattingService.format(DateUtils.addDays(info.to,
                                                                         -1),
                                                                         DateFormattingService.DateFormatEnum.DATE,
                                                                         userContext));

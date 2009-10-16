@@ -158,8 +158,8 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
             if (cancelUser != null) {
                 Date now = new Date();
                 cancelInfo = "Canceled by " + cancelUserName + " (" + cancelUserID + ")" 
-                            + " on " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.DATE, userContext) 
-                            + " at " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.TIME, userContext) + ".";
+                            + " on " + dateFormattingService.format(now, DateFormattingService.DateFormatEnum.DATE, userContext) 
+                            + " at " + dateFormattingService.format(now, DateFormattingService.DateFormatEnum.TIME, userContext) + ".";
             }
             
             Map<String, Object> extraData = new HashMap<String, Object>();

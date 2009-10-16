@@ -143,7 +143,7 @@ public class ChartServiceImpl implements ChartService {
             ChartValue<Date> chartValue = new ChartValue<Date>();
             chartValue.setId(currCal.getTimeInMillis());
             chartValue.setValue(currCal.getTime());
-            chartValue.setFormattedValue(dateFormattingService.formatDate(currCal.getTime(), format, userContext));
+            chartValue.setFormattedValue(dateFormattingService.format(currCal.getTime(), format, userContext));
 
             xAxisData.add(chartValue);
 

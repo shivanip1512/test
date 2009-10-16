@@ -135,7 +135,7 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     private String getFormattedImportTime(String importTimeStr, YukonUserContext userContext, DateFormatEnum dateFormatEnum) {
         try {
             Date importTime = CtiUtilities.parseJavaDateString(importTimeStr);
-            return dateFormattingService.formatDate(importTime,
+            return dateFormattingService.format(importTime,
                                                     dateFormatEnum,
                                                     userContext);
         } catch (ParseException okayToIgnore) {

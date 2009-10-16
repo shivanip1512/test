@@ -26,7 +26,7 @@ public class FormatDateTag extends YukonTagSupport {
         
         String formattedDate ="";
         if (value != null) {
-            formattedDate = dateFormattingService.formatDate(value,
+            formattedDate = dateFormattingService.format(value,
                                                              enumValue,
                                                              getUserContext());
         }else{

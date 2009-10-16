@@ -172,8 +172,8 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         
         info.put("Device Name", device.getPaoName());
         info.put("Point", litePoint.getPointName() +  " (id: " + getPointId() + ")");
-        info.put("Start Date", dateFormattingService.formatDate(startDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
-        info.put("Stop Date", dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Start Date", dateFormattingService.format(startDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Stop Date", dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
         info.put("Note", "Values of \"---\" indicate that there is incomplete data for that date.");
         return info;
     }

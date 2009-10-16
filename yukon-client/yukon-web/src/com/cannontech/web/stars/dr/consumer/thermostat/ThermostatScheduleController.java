@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,6 +13,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -194,13 +194,13 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     		schedule.getSeason().getSeasonEntries(scheduleTimeOfWeek);
     	
     	for(ThermostatSeasonEntry entry : seasonEntries) {
-    		Date startDate = entry.getStartDate();
+    		LocalTime startTime = entry.getStartTime();
+    		
+            String startDateString = 
+            	dateFormattingService.format(startTime, DateFormatEnum.TIME, yukonUserContext);
     		Integer coolTemperature = entry.getCoolTemperature();
     		Integer heatTemperature = entry.getHeatTemperature();
     		
-    		String startDateString = 
-    			dateFormattingService.formatDate(startDate, DateFormatEnum.TIME, yukonUserContext);
-
     		// Temperatures are only -1 if this is a 2 time temp thermostat type - ignore if -1
     		if(coolTemperature != -1 && heatTemperature != -1) {
 	    		argumentList.add(startDateString);
@@ -430,11 +430,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 	            // Default the time to 0 seconds past midnight and the temp to
 	            // -1
 	            ThermostatSeasonEntry firstEntry = entryList.get(0);
-	            firstEntry.setStartTime(0);
+	            firstEntry.setStartTime(new LocalTime(0, 0));
 	            firstEntry.setCoolTemperature(-1);
 	            firstEntry.setHeatTemperature(-1);
 	            ThermostatSeasonEntry lastEntry = entryList.get(1);
-	            lastEntry.setStartTime(0);
+	            lastEntry.setStartTime(new LocalTime(0, 0));
 	            lastEntry.setCoolTemperature(-1);
 	            lastEntry.setHeatTemperature(-1);
 	        }
@@ -477,7 +477,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             List<ThermostatSeasonEntry> entryList = seasonEntryMap.get(timeOfWeek);
 
             for (ThermostatSeasonEntry entry : entryList) {
-                Integer time = entry.getStartTime();
+                Integer time = entry.getStartTime().getMillisOfDay() / 1000 / 60;
                 Integer coolTemperature = entry.getCoolTemperature();
                 Integer heatTemperature = entry.getHeatTemperature();
 
@@ -573,7 +573,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 }
 
                 ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
-                entry.setStartTime(time);
+                entry.setStartTime(LocalTime.fromMillisOfDay(time * 60 * 1000));
                 entry.setCoolTemperature(coolTemperature);
                 entry.setHeatTemperature(heatTemperature);
                 entry.setTimeOfWeek(timeOfWeek);
@@ -608,9 +608,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     }
     
     @Autowired
-    public void setDateFormattingService(
-			DateFormattingService dateFormattingService) {
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
 		this.dateFormattingService = dateFormattingService;
 	}
-
 }

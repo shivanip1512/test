@@ -70,7 +70,7 @@ public class LogTailController extends LogController {
        
         // Checks to see if the logFile exists and has the ability to be read
         if((logFile != null) && (logFile.canRead())){
-            String lastMod = dateFormattingService.formatDate(new Date(lastModL), DateFormattingService.DateFormatEnum.BOTH, userContext);
+            String lastMod = dateFormattingService.format(new Date(lastModL), DateFormattingService.DateFormatEnum.BOTH, userContext);
             String fileLength = String.valueOf(fileLengthL/1024);
         	List<String> logLines = FileUtil.readLines(logFile, numLines, offSet);
             

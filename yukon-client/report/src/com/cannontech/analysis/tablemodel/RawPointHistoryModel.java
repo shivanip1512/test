@@ -121,8 +121,8 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
         
         info.put("Device Name", device.getPaoName());
         info.put("Point", litePoint.getPointName() +  " (id: " + Integer.toString(getPointId()) + ")");
-        info.put("Start Date", dateFormattingService.formatDate(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
-        info.put("Stop Date", dateFormattingService.formatDate(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Start Date", dateFormattingService.format(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Stop Date", dateFormattingService.format(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
         return info;
     }
     

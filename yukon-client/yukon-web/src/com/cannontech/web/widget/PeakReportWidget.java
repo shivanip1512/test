@@ -174,7 +174,7 @@ public class PeakReportWidget extends WidgetControllerBase {
                 startDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
                 stopDate = dateFormattingService.flexibleDateParser(stopDateStr, userContext);
             
-                String todayStr = dateFormattingService.formatDate(new Date(), DateFormattingService.DateFormatEnum.BOTH, userContext);
+                String todayStr = dateFormattingService.format(new Date(), DateFormattingService.DateFormatEnum.BOTH, userContext);
                 Date today = dateFormattingService.flexibleDateParser(todayStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
                 datesOk = true;
 
@@ -229,7 +229,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         // start date
         if (StringUtils.isBlank(startDateStr)) {
             mav.addObject("startDateStr",
-                          dateFormattingService.formatDate(DateUtils.addDays(new Date(),
+                          dateFormattingService.format(DateUtils.addDays(new Date(),
                                                                              -5),
                                                            DateFormattingService.DateFormatEnum.DATE,
                                                            userContext));
@@ -241,7 +241,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         // stop date
         if (StringUtils.isBlank(stopDateStr)) {
             mav.addObject("stopDateStr",
-                          dateFormattingService.formatDate(new Date(),
+                          dateFormattingService.format(new Date(),
                                                            DateFormattingService.DateFormatEnum.DATE,
                                                            userContext));
         }

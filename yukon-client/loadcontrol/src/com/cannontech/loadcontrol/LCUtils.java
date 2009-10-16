@@ -284,7 +284,7 @@ public class LCUtils
 						 || program.getStartTime().before(CtiUtilities.get1990GregCalendar()) ) {
                         return CtiUtilities.STRING_DASH_LINE;
                     } else {
-                        String result = dateFormattingService.formatDate(program.getStartTime().getTime(), DateFormatEnum.DATEHM, userContext);
+                        String result = dateFormattingService.format(program.getStartTime().getTime(), DateFormatEnum.DATEHM, userContext);
                         return result;
                     }
 				}
@@ -309,7 +309,7 @@ public class LCUtils
 						|| program.getStopTime().compareTo(CtiUtilities.get2035GregCalendar()) >= 0 ) {
                         return CtiUtilities.STRING_DASH_LINE;
 					} else {
-                        String result = dateFormattingService.formatDate(program.getStopTime().getTime(), DateFormatEnum.DATEHM, userContext);
+                        String result = dateFormattingService.format(program.getStopTime().getTime(), DateFormatEnum.DATEHM, userContext);
                         return result;
                     }
 				}
@@ -359,7 +359,7 @@ public class LCUtils
 			        DateFormattingService dateFormattingService =
 			            (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
 			        
-			        String result = dateFormattingService.formatDate(grpVal.getGroupTime(), DateFormatEnum.DATEHM, userContext);
+			        String result = dateFormattingService.format(grpVal.getGroupTime(), DateFormatEnum.DATEHM, userContext);
                     return result;
                 } else {
                     return CtiUtilities.STRING_DASH_LINE;
@@ -461,7 +461,7 @@ public class LCUtils
                     startDate.set(GregorianCalendar.MINUTE, 0);
                     startDate.set(GregorianCalendar.SECOND, winStartInt);
                     
-                    winStart = dateFormattingService.formatDate(startDate.getTime(), DateFormatEnum.TIME_TZ, userContext);
+                    winStart = dateFormattingService.format(startDate.getTime(), DateFormatEnum.TIME_TZ, userContext);
                 }
                 
                 if(winStopInt > -1) {
@@ -469,7 +469,7 @@ public class LCUtils
                     stopDate.set(GregorianCalendar.MINUTE, 0);
                     stopDate.set(GregorianCalendar.SECOND, winStopInt);
                     
-                    winStop = dateFormattingService.formatDate(stopDate.getTime(), DateFormatEnum.TIME_TZ, userContext);
+                    winStop = dateFormattingService.format(stopDate.getTime(), DateFormatEnum.TIME_TZ, userContext);
                 }
 			    
 			    
@@ -499,7 +499,7 @@ public class LCUtils
                     startDate.set(GregorianCalendar.SECOND, winStartInt);
 
                     DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-                    winStart = dateFormattingService.formatDate(startDate.getTime(), DateFormatEnum.TIME, userContext);
+                    winStart = dateFormattingService.format(startDate.getTime(), DateFormatEnum.TIME, userContext);
                 }
                 return winStart;
             }
@@ -524,7 +524,7 @@ public class LCUtils
                     stopDate.set(GregorianCalendar.SECOND, winStopInt);
 
                     DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-                    winStop = dateFormattingService.formatDate(stopDate.getTime(), DateFormatEnum.TIME, userContext);
+                    winStop = dateFormattingService.format(stopDate.getTime(), DateFormatEnum.TIME, userContext);
                 }
                 return winStop;
             }

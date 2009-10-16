@@ -58,7 +58,7 @@ public class MoveInMoveOutController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         Date currentDate = new Date();
-        String currentDateFormatted = dateFormattingService.formatDate(currentDate,
+        String currentDateFormatted = dateFormattingService.format(currentDate,
                                                                        DateFormattingService.DateFormatEnum.DATE,
                                                                        userContext);
 
@@ -131,7 +131,7 @@ public class MoveInMoveOutController extends MultiActionController {
         mav.addObject("previousReadingValue",
                       moveInResult.getCalculatedPreviousReading());
         mav.addObject("beginDate",
-                      dateFormattingService.formatDate(moveInForm.getMoveInDate(),
+                      dateFormattingService.format(moveInForm.getMoveInDate(),
                                                        DateFormatEnum.BOTH,
                                                        userContext));
         mav.addObject("prevMeter", moveInResult.getPreviousMeter());
@@ -153,7 +153,7 @@ public class MoveInMoveOutController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         Date currentDate = new Date();
-        String currentDateFormatted = dateFormattingService.formatDate(currentDate,
+        String currentDateFormatted = dateFormattingService.format(currentDate,
                                                                        DateFormattingService.DateFormatEnum.DATE,
                                                                        userContext);
 
@@ -215,9 +215,9 @@ public class MoveInMoveOutController extends MultiActionController {
         moveOutResult = moveInMoveOutService.scheduleMoveOut(moveOutForm);
         moveOutResult.setMoveOutDate(moveOutDate);
         mav.addObject("endDate",
-                      dateFormattingService.formatDate(new Date(moveOutDate.getTime()),
-                                                           DateFormatEnum.BOTH,
-                                                           userContext));
+                      dateFormattingService.format(new Date(moveOutDate.getTime()),
+                                                   DateFormatEnum.BOTH,
+                                                   userContext));
         moveInMoveOutEmailService.createMoveOutEmail(moveOutResult,
                                                      userContext);
 

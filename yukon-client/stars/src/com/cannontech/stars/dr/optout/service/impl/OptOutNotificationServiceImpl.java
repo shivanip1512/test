@@ -192,11 +192,11 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         cal.add( Calendar.HOUR_OF_DAY, durationInHours);
         Date reenableDate = cal.getTime();
         
-        String formattedOptOutDate = dateFormattingService.formatDate(optOutDate, 
+        String formattedOptOutDate = dateFormattingService.format(optOutDate, 
                                                                       DateFormatEnum.DATEHM,
                                                                       holder.yukonUserContext);
         
-        String formattedReenableDate = dateFormattingService.formatDate(reenableDate,
+        String formattedReenableDate = dateFormattingService.format(reenableDate,
                                                                         DateFormatEnum.DATEHM,
                                                                         holder.yukonUserContext);
         

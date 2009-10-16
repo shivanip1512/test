@@ -22,7 +22,7 @@ public class LastRunJobUpdaterHandler implements JobUpdaterHandler {
 
 		String dateStr = "N/A";
 		if (lastRun != null) {
-			dateStr = dateFormattingService.formatDate(lastRun, DateFormatEnum.DATEHM, userContext);
+			dateStr = dateFormattingService.format(lastRun, DateFormatEnum.DATEHM, userContext);
 		}
 		
 		return dateStr;

@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.joda.time.format.DateTimeFormatter;
+
 import com.cannontech.common.exception.BadConfigurationException;
 
 
@@ -42,6 +44,12 @@ public interface SystemDateFormattingService {
      * @return SimpleDateFormat
      */
     public DateFormat getSystemDateFormat(DateFormatEnum dateFormat);
+    
+    /**
+     * This method returns a Joda DateTimeFormatter for time: HH:mm
+     * @return Joad formatter
+     */
+    public DateTimeFormatter getCommandTimeFormatter();
     
     /**
      * This method returns a new Calendar object for the system TimeZone.

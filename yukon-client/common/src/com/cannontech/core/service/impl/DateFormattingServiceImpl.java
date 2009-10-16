@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.ReadableInstant;
+import org.joda.time.ReadablePartial;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.service.DateFormattingService;
@@ -33,19 +38,37 @@ public class DateFormattingServiceImpl implements DateFormattingService {
     
     private Map<String, FlexibleDateParser> dateParserLookup = new HashMap<String, FlexibleDateParser>();
 
-    public String formatDate(Date date, DateFormatEnum type, YukonUserContext userContext)
+    public String format(Object object, DateFormatEnum type, YukonUserContext userContext)
             throws IllegalArgumentException {
-        DateFormat df = getDateFormatter(type, userContext);
-        if (date != null) {
+        if (object != null) {
             
-            // will result in dates that would normally format to midnight of a date, to format instead
-            // to the previous date.
-            // MidnightMode.INCLUDES_MIDNIGHT is only set on date-only type DateFormatEnum values
-            if (type.getMidnightMode() == MidnightMode.INCLUDES_MIDNIGHT) {
-                date = DateUtils.addMilliseconds(date, -1);
-            }
-            
-            return df.format(date);
+        	if(object instanceof Date) {
+        		
+        		Date date = (Date) object;
+        		DateFormat df = getDateFormatter(type, userContext);
+	        	
+	            // will result in dates that would normally format to midnight of a date, to format instead
+	            // to the previous date.
+	            // MidnightMode.INCLUDES_MIDNIGHT is only set on date-only type DateFormatEnum values
+	            if (type.getMidnightMode() == MidnightMode.INCLUDES_MIDNIGHT) {
+	                date = DateUtils.addMilliseconds(date, -1);
+	            }
+	            
+	            return df.format(date);
+        	} else if (object instanceof ReadablePartial) {
+        		ReadablePartial partial = (ReadablePartial) object;
+        		
+        		DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
+        		return formatter.print(partial);
+        		
+        	} else if (object instanceof ReadableInstant) {
+        		ReadableInstant instant = (ReadableInstant) object;
+        		
+        		DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
+        		return formatter.print(instant);
+        	} else {
+        		throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.formatDate()");
+        	}
         } else {
             throw new IllegalArgumentException("Date object is null in DateFormattingServiceImpl.formatDate()");
         }
@@ -60,6 +83,18 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         
         return simpleDateFormat;
 
+    }
+    
+    @Override
+    public DateTimeFormatter getDateTimeFormatter(DateFormatEnum type, YukonUserContext userContext) {
+
+    	String format = 
+    		messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(type.getFormatKey());
+    	DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
+    	DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(userContext.getTimeZone());
+    	formatter.withZone(dateTimeZone);
+        
+        return formatter;
     }
 
     public synchronized Date flexibleDateParser(String dateStr,

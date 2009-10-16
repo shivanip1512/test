@@ -177,7 +177,7 @@ public class ResultsController {
             if( cbcPAO != null ) {
                 List<CCEventLog> events= CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType(), filterCapControlCache, dayCnt);
                 for(CCEventLog event : events) {
-                    String formattedTimestamp = dateFormattingService.formatDate(event.getTimestamp(), DateFormatEnum.BOTH, context);
+                    String formattedTimestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, context);
                     event.setFormattedTimestamp(formattedTimestamp);
                 }
                 ControlEventSet set = new ControlEventSet(id, events);

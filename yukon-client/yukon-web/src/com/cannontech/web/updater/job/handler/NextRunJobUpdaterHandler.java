@@ -35,7 +35,7 @@ public class NextRunJobUpdaterHandler implements JobUpdaterHandler {
 		
 		String dateStr = "N/A";
 		if (nextRun != null) {
-			dateStr = dateFormattingService.formatDate(nextRun, DateFormatEnum.DATEHM, userContext);
+			dateStr = dateFormattingService.format(nextRun, DateFormatEnum.DATEHM, userContext);
 		}
 		
 		return dateStr;

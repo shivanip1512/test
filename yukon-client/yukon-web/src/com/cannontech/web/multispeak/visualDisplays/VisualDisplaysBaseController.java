@@ -25,7 +25,7 @@ public class VisualDisplaysBaseController extends MultiActionController {
 	public ModelAndView currentDateTime(HttpServletRequest request, HttpServletResponse response) {
 		
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		String nowStr = dateFormattingService.formatDate(new Date(), DateFormatEnum.BOTH, userContext);
+		String nowStr = dateFormattingService.format(new Date(), DateFormatEnum.BOTH, userContext);
 		
 		ModelAndView mav = new ModelAndView(new JsonView());
 		mav.addObject("nowStr", nowStr);

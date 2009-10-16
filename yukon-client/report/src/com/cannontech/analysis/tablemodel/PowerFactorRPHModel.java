@@ -131,8 +131,8 @@ public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel
 
         
         info.put("Name", paoDao.getYukonPAOName(getTargetId()));
-        info.put("Start Date", dateFormattingService.formatDate(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
-        info.put("Stop Date", dateFormattingService.formatDate(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Start Date", dateFormattingService.format(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Stop Date", dateFormattingService.format(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
         return info;
     }
 

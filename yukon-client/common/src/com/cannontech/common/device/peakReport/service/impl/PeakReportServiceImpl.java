@@ -267,7 +267,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         DateFormat timeFormatter = dateFormattingService.getDateFormatter(DateFormattingService.DateFormatEnum.TIME, userContext);
         
         if(peakResult.getPeakType() == PeakReportPeakType.DAY) {
-            peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+            peakValueStr = dateFormattingService.format(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
         }
         else if(peakResult.getPeakType() == PeakReportPeakType.HOUR) {
             

@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import java.util.Calendar;
-import java.util.Date;
+import org.joda.time.LocalTime;
 
 /**
  * Model object which represents a schedule season entry for a thermostat
@@ -12,8 +11,7 @@ public class ThermostatSeasonEntry {
     private Integer seasonId;
     private TimeOfWeek timeOfWeek;
 
-    // Minutes from midnight
-    private Integer startTime;
+    private LocalTime startTime;
     private Integer coolTemperature;
     private Integer heatTemperature;
 
@@ -41,11 +39,11 @@ public class ThermostatSeasonEntry {
         this.timeOfWeek = timeOfWeek;
     }
 
-    public Integer getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Integer startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
@@ -64,28 +62,6 @@ public class ThermostatSeasonEntry {
     public void setHeatTemperature(Integer heatTemperature) {
 		this.heatTemperature = heatTemperature;
 	}
-
-    public Date getStartDate() {
-
-        Date date = null;
-
-        // Convert minutes from midnight into a date
-        if (this.getStartTime() != null) {
-
-            int totalMinutes = this.getStartTime();
-
-            int hours = totalMinutes / 60;
-            int minutes = totalMinutes - (hours * 60);
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, hours);
-            calendar.set(Calendar.MINUTE, minutes);
-
-            date = calendar.getTime();
-        }
-
-        return date;
-    }
 
     // This is a temporary workaround which is intended to be replaced with
     // more majors changes (see YUK-7069).

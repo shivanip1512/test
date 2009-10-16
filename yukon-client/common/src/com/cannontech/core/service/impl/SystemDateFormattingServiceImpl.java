@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
@@ -44,6 +46,11 @@ public class SystemDateFormattingServiceImpl implements SystemDateFormattingServ
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatEnum.getFormatString());
         dateFormat.setTimeZone(getSystemTimeZone());
         return dateFormat;
+    }
+    
+    @Override
+    public DateTimeFormatter getCommandTimeFormatter() {
+    	return DateTimeFormat.forPattern("HH:mm");
     }
 
     @Override
