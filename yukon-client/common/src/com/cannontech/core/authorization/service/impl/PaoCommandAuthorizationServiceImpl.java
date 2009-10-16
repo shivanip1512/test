@@ -35,7 +35,8 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
     
     public boolean isAuthorized(LiteYukonUser user, String command, YukonPao device) {
     	LiteYukonPAObject pao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
-    	return isAuthorized(user, command, pao);
+    	Permission permission = converter.getPermission(command);
+        return authorizationService.isAuthorized(user, permission, pao);
     }
 
     @Deprecated
