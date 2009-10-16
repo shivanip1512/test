@@ -1,34 +1,36 @@
 package com.cannontech.common.model;
 
+import com.cannontech.common.pao.PaoIdentifier;
+
 public class PaoProperty {
 
-    private int paoId;
-    private String propertyName;
+    private PaoIdentifier paoIdentifier;
+    private PaoPropertyName propertyName;
     private String propertyValue;
     
     public PaoProperty() {
         
     }
     
-    public PaoProperty(int id, String name, String value) {
-        this.paoId = id;
+    public PaoProperty(PaoIdentifier identifier, PaoPropertyName name, String value) {
+        this.paoIdentifier = identifier;
         this.propertyName = name;
         this.propertyValue = value;
     }
     
-    public int getPaoId() {
-        return paoId;
+    public PaoIdentifier getPaoIdentifier() {
+        return paoIdentifier;
     }
 
-    public void setPaoId(int paoId) {
-        this.paoId = paoId;
+    public void setPaoIdentifier(PaoIdentifier identifier) {
+        this.paoIdentifier = identifier;
     }
 
-    public String getPropertyName() {
+    public PaoPropertyName getPropertyName() {
         return propertyName;
     }
 
-    public void setPropertyName(String propertyName) {
+    public void setPropertyName(PaoPropertyName propertyName) {
         this.propertyName = propertyName;
     }
 

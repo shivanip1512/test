@@ -123,7 +123,7 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
 
     public Object getValue(Object val) 
     {
-        val = PortFactory.createPort( PortTypes.TCP );
+        val = PortFactory.createPort( PortTypes.TCPPORT );
         String name = getDescriptionTextField().getText().trim();
     
         Integer baudRate = new Integer((String) getBaudRateComboBox().getSelectedItem());

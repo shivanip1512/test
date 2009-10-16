@@ -17,8 +17,10 @@ import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.JTextFieldComboEditor;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.model.PaoProperty;
+import com.cannontech.common.model.PaoPropertyName;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
@@ -475,9 +477,7 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
 		getDialupSettingsPanel().setVisible(
 			com.cannontech.database.data.pao.PAOGroups.isDialupPort(type) );
 		
-		boolean tcpport = (type == PAOGroups.TCP) && (deviceType == PAOGroups.RTU_DNP || 
-                                    	              deviceType == PAOGroups.FAULT_CI ||
-                                    	              deviceType == PAOGroups.NEUTRAL_MONITOR);
+		boolean tcpport = (type == PAOGroups.TCPPORT) && (PAOGroups.isTcpPortEligible(deviceType));
 		
 		getTcpIpAddressTextField().setVisible(tcpport);
 		getTcpIpAddressLabel().setVisible(tcpport);
@@ -1756,19 +1756,17 @@ public Object getValue(Object val)
     LiteYukonPAObject port2 = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
     
     PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
-    propertyDao.remove(new PaoProperty(deviceBase.getPAObjectID(),"",""));
+    propertyDao.removeAll(deviceBase.getPAObjectID());
     
     if (port2 != null) {
         int porttype = port2.getType();
-        if (PortTypes.TCP == porttype && 
-            (devType == PAOGroups.RTU_DNP || 
-             devType == PAOGroups.FAULT_CI ||
-             devType == PAOGroups.NEUTRAL_MONITOR))
+        if (PortTypes.TCPPORT == porttype && PAOGroups.isTcpPortEligible(deviceType))
         {      
             int id = deviceBase.getPAObjectID();
+            PaoIdentifier identifier = new PaoIdentifier(id,PaoType.getForId(deviceType));
             
-            propertyDao.add(new PaoProperty(id,"tcp ip address",getTcpIpAddressTextField().getText()));
-            propertyDao.add(new PaoProperty(id,"tcp port",getTcpPortTextField().getText()));        
+            propertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpIpAddress,getTcpIpAddressTextField().getText()));
+            propertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpPort,getTcpPortTextField().getText()));
         }
     }
 	//This is a little bit ugly
@@ -2791,15 +2789,12 @@ public void setValue(Object val)
     PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
     if (port != null) {
         int porttype = port.getType();
-        if (PortTypes.TCP == porttype && 
-            (deviceType == PAOGroups.RTU_DNP || 
-             deviceType == PAOGroups.FAULT_CI ||
-             deviceType == PAOGroups.NEUTRAL_MONITOR))
+        if (PortTypes.TCPPORT == porttype && PAOGroups.isTcpPortEligible(deviceType))
         {      
             int id = deviceBase.getPAObjectID();
             String value = null;
             try{
-                PaoProperty prop = propertyDao.getByIdAndName(id,"tcp ip address");
+                PaoProperty prop = propertyDao.getByIdAndName(id,PaoPropertyName.TcpIpAddress);
                 value = prop.getPropertyValue();
             } catch (EmptyResultDataAccessException e) {
                 value = CtiUtilities.STRING_NONE;
@@ -2807,7 +2802,7 @@ public void setValue(Object val)
             getTcpIpAddressTextField().setText(value);
             
             try{
-                PaoProperty prop = propertyDao.getByIdAndName(id,"tcp port");
+                PaoProperty prop = propertyDao.getByIdAndName(id,PaoPropertyName.TcpPort);
                 value = prop.getPropertyValue();
             } catch (EmptyResultDataAccessException e) {
                 value = CtiUtilities.STRING_NONE;

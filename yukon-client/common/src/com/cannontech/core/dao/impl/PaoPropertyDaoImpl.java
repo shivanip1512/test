@@ -9,31 +9,17 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 
 import com.cannontech.common.model.PaoProperty;
+import com.cannontech.common.model.PaoPropertyName;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoPropertyDao;
 
 public class PaoPropertyDaoImpl implements PaoPropertyDao {
-    private static final String insertSql;
-    private static final String removeSql;
-    private static final String updateSql;
-    private static final String selectAllSql;
-    private static final String selectByIdSql;
     
     private static final ParameterizedRowMapper<PaoProperty> rowMapper;
-    
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
-    static {
-        insertSql = "INSERT INTO PaoProperty (PaObjectID, PropertyName, PropertyValue) VALUES (?,?,?)";
-        
-        removeSql = "DELETE FROM PaoProperty WHERE PaObjectID = ?";
-        
-        updateSql = "UPDATE PaoProperty SET PropertyName = ?," + 
-        "PropertyValue = ? WHERE PaObjectID = ?";
-        
-        selectAllSql = "SELECT PaObjectID,PropertyName,PropertyValue FROM PaoProperty";
-        
-        selectByIdSql = selectAllSql + " WHERE PaObjectID = ?";
-        
+    static { 
         rowMapper = PaoPropertyDaoImpl.createRowMapper();
     }
     
@@ -41,8 +27,16 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
         ParameterizedRowMapper<PaoProperty> rowMapper = new ParameterizedRowMapper<PaoProperty>() {
             public PaoProperty mapRow(ResultSet rs, int rowNum) throws SQLException {
                 PaoProperty property = new PaoProperty();
-                property.setPaoId(rs.getInt("PaObjectID"));
-                property.setPropertyName(rs.getString("PropertyName"));
+                
+                int paoId = rs.getInt("PaObjectID");
+                String paoTypeString = rs.getString("Type"); 
+                PaoType paoType = PaoType.getForDbString(paoTypeString);
+                property.setPaoIdentifier(new PaoIdentifier(paoId,paoType));
+                
+                String propertyName = rs.getString("PropertyName");
+                PaoPropertyName paoPropertyName =  PaoPropertyName.valueOf(propertyName);
+                property.setPropertyName(paoPropertyName);
+                
                 property.setPropertyValue(rs.getString("PropertyValue"));
 
                 return property;
@@ -53,42 +47,49 @@ public class PaoPropertyDaoImpl implements PaoPropertyDao {
 
     @Override
     public boolean add(PaoProperty property) {
-        int rowsAffected = simpleJdbcTemplate.update(insertSql,
-                                                     property.getPaoId(),
-                                                     property.getPropertyName(),
+        String sql = "INSERT INTO PaoProperty (PaObjectID, PropertyName, PropertyValue) VALUES (?,?,?)";
+        int rowsAffected = simpleJdbcTemplate.update(sql,
+                                                     property.getPaoIdentifier().getPaoId(),
+                                                     property.getPropertyName().name(),
                                                      property.getPropertyValue());
         boolean result = (rowsAffected == 1);
         
         return result;
     }
-
+    
     @Override
-    public PaoProperty getById(int id) {
-        PaoProperty property = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
+    public PaoProperty getByIdAndName(int id, PaoPropertyName propertyName) {
+        String sql = "SELECT pp.PaObjectID,pp.PropertyName,pp.PropertyValue,yp.Type FROM PaoProperty pp, " + 
+                     "YukonPaObject yp WHERE pp.PaObjectID = ? AND yp.PAObjectID = ? AND PropertyName = ?";
+        
+        PaoProperty property = simpleJdbcTemplate.queryForObject(sql, rowMapper, id, id, propertyName.name());
         
         return property;
     }
     
     @Override
-    public PaoProperty getByIdAndName(int id, String name) {
-        PaoProperty property = simpleJdbcTemplate.queryForObject(selectByIdSql + " AND PropertyName = ?", rowMapper, id, name);
-        
-        return property;
-    }
-    
-    @Override
-    public boolean remove(PaoProperty property) {
-        simpleJdbcTemplate.update(removeSql,property.getPaoId());
+    public boolean removeAll(int id) {
+        simpleJdbcTemplate.update("DELETE FROM PaoProperty WHERE PaObjectID = ?",id);
         
         return true;
     }
     
     @Override
+    public boolean remove(PaoProperty property) {
+        String sql = "DELETE FROM PaoProperty WHERE PaObjectID = ? AND PropertyName = ?";
+        int rows = simpleJdbcTemplate.update(sql,property.getPaoIdentifier().getPaoId(),property.getPropertyName().name());
+        
+        boolean ret = (rows == 1);
+        return ret;
+    }
+    
+    @Override
     public boolean update(PaoProperty property) {
-        int rowsAffected = simpleJdbcTemplate.update(updateSql,
-                                                     property.getPropertyName(),
+        String sql = "UPDATE PaoProperty SET PropertyValue = ? WHERE PaObjectID = ? AND PropertyName = ?";
+        int rowsAffected = simpleJdbcTemplate.update(sql,
                                                      property.getPropertyValue(),
-                                                     property.getPaoId());
+                                                     property.getPropertyName().name(),
+                                                     property.getPaoIdentifier().getPaoId());
         boolean result = (rowsAffected == 1);
         
         return result;

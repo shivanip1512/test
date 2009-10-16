@@ -798,9 +798,9 @@ public final static int getPortType(String typeString)
 	{
 		return DIALOUT_POOL;
 	}
-	else if (typeString.equalsIgnoreCase(PortTypes.STRING_TCP))
+	else if (typeString.equalsIgnoreCase(PortTypes.STRING_TCPPORT))
 	{
-	    return TCP;
+	    return TCPPORT;
 	}
 	else
 		return INVALID;
@@ -896,6 +896,20 @@ public static final boolean isDialupPort(String type)
 	int intType = getPortType(type);
 
 	return isDialupPort(intType);
+}
+
+public static final boolean isTcpPortEligible(int type)
+{
+    switch (type) {
+        case PAOGroups.RTU_DNP:
+        case PAOGroups.FAULT_CI:
+        case PAOGroups.NEUTRAL_MONITOR: {
+            return true;
+        }
+        default: {
+            return false;
+        }
+    }
 }
 
 /**
