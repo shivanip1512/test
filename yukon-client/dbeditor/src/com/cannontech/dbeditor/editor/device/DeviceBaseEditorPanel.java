@@ -1755,18 +1755,19 @@ public Object getValue(Object val)
     PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
     propertyDao.remove(new PaoProperty(deviceBase.getPAObjectID(),"",""));
     
-    int porttype = port2.getType();
-    if (PortTypes.TCP == porttype && 
-        (devType == PAOGroups.RTU_DNP || 
-         devType == PAOGroups.FAULT_CI ||
-         devType == PAOGroups.NEUTRAL_MONITOR))
-    {      
-        int id = deviceBase.getPAObjectID();
-        
-        propertyDao.add(new PaoProperty(id,"tcp ip address",getTcpIpAddressTextField().getText()));
-        propertyDao.add(new PaoProperty(id,"tcp port",getTcpPortTextField().getText()));        
+    if (port2 != null) {
+        int porttype = port2.getType();
+        if (PortTypes.TCP == porttype && 
+            (devType == PAOGroups.RTU_DNP || 
+             devType == PAOGroups.FAULT_CI ||
+             devType == PAOGroups.NEUTRAL_MONITOR))
+        {      
+            int id = deviceBase.getPAObjectID();
+            
+            propertyDao.add(new PaoProperty(id,"tcp ip address",getTcpIpAddressTextField().getText()));
+            propertyDao.add(new PaoProperty(id,"tcp port",getTcpPortTextField().getText()));        
+        }
     }
-	
 	//This is a little bit ugly
 	//The address could be coming from three distinct
 	//types of devices - yet all devices have an address
@@ -2782,43 +2783,44 @@ public void setValue(Object val)
     } else {
 		setNonRemBaseValue( val );		
 	}
-    LiteYukonPAObject port2 = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
+    LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
     
     PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
-    
-    int porttype = port2.getType();
-    if (PortTypes.TCP == porttype && 
-        (deviceType == PAOGroups.RTU_DNP || 
-         deviceType == PAOGroups.FAULT_CI ||
-         deviceType == PAOGroups.NEUTRAL_MONITOR))
-    {      
-        int id = deviceBase.getPAObjectID();
-        String value = null;
-        try{
-            PaoProperty prop = propertyDao.getByIdAndName(id,"tcp ip address");
-            value = prop.getPropertyValue();
-        } catch (EmptyResultDataAccessException e) {
-            value = CtiUtilities.STRING_NONE;
+    if (port != null) {
+        int porttype = port.getType();
+        if (PortTypes.TCP == porttype && 
+            (deviceType == PAOGroups.RTU_DNP || 
+             deviceType == PAOGroups.FAULT_CI ||
+             deviceType == PAOGroups.NEUTRAL_MONITOR))
+        {      
+            int id = deviceBase.getPAObjectID();
+            String value = null;
+            try{
+                PaoProperty prop = propertyDao.getByIdAndName(id,"tcp ip address");
+                value = prop.getPropertyValue();
+            } catch (EmptyResultDataAccessException e) {
+                value = CtiUtilities.STRING_NONE;
+            }
+            getTcpIpAddressTextField().setText(value);
+            
+            try{
+                PaoProperty prop = propertyDao.getByIdAndName(id,"tcp port");
+                value = prop.getPropertyValue();
+            } catch (EmptyResultDataAccessException e) {
+                value = CtiUtilities.STRING_NONE;
+            }
+            getTcpPortTextField().setText(value);
+            
+            getTcpIpAddressLabel().setVisible(true);
+            getTcpIpAddressTextField().setVisible(true);
+            getTcpPortLabel().setVisible(true);
+            getTcpPortTextField().setVisible(true);
+        } else {
+            getTcpIpAddressLabel().setVisible(false);
+            getTcpIpAddressTextField().setVisible(false);
+            getTcpPortLabel().setVisible(false);
+            getTcpPortTextField().setVisible(false);
         }
-        getTcpIpAddressTextField().setText(value);
-        
-        try{
-            PaoProperty prop = propertyDao.getByIdAndName(id,"tcp port");
-            value = prop.getPropertyValue();
-        } catch (EmptyResultDataAccessException e) {
-            value = CtiUtilities.STRING_NONE;
-        }
-        getTcpPortTextField().setText(value);
-        
-        getTcpIpAddressLabel().setVisible(true);
-        getTcpIpAddressTextField().setVisible(true);
-        getTcpPortLabel().setVisible(true);
-        getTcpPortTextField().setVisible(true);
-    } else {
-        getTcpIpAddressLabel().setVisible(false);
-        getTcpIpAddressTextField().setVisible(false);
-        getTcpPortLabel().setVisible(false);
-        getTcpPortTextField().setVisible(false);
     }
 }
 /**
