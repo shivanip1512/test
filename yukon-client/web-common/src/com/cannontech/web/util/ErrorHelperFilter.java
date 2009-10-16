@@ -79,8 +79,10 @@ public class ErrorHelperFilter  implements Filter {
 			String remoteAddr = httpReq.getRemoteAddr();
 			String queryString = httpReq.getQueryString();
 			//avoid printing password values to the log
-			queryString = queryString.replaceAll("PASSWORD=.*&", "PASSWORD=<password removed>&");
-			
+			if(queryString != null){
+			    queryString = queryString.replaceAll("PASSWORD=[^&]*&?", "PASSWORD=<password removed>&");
+			}
+			    
 			return "contextPath=" + contextPath +
 			    "; pathInfo=" + pathInfo + 
 				"; parameters=" + parameters + 
