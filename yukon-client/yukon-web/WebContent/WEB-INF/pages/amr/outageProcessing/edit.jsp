@@ -218,6 +218,7 @@
 			</tags:sectionContainer>
 			
 			<%-- SCHEDULE --%>
+			<cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
 			<c:if test="${outageMonitorId == 0}">
 			<br>
 			<tags:sectionContainer title="${scheduleSectionText}">
@@ -259,6 +260,7 @@
 				
 			</tags:sectionContainer>
 			</c:if>
+			</cti:checkRolesAndProperties>
 			
 			<%-- create / update / delete --%>
 			<br>

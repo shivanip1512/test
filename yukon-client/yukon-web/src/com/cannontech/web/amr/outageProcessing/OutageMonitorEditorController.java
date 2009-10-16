@@ -30,6 +30,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
@@ -44,6 +45,7 @@ public class OutageMonitorEditorController extends MultiActionController {
 	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private OutageMonitorService outageMonitorService;
 	private CronExpressionTagService cronExpressionTagService;
+	private RolePropertyDao rolePropertyDao;
 	
 	private static final String CRON_TAG_ID = "outageMonitor";
 	private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
@@ -196,7 +198,8 @@ public class OutageMonitorEditorController extends MultiActionController {
         	
         	// SCHEDULED BLINK COUNT REQUEST JOB
         	if (isNewMonitor && scheduleGroupCommand) {
-            		
+
+        		rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
             	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext, RetryStrategy.noRetryStrategy());
         	}
         	
@@ -332,4 +335,9 @@ public class OutageMonitorEditorController extends MultiActionController {
 	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
         this.cronExpressionTagService = cronExpressionTagService;
     }
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
 }
