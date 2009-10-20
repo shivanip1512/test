@@ -780,7 +780,8 @@ public final static int getPortType(String typeString)
 		return LOCAL_DIALUP;
 	}
 	else if( typeString.equalsIgnoreCase(PortTypes.STRING_TERM_SERVER) ||
-				 typeString.equalsIgnoreCase("terminal server shared") )
+	         typeString.equalsIgnoreCase("terminal server shared") ||
+			 typeString.equalsIgnoreCase(PortTypes.STRING_UDPPORT))
 	{
 		return TSERVER_SHARED;
 	}

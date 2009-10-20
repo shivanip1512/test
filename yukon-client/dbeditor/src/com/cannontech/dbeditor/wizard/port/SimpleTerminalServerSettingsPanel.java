@@ -6,6 +6,8 @@ package com.cannontech.dbeditor.wizard.port;
  
 import java.awt.Dimension;
 
+import com.cannontech.database.data.pao.PortTypes;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.port.TerminalServerDirectPort;
 
 public class SimpleTerminalServerSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -345,6 +347,11 @@ public Object getValue(Object val)
 
 	((TerminalServerDirectPort) val).setPortName( name );
 	((TerminalServerDirectPort) val).getPortTerminalServer().setIpAddress( ipAddress );
+	
+	if ("UDP".equals(ipAddress)) {
+	    ((YukonPAObject) val).setPAOType(PortTypes.STRING_UDPPORT);
+	} 
+	
 	((TerminalServerDirectPort) val).getPortTerminalServer().setSocketPortNumber( portNumber );
 
 	((TerminalServerDirectPort) val).getPortSettings().setBaudRate( baudRate );

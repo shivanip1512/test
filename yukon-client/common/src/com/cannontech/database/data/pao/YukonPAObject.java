@@ -322,6 +322,11 @@ public void setPAOName( String name )
 	getYukonPAObject().setPaoName( name );
 }
 
+public void setPAOType( String name )
+{
+    getYukonPAObject().setType(name);
+}
+
 public void setPAODescription(String description)
 {
 	getYukonPAObject().setDescription(description);

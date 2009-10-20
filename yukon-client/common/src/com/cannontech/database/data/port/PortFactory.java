@@ -92,6 +92,7 @@ public static DirectPort createPort( int typeOfPort )
 			break;
 			
 		case PortTypes.TSERVER_SHARED:
+		case PortTypes.UDPPORT:
 			TerminalServerSharedPort tsp = new TerminalServerSharedPort();
 			tsp.setPortType( PortTypes.STRING_TERM_SERVER );
 			tsp.getCommPort().setCommonProtocol("IDLC");			
@@ -143,7 +144,7 @@ public static DirectPort createPort( int typeOfPort )
 		    tcp.getPortTiming().setReceiveDataWait(new Integer(0));
 		    tcp.getPortTiming().setExtraTimeOut(new Integer(0));
 		    port = tcp;
-		    break;
+		    break;		    
 		default:
 			return null;
 	}
