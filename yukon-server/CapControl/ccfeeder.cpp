@@ -2079,7 +2079,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPAOName() << " Id: " << currentCapBank->getPAOId() << " size: " << currentCapBank->getBankSize() << endl;
                         }
-                        continue;
+                        break;
                     }
                 }
                 else
@@ -2092,7 +2092,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPAOName() << " Id: " << currentCapBank->getPAOId() << " size: " << currentCapBank->getBankSize() << endl;
                         }
-                        continue;
+                        break;
                     }
                 }
             }

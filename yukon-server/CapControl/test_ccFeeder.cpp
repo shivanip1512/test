@@ -410,13 +410,12 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_with_small_lead_lag)
     capBank2->setCloseOrder(0);
     capBank2->setTripOrder(1);
 
-    // This should STILL find Bank 150.
+    // This should not find a suitable bank.
     bank = feeder->findCapBankToChangeVars(-150,pointChanges,-125,125,150);
     BOOST_CHECK_EQUAL(pointChanges.size(),0);
     delete_container(pointChanges);
     pointChanges.clear();
-    BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank150");
+    BOOST_REQUIRE_EQUAL((bank == NULL), true);
 
     capBank1->setBankSize(600);
 
@@ -438,7 +437,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_with_small_lead_lag)
     capBank1->setBankSize(100);
     capBank2->setBankSize(100);
 
-    // Putting some legitimat 0's in to test skip logic
+    // Putting some legitimate 0's in to test skip logic
     bank = feeder->findCapBankToChangeVars(-150,pointChanges,-200,0,0);
     BOOST_CHECK_EQUAL(pointChanges.size(),0);
     delete_container(pointChanges);
