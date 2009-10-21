@@ -3,6 +3,7 @@ package com.cannontech.multispeak.dao;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -73,13 +74,13 @@ public interface MspObjectDao {
 
 
     /**
-     * Returns a List of Msp Meter.
-     * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List of Meter objects is returned.
+     * Retrieves msp meters from the mspVendor.
+     * Lists of msp meters are given to the callback as they are retrieved in chunks from the vendor.
      * @param mspVendor
-     * @return
+     * @param callback
+     * @throws Exception
      */
-    public List<com.cannontech.multispeak.deploy.service.Meter> getAllMspMeters(MultispeakVendor mspVendor);
+    public void getAllMspMeters(MultispeakVendor mspVendor, SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>> callback) throws Exception;
     
     /**
      * Returns a list of the MeterNumber(s) for the mspServiceLocation.

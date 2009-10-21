@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +19,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -29,8 +33,9 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Multimaps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
@@ -45,100 +50,108 @@ public class SyncCisSubstationGroupController {
 	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	
+	private Logger log = YukonLogManager.getLogger(SyncCisSubstationGroupController.class);
+	
 	@RequestMapping
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) {
         
         ModelAndView mav = new ModelAndView("setup/syncCisSubstationGroup/get.jsp");
-        
         return mav;
     }
 	
 	@RequestMapping
-    public ModelAndView getMeters(HttpServletRequest request, HttpServletResponse response) throws RemoteException {
+    public ModelAndView getMeters(HttpServletRequest request, HttpServletResponse response) throws RemoteException, Exception {
         
         ModelAndView mav = new ModelAndView("setup/syncCisSubstationGroup/sync.jsp");
-        
-        // get all msp meters
-        List<com.cannontech.multispeak.deploy.service.Meter> allMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+    	
+    	// init results and stats
+    	final List<MeterAndSubs> meterAndSubsList = new ArrayList<MeterAndSubs>();
+    	final StoredDeviceGroup substationSystemGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.SUBSTATION_NAME.getFullPath(), true);
+    	final AtomicInteger totalAdded = new AtomicInteger(0);
+    	final AtomicInteger totalRemoved = new AtomicInteger(0);
+    	final AtomicInteger totalNoChange = new AtomicInteger(0);
+
+    	// callback
+    	// processes the list of msp meters as they are retrieved from the cis vendor
+    	SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>> callback = new SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>>() {
+    		
+    		@Override
+    		public void handle(List<com.cannontech.multispeak.deploy.service.Meter> mspMeters) throws Exception {
+    			
+    			// msp meter number map
+    			log.debug("Handling msp meter list of size " + mspMeters.size());
+    			ImmutableListMultimap<String,com.cannontech.multispeak.deploy.service.Meter> mspMeterMap = Multimaps.index(mspMeters, new Function<com.cannontech.multispeak.deploy.service.Meter, String>() {
+    	    		@Override
+    	    		public String apply(com.cannontech.multispeak.deploy.service.Meter device) {
+    	    			return device.getMeterNo();
+    	    		}
+    	    	});
+    			
+    			// yukon meters
+    			List<String> meterNumberList = new ArrayList<String>(mspMeterMap.keySet());
+    	    	List<Meter> meters = meterDao.getMetersForMeterNumbers(meterNumberList);
+    	    	log.debug("Found " + meters.size() + " yukon meters for msp meter list");
+    	    	
+    	    	for (Meter meter : meters) {
+    	    		
+    	    		String meterNumber = meter.getMeterNumber();
+    	    		ImmutableList<com.cannontech.multispeak.deploy.service.Meter> mspMeterList = mspMeterMap.get(meterNumber);
+
+    	    		for (com.cannontech.multispeak.deploy.service.Meter mspMeter : mspMeterList) {
+        	    		
+        	    		if (mspMeter.getUtilityInfo() != null) {
+        	    		
+        	    			String substationName = mspMeter.getUtilityInfo().getSubstationName();
+        	    			
+	        	    		if (!StringUtils.isBlank(substationName)) {
+	        	    			
+	        	    			String substationDeviceGroupName = SystemGroupEnum.SUBSTATION_NAME.getFullPath() + substationName;
+	        	    			StoredDeviceGroup belongsIn = deviceGroupEditorDao.getStoredGroup(substationDeviceGroupName, true);
+	        	    			
+	        	    			// add
+	        	    			boolean added = false;
+	        	    			if (!deviceGroupMemberEditorDao.isChildDevice(belongsIn, meter)) {
+	        	    				deviceGroupMemberEditorDao.addDevices(belongsIn, meter);
+	        	    				added = true;
+	        	    				totalAdded.incrementAndGet();
+	        	    			} else {
+	        	    				totalNoChange.incrementAndGet();
+	        	    			}
+	        	    			
+	        	    			// remove
+	        	        		Set<StoredDeviceGroup> removed = new HashSet<StoredDeviceGroup>();
+	        	        		
+	        	        		Set<StoredDeviceGroup> doesNotBelongIn = deviceGroupMemberEditorDao.getGroupMembership(substationSystemGroup, meter);
+	        	        		doesNotBelongIn.remove(belongsIn);
+	        	        		
+	        	        		for (StoredDeviceGroup group : doesNotBelongIn) {
+	        	        			if (deviceGroupMemberEditorDao.isChildDevice(group, meter)) {
+	        	        				deviceGroupMemberEditorDao.removeDevices(group, meter);
+	        	        				removed.add(group);
+	        	        				totalRemoved.incrementAndGet();
+	        	        			}
+	        	        		}
+	        	    			
+	        	    			meterAndSubsList.add(new MeterAndSubs(meter, belongsIn, added, removed));
+	        	    		}
+        	    		}
+    	    		}
+    	    	}
+    		}
+    	};
+    	
         int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, null);
     	if (vendorId > 0) {
     		MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-    		allMeters = mspObjectDao.getAllMspMeters(mspVendor);
+    		mspObjectDao.getAllMspMeters(mspVendor, callback);
     	}
     	
-    	// meter number to msp meter map
-    	ImmutableMap<String, com.cannontech.multispeak.deploy.service.Meter> mspMeterMap = Maps.uniqueIndex(allMeters, new Function<com.cannontech.multispeak.deploy.service.Meter, String>() {
-    		@Override
-    		public String apply(com.cannontech.multispeak.deploy.service.Meter device) {
-    			return device.getMeterNo();
-    		}
-    	});
-    	
-    	// meter number to yukon meter map
-    	List<String> meterNumberList = new ArrayList<String>(mspMeterMap.keySet());
-    	List<Meter> meters = meterDao.getMetersForMeterNumbers(meterNumberList);
-    	
-    	ImmutableMap<String, Meter> yukonMeterMap = Maps.uniqueIndex(meters, new Function<Meter, String>() {
-    		@Override
-    		public String apply(Meter device) {
-    			return device.getMeterNumber();
-    		}
-    	});
-    	
-    	// init stats
-    	int totalAdded = 0;
-    	int totalRemoved = 0;
-    	int totalNoChange = 0;
-    	
-    	// build meterAndSubs list
-    	StoredDeviceGroup substationSystemGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.SUBSTATION_NAME.getFullPath(), true);
-    	
-    	List<MeterAndSubs> meterAndSubsList = new ArrayList<MeterAndSubs>();
-    	for (Meter meter : yukonMeterMap.values()) {
-    		
-    		// get substation name from msp meter
-    		String meterNumber = meter.getMeterNumber();
-    		com.cannontech.multispeak.deploy.service.Meter mspMeter = mspMeterMap.get(meterNumber);
-    		String substationName = mspMeter.getUtilityInfo().getSubstationName();
-    		
-    		if (!StringUtils.isBlank(substationName)) {
-    			
-    			String substationDeviceGroupName = SystemGroupEnum.SUBSTATION_NAME.getFullPath() + substationName;
-    			StoredDeviceGroup belongsIn = deviceGroupEditorDao.getStoredGroup(substationDeviceGroupName, true);
-    			
-    			// add
-    			boolean added = false;
-    			if (!deviceGroupMemberEditorDao.isChildDevice(belongsIn, meter)) {
-    				deviceGroupMemberEditorDao.addDevices(belongsIn, meter);
-    				added = true;
-    				totalAdded++;
-    			} else {
-    				totalNoChange++;
-    			}
-    			
-    			// remove
-        		Set<StoredDeviceGroup> removed = new HashSet<StoredDeviceGroup>();
-        		
-        		Set<StoredDeviceGroup> doesNotBelongIn = deviceGroupMemberEditorDao.getGroupMembership(substationSystemGroup, meter);
-        		doesNotBelongIn.remove(belongsIn);
-        		
-        		for (StoredDeviceGroup group : doesNotBelongIn) {
-        			if (deviceGroupMemberEditorDao.isChildDevice(group, meter)) {
-        				deviceGroupMemberEditorDao.removeDevices(group, meter);
-        				removed.add(group);
-        				totalRemoved++;
-        			}
-        		}
-    			
-    			meterAndSubsList.add(new MeterAndSubs(meter, belongsIn, added, removed));
-    		}
-    	}
     	
     	mav.addObject("substationGroupPrefix", SystemGroupEnum.SUBSTATION_NAME.getFullPath());
     	mav.addObject("meterAndSubsList", meterAndSubsList);
-    	mav.addObject("totalAdded", totalAdded);
-    	mav.addObject("totalRemoved", totalRemoved);
-    	mav.addObject("totalNoChange", totalNoChange);
+    	mav.addObject("totalAdded", totalAdded.get());
+    	mav.addObject("totalRemoved", totalRemoved.get());
+    	mav.addObject("totalNoChange", totalNoChange.get());
     	
         return mav;
     }
@@ -170,7 +183,6 @@ public class SyncCisSubstationGroupController {
 			return removed;
 		}
 	}
-	
 	
 	@Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {

@@ -12,10 +12,11 @@ import javax.xml.soap.Name;
 
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
@@ -114,9 +115,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<com.cannontech.multispeak.deploy.service.Meter> getAllMspMeters(MultispeakVendor mspVendor) {
-    
-    	List<com.cannontech.multispeak.deploy.service.Meter> allMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+    public void getAllMspMeters(MultispeakVendor mspVendor, SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>> callback) throws Exception {
     
     	boolean firstGet = true;
 		String lastReceived = null;
@@ -124,14 +123,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
 		while (firstGet || lastReceived != null) {
 			
 			CTILogger.info("Calling getMoreMspMeters, lastReceived = " + lastReceived);
-			lastReceived = getMoreMspMeters(allMeters, lastReceived, mspVendor);
+			lastReceived = getMoreMspMeters(mspVendor, lastReceived, callback);
 			firstGet = false;
 		}
+    }
     
-		return allMeters;
-	}
-    
-    private String getMoreMspMeters(List<com.cannontech.multispeak.deploy.service.Meter> allMeters, String lastReceived, MultispeakVendor mspVendor) {
+    private String getMoreMspMeters(MultispeakVendor mspVendor, String lastReceived, SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>> callback) throws Exception {
     	
     	String lastSent = null;
         
@@ -142,24 +139,32 @@ public class MspObjectDaoImpl implements MspObjectDao {
             	
                 com.cannontech.multispeak.deploy.service.Meter[] meters = port.getAllMeters(lastReceived);
                 
-                List<com.cannontech.multispeak.deploy.service.Meter> mspMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
+                List<com.cannontech.multispeak.deploy.service.Meter> mspMeters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>(meters.length);
                 if( meters != null) {
                     mspMeters = Arrays.asList(meters);
                 }
-                allMeters.addAll(mspMeters);
-                
+
                 int objectsRemaining = 0;
                 String objectsRemainingStr = getAttributeValue(port, "objectsRemaining");
-                if (NumberUtils.isDigits(objectsRemainingStr)) {
-                	objectsRemaining = Integer.valueOf(objectsRemainingStr);
+                if (!StringUtils.isBlank(objectsRemainingStr)) {
+                	try {
+                		objectsRemaining = Integer.valueOf(objectsRemainingStr);
+                	} catch (NumberFormatException e) {
+                		CTILogger.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
+                	}
                 }
                 
-                if (objectsRemaining != 0) {
+                // assume vendor is following spec by returning a number > 0 if there are more meters.
+                // some vendors (NISC for example) are known to return -1, do not handle this.
+                if (objectsRemaining > 0) { 
         			lastSent = getAttributeValue(port, "lastSent");
         			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
         		} else {
         			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
         		}
+                
+                // pass to callback
+                callback.handle(mspMeters);
                 
             } else {
                 CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
