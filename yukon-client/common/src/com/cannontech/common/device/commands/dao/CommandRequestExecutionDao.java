@@ -12,13 +12,13 @@ public interface CommandRequestExecutionDao {
 	
 	public CommandRequestExecution getById(int commandRequestExecutionId);
 	
-	public CommandRequestExecution findLatest(Date cutoff);
-	
-	public int getRequestCountById(int commandRequestExecutionId);
+	public int getRequestCountByCreId(int commandRequestExecutionId);
 	
 	public boolean isComplete(int commandRequestExecutionId);
 	
 	public Date getStopTime(int commandRequestExecutionId);
+	
+	public List<CommandRequestExecution> getCresByContextId(int commandRequestExecutionContextId);
 	
 	public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date startTime, Date stopTime, CommandRequestExecutionType type, boolean acsending);
 	

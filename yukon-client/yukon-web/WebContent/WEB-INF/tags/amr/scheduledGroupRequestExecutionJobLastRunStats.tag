@@ -39,12 +39,12 @@
 <c:choose>
 	<c:when test="${jobId > 0}">
 	
-		<cti:dataUpdaterCallback function="toggleViewStats_${id}()" initialize="true" requestCount="COMMAND_REQUEST_EXECUTION/${jobId}/LAST_REQUEST_COUNT_FOR_JOB" />
+		<cti:dataUpdaterCallback function="toggleViewStats_${id}()" initialize="true" requestCount="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_REQUEST_COUNT_FOR_JOB" />
 	
 		<div id="statsDiv_${id}" <c:if test="${not hasStatsInitially}">style="display:none;"</c:if>>
-			<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"/> ${lastResultsSuccessText}
-			/ <cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"/> ${lastResultsMissedText}
-			(<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"/> ${lastResultsTotalText})
+			<cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"/> ${lastResultsSuccessText}
+			/ <cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"/> ${lastResultsMissedText}
+			(<cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"/> ${lastResultsTotalText})
 		</div>
 		
 		<div id="noStatsDiv_${id}" <c:if test="${hasStatsInitially}">style="display:none;"</c:if>>

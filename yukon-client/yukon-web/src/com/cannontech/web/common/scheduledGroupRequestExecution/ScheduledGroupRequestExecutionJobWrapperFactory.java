@@ -54,7 +54,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 			this.userContext = userContext;
 			
 			this.task = (ScheduledGroupRequestExecutionTask)this.jobManager.instantiateTask(this.job);
-	        this.creCount = this.scheduledGroupRequestExecutionDao.getCreCountByJobId(this.job.getId(), startTime, stopTime);
+	        this.creCount = this.scheduledGroupRequestExecutionDao.getDistinctCreCountByJobId(this.job.getId(), startTime, stopTime);
 		}
 		
 		public ScheduledRepeatingJob getJob() {
@@ -104,6 +104,19 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		        return null;
 		    }
 			return this.task.getDeviceGroup().getFullName();
+		}
+		
+		public boolean isRetrySetup() {
+			return this.task.getRetryCount() > 0;
+		}
+		public int getRetryCount() {
+			return this.task.getRetryCount();
+		}
+		public Integer getStopRetryAfterHoursCount() {
+			return this.task.getStopRetryAfterHoursCount();
+		}
+		public Integer getTurnOffQueuingAfterRetryCount() {
+			return this.task.getTurnOffQueuingAfterRetryCount();
 		}
 		
 		public int getCreCount() {

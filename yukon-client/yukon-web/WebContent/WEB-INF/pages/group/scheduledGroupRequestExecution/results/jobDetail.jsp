@@ -28,6 +28,9 @@
 <cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.deviceGroup" />
 <cti:msg var="executionsPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.executions" />
 <cti:msg var="editScheduleButtonText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton" />
+<cti:msg var="retryCountText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.retryCount"/>
+<cti:msg var="stopRetryAfterHoursCountText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.stopRetryAfterHoursCount"/>
+<cti:msg var="turnOffQueuingAfterRetryCountText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.turnOffQueuingAfterRetryCount"/>
     
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -76,6 +79,67 @@
 				${jobWrapper.commandRequestTypeShortName}
 			</tags:nameValue>
 			
+			<%-- attribute/command --%>
+			<c:if test="${not empty jobWrapper.attributes}">
+				<tags:nameValue name="${attributeText}">${jobWrapper.attributeDescriptions}</tags:nameValue>
+			</c:if>
+			<c:if test="${not empty jobWrapper.command}">
+				<tags:nameValue name="${commandText}">${jobWrapper.command}</tags:nameValue>
+			</c:if>
+			
+			<%-- device group --%>
+			<tags:nameValue name="${deviceGroupText}">
+				<c:choose>
+					<c:when test="${not empty jobWrapper.deviceGroupName}">
+						<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+							<cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
+						</cti:url>
+						<a href="${deviceGroupUrl}">
+							${jobWrapper.deviceGroupName}
+						</a>
+					</c:when>
+					<c:otherwise>
+						<span class="errorRed">Group does not exist.</span>
+					</c:otherwise>
+				</c:choose>
+			</tags:nameValue>
+			
+			<%-- user --%>
+			<tags:nameValue name="${userText}">
+				${jobWrapper.job.userContext.yukonUser.username}
+			</tags:nameValue>
+			
+			<%-- retry setup --%>
+			<c:if test="${jobWrapper.retrySetup}">
+				<tags:nameValue name="Retry Options">
+					<tags:hideReveal title="View" showInitially="false">
+					
+						<table class="compactResultsTable">
+							<tr>
+								<td style="width:15px;">${jobWrapper.retryCount}</td>
+								<td>${retryCountText}</td>
+							</tr>
+							<c:if test="${not empty jobWrapper.stopRetryAfterHoursCount}">
+							<tr>
+								<td>${jobWrapper.stopRetryAfterHoursCount}</td>
+								<td>${stopRetryAfterHoursCountText}</td>
+							</tr>
+							</c:if>
+							<c:if test="${not empty jobWrapper.turnOffQueuingAfterRetryCount}">
+							<tr>
+								<td>${jobWrapper.turnOffQueuingAfterRetryCount}</td>
+								<td>${turnOffQueuingAfterRetryCountText}</td>
+							</tr>
+							</c:if>
+						</table>
+					
+					</tags:hideReveal>
+				</tags:nameValue>
+			</c:if>
+			
+			
+			<tags:nameValueGap gapHeight="20px"/>
+			
 			<%-- enabled --%>
 			<tags:nameValue name="${enabledText}">
 				<c:choose>
@@ -87,14 +151,6 @@
 					</c:otherwise>
 				</c:choose>
 			</tags:nameValue>
-			
-			<%-- attribute/command --%>
-			<c:if test="${not empty jobWrapper.attributes}">
-				<tags:nameValue name="${attributeText}">${jobWrapper.attributeDescriptions}</tags:nameValue>
-			</c:if>
-			<c:if test="${not empty jobWrapper.command}">
-				<tags:nameValue name="${commandText}">${jobWrapper.command}</tags:nameValue>
-			</c:if>
 			
 			<%-- schedule description --%>
 			<tags:nameValue name="${scheduleDescriptionText}">
@@ -129,28 +185,6 @@
 			</c:choose>
 			</tags:nameValue>
 			
-			<%-- device group --%>
-			<tags:nameValue name="${deviceGroupText}">
-				<c:choose>
-					<c:when test="${not empty jobWrapper.deviceGroupName}">
-						<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
-							<cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
-						</cti:url>
-						<a href="${deviceGroupUrl}">
-							${jobWrapper.deviceGroupName}
-						</a>
-					</c:when>
-					<c:otherwise>
-						<span class="errorRed">Group does not exist.</span>
-					</c:otherwise>
-				</c:choose>
-			</tags:nameValue>
-			
-			<%-- user --%>
-			<tags:nameValue name="${userText}">
-				${jobWrapper.job.userContext.yukonUser.username}
-			</tags:nameValue>
-			
 			<%-- all executions button --%>
 			<tags:nameValue name="${executionsText}">
 				<form name="viewAllExecutionsForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
@@ -161,7 +195,7 @@
 				
 					<a href="${creListUrl}">${executionsButtonText}</a> 
 				
-					(<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/CRE_COUNT_FOR_JOB" />)
+					(<cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/CRE_COUNT_FOR_JOB" />)
 					
 					<img onclick="$('viewAllExecutionsInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
 			
@@ -175,8 +209,8 @@
 			
 		</tags:nameValueContainer>
 		
-		
-		<br><br>
+		<%-- EDIT --%>
+		<br>
 		<form id="editScheduledGroupRequestExecutionForm" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
 			<input type="hidden" name="editJobId" value="${jobWrapper.job.id}">
 		</form>

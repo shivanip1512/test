@@ -53,7 +53,7 @@
 <c:choose>
 	<c:when test="${jobId > 0}">
 	
-		<cti:dataUpdaterCallback function="setLastRunCreId_${id}()" initialize="true" creId="COMMAND_REQUEST_EXECUTION/${jobId}/LAST_CRE_ID_FOR_JOB" />
+		<cti:dataUpdaterCallback function="setLastRunCreId_${id}()" initialize="true" creId="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobId}/LAST_CRE_ID_FOR_JOB" />
 	
 		<div id="lastRunDivWithLink_${id}" <c:if test="${not linkedInitially}">style="display:none;"</c:if>>
 			<a href="javascript:void(0);" onclick="viewLastRunCommandRequestExecution_${id}();">

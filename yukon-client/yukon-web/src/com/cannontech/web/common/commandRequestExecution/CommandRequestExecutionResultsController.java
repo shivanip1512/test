@@ -117,7 +117,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
         CommandRequestExecution cre = commandRequestExecutionDao.getById(commandRequestExecutionId);
         mav.addObject("cre", cre);
         
-        int requestCount = commandRequestExecutionDao.getRequestCountById(commandRequestExecutionId);
+        int requestCount = commandRequestExecutionDao.getRequestCountByCreId(commandRequestExecutionId);
         int successCount = commandRequestExecutionResultDao.getSucessCountByExecutionId(commandRequestExecutionId);
         int failCount = commandRequestExecutionResultDao.getFailCountByExecutionId(commandRequestExecutionId);
         boolean isComplete = commandRequestExecutionDao.isComplete(commandRequestExecutionId);

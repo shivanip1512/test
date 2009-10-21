@@ -45,27 +45,16 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         return commandRequestExecution;
     }
     
-    // GET LATEST
-    public CommandRequestExecution findLatest(Date cutoff) {
+    // BY CONTEXTID
+    public List<CommandRequestExecution> getCresByContextId(int commandRequestExecutionContextId) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE");
+        sql.append("WHERE CRE.CommandRequestExecContextId =").append(commandRequestExecutionContextId);
         
-        if (cutoff != null) {
-        	sql.append("AND CRE.StartTime <= ").appendArgument(cutoff);
-        }
-        
-        sql.append("ORDER BY CRE.StartTime DESC");
-        
-        List<CommandRequestExecution> cres = yukonJdbcTemplate.queryForLimitedResults(sql, new CommandRequestExecutionRowAndFieldMapper(), 1);
-        
-        if (cres.size() > 0) {
-            return cres.get(0);
-        } else {
-            return null;
-        }
+        return yukonJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
     }
-
+    
     // BY RANGE
     public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date beginTime, Date endTime, CommandRequestExecutionType type, boolean ascending) {
     	
@@ -101,7 +90,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // REQUEST COUNT
-    public int getRequestCountById(int commandRequestExecutionId) {
+    public int getRequestCountByCreId(int commandRequestExecutionId) {
     	
     	String sql = "SELECT CRE.RequestCount FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecId = ?";
     	return yukonJdbcTemplate.queryForInt(sql, commandRequestExecutionId);

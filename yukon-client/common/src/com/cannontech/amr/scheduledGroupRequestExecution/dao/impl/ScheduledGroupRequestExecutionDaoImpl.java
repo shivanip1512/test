@@ -1,5 +1,7 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -18,6 +21,8 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionRowAndFieldMapper;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -33,6 +38,8 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequestExecutionDao, InitializingBean {
 
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+	private CommandRequestExecutionDao commandRequestExecutionDao;
+	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 	
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -226,10 +233,10 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     }
     
     // CRE COUNT BY JOB ID
-    public int getCreCountByJobId(int jobId, Date startTime, Date stopTime) {
+    public int getDistinctCreCountByJobId(int jobId, Date startTime, Date stopTime) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT COUNT(CRE.CommandRequestExecId) AS creCount ");
+    	sql.append("SELECT COUNT(DISTINCT CRE.CommandRequestExecContextId) AS distinctCreCount");
     	sql.append("FROM ScheduledGrpCommandRequest SGCR");
         sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
         
@@ -246,11 +253,85 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         if (stopTime != null) {
         	sql.append("AND CRE.StartTime <= ").appendArgument(stopTime);
         }
-    	
+        
         int creCount = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
     	return creCount;
     }
 	
+    public int getLatestFailCountByJobId(int jobId) {
+    	
+    	CommandRequestExecution latestCre = findLatestCommandRequestExecutionForJobId(jobId, null);
+    	if (latestCre == null) {
+    		return 0;
+    	}
+    	
+    	// if the context has only a single cre look to it for fail count
+    	List<CommandRequestExecution> cres = commandRequestExecutionDao.getCresByContextId(latestCre.getContextId());
+    	if(cres.size() == 1) {
+    		return commandRequestExecutionResultDao.getFailCountByExecutionId(cres.get(0).getId());
+    	}
+    	
+    	// get fail count of most recent cre for context (lastest retry)
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT COUNT(CRER.CommandRequestExecResultId) AS failCount");
+		sql.append("FROM CommandRequestExec CRE");
+		sql.append("JOIN CommandRequestExecResult CRER ON (CRE.CommandRequestExecId = CRER.CommandRequestExecId)");
+		sql.append("WHERE CRE.CommandRequestExecContextId =").appendArgument(latestCre.getContextId());
+		sql.append("AND CRE.StopTime IS NOT NULL");
+		sql.append("AND CRER.ErrorCode > 0");
+		sql.append("GROUP BY CRE.CommandRequestExecId, CRER.CommandRequestExecId");
+		sql.append("ORDER BY CRE.CommandRequestExecId DESC");
+    	
+		LastestFailCountRowCallbackHandler rch = new LastestFailCountRowCallbackHandler();
+    	yukonJdbcTemplate.query(sql, rch);
+    	
+    	return rch.getFailCount();
+    }
+    
+    public int getLatestSuccessCountByJobId(int jobId) {
+    	
+    	CommandRequestExecution latestCre = findLatestCommandRequestExecutionForJobId(jobId, null);
+    	if (latestCre == null) {
+    		return 0;
+    	}
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT COUNT(CRER.CommandRequestExecResultId) AS successCount");
+		sql.append("FROM CommandRequestExec CRE");
+		sql.append("JOIN CommandRequestExecResult CRER ON (CRE.CommandRequestExecId = CRER.CommandRequestExecId)");
+		sql.append("WHERE CRE.CommandRequestExecContextId =").appendArgument(latestCre.getContextId());
+		sql.append("AND CRER.ErrorCode = 0");
+		
+		int successCount = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+    	return successCount;
+    }
+    
+    private class LastestFailCountRowCallbackHandler implements RowCallbackHandler {
+    	boolean countSet = false;
+		int failCount = 0;
+		@Override
+		public void processRow(ResultSet rs) throws SQLException {
+			if (!countSet) {
+				failCount = rs.getInt("failCount");
+				countSet = true;
+			}
+		}
+		public int getFailCount() {
+			return failCount;
+		}
+    }
+    
+    public int getLatestRequestCountByJobId(int jobId) {
+    	
+    	CommandRequestExecution latestCre = findLatestCommandRequestExecutionForJobId(jobId, null);
+        if (latestCre == null) {
+        	return 0;
+        }
+        
+    	String sql = "SELECT MAX(CRE.RequestCount) FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecContextId = ?";
+    	return yukonJdbcTemplate.queryForInt(sql, latestCre.getContextId());
+    }
+
 	private FieldMapper<ScheduledGroupRequestExecutionPair> fieldMapper = new FieldMapper<ScheduledGroupRequestExecutionPair>() {
         public void extractValues(MapSqlParameterSource p, ScheduledGroupRequestExecutionPair pair) {
             p.addValue("JobId", pair.getJobId());
@@ -293,4 +374,14 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
             YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {
         this.scheduledGroupRequestExecutionJobDefinition = scheduledGroupRequestExecutionJobDefinition;
     }
+	
+	@Autowired
+	public void setCommandRequestExecutionDao(CommandRequestExecutionDao commandRequestExecutionDao) {
+		this.commandRequestExecutionDao = commandRequestExecutionDao;
+	}
+	
+	@Autowired
+	public void setCommandRequestExecutionResultDao(CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
+		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
+	}
 }

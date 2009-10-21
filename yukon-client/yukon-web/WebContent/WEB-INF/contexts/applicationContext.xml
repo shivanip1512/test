@@ -560,6 +560,9 @@
                 <entry key="COMMAND_REQUEST_EXECUTION">
                     <ref local="commandRequestExecutionBackingService"/>
                 </entry>
+                <entry key="SCHEDULED_GROUP_REQUEST_EXECUTION">
+                    <ref local="scheduledGroupRequestExecutionBackingService"/>
+                </entry>
                 <entry key="OUTAGE_PROCESSING">
                     <ref local="outageMonitorBackingService"/>
                 </entry>
@@ -679,19 +682,20 @@
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
     </bean>
     
-    <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService">
-    </bean>
+    <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService"/>
     <bean id="requestCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.RequestCountCommandExecutionUpdaterHandler"/>
     <bean id="resultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.ResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="successResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.SuccessResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="failureResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.FailureResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="stopTimeCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.StopTimeCommandExecutionUpdaterHandler"/>
     <bean id="isCompleteCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.IsCompleteCommandExecutionUpdaterHandler"/>
-    <bean id="lastCreIdForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastCreIdForJobCommandExecutionUpdaterHandler"/>
-    <bean id="lastRequestCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastRequestCountForJobCommandExecutionUpdaterHandler"/>
-    <bean id="lastSuccessResultsCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastSuccessResultsCountForJobCommandExecutionUpdaterHandler"/>
-    <bean id="lastFailureResultsCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.LastFailureResultsCountForJobCommandExecutionUpdaterHandler"/>
-    <bean id="creCountForJobCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.CreCountForJobCommandExecutionUpdaterHandler"/>
+    
+    <bean id="scheduledGroupRequestExecutionBackingService" class="com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionBackingService"/>
+    <bean id="lastCreIdForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastCreIdForJobScheduledGroupRequestExecutionUpdaterHandler"/>
+    <bean id="lastRequestCountForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastRequestCountForJobScheduledGroupRequestExecutionUpdaterHandler"/>
+    <bean id="lastSuccessResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastSuccessResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler"/>
+    <bean id="lastFailureResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.LastFailureResultsCountForJobScheduledGroupRequestExecutionUpdaterHandler"/>
+    <bean id="creCountForJobLastCreIdForJobScheduledGroupRequestExecutionUpdaterHandler" class="com.cannontech.web.updater.scheduledGroupRequestExecution.handler.CreCountForJobLastCreIdForJobScheduledGroupRequestExecutionUpdaterHandler"/>
     
     <!-- outage -->
     <bean id="outageMonitorBackingService" class="com.cannontech.web.updater.outageProcessing.OutageMonitorBackingService">

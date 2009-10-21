@@ -13,7 +13,7 @@ public class RequestCountCommandExecutionUpdaterHandler implements CommandReques
 	@Override
 	public String handle(int id, YukonUserContext userContext) {
 
-		int count = commandRequestExecutionDao.getRequestCountById(id);
+		int count = commandRequestExecutionDao.getRequestCountByCreId(id);
 		return String.valueOf(count);
 	}
 	

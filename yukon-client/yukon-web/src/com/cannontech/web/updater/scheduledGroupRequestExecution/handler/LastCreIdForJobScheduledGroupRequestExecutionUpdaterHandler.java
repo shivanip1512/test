@@ -1,13 +1,13 @@
-package com.cannontech.web.updater.commandRequestExecution.handler;
+package com.cannontech.web.updater.scheduledGroupRequestExecution.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionUpdaterTypeEnum;
+import com.cannontech.web.updater.scheduledGroupRequestExecution.ScheduledGroupCommandRequestExecutionUpdaterTypeEnum;
 
-public class LastCreIdForJobCommandExecutionUpdaterHandler implements CommandRequestExecutionUpdaterHandler {
+public class LastCreIdForJobScheduledGroupRequestExecutionUpdaterHandler implements ScheduledGroupRequestExecutionUpdaterHandler {
 
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	
@@ -25,8 +25,8 @@ public class LastCreIdForJobCommandExecutionUpdaterHandler implements CommandReq
 	}
 	
 	@Override
-	public CommandRequestExecutionUpdaterTypeEnum getUpdaterType() {
-		return CommandRequestExecutionUpdaterTypeEnum.LAST_CRE_ID_FOR_JOB;
+	public ScheduledGroupCommandRequestExecutionUpdaterTypeEnum getUpdaterType() {
+		return ScheduledGroupCommandRequestExecutionUpdaterTypeEnum.LAST_CRE_ID_FOR_JOB;
 	}
 
 	@Autowired
