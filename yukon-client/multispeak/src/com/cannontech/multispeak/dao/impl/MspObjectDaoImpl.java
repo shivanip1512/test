@@ -154,9 +154,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 	}
                 }
                 
-                // assume vendor is following spec by returning a number > 0 if there are more meters.
-                // some vendors (NISC for example) are known to return -1, do not handle this.
-                if (objectsRemaining > 0) { 
+                if (objectsRemaining != 0) { 
         			lastSent = getAttributeValue(port, "lastSent");
         			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
         		} else {
