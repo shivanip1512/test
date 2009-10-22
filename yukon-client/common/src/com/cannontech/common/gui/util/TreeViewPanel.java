@@ -25,16 +25,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteConfig;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.device.Device;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
@@ -366,31 +364,34 @@ java.util.Date timerStart = new java.util.Date();
 		if( value != null )
 			selectedItems.put(  getCurrentTreeModel(), getSelectedItem() );
 		
-		LiteBaseTreeModel model = 
+		final LiteBaseTreeModel model = 
 			(LiteBaseTreeModel) getSortByComboBox().getSelectedItem();
 
 		getTree().setModel(model);
 		try
 		{
-			model.update();  //time hog on large DB's possibly!!
+			model.update(new Runnable() {
+			    public void run() {
+
+			        //Make sure that the tree is expanded at least one level
+			        expandRoot();
+
+			        //If there was a previous selection make sure it is selected
+			        Object itemToRestore = selectedItems.get( model );
+
+			        if( itemToRestore != null )
+			        {
+			            TreePath selectPath = com.cannontech.common.util.CtiUtilities.getTreePath( getTree(), itemToRestore );
+			            getTree().getSelectionModel().setSelectionPath( selectPath );
+			        }
+			    }
+			});  //time hog on large DB's possibly!!
 		}
 		catch( Exception e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( "caught exception while updating tree model", e );
 		}		
 
-
-		//Make sure that the tree is expanded at least one level
-		expandRoot();
-
-		//If there was a previous selection make sure it is selected
-		Object itemToRestore = selectedItems.get( model );
-
-		if( itemToRestore != null )
-		{
-			TreePath selectPath = com.cannontech.common.util.CtiUtilities.getTreePath( getTree(), itemToRestore );
-			getTree().getSelectionModel().setSelectionPath( selectPath );
-		}
 		
 //temp code
 timerStop = new java.util.Date();
@@ -514,88 +515,70 @@ public boolean selectLiteBase(TreePath path, LiteBase lBase )
 /**
  * This method will select objects looking in current tree model first
  */
-public void selectLiteObject(com.cannontech.database.data.lite.LiteBase liteObj) {
+public boolean selectLiteObject(final LiteBase liteBase) {
+    if( liteBase == null ) {
+        getTree().getSelectionModel().setSelectionPath( null );
+        return false;
+    } else {
+        TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
+        
+        if( selectLiteBase(rootPath, liteBase) ) {
+            invalidate();
+            repaint();
+            return true;
+        } else {
+            for( int i = 0; i < getSortByComboBox().getModel().getSize(); i++ ) {
+                final DBTreeModel model = (DBTreeModel) getSortByComboBox().getItemAt(i);
+                final int sortByIndex = i;
+                
+                if (!model.isLiteTypeSelectable(liteBase.getLiteType()))continue;
+                
+                rootPath = new TreePath( model.getRoot() );
 
-	if( liteObj == null )
-		getTree().getSelectionModel().setSelectionPath( null );
-	else
-	{
-		TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-		
-		if( selectLiteBase(rootPath, liteObj) )
-		{
-			invalidate();
-			repaint();
-		}
-		else
-		{
-			for( int i = 0; i < getSortByComboBox().getModel().getSize(); i++ )
-			{
-				com.cannontech.database.model.DBTreeModel model = (com.cannontech.database.model.DBTreeModel) getSortByComboBox().getItemAt(i);
+                if( selectLiteBase(rootPath, liteBase) ) {
+                    getSortByComboBox().setSelectedIndex( sortByIndex );
+                    invalidate();
+                    repaint();
+                    return true;
+                }
+                
+                // try reloading model
+                model.update(new Runnable() {
+                    public void run() {
+                        getTree().setModel(model);
 
-				model.update();
-				
-				getTree().setModel(model);
-				
-				rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-				
-				if( selectLiteBase(rootPath, liteObj) )
-				{
-					getSortByComboBox().setSelectedItem( getSortByComboBox().getModel().getElementAt(i));
-					invalidate();
-					repaint();
-					break;
-				}
-			} 
-		}
-	}
+                        TreePath rootPath = new TreePath( model.getRoot() );
+
+                        if( selectLiteBase(rootPath, liteBase) ) {
+                            getSortByComboBox().setSelectedIndex( sortByIndex );
+                            invalidate();
+                            repaint();
+                        }
+                    }
+                });
+            } 
+        }
+        
+        if(liteBase instanceof LitePoint) {  // Change to device tree for points.
+            getSortByComboBox().setSelectedIndex(1);
+            DBTreeModel model = (DBTreeModel) getSortByComboBox().getSelectedItem();
+            getTree().setModel(model);
+            rootPath = new TreePath( getCurrentTreeModel().getRoot() );
+            getTree().setSelectionPath( rootPath );
+            getTree().scrollPathToVisible( rootPath );
+            invalidate();
+            repaint();
+        }
+        return false;
+    }
 }
 
 /**
  * This method will select objects looking in current tree model first
  */
 public boolean selectObject(DBPersistent obj) {
-    LiteBase liteBase = LiteFactory.createLite(obj);
-	if( obj == null ) {
-		getTree().getSelectionModel().setSelectionPath( null );
-		return false;
-	} else {
-		TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-		
-		if( selectLiteBase(rootPath, liteBase) ) {
-			invalidate();
-			repaint();
-			return true;
-		} else {
-			for( int i = 0; i < getSortByComboBox().getModel().getSize(); i++ ) {
-				DBTreeModel model = (DBTreeModel) getSortByComboBox().getItemAt(i);
-
-				model.update();
-				
-				getTree().setModel(model);
-				
-				rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-				
-				if( selectLiteBase(rootPath, liteBase) ) {
-					getSortByComboBox().setSelectedIndex( i );
-					invalidate();
-					repaint();
-					return true;
-				}
-			} 
-		}
-		if(liteBase instanceof LitePoint) {  // Change to device tree for points.
-		    getSortByComboBox().setSelectedIndex(1);
-		    DBTreeModel model = (DBTreeModel) getSortByComboBox().getSelectedItem();
-		    getTree().setModel(model);
-		    rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-		    getTree().setSelectionPath( rootPath );
-	        getTree().scrollPathToVisible( rootPath );
-	        invalidate();
-            repaint();
-		}
-		return false;
-	}
+    final LiteBase liteBase = LiteFactory.createLite(obj);
+    return selectLiteObject(liteBase);
 }
 
 private boolean selectString(String val, TreePath path) {

@@ -17,7 +17,7 @@ import com.cannontech.spring.YukonSpringHook;
 /**
  * This type was created in VisualAge.
  */
-public class ContactTreeModel extends DBTreeModel implements FrameAware
+public class ContactTreeModel extends DbBackgroundTreeModel implements FrameAware
 {
 private SwingWorker<Object, LiteContact> worker;
 private Frame frame;
@@ -36,7 +36,7 @@ public boolean isLiteTypeSupported( int liteType )
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.CONTACT );
 }
 
-public void update() {
+public void doUpdate(final Runnable onCompletion) {
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     // if we have a worker, cancel it
     if (worker != null) {
@@ -90,7 +90,7 @@ public void update() {
             // we want to make sure the dialog goes away
             monitor.close();
             frame.setCursor(Cursor.getDefaultCursor());
-            
+            onCompletion.run();
         }
     };
     

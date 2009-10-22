@@ -146,6 +146,14 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
     	return false;
     }
     
+    @Override
+    public void update(Runnable onCompletion) {
+        update();
+        onCompletion.run();
+    }
+    
+    public abstract void update();
+    
     /**
      * Returns the converted liteBase object.  Override this method if the tree model
      * is not based on LiteYukonPaobjects (such as the DeviceMeterGroupModel which uses
@@ -155,6 +163,10 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
      */
     protected LiteBase convertLiteBase(LiteBase lb){
         return lb;
+    }
+    
+    public boolean isLiteTypeSelectable(int liteType) {
+        return isLiteTypeSupported(liteType);
     }
     
     public String toString() {

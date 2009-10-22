@@ -43,7 +43,6 @@ import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
-import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.pao.PaoType;
@@ -1140,6 +1139,8 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 
 			}
 			
+		} else if (event.getSource() != null && event.getSource() instanceof DBPersistent){
+		    showEditor((DBPersistent) event.getSource());
 		}
 		else
 			JOptionPane.showMessageDialog(
@@ -2590,7 +2591,7 @@ public void selectionPerformed(WizardPanelEvent event)
 
 	if((successfullInsertion || objTypeChange) && selectInTree) {
 	    if(selectWorked || objTypeChange) {
-	    	showEditorSelectedObject();
+	    	showEditorSelectedObject(newItem);
 	    }else {
 	        showEditor(newItem);
 	    }
@@ -2776,7 +2777,7 @@ private void showCopyWizardPanel(WizardPanel wizard) {
  * Insert the method's description here.
  * Creation date: (7/26/2001 3:45:30 PM)
  */
-public void showEditorSelectedObject()
+public void showEditorSelectedObject(Object o)
 {
 	java.awt.Frame f = CtiUtilities.getParentFrame(this.desktopPane);
 	f.validate();
@@ -2784,7 +2785,7 @@ public void showEditorSelectedObject()
 	try
 	{
 		
-		executeEditButton_ActionPerformed(new ActionEvent(this, DBEditorTreePopUpMenu.EDIT_TREENODE, "edit"));
+		executeEditButton_ActionPerformed(new ActionEvent(o, DBEditorTreePopUpMenu.EDIT_TREENODE, "edit"));
 	}
 	catch (Exception e)
 	{

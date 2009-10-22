@@ -35,11 +35,10 @@ boolean removeTreeObject(com.cannontech.database.data.lite.LiteBase lb);
  * @param path javax.swing.tree.TreePath
  */
 void treePathWillExpand(javax.swing.tree.TreePath path);
-/**
- * Insert the method's description here.
- * Creation date: (4/23/2002 10:31:35 AM)
- */
-void update();
+
+public void update(final Runnable onCompletion);
+public void update();
+
 /**
  * Insert the method's description here.
  * Creation date: (4/23/2002 10:31:35 AM)

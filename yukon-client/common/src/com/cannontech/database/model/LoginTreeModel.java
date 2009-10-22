@@ -17,7 +17,7 @@ import com.cannontech.user.UserUtils;
 /**
  * This type was created in VisualAge.
  */
-public class LoginTreeModel extends DBTreeModel implements FrameAware 
+public class LoginTreeModel extends DbBackgroundTreeModel implements FrameAware 
 {
 private Frame frame;
 private SwingWorker<Object, LiteYukonUser> worker;
@@ -47,7 +47,7 @@ public boolean isLiteTypeSupported( int liteType )
 /**
  * This method was created in VisualAge.
  */
-public synchronized void update() {
+public synchronized void doUpdate(final Runnable onCompletion) {
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     
     // if we have a worker, cancel it
@@ -105,6 +105,7 @@ public synchronized void update() {
             // we want to make sure the dialog goes away
             monitor.close();
             frame.setCursor(null);
+            onCompletion.run();
         }
     };
     

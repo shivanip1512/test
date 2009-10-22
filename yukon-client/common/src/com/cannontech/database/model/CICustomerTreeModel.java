@@ -28,7 +28,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * 
  * 
 */
-public class CICustomerTreeModel extends DBTreeModel implements FrameAware {
+public class CICustomerTreeModel extends DbBackgroundTreeModel implements FrameAware {
 private SwingWorker<Object, LiteCICustomer> worker;
 private Frame frame;
 /**
@@ -112,6 +112,10 @@ public boolean isLiteTypeSupported( int liteType )
 		  		 || liteType == com.cannontech.database.data.lite.LiteTypes.CONTACT );
 }
 
+@Override
+public boolean isLiteTypeSelectable(int liteType) {
+    return liteType == com.cannontech.database.data.lite.LiteTypes.CUSTOMER_CI;
+}
 
 public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 {
@@ -166,7 +170,7 @@ public boolean updateTreeObject(LiteBase lb)
 /**
  * This method was created in VisualAge.
  */
-public void update() {
+public void doUpdate(final Runnable onCompletion) {
 	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     // if we have a worker, cancel it
     if (worker != null) {
@@ -223,7 +227,7 @@ public void update() {
             // we want to make sure the dialog goes away
             monitor.close();
             frame.setCursor(Cursor.getDefaultCursor());
-            
+            onCompletion.run();
         }
     };
     
