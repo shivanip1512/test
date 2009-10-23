@@ -1452,7 +1452,7 @@
 		<row><td>IDS__NewDialog_ControlId_51</td><td>1033</td><td>Your Sub-Title Here</td><td>0</td><td/><td>278304778</td></row>
 		<row><td>IDS__NewDialog_ControlId_9</td><td>1033</td><td>Cancel</td><td>0</td><td/><td>278302730</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td>Yukon Reports</td><td>0</td><td/><td>1486479692</td></row>
-		<row><td>ID_STRING10</td><td>1033</td><td>Cannon Custom Install</td><td>0</td><td/><td>-1164367503</td></row>
+		<row><td>ID_STRING10</td><td>1033</td><td>Cooper Custom Install</td><td>0</td><td/><td>-2061681076</td></row>
 		<row><td>ID_STRING11</td><td>1033</td><td>LoadManagementService</td><td>0</td><td/><td>857292979</td></row>
 		<row><td>ID_STRING12</td><td>1033</td><td>CalcService</td><td>0</td><td/><td>857301171</td></row>
 		<row><td>ID_STRING13</td><td>1033</td><td>FDRService</td><td>0</td><td/><td>857309363</td></row>
@@ -1475,6 +1475,10 @@
 		<row><td>ID_STRING29</td><td>1033</td><td>NewShortcut19</td><td>0</td><td/><td>-300131190</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>All Yukon server and client applications</td><td>0</td><td/><td>1620663024</td></row>
 		<row><td>ID_STRING30</td><td>1033</td><td>Prophecy Examples</td><td>0</td><td/><td>-1172462679</td></row>
+		<row><td>ID_STRING31</td><td>1033</td><td>http://www.cooperpowereas.com/</td><td>0</td><td/><td>-2061675220</td></row>
+		<row><td>ID_STRING32</td><td>1033</td><td>http://www.cooperpowereas.com/Support/Support.cfm</td><td>0</td><td/><td>-2061669044</td></row>
+		<row><td>ID_STRING33</td><td>1033</td><td>1.800.815.2258</td><td>0</td><td/><td>-2061654676</td></row>
+		<row><td>ID_STRING34</td><td>1033</td><td>http://www.cooperpowereas.com/News/News.cfm</td><td>0</td><td/><td>-2061695604</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Only the client applications are installed</td><td>0</td><td/><td>1620673328</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>1754871247</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td/><td>0</td><td/><td>1620655728</td></row>
@@ -1638,7 +1642,10 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<col key="yes" def="s72">Property</col>
 		<col def="L0">Value</col>
 		<col def="S255">ISComments</col>
-		<row><td>ARPURLINFOABOUT</td><td>http://www.cannontech.com</td><td/></row>
+		<row><td>ARPHELPLINK</td><td>##ID_STRING32##</td><td/></row>
+		<row><td>ARPHELPTELEPHONE</td><td>##ID_STRING33##</td><td/></row>
+		<row><td>ARPURLINFOABOUT</td><td>##ID_STRING31##</td><td/></row>
+		<row><td>ARPURLUPDATEINFO</td><td>##ID_STRING34##</td><td/></row>
 		<row><td>DWUSINTERVAL</td><td>30</td><td/></row>
 		<row><td>DWUSLINK</td><td>CE0CA0E81ECC90C8BEACD038A9BC978FFE6BF78FFEDBC0E8CE3CE7F8398C809FBEBCF07FBEAC</td><td/></row>
 		<row><td>DefaultUIFont</td><td>Tahoma8</td><td/></row>
@@ -1649,7 +1656,7 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<row><td>IS_SQLSERVER_PASSWORD</td><td/><td/></row>
 		<row><td>IS_SQLSERVER_SERVER</td><td/><td/></row>
 		<row><td>IS_SQLSERVER_USERNAME</td><td>sa</td><td/></row>
-		<row><td>Manufacturer</td><td>Cannon Technologies, Inc.</td><td/></row>
+		<row><td>Manufacturer</td><td>Cooper Power - Energy Automation Solutions</td><td/></row>
 		<row><td>NewProperty1</td><td>0</td><td/></row>
 		<row><td>NewProperty2</td><td>0</td><td/></row>
 		<row><td>Option1</td><td>Option1</td><td/></row>
@@ -1690,7 +1697,7 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<row><td>ProObjWizard</td><td>_stock_</td><td/></row>
 		<row><td>ProductCode</td><td>64356C2D-E7B6-4CD7-8F64-DD65A3F1C66C</td><td/></row>
 		<row><td>ProductName</td><td>Yukon Application Suite</td><td/></row>
-		<row><td>ProductVersion</td><td>3.5</td><td/></row>
+		<row><td>ProductVersion</td><td>5.0</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.1</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.2</td><td>Yes, I want to launch %p now.</td><td/></row>
