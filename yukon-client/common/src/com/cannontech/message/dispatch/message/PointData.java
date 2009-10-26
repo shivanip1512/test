@@ -4,6 +4,7 @@ import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.point.PointType;
 
 
 public class PointData extends com.cannontech.message.util.Message implements PointValueQualityHolder
@@ -79,6 +80,11 @@ public long getTags() {
 
 public int getType() {
 	return type;
+}
+
+@Override
+public PointType getPointType() {
+	return PointType.getForId(type);
 }
 
 public double getValue() {

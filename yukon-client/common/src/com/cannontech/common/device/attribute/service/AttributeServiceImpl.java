@@ -11,7 +11,10 @@ import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinit
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PaoPointTemplate;
+import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.PointService;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -139,6 +142,16 @@ public class AttributeServiceImpl implements AttributeService {
             }
 
         }
+    }
+    
+    @Override
+    public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute attribute) {
+        // the following could probably be optimized, but it is technically correct
+        
+        PaoIdentifier paoIdentifier = paoPointIdentifier.getPaoIdentifier();
+        PaoPointIdentifier pointForAttribute = getPaoPointIdentifierForAttribute(new SimpleDevice(paoIdentifier), attribute);
+        boolean result = pointForAttribute.equals(paoPointIdentifier);
+        return result;
     }
 
 }

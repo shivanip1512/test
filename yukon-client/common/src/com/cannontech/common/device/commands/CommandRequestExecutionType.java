@@ -46,6 +46,7 @@ public enum CommandRequestExecutionType {
 	PHASE_DETECT_CLEAR(false, 14, "Phase Detection Clear Command", "Command sent to broadcast MCT to clear phase data from meters.", false),
 	PHASE_DETECT_COMMAND(false, 14, "Phase Detection Command", "Command sent to broadcast MCT to detect a phase change.", false),
 	PHASE_DETECT_READ(false, 7, "Phase Detection Read", "Command sent to MCT's to read phase data.", false),
+	VEE_RE_READ(false, 7, "Validation Engine Automatic Read", "Command sent to meter to validate previous readings", false),
 	
 	;
 	

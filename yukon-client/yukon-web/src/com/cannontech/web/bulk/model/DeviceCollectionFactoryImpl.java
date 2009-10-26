@@ -12,13 +12,14 @@ import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceCollectionType;
 
 /**
  * Implementation class for DeviceCollectionFactory
  */
 public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory, WebArgumentResolver {
 
-    private Map<String, DeviceCollectionProducer> collectionProducerMap = new HashMap<String, DeviceCollectionProducer>();
+    private Map<DeviceCollectionType, DeviceCollectionProducer> collectionProducerMap = new HashMap<DeviceCollectionType, DeviceCollectionProducer>();
 
     public void setCollectionProducerList(
             List<DeviceCollectionProducer> collectionProducerList) {
@@ -32,9 +33,10 @@ public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory, Web
             throws ServletRequestBindingException {
 
         String type = request.getParameter("collectionType");
+        DeviceCollectionType deviceCollectionType = DeviceCollectionType.valueOf(type);
 
-        if (collectionProducerMap.containsKey(type)) {
-            DeviceCollectionProducer producer = collectionProducerMap.get(type);
+        if (collectionProducerMap.containsKey(deviceCollectionType)) {
+            DeviceCollectionProducer producer = collectionProducerMap.get(deviceCollectionType);
             return producer.createDeviceCollection(request);
         }
 

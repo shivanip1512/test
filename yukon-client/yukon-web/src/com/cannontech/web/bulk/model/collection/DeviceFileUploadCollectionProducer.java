@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.CloseableIteratorWrapper;
@@ -32,8 +33,9 @@ import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
+import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
-public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducerBase {
+public class DeviceFileUploadCollectionProducer implements DeviceCollectionProducer {
     private ObjectMapperFactory objectMapperFactory = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionProducer = null;
 
@@ -42,8 +44,8 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
         this.deviceGroupCollectionProducer = deviceGroupCollectionProducer;
     }
     
-    public String getSupportedType() {
-        return "fileUpload";
+    public DeviceCollectionType getSupportedType() {
+        return DeviceCollectionType.fileUpload;
     }
 
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
@@ -57,7 +59,7 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
             }
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
 
-            MultipartFile dataFile = mRequest.getFile(getParameterName("dataFile"));
+            MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
             if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
                 throw new RuntimeException("dataFile is null");
             }
@@ -71,7 +73,7 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
     private DeviceCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile)
         throws ServletRequestBindingException, IOException, FileNotFoundException {
         final String originalFilename = dataFile.getOriginalFilename();
-        final String uploadTypeStr = ServletRequestUtils.getStringParameter(request, getParameterName("uploadType"));
+        final String uploadTypeStr = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("uploadType"));
         ObjectMapperFactory.FileMapperEnum uploadType = ObjectMapperFactory.FileMapperEnum.valueOf(uploadTypeStr);
 
         InputStream inputStream = dataFile.getInputStream();

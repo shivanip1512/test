@@ -7,14 +7,16 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
 /**
  * Implementation of DeviceCollection for an address range
  */
-public class DeviceGroupCollectionProducer extends DeviceCollectionProducerBase  {
+public class DeviceGroupCollectionProducer implements DeviceCollectionProducer  {
     
     private DeviceGroupService deviceGroupService = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
@@ -30,18 +32,18 @@ public class DeviceGroupCollectionProducer extends DeviceCollectionProducerBase 
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
     
-    public String getSupportedType() {
-        return "group";
+    public DeviceCollectionType getSupportedType() {
+        return DeviceCollectionType.group;
     }
 
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
-        String groupParameterName = getParameterName("name");
+        String groupParameterName = getSupportedType().getParameterName("name");
         
         String groupName = ServletRequestUtils.getStringParameter(request, groupParameterName);
         
-        String descriptionParameterName = getParameterName("description");
+        String descriptionParameterName = getSupportedType().getParameterName("description");
         
         String description = ServletRequestUtils.getStringParameter(request, descriptionParameterName);
         

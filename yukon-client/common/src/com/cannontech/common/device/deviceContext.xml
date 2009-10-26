@@ -45,6 +45,8 @@
     <bean id="devicePointService" class="com.cannontech.common.device.service.PointServiceImpl" scope="singleton">
     </bean>
     
+    <bean id="pointReadService" class="com.cannontech.common.device.service.impl.PointReadServiceImpl" />
+    
     <bean id="deviceUpdateService" class="com.cannontech.common.device.service.DeviceUpdateServiceImpl" scope="singleton">
     </bean>
     

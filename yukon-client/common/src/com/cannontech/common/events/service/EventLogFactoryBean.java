@@ -22,6 +22,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
+import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.dao.EventLogDao.ArgumentColumn;
@@ -29,6 +30,7 @@ import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
@@ -115,6 +117,12 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         builder.add(ArgumentMapper.create(Boolean.class, Types.VARCHAR));
         builder.add(ArgumentMapper.create(Date.class, Types.TIMESTAMP));
         builder.add(ArgumentMapper.create(LiteYukonUser.class, Types.VARCHAR, new LiteYukonUserToNameMapper()));
+        builder.add(ArgumentMapper.create(PaoIdentifier.class, Types.NUMERIC, new ObjectMapper<PaoIdentifier, Integer>() {
+            public Integer map(PaoIdentifier from) throws ObjectMappingException {
+                return from.getPaoId();
+            }
+        }));
+        builder.add(ArgumentMapper.create(PointIdentifier.class, Types.VARCHAR));
         argumentMappers = builder.build();
     }
     

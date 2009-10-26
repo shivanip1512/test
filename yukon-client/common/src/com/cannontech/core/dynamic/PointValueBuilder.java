@@ -1,23 +1,41 @@
 package com.cannontech.core.dynamic;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.database.data.point.PointType;
 
 public class PointValueBuilder {
     private Integer pointId = null;
     private Double value = null;
     private PointQuality pointQuality = PointQuality.Normal;
     private Date timeStamp = new Date();;
-    private Integer type = null;
+    private PointType pointType = null;
 
     private PointValueBuilder() {
     }
     
     public static PointValueBuilder create() {
         return new PointValueBuilder();
+    }
+    
+    /**
+     * This gets the pointId, timeStamp, quality, and value from the ResultSet. 
+     * Type must be supplied separately. 
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
+    public PointValueBuilder withResultSet(ResultSet rs) throws SQLException {
+        pointId = rs.getInt("pointid");
+        timeStamp = rs.getTimestamp("timestamp");
+        pointQuality = PointQuality.getPointQuality(rs.getInt("Quality"));
+        value = rs.getDouble("value");
+        return this;
     }
 
     public PointValueBuilder withPointId(int pointId) {
@@ -41,14 +59,24 @@ public class PointValueBuilder {
     }
 
     public PointValueBuilder withType(int type) {
-        this.type = type;
+        this.pointType = PointType.getForId(type);
         return this;
+    }
+    
+    public PointValueBuilder withType(String type) {
+    	this.pointType = PointType.getForString(type);
+    	return this;
+    }
+    
+    public PointValueBuilder withType(PointType type) {
+    	this.pointType = type;
+    	return this;
     }
     
     public PointValueQualityHolder build() {
         Validate.notNull(pointId);
         Validate.notNull(value);
-        Validate.notNull(type);
+        Validate.notNull(pointType);
         
         return new PointValueQualityHolder() {
 
@@ -69,7 +97,12 @@ public class PointValueBuilder {
 
             @Override
             public int getType() {
-                return type;
+                return pointType.getPointTypeId();
+            }
+            
+            @Override
+            public PointType getPointType() {
+            	return pointType;
             }
 
             @Override

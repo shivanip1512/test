@@ -53,6 +53,10 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         return queryForInt(sql.getSql(), sql.getArguments());
     }
 
+    public long queryForLong(SqlFragmentSource sql) throws DataAccessException {
+    	return queryForLong(sql.getSql(), sql.getArguments());
+    }
+    
     @Override
     public <T> T queryForObject(SqlFragmentSource sql,
             ParameterizedRowMapper<T> rm) throws DataAccessException {

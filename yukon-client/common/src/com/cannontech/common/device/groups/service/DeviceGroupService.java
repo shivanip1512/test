@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -102,5 +103,13 @@ public interface DeviceGroupService {
      * @return
      */
     public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> group, String identifier);
+
+    /**
+     * Tests if the given PAO is in the given group. If the given PAO
+     * is not a device, this method will always return false.
+     * @param key
+     * @param pao
+     */
+    public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao);
     
 }

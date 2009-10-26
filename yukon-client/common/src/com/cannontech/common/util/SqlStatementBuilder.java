@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.ReadableInstant;
 
 /**
  * A helper class for building SQL statements.
@@ -26,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
  * Supports IN clause lists as variable arguments:
  *   sql.append("foo in (", someIntList, ")");
  *   
- * Supports PreparedStatement friendly argument tracking
+ * Supports PreparedStatement friendly argument tracking:
  *   sql.append("select * from foo where bar = ").appendArgument(barArgumentValue);
  *   assert sql.getSQL().equals("select * from foo where bar = ?");
  *   assert sql.getArguments()[0] == barArgumentValue
@@ -34,8 +35,13 @@ import org.apache.commons.lang.StringUtils;
  * Supports concatenating fragments (arguments come too):
  *   SqlFragmentSource whereClause = getWhereClause(); // this method may use a SqlStatementBuilder
  *   sql.append("select * from foo where", whereClause);
+ *   
+ * Supports expanded syntax for adding arguments with simple operators (eq, neq, lt, gt, lte, gte, in):
+ *   sql.append("where foo").eq(fooArg); // appends "= ? " to the string and adds the argument
+ *   sql.append("  and size").lte(99);
+ *   sql.append("  and id").in(idList); // appends "in (...)", handles arguments like appendArgumentList
  */
-public class SqlStatementBuilder implements SqlFragmentSource {
+public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     private StringBuilder statement;
     private List<Object> arguments = new ArrayList<Object>(0); // usually not used
     
@@ -48,11 +54,8 @@ public class SqlStatementBuilder implements SqlFragmentSource {
         appendSpace();
     }
 
-    /**
-     * Converts the array to an SQL safe comma-separated list, appends it to the output,
-     * and appends a space.
-     * @param array
-     * @return this object for chaining
+    /* (non-Javadoc)
+     * @see com.cannontech.common.util.SqlBuilder#appendList(java.lang.Object[])
      */
     public SqlStatementBuilder appendList(Object[] array) {
         statement.append(convertToSqlLikeList(Arrays.asList(array)));
@@ -60,11 +63,8 @@ public class SqlStatementBuilder implements SqlFragmentSource {
         return this;
     }
     
-    /**
-     * Converts the array to an SQL safe comma-separated list, appends it to the output,
-     * and appends a space.
-     * @param array
-     * @return this object for chaining
+    /* (non-Javadoc)
+     * @see com.cannontech.common.util.SqlBuilder#appendList(java.util.Collection)
      */
     public SqlStatementBuilder appendList(Collection<?> array) {
         statement.append(convertToSqlLikeList(array));
@@ -72,16 +72,8 @@ public class SqlStatementBuilder implements SqlFragmentSource {
         return this;
     }
     
-    /**
-     * For each argument, handling is based on type:
-     *   int[]: same as calling appendList with a List<Integer>
-     *   long[]: same as calling appendList with a List<Long>
-     *   Object[]: same as calling appendList with an array
-     *   Collection: same as calling appendList with a Collection
-     *   SqlFragmentSource: same as calling appendFragment
-     *   else: call toString, trim, append, and append a space
-     * @param args
-     * @return this object for chaining
+    /* (non-Javadoc)
+     * @see com.cannontech.common.util.SqlBuilder#append(java.lang.Object)
      */
     public SqlStatementBuilder append(Object... args) {
         for (int i = 0; i < args.length; i++) {
@@ -159,17 +151,61 @@ public class SqlStatementBuilder implements SqlFragmentSource {
         statement.append(" ");
     }
     
-    /**
-     * Adds a "? " to the output and adds the argument to the argument list.
-     * @param argument
-     * @return
+    public SqlStatementBuilder eq(Object argument) {
+        statement.append("= ? ");
+        addArgument(argument);
+        return this;
+    }
+    
+    public SqlStatementBuilder neq(Object argument) {
+        statement.append("!= ? ");
+        addArgument(argument);
+        return this;
+    }
+    
+    public SqlStatementBuilder lt(Object argument) {
+        statement.append("< ? ");
+        addArgument(argument);
+        return this;
+    }
+    
+    public SqlStatementBuilder gt(Object argument) {
+        statement.append("> ? ");
+        addArgument(argument);
+        return this;
+    }
+    
+    public SqlStatementBuilder gte(Object argument) {
+        statement.append(">= ? ");
+        addArgument(argument);
+        return this;
+    }
+    
+    public SqlStatementBuilder lte(Object argument) {
+        statement.append("<= ? ");
+        addArgument(argument);
+        return this;
+    }
+    
+    public SqlStatementBuilder in(Collection<?> list) {
+        statement.append("in (");
+        appendArgumentList(list);
+        statement.append(") ");
+        return this;
+    }
+    
+    /* (non-Javadoc)
+     * @see com.cannontech.common.util.SqlBuilder#appendArgument(java.lang.Object)
      */
     public SqlStatementBuilder appendArgument(Object argument) {
     	statement.append("? ");
-    	arguments.add(argument);
+    	addArgument(argument);
     	return this;
     }
     
+    /* (non-Javadoc)
+     * @see com.cannontech.common.util.SqlBuilder#appendArgumentList(java.util.Collection)
+     */
     public SqlStatementBuilder appendArgumentList(Collection<?> list) {
         if(list.isEmpty()) {
             statement.append("null");
@@ -183,18 +219,24 @@ public class SqlStatementBuilder implements SqlFragmentSource {
             } else {
                 statement.append("? ");
             }
-            arguments.add(argument);
+            addArgument(argument);
         }
         return this;
     }
+
+    private void addArgument(Object argument) {
+        if (argument instanceof Enum<?>) {
+            Enum<?> e = (Enum<?>) argument;
+            arguments.add(e.name());
+        } else if (argument instanceof ReadableInstant) {
+            arguments.add(((ReadableInstant) argument).toInstant().toDate());
+        } else {
+            arguments.add(argument);
+        }
+    }
     
-    /**
-     * Appends the SQL from the fragment to the output and the argument list
-     * to the arguments.
-     * 
-     * The passed in fragment is left unchanged.
-     * @param fragment
-     * @return
+    /* (non-Javadoc)
+     * @see com.cannontech.common.util.SqlBuilder#appendFragment(com.cannontech.common.util.SqlFragmentSource)
      */
     public SqlStatementBuilder appendFragment(SqlFragmentSource fragment) {
     	statement.append(fragment.getSql().trim());

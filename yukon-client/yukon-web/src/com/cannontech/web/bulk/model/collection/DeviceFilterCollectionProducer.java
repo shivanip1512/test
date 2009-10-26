@@ -20,6 +20,7 @@ import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.RangeBasedDeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -28,8 +29,9 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
+import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
-public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase implements DeviceFilterCollectionHelper {
+public class DeviceFilterCollectionProducer implements DeviceCollectionProducer, DeviceFilterCollectionHelper {
     private MeterSearchDao meterSearchDao;
     private MspMeterSearchService mspMeterSearchService;
     
@@ -44,18 +46,18 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
 	}
 
     @Override
-    public String getSupportedType() {
-        return "deviceFilter";
+    public DeviceCollectionType getSupportedType() {
+        return DeviceCollectionType.deviceFilter;
     }
 
     @Override
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
         throws ServletRequestBindingException {
         String orderByField = ServletRequestUtils.getStringParameter(request,
-                                                                     getParameterName("orderBy"),
+                                                                     getSupportedType().getParameterName("orderBy"),
                                                                      MeterSearchField.PAONAME.toString());
         boolean orderByDescending = ServletRequestUtils.getBooleanParameter(request,
-                                                                            getParameterName("descending"),
+                                                                            getSupportedType().getParameterName("descending"),
                                                                             false);
         OrderBy orderBy = new OrderBy(orderByField,
                                       orderByDescending);
@@ -68,7 +70,7 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
         // query filter
         List<FilterBy> queryFilter = new ArrayList<FilterBy>();
         for (FilterBy filterBy : filterByList) {
-            String filterValue = ServletRequestUtils.getStringParameter(request, getParameterName(filterBy.getName()), "").trim();
+            String filterValue = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName(filterBy.getName()), "").trim();
             if (!StringUtils.isBlank(filterValue)) {
                 filterBy.setFilterValue(filterValue);
                 queryFilter.add(filterBy);
@@ -77,7 +79,7 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
         
         return createDeviceGroupCollection(queryFilter, orderBy);
     }
-    
+
     @Override
     public DeviceCollection createDeviceGroupCollection(final List<FilterBy> filterBys, final OrderBy orderBy) {
         return new RangeBasedDeviceCollection() {
@@ -86,14 +88,14 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
             public Map<String, String> getCollectionParameters() {
                 Map<String, String> paramMap = new HashMap<String, String>();
                 
-                paramMap.put("collectionType", getSupportedType());
+                paramMap.put("collectionType", getSupportedType().name());
 
                 for (FilterBy filterBy : filterBys) {
-                    paramMap.put(getParameterName(filterBy.getName()), filterBy.getFilterValue());
+                    paramMap.put(getSupportedType().getParameterName(filterBy.getName()), filterBy.getFilterValue());
                 }
                 
-                paramMap.put(getParameterName("orderBy"), orderBy.getField().getName());
-                paramMap.put(getParameterName("descending"), Boolean.toString(orderBy.isDescending()));
+                paramMap.put(getSupportedType().getParameterName("orderBy"), orderBy.getField().getName());
+                paramMap.put(getSupportedType().getParameterName("descending"), Boolean.toString(orderBy.isDescending()));
                 
                 return paramMap;
             }

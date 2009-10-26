@@ -57,6 +57,9 @@
         scope="prototype">
         <constructor-arg ref="jdbcTemplate"/>
     </bean>
+    
+    <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
+    <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
     <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" destroy-method="shutdown">
         <property name="standaloneRoleDao" ref="standaloneRoleDao" />

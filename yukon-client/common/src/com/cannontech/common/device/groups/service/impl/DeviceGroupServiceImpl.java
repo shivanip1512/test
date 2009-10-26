@@ -21,6 +21,8 @@ import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -153,6 +155,17 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
             result.add(group);
         }
         return removeDuplicates(result);
+    }
+    
+    @Override
+    public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao) {
+        if (pao.getPaoIdentifier().getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
+            return false;
+        }
+        
+        SimpleDevice simpleDevice = new SimpleDevice(pao);
+        boolean result = deviceGroupDao.isDeviceInGroup(group, simpleDevice);
+        return result;
     }
     
     private DeviceGroup getRelativeGroup(DeviceGroup rootGroup, List<String> names) {

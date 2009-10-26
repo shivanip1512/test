@@ -13,15 +13,17 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
 /**
  * Implementation of DeviceCollectionProducer for an address range
  */
-public class DeviceIdListCollectionProducer extends DeviceCollectionProducerBase {
+public class DeviceIdListCollectionProducer implements DeviceCollectionProducer {
 
 
     private DeviceDao deviceDao = null;
@@ -31,15 +33,15 @@ public class DeviceIdListCollectionProducer extends DeviceCollectionProducerBase
         this.deviceDao = deviceDao;
     }
 
-    public String getSupportedType() {
-        return "idList";
+    public DeviceCollectionType getSupportedType() {
+        return DeviceCollectionType.idList;
     }
 
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
         final String ids = ServletRequestUtils.getStringParameter(request,
-                                                                  getParameterName("ids"));
+                                                                  getSupportedType().getParameterName("ids"));
 
         return new ListBasedDeviceCollection() {
 
@@ -47,8 +49,8 @@ public class DeviceIdListCollectionProducer extends DeviceCollectionProducerBase
 
                 Map<String, String> paramMap = new HashMap<String, String>();
 
-                paramMap.put("collectionType", getSupportedType());
-                paramMap.put(getParameterName("ids"), ids);
+                paramMap.put("collectionType", getSupportedType().name());
+                paramMap.put(getSupportedType().getParameterName("ids"), ids);
 
                 return paramMap;
             }

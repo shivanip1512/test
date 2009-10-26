@@ -13,6 +13,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
 import com.cannontech.common.bulk.mapper.LiteYukonPAObjectToYukonDeviceMapper;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -20,12 +21,12 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
 /**
  * Implementation of DeviceCollectionProducer for an address range
  */
-public class DeviceAddressRangeCollectionProducer extends
-        DeviceCollectionProducerBase {
+public class DeviceAddressRangeCollectionProducer implements DeviceCollectionProducer {
 
     private PaoDao paoDao = null;
     private LiteYukonPAObjectToYukonDeviceMapper deviceMapper;
@@ -40,15 +41,15 @@ public class DeviceAddressRangeCollectionProducer extends
         this.deviceMapper = deviceMapper;
     }
 
-    public String getSupportedType() {
-        return "addressRange";
+    public DeviceCollectionType getSupportedType() {
+        return DeviceCollectionType.addressRange;
     }
 
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
-        final int startAddress = ServletRequestUtils.getIntParameter(request, getParameterName("start"), -1);
-        final int endAddress = ServletRequestUtils.getIntParameter(request, getParameterName("end"), -1);
+        final int startAddress = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName("start"), -1);
+        final int endAddress = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName("end"), -1);
         
         Validate.isTrue(startAddress >= 0, "start address must be greater than or equal to 0");
         Validate.isTrue(endAddress >= 0, "start address must be greater than or equal to 0");
@@ -60,10 +61,10 @@ public class DeviceAddressRangeCollectionProducer extends
 
                 Map<String, String> paramMap = new HashMap<String, String>();
 
-                paramMap.put("collectionType", getSupportedType());
-                paramMap.put(getParameterName("start"),
+                paramMap.put("collectionType", getSupportedType().name());
+                paramMap.put(getSupportedType().getParameterName("start"),
                              String.valueOf(startAddress));
-                paramMap.put(getParameterName("end"), String.valueOf(endAddress));
+                paramMap.put(getSupportedType().getParameterName("end"), String.valueOf(endAddress));
 
                 return paramMap;
             }

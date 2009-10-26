@@ -68,4 +68,6 @@ public interface AttributeService {
      * @param attribute - Attribute the point will represent
      */
     public void createPointForAttribute(YukonDevice device, Attribute attribute);
+
+    public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute usage);
 }

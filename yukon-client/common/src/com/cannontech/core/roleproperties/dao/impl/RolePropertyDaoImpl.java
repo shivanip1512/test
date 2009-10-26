@@ -1,6 +1,5 @@
 package com.cannontech.core.roleproperties.dao.impl;
 
-import java.beans.PropertyEditor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -26,10 +25,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.BadPropertyTypeException;
+import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
@@ -38,7 +37,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.web.input.type.InputType;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -297,33 +295,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         boolean result = rolesForUser.contains(role);
         return result;
     }
-
-    public Object convertPropertyValue(InputType<?> type, String value) {
-        if (StringUtils.isBlank(value)) {
-            if (log.isDebugEnabled()) {
-                log.debug("converted '" + value + "' with " + type + " to null (as null)");
-            }
-            return null;
-        }
-        if (value.trim().equals(CtiUtilities.STRING_NONE)) {
-            if (log.isDebugEnabled()) {
-                log.debug("converted '" + value + "' with " + type + " to null (as STRING_NONE)");
-            }
-            return null;
-        }
-        
-        PropertyEditor propertyEditor = type.getPropertyEditor();
-        propertyEditor.setAsText(value);
-        Object result = propertyEditor.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug("converted '" + value + "' with " + type + " to " + result + " (as " + result.getClass().getSimpleName() + ")");
-        }
-        return result;
-    }
     
     public Object convertPropertyValue(YukonRoleProperty roleProperty, String value) throws BadPropertyTypeException {
         try {
-            return convertPropertyValue(roleProperty.getType(), value);
+            return InputTypeFactory.convertPropertyValue(roleProperty.getType(), value);
         } catch (Exception e) {
             throw new BadPropertyTypeException(roleProperty, value, e);
         }
