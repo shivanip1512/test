@@ -715,6 +715,10 @@ div.actionArea {
 	text-align: right;
 }
 
+div.actionArea input {
+	min-width: 75px;
+}
+
 a.simpleLink {
     text-decoration: none;
     color: black;
