@@ -32,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandPriority;
 import com.cannontech.common.device.commands.CommandRequestBase;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionParameterDto;
@@ -338,7 +339,17 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         final LiteYukonUser user = parameterDto.getUser();
         final boolean noqueue = parameterDto.isNoqueue();
         // This method also handles the overriding of command priorities. 
-        final int priority = configurationSource.getInteger("OVERRIDE_PRIORITY_"+parameterDto.getType(), parameterDto.getPriority());
+        int commandPriority;
+        try{
+            commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_"+parameterDto.getType(), parameterDto.getPriority());
+            if(CommandPriority.checkCommandPriority(commandPriority))
+                throw new IllegalArgumentException("Command priorities must be between "+CommandPriority.minPriority+" and "+CommandPriority.maxPriority);
+        } catch (IllegalArgumentException e) {
+            log.error(e,e);
+            log.warn("System has recieved a new priority for "+parameterDto.getType()+", but cannot use the value because it is invalid.  The system will revert to using the default priority value until a valid priority is supplied.  Please fix the priority value and try again.");
+            commandPriority = parameterDto.getPriority();
+        }
+        final int priority = commandPriority;
         
         // create CommandRequestExection record
         CommandRequestExecutionContextId contextId = parameterDto.getContextId();
