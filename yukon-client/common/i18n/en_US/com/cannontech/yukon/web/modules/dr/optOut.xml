@@ -3,6 +3,8 @@
 <properties>
 
     <entry key="yukon.web.modules.dr.optOut.title">Opt Out Status</entry>
+    <entry key="yukon.web.modules.dr.optOut.breadcrumb">Opt Out Status</entry>
+    <entry key="yukon.web.modules.dr.optOut.operationsHome">Operations Home</entry>
     <entry key="yukon.web.modules.dr.optOut.search">Search for existing customer:</entry>
     
     <entry key="yukon.web.modules.dr.optOut.systemInfo">System Information: Opt Out</entry>
@@ -106,6 +108,8 @@
 
     <!--  scheduledEvents.jsp -->
     <entry key="yukon.web.modules.dr.scheduledEvents.title">Scheduled Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.breadcrumb">Scheduled Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.operationsHome">Operations Home</entry>
     <entry key="yukon.web.modules.dr.scheduledEvents.startDateTime">Start date</entry>
     <entry key="yukon.web.modules.dr.scheduledEvents.duration">Duration</entry>
     <entry key="yukon.web.modules.dr.scheduledEvents.accountNumber">Account Number</entry>

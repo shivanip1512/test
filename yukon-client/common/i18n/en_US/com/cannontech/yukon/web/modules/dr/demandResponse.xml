@@ -18,7 +18,7 @@
 <entry key="yukon.web.modules.dr.paging.last">last</entry>
 
 <entry key="yukon.web.modules.dr.actions.addFavorite">Add To Favorites</entry>
-<entry key="yukon.web.modules.dr.actions.addFavoriteIcon">/WebConfig/yukon/Icons/star_disabled.gif</entry>
+<entry key="yukon.web.modules.dr.actions.addFavoriteIcon">/WebConfig/yukon/Icons/star_grey_luminosity.png</entry>
 <entry key="yukon.web.modules.dr.actions.addFavoriteIcon.hover">/WebConfig/yukon/Icons/star.gif</entry>
 <entry key="yukon.web.modules.dr.actions.addFavoriteIcon.alt">Add to favorites</entry>
 <entry key="yukon.web.modules.dr.actions.removeFavorite">Remove From Favorites</entry>
@@ -316,13 +316,13 @@
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.noControl">You do not have permission to control this scenario</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.start">Start Scenario</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.actions.startIcon">/WebConfig/yukon/Icons/lightning_go.gif</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.startIcon">/WebConfig/yukon/Icons/cog_go.png</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.hover">/WebConfig/yukon/Icons/control_play.png</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.alt">Start Scenario</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stop">Stop Scenario</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon">/WebConfig/yukon/Icons/stop.gif</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon">/WebConfig/yukon/Icons/stop.png</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.hover">/WebConfig/yukon/Icons/control_stop.png</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.alt">Stop Scenario</entry>
 
@@ -381,13 +381,13 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noControl">You do not have permission to control this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.start">Start Control Area</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon">/WebConfig/yukon/Icons/lightning_go.gif</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon">/WebConfig/yukon/Icons/green_circle.png</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.hover">/WebConfig/yukon/Icons/control_play.png</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.alt">Start Control Area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.stop">Stop Control Area</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon">/WebConfig/yukon/Icons/stop.gif</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon">/WebConfig/yukon/Icons/stop.png</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.hover">/WebConfig/yukon/Icons/control_stop.png</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.alt">Stop Control Area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange">Change Control Area Trigger Values</entry>
@@ -472,13 +472,13 @@
 <entry key="yukon.web.modules.dr.programDetail.noControl">You do not have permission to control this program</entry>
 <entry key="yukon.web.modules.dr.programDetail.unknown">This program is not in Load Management</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.start">Start Program</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.startIcon">/WebConfig/yukon/Icons/lightning_go.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.startIcon.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.startIcon">/WebConfig/yukon/Icons/go.png</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.startIcon.hover">/WebConfig/yukon/Icons/control_play.png</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.startIcon.alt">Start Program</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.stop">Stop Program</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.stopIcon">/WebConfig/yukon/Icons/stop.gif</entry>
-<entry key="yukon.web.modules.dr.programDetail.actions.stopIcon.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stopIcon">/WebConfig/yukon/Icons/stop.png</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.stopIcon.hover">/WebConfig/yukon/Icons/control_stop.png</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.stopIcon.alt">Stop Program</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.changeGears">Change Gears</entry>
@@ -559,15 +559,16 @@
 
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.unknown">This load group is not in Load Management</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.disabled">This load group is disabled and cannot be controlled.</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.noControl">You do not have permission to control this load group</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed">Send Shed</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon">/WebConfig/yukon/Icons/lightning_go.gif</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.hover">/WebConfig/yukon/Icons/lightning_go_over.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon">/WebConfig/yukon/Icons/control_play_blue.png</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.hover">/WebConfig/yukon/Icons/control_play.png</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled">/WebConfig/yukon/Icons/lightning_go_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.alt">Shed Load Group</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore">Send Restore</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon">/WebConfig/yukon/Icons/stop.gif</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.hover">/WebConfig/yukon/Icons/stop_over.gif</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon">/WebConfig/yukon/Icons/control_stop_blue.png</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.hover">/WebConfig/yukon/Icons/control_stop.png</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled">/WebConfig/yukon/Icons/stop_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.alt">Restore Load Group</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.actions.enable">Enable Load Group</entry>
