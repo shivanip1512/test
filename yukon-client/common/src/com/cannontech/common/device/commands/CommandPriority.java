@@ -5,7 +5,7 @@ public class CommandPriority {
     public static final int minPriority = 1;
     public static final int maxPriority = 14;
     
-    public static boolean checkCommandPriority(int commandPriority){
+    public static boolean isCommandPriorityValid(int commandPriority){
         if(commandPriority >= minPriority &&
            commandPriority <= maxPriority)
             return true;
