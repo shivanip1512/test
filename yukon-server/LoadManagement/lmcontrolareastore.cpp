@@ -538,53 +538,56 @@ void CtiLMControlAreaStore::reset()
                             }
 
                             std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                            CtiLMGroupPtr lm_group = iter->second;
-
-                            switch( resolvePointType(point_type.c_str()) )
+                            if( iter != temp_all_group_map.end() )
                             {
-                            case AnalogPointType:
-                                switch( point_offset )
+                                CtiLMGroupPtr lm_group = iter->second;
+    
+                                switch( resolvePointType(point_type.c_str()) )
                                 {
-                                case DAILYCONTROLHISTOFFSET:
-                                    lm_group->setHoursDailyPointId(point_id);
-                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                case AnalogPointType:
+                                    switch( point_offset )
+                                    {
+                                    case DAILYCONTROLHISTOFFSET:
+                                        lm_group->setHoursDailyPointId(point_id);
+                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                        break;
+                                    case MONTHLYCONTROLHISTOFFSET:
+                                        lm_group->setHoursMonthlyPointId(point_id);
+                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                        break;
+                                    case SEASONALCONTROLHISTOFFSET:
+                                        lm_group->setHoursSeasonalPointId(point_id);
+                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                        break;
+                                    case ANNUALCONTROLHISTOFFSET:
+                                        lm_group->setHoursAnnuallyPointId(point_id);
+                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                        break;
+                                    default:
+                                        /*{
+                                            CtiLockGuard<CtiLogger> dout_guard(dout);
+                                            dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
+                                                 << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                                        }*/
+                                        break;
+                                    }
                                     break;
-                                case MONTHLYCONTROLHISTOFFSET:
-                                    lm_group->setHoursMonthlyPointId(point_id);
-                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
-                                    break;
-                                case SEASONALCONTROLHISTOFFSET:
-                                    lm_group->setHoursSeasonalPointId(point_id);
-                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
-                                    break;
-                                case ANNUALCONTROLHISTOFFSET:
-                                    lm_group->setHoursAnnuallyPointId(point_id);
-                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                case StatusPointType:
+                                    if( point_offset == 0 )
+                                    {
+                                        long control_status_point_id;
+                                        if( controlPointHashMap.findValue(point_id, control_status_point_id) )
+                                        {
+                                            lm_group->setControlStatusPointId(control_status_point_id);
+                                            temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                        }
+                                    }
                                     break;
                                 default:
-                                    /*{
-                                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                                        dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
-                                             << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                                    }*/
-                                    break;
-                                }
-                                break;
-                            case StatusPointType:
-                                if( point_offset == 0 )
-                                {
-                                    long control_status_point_id;
-                                    if( controlPointHashMap.findValue(point_id, control_status_point_id) )
                                     {
-                                        lm_group->setControlStatusPointId(control_status_point_id);
-                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                                        dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
                                     }
-                                }
-                                break;
-                            default:
-                                {
-                                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                                    dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
                                 }
                             }
                         }
@@ -643,23 +646,27 @@ void CtiLMControlAreaStore::reset()
                             rdr["internalstate"] >> internal_state;
                             rdr["dailyops"] >> daily_ops;
 
+                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                            if( iter != temp_all_group_map.end() )
+                            {
+                                CtiLMGroupPtr& lm_group = iter->second;
 
-                            CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
-                            lm_group->setGroupControlState(group_control_state);
-                            lm_group->setCurrentHoursDaily(cur_hours_daily);
-                            lm_group->setCurrentHoursMonthly(cur_hours_monthly);
-                            lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
-                            lm_group->setCurrentHoursAnnually(cur_hours_annually);
-                            lm_group->setLastControlSent(last_control_sent);
-                            lm_group->setDynamicTimestamp(timestamp);
-                            lm_group->setControlStartTime(control_start_time);
-                            lm_group->setControlCompleteTime(control_complete_time);
-                            lm_group->setNextControlTime(next_control_time);
-                            lm_group->setInternalState(internal_state);
-                            lm_group->resetDailyOps(daily_ops);
+                                lm_group->setGroupControlState(group_control_state);
+                                lm_group->setCurrentHoursDaily(cur_hours_daily);
+                                lm_group->setCurrentHoursMonthly(cur_hours_monthly);
+                                lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
+                                lm_group->setCurrentHoursAnnually(cur_hours_annually);
+                                lm_group->setLastControlSent(last_control_sent);
+                                lm_group->setDynamicTimestamp(timestamp);
+                                lm_group->setControlStartTime(control_start_time);
+                                lm_group->setControlCompleteTime(control_complete_time);
+                                lm_group->setNextControlTime(next_control_time);
+                                lm_group->setInternalState(internal_state);
+                                lm_group->resetDailyOps(daily_ops);
 
-                            lm_group->setDirty(false);
-                            lm_group->_insertDynamicDataFlag = FALSE;
+                                lm_group->setDirty(false);
+                                lm_group->_insertDynamicDataFlag = FALSE;
+                            }
                         }
                     }
                     /* Now lets load up info about macro groups */
@@ -746,56 +753,76 @@ void CtiLMControlAreaStore::reset()
                             if( cur_iter == all_program_group_map.end() )
                             {
                                 vector<CtiLMGroupPtr> group_vec;
-                                CtiLMGroupPtr lm_group = temp_all_group_map.find(group_id)->second;
 
-                                std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
-                                if( macro_iter != group_macro_map.end() ) //must be a macro group
+                                std::map<long, CtiLMGroupPtr >::iterator temp_all_group_map_iter = temp_all_group_map.find(group_id);
+                                if( temp_all_group_map_iter != temp_all_group_map.end() )
                                 {
-                                    vector<long> macro_vec = macro_iter->second;
-                                    for( vector<long>::iterator iter = macro_vec.begin();
-                                       iter != macro_vec.end();
-                                       iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+                                    CtiLMGroupPtr lm_group = temp_all_group_map_iter->second;
+    
+                                    std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                                    if( macro_iter != group_macro_map.end() ) //must be a macro group
                                     {
-                                        CtiLMGroupPtr child_group = temp_all_group_map.find(*iter)->second;
-                                        group_vec.push_back(child_group);
-                                        child_group->setGroupOrder(group_vec.size());
-                                        all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+                                        vector<long> macro_vec = macro_iter->second;
+
+                                        for( vector<long>::iterator iter = macro_vec.begin();
+                                           iter != macro_vec.end();
+                                           iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+                                        {
+                                            std::map<long, CtiLMGroupPtr >::iterator all_group_map_iter = temp_all_group_map.find(*iter);
+                                            if( all_group_map_iter != temp_all_group_map.end() )
+                                            {
+                                                CtiLMGroupPtr child_group = all_group_map_iter->second;
+
+                                                group_vec.push_back(child_group);
+                                                child_group->setGroupOrder(group_vec.size());
+                                                all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+                                            }
+                                        }
+                                    }
+                                    else //not a macro group, assign it to the program
+                                    {
+                                        group_vec.push_back(lm_group);
+                                        lm_group->setGroupOrder(group_vec.size());
+                                        all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
                                     }
                                 }
-                                else //not a macro group, assign it to the program
-                                {
-                                    group_vec.push_back(lm_group);
-                                    lm_group->setGroupOrder(group_vec.size());
-//                            all_program_group_map.insert(make_pair(program_id, group_vec));
-                                    all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                                }
+
                                 all_program_group_map.insert(make_pair(program_id, group_vec));
                             }
                             else
                             {
-                                CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
-
-                                std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
-                                if( macro_iter != group_macro_map.end() ) //must be a macro group
+                                std::map<long, CtiLMGroupPtr >::iterator temp_all_group_map_iter = temp_all_group_map.find(group_id);
+                                if( temp_all_group_map_iter != temp_all_group_map.end() )
                                 {
-                                    vector<long> macro_vec = macro_iter->second;
-                                    for( vector<long>::iterator iter = macro_vec.begin();
-                                       iter != macro_vec.end();
-                                       iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+                                    CtiLMGroupPtr& lm_group = temp_all_group_map_iter->second;
+    
+                                    std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                                    if( macro_iter != group_macro_map.end() ) //must be a macro group
                                     {
-                                        CtiLMGroupPtr& child_group = temp_all_group_map.find(*iter)->second;
-                                        cur_iter->second.push_back(child_group);
-                                        child_group->setGroupOrder(cur_iter->second.size());
-                                        all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+                                        vector<long> macro_vec = macro_iter->second;
+
+                                        for( vector<long>::iterator iter = macro_vec.begin();
+                                           iter != macro_vec.end();
+                                           iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+                                        {
+                                            std::map<long, CtiLMGroupPtr >::iterator all_group_map_iter = temp_all_group_map.find(*iter);
+                                            if( all_group_map_iter != temp_all_group_map.end() )
+                                            {
+                                                CtiLMGroupPtr& child_group = all_group_map_iter->second;
+
+                                                cur_iter->second.push_back(child_group);
+                                                child_group->setGroupOrder(cur_iter->second.size());
+                                                all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        cur_iter->second.push_back(lm_group);
+                                        lm_group->setGroupOrder(cur_iter->second.size());
+                                        all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
                                     }
                                 }
-                                else
-                                {
-                                    cur_iter->second.push_back(lm_group);
-                                    lm_group->setGroupOrder(cur_iter->second.size());
-                                    all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                                }
-
                             }
                         }
                     }
@@ -911,13 +938,18 @@ void CtiLMControlAreaStore::reset()
                                 CtiLMGroupVec& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
 
                                 //Inserting this program's groups
-                                CtiLMGroupVec group_vec = all_program_group_map.find(tempProgramId)->second;
-                                for( CtiLMGroupIter iter = group_vec.begin();
-                                   iter != group_vec.end();
-                                   iter++ )
+                                std::map< long, vector<CtiLMGroupPtr> >::iterator   group_vec_map_iter;
+                                if( (group_vec_map_iter = all_program_group_map.find(tempProgramId)) != all_program_group_map.end() )
                                 {
-                                    directGroups.push_back(*iter);
-                                    total_groups_assigned++;
+                                    CtiLMGroupVec group_vec = group_vec_map_iter->second;
+
+                                    for( CtiLMGroupIter iter = group_vec.begin();
+                                       iter != group_vec.end();
+                                       iter++ )
+                                    {
+                                        directGroups.push_back(*iter);
+                                        total_groups_assigned++;
+                                    }
                                 }
 
                                 //Inserting this direct program into hash map
