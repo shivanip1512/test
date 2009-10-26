@@ -346,6 +346,10 @@ table.nameValueTable tr.indent1 td.value {
 	font-size: .7em;
 }
 
+table.nameValueTable tr.section td {
+	padding-top: 10px;
+}
+
 .altRow {
 	background-color: #f6f6f6; 
 }

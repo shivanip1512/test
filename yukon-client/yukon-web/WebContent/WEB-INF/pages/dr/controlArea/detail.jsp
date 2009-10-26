@@ -75,7 +75,7 @@
                                 <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD,CONTROL_AREA_PEAK_PROJECTION,CONTROL_AREA_ATKU">
                                     <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
         	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.trigger" argument="${triggerNumber}"/>
-        	                        <tags:nameValue name="${fieldName}">
+        	                        <tags:nameValue name="${fieldName}" isSection="true">
                                         <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
                                             <cti:msg var="thresholdTitle" key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/>
                                             <tags:nameValue name="${thresholdTitle}">
