@@ -284,36 +284,21 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		// with a start date earlier than or equal to today and a current state of ACTIVE_SENT 
 		// or CANCEL_SENT
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ooeOuter.*");
-		sql.append("FROM OptOutEvent ooeOuter");
-		sql.append("WHERE ooeOuter.StopDate = ");
-		sql.append("	(SELECT MAX(ooeInner.StopDate)");
-		sql.append("	 FROM OptOutEvent ooeInner");
-		sql.append("	 WHERE ooeInner.InventoryId = ooeOuter.InventoryId");
-		sql.append("	 	AND ooeInner.CustomerAccountId = ooeOuter.CustomerAccountId");
-		sql.append("	 	AND ooeInner.StartDate <= ?");
-		sql.append("	 	AND (ooeInner.EventState = ?");
-		sql.append("	 		OR ooeInner.EventState = ?)");
-		sql.append("	 GROUP BY ooeInner.InventoryId, ooeInner.CustomerAccountId)");
-		sql.append("	AND ooeOuter.InventoryId = ?");
-		sql.append("	AND ooeOuter.CustomerAccountId = ?");
-		
-		OptOutEvent event = null;
-		try {
-			event = simpleJdbcTemplate.queryForObject(
-														sql.toString(), 
-														new OptOutEventRowMapper(), 
-														new Date(),
-														OptOutEventState.START_OPT_OUT_SENT.toString(),
-														OptOutEventState.CANCEL_SENT.toString(),
-														inventoryId,
-														customerAccountId);
-		} catch (EmptyResultDataAccessException e) {
-			// No event found, return null
-			return null;
-		}
-		
-		return event;
+        sql.append("SELECT *");
+        sql.append("FROM OptOutEvent ");
+        sql.append("WHERE StartDate <=").appendArgument(new Date());
+        sql.append("AND (EventState =").appendArgument(OptOutEventState.START_OPT_OUT_SENT.toString());
+        sql.append("      OR EventState =").appendArgument(OptOutEventState.CANCEL_SENT.toString()).append(")");
+        sql.append("AND InventoryId =").appendArgument(inventoryId);
+        sql.append("AND CustomerAccountId =").appendArgument(customerAccountId);
+        sql.append("ORDER BY StopDate DESC");
+        
+        List<OptOutEvent> events = simpleJdbcTemplate.query(sql.getSql(),
+                                                            new OptOutEventRowMapper(),
+                                                            sql.getArguments());
+        OptOutEvent event = (events.size() > 0) ? events.get(0) : null;
+
+        return event;
 	}
 	
 
@@ -630,17 +615,17 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	
 	@Transactional
 	private int getFirstEventUser(int optOutEventId) {
+
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT LogUserId");
+        sql.append("FROM OptOutEventLog ");
+        sql.append("WHERE OptOutEventId =").appendArgument(optOutEventId);
+        sql.append("ORDER BY LogDate ASC ");
 		
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ooelOuter.LogUserId");
-		sql.append("FROM OptOutEventLog ooelOuter");
-		sql.append("WHERE LogDate = ");
-		sql.append("	(SELECT MIN(LogDate) ");
-		sql.append("	 FROM OptOutEventLog");
-		sql.append("	 WHERE OptOutEventId = ooelOuter.OptOutEventId)");
-		sql.append("AND ooelOuter.OptOutEventId = ?");
-		
-		int userId = simpleJdbcTemplate.queryForInt(sql.toString(), optOutEventId);
+        List<Integer> userIds = simpleJdbcTemplate.query(sql.getSql(),
+                                                         new IntegerRowMapper(),
+                                                         sql.getArguments());
+        int userId = (userIds.size() > 0) ? userIds.get(0) : 0;
 		
 		return userId;
 	}

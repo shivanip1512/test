@@ -6,7 +6,6 @@ import java.util.List;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -136,10 +135,10 @@ public interface OptOutService {
 	 * @param stopTime - End of time period (inclusive)
 	 * @param user - User requesting count
 	 * @return - Total count
-	 * @throws NotFoundException - if program name is invalid
+	 * @throws ProgramNotFoundException - if program name is invalid
 	 */
 	public int getOptOutDeviceCountForProgram(String programName, Date startTime, 
-			Date stopTime, LiteYukonUser user) throws NotFoundException;
+			Date stopTime, LiteYukonUser user) throws ProgramNotFoundException;
 
 	/**
 	 * Method to allow additional opt outs for a given inventory
@@ -161,11 +160,11 @@ public interface OptOutService {
 	 * @param stopTime - End of time period (inclusive)
 	 * @param user - User requesting history
 	 * @return List of opt out history
-	 * @throws NotFoundException - if program name is not valid
+	 * @throws ProgramNotFoundException - if program name is not valid
 	 */
 	public List<OverrideHistory> getOptOutHistoryByProgram(
 			String programName, Date startTime, Date stopTime, LiteYukonUser user)
-		throws NotFoundException;
+		throws ProgramNotFoundException;
 	
 	/**
 	 * Method to get a list of opt out history for a given account for all inventory on that account

@@ -12,7 +12,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -124,7 +123,7 @@ public class OverrideHistoryRequestEndpoint {
                                                                 "UserNotAuthorized",
                                                                 "The user is not authorized to view override history.");
 
-        } catch (NotFoundException e) {
+        } catch (ProgramNotFoundException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByProgramNameRequest,
                                                                 e,
                                                                 "InvalidProgramName",

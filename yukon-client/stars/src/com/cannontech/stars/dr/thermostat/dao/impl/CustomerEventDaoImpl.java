@@ -61,31 +61,19 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         // In english: get the LMThermostatManualEvent row for the most recent
         // event for the thermostat
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ltmeOuter.*, lceb.EventDateTime");
-        sql.append("FROM LMThermostatManualEvent ltmeOuter, LMCustomerEventBase lceb");
-        sql.append("WHERE ltmeOuter.EventId IN ");
-        sql.append("    (SELECT lceb1.eventid");
-        sql.append("     FROM LMThermostatManualEvent ltme1");
-        sql.append("         JOIN LMCustomerEventBase lceb1 ON lceb1.EventId = ltme1.EventId");
-        sql.append("     WHERE ltme1.InventoryId = ltmeOuter.InventoryId");
-        sql.append("     AND lceb1.EventDateTime =");
-        sql.append("         (SELECT ");
-        sql.append("          MAX(lceb2.EventDateTime) EventDateTime");
-        sql.append("          FROM LMThermostatManualEvent ltme2, LMCustomerEventBase lceb2");
-        sql.append("          WHERE lceb2.EventId = ltme2.EventId");
-        sql.append("          and ltme2.inventoryid = ltmeOuter.inventoryid");
-        sql.append("          )");
-        sql.append("     )");
-        sql.append("AND ltmeOuter.EventId = lceb.EventId");
-        sql.append("AND ltmeOuter.InventoryId = ?");
-
+        sql.append("SELECT event.*, base.EventDateTime");
+        sql.append("FROM LMThermostatManualEvent event, LMCustomerEventBase base");        
+        sql.append("WHERE event.EventId = base.EventId");
+        sql.append("AND event.InventoryId = ?");
+        sql.append("ORDER BY base.EventDateTime DESC");
+        
         ThermostatManualEvent manualEvent = new ThermostatManualEvent();
         List<ThermostatManualEvent> eventList = 
         	simpleJdbcTemplate.query(sql.toString(),
                                      new ThermostatManualEventMapper(energyCompany),
                                      inventoryId);
 
-        // If any events are found, use the first one - who knows what the 'last event' was
+        // If any events are found, use the first one which is most recent
     	if(eventList.size() > 0) {
     		manualEvent = eventList.get(0);
     	}

@@ -31,7 +31,6 @@ import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
@@ -42,7 +41,6 @@ import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -73,8 +71,8 @@ import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
-import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -97,8 +95,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
 	private LMHardwareControlInformationService lmHardwareControlInformationService;
 	private CustomerDao customerDao;
-	private ProgramDao programDao;
-	private EnergyCompanyDao energyCompanyDao;
+	private ProgramService programService;
 	private EnrollmentDao enrollmentDao;
 	private StarsSearchDao starsSearchDao;
 	private SystemDateFormattingService systemDateFormattingService;
@@ -496,12 +493,11 @@ public class OptOutServiceImpl implements OptOutService {
 		// See if the optional programName parameter was set - if so, only create
 		// history objects for that program
 		if (programName != null) {
-			LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+		    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 			Program program = null;
 			try {
-				program = programDao.getByProgramName(programName, 
-											Collections.singletonList(energyCompany.getEnergyCompanyID()));
-			} catch (NotFoundException e) {
+				program = programService.getByProgramName(programName, energyCompany);
+			} catch (IllegalArgumentException e) {
 				throw new ProgramNotFoundException("Program not found", e);
 			}
 			
@@ -544,14 +540,17 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	public List<OverrideHistory> getOptOutHistoryByProgram(String programName,
-			Date startTime, Date stopTime, LiteYukonUser user) throws NotFoundException {
+			Date startTime, Date stopTime, LiteYukonUser user) throws ProgramNotFoundException {
 
 		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
 		
-		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-		Program program = programDao.getByProgramName(programName, 
-									Collections.singletonList(energyCompany.getEnergyCompanyID()));
-		
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        Program program = null;
+        try {
+            program = programService.getByProgramName(programName, energyCompany);
+        } catch (IllegalArgumentException e) {
+            throw new ProgramNotFoundException("Program not found", e);
+        }
 		
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
 		
@@ -595,14 +594,13 @@ public class OptOutServiceImpl implements OptOutService {
 		int numberOfDevices = optedOutInventory.size();
 		
 		if(programName != null) {
-			LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-			Program program = null;
-			try {
-				program = programDao.getByProgramName(programName, 
-											Collections.singletonList(energyCompany.getEnergyCompanyID()));
-			} catch (NotFoundException e) {
-				throw new ProgramNotFoundException("Program not found: " + programName, e);
-			}
+            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+            Program program = null;
+            try {
+                program = programService.getByProgramName(programName, energyCompany);
+            } catch (IllegalArgumentException e) {
+                throw new ProgramNotFoundException("Program not found", e);
+            }
 			List<Integer> programInventory = 
 				enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
 
@@ -619,13 +617,17 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	public int getOptOutDeviceCountForProgram(String programName,
-			Date startTime, Date stopTime, LiteYukonUser user) {
+			Date startTime, Date stopTime, LiteYukonUser user) throws ProgramNotFoundException{
 		
 		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
 		
-		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-		Program program = programDao.getByProgramName(programName, 
-									Collections.singletonList(energyCompany.getEnergyCompanyID()));
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        Program program = null;
+        try {
+            program = programService.getByProgramName(programName, energyCompany);
+        } catch (IllegalArgumentException e) {
+            throw new ProgramNotFoundException("Program not found", e);
+        }
 		List<Integer> optedOutInventory = 
 			enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
 		
@@ -1041,15 +1043,10 @@ public class OptOutServiceImpl implements OptOutService {
 		this.customerDao = customerDao;
 	}
 	
-	@Autowired
-	public void setProgramDao(ProgramDao programDao) {
-		this.programDao = programDao;
-	}
-	
-	@Autowired
-	public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-		this.energyCompanyDao = energyCompanyDao;
-	}
+    @Autowired
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
+    }
 	
 	@Autowired
 	public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
