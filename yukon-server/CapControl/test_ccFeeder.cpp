@@ -1,14 +1,5 @@
-/*---------------------------------------------------------------------------
-        Filename:  test_ccapbank.cpp
 
-        Programmer:  Jess Oteson
-
-        Initial Date:  5/11/2007
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies 2007
----------------------------------------------------------------------------*/
-
-#define BOOST_AUTO_TEST_MAIN "Test CCCapBank"
+#define BOOST_AUTO_TEST_MAIN "Test CCFeeder"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
