@@ -462,8 +462,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
 
             // Start time is seconds from midnight in db
             LocalTime localTime = entry.getStartTime();
-            Integer startTimeSeconds = 
-            	(localTime.getHourOfDay() * 60 * 60) + (localTime.getMinuteOfHour() * 60);
+            Integer startTimeSeconds = localTime.getMillisOfDay() / 1000;
 
             simpleJdbcTemplate.update(entrySql.toString(),
                                       seasonId,
