@@ -4607,7 +4607,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
     }
     else if( getProgramState() == CtiLMProgramBase::ManualActiveState )
     {
-        if( ( secondsFrom1901 >= getDirectStopTime().seconds() || areAllGroupsStopped() ) && !getIsRampingOut() )
+        if( secondsFrom1901 >= getDirectStopTime().seconds() && !getIsRampingOut() )
         {
             returnBoolean = TRUE;
             {
@@ -5760,7 +5760,7 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << "LMProgram: " << getPAOName() << ",  has more than 8 groups, taking 2 at a time" << endl;
+                dout << CtiTime() << "LMProgram: " << getPAOName() << ", has 8 or more groups, taking 2 at a time" << endl;
             }
 
             num_groups_to_take = 2;
@@ -5821,20 +5821,6 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
 
     }
     return expected_load_reduction;
-}
-
-bool CtiLMProgramDirect::areAllGroupsStopped()
-{
-    bool retVal = true;
-    for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
-    {
-        if( (*i)->getGroupControlState() != CtiLMGroupBase::InactiveState )
-        {
-            retVal = false;
-            break;
-        }
-    }
-    return retVal;
 }
 
 bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)
