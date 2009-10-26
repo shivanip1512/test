@@ -342,7 +342,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         int commandPriority;
         try{
             commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_"+parameterDto.getType(), parameterDto.getPriority());
-            if(CommandPriority.isCommandPriorityValid(commandPriority))
+            if(!CommandPriority.isCommandPriorityValid(commandPriority))
                 throw new IllegalArgumentException("Command priorities must be between "+CommandPriority.minPriority+" and "+CommandPriority.maxPriority);
         } catch (IllegalArgumentException e) {
             log.error(e,e);
