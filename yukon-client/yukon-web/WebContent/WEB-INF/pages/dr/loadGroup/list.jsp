@@ -6,7 +6,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="loadGroupList">
-    <cti:standardMenu menuSelection="details|loadGroups"/>
+    <cti:standardMenu menuSelection="details|loadgroups"/>
 
     <tags:simpleDialog id="drDialog"/>
 

@@ -7,7 +7,7 @@
 
 <cti:msg var="pageTitle" key="yukon.web.modules.dr.loadGroupDetail.pageTitle" argument="${loadGroup.name}"/>
 <cti:standardPage module="dr" page="loadGroupDetail" title="${pageTitle}">
-    <cti:standardMenu menuSelection="details|loadGroups"/>
+    <cti:standardMenu menuSelection="details|loadgroups"/>
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
