@@ -18,6 +18,9 @@
         <cti:crumbLink url="/operator/Operations.jsp">
             <cti:msg key="yukon.web.modules.dr.scenarioList.breadcrumb.operationsHome"/>
         </cti:crumbLink>
+        <cti:crumbLink url="/spring/dr/home">
+            <cti:msg key="yukon.web.modules.dr.scenarioList.breadcrumb.drHome"/>
+        </cti:crumbLink>
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.scenarioList.breadcrumb.scenarios"/></cti:crumbLink>
     </cti:breadCrumbs>
 

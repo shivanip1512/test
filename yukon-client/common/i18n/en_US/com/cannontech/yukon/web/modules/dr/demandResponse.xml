@@ -282,6 +282,7 @@
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>
 <entry key="yukon.web.modules.dr.searchResults.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.searchResults.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.searchResults.breadcrumb.home">Quick Search</entry>
 <entry key="yukon.web.modules.dr.searchResults.searchResult">Search Results for &quot;{0}&quot;</entry>
 <entry key="yukon.web.modules.dr.searchResults.noResults">No items matched.</entry>
@@ -292,6 +293,7 @@
 <!-- Scenario List -->
 <entry key="yukon.web.modules.dr.scenarioList.pageTitle">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.scenarioList.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.scenarioList.breadcrumb.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.noResults">No scenarios matched.</entry>
@@ -307,6 +309,7 @@
 <!-- Scenario Detail -->
 <entry key="yukon.web.modules.dr.scenarioDetail.pageTitle">Scenario {0}</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenario">Scenario {0}</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.scenario">Scenario {0}</entry>
@@ -332,6 +335,7 @@
 <!-- Control Area List -->
 <entry key="yukon.web.modules.dr.controlAreaList.pageTitle">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.noResults">No Control Areas matched.</entry>
@@ -362,6 +366,7 @@
 <!-- Control Area Detail -->
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlArea">Control Area {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.controlArea">Control Area {0}</entry>
@@ -423,6 +428,7 @@
 <!-- Program List -->
 <entry key="yukon.web.modules.dr.programList.pageTitle">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.programList.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.programList.breadcrumb.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.noResults">No programs matched.</entry>
@@ -455,6 +461,7 @@
 <!-- Program Detail -->
 <entry key="yukon.web.modules.dr.programDetail.pageTitle">Program {0}</entry>
 <entry key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.programDetail.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.programDetail.breadcrumb.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programDetail.breadcrumb.program">Program {0}</entry>
 <entry key="yukon.web.modules.dr.programDetail.program">Program {0}</entry>
@@ -519,6 +526,7 @@
 <!-- Load Group List -->
 <entry key="yukon.web.modules.dr.loadGroupList.pageTitle">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.noResults">No load groups matched.</entry>
@@ -546,6 +554,7 @@
 <!-- Load Group Detail -->
 <entry key="yukon.web.modules.dr.loadGroupDetail.pageTitle">Load Group {0}</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.drHome">Demand Response</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroup">Load Group {0}</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.loadGroup">Load Group {0}</entry>
