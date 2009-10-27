@@ -345,8 +345,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             if(!CommandPriority.isCommandPriorityValid(commandPriority))
                 throw new IllegalArgumentException("Command priorities must be between "+CommandPriority.minPriority+" and "+CommandPriority.maxPriority);
         } catch (IllegalArgumentException e) {
-            log.error(e,e);
-            log.warn("System has recieved a new priority for "+parameterDto.getType()+", but cannot use the value because it is invalid.  The system will revert to using the default priority value until a valid priority is supplied.  Please fix the priority value and try again.");
+            log.warn("System has recieved a new priority for "+parameterDto.getType()+", but cannot use the value because it is invalid.  The system will revert to using the default priority value until a valid priority is supplied.  Please fix the priority value and try again.",e);
             commandPriority = parameterDto.getPriority();
         }
         final int priority = commandPriority;
