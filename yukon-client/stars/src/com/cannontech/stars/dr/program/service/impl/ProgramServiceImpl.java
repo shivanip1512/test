@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -62,7 +62,7 @@ public class ProgramServiceImpl implements ProgramService {
         Program program = null;
         try {
             program = programDao.getByProgramName(programName, energyCompanyIds);
-        } catch (IllegalArgumentException e) {
+        } catch (ProgramNotFoundException e) {
             /*
              * Since we couldn't find the program by the program name lets try
              * finding the program by its alternate name.

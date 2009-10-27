@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -29,14 +29,14 @@ import com.cannontech.stars.dr.util.YukonListEntryHelper;
  */
 public class CustomerEventDaoImpl implements CustomerEventDao {
 
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
 
     private ECMappingDao ecMappingDao;
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Autowired
@@ -62,16 +62,14 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         // event for the thermostat
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT event.*, base.EventDateTime");
-        sql.append("FROM LMThermostatManualEvent event, LMCustomerEventBase base");        
+        sql.append("FROM LMThermostatManualEvent event, LMCustomerEventBase base");
         sql.append("WHERE event.EventId = base.EventId");
-        sql.append("AND event.InventoryId = ?");
+        sql.append("AND event.InventoryId =").appendArgument(inventoryId);
         sql.append("ORDER BY base.EventDateTime DESC");
         
         ThermostatManualEvent manualEvent = new ThermostatManualEvent();
         List<ThermostatManualEvent> eventList = 
-        	simpleJdbcTemplate.query(sql.toString(),
-                                     new ThermostatManualEventMapper(energyCompany),
-                                     inventoryId);
+            yukonJdbcTemplate.queryForLimitedResults(sql,  new ThermostatManualEventMapper(energyCompany), 1);
 
         // If any events are found, use the first one which is most recent
     	if(eventList.size() > 0) {
@@ -112,7 +110,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
 
         String notes = event.getNotes();
         String authorizedBy = event.getAuthorizedBy();
-        simpleJdbcTemplate.update(baseSql.toString(),
+        yukonJdbcTemplate.update(baseSql.toString(),
                                   eventId,
                                   eventTypeId,
                                   actionId,
@@ -127,7 +125,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         mappingSql.append("VALUES (?,?)");
 
         Integer energyCompanyId = energyCompany.getEnergyCompanyID();
-        simpleJdbcTemplate.update(mappingSql.toString(),
+        yukonJdbcTemplate.update(mappingSql.toString(),
                                   energyCompanyId,
                                   eventId);
 
@@ -152,7 +150,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         mappingSql.append("(EventId, InventoryId)");
         mappingSql.append("VALUES (?,?)");
 
-        simpleJdbcTemplate.update(mappingSql.toString(),
+        yukonJdbcTemplate.update(mappingSql.toString(),
                                   event.getEventId(),
                                   event.getThermostatId());
     }
@@ -183,7 +181,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
 
         Integer eventId = event.getEventId();
         Integer thermostatId = event.getThermostatId();
-        simpleJdbcTemplate.update(eventSql.toString(),
+        yukonJdbcTemplate.update(eventSql.toString(),
                                   eventId,
                                   thermostatId,
                                   previousTemperature,

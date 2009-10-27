@@ -494,12 +494,7 @@ public class OptOutServiceImpl implements OptOutService {
 		// history objects for that program
 		if (programName != null) {
 		    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-			Program program = null;
-			try {
-				program = programService.getByProgramName(programName, energyCompany);
-			} catch (IllegalArgumentException e) {
-				throw new ProgramNotFoundException("Program not found", e);
-			}
+			Program program = programService.getByProgramName(programName, energyCompany);
 			
 			List<Integer> optedOutInventory = 
 				enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
@@ -545,12 +540,7 @@ public class OptOutServiceImpl implements OptOutService {
 		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
 		
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        Program program = null;
-        try {
-            program = programService.getByProgramName(programName, energyCompany);
-        } catch (IllegalArgumentException e) {
-            throw new ProgramNotFoundException("Program not found", e);
-        }
+        Program program = programService.getByProgramName(programName, energyCompany);
 		
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
 		
@@ -595,12 +585,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		if(programName != null) {
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-            Program program = null;
-            try {
-                program = programService.getByProgramName(programName, energyCompany);
-            } catch (IllegalArgumentException e) {
-                throw new ProgramNotFoundException("Program not found", e);
-            }
+            Program program = programService.getByProgramName(programName, energyCompany);
 			List<Integer> programInventory = 
 				enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
 
@@ -622,12 +607,7 @@ public class OptOutServiceImpl implements OptOutService {
 		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
 		
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        Program program = null;
-        try {
-            program = programService.getByProgramName(programName, energyCompany);
-        } catch (IllegalArgumentException e) {
-            throw new ProgramNotFoundException("Program not found", e);
-        }
+        Program program = programService.getByProgramName(programName, energyCompany);
 		List<Integer> optedOutInventory = 
 			enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
 		

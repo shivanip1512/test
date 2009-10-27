@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.dr.appliance.model.Appliance;
@@ -158,7 +159,7 @@ public class ProgramDaoImpl implements ProgramDao {
                                                      PAOGroups.STRING_CAT_LOADMANAGEMENT,
                                                      programName);
         } catch(IncorrectResultSizeDataAccessException ex){
-            throw new IllegalArgumentException("The program name supplied returned too many results or none at all.");
+            throw new ProgramNotFoundException("The program name supplied returned too many results or none at all.");
         }
     }
 
@@ -187,7 +188,7 @@ public class ProgramDaoImpl implements ProgramDao {
                                                      alternateProgramName+",%",
                                                      "%,"+alternateProgramName);
         } catch(IncorrectResultSizeDataAccessException ex){
-            throw new IllegalArgumentException("The alternate program name supplied returned too many results or none at all.");            
+            throw new ProgramNotFoundException("The alternate program name supplied returned too many results or none at all.");            
         }
     }
 
