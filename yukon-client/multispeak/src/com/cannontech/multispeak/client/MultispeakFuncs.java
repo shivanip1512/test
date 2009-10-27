@@ -293,6 +293,7 @@ public class MultispeakFuncs
     /**
      * Helper method to construct a new service location value containing a position location.
      * Format is "serviceLocation [position]"
+     * Only add the positionNumber for meters that are NOT in the first position (1).
      * @param serviceLocation
      * @param positionNumber
      * @return
@@ -301,7 +302,9 @@ public class MultispeakFuncs
     	String serviceLocationWithRegNo = serviceLocation;
     	
     	if (StringUtils.isNotBlank(positionNumber)) {
-    		serviceLocationWithRegNo += " [" + positionNumber + "]";
+    	    if (StringUtils.isNumeric(positionNumber) && Integer.valueOf(positionNumber) > 1) {
+    	        serviceLocationWithRegNo += " [" + positionNumber + "]";
+    	    }
     	}    	
     	return serviceLocationWithRegNo;
     }
