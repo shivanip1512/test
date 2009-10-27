@@ -2,7 +2,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -52,7 +51,7 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
         public String groupName;
         public Integer deviceCount;
         public Integer devicesWithReads;
-        public String readPercent;
+        public Double readPercent;
     }
     
     static public class GroupResultsModelRow {
@@ -107,21 +106,20 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
                 successCount++;
             }
         }
-        double successPercent = (new Double(successCount) / new Double(deviceCount)) * 100.0;
-        DecimalFormat formatter = new DecimalFormat("###.##");
-        String successPercentString = formatter.format(successPercent) + "%";
+        double successPercent = (new Double(successCount) / new Double(deviceCount));
         DeviceReadStatisticsSummaryModel.ModelRow groupRow = new DeviceReadStatisticsSummaryModel.ModelRow();
         groupRow.groupName = name;
         groupRow.deviceCount = deviceCount;
         groupRow.devicesWithReads = successCount;
-        groupRow.readPercent = successPercentString;
+        groupRow.readPercent = successPercent;
         return groupRow;
     }
 
     private List<GroupResultsModelRow> getGroupResultRows(Set<SimpleDevice> devices){
         Date now = new Date();
         DateTime nowDateTime = new DateTime(now);
-        DateTime lastMonthDateTime = nowDateTime.minusDays(31); 
+//        DateTime lastMonthDateTime = nowDateTime.minusDays(31);
+        DateTime lastMonthDateTime = nowDateTime.minusDays(91); 
         final Date lastMonth = lastMonthDateTime.toDate();
         List<PaoPointIdentifier> identifiers = Lists.newArrayList();
         for(SimpleDevice device : devices) {
