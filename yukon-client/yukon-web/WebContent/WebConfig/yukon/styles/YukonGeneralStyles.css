@@ -288,6 +288,10 @@ table.compactResultsTable th {
 	padding: 3px;
 }
 
+table.compactResultsTable .padded {
+	padding-top: 7px;
+}
+
 table.compactResultsTable th a {
 	text-decoration: none;
     color: #000000;
@@ -720,7 +724,7 @@ div.actionArea {
 }
 
 div.actionArea input {
-	min-width: 75px;
+	width: 75px;
 }
 
 a.simpleLink {

@@ -23,19 +23,19 @@ scheduleStopChecked = function() {
 
 updateSubmitButtons = function() {
     if (!$('autoObserveConstraints').checked) {
-        $('okButton').hide();
-        $('nextButton').show();
+        $('okButton').disable();
+        $('nextButton').enable();
     } else {
-        $('okButton').show();
-        $('nextButton').hide();
+        $('okButton').enable();
+        $('nextButton').disable();
     }
 }
 
 allProgramsChecked = function() {
     allChecked = $('allProgramsCheckbox').checked;
-	for (index = 0; index < ${fn:length(programs)}; index++) {
-		$('startProgramCheckbox' + index).checked = allChecked;
-	}
+    for (index = 0; index < ${fn:length(programs)}; index++) {
+        $('startProgramCheckbox' + index).checked = allChecked;
+    }
 }
 
 updateAllProgramsChecked = function() {
@@ -48,11 +48,11 @@ updateAllProgramsChecked = function() {
 }
 
 singleProgramChecked = function(boxChecked) {
-	if ($(boxChecked).checked) {
-		updateAllProgramsChecked();
-	} else {
-		$('allProgramsCheckbox').checked = false;
-	}
+    if ($(boxChecked).checked) {
+        updateAllProgramsChecked();
+    } else {
+        $('allProgramsCheckbox').checked = false;
+    }
 }
 </script>
 
@@ -79,21 +79,32 @@ singleProgramChecked = function(boxChecked) {
             <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.stopTime"/></th>
         </tr>
         <tr valign="top">
-            <td width="25%">
-                <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
-                <label for="startNowCheckbox">
-                    <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startNow"/>
-                </label><br>
-
-                <tags:dateTimeInput fieldId="startDate" fieldValue="${backingBean.startDate}"
+            <td width="50%" class="padded">
+                <table>
+                    <tr><td>
+                        <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
+                        <label for="startNowCheckbox">
+                            <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startNow"/>
+                        </label>
+                    </td></tr>
+                    <tr><td class="padded">
+                        <tags:dateTimeInput fieldId="startDate" fieldValue="${backingBean.startDate}"
                     disabled="true"/>
+                    </td></tr>
+                </table>
             </td>
-            <td width="25%">
-                <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
-                <label for="scheduleStopCheckbox">
-                    <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.scheduleStop"/>
-                </label><br>
-                <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"/>
+            <td width="50%" class="padded">
+                <table>
+                    <tr><td>
+                        <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
+                        <label for="scheduleStopCheckbox">
+                            <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.scheduleStop"/>
+                        </label>
+                    </td></tr>
+                    <tr><td class="padded">
+                        <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"/>
+                    </td></tr>
+                </table>
             </td>
         </tr>
     </table>

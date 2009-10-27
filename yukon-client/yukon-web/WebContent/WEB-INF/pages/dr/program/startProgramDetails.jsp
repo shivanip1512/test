@@ -47,11 +47,11 @@ gearChanged = function() {
 updateSubmitButtons = function() {
     if ($('addAdjustmentsCheckbox').checked
         || !$('autoObserveConstraints').checked) {
-        $('okButton').hide();
-        $('nextButton').show();
+        $('okButton').disable();
+        $('nextButton').enable();
     } else {
-        $('okButton').show();
-        $('nextButton').hide();
+        $('okButton').enable();
+        $('nextButton').disable();
     }
 }
 </script>
@@ -65,45 +65,62 @@ updateSubmitButtons = function() {
     <form:hidden path="programId"/>
 
     <table class="compactResultsTable">
-        <tr>
+        <tr class="headerRow">
             <th><cti:msg key="yukon.web.modules.dr.program.startProgram.gear"/></th>
             <th><cti:msg key="yukon.web.modules.dr.program.startProgram.startTime"/></th>
             <th><cti:msg key="yukon.web.modules.dr.program.startProgram.stopTime"/></th>
         </tr>
         <tr valign="top">
-            <td width="33%">
-                <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
-                    <c:forEach var="gear" varStatus="status" items="${gears}">
-                        <form:option value="${status.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
-                    </c:forEach>
-                </form:select><br>
-                <c:set var="addAdjustmentAreaStyle" value="none"/>
-                <c:if test="${!empty gears && gears[0].targetCycle}">
-                    <c:set var="addAdjustmentAreaStyle" value="block"/>
-                </c:if>
-                <div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
-                    <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
-                        onclick="updateSubmitButtons();"/>
-                    <label for="addAdjustmentsCheckbox">
-                        <cti:msg key="yukon.web.modules.dr.program.startProgram.addAdjustments"/>
-                    </label><br>
-                </div>
+            <td width="33%" class="padded">
+                <table>
+                    <tr><td>
+                        <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
+                            <c:forEach var="gear" varStatus="status" items="${gears}">
+                                <form:option value="${status.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
+                            </c:forEach>
+                        </form:select>
+                    </td></tr>
+                    <tr><td class="padded">
+                        <c:set var="addAdjustmentAreaStyle" value="none"/>
+                        <c:if test="${!empty gears && gears[0].targetCycle}">
+                            <c:set var="addAdjustmentAreaStyle" value="block"/>
+                        </c:if>
+                        <div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
+                            <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
+                                onclick="updateSubmitButtons();"/>
+                            <label for="addAdjustmentsCheckbox">
+                                <cti:msg key="yukon.web.modules.dr.program.startProgram.addAdjustments"/>
+                            </label><br>
+                        </div>
+                    </td></tr>
+                </table>
             </td>
-            <td width="33%">
-                <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
-                <label for="startNowCheckbox">
-                    <cti:msg key="yukon.web.modules.dr.program.startProgram.startNow"/>
-                </label><br>
-
-                <tags:dateTimeInput fieldId="startDate" fieldValue="${backingBean.startDate}"
-                    disabled="true"/>
+            <td width="33%" class="padded">
+                <table>
+                    <tr><td>
+                        <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
+                        <label for="startNowCheckbox">
+                            <cti:msg key="yukon.web.modules.dr.program.startProgram.startNow"/>
+                        </label><br>
+                    </td></tr>
+                    <tr><td class="padded">
+                        <tags:dateTimeInput fieldId="startDate" fieldValue="${backingBean.startDate}"
+                            disabled="true"/>
+                    </td></tr>
+                </table>
             </td>
-            <td width="33%">
-                <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
-                <label for="scheduleStopCheckbox">
-                    <cti:msg key="yukon.web.modules.dr.program.startProgram.scheduleStop"/>
-                </label><br>
-                <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"/>
+            <td width="33%" class="padded">
+                <table>
+                    <tr><td>
+                        <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
+                        <label for="scheduleStopCheckbox">
+                            <cti:msg key="yukon.web.modules.dr.program.startProgram.scheduleStop"/>
+                        </label><br>
+                    </td></tr>
+                    <tr><td class="padded">
+                        <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"/>
+                    </td></tr>
+                </table>
             </td>
         </tr>
     </table>

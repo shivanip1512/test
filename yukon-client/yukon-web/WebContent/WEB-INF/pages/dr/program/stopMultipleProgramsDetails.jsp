@@ -62,13 +62,18 @@ singleProgramChecked = function(boxChecked) {
             <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopTime"/></th>
         </tr>
         <tr><td>
-            <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
-            <label for="stopNowCheckbox">
-                <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow"/>
-            </label><br>
-        
-            <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
-                disabled="true"/>
+            <table>
+                <tr><td>
+                    <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
+                    <label for="stopNowCheckbox">
+                        <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow"/>
+                    </label>
+                </td></tr>
+                <tr><td class="padded">
+                    <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
+                        disabled="true"/>
+                </td></tr>
+            </table>
         </td></tr>
     </table>
     <br>

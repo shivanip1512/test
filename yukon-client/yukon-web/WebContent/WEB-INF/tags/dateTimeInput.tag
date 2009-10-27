@@ -19,7 +19,18 @@
     <c:set var="disabledStr" value=" disabled"/>
 </c:if>
 
-<%-- TODO:  localize and consider merging into dateInputCalendar.tag, turning on via attributes --%>
 <input type="hidden" id="${fieldId}" name="${fieldId}" value="${datePart} ${timePart}"/>
-<cti:msg key="yukon.common.calendarcontrol.date"/><tags:dateInputCalendar fieldId="${fieldId}DatePart" fieldName="${fieldId}DatePart" fieldValue="${datePart}" disabled="${pageScope.disabled}"/><br>
-<cti:msg key="yukon.common.calendarcontrol.time"/><input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text" size="5" value="${timePart}"${disabledStr}/>
+<table>
+    <tr>
+        <td><cti:msg key="yukon.common.calendarcontrol.date"/></td>
+        <td><tags:dateInputCalendar fieldId="${fieldId}DatePart"
+            fieldName="${fieldId}DatePart" fieldValue="${datePart}"
+            disabled="${pageScope.disabled}"/></td>
+    </tr>
+    <tr>
+        <td><cti:msg key="yukon.common.calendarcontrol.time"/></td>
+        <td><input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text"
+            maxlength="5" size="10" style="width:70px;"
+            value="${timePart}"${disabledStr}/></td>
+    </tr>
+</table>

@@ -24,12 +24,12 @@ updateComponentAvailability = function() {
 
         if (!$('stopNowCheckbox').checked && $('useStopGearCheckbox').checked) {
             $('gearNumber').disabled = false;
-            $('okButton').hide();
-            $('nextButton').show();
+            $('okButton').disable();
+            $('nextButton').enable();
         } else {
             $('gearNumber').disabled = true;
-            $('okButton').show();
-            $('nextButton').hide();
+            $('okButton').enable();
+            $('nextButton').disable();
         }
     </c:if>
 }
@@ -56,27 +56,37 @@ updateComponentAvailability = function() {
         </tr>
         <tr valign="top">
             <td width="50%">
-                <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
-                <label for="stopNowCheckbox">
-                    <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopNow"/>
-                </label><br>
-
-                <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
-                    disabled="true"/>
+                <table>
+                    <tr><td>
+                        <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
+                        <label for="stopNowCheckbox">
+                            <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopNow"/>
+                        </label>
+                    </td></tr>
+                    <tr><td class="padded">
+                        <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
+                            disabled="true"/>
+                    </td></tr>
+                </table>
             </td>
             <c:if test="${stopGearAllowed}">
             <td width="50%">
-                <form:checkbox path="useStopGear" id="useStopGearCheckbox" onclick="updateComponentAvailability()"/>
-                <label for="useStopGearCheckbox">
-                    <cti:msg key="yukon.web.modules.dr.program.stopProgram.useStopGear"/>
-                </label><br>
-
-                <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
-                    <c:forEach var="gear" varStatus="status" items="${gears}">
-                        <form:option value="${status.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
-                    </c:forEach>
-                </form:select><br>
-                <script type="text/javascript">updateComponentAvailability();</script>
+                <table>
+                    <tr><td>
+                        <form:checkbox path="useStopGear" id="useStopGearCheckbox" onclick="updateComponentAvailability()"/>
+                        <label for="useStopGearCheckbox">
+                            <cti:msg key="yukon.web.modules.dr.program.stopProgram.useStopGear"/>
+                        </label>
+                    </td></tr>
+                    <tr><td class="padded">
+                        <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
+                            <c:forEach var="gear" varStatus="status" items="${gears}">
+                                <form:option value="${status.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
+                            </c:forEach>
+                        </form:select><br>
+                        <script type="text/javascript">updateComponentAvailability();</script>
+                    </td></tr>
+                </table>
             </td>
             </c:if>
         </tr>
