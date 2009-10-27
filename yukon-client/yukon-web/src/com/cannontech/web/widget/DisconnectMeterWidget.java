@@ -26,9 +26,11 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -69,6 +71,9 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             int stateGroupId = litePoint.getStateGroupID();
             LiteState liteState = stateDao.getLiteState(stateGroupId, (int) pointValue.getValue());
             mav.addObject("state", getDisconnectedState(liteState.getStateRawState()));
+            
+            LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
+            mav.addObject("stateGroups",liteStates);
             
         } catch(NotFoundException e) {
             isConfigured = false;
@@ -118,6 +123,33 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return mav;
     }
 
+    public ModelAndView helpInfo(HttpServletRequest request, HttpServletResponse response)
+    throws Exception {
+        
+        ModelAndView mav = new ModelAndView("disconnectMeterWidget/helpInfo.jsp");
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        mav.addObject("device", device);
+        
+        boolean isConfigured = true;
+        try {
+            LitePoint litePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.DISCONNECT_STATUS);
+            int stateGroupId = litePoint.getStateGroupID();
+            LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
+            mav.addObject("stateGroups",liteStates);
+        } catch(NotFoundException e) {
+            isConfigured = false;
+        }
+        
+        mav.addObject("isMCT4xx",DeviceTypesFuncs.isMCT4XX(device.getType()));
+        mav.addObject("isMCT310",(DeviceTypes.MCT310ID == device.getType()||
+                                  DeviceTypes.MCT310IDL == device.getType()));
+        mav.addObject("isMCT213",(DeviceTypes.MCT213 == device.getType()));
+        
+        mav.addObject("isConfigured", isConfigured);
+        return mav;
+    }
+    
     public ModelAndView connect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
     	

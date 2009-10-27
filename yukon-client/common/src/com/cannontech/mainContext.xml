@@ -142,6 +142,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/dr/optOut</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/thermostat</value>
+               <value>classpath:com/cannontech/yukon/web/modules/widgets/disconnectMeterWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/touWidget</value>
                <value>classpath:com/cannontech/yukon/common/device/bulk</value>
                <value>classpath:com/cannontech/yukon/common/device/commander</value>

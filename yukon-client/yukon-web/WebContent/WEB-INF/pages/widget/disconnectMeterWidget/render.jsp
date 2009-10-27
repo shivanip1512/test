@@ -2,6 +2,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<cti:msg key="yukon.web.modules.widgets.disconnectMeterWidget.title" var="title" />
+<cti:msg key="yukon.web.modules.widgets.disconnectMeterWidget.infoLink" var="infoLink" />
+
 <script type="text/javascript">
 
     function toggleConnectButons() {
@@ -25,18 +28,23 @@
 
 </script>
 
+<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}" deviceId="${device.deviceId}">
+	${infoLink}
+</ct:widgetActionPopup>
+
+<ct:simpleDialog id="disconnectInfo"/>
+
 <ct:nameValueContainer altRowOn="true">
   <ct:nameValue name="${attribute.description}">
   <c:if test="${isConfigured}">
     <ct:attributeValue device="${device}" attribute="${attribute}" />
   </c:if>
   <c:if test="${not isConfigured}">
-    Disconnect Status Point is not configured.
+    <cti:msg key="yukon.web.modules.widgets.disconnectMeterWidget.notConfigured" />
   </c:if>
   </ct:nameValue>
 </ct:nameValueContainer>
 <BR>
-
 <div style="text-align: right">
 	<ct:widgetActionRefresh hide="${!readable}" method="read" label="Read Status" labelBusy="Reading"/>
     

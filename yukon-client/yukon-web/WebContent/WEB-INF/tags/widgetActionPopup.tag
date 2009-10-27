@@ -1,0 +1,28 @@
+<%@ attribute name="method" required="true" type="java.lang.String"%>
+<%@ attribute name="container" required="true" type="java.lang.String"%>
+<%@ attribute name="label" required="true" type="java.lang.String"%>
+<%@ attribute name="labelBusy" required="true" type="java.lang.String"%>
+
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%@ tag  dynamic-attributes="linkParameters" %>
+
+<cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
+<cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
+<cti:uniqueIdentifier var="dialogId" prefix="${title}_" />
+
+<ct:simpleDialog id="${dialogId}"/>
+
+<script type="text/javascript">
+	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
+</script>
+
+<div id="popupDiv" style="text-align:right;font-size:12px;">
+    <a href="javascript:void(0)"
+       style="align:right"
+       onclick="${widgetParameters.jsWidget}.doActionPopup('${method}', '${thisId}', '${label}', '${dialogId}')">
+        <jsp:doBody/>
+    </a>
+</div>

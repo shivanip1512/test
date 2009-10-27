@@ -1,11 +1,10 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/touPreviousReadings.js"/>
 
-<tags:simpleDialog id="touDialog"/>
+<ct:simpleDialog id="touDialog"/>
 
 <c:choose>
 	<c:when test="${touAttributesAvailable}">
