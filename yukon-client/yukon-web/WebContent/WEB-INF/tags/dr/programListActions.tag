@@ -18,6 +18,10 @@
             </span>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="runningEnabled">
+            <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.alreadyRunning"/>
+            <span class="subtleGray" title="${programUnknown}">
+                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
+            </span>
             <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>

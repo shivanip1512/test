@@ -27,6 +27,10 @@
                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="fullyActiveEnabled">
+            <cti:msg var="controlAreaFullyActive" key="yukon.web.modules.dr.controlAreaDetail.alreadyFullyActive"/>
+            <span class="subtleGray" title="${controlAreaFullyActive}">
+                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
+            </span>
             <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>

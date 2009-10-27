@@ -36,14 +36,13 @@
                                    logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="disabled">
-            <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
-                <cti:param name="loadGroupId" value="${paoId}"/>
-                <cti:param name="isEnabled" value="true"/>
-            </cti:url>
-            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title" 
-                                   dialogId="drDialog" 
-                                   actionUrl="${sendEnableUrl}" 
-                                   logoKey="yukon.web.modules.dr.loadGroupDetail.actions.enableIcon"/>
+            <cti:msg var="loadGroupDisabled" key="yukon.web.modules.dr.loadGroupDetail.disabled"/>
+            <span title="${loadGroupDisabled}">
+                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
+            </span>
+            <span class="subtleGray" title="${loadGroupDisabled}">
+                <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
+            </span>
         </tags:dynamicChooseOption>
     </tags:dynamicChoose>
 </cti:checkPaoAuthorization>
