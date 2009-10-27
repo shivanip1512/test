@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -262,7 +263,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         buffer.append(this.generateRemoveChangeText(deviceDefinition, removeTemplates));
 
         // Add text for point transfers
-        List<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
+        Collection<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
                                                                                                        deviceDefinition);
         buffer.append("Points to transfer:\n");
         if (transferTemplates.size() == 0) {
@@ -320,7 +321,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      * @return A String with change information
      */
     private String generatePointTransferChangeText(DeviceDefinition deviceDefinition,
-            List<PointTemplateTransferPair> transferTemplates) {
+            Iterable<PointTemplateTransferPair> transferTemplates) {
 
         StringBuffer buffer = new StringBuffer();
 
