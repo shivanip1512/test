@@ -346,14 +346,10 @@ public Object getValue(Object val)
 	Integer baudRate = new Integer((String) getBaudRateComboBox().getSelectedItem());
 
 	((TerminalServerDirectPort) val).setPortName( name );
+	
 	((TerminalServerDirectPort) val).getPortTerminalServer().setIpAddress( ipAddress );
-	
-	if ("UDP".equals(ipAddress)) {
-	    ((YukonPAObject) val).setPAOType(PortTypes.STRING_UDPPORT);
-	} 
-	
 	((TerminalServerDirectPort) val).getPortTerminalServer().setSocketPortNumber( portNumber );
-
+	
 	((TerminalServerDirectPort) val).getPortSettings().setBaudRate( baudRate );
 	((TerminalServerDirectPort) val).getPortSettings().setLineSettings( "8N1" );
 

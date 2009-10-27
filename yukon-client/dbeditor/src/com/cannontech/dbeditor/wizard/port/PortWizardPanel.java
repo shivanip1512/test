@@ -74,9 +74,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		}
 		else if (((PortTypeQuestionPanelA) currentInputPanel).isUDPTerminalServerPort()) 
 		{
-            getTerminalServerTypeQuestionPanel().setFirstFocus();
-            getTerminalServerTypeQuestionPanel().setAsUDP();
-            return getTerminalServerTypeQuestionPanel();
+		    //Skipping to end. No need to choose between dedicated and dial up
+		    getSimpleTerminalServerSettingsPanel().setAsUDP();
+		    getSimpleTerminalServerSettingsPanel().setFirstFocus();
+            return getSimpleTerminalServerSettingsPanel();
         }
 		else
 		{

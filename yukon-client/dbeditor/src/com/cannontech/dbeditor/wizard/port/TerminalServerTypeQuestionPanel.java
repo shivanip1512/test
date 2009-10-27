@@ -5,6 +5,9 @@ package com.cannontech.dbeditor.wizard.port;
  */
 import java.awt.Dimension;
 
+import com.cannontech.database.data.pao.PortTypes;
+import com.cannontech.database.data.port.PortFactory;
+
 public class TerminalServerTypeQuestionPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.ButtonGroup ivjCommLineTypeButtonGroup = null;
 	private javax.swing.JRadioButton ivjDedicatedRadioButton = null;
@@ -234,12 +237,11 @@ public Object getValue(Object val)
 
 	try
 	{	
-		if( getDedicatedRadioButton().isSelected() )
-			return com.cannontech.database.data.port.PortFactory.createPort( com.cannontech.database.data.pao.PortTypes.TSERVER_SHARED );
-		else
-//		if( getDialupRadioButton().isSelected() )
-			return com.cannontech.database.data.port.PortFactory.createPort( com.cannontech.database.data.pao.PortTypes.TSERVER_DIALUP );
-
+		if (getDedicatedRadioButton().isSelected()) {
+			return PortFactory.createPort(PortTypes.TSERVER_SHARED);
+		} else {
+			return PortFactory.createPort(PortTypes.TSERVER_DIALUP);
+		}
 		/*else
 			return com.cannontech.database.data.port.PortFactory.createPort( com.cannontech.database.data.port.PortTypes.getType("Terminal Server Radio") );
 		Josh Wolberg commented this out on Sept 20th 1999 to reply to a

@@ -5,6 +5,9 @@ package com.cannontech.dbeditor.wizard.port;
  */
 import java.awt.Dimension;
 
+import com.cannontech.database.data.pao.PortTypes;
+import com.cannontech.database.data.port.PortFactory;
+
 public class PortTypeQuestionPanelA extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JLabel ivjJLabel1 = null;
 	private javax.swing.JRadioButton ivjLocalSerialPortRadioButton = null;
@@ -215,8 +218,13 @@ private javax.swing.JRadioButton getUDPTerminalServerRadioButton() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue( Object val) {
-	return null;
+public Object getValue(Object val) {
+    
+    if (getUDPTerminalServerRadioButton().isSelected()) {
+        return PortFactory.createPort(PortTypes.UDPPORT);
+    }
+    //If not UDP, we will decide what to create in the next panel.
+    return null;
 }
 /**
  * Called whenever the part throws an exception.

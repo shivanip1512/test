@@ -94,7 +94,15 @@ public static DirectPort createPort( int typeOfPort )
 		case PortTypes.TSERVER_SHARED:
 		case PortTypes.UDPPORT:
 			TerminalServerSharedPort tsp = new TerminalServerSharedPort();
-			tsp.setPortType( PortTypes.STRING_TERM_SERVER );
+			//The only difference in these ports is the Type in the database.
+			if (PortTypes.UDPPORT == typeOfPort)
+			{
+			    tsp.setPortType( PortTypes.STRING_UDPPORT );
+			}
+			else
+			{
+			    tsp.setPortType( PortTypes.STRING_TERM_SERVER );
+			}
 			tsp.getCommPort().setCommonProtocol("IDLC");			
 			tsp.getPortTiming().setPreTxWait(new Integer(25));
 			tsp.getPortTiming().setRtsToTxWait(new Integer(0));

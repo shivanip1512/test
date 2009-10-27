@@ -27,12 +27,12 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
 			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK,
-			PortTypes.DIALOUT_POOL, PortTypes.TCPPORT
+			PortTypes.DIALOUT_POOL, PortTypes.TCPPORT, PortTypes.UDPPORT
 		},
 		{		//1	- PortTimingsEditorPanel
 			PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO, PortTypes.LOCAL_DIALUP, 
 			PortTypes.TSERVER_SHARED, PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP,
-			PortTypes.LOCAL_DIALBACK, PortTypes.TCPPORT
+			PortTypes.LOCAL_DIALBACK, PortTypes.TCPPORT, PortTypes.UDPPORT
 		},
 		{		//2 - PortModemEditorPanel
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
@@ -46,7 +46,8 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 		{		//3 - PortSharingEditorPanel
 			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
-			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
+			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK,
+			PortTypes.UDPPORT
 		},
 		{		//4 - PortPool
 			PortTypes.DIALOUT_POOL
