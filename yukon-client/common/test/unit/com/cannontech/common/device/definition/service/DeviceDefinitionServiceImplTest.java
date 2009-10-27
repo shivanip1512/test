@@ -1,6 +1,8 @@
 package com.cannontech.common.device.definition.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,7 +27,9 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Sets;
 
 /**
  * Test class for DeviceDefinitionService
@@ -293,36 +297,25 @@ public class DeviceDefinitionServiceImplTest {
     public void testGetPointTemplatesToTransfer() {
 
         // Test remove points from type 'device1' to type 'device2'
-    	List<PointTemplateTransferPair> expectedTemplates = new ArrayList<PointTemplateTransferPair>();
+    	Set<PointTemplateTransferPair> expectedTemplates = Sets.newHashSet();
 
         // Analog
         PointTemplateTransferPair pair = new PointTemplateTransferPair();
-        pair.newDefinitionTemplate = new PointTemplate("pulse2",
-                2,
-                3,
-                .1,
-                1,
-                0,
-                3);
-        pair.oldDefinitionTemplate = new PointIdentifier(2, 4);
+        pair.newDefinitionTemplate = new PointTemplate("pulse2", PointType.PulseAccumulator, 3, .1, 1, 0, 3);
+        pair.oldDefinitionTemplate = new PointIdentifier(PointType.PulseAccumulator, 4);
         expectedTemplates.add(pair);
 
         pair = new PointTemplateTransferPair();
-        pair.newDefinitionTemplate = new PointTemplate("analog1",
-                1,
-                1,
-                .0001,
-                1,
-                0,
-                3);
-        pair.oldDefinitionTemplate = new PointIdentifier(1, 1);
+        pair.newDefinitionTemplate = new PointTemplate("analog1", PointType.Analog, 1, .0001, 1, 0, 3);
+        pair.oldDefinitionTemplate = new PointIdentifier(PointType.Analog, 1);
         expectedTemplates.add(pair);
-        List<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,
-                                                                                 new DeviceDefinitionImpl(PaoType.getForId(1022),
-                                                                                                          "Device2",
-                                                                                                          "display2",
-                                                                                                          "MCT370",
-                                                                                                          "change1"));
+        DeviceDefinitionImpl newDefinition = new DeviceDefinitionImpl(PaoType.MCT370,
+                                                                      "Device2",
+                                                                      "display2",
+                                                                      "MCT370",
+                                                                      "change1");
+        Set<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,
+                                                                                              newDefinition);
 
         assertEquals("Point templates to transfer were not as expected",
                      expectedTemplates,

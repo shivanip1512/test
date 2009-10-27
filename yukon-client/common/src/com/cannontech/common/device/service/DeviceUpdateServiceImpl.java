@@ -351,7 +351,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     throws TransactionException {
 
     	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        List<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
+        Iterable<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
                                                                                 newDefinition);
 
         SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);

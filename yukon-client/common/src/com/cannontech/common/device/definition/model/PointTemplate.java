@@ -2,6 +2,7 @@ package com.cannontech.common.device.definition.model;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -18,6 +19,16 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
     private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
 
+    public PointTemplate(PointType type, int offset) {
+        pointIdentifier = new PointIdentifier(type, offset);
+    }
+    
+    /**
+     * @deprecated Use PointType version.
+     * @param type
+     * @param offset
+     */
+    @Deprecated
     public PointTemplate(int type, int offset) {
         pointIdentifier = new PointIdentifier(type, offset);
     }
@@ -26,17 +37,56 @@ public class PointTemplate implements Comparable<PointTemplate> {
         return pointIdentifier.getOffset();
     }
 
+    /**
+     * @deprecated Use getPointType version.
+     */
+    @Deprecated
     public int getType() {
         return pointIdentifier.getType();
+    }
+    
+    public PointType getPointType() {
+        return pointIdentifier.getPointType();
     }
 
     public PointIdentifier getPointIdentifier() {
         return pointIdentifier;
     }
 
+    /**
+     * @deprecated Use the PointType version.
+     * @param name
+     * @param type
+     * @param offset
+     * @param multiplier
+     * @param unitOfMeasure
+     * @param stateGroupId
+     * @param decimalPlaces
+     */
+    @Deprecated
     public PointTemplate(String name, int type, int offset, double multiplier,
             int unitOfMeasure, int stateGroupId, int decimalPlaces) {
         pointIdentifier = new PointIdentifier(type, offset);
+        this.name = name;
+        this.multiplier = multiplier;
+        this.unitOfMeasure = unitOfMeasure;
+        this.stateGroupId = stateGroupId;
+        this.decimalPlaces = decimalPlaces;
+    }
+    
+    public PointTemplate(String name, PointType type, int offset, double multiplier,
+            int unitOfMeasure, int stateGroupId, int decimalPlaces) {
+        pointIdentifier = new PointIdentifier(type, offset);
+        this.name = name;
+        this.multiplier = multiplier;
+        this.unitOfMeasure = unitOfMeasure;
+        this.stateGroupId = stateGroupId;
+        this.decimalPlaces = decimalPlaces;
+    }
+    
+    public PointTemplate(String name, PointIdentifier pointIdentifier, double multiplier,
+            int unitOfMeasure, int stateGroupId, int decimalPlaces) {
+        this.pointIdentifier = pointIdentifier;
         this.name = name;
         this.multiplier = multiplier;
         this.unitOfMeasure = unitOfMeasure;
@@ -100,7 +150,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
 
     }
 
-	@Override
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -111,7 +161,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
         return result;
     }
 
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -138,11 +188,11 @@ public class PointTemplate implements Comparable<PointTemplate> {
         	return false;
         return true;
     }
-    
+
     @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("type", getType());
+        tsc.append("type", getPointType());
         tsc.append("offset", getOffset());
         tsc.append("name", getName());
         return tsc.toString();

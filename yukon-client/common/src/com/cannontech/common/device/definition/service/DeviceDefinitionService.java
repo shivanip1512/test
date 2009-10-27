@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
@@ -19,17 +21,46 @@ public interface DeviceDefinitionService {
 	public static class PointTemplateTransferPair {
         public PointIdentifier oldDefinitionTemplate;
         public PointTemplate newDefinitionTemplate;
-        
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((newDefinitionTemplate == null) ? 0
+                    : newDefinitionTemplate.hashCode());
+            result = prime * result + ((oldDefinitionTemplate == null) ? 0
+                    : oldDefinitionTemplate.hashCode());
+            return result;
+        }
         @Override
         public boolean equals(Object obj) {
-        	PointTemplateTransferPair other = (PointTemplateTransferPair)obj; 
-        	if (this.oldDefinitionTemplate.equals(other.oldDefinitionTemplate)) {
-        		if (this.newDefinitionTemplate.equals(newDefinitionTemplate)) {
-        			return true;
-        		}
-        	}
-        	return false;
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            PointTemplateTransferPair other = (PointTemplateTransferPair) obj;
+            if (newDefinitionTemplate == null) {
+                if (other.newDefinitionTemplate != null)
+                    return false;
+            } else if (!newDefinitionTemplate.equals(other.newDefinitionTemplate))
+                return false;
+            if (oldDefinitionTemplate == null) {
+                if (other.oldDefinitionTemplate != null)
+                    return false;
+            } else if (!oldDefinitionTemplate.equals(other.oldDefinitionTemplate))
+                return false;
+            return true;
         }
+        @Override
+        public String toString() {
+            ToStringBuilder b = new ToStringBuilder(this);
+            b.append("oldDefinitionTemplate", oldDefinitionTemplate);
+            b.append("newDefinitionTemplate", newDefinitionTemplate);
+            return b.toString();
+        }
+        
+
     }
 
     /**
@@ -106,6 +137,6 @@ public interface DeviceDefinitionService {
      * @return Set of point templates that will be transfered from the device
      *         (returns a new copy each time the method is called)
      */
-    public abstract List<PointTemplateTransferPair> getPointTemplatesToTransfer(SimpleDevice device,
+    public abstract Set<PointTemplateTransferPair> getPointTemplatesToTransfer(SimpleDevice device,
             DeviceDefinition deviceDefinition);
 }

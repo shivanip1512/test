@@ -18,6 +18,7 @@ import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation class for DeviceDefinitionService
@@ -104,7 +105,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 		Set<PointTemplate> existingTemplates = deviceDefinitionDao.getInitPointTemplates(newDefinition);
 		HashSet<PointTemplate> result = new HashSet<PointTemplate>(existingTemplates);
 		
-		List<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(device, newDefinition);
+		Iterable<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(device, newDefinition);
 		for (PointTemplateTransferPair pointTemplateTransferPair : pointTemplatesToTransfer) {
 			result.remove(pointTemplateTransferPair.newDefinitionTemplate);
 		}
@@ -128,7 +129,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 			result.add(pointTemplate.getPointIdentifier());
 		}
 		
-		List<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(device, newDefinition);
+		Iterable<PointTemplateTransferPair> pointTemplatesToTransfer = getPointTemplatesToTransfer(device, newDefinition);
 		for (PointTemplateTransferPair pointTemplateTransferPair : pointTemplatesToTransfer) {
 			result.remove(pointTemplateTransferPair.oldDefinitionTemplate);
 		}
@@ -136,7 +137,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 		return result;
 	}
 
-    public List<PointTemplateTransferPair> getPointTemplatesToTransfer(SimpleDevice device,
+    public Set<PointTemplateTransferPair> getPointTemplatesToTransfer(SimpleDevice device,
             DeviceDefinition newDefinition) {
 
 		this.validateChange(device, newDefinition);
@@ -145,7 +146,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 		Set<PointTemplate> supportedTemplates = deviceDefinitionDao.getAllPointTemplates(newDefinition);
 		
 		// Form pairs of points by comparing names
-		List<PointTemplateTransferPair> templates = new ArrayList<PointTemplateTransferPair>();
+		Set<PointTemplateTransferPair> result = Sets.newHashSet();
 		for (PointTemplate oldTemplate : existingTemplates) {
 			for (PointTemplate newTemplate : supportedTemplates) {
 				// here's the big check that determines what points are the same
@@ -155,12 +156,12 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 					PointTemplateTransferPair pair = new PointTemplateTransferPair();
 					pair.oldDefinitionTemplate = oldTemplate.getPointIdentifier();
 					pair.newDefinitionTemplate = newTemplate;
-					templates.add(pair);
+					result.add(pair);
 				}
 			}
 		}
 		
-		return templates;
+		return result;
 	}
 
     /**
