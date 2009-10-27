@@ -1,7 +1,5 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +8,6 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -27,6 +24,7 @@ import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionRow
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -282,10 +280,12 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 		sql.append("GROUP BY CRE.CommandRequestExecId, CRER.CommandRequestExecId");
 		sql.append("ORDER BY CRE.CommandRequestExecId DESC");
     	
-		LastestFailCountRowCallbackHandler rch = new LastestFailCountRowCallbackHandler();
-    	yukonJdbcTemplate.query(sql, rch);
+    	List<Integer> results = yukonJdbcTemplate.queryForLimitedResults(sql, new IntegerRowMapper(), 1);
+    	if (results.size() == 0) {
+    		return 0;
+    	}
     	
-    	return rch.getFailCount();
+    	return results.get(0);
     }
     
     public int getLatestSuccessCountByJobId(int jobId) {
@@ -304,21 +304,6 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 		
 		int successCount = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
     	return successCount;
-    }
-    
-    private class LastestFailCountRowCallbackHandler implements RowCallbackHandler {
-    	boolean countSet = false;
-		int failCount = 0;
-		@Override
-		public void processRow(ResultSet rs) throws SQLException {
-			if (!countSet) {
-				failCount = rs.getInt("failCount");
-				countSet = true;
-			}
-		}
-		public int getFailCount() {
-			return failCount;
-		}
     }
     
     public int getLatestRequestCountByJobId(int jobId) {
