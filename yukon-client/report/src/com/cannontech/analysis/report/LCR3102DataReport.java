@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.LCR3102DataModel;
 import com.cannontech.simplereport.reportlayoutdata.LCR3102DataReportLayoutData;
-import com.cannontech.spring.YukonSpringHook;
 
 public class LCR3102DataReport extends SingleGroupYukonReportBase {
     
@@ -16,10 +14,6 @@ public class LCR3102DataReport extends SingleGroupYukonReportBase {
         super(bareModel);
     }
     
-    public LCR3102DataReport() {
-        this((LCR3102DataModel)YukonSpringHook.getBean("lcr3102DataModel"));
-    }
-
     @Override
     protected List<ColumnLayoutData> getBodyColumns() {
         return Arrays.asList(bodyColumns);

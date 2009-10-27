@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.search.PaoTypeLuceneSearcher;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
@@ -106,7 +108,7 @@ import com.google.common.collect.Lists;
         sql.append("  JOIN Point pointA ON pointA.PointID = rphA.PointID");
         sql.append("  JOIN Point pointB ON pointB.PAObjectID = pointA.PAObjectID");
         sql.append("  JOIN RawPointHistory rphB on rphB.pointID = pointB.PointId AND rphB.TIMESTAMP = rphA.TIMESTAMP");
-        sql.append("  JOIN YukonPAObject pao ON pao.PAObjectID = pointA.PAObjectID AND pao.type = 'LCR-3102'");
+        sql.append("  JOIN YukonPAObject pao ON pao.PAObjectID = pointA.PAObjectID AND pao.type = ").appendArgument(PaoType.LCR3102.getDbString());
         sql.append("  JOIN InventoryBase invBase ON invBase.DeviceID = pao.PAObjectID");
         sql.append("  JOIN LMHardwareBase lmhBase ON lmhBase.InventoryID = invBase.InventoryID");
         sql.append("  JOIN DeviceRoutes dr on pao.PAObjectID = dr.DEVICEID");
@@ -120,6 +122,8 @@ import com.google.common.collect.Lists;
         } else {
             sql.append("WHERE");
         }
+        /* These offsets correspond to point pairs of 'Runtime Load X' and 'Relay X Shed Time' */
+        /* on lcr 3102 devices, there are 4 pairs total. */
         sql.append("((pointA.POINTOFFSET = 5 AND pointB.POINTOFFSET = 9 )"); 
         sql.append("  OR (pointA.POINTOFFSET = 6 AND pointB.POINTOFFSET = 10 ) ");
         sql.append("  OR (pointA.POINTOFFSET = 7 AND pointB.POINTOFFSET = 11 ) ");
