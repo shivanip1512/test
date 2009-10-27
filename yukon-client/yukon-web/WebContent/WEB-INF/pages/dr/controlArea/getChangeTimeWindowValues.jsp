@@ -18,10 +18,17 @@
         onsubmit="return submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');">
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
 
-        <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTime"/>
-        <input type="text" name="startTime" value="${startTime}"/><br>
-        <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.stopTime"/>
-        <input type="text" name="stopTime" value="${stopTime}"/>
+        <table>
+            <tr>
+                <td><cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTime"/></td>
+                <td><input type="text" name="startTime" value="${startTime}" maxlength="5" size="5"/></td>
+            </tr>
+            <tr>
+                <td><cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.stopTime"/></td>
+                <td><input type="text" name="stopTime" value="${stopTime}" maxlength="5" size="5"/></td>
+            </tr>
+        </table>
+
         <div class="actionArea">
             <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton"/>"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.cancelButton"/>"
