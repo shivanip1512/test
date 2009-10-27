@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/22/2009 10:28:12 AM                       */
+/* Created on:     10/27/2009 1:28:34 PM                        */
 /*==============================================================*/
 
 
@@ -4602,6 +4602,9 @@ create table DynamicCCFeeder  (
    LastWattPointTime    DATE                            not null,
    LastVoltPointTime    DATE                            not null,
    retryIndex           NUMBER                          not null,
+   PhaseAValueBeforeControl FLOAT                           not null,
+   PhaseBValueBeforeControl FLOAT                           not null,
+   PhaseCValueBeforeControl FLOAT                           not null,
    constraint PK_DYNAMICCCFEEDER primary key (FeederID)
 );
 
@@ -4674,6 +4677,9 @@ create table DynamicCCSubstationBus  (
    phasecvalue          FLOAT                           not null,
    LastWattPointTime    DATE                            not null,
    LastVoltPointTime    DATE                            not null,
+   PhaseAValueBeforeControl FLOAT                           not null,
+   PhaseBValueBeforeControl FLOAT                           not null,
+   PhaseCValueBeforeControl FLOAT                           not null,
    constraint PK_DYNAMICCCSUBSTATIONBUS primary key (SubstationBusID)
 );
 

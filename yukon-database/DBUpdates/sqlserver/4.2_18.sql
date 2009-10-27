@@ -1,15 +1,8 @@
-/******************************************/ 
-/**** SQLServer 2000 DBupdates         ****/ 
-/******************************************/ 
- 
-/* Start YUK-7940 */ 
-UPDATE YukonRoleProperty 
-SET DefaultValue = 'false' 
-WHERE RolePropertyId = -21307; 
-/* End YUK-7940 */ 
+/******************************************/
+/**** SQLServer 2000 DBupdates         ****/
+/******************************************/
 
 /* Start YUK-7966 */
-/* @error ignore-begin */
 ALTER TABLE DynamicCCFeeder
 ADD PhaseAValueBeforeControl FLOAT;
 GO
@@ -69,10 +62,9 @@ WHERE PhaseCValueBeforeControl IS NULL;
 ALTER TABLE DynamicCCSubstationBus
 ALTER COLUMN PhaseCValueBeforeControl FLOAT NOT NULL;
 GO
-/* @error ignore-end */
 /* End YUK-7966 */ 
 
-/**************************************************************/ 
-/* VERSION INFO                                               */ 
-/*   Automatically gets inserted from build script            */ 
-/**************************************************************/ 
+/**************************************************************/
+/* VERSION INFO                                               */
+/*   Automatically gets inserted from build script            */
+/**************************************************************/

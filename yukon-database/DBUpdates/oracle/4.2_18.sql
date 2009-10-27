@@ -1,15 +1,8 @@
-/******************************************/ 
-/**** Oracle DBupdates                 ****/ 
-/******************************************/ 
-
-/* Start YUK-7940 */ 
-UPDATE YukonRoleProperty 
-SET DefaultValue = 'false' 
-WHERE RolePropertyId = -21307; 
-/* End YUK-7940 */ 
+/******************************************/
+/**** Oracle DBupdates                 ****/
+/******************************************/
 
 /* Start YUK-7966 */
-/* @error ignore-begin */
 ALTER TABLE DynamicCCFeeder 
 ADD PhaseAValueBeforeControl FLOAT;
 UPDATE DynamicCCFeeder 
@@ -56,10 +49,9 @@ SET PhaseCValueBeforeControl = PhaseCValue
 WHERE PhaseCValueBeforeControl IS NULL;
 ALTER TABLE DynamicCCSubstationBus
 MODIFY PhaseCValueBeforeControl FLOAT NOT NULL;
-/* @error ignore-end */
 /* End YUK-7966 */
 
-/**************************************************************/ 
-/* VERSION INFO                                               */ 
-/*   Automatically gets inserted from build script            */ 
-/**************************************************************/ 
+/**************************************************************/
+/* VERSION INFO                                               */
+/*   Automatically gets inserted from build script            */
+/**************************************************************/
