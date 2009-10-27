@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -46,6 +45,7 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
     private Attribute attribute;
     private List<String> groupNames;
     private DeviceGroupService deviceGroupService;
+    private DateTime lastMonth;
 
     static public class ModelRow {
         public String groupName;
@@ -116,11 +116,6 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
     }
 
     private List<GroupResultsModelRow> getGroupResultRows(Set<SimpleDevice> devices){
-        Date now = new Date();
-        DateTime nowDateTime = new DateTime(now);
-//        DateTime lastMonthDateTime = nowDateTime.minusDays(31);
-        DateTime lastMonthDateTime = nowDateTime.minusDays(91); 
-        final Date lastMonth = lastMonthDateTime.toDate();
         List<PaoPointIdentifier> identifiers = Lists.newArrayList();
         for(SimpleDevice device : devices) {
             try {
@@ -151,7 +146,7 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
                     sql.append("from YukonPAObject ypo");
                     sql.append("  left outer join Point p on p.PAObjectID = ypo.PAObjectID and p.POINTOFFSET = ");
                     sql.appendArgument(pointIdentifier.getOffset()).append(" and p.POINTTYPE = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
-                    sql.append("  left outer join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID and rph.TIMESTAMP >= ").appendArgument(lastMonth);
+                    sql.append("  left outer join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID and rph.TIMESTAMP >= ").appendArgument(lastMonth.toDate());
                     sql.append("where ypo.PAObjectID in ( ").appendArgumentList(subList).append(" ) "); 
                     sql.append("group by ypo.PAOName");
                     return sql;
@@ -172,6 +167,10 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
         return groupResultRows;
     }
 
+    public void setLastMonthDate(DateTime lastMonth) {
+        this.lastMonth = lastMonth;
+    }
+    
     public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
@@ -198,5 +197,4 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
-
 }

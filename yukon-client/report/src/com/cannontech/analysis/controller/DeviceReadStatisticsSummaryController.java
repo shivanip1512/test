@@ -1,11 +1,15 @@
 package com.cannontech.analysis.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.DeviceReadStatisticsSummaryReport;
@@ -15,7 +19,9 @@ import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
@@ -61,6 +67,12 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
             deviceReadSummaryModel.setGroupsFilter(namesList);
         } 
         
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        TimeZone timeZone = yukonUserContext.getTimeZone();
+        DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+        DateTime now = new DateTime(new Date(), dateTimeZone);
+        DateTime lastMonth = now.minusDays(31);
+        deviceReadSummaryModel.setLastMonthDate(lastMonth);
     }
     
     public String getHTMLOptionsTable() {
