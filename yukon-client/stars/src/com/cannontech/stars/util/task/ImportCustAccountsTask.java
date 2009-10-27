@@ -747,7 +747,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								addToLog(lineNoKey, value, importLog);
 		                        continue;
 							} catch (SQLException sqle) {
-	                            String[] value = hwLines.get(lineNoKey);
+	                            String[] value = custLines.get(lineNoKey);
 	                            addToLog(lineNoKey, value, importLog);
 	                            importLog.println(sqle.getStackTrace());
 								continue;
@@ -898,7 +898,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFileErrors++;
 						String[] value = hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Incorrect number of fields]";
-						custLines.put(lineNoKey, value);
+						hwLines.put(lineNoKey, value);
 						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
@@ -911,7 +911,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFileErrors++;
 						String[] value = hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Account # cannot be empty]";
-						custLines.put(lineNoKey, value);
+						hwLines.put(lineNoKey, value);
 						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
@@ -920,7 +920,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFileErrors++;
 						String[] value = hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Serial # cannot be empty]";
-						custLines.put(lineNoKey, value);
+						hwLines.put(lineNoKey, value);
 						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
@@ -928,7 +928,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFileErrors++;
 						String[] value = hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Device type cannot be empty]";
-						custLines.put(lineNoKey, value);
+						hwLines.put(lineNoKey, value);
 						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
@@ -939,7 +939,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFileErrors++;
 						String[] value = hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"]";
-						custLines.put(lineNoKey, value);
+						hwLines.put(lineNoKey, value);
 						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
@@ -959,7 +959,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							hwFileErrors++;
 							String[] value = hwLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " will be removed by the import program]";
-							custLines.put(lineNoKey, value);
+							hwLines.put(lineNoKey, value);
 							continue;
 						}
 					}
@@ -982,7 +982,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							hwFileErrors++;
 							String[] value = hwLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist]";
-							custLines.put(lineNoKey, value);
+							hwLines.put(lineNoKey, value);
 							addToLog(lineNoKey, value, importLog);
 							continue;
 						}
@@ -998,9 +998,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() >= 0) &&
                             (!applianceNameList.contains(appFields[ImportManagerUtil.IDX_APP_TYPE]))) {
 						    hwFileErrors++;
-                            String[] value = custLines.get(lineNoKey);
+                            String[] value = hwLines.get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: Appliance Type was supplied, but doesn't exist]";
-                            custLines.put(lineNoKey, value);
+                            hwLines.put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -1020,7 +1020,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							hwFileErrors++;
 							String[] value = hwLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
-							custLines.put(lineNoKey, value);
+							hwLines.put(lineNoKey, value);
 							addToLog(lineNoKey, value, importLog);
 	                        continue;
 						} catch (SQLException sqle) {
@@ -1050,11 +1050,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							}
 						}
 						else {
-							if (acctNo != null && !acctNo.equals("") && (custFields != null && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))) {
+							if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] )) {
 								hwFileErrors++;
 								String[] value = hwLines.get(lineNoKey);
 								value[1] = "[line: " + lineNo + " error: Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account]";
-								custLines.put(lineNoKey, value);
+								hwLines.put(lineNoKey, value);
 								addToLog(lineNoKey, value, importLog);
 								continue;
 							}
