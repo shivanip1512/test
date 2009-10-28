@@ -312,6 +312,8 @@ enum YukonError_t
     UnsupportedDevice,
     NoRouteFound,
 
+    ErrorCommandAlreadyInProgress,
+
     FinalError
 };
 

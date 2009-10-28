@@ -405,7 +405,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
                     if( port->getWorkCount(requestID) > 0 )
                     {
                         // Here we are trying to save the horrors of CleanQueue from being called without cause.
-                        entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cancelOutMessages);
+                        entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cancelOutMessages, (void *)1);
                     }
 
                     queuedDevices = port->getQueuedWorkDevices();
@@ -429,7 +429,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
                                 {
                                     OUTMESS *tempOM = (OUTMESS *)*iter;
                                     tempOM->Request.MacroOffset = 0;//No resubmitting this request, it is dead!
-                                    cancelOutMessages(0,tempOM);
+                                    cancelOutMessages((void *)1,tempOM);
                                     iter = omList.erase(omList.begin());
                                 }
                             }

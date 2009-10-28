@@ -901,7 +901,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             //  submit a retry if we're multi-day and we have any retries left
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                if( _daily_read_info.request.multi_day_retries > 0 )
+                if( _daily_read_info.request.multi_day_retries > 0  && InMessage->EventCode != ErrorRequestCancelled)
                 {
                     _daily_read_info.request.multi_day_retries--;
 
@@ -1443,7 +1443,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 temp += printable_date(_daily_read_info.request.begin);
             }
 
-            returnErrorMessage(NOTNORMAL, OutMessage, retList, temp);
+            nRet = ErrorCommandAlreadyInProgress;
+            returnErrorMessage(ErrorCommandAlreadyInProgress, OutMessage, retList, temp);
         }
         else
         {

@@ -13,12 +13,11 @@
 #include "dlldefs.h"
 #include <string>
 
-typedef struct _ERRSTRUCT {
+struct ERRSTRUCT {
     INT  Error;
     CHAR ErrorMessage[160];
     INT  Type;
-    CHAR TypeDescription[16];
-} ERRSTRUCT;
+};
 
 /* Prototypes from ERROR.C */
 INT SetUnknown( ERRSTRUCT &ESt );

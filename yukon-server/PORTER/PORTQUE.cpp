@@ -1983,6 +1983,7 @@ void cancelOutMessages(void *doSendError, void* om)
 
     if( doSendError != 0 )
     {
+        OutMessage->Request.Connection = NULL;
         SendError( OutMessage, ErrorRequestCancelled );
     }
     else

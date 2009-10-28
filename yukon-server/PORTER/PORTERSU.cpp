@@ -104,7 +104,6 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 {
     INMESS InMessage;
     ULONG BytesWritten;
-    ERRSTRUCT ErrStruct;
     struct timeb TimeB;
 
     if(!OutMessage)

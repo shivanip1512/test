@@ -1642,6 +1642,23 @@ int WriteFailToFile(FILE* errFile, int status, string &dev_name)
     return retVal;
 }
 
+static bool isBreakStatus( int status )
+{
+    switch( status )
+    {
+        case DEVICEINHIBITED:
+        case NoMethod:
+        case ErrorInvalidSSPEC:
+        case ErrorVerifySSPEC:
+        case IDNF: // IDNF means not in the database
+        case ErrorCommandAlreadyInProgress:
+            return false;
+
+        default:
+            return true;
+    }
+}
+
 static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way)
 {
     bool interrupted = false;
@@ -1733,17 +1750,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             if( msg->isA() == MSG_PCRETURN )
             {
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
-                bool preventBreak = (ret_msg->Status() == DEVICEINHIBITED) ||
-                                    (ret_msg->Status() == NoMethod) ||
-                                    (ret_msg->Status() == ErrorInvalidSSPEC) ||
-                                    (ret_msg->Status() == ErrorVerifySSPEC) ||
-                                    (ret_msg->Status() == IDNF); // IDNF means not in the database
                 DumpReturnMessage(*ret_msg);
+                bool allowExitOnError = isBreakStatus(ret_msg->Status());
                 HandleReturnMessage(ret_msg, good_map, bad_map, device_map, resultQueue);
                 lastReturnMessageReceived = lastReturnMessageReceived.now();
 
                 // have we received everything expected?
-                if( device_map.size() == 0 && !preventBreak )
+                if( device_map.size() == 0 && allowExitOnError )
                     break;
             }
             else if( msg->isA() == MSG_QUEUEDATA )
