@@ -1,5 +1,11 @@
 #pragma once
 
+class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
+{
+    public:
+        virtual bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank){return true;};
+};
+
 template <class T>
 T *create_object(long objectid, string name)
 {

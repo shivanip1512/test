@@ -42,7 +42,8 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib
 
 CAPCTRLTESTOBJS= \
 test_ccsubstationbus.obj \
-test_ccFeeder.obj
+test_ccFeeder.obj \
+test_likeDayControl.obj
 
 CAPCTRLBASEOBJS= \
 $(OBJ)\ccservice.obj \

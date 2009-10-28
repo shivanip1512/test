@@ -9761,7 +9761,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
     if (!getDisableFlag())
     {
 
-        //This could be moved to happen when teh control strategy is changed instead of running every cycle.
+        //This could be moved to happen when the control strategy is changed instead of running every cycle.
         if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) ||
             !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) ||
             !stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
@@ -9780,7 +9780,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
 
         if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod))
         {
-            subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
+            performDataOldAndFallBackNecessaryCheckOnFeeders();
         }
         else
         {
@@ -9794,11 +9794,6 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
                     {
                         subBusFlag = true;
                     }
-
-                    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
-                    {
-                        subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
-                    }
                 }
                 else if ( !stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits))
                 {
@@ -9808,11 +9803,6 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
                     {
                         subBusFlag = true;
                     }
-
-                    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
-                    {
-                        subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
-                    }
                 }
                 else
                 {
@@ -9821,11 +9811,11 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
                     {
                         subBusFlag = true;
                     }
+                }
 
-                    if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
-                    {
-                        subBusFlag |= performDataOldAndFallBackNecessaryCheckOnFeeders();
-                    }
+                if (!stringCompareIgnoreCase(getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                {
+                    performDataOldAndFallBackNecessaryCheckOnFeeders();
                 }
             }
         }

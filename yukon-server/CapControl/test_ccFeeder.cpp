@@ -28,13 +28,6 @@ extern BOOL _END_DAY_ON_TRIP;
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
-{
-    public:
-        virtual bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank){return true;};
-};
-
-
 void initialize_bank(CtiCCCapBank* bank, int closeOrder = 0, int tripOrder = 0)
 {
     bank->setCloseOrder(closeOrder);
