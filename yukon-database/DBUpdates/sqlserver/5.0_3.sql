@@ -78,6 +78,12 @@ SET Type = 'INTEGRATION GROUP'
 WHERE Type = 'XML GROUP';
 /* End YUK-7977 */
 
+/* Start YUK-6820 */
+UPDATE YukonRoleProperty 
+SET DefaultValue = 'true'
+WHERE RolePropertyID = -10814;
+/* End YUK-6820 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
