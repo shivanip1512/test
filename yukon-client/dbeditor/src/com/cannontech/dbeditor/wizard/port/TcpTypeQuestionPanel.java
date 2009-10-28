@@ -3,19 +3,24 @@ package com.cannontech.dbeditor.wizard.port;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.CaretListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.port.TcpPort;
 
 public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListener, CaretListener{
-    private javax.swing.JComboBox ivjBaudRateComboBox = null;
-    private javax.swing.JLabel ivjBaudRateLabel = null;
+    private JComboBox baudRateCombo = null;
+    private JLabel baudRateLabel = null;
         
-    private javax.swing.JLabel ivjDescriptionLabel = null;
-    private javax.swing.JTextField ivjDescriptionTextField = null;
+    private JLabel descriptionLabel = null;
+    private JTextField descriptionTextField = null;
 
     public TcpTypeQuestionPanel() {
         super();
@@ -24,93 +29,88 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
 
     public void actionPerformed(java.awt.event.ActionEvent e) {
         if (e.getSource() == getBaudRateComboBox()) { 
-            connEtoC3(e);
+            baudRateSelected(e);
         }
     }
 
     public void caretUpdate(javax.swing.event.CaretEvent e) {
         if (e.getSource() == getDescriptionTextField()) { 
-            connEtoC4(e);
+            descriptionEntered(e);
         }
 
     }
 
-    private void connEtoC3(java.awt.event.ActionEvent arg1) {
+    private void baudRateSelected(java.awt.event.ActionEvent arg1) {
         try {
-
-            this.data_Update(null);
-        } catch (java.lang.Throwable ivjExc) {
-            handleException(ivjExc);
+            fireInputUpdate();
+        } catch (Throwable e) {
+            handleException(e);
         }
     }
 
-    private void connEtoC4(javax.swing.event.CaretEvent arg1) {
+    private void descriptionEntered(javax.swing.event.CaretEvent arg1) {
         try {
-            this.data_Update(arg1);
-        } catch (java.lang.Throwable ivjExc) {
-            handleException(ivjExc);
+            fireInputUpdate();
+        } catch (Throwable e) {
+            handleException(e);
         }
     }
 
-    public void data_Update(javax.swing.event.CaretEvent caretEvent) {
-        fireInputUpdate();
-    }
-
-    private javax.swing.JComboBox getBaudRateComboBox() {
-        if (ivjBaudRateComboBox == null) {
+    private JComboBox getBaudRateComboBox() {
+        if (baudRateCombo == null) {
             try {
-                ivjBaudRateComboBox = new javax.swing.JComboBox();
-                ivjBaudRateComboBox.setName("BaudRateComboBox");
-                ivjBaudRateComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-                ivjBaudRateComboBox.setMaximumRowCount(5);
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
+                baudRateCombo = new javax.swing.JComboBox();
+                baudRateCombo.setName("BaudRateComboBox");
+                baudRateCombo.setFont(new java.awt.Font("dialog", 0, 14));
+                baudRateCombo.setMaximumRowCount(5);
+            } catch (java.lang.Throwable e) {
+                handleException(e);
             }
         }
-        return ivjBaudRateComboBox;
+        return baudRateCombo;
     }
 
-    private javax.swing.JLabel getBaudRateLabel() {
-        if (ivjBaudRateLabel == null) {
+    private JLabel getBaudRateLabel() {
+        if (baudRateLabel == null) {
             try {
-                ivjBaudRateLabel = new javax.swing.JLabel();
-                ivjBaudRateLabel.setName("BaudRateLabel");
-                ivjBaudRateLabel.setFont(new java.awt.Font("dialog", 0, 14));
-                ivjBaudRateLabel.setText("Baud Rate:");
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
+                baudRateLabel = new javax.swing.JLabel();
+                baudRateLabel.setName("BaudRateLabel");
+                baudRateLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                baudRateLabel.setText("Baud Rate:");
+            } catch (java.lang.Throwable e) {
+                handleException(e);
             }
         }
-        return ivjBaudRateLabel;
+        return baudRateLabel;
     }
 
-    private javax.swing.JLabel getDescriptionLabel() {
-        if (ivjDescriptionLabel == null) {
+    private JLabel getDescriptionLabel() {
+        if (descriptionLabel == null) {
             try {
-                ivjDescriptionLabel = new javax.swing.JLabel();
-                ivjDescriptionLabel.setName("DescriptionLabel");
-                ivjDescriptionLabel.setFont(new java.awt.Font("dialog", 0, 14));
-                ivjDescriptionLabel.setText("Description:");
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
+                descriptionLabel = new javax.swing.JLabel();
+                descriptionLabel.setName("DescriptionLabel");
+                descriptionLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                descriptionLabel.setText("Description:");
+            } catch (Throwable e) {
+                handleException(e);
             }
         }
-        return ivjDescriptionLabel;
+        return descriptionLabel;
     }
 
-    private javax.swing.JTextField getDescriptionTextField() {
-        if (ivjDescriptionTextField == null) {
+    private JTextField getDescriptionTextField() {
+        if (descriptionTextField == null) {
             try {
-                ivjDescriptionTextField = new javax.swing.JTextField();
-                ivjDescriptionTextField.setName("DescriptionTextField");
-                ivjDescriptionTextField.setFont(new java.awt.Font("sansserif", 0, 14));
-                ivjDescriptionTextField.setColumns(12);
-                ivjDescriptionTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PORT_DESCRIPTION_LENGTH));
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
+                descriptionTextField = new javax.swing.JTextField();
+                descriptionTextField.setName("DescriptionTextField");
+                descriptionTextField.setFont(new java.awt.Font("sansserif", 0, 14));
+                descriptionTextField.setColumns(12);
+                descriptionTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_PORT_DESCRIPTION_LENGTH));
+            } catch (Throwable e) {
+                handleException(e);
             }
         }
-        return ivjDescriptionTextField;
+        return descriptionTextField;
     }
 
     public Dimension getMinimumSize() {
@@ -179,16 +179,16 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
             handleException(ivjExc);
         }
 
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_300 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_1200 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_2400 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_4800 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_9600 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_14400 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_28800 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_38400 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_57600 );
-        ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_115200 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_300 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_1200 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_2400 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_4800 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_9600 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_14400 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_28800 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_38400 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_57600 );
+        baudRateCombo.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_115200 );
         getBaudRateComboBox().setSelectedItem(com.cannontech.common.version.DBEditorDefines.BAUD_1200);
 
     }
@@ -211,12 +211,14 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
     public void setFirstFocus() 
     {
         // Make sure that when its time to display this panel, the focus starts in the top component
-        javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        SwingUtilities.invokeLater( 
+            new Runnable() 
             { 
-            public void run() 
+                public void run() 
                 { 
-                getDescriptionTextField().requestFocus(); 
-            } 
-        });    
+                    getDescriptionTextField().requestFocus(); 
+                } 
+            }
+        );    
     }
 }

@@ -1539,7 +1539,7 @@ private javax.swing.JTextField getTcpIpAddressTextField() {
         try {
             tcpIpAddressTextField = new javax.swing.JTextField();
             tcpIpAddressTextField.setName("TcpIpAddressTextField");
-            tcpIpAddressTextField.setMaximumSize(new java.awt.Dimension(2147483647, 20));
+            tcpIpAddressTextField.setMaximumSize(new java.awt.Dimension(200, 20));
             tcpIpAddressTextField.setColumns(0);
             tcpIpAddressTextField.setPreferredSize(new java.awt.Dimension(157,24));
             tcpIpAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
@@ -1557,7 +1557,7 @@ private javax.swing.JTextField getTcpPortTextField() {
         try {
             tcpPortTextField = new javax.swing.JTextField();
             tcpPortTextField.setName("TcpPortTextField");
-            tcpPortTextField.setMaximumSize(new java.awt.Dimension(2147483647, 20));
+            tcpPortTextField.setMaximumSize(new java.awt.Dimension(200, 20));
             tcpPortTextField.setColumns(0);
             tcpPortTextField.setPreferredSize(new java.awt.Dimension(157,24));
             tcpPortTextField.setFont(new java.awt.Font("sansserif", 0, 14));

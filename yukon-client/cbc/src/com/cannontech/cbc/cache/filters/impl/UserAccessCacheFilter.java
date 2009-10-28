@@ -2,6 +2,7 @@ package com.cannontech.cbc.cache.filters.impl;
 
 
 import com.cannontech.cbc.cache.filters.CacheFilter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -40,6 +41,9 @@ public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>
         String paoName = capObject.getCcName();
         
         LiteYukonPAObject obj = new LiteYukonPAObject(paoId, paoName);
+        PaoType type = PaoType.getForDbString(capObject.getCcType());
+        obj.setType(type.getDeviceTypeId());
+        
         boolean ret = paoAuthorizationService.isAuthorized(user, Permission.PAO_VISIBLE, obj );
         return ret;
 	}
