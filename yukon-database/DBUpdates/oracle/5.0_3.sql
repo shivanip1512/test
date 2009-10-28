@@ -59,6 +59,12 @@ MODIFY PhaseCValueBeforeControl FLOAT NOT NULL;
 /* @error ignore-end */
 /* End YUK-7966 */
 
+/* Start YUK-7977 */
+UPDATE YukonPAObject 
+SET Type = 'INTEGRATION GROUP' 
+WHERE Type = 'XML GROUP';
+/* End YUK-7977 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
