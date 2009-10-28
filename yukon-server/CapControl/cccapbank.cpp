@@ -615,6 +615,16 @@ LONG CtiCCCapBank::getControlStatus() const
 {
    return _controlstatus;
 }
+
+BOOL CtiCCCapBank::isPendingStatus()
+{
+    if (getControlStatus() == CtiCCCapBank::OpenPending ||
+        getControlStatus() ==  CtiCCCapBank::ClosePending)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
 /*---------------------------------------------------------------------------
     getControlStatus
 

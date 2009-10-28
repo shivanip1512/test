@@ -404,10 +404,17 @@ public:
     const CtiTime& getLinkDropOutTime() const;
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
 
+    map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
+    map <long, CtiCCAreaPtr>* getPAOAreaMap();
+    map <long, CtiCCSubstationPtr>* getPAOStationMap();
+    map <long, CtiCCSpecialPtr>* getPAOSpecialAreaMap();
      static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
+
+    BOOL getStoreRecentlyReset();
+    void setStoreRecentlyReset(BOOL flag);
 
     RWRecursiveLock<RWMutexLock> & getMux() { return _storeMutex; };
 
@@ -474,6 +481,7 @@ private:
     RWThread _opstatsthr;
 
     BOOL _isvalid;
+    BOOL _storeRecentlyReset;
     BOOL _reregisterforpoints;
     LONG _regMask;
     BOOL _reloadfromamfmsystemflag;

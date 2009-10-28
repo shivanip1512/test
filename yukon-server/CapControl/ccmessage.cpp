@@ -635,7 +635,7 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSubstationBusMsg has "<< buses.size()<<" entries." << endl;
@@ -657,6 +657,17 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
                     dout << CtiTime() << " -    Feed: "<<((CtiCCFeeder*)feeds[hh])->getPAOName()<<" "<<((CtiCCFeeder*)feeds[hh])->getCurrentVarLoadPointValue()<<" "<<((CtiCCFeeder*)feeds[hh])->getEstimatedVarLoadPointValue() <<" " <<
                         ((CtiCCFeeder*)feeds[hh])->getPeakLead()<<" "<<((CtiCCFeeder*)feeds[hh])->getPeakLag()<< endl;
                 }
+
+                CtiCCCapBank_SVector& caps =   ((CtiCCFeeder*)feeds[hh])->getCCCapBanks();
+                for (int hhh = 0; hhh < caps.size(); hhh++) 
+                {
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " -        Cap: "<<((CtiCCCapBank*)caps[hhh])->getPAOName() <<" "<<
+                            ((CtiCCCapBank*)caps[hhh])->getControlStatusText()<< endl;
+                    }
+                }
+
             }
         }
     }
@@ -665,6 +676,16 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
         _ccSubstationBuses->push_back(((CtiCCSubstationBus*)buses.at(i))->replicate());
     }
 }
+
+
+
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0)
+{
+
+    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    _ccSubstationBuses->push_back(substationBus->replicate());
+}
+
 
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusMsg) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0)
 {
@@ -871,7 +892,7 @@ RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _ccGeoAreas = new CtiCCArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
@@ -895,7 +916,8 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : C
 
 
 
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL),_msgInfoBitMask(0)
+
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(ccGeoAreasMsg._msgInfoBitMask)
 {
     operator=(ccGeoAreasMsg);
 }
@@ -988,7 +1010,7 @@ RWDEFINE_COLLECTABLE( CtiCCSpecialAreasMsg, CTICCSPECIALAREAS_MSG_ID )
 CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
 {
     _ccSpecialAreas = new CtiCCSpArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
@@ -1120,7 +1142,7 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULONG bitMask) : CtiCCMessage("CCSubstations"), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstations = new CtiCCSubstation_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries." << endl;

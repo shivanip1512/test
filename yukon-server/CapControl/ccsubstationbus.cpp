@@ -6715,84 +6715,83 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
 
         if (currentCCFeeder->getPerformingVerificationFlag())
         {
-            if (currentCCFeeder->isVerificationAlreadyControlled(minConfirmPercent, currentCCFeeder->getCurrentVarPointQuality(),
-                                                                   currentCCFeeder->getPhaseAValueBeforeControl(),
-                                                                   currentCCFeeder->getPhaseBValueBeforeControl(),
-                                                                   currentCCFeeder->getPhaseCValueBeforeControl(),
-                                                                   currentCCFeeder->getPhaseAValue(),
-                                                                   currentCCFeeder->getPhaseBValue(),
-                                                                   currentCCFeeder->getPhaseCValue(),
-                                                                   currentCCFeeder->getVarValueBeforeControl(),
-                                                                   currentCCFeeder->getCurrentVarLoadPointValue(),
-                                                                   currentCCFeeder->getUsePhaseData(),
-                                                                   currentCCFeeder->getTotalizedControlFlag())
-                 || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,maxConfirmTime,sendRetries))
-            {
-
-                if ( getControlSendRetries() > 0 &&
-                     !currentCCFeeder->isVerificationAlreadyControlled(minConfirmPercent,
-                                                                       currentCCFeeder->getCurrentVarPointQuality(),
+            if ( currentCCFeeder->getLastVerificationMsgSentSuccessfulFlag())
+            {    
+                bool alreadyControlled = currentCCFeeder->isVerificationAlreadyControlled(minConfirmPercent, currentCCFeeder->getCurrentVarPointQuality(),
                                                                        currentCCFeeder->getPhaseAValueBeforeControl(),
-                                                                       currentCCFeeder->getPhaseBValueBeforeControl(),
+                                                                       currentCCFeeder->getPhaseBValueBeforeControl(), 
                                                                        currentCCFeeder->getPhaseCValueBeforeControl(),
-                                                                       currentCCFeeder->getPhaseAValue(),
-                                                                       currentCCFeeder->getPhaseBValue(),
-                                                                       currentCCFeeder->getPhaseCValue(),
-                                                                       currentCCFeeder->getVarValueBeforeControl(),
+                                                                       currentCCFeeder->getPhaseAValue(), 
+                                                                       currentCCFeeder->getPhaseBValue(), 
+                                                                       currentCCFeeder->getPhaseCValue(), 
+                                                                       currentCCFeeder->getVarValueBeforeControl(), 
                                                                        currentCCFeeder->getCurrentVarLoadPointValue(),
-                                                                       currentCCFeeder->getUsePhaseData(),
-                                                                       currentCCFeeder->getTotalizedControlFlag()) &&
-                    currentDateTime.seconds() < currentCCFeeder->getLastOperationTime().seconds() + maxConfirmTime)
-                {
-                    if(currentCCFeeder->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages, maxConfirmTime, sendRetries))
-                    {
-                        setLastOperationTime(currentDateTime);
-                        setBusUpdatedFlag(TRUE);
-                    }
-                    verifyCapFound = TRUE;
-                }
-                else if (currentCCFeeder->getWaitForReCloseDelayFlag() ||
-                         (!currentCCFeeder->capBankVerificationStatusUpdate(pointChanges, ccEvents, minConfirmPercent, failPercent,
-                                                                            currentCCFeeder->getPhaseAValue(),
-                                                                            currentCCFeeder->getPhaseBValue(),
-                                                                            currentCCFeeder->getPhaseCValue()) &&
-                         currentCCFeeder->getCurrentVerificationCapBankId() != -1) )
-                {
-                    if (currentCCFeeder->sendNextCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages))
-                    {
-                        setBusUpdatedFlag(TRUE);
-                        currentCCFeeder->setWaitForReCloseDelayFlag(FALSE);
-                    }
-                    else
-                        currentCCFeeder->setWaitForReCloseDelayFlag(TRUE);
+                                                                       currentCCFeeder->getUsePhaseData(), 
+                                                                       currentCCFeeder->getTotalizedControlFlag());
 
-                    verifyCapFound = TRUE;
-
-                }
-                else
+                if (alreadyControlled || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,maxConfirmTime,sendRetries))
                 {
-                    if (currentCCFeeder->areThereMoreCapBanksToVerify())
+                
+                    if ( getControlSendRetries() > 0 && !alreadyControlled && 
+                        currentDateTime.seconds() < currentCCFeeder->getLastOperationTime().seconds() + maxConfirmTime)
                     {
-                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                        if(currentCCFeeder->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages, maxConfirmTime, sendRetries))
                         {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << getPAOName()<< "( "<<getPAOId()<<" ) FEED-"<<currentCCFeeder->getPAOName()<<" CB-"<<currentCCFeeder->getCurrentVerificationCapBankId() << endl;
+                            setLastOperationTime(currentDateTime); 
+                            setBusUpdatedFlag(TRUE);
                         }
-
-                        currentCCFeeder->setEventSequence(getEventSequence());
-                        currentCCFeeder->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
                         verifyCapFound = TRUE;
                     }
-
-
-                    setBusUpdatedFlag(TRUE);
-                    setPerformingVerificationFlag(TRUE);
+                    else if (currentCCFeeder->getWaitForReCloseDelayFlag() || 
+                             (!currentCCFeeder->capBankVerificationStatusUpdate(pointChanges, ccEvents, minConfirmPercent, failPercent, 
+                                                                                currentCCFeeder->getPhaseAValue(), 
+                                                                                currentCCFeeder->getPhaseBValue(), 
+                                                                                currentCCFeeder->getPhaseCValue()) &&
+                             currentCCFeeder->getCurrentVerificationCapBankId() != -1) )
+                    {
+                        if (currentCCFeeder->sendNextCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages))
+                        {
+                            setBusUpdatedFlag(TRUE);
+                        }
+                        verifyCapFound = TRUE;
+                    }
+                    else
+                    {
+                        if (currentCCFeeder->areThereMoreCapBanksToVerify())
+                        {
+                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                            {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << getPAOName()<< "( "<<getPAOId()<<" ) FEED-"<<currentCCFeeder->getPAOName()<<" CB-"<<currentCCFeeder->getCurrentVerificationCapBankId() << endl;
+                            }
+                
+                            currentCCFeeder->setEventSequence(getEventSequence());
+                            if (currentCCFeeder->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages))
+                            {
+                                setBusUpdatedFlag(TRUE);
+                            }
+                            setPerformingVerificationFlag(TRUE);
+                            verifyCapFound = TRUE;
+                        }
+                        
+                
+                    }
+                }
+                else //WAIT
+                {
+                    verifyCapFound = TRUE;
                 }
             }
-            else //WAIT
+            else
             {
+                if (currentCCFeeder->sendNextCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages))
+                {
+                     setBusUpdatedFlag(TRUE);
+                }
                 verifyCapFound = TRUE;
+
             }
+
         }
         else //if (!currentCCFeeder->getPerformingVerificationFlag())
         {
@@ -6805,9 +6804,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
                 }
 
                 currentCCFeeder->setEventSequence(getEventSequence());
-                currentCCFeeder->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
+                if (currentCCFeeder->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages))
+                {
+                    setBusUpdatedFlag(TRUE);
+                }
                 setPerformingVerificationFlag(TRUE);
-                setBusUpdatedFlag(TRUE);
                 verifyCapFound = TRUE;
             }
         }
@@ -7169,11 +7170,6 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                                         +char2string(*(addFlags+15)) +char2string(*(addFlags+16)));
             _additionalFlags.append("NNN");
 
-            //storing current and before var values in the same db column CURRENTVALUE.BEFOREVALUE
-            double hijackedPhaseABeforeAndAfter = (INT)_phaseAvalue + (_phaseAvalueBeforeControl/BEFOREPHASEMULTIPLIER);
-            double hijackedPhaseBBeforeAndAfter = (INT)_phaseBvalue + (_phaseBvalueBeforeControl/BEFOREPHASEMULTIPLIER);
-            double hijackedPhaseCBeforeAndAfter = (INT)_phaseCvalue + (_phaseCvalueBeforeControl/BEFOREPHASEMULTIPLIER);
-
             updater.clear();
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==_paoid);
@@ -7201,13 +7197,14 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["ivcount"].assign( _iVCount )
             << dynamicCCSubstationBusTable["iwcontroltot"].assign( _iWControlTot )
             << dynamicCCSubstationBusTable["iwcount"].assign( _iWCount )
-            << dynamicCCSubstationBusTable["phaseavalue"].assign( hijackedPhaseABeforeAndAfter )
-            << dynamicCCSubstationBusTable["phasebvalue"].assign( hijackedPhaseBBeforeAndAfter )
-            << dynamicCCSubstationBusTable["phasecvalue"].assign( hijackedPhaseCBeforeAndAfter )
+            << dynamicCCSubstationBusTable["phaseavalue"].assign( _phaseAvalue )
+            << dynamicCCSubstationBusTable["phasebvalue"].assign( _phaseBvalue )
+            << dynamicCCSubstationBusTable["phasecvalue"].assign( _phaseCvalue )
             << dynamicCCSubstationBusTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
-            << dynamicCCSubstationBusTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) );
-
-            ;
+            << dynamicCCSubstationBusTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) )
+            << dynamicCCSubstationBusTable["phaseavaluebeforecontrol"].assign( _phaseAvalueBeforeControl )
+            << dynamicCCSubstationBusTable["phasebvaluebeforecontrol"].assign( _phaseBvalueBeforeControl )
+            << dynamicCCSubstationBusTable["phasecvaluebeforecontrol"].assign( _phaseCvalueBeforeControl );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -7287,7 +7284,10 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _phaseBvalue
             << _phaseCvalue
             << _lastWattPointTime
-            << _lastVoltPointTime;
+            << _lastVoltPointTime
+            << _phaseAvalueBeforeControl
+            << _phaseBvalueBeforeControl
+            << _phaseCvalueBeforeControl;
 
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -10624,25 +10624,18 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["iwcontroltot"] >> _iWControlTot;
         rdr["iwcount"] >> _iWCount;
 
-        //current and before var values were stored in the same db column CURRENTVALUE.BEFOREVALUE
-        double hijackedPhaseABeforeAndAfter;
-        double hijackedPhaseBBeforeAndAfter;
-        double hijackedPhaseCBeforeAndAfter;
-        rdr["phaseavalue"] >> hijackedPhaseABeforeAndAfter;
-        rdr["phasebvalue"] >> hijackedPhaseBBeforeAndAfter;
-        rdr["phasecvalue"] >> hijackedPhaseCBeforeAndAfter;
-
-        _phaseAvalue = (INT)hijackedPhaseABeforeAndAfter;
-        _phaseBvalue = (INT)hijackedPhaseBBeforeAndAfter;
-        _phaseCvalue = (INT)hijackedPhaseCBeforeAndAfter;
-
-        _phaseAvalueBeforeControl = (hijackedPhaseABeforeAndAfter - _phaseAvalue)*BEFOREPHASEMULTIPLIER;
-        _phaseBvalueBeforeControl = (hijackedPhaseBBeforeAndAfter - _phaseBvalue)*BEFOREPHASEMULTIPLIER;
-        _phaseCvalueBeforeControl = (hijackedPhaseCBeforeAndAfter - _phaseCvalue)*BEFOREPHASEMULTIPLIER;
-
+        rdr["phaseavalue"] >> _phaseAvalue;
+        rdr["phasebvalue"] >> _phaseBvalue;
+        rdr["phasecvalue"] >> _phaseCvalue;
+      
         rdr["lastwattpointtime"] >> _lastWattPointTime;
         rdr["lastvoltpointtime"] >> _lastVoltPointTime;
 
+        rdr["phaseavaluebeforecontrol"] >> _phaseAvalueBeforeControl;
+        rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
+        rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
+
+        
         _insertDynamicDataFlag = FALSE;
 
         _dirty = false;

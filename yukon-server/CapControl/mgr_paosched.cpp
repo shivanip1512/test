@@ -754,25 +754,6 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-       /* try
-        {             
-            list <CtiPAOSchedule*>::iterator iter = _schedules.begin();
-            while (iter != _schedules.end())
-            {
-                CtiPAOSchedule *schedToDelete  = *iter;
-                iter++;
-                if (schedToDelete != NULL)
-                {
-                    delete schedToDelete;
-                }
-            }
-            
-        }
-        catch (...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        } */
         _schedules.clear();
         _schedules.assign(tempSchedules.begin(), tempSchedules.end());
         setValid(true);
@@ -861,24 +842,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        /*try
-        {
-            list <CtiPAOEvent*>::iterator iter = _events.begin();
-            while (iter != _events.end())
-            {
-                CtiPAOEvent *evtToDelete = *iter;
-                iter++;
-                if (evtToDelete != NULL)
-                {
-                    delete evtToDelete;
-                }
-            }
-        }
-        catch (...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        } */
+        
         _events.clear();
         _events.assign(tempEvents.begin(), tempEvents.end());
         setValid(true);

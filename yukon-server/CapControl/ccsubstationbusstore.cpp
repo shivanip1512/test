@@ -806,6 +806,15 @@ BOOL CtiCCSubstationBusStore::deleteCapControlMaps()
 }
 
 
+BOOL CtiCCSubstationBusStore::getStoreRecentlyReset()
+{   
+    return _storeRecentlyReset;
+}
+void CtiCCSubstationBusStore::setStoreRecentlyReset(BOOL flag)
+{
+    _storeRecentlyReset = flag;
+}
+
 /*---------------------------------------------------------------------------
     reset
 
@@ -818,41 +827,6 @@ void CtiCCSubstationBusStore::reset()
     bool wasAlreadyRunning = false;
     try
     {
-        CtiCCSubstationBus_vec tempCCSubstationBuses;
-        CtiCCSubstation_vec tempCCSubstations;
-        CtiCCArea_vec tempCCGeoAreas;
-        CtiCCSpArea_vec tempCCSpecialAreas;
-
-
-        map< long, CtiCCAreaPtr > temp_paobject_area_map;
-        map< long, CtiCCSpecialPtr > temp_paobject_specialarea_map;
-        map< long, CtiCCSubstationPtr > temp_paobject_substation_map;
-        map< long, CtiCCSubstationBusPtr > temp_paobject_subbus_map;
-        map< long, CtiCCFeederPtr > temp_paobject_feeder_map;
-        map< long, CtiCCCapBankPtr > temp_paobject_capbank_map;
-
-        multimap< long, CtiCCAreaPtr > temp_point_area_map;
-        multimap< long, CtiCCSpecialPtr > temp_point_specialarea_map;
-        multimap< long, CtiCCSubstationPtr > temp_point_substation_map;
-        multimap< long, CtiCCSubstationBusPtr > temp_point_subbus_map;
-        multimap< long, CtiCCFeederPtr > temp_point_feeder_map;
-        multimap< long, CtiCCCapBankPtr > temp_point_capbank_map;
-        std::map< long, CtiCCStrategyPtr > temp_strategyid_strategy_map;
-
-        map< long, long > temp_capbank_subbus_map;
-        map< long, long > temp_capbank_feeder_map;
-        map< long, long > temp_feeder_subbus_map;
-        map< long, long > temp_subbus_substation_map;
-        map< long, long > temp_substation_area_map;
-        map< long, long > temp_substation_specialarea_map;
-        map< long, long > temp_cbc_capbank_map;
-
-        multimap<long, long> temp_altsub_sub_idmap;
-
-        list <long> orphanCaps;
-        list <long> orphanFeeders;
-
-
         LONG currentAllocations = ResetBreakAlloc();
         if ( _CC_DEBUG & CC_DEBUG_EXTENDED )
         {
@@ -861,6 +835,8 @@ void CtiCCSubstationBusStore::reset()
         }
 
         {
+
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
@@ -877,12 +853,8 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Obtained connection to the database..." << endl;
                 dout << CtiTime() << " - Resetting substation buses from database..." << endl;
             }
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
             wasAlreadyRunning = deleteCapControlMaps();
-
-            //reCalculateCapBankOperationStatsFromDatabase( );
-
 
             CtiTime currentDateTime;
             /*************************************************************
@@ -894,70 +866,58 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - DataBase Reload Begin - " << endl;
             }
 
-            reloadStrategyFromDatabase(-1, &temp_strategyid_strategy_map);
+            reloadStrategyFromDatabase(-1, &_strategyid_strategy_map);
 
             /***********************************************************
             *******  Loading Areas                               *******
             ************************************************************/
-            reloadSpecialAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_specialarea_map, &temp_point_specialarea_map, &tempCCSpecialAreas);
+            reloadSpecialAreaFromDatabase(0, &_strategyid_strategy_map, &_paobject_specialarea_map, &_pointid_specialarea_map, _ccSpecialAreas);
 
-            reloadAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_area_map, &temp_point_area_map, &tempCCGeoAreas);
+            reloadAreaFromDatabase(0, &_strategyid_strategy_map, &_paobject_area_map, &_pointid_area_map, _ccGeoAreas);
 
             /***********************************************************
             *******  Loading Substations                         *******
             ************************************************************/
 
-            reloadSubstationFromDatabase(0, &temp_paobject_substation_map, &temp_paobject_area_map, &temp_paobject_specialarea_map,
-                                         &temp_point_substation_map,
-                                         &temp_substation_area_map, &temp_substation_specialarea_map, &tempCCSubstations);
+            reloadSubstationFromDatabase(0, &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map,
+                                         &_pointid_station_map, 
+                                         &_substation_area_map, &_substation_specialarea_map, _ccSubstations);
 
-            try
-            {
-                _paobject_area_map = temp_paobject_area_map;
-                _paobject_specialarea_map = temp_paobject_specialarea_map;
-                _paobject_substation_map = temp_paobject_substation_map;
-                _strategyid_strategy_map = temp_strategyid_strategy_map;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
 
             /***********************************************************
             *******  Loading SubBuses                            *******
             ************************************************************/
 
-            reloadSubBusFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_subbus_map, & temp_paobject_substation_map,
-                                     &temp_point_subbus_map, &temp_altsub_sub_idmap, &temp_subbus_substation_map, &tempCCSubstationBuses);
+            reloadSubBusFromDatabase(0, &_strategyid_strategy_map, &_paobject_subbus_map, &_paobject_substation_map,
+                                     &_pointid_subbus_map, &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
 
             /***********************************************************
             *******  Loading Feeders                             *******
             ************************************************************/
 
-            if (tempCCSubstationBuses.size() > 0)
+            if (_ccSubstationBuses->size() > 0)
             {
-                {
-                    reloadFeederFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_feeder_map,
-                                             &temp_paobject_subbus_map, &temp_point_feeder_map,
-                                             &temp_feeder_subbus_map);//, &temp_feeder_area_map );
+                {   
+                    reloadFeederFromDatabase(0, &_strategyid_strategy_map, &_paobject_feeder_map,
+                                             &_paobject_subbus_map, &_pointid_feeder_map, 
+                                             &_feeder_subbus_map);//, &temp_feeder_area_map );
                 }
 
                /************************************************************
                 ********    Loading Cap Banks                       ********
                 ************************************************************/
                 {
-                    reloadCapBankFromDatabase(0, &temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
-                                          &temp_point_capbank_map, &temp_capbank_subbus_map,
-                                          &temp_capbank_feeder_map, &temp_feeder_subbus_map, &temp_cbc_capbank_map );
+                    reloadCapBankFromDatabase(0, &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
+                                          &_pointid_capbank_map, &_capbank_subbus_map,
+                                          &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
                 }
 
                 /************************************************************
                 ********    Loading Monitor Points                   ********
                 ************************************************************/
                 {
-                    reloadMonitorPointsFromDatabase(0, &temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
-                                          &temp_point_capbank_map);
+                    reloadMonitorPointsFromDatabase(0, &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
+                                          &_pointid_capbank_map);
                 }
 
 
@@ -977,11 +937,10 @@ void CtiCCSubstationBusStore::reset()
              ********    Loading Operation Statistics            ********
              ************************************************************/
             {
-                 reloadOperationStatsFromDatabase(conn,0,&temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
+                 reloadOperationStatsFromDatabase(conn,0,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
                                                        &_paobject_substation_map,
                                                        &_paobject_area_map,
                                                       &_paobject_specialarea_map);
-
             }
 
 
@@ -990,8 +949,8 @@ void CtiCCSubstationBusStore::reset()
              ************************************************************/
             try
             {
-               locateOrphans(&orphanCaps, &orphanFeeders, temp_paobject_capbank_map, temp_paobject_feeder_map,
-                             temp_capbank_feeder_map, temp_feeder_subbus_map);
+               locateOrphans(&_orphanedCapBanks, &_orphanedFeeders, _paobject_capbank_map, _paobject_feeder_map,
+                             _capbank_feeder_map, _feeder_subbus_map);
             }
             catch (...)
             {
@@ -1003,116 +962,15 @@ void CtiCCSubstationBusStore::reset()
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - DataBase Reload End - " << endl;
-                dout << CtiTime() << " - Loading values into capcontrol - " << endl;
-            }
-
-            try
-            {
-                _altsub_sub_idmap = temp_altsub_sub_idmap;
-                _paobject_subbus_map = temp_paobject_subbus_map;
-                _paobject_feeder_map = temp_paobject_feeder_map;
-                _paobject_capbank_map = temp_paobject_capbank_map;
-
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
-            try
-            {
-                _pointid_area_map = temp_point_area_map;
-                _pointid_specialarea_map = temp_point_specialarea_map;
-                _pointid_subbus_map = temp_point_subbus_map;
-                _pointid_station_map = temp_point_substation_map;
-                _pointid_feeder_map = temp_point_feeder_map;
-                _pointid_capbank_map = temp_point_capbank_map;
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            try
-            {
-                _subbus_substation_map = temp_subbus_substation_map;
-                _substation_area_map = temp_substation_area_map;
-                _substation_specialarea_map = temp_substation_specialarea_map;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            try
-            {
-                _feeder_subbus_map = temp_feeder_subbus_map;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            try
-            {
-                _capbank_subbus_map = temp_capbank_subbus_map;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            try
-            {
-                _capbank_feeder_map = temp_capbank_feeder_map;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            try
-            {
-                _cbc_capbank_map = temp_cbc_capbank_map;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            try
-            {
-                _orphanedCapBanks = orphanCaps;
-                _orphanedFeeders = orphanFeeders;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
-            try
-            {
-                *_ccSubstationBuses = tempCCSubstationBuses;
-                *_ccSubstations = tempCCSubstations;
-                *_ccGeoAreas = tempCCGeoAreas;
-                *_ccSpecialAreas = tempCCSpecialAreas;
-            }
-            catch (...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            if ( _CC_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Done Loading values into capcontrol - " << endl;
             }
+
+            setStoreRecentlyReset(TRUE);
+            _isvalid = TRUE;
+            _2wayFlagUpdate = FALSE;
         }
 
-        _isvalid = TRUE;
-        _2wayFlagUpdate = FALSE;
+
     }
     catch (...)
     {
@@ -6356,7 +6214,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << dynamicCCSubstationBusTable["phasebvalue"]
                         << dynamicCCSubstationBusTable["phasecvalue"]
                         << dynamicCCSubstationBusTable["lastwattpointtime"]
-                        << dynamicCCSubstationBusTable["lastvoltpointtime"];
+                        << dynamicCCSubstationBusTable["lastvoltpointtime"]
+                        << dynamicCCSubstationBusTable["phaseavaluebeforecontrol"] 
+                        << dynamicCCSubstationBusTable["phasebvaluebeforecontrol"] 
+                        << dynamicCCSubstationBusTable["phasecvaluebeforecontrol"];
 
                         selector.from(capControlSubstationBusTable);
                         selector.from(dynamicCCSubstationBusTable);
@@ -7098,7 +6959,10 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["phasecvalue"]
                     << dynamicCCFeederTable["lastwattpointtime"]
                     << dynamicCCFeederTable["lastvoltpointtime"]
-                    << dynamicCCFeederTable["retryindex"];
+                    << dynamicCCFeederTable["retryindex"]
+                    << dynamicCCFeederTable["phaseavaluebeforecontrol"]
+                    << dynamicCCFeederTable["phasebvaluebeforecontrol"]
+                    << dynamicCCFeederTable["phasecvaluebeforecontrol"];
 
 
                     selector.from(dynamicCCFeederTable);
@@ -10622,7 +10486,22 @@ void CtiCCSubstationBusStore::removeItemsFromMap(int mapType, long first)
     }
     return;
 }
-
+map <long, CtiCCSubstationBusPtr>* CtiCCSubstationBusStore::getPAOSubMap()
+{
+    return &_paobject_subbus_map;
+}
+map <long, CtiCCAreaPtr>* CtiCCSubstationBusStore::getPAOAreaMap()
+{
+    return &_paobject_area_map;
+}
+map <long, CtiCCSubstationPtr>* CtiCCSubstationBusStore::getPAOStationMap()
+{
+    return &_paobject_substation_map;
+}
+map <long, CtiCCSpecialPtr>* CtiCCSubstationBusStore::getPAOSpecialAreaMap()
+{
+    return &_paobject_specialarea_map;
+}
 
 
 void CtiCCSubstationBusStore::setLinkStatusPointId(LONG pointId)

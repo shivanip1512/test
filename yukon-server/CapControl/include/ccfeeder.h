@@ -180,6 +180,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getOvUvDisabledFlag() const;
     BOOL getCorrectionNeededNoBankAvailFlag() const;
     bool getLikeDayControlFlag() const;
+    BOOL getLastVerificationMsgSentSuccessfulFlag() const;    
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     DOUBLE getTargetVarValue() const;
@@ -303,6 +304,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setOvUvDisabledFlag(BOOL flag);
     CtiCCFeeder& setCorrectionNeededNoBankAvailFlag(BOOL flag);
     CtiCCFeeder& setLikeDayControlFlag(BOOL flag);
+    CtiCCFeeder& setLastVerificationMsgSentSuccessfulFlag(BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setTargetVarValue(DOUBLE value);
@@ -332,6 +334,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setRetryIndex(LONG value);
 
     void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag);
+    CtiCCCapBank* getLastCapBankControlledDevice();
     CtiCCCapBank* findCapBankToChangeVars(double kvarSolution, CtiMultiMsg_vec& pointChanges,
                                           double leadLevel = 0, double lagLevel = 0, double currentVarValue = 0);
     bool checkForMaxKvar( long, long );
@@ -400,8 +403,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                                                         string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
     CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                         string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
-    CtiCCFeeder& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                          CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control);
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
 
@@ -557,6 +562,7 @@ private:
     BOOL _ovUvDisabledFlag;
     BOOL _correctionNeededNoBankAvailFlag;
     BOOL _likeDayControlFlag;
+    BOOL _lastVerificationMsgSentSuccessful;
 
     LONG   _eventSeq;
 

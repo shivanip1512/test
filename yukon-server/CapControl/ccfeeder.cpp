@@ -862,6 +862,18 @@ LONG CtiCCFeeder::getLastCapBankControlledDeviceId() const
     return _lastcapbankcontrolleddeviceid;
 }
 
+CtiCCCapBank* CtiCCFeeder::getLastCapBankControlledDevice()
+{
+    for(int i = 0; i < _cccapbanks.size(); i++)
+    {
+        if( ((CtiCCCapBank*)_cccapbanks[i])->getPAOId() ==  _lastcapbankcontrolleddeviceid)
+        {
+            return _cccapbanks[i];
+        }
+    }
+    return NULL;
+}
+
 /*---------------------------------------------------------------------------
     getBusOptimizedVarCategory
 
@@ -4284,7 +4296,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                {
                    returnBoolean = TRUE;
                    currentCapBank->setPerformingVerificationFlag(FALSE);
-                   //setBusUpdatedFlag(TRUE);
                    return returnBoolean;
                }
 
@@ -4664,7 +4675,6 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
            {
                returnBoolean = TRUE;
                currentCapBank->setPerformingVerificationFlag(FALSE);
-               //setBusUpdatedFlag(TRUE);
                return returnBoolean;
            }
 
@@ -4687,7 +4697,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 }
 
 
-CtiCCFeeder& CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
@@ -4699,68 +4709,28 @@ CtiCCFeeder& CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateT
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
         if( currentCapBank->getPAOId() == _currentVerificationCapBankId )
         {
-
             currentCapBank->initVerificationControlStatus();
-            setCurrentVerificationCapBankState(currentCapBank->getAssumedOrigVerificationState());
             currentCapBank->setAssumedOrigVerificationState(getCurrentVerificationCapBankOrigState());
             currentCapBank->setPreviousVerificationControlStatus(-1);
             currentCapBank->setVCtrlIndex(1); //1st control sent
-            currentCapBank->setPerformingVerificationFlag(TRUE);
             setPerformingVerificationFlag(TRUE);
 
-
+            setCurrentVerificationCapBankState(currentCapBank->getAssumedOrigVerificationState());
+            currentCapBank->setPerformingVerificationFlag(TRUE);
             if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
             {
-
-                /*if( currentCapBank->getRecloseDelay() > 0 &&
-                    currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + currentCapBank->getRecloseDelay() )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Can Not Close Cap Bank: " << currentCapBank->getPAOName() << " yet...because it has not passed its reclose delay." << endl;
-                    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                    {
-                        dout << " Last Status Change Time: " << currentCapBank->getLastStatusChangeTime() << endl;
-                        dout << " Reclose Delay:           " << currentCapBank->getRecloseDelay() << endl;
-                        dout << " Current Date Time:       " << currentDateTime << endl;
-                    }
-                    retVal = FALSE;
-                }
-                else  */
-                {
-                    //add capbank reclose delay check here...
-                    DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                    int control =  CtiCCCapBank::Close;
-                    if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
-                        _USE_FLIP_FLAG == TRUE )
-                    {
-                        control = 4; //flip
-                    }
-                string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue());
-                request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
-                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-                }
+                request = createCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentCapBank,  CtiCCCapBank::Close);
             }
             else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
             {
-                DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                int control =  CtiCCCapBank::Open;
-                if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
-                    _USE_FLIP_FLAG == TRUE )
-                {
-                    control = 4; //flip
-                }
-                string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue());
-                request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
-                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
+                request = createCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentCapBank,  CtiCCCapBank::Open);
             }
-
-
             if( request != NULL )
             {
                 pilMessages.push_back(request);
                 setLastOperationTime(currentDateTime);
-                //setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                //setLastFeederControlledPosition(i);
+
+                setLastVerificationMsgSentSuccessfulFlag(TRUE);
                 setLastCapBankControlledDeviceId( currentCapBank->getPAOId());
                 setLastOperationTime(currentDateTime);
                //((CtiCCFeeder*)_ccfeeders[currentPosition])->setLastOperationTime(currentDateTime);
@@ -4773,142 +4743,112 @@ CtiCCFeeder& CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateT
                 }
 
             }
-            //setNewPointDataReceivedFlag(FALSE);
-            //regardless what happened the substation bus should be should be sent to the client
+            else
+            {    
+                retVal = FALSE;
+                setLastVerificationMsgSentSuccessfulFlag(FALSE);
+            }
 
-            //setBusUpdatedFlag(TRUE);
-            return *this;
+            return retVal;
         }
     }
-    return *this;
+    return retVal;
 }
+
+CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                      CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control)
+{
+
+    CtiRequestMsg* request = NULL;
+    if( control == CtiCCCapBank::Close && currentCapBank->getRecloseDelay() > 0 &&
+        currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + currentCapBank->getRecloseDelay() )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can Not Close Cap Bank: " << currentCapBank->getPAOName() << " yet...because it has not passed its reclose delay." << endl;
+        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+        {
+            dout << " Last Status Change Time: " << currentCapBank->getLastStatusChangeTime() << endl;
+            dout << " Reclose Delay:           " << currentCapBank->getRecloseDelay() << endl;
+            dout << " Current Date Time:       " << currentDateTime << endl;
+        }
+
+        setWaitForReCloseDelayFlag(TRUE);
+    }
+    else
+    {
+        //check capbank reclose delay here...
+        DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+        string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+        bool flipFlag = FALSE;
+        if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
+                _USE_FLIP_FLAG == TRUE )
+        {
+            flipFlag = TRUE; //flip
+        }
+
+        if( control == CtiCCCapBank::Open)
+        {
+            control = (flipFlag ? 4 : CtiCCCapBank::Open);
+            request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
+        }
+        else
+        {
+            control = (flipFlag ? 4 : CtiCCCapBank::Close);
+            request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
+        }
+    }
+    return request;
+}
+
+
 
 
 BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
-    BOOL retVal = TRUE;
+    BOOL retVal = FALSE;
     CtiRequestMsg* request = NULL;
     for(LONG j=0;j<_cccapbanks.size();j++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
         if( currentCapBank->getPAOId() == _currentVerificationCapBankId )
         {
-            if (currentCapBank->getVCtrlIndex() == 1)
+            if (currentCapBank->getVCtrlIndex() == 1 || currentCapBank->getVCtrlIndex() == 3)
             {
+                if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ***WARNING*** Adjusting VerificationControlIndex! setting vCtrlIdx = 2. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    request = createCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentCapBank,  CtiCCCapBank::Close);
                 }
-                currentCapBank->setVCtrlIndex(2);
+                else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
+                {
+                    request = createCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentCapBank,  CtiCCCapBank::Open);
+                }
             }
             else if (currentCapBank->getVCtrlIndex() == 2)
             {
-                if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
-                {
-                    DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                    int control =  CtiCCCapBank::Open;
-                    if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
-                        _USE_FLIP_FLAG == TRUE )
-                    {
-                        control = 4; //flip
-                    }
-                    //setEventSequence(getEventSequence());
-                    string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                    request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
-                                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-                }
-                else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
-                {
-                    if( currentCapBank->getRecloseDelay() > 0 &&
-                        currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + currentCapBank->getRecloseDelay() )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Close Cap Bank: " << currentCapBank->getPAOName() << " yet...because it has not passed its reclose delay." << endl;
-                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                        {
-                            dout << " Last Status Change Time: " << currentCapBank->getLastStatusChangeTime() << endl;
-                            dout << " Reclose Delay:           " << currentCapBank->getRecloseDelay() << endl;
-                            dout << " Current Date Time:       " << currentDateTime << endl;
-                        }
-                        retVal = FALSE;
-                    }
-                    else
-                    {
-                        //check capbank reclose delay here...
-                        DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                        int control =  CtiCCCapBank::Close;
-                        if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
-                            _USE_FLIP_FLAG == TRUE )
-                        {
-                            control = 4; //flip
-                        }
-                        //currentFeeder->setEventSequence(getEventSequence());
-                        string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                        request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
-                                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-                    }
-                }
-
+                //(getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open) ||
+                //(getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
+                request = createCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentCapBank, getCurrentVerificationCapBankOrigState());
             }
-            else if (currentCapBank->getVCtrlIndex() == 3)
-            {
-                if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
-                {
-                    if( currentCapBank->getRecloseDelay() > 0 &&
-                        currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + currentCapBank->getRecloseDelay() )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Close Cap Bank: " << currentCapBank->getPAOName() << " yet...because it has not passed its reclose delay." << endl;
-                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                        {
-                            dout << " Last Status Change Time: " << currentCapBank->getLastStatusChangeTime() << endl;
-                            dout << " Reclose Delay:           " << currentCapBank->getRecloseDelay() << endl;
-                            dout << " Current Date Time:       " << currentDateTime << endl;
-                        }
-                        retVal = FALSE;
-                    }
-                    else
-                    {
-                         //check capbank reclose delay here...
-                        DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                        int control =  CtiCCCapBank::Close;
-                        if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
-                            _USE_FLIP_FLAG == TRUE )
-                        {
-                            control = 4; //flip
-                        }
-                        string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                        request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
-                                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-                    }
-                }
-                else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
-                {
-                    DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                    int control =  CtiCCCapBank::Open;
-                    if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
-                        _USE_FLIP_FLAG == TRUE )
-                    {
-                        control = 4; //flip
-                    }
-                    string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                    request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
-                                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-                }
-
-            }
-            else if (currentCapBank->getVCtrlIndex() == 5)
+            else if (currentCapBank->getVCtrlIndex() == 5 || currentCapBank->getVCtrlIndex() == 0)
             {
                 request = NULL;
+                currentCapBank->setVCtrlIndex(5);
+                setLastVerificationMsgSentSuccessfulFlag(TRUE);
+                return TRUE;
             }
+            
             if( request != NULL )
             {
+                retVal = TRUE;
                 pilMessages.push_back(request);
                 setLastCapBankControlledDeviceId( currentCapBank->getPAOId());
                 setLastOperationTime(currentDateTime);
-               //((CtiCCFeeder*)_ccfeeders[i])->setLastOperationTime(currentDateTime);
                 setVarValueBeforeControl(getCurrentVarLoadPointValue());
                 setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
+                setLastVerificationMsgSentSuccessfulFlag(TRUE);
+                setWaitForReCloseDelayFlag(FALSE);
                 figureEstimatedVarLoadPointValue();
                 if( getEstimatedVarLoadPointId() > 0 )
                 {
@@ -4917,12 +4857,16 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
 
                 return retVal;
             }
+            else
+            {
+                setLastVerificationMsgSentSuccessfulFlag(FALSE);
+            }
 
         }
     }
-
-
-
+    
+    
+    
 
     return retVal;
 }
@@ -5270,14 +5214,14 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
     {
         if( minConfirmPercent > 0 )
         {
-            for(LONG i=0;i<_cccapbanks.size();i++)
-            {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-                if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
+            CtiCCCapBank* currentCapBank = getLastCapBankControlledDevice();
+            if( currentCapBank != NULL &&
+                currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() &&
+                currentCapBank->getPerformingVerificationFlag() &&
+                currentCapBank->getVCtrlIndex() > 0)
                 {
                     DOUBLE change;
-                    if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                        currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
+                    if( currentCapBank->isPendingStatus())
                     {
                         if ( usePhaseData && !useTotalizedControl )
                         {
@@ -5326,9 +5270,8 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
                         returnBoolean = false;
                     }
 
-                    break;
                 }
-            }
+            
 
             // Check all other banks on this feeder for a pending state...
             if (found == FALSE)
@@ -5336,8 +5279,7 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
                 for(LONG i=0;i<_cccapbanks.size();i++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-                    if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                        currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                    if (currentCapBank->isPendingStatus() && currentCapBank->getVCtrlIndex() > 0)
                     {
                         if ( usePhaseData && !useTotalizedControl )
                         {
@@ -5625,6 +5567,14 @@ CtiCCFeeder& CtiCCFeeder::setLikeDayControlFlag(BOOL flag)
     if (_likeDayControlFlag != flag)
         _dirty = TRUE;
     _likeDayControlFlag = flag;
+
+    return *this;
+}
+CtiCCFeeder& CtiCCFeeder::setLastVerificationMsgSentSuccessfulFlag(BOOL flag)
+{
+    if (_lastVerificationMsgSentSuccessful != flag)
+        _dirty = TRUE;
+    _lastVerificationMsgSentSuccessful = flag;
 
     return *this;
 }
@@ -6052,6 +6002,12 @@ bool CtiCCFeeder::getLikeDayControlFlag() const
 {
     return _likeDayControlFlag;
 }
+
+BOOL CtiCCFeeder::getLastVerificationMsgSentSuccessfulFlag() const
+{
+    return _lastVerificationMsgSentSuccessful;
+}
+
 
 
 LONG CtiCCFeeder::getCurrentVerificationCapBankId() const
@@ -6879,6 +6835,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             addFlags[9] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[10] = (_correctionNeededNoBankAvailFlag?'Y':'N');
             addFlags[11] = (_likeDayControlFlag?'Y':'N');
+            addFlags[12] = (_lastVerificationMsgSentSuccessful?'Y':'N');
 
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
@@ -6892,12 +6849,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             _additionalFlags.append(char2string(*(addFlags+9)));
             _additionalFlags.append(char2string(*(addFlags+10)));
             _additionalFlags.append(char2string(*(addFlags+11)));
-            _additionalFlags.append("NNNNNNNN");
-
-            //storing current and before var values in the same db column CURRENTVALUE.BEFOREVALUE
-            double hijackedPhaseABeforeAndAfter = (INT)_phaseAvalue + (_phaseAvalueBeforeControl/BEFOREPHASEMULTIPLIER);
-            double hijackedPhaseBBeforeAndAfter = (INT)_phaseBvalue + (_phaseBvalueBeforeControl/BEFOREPHASEMULTIPLIER);
-            double hijackedPhaseCBeforeAndAfter = (INT)_phaseCvalue + (_phaseCvalueBeforeControl/BEFOREPHASEMULTIPLIER);
+            _additionalFlags.append(char2string(*(addFlags+12)));
+            _additionalFlags.append("NNNNNNN");
 
             updater.clear();
 
@@ -6920,12 +6873,15 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["ivcount"].assign(_iVCount)
             << dynamicCCFeederTable["iwcontroltot"].assign(_iWControlTot)
             << dynamicCCFeederTable["iwcount"].assign(_iWCount)
-            << dynamicCCFeederTable["phaseavalue"].assign(hijackedPhaseABeforeAndAfter)
-            << dynamicCCFeederTable["phasebvalue"].assign(hijackedPhaseBBeforeAndAfter)
-            << dynamicCCFeederTable["phasecvalue"].assign(hijackedPhaseCBeforeAndAfter)
+            << dynamicCCFeederTable["phaseavalue"].assign(_phaseAvalue)
+            << dynamicCCFeederTable["phasebvalue"].assign(_phaseBvalue)
+            << dynamicCCFeederTable["phasecvalue"].assign(_phaseCvalue)
             << dynamicCCFeederTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
             << dynamicCCFeederTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) )
-            << dynamicCCFeederTable["retryindex"].assign(_retryIndex);
+            << dynamicCCFeederTable["retryindex"].assign(_retryIndex)
+            << dynamicCCFeederTable["phaseavaluebeforecontrol"].assign(_phaseAvalueBeforeControl)
+            << dynamicCCFeederTable["phasebvaluebeforecontrol"].assign(_phaseBvalueBeforeControl)
+            << dynamicCCFeederTable["phasecvaluebeforecontrol"].assign(_phaseCvalueBeforeControl);
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -7001,8 +6957,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _phaseCvalue
             << _lastWattPointTime
             << _lastVoltPointTime
-            << _retryIndex;
-
+            << _retryIndex
+            << _phaseAvalueBeforeControl
+            << _phaseBvalueBeforeControl
+            << _phaseCvalueBeforeControl;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -7301,6 +7259,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _correctionNeededNoBankAvailFlag = right._correctionNeededNoBankAvailFlag;
         _likeDayControlFlag = right._likeDayControlFlag;
+        _lastVerificationMsgSentSuccessful = right._lastVerificationMsgSentSuccessful;
 
         _targetvarvalue = right._targetvarvalue;
         _solution = right._solution;
@@ -7603,6 +7562,7 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     _ovUvDisabledFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
     _correctionNeededNoBankAvailFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
     _likeDayControlFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
+    _lastVerificationMsgSentSuccessful = (_additionalFlags[12]=='y'?TRUE:FALSE);
     rdr["eventSeq"] >> _eventSeq;
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
@@ -7614,26 +7574,18 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     rdr["iwcontroltot"] >> _iWControlTot;
     rdr["iwcount"] >> _iWCount;
 
-    //current and before var values were stored in the same db column CURRENTVALUE.BEFOREVALUE
-    double hijackedPhaseABeforeAndAfter;
-    double hijackedPhaseBBeforeAndAfter;
-    double hijackedPhaseCBeforeAndAfter;
-    rdr["phaseavalue"] >> hijackedPhaseABeforeAndAfter;
-    rdr["phasebvalue"] >> hijackedPhaseBBeforeAndAfter;
-    rdr["phasecvalue"] >> hijackedPhaseCBeforeAndAfter;
-
-    _phaseAvalue = (INT)hijackedPhaseABeforeAndAfter;
-    _phaseBvalue = (INT)hijackedPhaseBBeforeAndAfter;
-    _phaseCvalue = (INT)hijackedPhaseCBeforeAndAfter;
-
-    _phaseAvalueBeforeControl = (hijackedPhaseABeforeAndAfter - _phaseAvalue)*BEFOREPHASEMULTIPLIER;
-    _phaseBvalueBeforeControl = (hijackedPhaseBBeforeAndAfter - _phaseBvalue)*BEFOREPHASEMULTIPLIER;
-    _phaseCvalueBeforeControl = (hijackedPhaseCBeforeAndAfter - _phaseCvalue)*BEFOREPHASEMULTIPLIER;
-
+    rdr["phaseavalue"] >> _phaseAvalue;
+    rdr["phasebvalue"] >> _phaseBvalue;
+    rdr["phasecvalue"] >> _phaseCvalue;
 
     rdr["lastwattpointtime"] >> _lastWattPointTime;
     rdr["lastvoltpointtime"] >> _lastVoltPointTime;
     rdr["retryindex"] >> _retryIndex;
+
+    rdr["phaseavaluebeforecontrol"] >> _phaseAvalueBeforeControl;
+    rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
+    rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
+
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;

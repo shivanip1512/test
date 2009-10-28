@@ -66,13 +66,23 @@ public:
     void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
                                     CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
 
+    void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
+                            CtiMultiMsg_vec& capMessages,  CtiMultiMsg* multiCCEventMsg);
+
+    void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges, 
+                                   CtiCCArea_vec& areaChanges, long broadCastMask);
+    void readClientMsgQueue();
+    void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
 private:
     
     CtiCapController();
     virtual ~CtiCapController();
 
     void controlLoop();
-    //void processCCEventMsgs(CtiMultiMsg* msgMulti);
+    void messageSender();
+    void outClientMsgs();
     void processCCEventMsgs();
 
     CtiConnection* getPILConnection();
@@ -96,7 +106,8 @@ private:
     
     static CtiCapController* _instance;                    
     RWThread _substationBusThread;
-    //RWThread _ccEventMsgThread;
+    RWThread _outClientMsgThread;
+    RWThread _messageSenderThread;
 
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;

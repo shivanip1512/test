@@ -265,6 +265,7 @@ public:
     CtiCCCapBank& initVerificationControlStatus();
     CtiCCCapBank& addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg);
     string getControlStatusText() const;
+    BOOL isPendingStatus();
 
     CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
 

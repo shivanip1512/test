@@ -389,6 +389,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBusMsg )
 public:
     CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask = 0);
     CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusesMsg);
+    CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus);
 
     virtual ~CtiCCSubstationBusMsg();
 
@@ -443,8 +444,8 @@ class CtiCCGeoAreasMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
 
 public:
-    CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, ULONG bitMask = 0);
-    //CtiCCGeoAreasMsg(CtiCCArea* ccArea);
+    CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, ULONG bitMask = 1);
+    CtiCCGeoAreasMsg(CtiCCArea* ccArea);
     CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
     virtual ~CtiCCGeoAreasMsg();
@@ -462,7 +463,7 @@ public:
     static ULONG AreaAdded;
     static ULONG AreaModified;
 private:
-    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(0) {};
+    CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(1) {};
     
     CtiCCArea_vec* _ccGeoAreas;
     ULONG _msgInfoBitMask;
