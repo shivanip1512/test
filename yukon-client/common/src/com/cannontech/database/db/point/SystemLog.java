@@ -24,18 +24,18 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 
 	/* Log types, match this with log types in yukon.h */
 	public static final int TYPE_GENERAL = 1;
-	public static final int TYPE_POINT_CHANGE = 2; //May not be used
+//	public static final int TYPE_POINT_CHANGE = 2; //Not used anywhere - 20091026
 	public static final int TYPE_LOADMANAGEMENT = 3;
-	public static final int TYPE_USER = 4;
+//	public static final int TYPE_USER = 4;   //Not used anywhere - 20091026
 	public static final int TYPE_MACS = 7; 
 	public static final int TYPE_ALARM = 8;
 	public static final int TYPE_MULTISPEAK = 9;
 	public static final int TYPE_CAP_CONTROL = 10;
 
 	public static final String TYPE_GENERAL_STRING = "General";
-	public static final String TYPE_POINT_CHANGE_STRING = "Point Change"; //May not be used
+//	public static final String TYPE_POINT_CHANGE_STRING = "Point Change"; //Not used anywhere - 20091026
 	public static final String TYPE_LOADMANAGEMENT_STRING = "Load Management";
-	public static final String TYPE_USER_STRING = "Yukon User";
+//	public static final String TYPE_USER_STRING = "Yukon User";  //Not used anywhere - 20091026
 	public static final String TYPE_MACS_STRING = "MACS"; 
 	public static final String TYPE_ALARM_STRING = "Alarming";
 	public static final String TYPE_MULTISPEAK_STRING = "MultiSpeak";
@@ -45,9 +45,7 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 	public static final int[] LOG_TYPES = {
 		
 		TYPE_GENERAL,
-		TYPE_POINT_CHANGE,
 		TYPE_LOADMANAGEMENT,
-		TYPE_USER,
 		TYPE_MACS,	
 		TYPE_ALARM,
 		TYPE_MULTISPEAK,
@@ -56,9 +54,7 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent implement
 	public static final String[] LOG_TYPE_STRINGS = {
 		
 		TYPE_GENERAL_STRING,
-		TYPE_POINT_CHANGE_STRING,
 		TYPE_LOADMANAGEMENT_STRING,
-		TYPE_USER_STRING,
 		TYPE_MACS_STRING,	
 		TYPE_ALARM_STRING,
 		TYPE_MULTISPEAK_STRING,
@@ -93,12 +89,8 @@ public static String getLogTypeStringFromID(int id_)
 	{
 		case TYPE_GENERAL:
 			return TYPE_GENERAL_STRING;
-		case TYPE_POINT_CHANGE:
-			return TYPE_POINT_CHANGE_STRING;
 		case TYPE_LOADMANAGEMENT:
 			return TYPE_LOADMANAGEMENT_STRING;
-		case TYPE_USER:
-			return TYPE_USER_STRING;
 		case TYPE_MACS:
 			return TYPE_MACS_STRING;
 		case TYPE_ALARM:
