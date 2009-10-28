@@ -755,7 +755,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 }
             }
         }
-        else if(CmdStr.contains(" phasecurrent read"))
+        else if(CmdStr.contains(" phase current"))
         {
             _cmd["phasecurrentread"] = CtiParseValue(TRUE);
         }
