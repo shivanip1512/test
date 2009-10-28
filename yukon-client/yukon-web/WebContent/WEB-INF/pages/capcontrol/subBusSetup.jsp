@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var substationBusVoltReductionPointPicker = new PointPicker('subReductionPointValue','com.cannontech.common.search.criteria.StatusPointCriteria','pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice','substationBusVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+        var substationBusVoltReductionPointPicker = new PointPicker('subReductionPointValue','com.cannontech.common.search.criteria.VoltReductionCriteria','pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice','substationBusVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
         var sub_Var_PointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_Point;deviceName:sub_Var_Device','sub_Var_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
         var sub_Var_PhaseB_PointPicker = new PointPicker('var_phase_b_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device','sub_Var_PhaseB_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
         var sub_Var_PhaseC_PointPicker = new PointPicker('var_phase_c_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device','sub_Var_PhaseC_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
