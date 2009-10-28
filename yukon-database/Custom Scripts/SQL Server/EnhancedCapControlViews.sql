@@ -85,7 +85,7 @@ GO
 /* EnhancedCCOperations View
  * This view is the same view as CCInventory_View except for it also contains the 
  * communication strength (CommStrength), the switch command (SWCommand), the operation reason (OPReason), 
- * and the conformation status (ConfermationStatus).
+ * and the confirmation status (ConfirmationStatus).
  */
 CREATE VIEW EnhancedCCOperations_View AS 
 SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBankId, YP.PAOName AS CapBankName, 
@@ -94,7 +94,7 @@ SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBank
        YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
        YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, YP4.PAOName AS Region, YP4.PAObjectId AS AreaId, 
        CB.BankSize, CB.ControllerType, CBA.CommStrength, CCOAS.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
-       CCOBC.KvarAfter, CCOBC.KvarChange, CCOBC.KvarBefore, CCOAS.SWCommand, CCOAS.OPReason, CCOBC.CapBankStateInfo AS ConfermationStatus
+       CCOBC.KvarAfter, CCOBC.KvarChange, CCOBC.KvarBefore, CCOAS.SWCommand, CCOAS.OPReason, CCOBC.CapBankStateInfo AS ConfirmationStatus
 FROM EnhancedCCOperationsASent_View CCOAS 
 JOIN CCOperationsBConfirmed_View CCOBC ON CCOBC.ActionId = CCOAS.ActionId 
 AND CCOBC.PointId = CCOAS.PointId 
