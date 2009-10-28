@@ -16,8 +16,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -364,7 +366,48 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         deleteInventoryToWarehouseMapping(inventoryId);
         internalDeleteInventoryBase(inventoryId);
     }
+    
+    @Override
+    public List<PaoIdentifier> getPaosNotInInventory() {
 
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append("WHERE NOT EXISTS");
+        sql.append("      (SELECT * FROM InventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId)");
+
+        List<PaoIdentifier> paoList = 
+            simpleJdbcTemplate.query(sql.getSql(), new YukonPaoRowMapper(), sql.getArguments());
+        
+        return paoList;
+    }
+
+    @Override
+    public List<PaoIdentifier> getPaosNotOnAnAccount(List<LiteStarsEnergyCompany> energyCompanyList) {
+
+        List<Integer> ecIdList = new ArrayList<Integer>();
+        for (LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+            ecIdList.add(energyCompany.getEnergyCompanyID());
+        }
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.*");
+        sql.append("FROM InventoryBase ib");
+        sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
+        sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+        sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+        sql.append("WHERE etim.EnergyCompanyId IN (").append(ecIdList).append(")");
+        sql.append("AND ib.AccountId = 0");
+        sql.append("AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+
+        List<PaoIdentifier> paoList = simpleJdbcTemplate.query(sql.toString(),
+                                                                new YukonPaoRowMapper(),
+                                                                sql.getArguments());
+
+        return paoList;
+
+
+    }
+    
     private void deleteLMHardwareInfo(LiteInventoryBase liteInv) {
         int inventoryId = liteInv.getInventoryID();
 

@@ -6,20 +6,20 @@
  */
 package com.cannontech.stars.web.bean;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 
 /**
@@ -48,7 +48,7 @@ public class DeviceBean {
 	private String action = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private List<LiteYukonPAObject> deviceList = null;
+	private List<DisplayablePao> deviceList = null;
 
 	public DeviceBean() {
 	}
@@ -59,42 +59,65 @@ public class DeviceBean {
 		return energyCompany;
 	}
 	
-	private List<LiteYukonPAObject> getDeviceList() {
-		if (deviceList != null) return deviceList;
-		deviceList = new ArrayList<LiteYukonPAObject>();
-		
-		String deviceName = getDeviceName();
-		List<LiteYukonPAObject> devices = InventoryManagerUtil.searchDevice( getCategoryID(), deviceName );
-		
-		StarsSearchDao starsSearchDao = (StarsSearchDao) YukonSpringHook.getBean("starsSearchDao");
-		
-		if (getFilter() == DEV_FILTER_NOT_ASSIGNED
-			|| getFilter() == DEV_FILTER_NOT_IN_INVENTORY)
-		{
-			for (int i = 0; i < devices.size(); i++) {
-				LiteYukonPAObject litePao =  devices.get(i);
-				try {
-					LiteInventoryBase liteInv = starsSearchDao.getByDeviceId(litePao.getYukonID(), getEnergyCompany());
-					if (liteInv.getAccountID() == 0 && getFilter() == DEV_FILTER_NOT_ASSIGNED)
-						deviceList.add( litePao );
-				}
-				catch (ObjectInOtherEnergyCompanyException e) {
-					
-				}
-				catch (NotFoundException e) {
-					deviceList.add( litePao );
-				}
-			}
+	private List<DisplayablePao> getDeviceList() {
+		if (deviceList != null) {
+		    return deviceList;
 		}
-		else {
-			deviceList.addAll( devices );
+		
+		List<LiteYukonPAObject> devices = 
+		    InventoryManagerUtil.searchDevice(getCategoryID(), getDeviceName());
+
+		PaoLoadingService paoLoadingService = YukonSpringHook.getBean(PaoLoadingService.class);
+		List<DisplayablePao> currentDeviceList = paoLoadingService.getDisplayableDevices(devices);
+		
+		int currentFilter = getFilter();
+		List<LiteStarsEnergyCompany> energyCompanyList = 
+		    Collections.singletonList(getEnergyCompany());
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+		    YukonSpringHook.getBean(StarsInventoryBaseDao.class);
+
+		if(currentFilter == DEV_FILTER_NOT_IN_INVENTORY) {
+		    
+		    List<PaoIdentifier> paosToKeep = starsInventoryBaseDao.getPaosNotInInventory();
+
+		    Iterator<DisplayablePao> iterator = currentDeviceList.iterator();
+		    while(iterator.hasNext()) {
+		        DisplayablePao pao = iterator.next();
+		        PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
+		        if(!paosToKeep.contains(paoIdentifier)) {
+		            currentDeviceList.remove(pao);
+		        }
+		    }
+		    
+		} else if(currentFilter == DEV_FILTER_NOT_ASSIGNED) {
+		    
+		    // Get paos not in inventory
+		    List<PaoIdentifier> paosToKeep = starsInventoryBaseDao.getPaosNotInInventory();
+		    
+		    // Get paos in inventory but not assigned to an account
+		    List<PaoIdentifier> paosNotOnAnAccount = 
+		        starsInventoryBaseDao.getPaosNotOnAnAccount(energyCompanyList);
+		    
+		    paosToKeep.addAll(paosNotOnAnAccount);
+		    
+		    Iterator<DisplayablePao> iterator = currentDeviceList.iterator();
+            while(iterator.hasNext()) {
+                DisplayablePao pao = iterator.next();
+                PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
+                if(!paosToKeep.contains(paoIdentifier)) {
+                    currentDeviceList.remove(pao);
+                }
+            }
+		    
 		}
+
+		deviceList = currentDeviceList;
 		
 		return deviceList;
 	}
 	
 	public String getHTML(HttpServletRequest req) {
-		List<LiteYukonPAObject> devList = getDeviceList();
+		List<DisplayablePao> devList = getDeviceList();
 		
 		if (devList == null || devList.size() == 0) {
 			StringBuffer htmlBuf = new StringBuffer();
@@ -183,14 +206,14 @@ public class DeviceBean {
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
 		for (int i = minInvNo; i <= maxInvNo; i++) {
-			LiteYukonPAObject litePao = devList.get(i-1);
+			DisplayablePao pao = devList.get(i-1);
         	
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%'>");
-			htmlBuf.append("<input type='radio' name='DeviceID' value='").append(litePao.getYukonID()).append("'>");
+			htmlBuf.append("<input type='radio' name='DeviceID' value='").append(pao.getPaoIdentifier().getPaoId()).append("'>");
 			htmlBuf.append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='50%'>").append( litePao.getPaoName() ).append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='40%'>").append( PAOGroups.getPAOTypeString(litePao.getType()) ).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='50%'>").append(pao.getName()).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='40%'>").append(pao.getPaoIdentifier().getPaoType().getPaoTypeName()).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		}
         

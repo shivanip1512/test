@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -87,5 +88,18 @@ public interface StarsInventoryBaseDao {
      * Deletes a hardware device from the inventory.  Deletes only the LM Hardware for now.
      */
     public void deleteInventoryBase(int inventoryId);    
+    
+    /**
+     * Method to get a list of paos that are not associated with an inventory object
+     * @return List of paos
+     */
+    public List<PaoIdentifier> getPaosNotInInventory();
+
+    /**
+     * Method to get a list of paos that are associated with an inventory object and are NOT
+     * on an account
+     * @return List of paos
+     */
+    List<PaoIdentifier> getPaosNotOnAnAccount(List<LiteStarsEnergyCompany> energyCompanyList);
     
 }
