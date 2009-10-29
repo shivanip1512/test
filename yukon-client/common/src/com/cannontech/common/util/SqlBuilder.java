@@ -35,6 +35,13 @@ public interface SqlBuilder {
 
     /**
      * Adds a "? " to the output and adds the argument to the argument list.
+     * 
+     * This method has special handling for some arguments based on the type
+     * of Object passed in:
+     * 
+     *   DatabaseRepresentationSource - call getDatabaseRepresentation() and append result
+     *   Enum - call name() and append result
+     *   ReadableInstant - call toDate() and append result
      * @param argument
      * @return
      */

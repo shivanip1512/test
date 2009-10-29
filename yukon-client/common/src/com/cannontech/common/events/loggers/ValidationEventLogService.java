@@ -13,4 +13,7 @@ public interface ValidationEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation")
     public void validationEngineStartup(long lastChangeIdProcessed, int tagsCleared);
 
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation")
+    public void changedQualityOnPeakedValue(PaoIdentifier paoIdentifier, int changeId);
+
 }

@@ -1,6 +1,8 @@
 package com.cannontech.common.point;
 
-public enum PointQuality {
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
+public enum PointQuality implements DatabaseRepresentationSource {
     Uninitialized(0, "Uninitialized", "Uninit"),
     InitDefault(1, "Init Default", "Init-Def"),	//not used JOtteson 6/30/2009
     InitLastKnown(2, "Init Last Known", "Init-Last"),	//not used JOtteson 6/30/2009
@@ -39,6 +41,11 @@ public enum PointQuality {
     public final int getQuality() {
 		return quality;
 	}
+    
+    @Override
+    public Object getDatabaseRepresentation() {
+        return quality;
+    }
     
     public final String getDescription() {
 		return description;

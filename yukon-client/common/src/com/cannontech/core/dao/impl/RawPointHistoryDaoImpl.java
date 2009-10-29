@@ -2,32 +2,33 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ReverseList;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.MaxListResultSetExtractor;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.YukonJdbcTemplate;
 
 /**
  * Implementation of RawPointHistoryDao
  */
 public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
-    private SimpleJdbcTemplate jdbcTemplate = null;
+    private YukonJdbcTemplate yukonTemplate = null;
 
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setJdbcTemplate(YukonJdbcTemplate yukonTemplate) {
+        this.yukonTemplate = yukonTemplate;
     }
 
     private static final String sqlBasePoint = 
@@ -35,6 +36,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         "       rph.pointid,                                                    " + 
         "       rph.timestamp,                                                  " + 
         "       rph.value,                                                      " + 
+        "       rph.quality,                                                    " + 
         "       p.pointtype                                                     " + 
         "   FROM                                                                " + 
         "       rawpointhistory rph,                                            " + 
@@ -49,6 +51,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         "       rph.pointid,                                                    " + 
         "       rph.timestamp,                                                  " + 
         "       rph.value,                                                      " + 
+        "       rph.quality,                                                    " + 
         "       p.pointtype                                                     " + 
         "   FROM                                                                " + 
         "       rawpointhistory rph,                                            " + 
@@ -79,7 +82,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     public PointValueHolder getPointData(int pointId, Date date) {
         PointValueHolder result;
-        List<PointValueHolder> results = jdbcTemplate.query(sqlBasePoint, new LiteRPHRowMapper(), pointId, date);
+        List<PointValueHolder> results = yukonTemplate.query(sqlBasePoint, new LiteRPHRowMapper(), pointId, date);
         if(results.isEmpty()){
             return null;
         }else{
@@ -111,7 +114,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     private List<PointValueHolder> doGetPointData(String sql, int pointId, Date startDate, Date stopDate) {
         
-        List<PointValueHolder> result = jdbcTemplate.query(sql, new LiteRPHRowMapper(), pointId, startDate, stopDate);
+        List<PointValueHolder> result = yukonTemplate.query(sql, new LiteRPHRowMapper(), pointId, startDate, stopDate);
         return result;
     }
     
@@ -120,12 +123,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         if (startDate.before(stopDate)) {
             // do forward query
             Object[] arguments = new Object[] {pointId, startDate, stopDate};
-            JdbcOperations oldTemplate = jdbcTemplate.getJdbcOperations();
+            JdbcOperations oldTemplate = yukonTemplate.getJdbcOperations();
             oldTemplate.query(buildSql(false, true), arguments, rse);
         } else {
             // do backward query
             Object[] arguments = new Object[] {pointId, stopDate, startDate};
-            JdbcOperations oldTemplate = jdbcTemplate.getJdbcOperations();
+            JdbcOperations oldTemplate = yukonTemplate.getJdbcOperations();
             oldTemplate.query(buildSql(false, false), arguments, rse);
         }
         List<PointValueHolder> result = rse.getResult();
@@ -137,15 +140,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
      */
     private class LiteRPHRowMapper implements ParameterizedRowMapper<PointValueHolder> {
 
-        public PointValueHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public PointValueQualityHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-            final int pointId = rs.getInt("pointid");
-            final Timestamp timestamp = rs.getTimestamp("timestamp");
-            final double value = rs.getDouble("value");
-
-            final int type = PointTypes.getType(rs.getString("pointtype"));
-
-            return new SimplePointValue(pointId, timestamp, type, value);
+            PointValueBuilder builder = PointValueBuilder.create();
+            builder.withResultSet(rs);
+            builder.withType(rs.getString("pointtype"));
+            return builder.build();
         }
 
     }
@@ -199,6 +199,17 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             result = new ReverseList<PointValueHolder>(result);
         }
         return result;
+    }
+    
+    @Override
+    public void changeQuality(int changeId, PointQuality questionable) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("update RawPointHistory");
+        sql.append("set Quality").eq(questionable);
+        sql.append("where ChangeId").eq(changeId);
+        
+        yukonTemplate.update(sql);
+        
     }
 
 }

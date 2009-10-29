@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 /**
@@ -67,8 +68,8 @@ public interface RawPointHistoryDao {
     /**
      * Method to get a list of point values for a given time period, but only returning
      * up to maxRows rows. If startDate.before(stopDate) is true, the returned list
-     * will contain the maxRows closset to startDate.  If stopDate.before(startDate) 
-     * is true, the returned list will contain the maxRows closset to stopDate. 
+     * will contain the maxRows closest to startDate.  If stopDate.before(startDate) 
+     * is true, the returned list will contain the maxRows closest to stopDate. 
      *
      * See note about start and stop order.
      * Always excludes start date, and includes end date.
@@ -102,5 +103,14 @@ public interface RawPointHistoryDao {
      * @return
      */
     public List<PointValueHolder> getIntervalPointData(int pointId, Date startDate, Date stopDate, ChartInterval resolution, Mode mode);
+
+
+    /**
+     * Update the quality for the specified change id.
+     * 
+     * @param changeId any valid change id
+     * @param questionable any valid quality
+     */
+    public void changeQuality(int changeId, PointQuality questionable);
 
 }

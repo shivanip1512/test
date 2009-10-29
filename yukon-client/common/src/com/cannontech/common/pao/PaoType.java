@@ -3,6 +3,7 @@ package com.cannontech.common.pao;
 
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -11,7 +12,7 @@ import com.cannontech.database.data.pao.RouteTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum PaoType {
+public enum PaoType implements DatabaseRepresentationSource {
     CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU711(DeviceTypes.CCU711, "CCU-711", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     TCU5000(DeviceTypes.TCU5000, "TCU-5000", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -214,6 +215,11 @@ public enum PaoType {
 
     public String getDbString() {
         return dbString;
+    }
+    
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getDbString();
     }
 
     public PaoCategory getPaoCategory() {

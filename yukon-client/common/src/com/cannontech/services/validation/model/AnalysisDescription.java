@@ -10,6 +10,7 @@ public class AnalysisDescription {
     private double kwhReadingError = .1;
     private double kwhSlopeError = 4;
     private double peakHeightMinimum = 2;
+    private boolean setQuestionableOnPeak = true;
     private boolean reReadOnUnreasonable = false;
     private DeviceGroup deviceGroup;
     
@@ -48,5 +49,11 @@ public class AnalysisDescription {
     }
     public DeviceGroup getDeviceGroup() {
         return deviceGroup;
+    }
+    public void setSetQuestionableOnPeak(boolean setQuestionableOnPeak) {
+        this.setQuestionableOnPeak = setQuestionableOnPeak;
+    }
+    public boolean isSetQuestionableOnPeak() {
+        return setQuestionableOnPeak;
     }
 }

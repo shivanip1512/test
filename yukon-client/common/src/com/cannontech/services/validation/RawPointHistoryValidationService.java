@@ -31,11 +31,13 @@ import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.service.PointReadService;
 import com.cannontech.common.events.loggers.ValidationEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.WaitableExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
+import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.point.PointType;
@@ -66,6 +68,7 @@ public class RawPointHistoryValidationService {
     private AnalysisDescriptionDao analysisDescriptionDao;
     private AttributeService attributeService;
     private RphTagDao rphTagDao;
+    private RawPointHistoryDao rawPointHistoryDao;
     private PersistedSystemValueDao persistedSystemValueDao;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private ValidationEventLogService validationEventLogService;
@@ -127,7 +130,7 @@ public class RawPointHistoryValidationService {
                     }
                 } while (didSomething);
             }
-        }, 0, 1, TimeUnit.MINUTES);
+        }, 2, 1, TimeUnit.MINUTES);
 
     }
 
@@ -406,7 +409,7 @@ public class RawPointHistoryValidationService {
                 // Check if re read should be performed. The goal here is to get
                 // an extra reading so that we can detect a possible peak. But,
                 // we don't want to loop if a meter is simply recording a lot of
-                // usage at the moment or the customer hasn't correctly configured
+                // usage at the moment or the utility hasn't correctly configured
                 // the usage limits. To prevent looping, we'll look at the usage delta
                 // between the 2 and 1 values (essentially the same as looking to see 
                 // if the 1 value has a UU tag, but without hitting the DB). If the 
@@ -452,6 +455,12 @@ public class RawPointHistoryValidationService {
                 LogHelper.debug(log, "Sumbitting reread for a %.1f old reading for %s", timeSinceReading.toPeriod(), workUnit.paoPointIdentifier);
                 validationEventLogService.unreasonableValueCausedReRead(workUnit.paoPointIdentifier.getPaoIdentifier(), workUnit.paoPointIdentifier.getPointIdentifier());
             }
+        }
+        
+        if (analysisDescription.isSetQuestionableOnPeak() && peakInTheMiddle) {
+            int changeId = values.get(1).changeId; // peak in the "middle" means the 1 value
+            rawPointHistoryDao.changeQuality(changeId, PointQuality.Questionable);
+            validationEventLogService.changedQualityOnPeakedValue(workUnit.paoPointIdentifier.getPaoIdentifier(), changeId);
         }
     }
 
@@ -589,6 +598,11 @@ public class RawPointHistoryValidationService {
     @Autowired
     public void setRphTagDao(RphTagDao rphTagDao) {
         this.rphTagDao = rphTagDao;
+    }
+    
+    @Autowired
+    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
+        this.rawPointHistoryDao = rawPointHistoryDao;
     }
     
     @Autowired

@@ -225,7 +225,9 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     }
 
     private void addArgument(Object argument) {
-        if (argument instanceof Enum<?>) {
+        if (argument instanceof DatabaseRepresentationSource) {
+            arguments.add(((DatabaseRepresentationSource) argument).getDatabaseRepresentation());
+        } else if (argument instanceof Enum<?>) {
             Enum<?> e = (Enum<?>) argument;
             arguments.add(e.name());
         } else if (argument instanceof ReadableInstant) {
