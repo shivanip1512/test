@@ -29,11 +29,12 @@
         </cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.modules.dr.controlAreaDetail.controlArea"
+    <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
+    <h2><dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}"/>
+    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.controlArea"
         htmlEscape="true" argument="${controlArea.name}"/></h2>
     <br>
 
-    <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
@@ -484,7 +485,6 @@
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                         </div>
                     </cti:checkPaoAuthorization>
-                    <dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}" includeText="true"/><br>
     	        </tags:abstractContainer>
             </td>
         </tr>

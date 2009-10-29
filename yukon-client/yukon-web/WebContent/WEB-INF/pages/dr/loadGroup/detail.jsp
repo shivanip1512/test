@@ -30,11 +30,12 @@
         </cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.modules.dr.loadGroupDetail.loadGroup"
+    <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
+    <h2><dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}"/>
+        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.loadGroup"
         htmlEscape="true" argument="${loadGroup.name}"/></h2>
     <br>
 
-    <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
     <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
@@ -182,7 +183,6 @@
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                         </div>
                     </cti:checkPaoAuthorization>
-                    <dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}" includeText="true"/><br>
                 </tags:abstractContainer>
             </td>
         </tr>

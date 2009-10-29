@@ -6,13 +6,11 @@
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
 <entry key="yukon.web.modules.dr.blankField">N/A</entry>
 
-<entry key="yukon.web.modules.dr.actions.addFavorite">Add To Favorites</entry>
-<entry key="yukon.web.modules.dr.actions.addFavoriteIcon">/WebConfig/yukon/Icons/star_grey.png</entry>
-<entry key="yukon.web.modules.dr.actions.addFavoriteIcon.hover">/WebConfig/yukon/Icons/star.gif</entry>
+<entry key="yukon.web.modules.dr.actions.addFavoriteIcon">/WebConfig/yukon/Icons/favorite_not.gif</entry>
+<entry key="yukon.web.modules.dr.actions.addFavoriteIcon.hover">/WebConfig/yukon/Icons/favorite.gif</entry>
 <entry key="yukon.web.modules.dr.actions.addFavoriteIcon.alt">Add to favorites</entry>
-<entry key="yukon.web.modules.dr.actions.removeFavorite">Remove From Favorites</entry>
-<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon">/WebConfig/yukon/Icons/star.gif</entry>
-<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon.hover">/WebConfig/yukon/Icons/star_over.gif</entry>
+<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon">/WebConfig/yukon/Icons/favorite.gif</entry>
+<entry key="yukon.web.modules.dr.actions.removeFavoriteIcon.hover">/WebConfig/yukon/Icons/favorite_not.gif</entry>
 <entry key="yukon.web.modules.dr.actions.removeFavoriteIcon.alt">Remove from favorites</entry>
 
 <entry key="yukon.web.modules.dr.paoType.LM_SCENARIO">Scenario</entry>

@@ -29,11 +29,12 @@
         </cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.modules.dr.scenarioDetail.scenario"
+    <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
+    <h2><dr:favoriteIcon paoId="${scenarioId}" isFavorite="${isFavorite}"/>
+        <cti:msg key="yukon.web.modules.dr.scenarioDetail.scenario"
         htmlEscape="true" argument="${scenario.name}"/></h2>
     <br>
 
-    <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
@@ -81,7 +82,6 @@
                         </span>
                         <br>
                     </cti:checkPaoAuthorization>
-                    <dr:favoriteIcon paoId="${scenarioId}" isFavorite="${isFavorite}" includeText="true"/><br>
     	        </tags:abstractContainer>
             </td>
         </tr>

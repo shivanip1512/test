@@ -30,11 +30,12 @@
         </cti:crumbLink>
     </cti:breadCrumbs>
 
-    <h2><cti:msg key="yukon.web.modules.dr.programDetail.program"
+    <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+    <h2><dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}"/>
+        <cti:msg key="yukon.web.modules.dr.programDetail.program"
         htmlEscape="true" argument="${program.name}"/></h2>
     <br>
 
-    <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td width="50%" valign="top">
@@ -305,7 +306,6 @@
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/>
                         </div>
                     </cti:checkPaoAuthorization>
-                    <dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}" includeText="true"/><br>
                 </tags:abstractContainer>
             </td>
         </tr>
