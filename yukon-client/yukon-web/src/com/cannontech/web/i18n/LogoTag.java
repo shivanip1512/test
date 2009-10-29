@@ -36,7 +36,7 @@ public class LogoTag extends YukonTagSupport {
 	
 	            // Create image html
 	            StringBuilder sb = new StringBuilder();
-	            sb.append("<img src=\"");
+	            sb.append("<img class=\"logoImage\" src=\"");
 	            sb.append(safeUrl);
 	            sb.append("\"");
 	

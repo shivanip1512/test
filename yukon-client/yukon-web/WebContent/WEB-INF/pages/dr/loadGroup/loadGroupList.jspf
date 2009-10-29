@@ -101,59 +101,61 @@
         </table>
         
         <br>
-        <input type="submit" value="<cti:msg key="yukon.web.modules.dr.loadGroupList.filter.submit"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/>"
-            onclick="javascript:clearFilter()"/>
+        <div class="actionArea">
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.loadGroupList.filter.submit"/>"/>
+            <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/>"
+                onclick="javascript:clearFilter()"/>
+        </div>
     </form:form>
 </tags:simplePopup>
 
 <%-- Main Load Group list table section --%>
 
-<c:if test="${searchResult.hitCount == 0}">
-    <cti:msg key="yukon.web.modules.dr.loadGroupList.noResults"/><br>
-    <a href="javascript:void(0)" onclick="$('filterPopup').show()"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a>
-    <a href="javascript:void(0)" onclick="javascript:clearFilter()"><cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/></a>
-</c:if>
-<c:if test="${searchResult.hitCount > 0}">
-<dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-    filter="$('filterPopup').show()"/>
 <cti:msg var="loadGroupTitle" key="yukon.web.modules.dr.loadGroupList.loadGroups"/>
-<tags:abstractContainer type="box" title="${loadGroupTitle}">
+<tags:pagedBox title="${loadGroupTitle}" searchResult="${searchResult}"
+    filterDialog="filterPopup" baseUrl="${baseUrl}">
     <table id="loadGroupList" class="compactResultsTable rowHighlighting">
         <tr>
             <th></th>
+            <c:set var="numColumns" value="1"/>
             <th>
                 <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.name"
                     baseUrl="${baseUrl}" fieldName="NAME"/>        
             </th>
             <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.state"
                         baseUrl="${baseUrl}" fieldName="STATE"/>        
                 </th>
             </cti:checkRolesAndProperties>
+            <c:set var="numColumns" value="${numColumns + 1}"/>
             <th>
                 <cti:msg key="yukon.web.modules.dr.loadGroupList.heading.action" />
             </th>
             <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.lastAction"
                         baseUrl="${baseUrl}" fieldName="LAST_ACTION"/>        
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics"
                         baseUrl="${baseUrl}" fieldName="CONTROL_STATISTICS"/>        
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.reduction"
                         baseUrl="${baseUrl}" fieldName="REDUCTION"/>        
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.loadCapacity"
                         baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
@@ -192,8 +194,8 @@
                 </cti:checkRolesAndProperties>
             </tr>
         </c:forEach>
+        <c:if test="${searchResult.hitCount == 0}">
+            <tr><td></td><td colspan="${numColumns}"><cti:msg key="yukon.web.modules.dr.loadGroupList.noResults"/></td></tr>
+        </c:if>
     </table>
-</tags:abstractContainer>
-<dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-    filter="$('filterPopup').show()"/>
-</c:if>
+</tags:pagedBox>

@@ -19,40 +19,37 @@
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.searchResults.breadcrumb.home"/></cti:crumbLink>
     </cti:breadCrumbs>
 
-    <c:if test="${searchResult.hitCount == 0}">
-        <cti:msg key="yukon.web.modules.dr.searchResults.noResults"/>
-    </c:if>
-    <c:if test="${searchResult.hitCount > 0}">
-        <c:set var="baseUrl" value="/spring/dr/search"/>
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
-        <cti:msg var="searchTitle" key="yukon.web.modules.dr.searchResults.searchResult" argument="${quickSearchBean.name}"/>
-        <tags:abstractContainer type="box" title="${searchTitle}">
-            <table class="compactResultsTable">
-                <tr>
-                    <th></th>
-                    <th>
-                        <cti:msg key="yukon.web.modules.dr.searchResults.nameHeader"></cti:msg>
-                    </th>
-                    <th>
-                        <cti:msg key="yukon.web.modules.dr.searchResults.typeHeader"></cti:msg>
-                    </th>
+    <c:set var="baseUrl" value="/spring/dr/search"/>
+    <cti:msg var="searchTitle" key="yukon.web.modules.dr.searchResults.searchResult" argument="${quickSearchBean.name}"/>
+    <tags:pagedBox title="${searchTitle}" searchResult="${searchResult}"
+        baseUrl="${baseUrl}">
+        <table class="compactResultsTable">
+            <tr>
+                <th></th>
+                <th>
+                    <cti:msg key="yukon.web.modules.dr.searchResults.nameHeader"></cti:msg>
+                </th>
+                <th>
+                    <cti:msg key="yukon.web.modules.dr.searchResults.typeHeader"></cti:msg>
+                </th>
+            </tr>
+            <c:forEach var="pao" items="${searchResult.resultList}">
+                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}"/></td>
+                    <td>
+                        <cti:paoDetailUrl yukonPao="${pao}">
+                            <spring:escapeBody>${pao.name}</spring:escapeBody>
+                        </cti:paoDetailUrl>
+                    </td>
+                    <td>
+                        <cti:msg key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}"/>
+                    </td>
                 </tr>
-                <c:forEach var="pao" items="${searchResult.resultList}">
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}"/></td>
-                        <td>
-                            <cti:paoDetailUrl yukonPao="${pao}">
-                                <spring:escapeBody>${pao.name}</spring:escapeBody>
-                            </cti:paoDetailUrl>
-                        </td>
-                        <td>
-                            <cti:msg key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}"/>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </table>
-        </tags:abstractContainer>
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"/>
-    </c:if>
+            </c:forEach>
+            <c:if test="${searchResult.hitCount == 0}">
+                <tr><td></td><td colspan="3"><cti:msg key="yukon.web.modules.dr.searchResults.noResults"/></td></tr>
+            </c:if>
+        </table>
+    </tags:pagedBox>
 
 </cti:standardPage>

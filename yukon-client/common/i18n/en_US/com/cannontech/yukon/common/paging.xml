@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="yukon.common.paging.previous">Prev</entry>
+<entry key="yukon.common.paging.previousIcon">/WebConfig/yukon/Icons/resultset_previous.gif</entry>
+<entry key="yukon.common.paging.previousIcon.hover">/WebConfig/yukon/Icons/resultset_previous.gif</entry>
+<entry key="yukon.common.paging.previousIcon.disabled">/WebConfig/yukon/Icons/resultset_previous_disabled.gif</entry>
+<entry key="yukon.common.paging.previousIcon.alt">Start Scenario</entry>
+
+<entry key="yukon.common.paging.next">Next</entry>
+<entry key="yukon.common.paging.nextIcon">/WebConfig/yukon/Icons/resultset_next.gif</entry>
+<entry key="yukon.common.paging.nextIcon.hover">/WebConfig/yukon/Icons/resultset_next.gif</entry>
+<entry key="yukon.common.paging.nextIcon.disabled">/WebConfig/yukon/Icons/resultset_next_disabled.gif</entry>
+<entry key="yukon.common.paging.nextIcon.alt">Start Scenario</entry>
+
+<entry key="yukon.common.paging.viewing">{0}-{1} of {2}</entry>
+<entry key="yukon.common.paging.itemsPerPage">Items per Page: </entry>
+
+</properties>

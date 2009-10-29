@@ -6,17 +6,6 @@
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
 <entry key="yukon.web.modules.dr.blankField">N/A</entry>
 
-
-<entry key="yukon.web.modules.dr.paging.viewing">Viewing {0}-{1} of {2}</entry>
-<entry key="yukon.web.modules.dr.paging.resultsPerPage">Results per page:</entry>
-<entry key="yukon.web.modules.dr.paging.filter">Filter</entry>
-<entry key="yukon.web.modules.dr.paging.page">Page:</entry>
-
-<entry key="yukon.web.modules.dr.paging.first">first</entry>
-<entry key="yukon.web.modules.dr.paging.previous">previous</entry>
-<entry key="yukon.web.modules.dr.paging.next">next</entry>
-<entry key="yukon.web.modules.dr.paging.last">last</entry>
-
 <entry key="yukon.web.modules.dr.actions.addFavorite">Add To Favorites</entry>
 <entry key="yukon.web.modules.dr.actions.addFavoriteIcon">/WebConfig/yukon/Icons/star_grey.png</entry>
 <entry key="yukon.web.modules.dr.actions.addFavoriteIcon.hover">/WebConfig/yukon/Icons/star.gif</entry>

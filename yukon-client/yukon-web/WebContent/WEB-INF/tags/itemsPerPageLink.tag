@@ -7,7 +7,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <c:if test="${itemsPerPage == searchResult.count}">
-    ${itemsPerPage}
+    <span class="selectedItem">${itemsPerPage}</span>
 </c:if>
 
 <c:if test="${itemsPerPage != searchResult.count}">

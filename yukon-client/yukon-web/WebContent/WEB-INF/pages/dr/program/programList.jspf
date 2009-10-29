@@ -130,71 +130,75 @@ function clearFilter() {
         </table>
         
         <br>
-        <input type="submit" value="<cti:msg key="yukon.web.modules.dr.programList.filter.submit"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.programList.filter.clear"/>"
-            onclick="javascript:clearFilter()"/>
+        <div class="actionArea">
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.programList.filter.submit"/>"/>
+            <input type="button" value="<cti:msg key="yukon.web.modules.dr.programList.filter.clear"/>"
+                onclick="javascript:clearFilter()"/>
+        </div>
     </form:form>
 </tags:simplePopup><br>
 
 <%-- Main Program list table section --%>
 
-<c:if test="${searchResult.hitCount == 0}">
-    <cti:msg key="yukon.web.modules.dr.programList.noResults"/><br>
-    <a href="javascript:void(0)" onclick="$('filterPopup').show()"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a>
-    <a href="javascript:void(0)" onclick="javascript:clearFilter()"><cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/></a>
-</c:if>
-<c:if test="${searchResult.hitCount > 0}">
-<dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-    filter="$('filterPopup').show()"/>
 <cti:msg var="programTitle" key="yukon.web.modules.dr.programList.programs"/>
-<tags:abstractContainer type="box" title="${programTitle}">
+<tags:pagedBox title="${programTitle}" searchResult="${searchResult}"
+    filterDialog="filterPopup" baseUrl="${baseUrl}">
     <table id="programList" class="compactResultsTable rowHighlighting">
         <tr>
             <th></th>
+            <c:set var="numColumns" value="1"/>
             <th>
                 <dr:sortByLink key="yukon.web.modules.dr.programList.heading.name"
                     baseUrl="${baseUrl}" fieldName="NAME"/>
             </th>
             <cti:checkRolesAndProperties value="PROGRAM_STATE">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.programList.heading.state"
                         baseUrl="${baseUrl}" fieldName="STATE"/>
                 </th>
             </cti:checkRolesAndProperties>
+            <c:set var="numColumns" value="${numColumns + 1}"/>
             <th>
                 <cti:msg key="yukon.web.modules.dr.programList.heading.actions"/>
             </th>
             <cti:checkRolesAndProperties value="PROGRAM_START">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.programList.heading.start"
                         baseUrl="${baseUrl}" fieldName="START"/>
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="PROGRAM_STOP">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.programList.heading.stop"
                         baseUrl="${baseUrl}" fieldName="STOP"/>
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.programList.heading.currentGear"
                         baseUrl="${baseUrl}" fieldName="CURRENT_GEAR"/>
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.programList.heading.priority"
                         baseUrl="${baseUrl}" fieldName="PRIORITY"/>
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.programList.heading.reduction"
                         baseUrl="${baseUrl}" fieldName="REDUCTION"/>
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
+                <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.programList.heading.loadCapacity"
                         baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
@@ -241,8 +245,8 @@ function clearFilter() {
                 </cti:checkRolesAndProperties>
             </tr>
         </c:forEach>
+        <c:if test="${searchResult.hitCount == 0}">
+            <tr><td></td><td colspan="${numColumns}"><cti:msg key="yukon.web.modules.dr.programList.noResults"/></td></tr>
+        </c:if>
     </table>
-</tags:abstractContainer>
-<dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-    filter="$('filterPopup').show()"/>
-</c:if>
+</tags:pagedBox>

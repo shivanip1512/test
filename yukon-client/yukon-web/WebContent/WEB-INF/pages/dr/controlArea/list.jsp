@@ -112,145 +112,150 @@
         </table>
 
         <br>
-        <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlAreaList.filter.submit"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlAreaList.filter.clear"/>"
-            onclick="javascript:clearFilter()"/>
+        <div class="actionArea">
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlAreaList.filter.submit"/>"/>
+            <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlAreaList.filter.clear"/>"
+                onclick="javascript:clearFilter()"/>
+        </div>
     </form:form>
     </tags:simplePopup><br>
 
     <%-- Main Control Area list table section --%>
-    
-    <c:if test="${searchResult.hitCount == 0}">
-        <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults"/><br>
-        <a href="javascript:void(0)" onclick="$('filterPopup').show()"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a>
-        <a href="javascript:void(0)" onclick="javascript:clearFilter()"><cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/></a>
-    </c:if>
-    <c:if test="${searchResult.hitCount > 0}">
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-            filter="$('filterPopup').show()"/>
-        <cti:msg var="controlAreaTitle" key="yukon.web.modules.dr.controlAreaList.controlAreas"/>
-        <tags:abstractContainer type="box" title="${controlAreaTitle}">
-            <table id="controlAreaList" class="compactResultsTable rowHighlighting">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    
-                    <%-- Table headers - columns are hidden/shown based on role props --%>
-                    
-                    <th></th>
+
+    <cti:msg var="controlAreaTitle" key="yukon.web.modules.dr.controlAreaList.controlAreas"/>
+    <tags:pagedBox title="${controlAreaTitle}" searchResult="${searchResult}"
+        filterDialog="filterPopup" baseUrl="${baseUrl}">
+        <table id="controlAreaList" class="compactResultsTable rowHighlighting">
+            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                
+                <%-- Table headers - columns are hidden/shown based on role props --%>
+                
+                <th></th>
+                <c:set var="numColumns" value="1"/>
+                <th>
+                    <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.name"
+                        baseUrl="${baseUrl}" fieldName="NAME"/>
+                </th>
+                <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
+                    <c:set var="numColumns" value="${numColumns + 1}"/>
                     <th>
-                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.name"
-                            baseUrl="${baseUrl}" fieldName="NAME"/>
+                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.state"
+                            baseUrl="${baseUrl}" fieldName="STATE"/>
                     </th>
+                </cti:checkRolesAndProperties>
+                <c:set var="numColumns" value="${numColumns + 1}"/>
+                <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.actions"/></th>
+                <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
+                    <c:set var="numColumns" value="${numColumns + 1}"/>
+                    <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold"/></th>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
+                    <c:set var="numColumns" value="${numColumns + 1}"/>
+                    <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.peakProjection"/></th>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
+                    <c:set var="numColumns" value="${numColumns + 1}"/>
+                    <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.atku"/></th>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
+                    <c:set var="numColumns" value="${numColumns + 1}"/>
+                    <th>
+                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.priority"
+                            baseUrl="${baseUrl}" fieldName="PRIORITY"/>
+                    </th>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
+                    <c:set var="numColumns" value="${numColumns + 1}"/>
+                    <th>
+                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.timeWindow"
+                            baseUrl="${baseUrl}" fieldName="START"/>
+                    </th>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
+                    <c:set var="numColumns" value="${numColumns + 1}"/>
+                    <th>
+                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.loadCapacity"
+                            baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
+                    </th>
+                </cti:checkRolesAndProperties>
+            </tr>
+            <c:forEach var="controlArea" items="${controlAreas}">
+                
+                <%-- Table data section - columns are hidden/shown based on role props --%>
+                
+                <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
+                <c:url var="controlAreaUrl" value="/spring/dr/controlArea/detail">
+                    <c:param name="controlAreaId" value="${controlAreaId}"/>
+                </c:url>
+                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <td><dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${favoritesByPaoId[controlAreaId]}"/></td>
+                    <td>
+                        <a href="${controlAreaUrl}"><spring:escapeBody htmlEscape="true">${controlArea.name}</spring:escapeBody></a>
+                    </td>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
-                        <th>
-                            <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.state"
-                                baseUrl="${baseUrl}" fieldName="STATE"/>
-                        </th>
+                        <td>
+                            <dr:controlAreaState controlAreaId="${controlAreaId}"/>
+                        </td>
                     </cti:checkRolesAndProperties>
-                    <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.actions"/></th>
+                    <td style="white-space: nowrap;">
+                        <dr:controlAreaListActions pao="${controlArea}"/>
+                    </td>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
-                        <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold"/></th>
+                        <td>
+                            <c:if test="${empty controlArea.triggers}">
+                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers"/>
+                            </c:if>
+                            <c:forEach var="trigger" items="${controlArea.triggers}">
+                                   <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${trigger.triggerNumber}/VALUE_THRESHOLD"/>
+                                   <br/>
+                            </c:forEach>
+                        </td>
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
-                        <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.peakProjection"/></th>
+                        <td>
+                            <c:forEach var="trigger" items="${controlArea.triggers}">
+                                <c:if test="${trigger.thresholdType}">
+                                    <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${trigger.triggerNumber}/PEAK_PROJECTION"/>
+                                </c:if>
+                                <br/>
+                            </c:forEach>
+    
+                        </td>
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
-                        <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.atku"/></th>
+                        <td>
+                            <c:forEach var="trigger" items="${controlArea.triggers}">
+                               <c:if test="${trigger.thresholdType}">
+                                   <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${trigger.triggerNumber}/ATKU"/>
+                                </c:if>
+                                <br/>
+                            </c:forEach>
+                        </td>
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
-                        <th>
-                            <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.priority"
-                                baseUrl="${baseUrl}" fieldName="PRIORITY"/>
-                        </th>
+                        <td>
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
+                        </td>
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
-                        <th>
-                            <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.timeWindow"
-                                baseUrl="${baseUrl}" fieldName="START"/>
-                        </th>
+                        <td>
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
+                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.separator"/>
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
+                        </td>
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
-                        <th>
-                            <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.loadCapacity"
-                                baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
-                        </th>
+                        <td>
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
+                        </td>
                     </cti:checkRolesAndProperties>
                 </tr>
-                <c:forEach var="controlArea" items="${controlAreas}">
-                    
-                    <%-- Table data section - columns are hidden/shown based on role props --%>
-                    
-                    <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
-                    <c:url var="controlAreaUrl" value="/spring/dr/controlArea/detail">
-                        <c:param name="controlAreaId" value="${controlAreaId}"/>
-                    </c:url>
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${favoritesByPaoId[controlAreaId]}"/></td>
-                        <td>
-                            <a href="${controlAreaUrl}"><spring:escapeBody htmlEscape="true">${controlArea.name}</spring:escapeBody></a>
-                        </td>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
-                            <td>
-                                <dr:controlAreaState controlAreaId="${controlAreaId}"/>
-                            </td>
-                        </cti:checkRolesAndProperties>
-                        <td style="white-space: nowrap;">
-                            <dr:controlAreaListActions pao="${controlArea}"/>
-                        </td>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
-                            <td>
-                                <c:if test="${empty controlArea.triggers}">
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers"/>
-                                </c:if>
-                                <c:forEach var="trigger" items="${controlArea.triggers}">
-                                       <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${trigger.triggerNumber}/VALUE_THRESHOLD"/>
-                                       <br/>
-                                </c:forEach>
-                            </td>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
-                            <td>
-                                <c:forEach var="trigger" items="${controlArea.triggers}">
-                                    <c:if test="${trigger.thresholdType}">
-                                        <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${trigger.triggerNumber}/PEAK_PROJECTION"/>
-                                    </c:if>
-                                    <br/>
-                                </c:forEach>
-        
-                            </td>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
-                            <td>
-                                <c:forEach var="trigger" items="${controlArea.triggers}">
-                                   <c:if test="${trigger.thresholdType}">
-                                       <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${trigger.triggerNumber}/ATKU"/>
-                                    </c:if>
-                                    <br/>
-                                </c:forEach>
-                            </td>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
-                            <td>
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
-                            </td>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
-                            <td>
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.separator"/>
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
-                            </td>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
-                            <td>
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
-                            </td>
-                        </cti:checkRolesAndProperties>
-                    </tr>
-                </c:forEach>
-            </table>
-        </tags:abstractContainer>
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-            filter="$('filterPopup').show()"/>
-    </c:if>
+            </c:forEach>
+            <c:if test="${searchResult.hitCount == 0}">
+                <tr><td></td><td colspan="${numColumns}"><cti:msg key="yukon.web.modules.dr.controlAreaList.noResults"/></td></tr>
+            </c:if>
+
+        </table>
+    </tags:pagedBox>
 
 </cti:standardPage>

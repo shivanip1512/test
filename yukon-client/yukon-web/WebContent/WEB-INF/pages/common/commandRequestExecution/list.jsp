@@ -96,8 +96,10 @@
 	
 	
 	<%-- RESULTS TABLE --%>
-	<tags:filterLink popupId="filterPopup"/>
-	
+    <div style="padding-bottom:5px;">
+	    <tags:filterLink popupId="filterPopup"/>
+	</div>
+
 	<table id="cresTable" class="resultsTable activeResultsTable">
 	
 		<tr>

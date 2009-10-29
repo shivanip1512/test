@@ -66,52 +66,47 @@
         </table>
         
         <br>
-        <input type="submit" value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.submit"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.clear"/>"
-            onclick="javascript:clearFilter()"/>
+        <div class="actionArea">
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.submit"/>"/>
+            <input type="button" value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.clear"/>"
+                onclick="javascript:clearFilter()"/>
+        </div>
     </form:form>
     </tags:simplePopup><br>
 
-    <c:if test="${searchResult.hitCount == 0}">
-        <cti:msg key="yukon.web.modules.dr.scenarioList.noResults"/><br>
-        <a href="javascript:void(0)" onclick="$('filterPopup').show()"><cti:msg key="yukon.web.modules.dr.paging.filter"/></a>
-        <a href="javascript:void(0)" onclick="javascript:clearFilter()"><cti:msg key="yukon.web.modules.dr.loadGroupList.filter.clear"/></a>
-    </c:if>
-    <c:if test="${searchResult.hitCount > 0}">
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-            filter="$('filterPopup').show()"/>
-        <cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios"/>
-        <tags:abstractContainer type="box" title="${scenarioTitle}">
-            <table id="scenarioList" class="compactResultsTable rowHighlighting">
-                <tr>
-                    <th></th>
-                    <th>
-                        <dr:sortByLink key="yukon.web.modules.dr.scenarioList.heading.name"
-                            baseUrl="${baseUrl}" fieldName="NAME"/>
-                    </th>
-                    <th>
-                        <cti:msg key="yukon.web.modules.dr.scenarioList.heading.actions"/>
-                    </th>
+    <cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios"/>
+    <tags:pagedBox title="${scenarioTitle}" searchResult="${searchResult}"
+        filterDialog="filterPopup" baseUrl="${baseUrl}">
+        <table id="scenarioList" class="compactResultsTable rowHighlighting">
+            <tr>
+                <th width="1"></th>
+                <th>
+                    <dr:sortByLink key="yukon.web.modules.dr.scenarioList.heading.name"
+                        baseUrl="${baseUrl}" fieldName="NAME"/>
+                </th>
+                <th>
+                    <cti:msg key="yukon.web.modules.dr.scenarioList.heading.actions"/>
+                </th>
+            </tr>
+            <c:forEach var="scenario" items="${scenarios}">
+                <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
+                <c:url var="scenarioUrl" value="/spring/dr/scenario/detail">
+                    <c:param name="scenarioId" value="${scenarioId}"/>
+                </c:url>
+                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <td><dr:favoriteIcon paoId="${scenarioId}" isFavorite="${favoritesByPaoId[scenarioId]}"/></td>
+                    <td>
+                        <a href="${scenarioUrl}"><spring:escapeBody htmlEscape="true">${scenario.name}</spring:escapeBody></a>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <dr:scenarioListActions pao="${scenario}"/>
+                    </td>
                 </tr>
-                <c:forEach var="scenario" items="${scenarios}">
-                    <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
-                    <c:url var="scenarioUrl" value="/spring/dr/scenario/detail">
-                        <c:param name="scenarioId" value="${scenarioId}"/>
-                    </c:url>
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><dr:favoriteIcon paoId="${scenarioId}" isFavorite="${favoritesByPaoId[scenarioId]}"/></td>
-                        <td>
-                            <a href="${scenarioUrl}"><spring:escapeBody htmlEscape="true">${scenario.name}</spring:escapeBody></a>
-                        </td>
-                        <td style="white-space: nowrap;">
-                            <dr:scenarioListActions pao="${scenario}"/>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </table>
-        </tags:abstractContainer>
-        <dr:searchNavigation searchResult="${searchResult}" baseUrl="${baseUrl}"
-            filter="$('filterPopup').show()"/>
-    </c:if>
+            </c:forEach>
+            <c:if test="${searchResult.hitCount == 0}">
+                <tr><td></td><td colspan="3"><cti:msg key="yukon.web.modules.dr.scenarioList.noResults"/></td></tr>
+            </c:if>
+        </table>
+    </tags:pagedBox>
 
 </cti:standardPage>

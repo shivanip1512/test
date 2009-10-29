@@ -541,7 +541,9 @@ div.triangleContainer .triangleContainer_titleBar .controls {
     cursor: pointer;
 }
 
-div.boxContainer .boxContainer_titleBar, table.boxContainer td.boxContainer_titleBar { 
+div.boxContainer .boxContainer_titleBar,
+table.boxContainer td.boxContainer_titleBar,
+div.pagedBox .title, div.pagedBox .footer {
 	background-color: #F7F7F7;
 	border: 1px solid #BBBBBB;
 	padding: .25em .5em; 
@@ -551,7 +553,12 @@ div.boxContainer .boxContainer_titleBar, table.boxContainer td.boxContainer_titl
 	text-align: left;
 }
 
-div.boxContainer .boxContainer_titleBar .boxContainer_title { 
+div.pagedBox .footer {
+	border-top: none;
+}
+
+div.boxContainer .boxContainer_titleBar .boxContainer_title,
+div.pagedBox .title, div.pagedBox .footer {
 	color: #0066CC;
 	line-height: 1.5em;
 	font-weight: bold;
@@ -575,7 +582,7 @@ div.boxContainer .boxContainer_titleBar .controls .minMax {
 	cursor: pointer;
 }
 
-div.boxContainer .boxContainer_content { 
+div.boxContainer .boxContainer_content, div.pagedBox .content { 
 	padding: .5em;
 	border-left: 1px solid #BBBBBB;
 	border-right: 1px solid #BBBBBB;
@@ -611,6 +618,55 @@ div.sectionContainer .sectionContainer_titleBar .sectionContainer_blackTitle {
 div.sectionContainer .sectionContainer_content {
    padding: .5em;
    border-top:1px #CCCCCC solid;
+}
+
+div.pagedBox table {
+    width: 100%;
+    vertical-align: bottom;
+}
+
+div.pagedBox table .titleArea {
+    width: 50%;
+}
+
+div.pagedBox table .filterArea {
+    width: 20%;
+    vertical-align: middle;
+}
+
+div.pagedBox table .pagingArea {
+	text-align: right;
+    width: 30%;
+}
+
+div.pagedBox table .perPageArea {
+    width: 70%;
+}
+
+div.pagedBox .filterArea,
+div.pagedBox .pagingArea,
+div.pagedBox .perPageArea {
+   color: #06C;
+   font-weight: normal;
+}
+
+div.pagedBox .filterArea a,
+div.pagedBox .pagingArea a,
+div.pagedBox .perPageArea a {
+   color: #06C;
+   text-decoration: none;
+}
+
+div.pagedBox .selectedItem {
+   font-weight: bold;
+}
+
+div.pagedBox table.boxTable {
+    height: 100%;
+}
+
+.logoImage {
+	vertical-align: middle;
 }
 
 .widgetColumns td.widgetColumnCell .titledContainerOverride {
