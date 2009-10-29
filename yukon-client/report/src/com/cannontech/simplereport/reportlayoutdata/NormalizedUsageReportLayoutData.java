@@ -9,7 +9,7 @@ public class NormalizedUsageReportLayoutData implements ReportLayoutData{
     public NormalizedUsageReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "MM/dd/yyyy HH:mm z"),
+            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "BOTH"),
             new ColumnLayoutData("Value", "valueHolder", 500, "SHORT"),
         };
     }

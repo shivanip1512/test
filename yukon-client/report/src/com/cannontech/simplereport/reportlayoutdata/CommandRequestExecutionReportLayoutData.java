@@ -13,7 +13,7 @@ public class CommandRequestExecutionReportLayoutData implements ReportLayoutData
             new ColumnLayoutData("Status", "status", 200),
             new ColumnLayoutData("Device Name", "deviceName", 180),
             new ColumnLayoutData("Route Name", "routeName", 150),
-            new ColumnLayoutData("Completed", "completeTime", 150, "MM/dd/yyyy HH:mm z"),
+            new ColumnLayoutData("Completed", "completeTime", 150, "BOTH"),
         };
     }
     

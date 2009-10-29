@@ -70,8 +70,9 @@
             <tr>
                 <td colspan="2">
             		<div id="CopyRight">
-            			<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
-            			<cti:msg key="yukon.web.layout.standard.copyright"/>
+            			<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/> |
+            			<cti:msg key="yukon.web.layout.standard.copyright"/> |
+            			Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
             		</div>
                 </td>
             </tr>

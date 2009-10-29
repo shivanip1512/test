@@ -28,6 +28,7 @@ public interface DateFormattingService {
         TIMEZONE(MidnightMode.NORMAL),
         DATE(MidnightMode.NORMAL), 
         BOTH(MidnightMode.NORMAL), 
+        FULL(MidnightMode.NORMAL), 
         DATEHM(MidnightMode.NORMAL), 
         DATEH(MidnightMode.NORMAL),
         HOUR(MidnightMode.NORMAL),

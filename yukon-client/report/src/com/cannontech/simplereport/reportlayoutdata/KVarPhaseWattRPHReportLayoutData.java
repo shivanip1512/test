@@ -9,7 +9,7 @@ public class KVarPhaseWattRPHReportLayoutData implements ReportLayoutData{
     public KVarPhaseWattRPHReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "MM/dd/yyyy HH:mm z"),
+            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "BOTH"),
             new ColumnLayoutData("Phase A", "phaseA", 120, "SHORT"),
             new ColumnLayoutData("Phase B", "phaseB", 120, "SHORT"),
             new ColumnLayoutData("Phase C", "phaseC", 120, "SHORT"),

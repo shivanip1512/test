@@ -9,7 +9,7 @@ public class KVarWattRPHReportLayoutData implements ReportLayoutData{
     public KVarWattRPHReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "MM/dd/yyyy HH:mm z"),
+            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "BOTH"),
             new ColumnLayoutData("Current Var Load", "currentVarLoad", 150, "SHORT"),
             new ColumnLayoutData("Estimated Var Load", "estimatedVarLoad", 150, "SHORT"),
             new ColumnLayoutData("Current Watt Load", "currentWattLoad", 150, "SHORT"),

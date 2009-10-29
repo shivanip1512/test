@@ -9,7 +9,7 @@ public class PowerFactorRPHReportLayoutData implements ReportLayoutData{
     public PowerFactorRPHReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "MM/dd/yyyy HH:mm z"),
+            new ColumnLayoutData("Date/Time", "pointDataTimeStamp", 150, "BOTH"),
             new ColumnLayoutData("Power Factor", "powerFactor", 200, "SHORT"),
             new ColumnLayoutData("Estimated Power Factor", "estimatedPowerFactor", 200, "SHORT"),
         };
