@@ -37,6 +37,7 @@ public class YukonFileAppender extends AppenderSkeleton {
      * maximum file size set at 1 gigabyte
      */ 
     private static long maxFileSize = 1073741824; 
+    private static ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
     
     /**
      * maximum file size as a string, defaults to 1 gigabyte
@@ -107,7 +108,6 @@ public class YukonFileAppender extends AppenderSkeleton {
         String directory = CtiUtilities.getYukonBase() + "/Server/Log/";
         
         // Gets the value from the cparm if it exists
-        ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
         String logDirectory = configSource.getString("LOG_DIRECTORY");
 
         /* Checks to see if the path exists and also checks to see if the path
