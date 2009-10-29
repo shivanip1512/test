@@ -8,7 +8,6 @@ package com.cannontech.loadcontrol.popup;
 import java.awt.Dimension;
 
 import javax.swing.JOptionPane;
-import javax.swing.plaf.DimensionUIResource;
 
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.util.CtiUtilities;

@@ -365,6 +365,20 @@ private void initialize() {
 	// user code begin {2}
 	// user code end
 }
+
+private boolean isTimeInDefaultLCWindow(int time) {
+    boolean insideDefaultLoadControlStartWindow =
+        (getLmControlArea().getDefDailyStartTime() <= time || 
+         getLmControlArea().getDefDailyStartTime() == LMControlArea.INVALID_INT);
+
+    boolean insideDefaultLoadControlStopWindow =
+        (getLmControlArea().getDefDailyStopTime() >= time || 
+         getLmControlArea().getDefDailyStopTime() == LMControlArea.INVALID_INT);
+
+    return (insideDefaultLoadControlStartWindow && insideDefaultLoadControlStopWindow);
+    
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (5/16/2002 10:31:30 AM)
@@ -377,16 +391,16 @@ private boolean isNewDailyTimeValid()
 
 	//we only have a stop time selected and that stop time >= DefDailStartTime
 	if( getStartTime() == LMControlArea.INVALID_INT
-	    && getStopTime() != LMControlArea.INVALID_INT )
-	{
-		return getStopTime() >= getLmControlArea().getDefDailyStartTime().intValue();
+	    && getStopTime() != LMControlArea.INVALID_INT ) {
+
+	    return isTimeInDefaultLCWindow(getStopTime());
 	}
 
 	//we only have a start time selected and that start time >= DefDailStopTime
 	if( getStopTime() == LMControlArea.INVALID_INT
-		 && getStartTime() != LMControlArea.INVALID_INT )
-	{
-		 return getStartTime() <= getLmControlArea().getDefDailyStopTime().intValue();
+		 && getStartTime() != LMControlArea.INVALID_INT ) {
+	    
+        return isTimeInDefaultLCWindow(getStartTime());
 	}
 
 	//both start and stop boxes must be checked
@@ -399,12 +413,13 @@ private boolean isNewDailyTimeValid()
 private boolean isTimeValid() 
 {
 	//if the start or stop time == -1, then make sure the startTime > stopTime
-	return ( getStartTime() < getStopTime()
-		 		||
-		 		getStartTime() == LMControlArea.INVALID_INT
-		 	   || 
-		 	   getStopTime() == LMControlArea.INVALID_INT );
-
+    return ((getStartTime() < getStopTime() &&
+             getStartTime() != LMControlArea.INVALID_INT) ||
+            (getStartTime() == LMControlArea.INVALID_INT &&
+             LCUtils.decodeStartWindow(getLmControlArea()) < getStopTime()) || 
+            (getStopTime() == LMControlArea.INVALID_INT &&
+             getStartTime() < LCUtils.decodeStopWindow(getLmControlArea())));
+    
 }
 /**
  * Comment
