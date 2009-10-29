@@ -446,11 +446,11 @@ public final class PaoDaoImpl implements PaoDao {
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader() {
         return new PaoLoader<DisplayablePao>() {
             @Override
-            public <T extends YukonPao> Map<T, DisplayablePao> getForPaos(Iterable<? extends T> identifiers) {
-                Map<? extends T, String> namesForYukonDevices = getNamesForPaos(identifiers);
-                Map<T, DisplayablePao> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
+            public Map<PaoIdentifier, DisplayablePao> getForPaos(Iterable<PaoIdentifier> identifiers) {
+                Map<PaoIdentifier, String> namesForYukonDevices = getNamesForPaos(identifiers);
+                Map<PaoIdentifier, DisplayablePao> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
 
-                for (Entry<? extends T, String> entry : namesForYukonDevices.entrySet()) {
+                for (Entry<PaoIdentifier, String> entry : namesForYukonDevices.entrySet()) {
                     DisplayableDevice displayableMeter = new DisplayableDevice(entry.getKey().getPaoIdentifier(), entry.getValue());
                     result.put(entry.getKey(), displayableMeter);
                 }
@@ -460,12 +460,12 @@ public final class PaoDaoImpl implements PaoDao {
         };
     }
 
-    public <I extends YukonPao> Map<I, String> getNamesForPaos(Iterable<I> identifiers) {
+    public Map<PaoIdentifier, String> getNamesForPaos(Iterable<PaoIdentifier> identifiers) {
         // build a lookup map based on the pao id (will also be used as a set of ids for the sql)
-        final ImmutableMap<Integer, I> deviceLookup = Maps.uniqueIndex(identifiers, new Function<I, Integer>() {
+        final ImmutableMap<Integer, PaoIdentifier> deviceLookup = Maps.uniqueIndex(identifiers, new Function<PaoIdentifier, Integer>() {
             @Override
-            public Integer apply(I device) {
-                return device.getPaoIdentifier().getPaoId();
+            public Integer apply(PaoIdentifier device) {
+                return device.getPaoId();
             }
         });
         ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcOperations);
@@ -495,14 +495,14 @@ public final class PaoDaoImpl implements PaoDao {
         List<PaoIdAndName> names = template.query(sqlGenerator, deviceLookup.keySet(), rowMapper);
 
         // convert the resulting list into a lookup table
-        ImmutableMap<I, PaoIdAndName> intermediaryResult = Maps.uniqueIndex(names, new Function<PaoIdAndName, I>() {
-            public I apply(PaoIdAndName pao) {
+        ImmutableMap<PaoIdentifier, PaoIdAndName> intermediaryResult = Maps.uniqueIndex(names, new Function<PaoIdAndName, PaoIdentifier>() {
+            public PaoIdentifier apply(PaoIdAndName pao) {
                 return deviceLookup.get(pao.paoId);
             }
         });
 
         // transform the lookup table into the identifier to string map that will be returned
-        Map<I,String> result = Maps.transformValues(intermediaryResult, new Function<PaoIdAndName, String>() {
+        Map<PaoIdentifier,String> result = Maps.transformValues(intermediaryResult, new Function<PaoIdAndName, String>() {
             public String apply(PaoIdAndName paoIdAndName) {
                 return paoIdAndName.name;
             }

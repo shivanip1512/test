@@ -2,7 +2,7 @@ package com.cannontech.core.service.impl;
 
 import java.util.Map;
 
-import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.PaoIdentifier;
 
 /**
  * This interface is implemented by an object that can load objects associated with PAOs in a certain manner.
@@ -25,6 +25,6 @@ public interface PaoLoader<O> {
 	 * @param identifiers
 	 * @return
 	 */
-	public <T extends YukonPao> Map<T,O> getForPaos(Iterable<? extends T> identifiers);
+	public Map<PaoIdentifier,O> getForPaos(Iterable<PaoIdentifier> identifiers);
 
 }

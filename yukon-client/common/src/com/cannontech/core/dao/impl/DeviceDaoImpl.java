@@ -18,8 +18,8 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -367,11 +367,11 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
         return new PaoLoader<DeviceCollectionReportDevice>() {
             @Override
-            public <T extends YukonPao> Map<T, DeviceCollectionReportDevice> getForPaos(Iterable<? extends T> identifiers) {
-                Map<? extends T, String> namesForYukonDevices = getNamesForYukonDevices(identifiers);
-                Map<T, DeviceCollectionReportDevice> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
+            public Map<PaoIdentifier, DeviceCollectionReportDevice> getForPaos(Iterable<PaoIdentifier> identifiers) {
+                Map<PaoIdentifier, String> namesForYukonDevices = getNamesForYukonDevices(identifiers);
+                Map<PaoIdentifier, DeviceCollectionReportDevice> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
 
-                for (Entry<? extends T, String> entry : namesForYukonDevices.entrySet()) {
+                for (Entry<PaoIdentifier, String> entry : namesForYukonDevices.entrySet()) {
                     DeviceCollectionReportDevice dcrd = new DeviceCollectionReportDevice(entry.getKey().getPaoIdentifier());
                     dcrd.setName(entry.getValue());
                     result.put(entry.getKey(), dcrd);
@@ -382,11 +382,11 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         };
     }
 
-    public <I extends YukonPao> Map<I, String> getNamesForYukonDevices(Iterable<I> identifiers) {
+    public Map<PaoIdentifier, String> getNamesForYukonDevices(Iterable<PaoIdentifier> identifiers) {
         // build a lookup map based on the pao id (will also be used as a set of ids for the sql)
-        final ImmutableMap<Integer, I> deviceLookup = Maps.uniqueIndex(identifiers, new Function<I, Integer>() {
+        final ImmutableMap<Integer, PaoIdentifier> deviceLookup = Maps.uniqueIndex(identifiers, new Function<PaoIdentifier, Integer>() {
             @Override
-            public Integer apply(I device) {
+            public Integer apply(PaoIdentifier device) {
                 return device.getPaoIdentifier().getPaoId();
             }
         });
@@ -420,14 +420,14 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         List<DeviceAndName> names = template.query(sqlGenerator, deviceLookup.keySet(), rowMapper);
 
         // convert the resulting list into a lookup table
-        ImmutableMap<I, DeviceAndName> intermediaryResult = Maps.uniqueIndex(names, new Function<DeviceAndName, I>() {
-            public I apply(DeviceAndName meter) {
+        ImmutableMap<PaoIdentifier, DeviceAndName> intermediaryResult = Maps.uniqueIndex(names, new Function<DeviceAndName, PaoIdentifier>() {
+            public PaoIdentifier apply(DeviceAndName meter) {
                 return deviceLookup.get(meter.deviceId);
             }
         });
 
         // transform the lookup table into the identifier to string map that will be returned
-        Map<I,String> result = Maps.transformValues(intermediaryResult, new Function<DeviceAndName, String>() {
+        Map<PaoIdentifier,String> result = Maps.transformValues(intermediaryResult, new Function<DeviceAndName, String>() {
             public String apply(DeviceAndName deviceAndName) {
                 return deviceAndName.name;
             }

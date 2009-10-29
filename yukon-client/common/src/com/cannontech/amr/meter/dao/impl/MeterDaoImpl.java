@@ -20,6 +20,7 @@ import com.cannontech.amr.meter.model.DisplayableMeter;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -164,17 +165,17 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     public PaoLoader<DisplayablePao> getDisplayableDeviceLoader() {
         return new PaoLoader<DisplayablePao>() {
             @Override
-            public <T extends YukonPao> Map<T, DisplayablePao> getForPaos(Iterable<? extends T> identifiers) {
+            public Map<PaoIdentifier, DisplayablePao> getForPaos(Iterable<PaoIdentifier> identifiers) {
                 MeterDisplayFieldEnum meterDisplayFieldEnum = 
                     rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class, null);
 
-                Map<? extends T, Meter> metersForYukonDevices = getMetersForYukonDevices(identifiers);
+                Map<PaoIdentifier, Meter> metersForYukonDevices = getMetersForYukonDevices(identifiers);
 
-                Map<T, DisplayablePao> result = Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
+                Map<PaoIdentifier, DisplayablePao> result = Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
 
-                for (Entry<? extends T, Meter> entry : metersForYukonDevices.entrySet()) {
+                for (Entry<PaoIdentifier, Meter> entry : metersForYukonDevices.entrySet()) {
                     DisplayableMeter displayableMeter = new DisplayableMeter(entry.getValue(), meterDisplayFieldEnum);
-                    T key = entry.getKey();
+                    PaoIdentifier key = entry.getKey();
                     result.put(key, displayableMeter);
                 }
 
@@ -187,14 +188,14 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
         return new PaoLoader<DeviceCollectionReportDevice>() {
             @Override
-            public <T extends YukonPao> Map<T, DeviceCollectionReportDevice> getForPaos(Iterable<? extends T> identifiers) {
+            public Map<PaoIdentifier, DeviceCollectionReportDevice> getForPaos(Iterable<PaoIdentifier> identifiers) {
 
-                Map<? extends T, Meter> metersForYukonDevices = getMetersForYukonDevices(identifiers);
+                Map<PaoIdentifier, Meter> metersForYukonDevices = getMetersForYukonDevices(identifiers);
 
-                Map<T, DeviceCollectionReportDevice> result = Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
+                Map<PaoIdentifier, DeviceCollectionReportDevice> result = Maps.newHashMapWithExpectedSize(metersForYukonDevices.size());
 
-                for (Entry<? extends T, Meter> entry : metersForYukonDevices.entrySet()) {
-                    T key = entry.getKey();
+                for (Entry<PaoIdentifier, Meter> entry : metersForYukonDevices.entrySet()) {
+                    PaoIdentifier key = entry.getKey();
                     DeviceCollectionReportDevice dcrd = new DeviceCollectionReportDevice(key.getPaoIdentifier());
                     Meter meter = entry.getValue();
                     dcrd.setName(getFormattedDeviceName(meter));

@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -56,7 +58,8 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
     
     public List<DisplayablePao> getDisplayableDevices(Iterable<? extends YukonPao> paos) {
         
-        List<DisplayablePao> result = loadDevices(paos, displayablePaoloaders);
+        Map<PaoIdentifier, DisplayablePao> loadedDevices = loadDevices(paos, displayablePaoloaders);
+        List<DisplayablePao> result = Lists.newArrayList(loadedDevices.values());
         
         Collections.sort(result, new Comparator<DisplayablePao> () {
             @Override
@@ -69,25 +72,29 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
     
     @Override
     public List<DeviceCollectionReportDevice> getDeviceCollectionReportDevices(Iterable<? extends YukonPao> paos) {
-        List<DeviceCollectionReportDevice> result = loadDevices(paos, deviceCollectionReportDeviceLoaders);
+        Map<PaoIdentifier, DeviceCollectionReportDevice> loadedDevices = loadDevices(paos, deviceCollectionReportDeviceLoaders);
+        List<DeviceCollectionReportDevice> result = Lists.newArrayList(loadedDevices.values());
         return result;
     }
     
-    public static <T> List<T> loadDevices(Iterable<? extends YukonPao> paos, Iterable<PaoLoader<T>> loaders) {
+    public static <T> Map<PaoIdentifier, T> loadDevices(Iterable<? extends YukonPao> paos, Iterable<PaoLoader<T>> loaders) {
 
-        Set<YukonPao> unloadedDevices = Sets.newHashSet(paos);
-        int requestedDevices = unloadedDevices.size(); // count the "unloaded" because paos is an iterable
-        List<T> result = Lists.newArrayListWithExpectedSize(requestedDevices);
+        Set<PaoIdentifier> allIdentifiers = Sets.newHashSet();
+        for (YukonPao pao : paos) {
+            allIdentifiers.add(pao.getPaoIdentifier());
+        }
+        int requestedDevices = allIdentifiers.size(); // count the "unloaded" because paos is an iterable
+        Map<PaoIdentifier, T> result = Maps.newHashMapWithExpectedSize(requestedDevices);
         
         for (PaoLoader<T> loader : loaders) {
+            Set<PaoIdentifier> unloadedDevices = Sets.difference(allIdentifiers, result.keySet());
             if (unloadedDevices.isEmpty()) break;
-            Map<YukonPao, T> namesForYukonDevices = loader.getForPaos(unloadedDevices);
-            result.addAll(namesForYukonDevices.values());
-            unloadedDevices.removeAll(namesForYukonDevices.keySet());
+            Map<PaoIdentifier, T> namesForYukonDevices = loader.getForPaos(unloadedDevices);
+            result.putAll(namesForYukonDevices);
         }
         
-        if (!unloadedDevices.isEmpty()) {
-            throw new RuntimeException("Unable to load " + unloadedDevices.size() + " of the " + requestedDevices + " requested devices");
+        if (!result.keySet().equals(allIdentifiers)) {
+            throw new RuntimeException("Unable to load some of the " + requestedDevices + " requested devices");
         }
         
         return result;
