@@ -716,7 +716,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
 							setApplianceFields( appFields, columns, hwColIdx );
 							
-							if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() >= 0) &&
+							if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) &&
 							    (!applianceNameList.contains(appFields[ImportManagerUtil.IDX_APP_TYPE]))) {
 							    custFileErrors++;
 							    String[] value = custLines.get(lineNoKey);
