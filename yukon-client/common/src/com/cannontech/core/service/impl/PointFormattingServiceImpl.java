@@ -86,8 +86,10 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 Boolean statusPoint = (data.getType() == PointTypes.STATUS_POINT || data.getType() == PointTypes.CALCULATED_STATUS_POINT);
                 
                 PointQuality quality = null;
+                String shortQuality = "";
                 if (data instanceof PointValueQualityHolder) {
                 	quality = ((PointValueQualityHolder)data).getPointQuality();
+                	shortQuality = getDisplayStringForQuality(((PointValueQualityHolder) data).getPointQuality(), userContext);
                 }
                 
                 if (statusPoint) {
@@ -158,6 +160,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 Date pointDataTimeStamp = data.getPointDataTimeStamp();
                 params.put("time", pointDataTimeStamp);
                 params.put("quality", quality);
+                params.put("shortQuality", shortQuality);
                 String result = templateProcessor.process(format, params);
                 return result;
             }
@@ -181,6 +184,14 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             }
         };
         return impl;
+    }
+    
+    private String getDisplayStringForQuality(PointQuality quality, YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String key = "yukon.common.pointFormatting.shortQuality." + quality.name();
+        String message = messageSourceAccessor.getMessageWithDefault(key, quality.getAbbreviation());
+        
+        return message;
     }
 
     public String getValueString(PointValueHolder value, Format format, YukonUserContext userContext) {
