@@ -250,18 +250,15 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				event.getSource() == getYCCommandMenu().executeMenuItem )
 		{
 		    getYCFileMenu().updateRecentList(getYC().getTreeItem());
-			String commandString = DaoFactory.getCommandDao().loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
-			if( commandString != null)	//null is a cancel from prompt
-			{
-				try {
-                    setCommand(commandString);
-    				if( isValidSetup() ) {
-    					getCommandPanel().enter(getCommand());
-    					getYC().executeCommand();
-    				}
-				} catch (PaoAuthorizationException e) {
-                    update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), MessageType.ERROR));
+			String commandString = (String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim();
+			try {
+                setCommand(commandString);
+				if( isValidSetup() ) {
+					getCommandPanel().enter(getCommand());
+					getYC().executeCommand();
 				}
+			} catch (PaoAuthorizationException e) {
+                update(yc, yc.new OutputMessage(YC.OutputMessage.DEBUG_MESSAGE, "\n ** You do not have permission to execute command: " + e.getPermission(), MessageType.ERROR));
 			}
 		}
 		
@@ -281,9 +278,12 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 			if( getCommandPanel().getAvailableCommandsComboBox().getSelectedIndex() > 0) //0 is default "select"
 			{
-				String commandString = getYC().getCommandFromLabel(getCommandPanel().getAvailableCommandsComboBox().getSelectedItem().toString() );
-				getCommandPanel().getExecuteCommandComboBoxTextField().setText( commandString );
-				getCommandPanel().getExecuteButton().requestFocusInWindow();
+				String rawCommandString = getYC().getCommandFromLabel(getCommandPanel().getAvailableCommandsComboBox().getSelectedItem().toString() );
+				String commandString = DaoFactory.getCommandDao().loadPromptValue(rawCommandString.trim(), this);
+	            if( commandString != null) { //null is a cancel from prompt
+    				getCommandPanel().getExecuteCommandComboBoxTextField().setText( commandString );
+    				getCommandPanel().getExecuteButton().requestFocusInWindow();
+	            }
 			}
 			
 		}

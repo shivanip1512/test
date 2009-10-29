@@ -9,6 +9,9 @@ function loadCommanderCommand(selectEl, cmdField) {
 
     // parse for parameters
     getCommanderParams(originalCmd);
+
+	// replace any escaped question marks (double ?) with single ?
+    originalCmd = originalCmd.replace('??', '?');
     
     // kick off replacements
     processCommanderReplacement(0, originalCmd, originalCmd, cmdField);
@@ -20,7 +23,7 @@ function loadCommanderCommand(selectEl, cmdField) {
 // replacements will stop when no more parameters exist
 function processCommanderReplacement(paramIdx, originalCmd, cmd, cmdField) {
 
-    var param = params[paramIdx];
+	var param = params[paramIdx];
     
     if (param != undefined) {
     
@@ -50,6 +53,7 @@ function processCommanderReplacement(paramIdx, originalCmd, cmd, cmdField) {
             $(cmdField).value = originalCmd;
         }
     }
+    
 }
 
 function getCommanderParams(cmd) {
@@ -62,6 +66,11 @@ function getCommanderParams(cmd) {
         
             var startIdx = cmdIdx;
             var endIdx = null;
+            
+            if (cmd.charAt(cmdIdx + 1) == '?') {
+            	cmdIdx = cmdIdx + 2;
+            	continue;
+            }
             
             // quoted prompt string if quote immediately follows ?
             if (cmd.charAt(cmdIdx + 1) == "'" || cmd.charAt(cmdIdx + 1) == '"') {
@@ -103,6 +112,6 @@ function getCommanderParams(cmd) {
         
         cmdIdx++;
     }
-
+    
     return cmd;
 }
