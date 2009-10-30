@@ -68,6 +68,8 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private Boolean voltReductionFlag = null;
     private Boolean usePhaseData = null;
     
+    private Boolean primaryBusFlag = null;
+    private Integer alternateBusId = null;
     /**
      * constructor comment.
      */
@@ -777,4 +779,21 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         return (CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(controlUnits) || 
         		CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(controlUnits));
 	}
+
+    public Boolean getPrimaryBusFlag() {
+        return primaryBusFlag;
+    }
+
+    public void setPrimaryBusFlag(Boolean primaryBusFlag) {
+        this.primaryBusFlag = primaryBusFlag;
+    }
+
+    public Integer getAlternateBusId() {
+        return alternateBusId;
+    }
+
+    public void setAlternateBusId(Integer alternateBusId) {
+        this.alternateBusId = alternateBusId;
+    }
+	
 }

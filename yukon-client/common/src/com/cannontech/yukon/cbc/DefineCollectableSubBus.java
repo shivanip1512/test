@@ -107,7 +107,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     subBus.setDisplayOrder( new Integer( vstr.extractInt() ));
     subBus.setVoltReductionFlag( ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
     subBus.setUsePhaseData( ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
-	subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
+	subBus.setPrimaryBusFlag(((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
+	subBus.setAlternateBusId(new Integer((int)vstr.extractUnsignedInt()));
+	
+    subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
 
 /**
@@ -164,8 +167,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertDouble( subBus.getPhaseC() );
     vstr.insertUnsignedInt( (subBus.getLikeDayControlFlag().booleanValue() == true) ? 1 : 0 );
     vstr.insertInt( subBus.getDisplayOrder() );
-    vstr.insertUnsignedInt( (subBus.getVoltReductionFlag().booleanValue() == true) ? 1 : 0 );
-    vstr.insertUnsignedInt( (subBus.getUsePhaseData().booleanValue() == true) ? 1 : 0 );
+    vstr.insertUnsignedInt((subBus.getVoltReductionFlag().booleanValue() == true) ? 1 : 0);
+    vstr.insertUnsignedInt((subBus.getUsePhaseData().booleanValue() == true) ? 1 : 0);
+    vstr.insertUnsignedInt((subBus.getPrimaryBusFlag().booleanValue() == true) ? 1 : 0);
+    vstr.insertUnsignedInt((subBus.getAlternateBusId().intValue()));
 	VectorInsert.insertVector( subBus.getCcFeeders(), vstr, polystr );
 }
 }
