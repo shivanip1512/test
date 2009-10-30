@@ -371,7 +371,7 @@ public class RawPointHistoryValidationService {
             boolean jumpDown = values.get(1).getValue() < values.get(2).getValue() - analysisDescription.getKwhReadingError();
             boolean fall = values.get(0).getValue() < values.get(1).getValue() - analysisDescription.getKwhReadingError();
             boolean increasing = values.get(0).getValue() >= values.get(2).getValue() - analysisDescription.getKwhReadingError();
-            double height = calculateHeight(values.get(2), values.get(0), values.get(1));
+            double height = calculateHeight(values.get(2), values.get(1), values.get(0));
             boolean peakIsGreatEnough = height > analysisDescription.getPeakHeightMinimum();
             LogHelper.trace(log, "for %d: jumpUp=%b, jumpDown=%b, fall=%b, increasing=%b, height=%.1f, peakIsGreatEnough=%b", workUnit.thisValue.changeId, jumpUp, jumpDown, fall, increasing, height, peakIsGreatEnough);
 
@@ -468,12 +468,12 @@ public class RawPointHistoryValidationService {
      * Calculate the height or severity of the peak when compared to the previous and subsequent values (base1 and base2).
      * 
      * @param base1 a normal value
-     * @param base2 a normal value
      * @param peak a value that has been determined to be a peak
+     * @param base2 a normal value
      * @return
      */
-    private static double calculateHeight(RawPointHistoryWrapper base1, RawPointHistoryWrapper base2, RawPointHistoryWrapper peak) {
-        double kwhDelta = base1.getValue() - base2.getValue();
+    private static double calculateHeight(RawPointHistoryWrapper base1, RawPointHistoryWrapper peak, RawPointHistoryWrapper base2) {
+        double kwhDelta = base2.getValue() - base1.getValue();
         Duration deltaDuration = new Duration(base1.getTime(), base2.getTime()); 
         double baseKwh = 0;
         if (deltaDuration.getMillis() <= 0) {
