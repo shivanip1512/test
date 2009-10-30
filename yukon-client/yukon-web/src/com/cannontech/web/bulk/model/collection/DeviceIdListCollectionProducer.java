@@ -67,6 +67,11 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
 
                 return deviceList;
             }
+            
+            @Override
+            public long getDeviceCount() {
+                return ids.split(",").length;
+            }
 
             @Override
             public MessageSourceResolvable getDescription() {
