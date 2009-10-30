@@ -353,7 +353,7 @@ public class ClientSession {
 	    
 	    LoginPanel loginPanel = new LoginPanel(host,
 	                           userName,
-	                           prefs.getDefaultPassword(),
+	                           prefs.getDefaultPassword(userName),
                                prefs.getDefaultRememberPassword(), false);
 	    loginPanel.setHostEditable(false);
 	    loginPanel.setUserEditable(false);

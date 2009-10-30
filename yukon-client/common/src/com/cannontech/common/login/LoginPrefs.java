@@ -45,6 +45,25 @@ class LoginPrefs extends CtiPreferences {
 			return "yukon";
 	}
 	
+	/**
+	 * Checks the username to see if it matches the name that
+	 * was typed in last time "remember me" was checked.  If the name
+	 * matches the username provided, the password is returned.
+	 */
+	public String getDefaultPassword(String username){
+        String password = get(DEFAULT_PASSWORD, null);
+        //only use the remembered password if we're logging in as the
+        //user who owns it
+        if( password != null && username.equals(getDefaultUsername()) )
+        {
+          //if we have a value, we must decrypt it
+            password = CtiCipher.decrypt(password);
+            return (password == null ? "yukon" : password);
+        }
+        else
+            return "";
+	}
+	
 	public boolean getDefaultRememberPassword() {
 		return getBoolean(DEFAULT_REMEMBER_PASSWORD, true);
 	}
