@@ -25,7 +25,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
 import com.google.common.collect.Lists;
 
-public class DeviceRequestDetailModel extends BareReportModelBase<DeviceRequestDetailModel.ModelRow> {
+public class DeviceRequestDetailModel extends BareDatedReportModelBase<DeviceRequestDetailModel.ModelRow> {
 
     private Logger log = YukonLogManager.getLogger(DeviceRequestDetailModel.class);
 
@@ -38,6 +38,7 @@ public class DeviceRequestDetailModel extends BareReportModelBase<DeviceRequestD
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private List<String> groupNames;
     private List<String> deviceNames;
+    private boolean lifetime = false;
 
     private DeviceGroupEditorDao deviceGroupEditorDao;
 
@@ -85,6 +86,42 @@ public class DeviceRequestDetailModel extends BareReportModelBase<DeviceRequestD
         return deviceIds;
     }
     
+    private SqlFragmentSource getSqlSource(List<Integer> subList){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if(!lifetime){
+            sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, sum(requests) requests, sum(attempts) attempts, sum(completions) completions");
+            sql.append("from DYNAMICPAOSTATISTICSHISTORY dpsh");
+            sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dpsh.PAObjectID");
+            sql.append("  join DeviceRoutes dr on dr.DEVICEID = dpsh.PAObjectID");
+            sql.append("join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
+            sql.append("WHERE dpsh.PAObjectID IN (").appendArgumentList(subList).append(")");
+            sql.append("  and DateOffset > ").appendArgument(getStartDateOffset()).append("and DateOffset <= ").appendArgument(getStopDateOffset());
+            sql.append("group by ypo.PAOName,ypo.type, route.PAOName");
+        } else {
+            sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
+            sql.append("from DYNAMICPAOSTATISTICS dps");
+            sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dps.PAObjectID");
+            sql.append("  join DeviceRoutes dr on dr.DEVICEID = dps.PAObjectID");
+            sql.append("  join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
+            sql.append("WHERE dps.PAObjectID IN (").appendArgumentList(subList).append(")");
+            sql.append("  and dps.StatisticType = 'Lifetime'");
+            sql.append("group by ypo.PAOName,ypo.type, route.PAOName, Requests, Attempts, Completions");
+        }
+        return sql;
+    }
+    
+    private long getStartDateOffset() {
+        long startDateMillis = getStartDate().getTime();
+        long startOffset = ((((startDateMillis / 1000) / 60) / 60) / 24);
+        return startOffset;
+    }
+    
+    private long getStopDateOffset(){
+        long stopDateMillis = getStopDate().getTime();
+        long stopOffset = ((((stopDateMillis / 1000) / 60) / 60) / 24);
+        return stopOffset;
+    }
+
     public void doLoadData() {
         List<Integer> deviceIds = Lists.newArrayList();
         
@@ -94,15 +131,7 @@ public class DeviceRequestDetailModel extends BareReportModelBase<DeviceRequestD
         SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, sum(requests) requests, sum(attempts) attempts, sum(completions) completions");
-                sql.append("from DYNAMICPAOSTATISTICSHISTORY dpsh");
-                sql.append("  join YukonPAObject ypo on ypo.PAObjectID = dpsh.PAObjectID");
-                sql.append("  join DeviceRoutes dr on dr.DEVICEID = dpsh.PAObjectID");
-                sql.append("join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
-                sql.append("WHERE dpsh.PAObjectID IN (").appendArgumentList(subList).append(")");
-                sql.append("group by ypo.PAOName,ypo.type, route.PAOName");
-                return sql;
+                return getSqlSource(subList);
             }
         };
         
@@ -122,7 +151,7 @@ public class DeviceRequestDetailModel extends BareReportModelBase<DeviceRequestD
                     String successString = formatter.format(success);
                     row.success = successString;
                 } else {
-                    row.success = "No Completions";
+                    row.success = "---";
                 }
                 
                 return row;
@@ -141,6 +170,14 @@ public class DeviceRequestDetailModel extends BareReportModelBase<DeviceRequestD
     
     public void setDeviceFilter(List<String> deviceNames) {
         this.deviceNames = deviceNames;
+    }
+    
+    public void setLifetime(boolean lifetime){
+        this.lifetime = lifetime;
+    }
+    
+    public boolean isLifetime(){
+        return lifetime;
     }
 
     @Required

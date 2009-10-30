@@ -26,8 +26,8 @@ public class DeviceRequestDetailReport extends SimpleYukonReportBase {
             new ColumnLayoutData("Device Name", "deviceName", 150),
             new ColumnLayoutData("Device Type", "type", 100),
             new ColumnLayoutData("Route", "route", 150),
-            new ColumnLayoutData("Requests", "requests", 100),
-            new ColumnLayoutData("Attempts Per Success", "success", 100),
+            new ColumnLayoutData(deviceRequestDetailModel.isLifetime() ? "Lifetime Requests" : "Requests", "requests", 150),
+            new ColumnLayoutData(deviceRequestDetailModel.isLifetime() ? "Lifetime Attempts Per Success" : "Attempts Per Success", "success", 150),
         };
         return Arrays.asList(bodyColumns);
     }
