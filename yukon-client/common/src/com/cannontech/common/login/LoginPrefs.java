@@ -39,10 +39,10 @@ class LoginPrefs extends CtiPreferences {
 		if( password != null )
 		{
 			password = CtiCipher.decrypt(password);
-			return (password == null ? "yukon" : password);
+			return (password == null ? "" : password);
 		}
 		else
-			return "yukon";
+			return "";
 	}
 	
 	/**
@@ -58,7 +58,7 @@ class LoginPrefs extends CtiPreferences {
         {
           //if we have a value, we must decrypt it
             password = CtiCipher.decrypt(password);
-            return (password == null ? "yukon" : password);
+            return (password == null ? "" : password);
         }
         else
             return "";
