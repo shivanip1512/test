@@ -71,6 +71,7 @@ CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr)
 
     _operationStats.setPAOId(_paoid);
     _confirmationStats.setPAOId(_paoid);
+    _originalParent.setPAOId(_paoid);
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -110,6 +111,10 @@ CtiCCConfirmationStats& CtiCCFeeder::getConfirmationStats()
     return _confirmationStats;
 }
 
+CtiCCOriginalParent& CtiCCFeeder::getOriginalParent()
+{
+    return _originalParent;
+}
 /*---------------------------------------------------------------------------
     getPAOId
 
@@ -512,15 +517,6 @@ float CtiCCFeeder::getDisplayOrder() const
     return _displayorder;
 }
 
-LONG CtiCCFeeder::getOriginalSubBusId() const
-{
-    return _originalsubbusid;
-}
-
-float CtiCCFeeder::getOriginalSwitchingOrder() const
-{
-    return _originalswitchingorder;
-}
 
 /*---------------------------------------------------------------------------
     getIntegrateFlag
@@ -1512,16 +1508,6 @@ CtiCCFeeder& CtiCCFeeder::setDisplayOrder(float order)
     return *this;
 }
 
-CtiCCFeeder& CtiCCFeeder::setOriginalSubBusId(LONG subBusId)
-{
-    _originalsubbusid = subBusId;
-    return *this;
-}
-CtiCCFeeder& CtiCCFeeder::setOriginalSwitchingOrder(float order)
-{
-    _originalswitchingorder = order;
-    return *this;
-}
 
 /*---------------------------------------------------------------------------
     setNewPointDataReceivedFlag
@@ -6716,7 +6702,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
         if( !_insertDynamicDataFlag )
         {
             RWDBUpdater updater = dynamicCCFeederTable.updater();
-
+            
             updater.where(dynamicCCFeederTable["feederid"]==_paoid);
 
             updater << dynamicCCFeederTable["currentvarpointvalue"].assign( _currentvarloadpointvalue )
@@ -6724,10 +6710,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["newpointdatareceivedflag"].assign( _newpointdatareceivedflag?"Y":"N" )
             << dynamicCCFeederTable["lastcurrentvarupdatetime"].assign( toRWDBDT((CtiTime)_lastcurrentvarpointupdatetime) );
 
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
+           
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6736,10 +6719,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
+                
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = updater.asString();
@@ -6760,10 +6740,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["recentlycontrolledflag"].assign( _recentlycontrolledflag?"Y":"N" )
             << dynamicCCFeederTable["lastoperationtime"].assign( toRWDBDT((CtiTime)_lastoperationtime) );
 
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
+            
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6772,10 +6749,6 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = updater.asString();
@@ -6796,10 +6769,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["busoptimizedvarcategory"].assign( _busoptimizedvarcategory )
             << dynamicCCFeederTable["busoptimizedvaroffset"].assign( _busoptimizedvaroffset );
 
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
+            
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6808,10 +6778,6 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = updater.asString();
@@ -6883,10 +6849,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["phasebvaluebeforecontrol"].assign(_phaseBvalueBeforeControl)
             << dynamicCCFeederTable["phasecvaluebeforecontrol"].assign(_phaseCvalueBeforeControl);
 
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
+            
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6962,6 +6925,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _phaseBvalueBeforeControl
             << _phaseCvalueBeforeControl;
 
+
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 string loggedSQLstring = inserter.asString();
@@ -6994,8 +6958,11 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
                     }
                 }
             }
-        }
 
+
+        }
+        if( getOriginalParent().isDirty() )
+            getOriginalParent().dumpDynamicData(conn, currentDateTime);
         if (getOperationStats().isDirty())
             getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
@@ -7214,9 +7181,6 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _offpkpfsetpoint = right._offpkpfsetpoint;
         _displayorder = right._displayorder;
 
-        _originalsubbusid = right._originalsubbusid;
-        _originalswitchingorder = right._originalswitchingorder;
-
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
         _estimatedvarloadpointid = right._estimatedvarloadpointid;
@@ -7303,7 +7267,9 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
 
         _operationStats = right._operationStats;
         _confirmationStats = right._confirmationStats;
+        _originalParent = right._originalParent;
     }
+
     return *this;
 }
 
@@ -7482,6 +7448,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setLastWattPointTime(gInvalidCtiTime);
     setLastVoltPointTime(gInvalidCtiTime);
     setRetryIndex(0);
+    _originalParent.setPAOId(_paoid);
 
 }
 
@@ -7586,6 +7553,7 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
     rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
 
+    _originalParent.restore(rdr);
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;

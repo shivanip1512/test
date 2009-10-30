@@ -70,6 +70,7 @@ $(OBJ)\ccsubstation.obj \
 $(OBJ)\ccoperationstats.obj \
 $(OBJ)\ccconfirmationstats.obj \
 $(OBJ)\ccstatsobject.obj \
+$(OBJ)\ccoriginalparent.obj \
 
 TARGS = capcontrol.exe
 

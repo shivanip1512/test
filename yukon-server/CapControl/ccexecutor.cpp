@@ -19,6 +19,7 @@ using std::list;
 #include "ccexecutor.h"
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"
+#include "ccoriginalparent.h"
 #include "ccid.h"
 #include "logger.h"
 #include "utility.h"
@@ -6251,10 +6252,10 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
             {
                 tempFeederId = currentFeeder->getPAOId();
                 movedCapBankId = bankId;
-                originalFeederId = currentCapBank->getOriginalFeederId();
-                capSwitchingOrder = currentCapBank->getOriginalSwitchingOrder();
-                closeOrder = currentCapBank->getOriginalCloseOrder();
-                tripOrder = currentCapBank->getOriginalTripOrder();
+                originalFeederId = currentCapBank->getOriginalParent().getOriginalParentId();
+                capSwitchingOrder = currentCapBank->getOriginalParent().getOriginalSwitchingOrder();
+                closeOrder = currentCapBank->getOriginalParent().getOriginalCloseOrder();
+                tripOrder = currentCapBank->getOriginalParent().getOriginalTripOrder();
             }
             else
             {
@@ -6324,8 +6325,8 @@ void CtiCCCommandExecutor::ReturnFeederToOriginalSubBus()
         {
             tempSubBusId = currentFeeder->getParentId();
             movedFeederId = fdrId;
-            originalSubBusId = currentFeeder->getOriginalSubBusId();
-            fdrSwitchingOrder = currentFeeder->getOriginalSwitchingOrder();
+            originalSubBusId = currentFeeder->getOriginalParent().getOriginalParentId();
+            fdrSwitchingOrder = currentFeeder->getOriginalParent().getOriginalSwitchingOrder();
         }
         else
         {
@@ -6830,17 +6831,17 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             
             if( !permanentFlag )
             {
-                movedCapBankPtr->setOriginalFeederId(oldFeederPtr->getPAOId());
-                movedCapBankPtr->setOriginalSwitchingOrder(movedCapBankPtr->getControlOrder());
-                movedCapBankPtr->setOriginalCloseOrder(movedCapBankPtr->getCloseOrder());
-                movedCapBankPtr->setOriginalTripOrder(movedCapBankPtr->getTripOrder());
+                movedCapBankPtr->getOriginalParent().setOriginalParentId(oldFeederPtr->getPAOId());
+                movedCapBankPtr->getOriginalParent().setOriginalSwitchingOrder(movedCapBankPtr->getControlOrder());
+                movedCapBankPtr->getOriginalParent().setOriginalCloseOrder(movedCapBankPtr->getCloseOrder());
+                movedCapBankPtr->getOriginalParent().setOriginalTripOrder(movedCapBankPtr->getTripOrder());
             }
             else
             {
-                movedCapBankPtr->setOriginalFeederId(0);
-                movedCapBankPtr->setOriginalSwitchingOrder(0.0);
-                movedCapBankPtr->setOriginalCloseOrder(0.0);
-                movedCapBankPtr->setOriginalTripOrder(0.0);
+                movedCapBankPtr->getOriginalParent().setOriginalParentId(0);
+                movedCapBankPtr->getOriginalParent().setOriginalSwitchingOrder(0.0);
+                movedCapBankPtr->getOriginalParent().setOriginalCloseOrder(0.0);
+                movedCapBankPtr->getOriginalParent().setOriginalTripOrder(0.0);
 
             }
 
@@ -7041,14 +7042,13 @@ void CtiCCExecutor::moveFeeder(INT permanentFlag, LONG oldSubBusId, LONG movedFe
             
             if( !permanentFlag )
             {
-                movedFeederPtr->setOriginalSubBusId(oldSubBusPtr->getPAOId());
-                movedFeederPtr->setOriginalSwitchingOrder(movedFeederPtr->getDisplayOrder());
-                
+                movedFeederPtr->getOriginalParent().setOriginalParentId(oldSubBusPtr->getPAOId());
+                movedFeederPtr->getOriginalParent().setOriginalSwitchingOrder(movedFeederPtr->getDisplayOrder());
             }
             else
             {
-                movedFeederPtr->setOriginalSubBusId(0);
-                movedFeederPtr->setOriginalSwitchingOrder(0.0);
+                movedFeederPtr->getOriginalParent().setOriginalParentId(0);
+                movedFeederPtr->getOriginalParent().setOriginalSwitchingOrder(0.0);
 
             }
 

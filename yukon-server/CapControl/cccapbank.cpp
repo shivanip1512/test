@@ -47,6 +47,7 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
      _ovuvSituationFlag = false;
      _operationStats.setPAOId(_paoid);
      _confirmationStats.setPAOId(_paoid);
+     _originalParent.setPAOId(_paoid);
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)  
@@ -112,6 +113,11 @@ CtiCCOperationStats& CtiCCCapBank::getOperationStats()
 CtiCCConfirmationStats& CtiCCCapBank::getConfirmationStats()
 {
     return _confirmationStats;
+}
+
+CtiCCOriginalParent& CtiCCCapBank::getOriginalParent()
+{
+    return _originalParent;
 }
 
 
@@ -694,35 +700,6 @@ LONG CtiCCCapBank::getTagsControlStatus() const
     return _tagscontrolstatus;
 }
 
-/*---------------------------------------------------------------------------
-    getOriginalFeederId
-
-    Returns the original feeder id on the cap bank used for temp cap bank moves
----------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getOriginalFeederId() const
-{
-    return _originalfeederid;
-}
-
-/*---------------------------------------------------------------------------
-    getOriginalSwitchingOrder
-
-    Returns the original switching order on the cap bank used for temp cap bank moves 
----------------------------------------------------------------------------*/
-float CtiCCCapBank::getOriginalSwitchingOrder() const
-{
-    return _originalswitchingorder;
-}
-
-float CtiCCCapBank::getOriginalCloseOrder() const
-{
-    return _originalcloseorder;
-}
-
-float CtiCCCapBank::getOriginalTripOrder() const
-{
-    return _originaltriporder;
-}
 /*---------------------------------------------------------------------------
     setPAOId
 
@@ -2057,69 +2034,6 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
     return *this;
 }
 
-/*---------------------------------------------------------------------------
-    setOriginalFeederId
-
-    Sets the original feeder id on the capbank for temp cap bank moves
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOriginalFeederId(LONG origfeeder)
-{
-    if( _originalfeederid != origfeeder )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = TRUE;
-    }
-    _originalfeederid = origfeeder;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setOriginalSwitchingOrder
-
-    Sets the switching order on the capbank for temp cap bank moves
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(float origorder)
-{
-    if( _originalswitchingorder != origorder )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = TRUE;
-    }
-    _originalswitchingorder = origorder;
-    return *this;
-}
-CtiCCCapBank& CtiCCCapBank::setOriginalCloseOrder(float origorder)
-{
-    if( _originalcloseorder != origorder )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = TRUE;
-    }
-    _originalcloseorder = origorder;
-    return *this;
-}
-CtiCCCapBank& CtiCCCapBank::setOriginalTripOrder(float origorder)
-{
-    if( _originaltriporder != origorder )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = TRUE;
-    }
-    _originaltriporder = origorder;
-    return *this;
-}
 
 CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg)
 {
@@ -2160,6 +2074,7 @@ CtiCCPointResponse* CtiCCCapBank::getPointResponse(CtiCCMonitorPoint* point)
 void CtiCCCapBank::restoreGuts(RWvistream& istrm)
 {
     CtiTime tempTime1;
+    LONG tempParentId;
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _paoid
@@ -2189,7 +2104,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _totaloperations
     >> tempTime1
     >> _tagscontrolstatus
-    >> _originalfeederid
+    >> tempParentId
     >> _currentdailyoperations
     >> _ignoreFlag
     >> _ignoreReason
@@ -2206,6 +2121,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     istrm >> _localControlFlag;
     istrm >> _partialPhaseInfo;
     _laststatuschangetime = CtiTime(tempTime1);
+    _originalParent.setOriginalParentId(tempParentId);
 }
 
 /*---------------------------------------------------------------------------
@@ -2215,6 +2131,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
 {
+    LONG tempParentId = _originalParent.getOriginalParentId();
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid;
@@ -2246,7 +2163,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     ostrm <<  _totaloperations;
     ostrm <<  _laststatuschangetime;
     ostrm <<  _tagscontrolstatus;
-    ostrm <<  _originalfeederid;
+    ostrm <<  tempParentId;
     ostrm <<  _currentdailyoperations;
     ostrm <<  _ignoreFlag;   
     ostrm << _ignoreReason;
@@ -2303,8 +2220,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _totaloperations = right._totaloperations;
         _laststatuschangetime = right._laststatuschangetime;
         _tagscontrolstatus = right._tagscontrolstatus;
-        _originalfeederid = right._originalfeederid;
-        _originalswitchingorder = right._originalswitchingorder;
         _assumedOrigCapBankPos = right._assumedOrigCapBankPos;
         _prevVerificationControlStatus = right._prevVerificationControlStatus;
         _vCtrlIndex = right._vCtrlIndex;
@@ -2348,6 +2263,8 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _sBeforeVars = right._sBeforeVars;
         _sPercentChange = right._sPercentChange;
         _ovuvSituationFlag = right._ovuvSituationFlag;
+
+        _originalParent = right._originalParent;
 
         _operationStats = right._operationStats;
         if (right._twoWayPoints != NULL)
@@ -2426,10 +2343,6 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setLastStatusChangeTime(gInvalidCtiTime);
     setControlStatus(CtiCCCapBank::Open);
     setTagsControlStatus(0);
-    setOriginalFeederId(0);
-    setOriginalSwitchingOrder(0.0);
-    setOriginalCloseOrder(0.0);
-    setOriginalTripOrder(0.0);
     setAssumedOrigVerificationState(CtiCCCapBank::Open);
     setPreviousVerificationControlStatus(CtiCCCapBank::Open);
     setVCtrlIndex(-1);
@@ -2469,6 +2382,9 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setIgnoreReasonTimeUpdated(gInvalidCtiTime);
     setIgnoreIndicatorTimeUpdated(gInvalidCtiTime);
     setUnsolicitedChangeTimeUpdated(gInvalidCtiTime);
+
+    _originalParent.setPAOId(_paoid);
+
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
 
@@ -2488,8 +2404,6 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     rdr["laststatuschangetime"] >> _laststatuschangetime;
     rdr["tagscontrolstatus"] >> _tagscontrolstatus;
     rdr["ctitimestamp"] >> dynamicTimeStamp;
-    rdr["originalfeederid"] >> _originalfeederid;
-    rdr["originalswitchingorder"] >> _originalswitchingorder;
     rdr["assumedstartverificationstatus"] >> _assumedOrigCapBankPos;
     rdr["prevverificationcontrolstatus"] >> _prevVerificationControlStatus;
     rdr["verificationcontrolindex"] >> _vCtrlIndex;
@@ -2542,6 +2456,8 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     rdr["changevar"] >> _sPercentChange;
     rdr["twowaycbclastcontrol"] >> _reportedCBCLastControlReason;
     rdr["partialphaseinfo"] >> _partialPhaseInfo;
+
+    _originalParent.restore(rdr);
 
     _actionId = -1;
 
@@ -2658,8 +2574,6 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["laststatuschangetime"].assign( toRWDBDT((CtiTime)_laststatuschangetime) )
             << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
             << dynamicCCCapBankTable["ctitimestamp"].assign(toRWDBDT((CtiTime)currentDateTime))
-            << dynamicCCCapBankTable["originalfeederid"].assign( _originalfeederid )
-            << dynamicCCCapBankTable["originalswitchingorder"].assign( _originalswitchingorder )
             << dynamicCCCapBankTable["assumedstartverificationstatus"].assign(_assumedOrigCapBankPos)
             << dynamicCCCapBankTable["prevverificationcontrolstatus"].assign(_prevVerificationControlStatus)
             << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
@@ -2709,8 +2623,6 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << _laststatuschangetime
             << _tagscontrolstatus
             << currentDateTime
-            << _originalfeederid
-            << _originalswitchingorder
             << _assumedOrigCapBankPos
             << _prevVerificationControlStatus
             << _vCtrlIndex
@@ -2753,6 +2665,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
                 }
             }
         }
+        if (getOriginalParent().isDirty())
+            getOriginalParent().dumpDynamicData(conn, currentDateTime);
 
         if (getOperationStats().isDirty())
             getOperationStats().dumpDynamicData(conn, currentDateTime);

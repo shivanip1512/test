@@ -32,6 +32,7 @@
 #include "ccexecutor.h"
 #include "ccmessage.h"
 #include "mgr_paosched.h"
+#include "ccoriginalparent.h"
 
 #include "ccUnitTestUtil.h"
 
@@ -192,7 +193,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
     while (j > 0)
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders2[j-1];
-        if (currentFeeder->getOriginalSubBusId() == bus1->getPAOId())
+        if (currentFeeder->getOriginalParent().getOriginalParentId() == bus1->getPAOId())
         {
 
             CtiCCExecutorFactory f;

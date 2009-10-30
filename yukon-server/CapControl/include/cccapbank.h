@@ -28,6 +28,7 @@
 #include "cctwowaycbcpoints.h"
 #include "ccoperationstats.h"
 #include "ccConfirmationStats.h"
+#include "ccoriginalparent.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "ctitime.h"
@@ -122,12 +123,6 @@ public:
     LONG getTotalOperations() const;
     const CtiTime& getLastStatusChangeTime() const;
     LONG getTagsControlStatus() const;
-    LONG getOriginalFeederId() const;
-
-    float getOriginalSwitchingOrder() const;
-    float getOriginalCloseOrder() const;
-    float getOriginalTripOrder() const;
-
     BOOL getVerificationFlag() const;
     BOOL getPerformingVerificationFlag() const;
     BOOL getVerificationDoneFlag() const;
@@ -209,10 +204,6 @@ public:
     CtiCCCapBank& setTotalOperations(LONG operations);
     CtiCCCapBank& setLastStatusChangeTime(const CtiTime& laststatuschangetime);
     CtiCCCapBank& setTagsControlStatus(LONG tags);
-    CtiCCCapBank& setOriginalFeederId(LONG origfeeder);
-    CtiCCCapBank& setOriginalSwitchingOrder(float origorder);
-    CtiCCCapBank& setOriginalCloseOrder(float origorder);
-    CtiCCCapBank& setOriginalTripOrder(float origorder);
 
     CtiCCCapBank& setVerificationFlag(BOOL verificationFlag);
     CtiCCCapBank& setPerformingVerificationFlag(BOOL performingVerificationFlag);
@@ -271,6 +262,7 @@ public:
 
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
+    CtiCCOriginalParent& getOriginalParent();
 
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
@@ -411,6 +403,7 @@ private:
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
+    CtiCCOriginalParent _originalParent;
 
     LONG _actionId;
 

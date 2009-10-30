@@ -144,6 +144,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void getAllAltSubValues(DOUBLE &volt, DOUBLE &var, DOUBLE &watt);
     LONG getSwitchOverPointId() const;
     BOOL getSwitchOverStatus() const;
+    BOOL getPrimaryBusFlag() const;
     BOOL getDualBusEnable() const;
     LONG getEventSequence() const;
     BOOL getReEnableBusFlag() const;
@@ -271,6 +272,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setAltSubControlValue(DOUBLE controlValue);
     CtiCCSubstationBus& setSwitchOverPointId(LONG pointId);
     CtiCCSubstationBus& setSwitchOverStatus(BOOL status);
+    CtiCCSubstationBus& setPrimaryBusFlag(BOOL status);
     CtiCCSubstationBus& setDualBusEnable(BOOL flag);
     CtiCCSubstationBus& setEventSequence(LONG eventSeq);
     CtiCCSubstationBus& setReEnableBusFlag(BOOL flag);
@@ -478,6 +480,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _altSubControlValue;
     LONG   _switchOverPointId;
     BOOL   _switchOverStatus;
+    BOOL   _primaryBusFlag;
     BOOL   _dualBusEnable;
     LONG   _eventSeq;
     BOOL   _multiMonitorFlag;

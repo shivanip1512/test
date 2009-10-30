@@ -608,7 +608,7 @@ LONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::getCurrentVarLoadPointValue() const
 {
-    if (_dualBusEnable && _switchOverStatus && !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
+    if (_dualBusEnable && _switchOverStatus && !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
     {
         return _altSubControlValue;
     }
@@ -1001,7 +1001,7 @@ LONG CtiCCSubstationBus::getLastFeederControlledPAOId() const
 ---------------------------------------------------------------------------*/
 LONG CtiCCSubstationBus::getLastFeederControlledPosition() const
 {
-    if (_lastfeedercontrolledposition >= 0)
+    if (_lastfeedercontrolledposition >= 0 && _lastfeedercontrolledposition < _ccfeeders.size())
         return _lastfeedercontrolledposition;
     else
         return 0;
@@ -1200,6 +1200,10 @@ LONG CtiCCSubstationBus::getSwitchOverPointId() const
 BOOL CtiCCSubstationBus::getSwitchOverStatus() const
 {
     return _switchOverStatus;
+}
+BOOL CtiCCSubstationBus::getPrimaryBusFlag() const
+{
+    return _primaryBusFlag;
 }
 BOOL CtiCCSubstationBus::getDualBusEnable() const
 {
@@ -2791,6 +2795,15 @@ CtiCCSubstationBus& CtiCCSubstationBus::setSwitchOverStatus(BOOL status)
         _dirty = TRUE;
     }
     _switchOverStatus = status;
+    return *this;
+}
+CtiCCSubstationBus& CtiCCSubstationBus::setPrimaryBusFlag(BOOL status)
+{
+    if (_primaryBusFlag != status)
+    {
+        _dirty = TRUE;
+    }
+    _primaryBusFlag = status;
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setDualBusEnable(BOOL flag)
@@ -7162,13 +7175,14 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[14] = (_voltReductionFlag?'Y':'N');
             addFlags[15] = (_sendMoreTimeControlledCommandsFlag?'Y':'N');
             addFlags[16] = (_disableOvUvVerificationFlag?'Y':'N');
+            addFlags[17] = (_primaryBusFlag?'Y':'N');
             _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
                                          char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8)) +
                                          char2string(*(addFlags+9)) + char2string(*(addFlags+10)) + char2string(*(addFlags+11)) +
                                          char2string(*(addFlags+12)) +char2string(*(addFlags+13)) +char2string(*(addFlags+14))
-                                        +char2string(*(addFlags+15)) +char2string(*(addFlags+16)));
-            _additionalFlags.append("NNN");
+                                        +char2string(*(addFlags+15)) +char2string(*(addFlags+16)) +char2string(*(addFlags+17)));
+            _additionalFlags.append("NN");
 
             updater.clear();
 
@@ -9981,6 +9995,8 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _displayOrder
     >> _voltReductionFlag
     >> _usePhaseData
+    >> _primaryBusFlag
+    >> _altDualSubId
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -10087,6 +10103,8 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _displayOrder
     << _voltReductionFlag
     << _usePhaseData
+    << _primaryBusFlag
+    << _altDualSubId
     << _ccfeeders;
 }
 
@@ -10191,6 +10209,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _switchOverPointId = right._switchOverPointId;
         _dualBusEnable = right._dualBusEnable;
         _switchOverStatus = right._switchOverStatus;
+        _primaryBusFlag = right._primaryBusFlag;
         _altSubControlValue = right._altSubControlValue;
         _eventSeq = right._eventSeq;
         _multiMonitorFlag = right._multiMonitorFlag;
@@ -10406,6 +10425,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setCapBankInactivityTime(-1);
 
     setSwitchOverStatus(FALSE);
+    setPrimaryBusFlag(FALSE);
     setEventSequence(0);
 
     setTargetVarValue(0);
@@ -10577,6 +10597,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _voltReductionFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
         _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y'?TRUE:FALSE);
         _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
+        _primaryBusFlag = (_additionalFlags[17]=='y'?TRUE:FALSE);
 
         if (!_TIME_OF_DAY_VAR_CONF)
         {

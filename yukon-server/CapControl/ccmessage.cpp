@@ -692,6 +692,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substa
     operator=(substationBusMsg);
 }
 
+
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/

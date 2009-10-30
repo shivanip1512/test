@@ -6463,6 +6463,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     RWDBTable dateOfSeason = db.table("dateofseason");
                     RWDBTable dateOfHoliday = db.table("dateofholiday");
                     RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
+                    RWDBTable dynamicCCoriginalParentTable = db.table("dynamicccoriginalparent");
 
                     {
 
@@ -6962,19 +6963,26 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["retryindex"]
                     << dynamicCCFeederTable["phaseavaluebeforecontrol"]
                     << dynamicCCFeederTable["phasebvaluebeforecontrol"]
-                    << dynamicCCFeederTable["phasecvaluebeforecontrol"];
+                    << dynamicCCFeederTable["phasecvaluebeforecontrol"]
+                    << dynamicCCoriginalParentTable["originalparentid"]
+                    << dynamicCCoriginalParentTable["originalswitchingorder"]
+                    << dynamicCCoriginalParentTable["originalcloseorder"]
+                    << dynamicCCoriginalParentTable["originaltriporder"];
 
 
                     selector.from(dynamicCCFeederTable);
                     selector.from(capControlFeederTable);
+                    selector.from(dynamicCCoriginalParentTable);
 
                     if (feederId > 0)
                     {
                         selector.where(capControlFeederTable["feederid"]==dynamicCCFeederTable["feederid"] &&
+                                       capControlFeederTable["feederid"]==dynamicCCoriginalParentTable["paobjectid"] &&
                                    capControlFeederTable["feederid"]==feederId);
                     }
                     else
-                        selector.where(capControlFeederTable["feederid"]==dynamicCCFeederTable["feederid"]);
+                        selector.where(capControlFeederTable["feederid"]==dynamicCCFeederTable["feederid"] &&
+                                       capControlFeederTable["feederid"]==dynamicCCoriginalParentTable["paobjectid"]);
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
@@ -7171,6 +7179,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                 RWDBTable dynamicCCMonitorBankHistoryTable = db.table("dynamicccmonitorbankhistory");
                 RWDBTable dynamicCCMonitorPointResponseTable = db.table("dynamicccmonitorpointresponse");
                 RWDBTable dynamicCCTwoWayTable = db.table("dynamiccctwowaycbc");
+                RWDBTable dynamicCCoriginalParentTable = db.table("dynamicccoriginalparent");
 
 
                 {
@@ -7404,8 +7413,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << dynamicCCCapBankTable["laststatuschangetime"]
                     << dynamicCCCapBankTable["tagscontrolstatus"]
                     << dynamicCCCapBankTable["ctitimestamp"]
-                    << dynamicCCCapBankTable["originalfeederid"]
-                    << dynamicCCCapBankTable["originalswitchingorder"]
                     << dynamicCCCapBankTable["assumedstartverificationstatus"]
                     << dynamicCCCapBankTable["prevverificationcontrolstatus"]
                     << dynamicCCCapBankTable["verificationcontrolindex"]
@@ -7417,18 +7424,26 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << dynamicCCCapBankTable["aftervar"]
                     << dynamicCCCapBankTable["changevar"]
                     << dynamicCCCapBankTable["twowaycbclastcontrol"]
-                    << dynamicCCCapBankTable["partialphaseinfo"];
+                    << dynamicCCCapBankTable["partialphaseinfo"]
+                    << dynamicCCoriginalParentTable["originalparentid"]
+                    << dynamicCCoriginalParentTable["originalswitchingorder"]
+                    << dynamicCCoriginalParentTable["originalcloseorder"]
+                    << dynamicCCoriginalParentTable["originaltriporder"];
+                    
 
                     selector.from(dynamicCCCapBankTable);
                     selector.from(capBankTable);
+                    selector.from(dynamicCCoriginalParentTable);
 
                     if (capBankId > 0)
                     {
                         selector.where(capBankTable["deviceid"]==dynamicCCCapBankTable["capbankid"] &&
+                                   capBankTable["deviceid"] == dynamicCCoriginalParentTable["paobjectid"] &&
                                    capBankTable["deviceid"] == capBankId);
                     }
                     else
-                        selector.where(capBankTable["deviceid"]==dynamicCCCapBankTable["capbankid"] );
+                        selector.where(capBankTable["deviceid"]==dynamicCCCapBankTable["capbankid"] &&
+                                   capBankTable["deviceid"] == dynamicCCoriginalParentTable["paobjectid"] );
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {

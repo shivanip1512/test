@@ -40,7 +40,7 @@
 #include "pointtypes.h"
 #include "devicetypes.h"
 #include "resolvers.h"
-//#include "ccscheduler.h"
+#include "ccoriginalparent.h"
 #include "mgr_paosched.h"
 #include "thread_monitor.h"
 #include "utility.h"
@@ -2460,7 +2460,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 while (j > 0)
                                 {
                                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
-                                    if (currentFeeder->getOriginalSubBusId() == currentSubstationBus->getPAOId())
+                                    if (currentFeeder->getOriginalParent().getOriginalParentId() == currentSubstationBus->getPAOId())
                                     {
                                     
                                         CtiCCExecutorFactory f;

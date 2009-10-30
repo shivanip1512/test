@@ -29,6 +29,7 @@
 #include "types.h"
 #include "observe.h"
 #include "ccmonitorpoint.h"
+#include "ccoriginalparent.h"
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
@@ -139,8 +140,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
     float getDisplayOrder() const;
-    LONG getOriginalSubBusId() const;
-    float getOriginalSwitchingOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
     const CtiTime& getLastCurrentVarPointUpdateTime() const;
     LONG getEstimatedVarLoadPointId() const;
@@ -261,8 +260,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setControlDelayTime(LONG delay);
     CtiCCFeeder& setControlSendRetries(LONG retries);
     CtiCCFeeder& setDisplayOrder(float order);
-    CtiCCFeeder& setOriginalSubBusId(LONG subBusId);
-    CtiCCFeeder& setOriginalSwitchingOrder(float order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setEstimatedVarLoadPointId(LONG estimatedvarid);
@@ -431,6 +428,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
+    CtiCCOriginalParent& getOriginalParent();
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -511,8 +509,6 @@ private:
     DOUBLE _offpkpfsetpoint;
 
     float _displayorder;
-    LONG _originalsubbusid;
-    float _originalswitchingorder;
 
     BOOL _newpointdatareceivedflag;
     CtiTime _lastcurrentvarpointupdatetime;
@@ -598,6 +594,7 @@ private:
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
+    CtiCCOriginalParent _originalParent;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
