@@ -496,15 +496,11 @@
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 
-<entry key="yukon.web.modules.dr.programDetail.parents.controlArea">
-    This program is included in the following control area.
-</entry>
+<entry key="yukon.web.modules.dr.programDetail.parents.controlArea">Control Area</entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.noControlArea">
     This program is not included in a control area.
 </entry>
-<entry key="yukon.web.modules.dr.programDetail.parents.scenarios">
-    This program is included in the following scenarios.
-</entry>
+<entry key="yukon.web.modules.dr.programDetail.parents.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.noScenarios">
     This program is not included in any scenarios.
 </entry>
@@ -583,18 +579,14 @@
 <entry key="yukon.web.modules.dr.loadGroupDetail.note.macroLoadGroup">This is a macro load group.</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.loadGroups">Load Groups</entry>
 
-<entry key="yukon.web.modules.dr.loadGroupDetail.parents.programs">
-    This load group is included in the following programs.
-</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms">
     This load group is not included in any programs.
 </entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission">You do not have permission to view this program.</entry>
 
-<entry key="yukon.web.modules.dr.loadGroupDetail.parents.loadGroups">
-    This load group is included in the following macro load groups.
-</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.parents.noLoadGroups">
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.macroLoadGroups">Macro Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.noMacroLoadGroups">
     This load group is not included in any macro load groups.
 </entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission">You do not have permission to view this loadGroup.</entry>

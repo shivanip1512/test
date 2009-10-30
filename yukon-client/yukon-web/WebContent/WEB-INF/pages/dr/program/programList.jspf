@@ -136,7 +136,7 @@ function clearFilter() {
                 onclick="javascript:clearFilter()"/>
         </div>
     </form:form>
-</tags:simplePopup><br>
+</tags:simplePopup>
 
 <%-- Main Program list table section --%>
 

@@ -21,7 +21,7 @@
             <cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.drHome"/>
         </cti:crumbLink>
         <cti:crumbLink url="/spring/dr/scenario/list">
-        	<cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenarios"/>
+            <cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenarios"/>
         </cti:crumbLink>
         <cti:crumbLink>
             <cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenario"
@@ -35,26 +35,26 @@
         htmlEscape="true" argument="${scenario.name}"/></h2>
     <br>
 
-    <table cellspacing="0" cellpadding="0" width="100%">
+    <table class="widgetColumns">
         <tr>
-            <td width="50%" valign="top">
-            <%-- Scenarios don't have any info right now.
+            <td class="widgetColumnCell" valign="top">
+                <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.info"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                 </tags:abstractContainer>
-            --%>
+                </div>
             </td>
-            <td width="10">&nbsp;</td>
-            <td width="50%" valign="top">
+            <td class="widgetColumnCell" valign="top">
+                <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.actions"/>
-            	<tags:abstractContainer type="box" title="${boxTitle}">
+                <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
                         <cti:url var="startScenarioUrl" value="/spring/dr/program/startMultipleProgramsDetails">
                             <cti:param name="scenarioId" value="${scenarioId}"/>
                         </cti:url>
-                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
-                                                       dialogId="drDialog" 
-                                                       actionUrl="${startScenarioUrl}" 
+                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
+                                                       dialogId="drDialog"
+                                                       actionUrl="${startScenarioUrl}"
                                                        logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"
                                                        labelKey="yukon.web.modules.dr.scenarioDetail.actions.start"/>
                         <br>
@@ -62,9 +62,9 @@
                         <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
                             <cti:param name="scenarioId" value="${scenarioId}"/>
                         </cti:url>
-                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
-                                                       dialogId="drDialog" 
-                                                       actionUrl="${stopScenarioUrl}" 
+                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
+                                                       dialogId="drDialog"
+                                                       actionUrl="${stopScenarioUrl}"
                                                        logoKey="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"
                                                        labelKey="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
                         <br>
@@ -73,22 +73,27 @@
                         <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>
                         <span title="${noScenarioControl}">
                             <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.disabled"/>
-                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start"/>
+                            <cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.start"/>
                         </span>
                         <br>
                         <span title="${noScenarioControl}">
                             <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled"/>
-                    		<cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
+                            <cti:msg key="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
                         </span>
                         <br>
                     </cti:checkPaoAuthorization>
-    	        </tags:abstractContainer>
+                </tags:abstractContainer>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="widgetColumnCell" colspan="2">
+                <div class="widgetContainer">
+                    <c:set var="baseUrl" value="/spring/dr/scenario/detail"/>
+                    <%@ include file="../program/programList.jspf" %>
+                </div>
             </td>
         </tr>
     </table>
-    <br>
-
-    <c:set var="baseUrl" value="/spring/dr/scenario/detail"/>
-    <%@ include file="../program/programList.jspf" %>
 
 </cti:standardPage>

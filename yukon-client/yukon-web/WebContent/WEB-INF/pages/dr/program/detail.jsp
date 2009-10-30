@@ -36,12 +36,13 @@
         htmlEscape="true" argument="${program.name}"/></h2>
     <br>
 
-    <table cellspacing="0" cellpadding="0" width="100%">
+    <table class="widgetColumns">
         <tr>
-            <td width="50%" valign="top">
-            
+            <td class="widgetColumnCell" valign="top">
+
                 <%-- Program Info section --%>
-            
+
+                <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.info"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <tags:nameValueContainer>
@@ -89,16 +90,17 @@
                         </cti:checkRolesAndProperties>
                     </tags:nameValueContainer>
                 </tags:abstractContainer>
+                </div>
             </td>
-            <td width="10">&nbsp;</td>
-            <td width="50%" valign="top">
-            
+            <td class="widgetColumnCell" valign="top">
+
                 <%-- 
                     Program Actions section each action has a simpleDialogLink that
                     pops open a dialog for the action.  The available actions are based
                     on the dynamically updated SHOW_ACTION value
                 --%>
-            
+
+                <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
@@ -307,71 +309,95 @@
                         </div>
                     </cti:checkPaoAuthorization>
                 </tags:abstractContainer>
+                </div>
             </td>
         </tr>
+
+        <%-- Child Load Groups for the Program --%>
+        <tr>
+            <td class="widgetColumnCell" colspan="2">
+                <div class="widgetContainer">
+                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
+                    <c:set var="baseUrl" value="/spring/dr/program/detail"/>
+                    <%@ include file="../loadGroup/loadGroupList.jspf" %>
+                </div>
+            </td>
+        </tr>
+
+        <c:set var="showControlAreas" value="false"/>
+        <c:set var="showScenarios" value="false"/>
+        <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
+            <c:set var="showControlAreas" value="true"/>
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="SHOW_SCENARIOS">
+            <c:set var="showScenarios" value="true"/>
+        </cti:checkRolesAndProperties>
+
+        <c:if test="${showControlAreas || showScenarios}">
+        <tr>
+            <c:if test="${showControlAreas}">
+            <td class="widgetColumnCell" valign="top">
+                <div class="widgetContainer">
+                    <%-- 
+                        Parent Control Area for the Program - has a link to Control Area detail if
+                        the user has permission to view the Control Area 
+                    --%>
+                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.parents.controlArea"/>
+                    <tags:abstractContainer title="${boxTitle}" type="box">
+                        <c:if test="${empty parentControlArea}">
+                            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
+                        </c:if>
+                        <c:if test="${!empty parentControlArea}">
+                            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}">
+                                <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
+                                    <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
+                                </c:url>
+                                <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
+                            </cti:checkPaoAuthorization>
+                            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}" invert="true">
+                                <cti:msg var="noParentPermission" key="yukon.web.modules.dr.programDetail.parents.noControlAreaPermission"/>
+                                <span title="${noParentPermission}">
+                                    <spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody>
+                                </span>
+                            </cti:checkPaoAuthorization>
+                        </c:if>
+                    </tags:abstractContainer>
+                </div>
+            </td>
+            </c:if>
+            <c:if test="${showScenarios}">
+            <td class="widgetColumnCell" valign="top">
+                <div class="widgetContainer">
+                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.parents.scenarios"/>
+                    <tags:abstractContainer title="${boxTitle}" type="box">
+                        <%-- 
+                            Parent Scenario(s) for the Program - has a link to Scenario detail if
+                            the user has permission to view the Scenario 
+                        --%>
+                        <c:if test="${empty parentScenarios}">
+                            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
+                        </c:if>
+                        <c:if test="${!empty parentScenarios}">
+                            <c:forEach var="parentScenario" items="${parentScenarios}">
+                                <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentScenario}">
+                                    <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
+                                        <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
+                                    </c:url>
+                                    <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
+                                </cti:checkPaoAuthorization>
+                                <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentScenario}" invert="true">
+                                    <cti:msg var="noParentPermission" key="yukon.web.modules.dr.programDetail.parents.noScenarioPermission"/>
+                                    <span title="${noParentPermission}">
+                                        <spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody>
+                                    </span>
+                                </cti:checkPaoAuthorization>
+                            </c:forEach>
+                        </c:if>
+                    </tags:abstractContainer>
+                </div>
+            </td>
+            </c:if>
+        </tr>
+        </c:if>
     </table>
-    <br>
-
-    <%-- Child Load Groups for the Program --%>
-
-    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
-    <c:set var="baseUrl" value="/spring/dr/program/detail"/>
-    <%@ include file="../loadGroup/loadGroupList.jspf" %>
-    <br>
-
-    <%-- 
-        Parent Control Area for the Program - has a link to Control Area detail if
-        the user has permission to view the Control Area 
-    --%>
-
-    <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
-        <c:if test="${empty parentControlArea}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
-        </c:if>
-        <c:if test="${!empty parentControlArea}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.controlArea"/></p>
-            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}">
-                <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
-                    <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
-                </c:url>
-                <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
-            </cti:checkPaoAuthorization>
-            <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}" invert="true">
-                <cti:msg var="noParentPermission" key="yukon.web.modules.dr.programDetail.parents.noControlAreaPermission"/>
-                <span title="${noParentPermission}">
-                    <spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody>
-                </span>
-            </cti:checkPaoAuthorization>
-        </c:if>
-        <br>
-    </cti:checkRolesAndProperties>
-
-    <%-- 
-        Parent Scenario(s) for the Program - has a link to Scenario detail if
-        the user has permission to view the Scenario 
-    --%>
-
-    <cti:checkRolesAndProperties value="SHOW_SCENARIOS">
-        <c:if test="${empty parentScenarios}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
-        </c:if>
-        <c:if test="${!empty parentScenarios}">
-            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.scenarios"/></p>
-            <c:forEach var="parentScenario" items="${parentScenarios}">
-                <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentScenario}">
-                    <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
-                        <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
-                    </c:url>
-                    <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>
-                </cti:checkPaoAuthorization>
-                <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentScenario}" invert="true">
-                    <cti:msg var="noParentPermission" key="yukon.web.modules.dr.programDetail.parents.noScenarioPermission"/>
-                    <span title="${noParentPermission}">
-                        <spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody>
-                    </span>
-                </cti:checkPaoAuthorization>
-            </c:forEach>
-        </c:if>
-    </cti:checkRolesAndProperties>
-
 </cti:standardPage>
