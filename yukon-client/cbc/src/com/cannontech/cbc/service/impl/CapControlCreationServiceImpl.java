@@ -109,7 +109,9 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
                 CapbankController controller = new CapbankController();
                 PaoType deviceType = PaoType.getForId(type);
                 controller.setScanGroup(0);
-                controller.setScanType(DeviceScanRate.TYPE_GENERAL);
+                controller.setScanType(DeviceScanRate.TYPE_INTEGRITY);
+                controller.setIntervalRate(300);
+                controller.setAlternateRate(300);
                 controller.setName(name);
                 controller.setType(deviceType.getDeviceTypeId());
                 controller.setPortId(portId);
