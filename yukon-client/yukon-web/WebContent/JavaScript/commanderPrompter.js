@@ -85,7 +85,16 @@ function getCommanderParams(cmd) {
             // unquoted prompt string
             // ends at space or quote that is to be preserved, or eol
             else {
-                for (j = cmdIdx + 1; j < cmd.length; j++) {
+            	
+            	// Skip over any spaces at the beginning of the prompt
+            	var j = cmdIdx + 1;
+            	for (j = cmdIdx + 1; j < cmd.length; j++) {
+            		if (cmd.charAt(j) != ' ') {
+            			break;
+            		}
+            	}
+            	
+                for (j; j < cmd.length; j++) {
                     if (cmd.charAt(j) == ' ' || cmd.charAt(j) == "'" || cmd.charAt(j) == '"') {
                         endIdx = j - 1;
                         break;    

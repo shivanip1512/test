@@ -152,7 +152,14 @@ public final class CommandDaoImpl implements CommandDao {
 		    char charAt = promptString.charAt(0);
 		    if(charAt == DEFAULT_VALUE_PROMPT) {
 		        // found a double ?, ignore and look for another prompt value
-		        promptIndex = valueString.trim().substring(promptIndex + 2).indexOf(DEFAULT_VALUE_PROMPT);
+		        promptIndex = promptIndex + 2;
+		        String substring = valueString.trim().substring(promptIndex);
+                int nextPromptIndex = substring.indexOf(DEFAULT_VALUE_PROMPT);
+                if(nextPromptIndex == -1) {
+                    promptIndex = nextPromptIndex;
+                } else {
+                    promptIndex += nextPromptIndex;
+                }
 		        continue;
 		    }
 		    
@@ -193,9 +200,13 @@ public final class CommandDaoImpl implements CommandDao {
 			{
 				valueString = (valueString.substring(0, promptIndex) + value + stringEnding).trim();
 				int nextIndex = promptIndex + value.length();
-				promptIndex = valueString.trim().substring(nextIndex).indexOf(DEFAULT_VALUE_PROMPT);	//look for another prompt value
-				if(promptIndex != -1) {
-				    promptIndex += nextIndex;
+				if(nextIndex < valueString.length()) {
+    				promptIndex = valueString.trim().substring(nextIndex).indexOf(DEFAULT_VALUE_PROMPT);	//look for another prompt value
+    				if(promptIndex != -1) {
+    				    promptIndex += nextIndex;
+    				}
+				} else {
+				    promptIndex = -1;
 				}
 			}
 			else
