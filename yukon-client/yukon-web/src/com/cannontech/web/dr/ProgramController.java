@@ -1102,11 +1102,14 @@ public class ProgramController {
         // TODO:  I don't know how to create programs that aren't LMProgramDirect
         // programs so I don't know how to test them.
         List<LMProgramDirectGear> gears = Collections.emptyList();
+        LMProgramDirectGear currentGear = null;
         LMProgramBase programBase = programService.getProgramForPao(program);
         if (programBase instanceof IGearProgram) {
             gears = ((IGearProgram) programBase).getDirectGearVector();
+            currentGear = ((IGearProgram) programBase).getCurrentGear();
         }
         modelMap.addAttribute("gears", gears);
+        modelMap.addAttribute("currentGear", currentGear);
     }
 
     private void assertStopGearAllowed(YukonUserContext userContext) {
