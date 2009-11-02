@@ -28,7 +28,7 @@
         <property name="autodetect" value="true"/>
     </bean>
       
-	<bean class="com.cannontech.services.validation.dao.impl.AnalysisDescriptionDaoImpl"/>    
+	<bean id="validationMonitorDao" class="com.cannontech.services.validation.dao.impl.ValidationMonitorDaoImpl"/>
 	<bean class="com.cannontech.services.validation.dao.impl.RphTagDaoImpl"/>    
 	<bean class="com.cannontech.services.validation.RawPointHistoryValidationService"/>    
 

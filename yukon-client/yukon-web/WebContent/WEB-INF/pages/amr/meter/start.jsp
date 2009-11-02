@@ -28,6 +28,10 @@
 					<%-- TAMPER FLAGS WIDGET --%>
 					<cti:msg var="tamperFlagMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.popupInfo"/>
 					<ct:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
+                    
+                    <%-- VALIDATION MONITORS WIDGET --%>
+                    <cti:msg var="validationMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.validationMonitorsWidget.popupInfo"/>
+                    <ct:widget bean="validationMonitorsWidget" helpText="${validationMonitorsWidgetPopupInfoText}"/>
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">

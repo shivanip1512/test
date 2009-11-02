@@ -506,6 +506,16 @@
 	   	</property>
     </bean>
     
+    <bean id="validationMonitorsWidget" class="com.cannontech.web.widget.ValidationMonitorsWidget">
+        <property name="title" value="Validation Monitors"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="VALIDATION_ENGINE"/>
+            </bean>
+        </property>
+    </bean>
+    
     <bean id="scheduledGroupRequstExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequstExecutionWidget">
     	<property name="title" value="Scheduled Requests"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
@@ -568,6 +578,9 @@
                 </entry>
                 <entry key="TAMPER_FLAG_PROCESSING">
                     <ref local="tamperFlagMonitorBackingService"/>
+                </entry>
+                <entry key="VALIDATION_PROCESSING">
+                    <ref local="validationMonitorBackingService"/>
                 </entry>
                 <entry key="JOB">
                     <ref local="jobBackingService"/>
@@ -708,6 +721,11 @@
     </bean>
     <bean id="violationsCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.ViolationsCountTamperFlagProcessingUpdaterHandler"/>
     <bean id="monitoringCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.MonitoringCountTamperFlagProcessingUpdaterHandler"/>
+    
+    <!-- validation -->
+    <bean id="validationMonitorBackingService" class="com.cannontech.web.updater.validationProcessing.ValidationMonitorBackingService">
+    </bean>
+    <bean id="monitoringCountValidationProcessingUpdaterHandler" class="com.cannontech.web.updater.validationProcessing.handler.MonitoringCountValidationProcessingUpdaterHandler"/>
     
     <!-- jobs -->
     <bean id="jobBackingService" class="com.cannontech.web.updater.job.JobBackingService">

@@ -50,4 +50,6 @@
     <bean id="CommandRequestExecutionResultsController" class="com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionResultsController">
     </bean>
 
+    <!-- Validation Monitor Editor Controller -->
+    <bean class="com.cannontech.web.common.vee.monitor.ValidationMonitorEditorController"/>
 </beans>

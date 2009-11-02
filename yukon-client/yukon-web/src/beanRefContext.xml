@@ -20,6 +20,7 @@
             <value>com/cannontech/jobs/jobContext.xml</value>
             <value>com/cannontech/report/reportContext.xml</value>
             <value>com/cannontech/common/opc/applicationContext.xml</value>
+            <value>com/cannontech/services/validation/validationContext.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>

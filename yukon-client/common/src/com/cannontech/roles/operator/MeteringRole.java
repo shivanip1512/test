@@ -30,4 +30,6 @@ public interface MeteringRole {
     public static final int TAMPER_FLAG_PROCESSING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 14; // -20214
     /** Access to the Phase Detect link on the System Actions widget on metering start page */
     public static final int PHASE_DETECT = OperatorRoleDefs.METERING_PROPERTYID_BASE - 15; // -20215
+    /** Access to the Validation Engine setup and processing widget on metering start page */
+    public static final int VALIDATION_ENGINE = OperatorRoleDefs.METERING_PROPERTYID_BASE - 16; // -20216
 }

@@ -157,6 +157,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/amr/outageProcessing</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/phaseDetect</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/tamperFlagProcessing</value>
+               <value>classpath:com/cannontech/yukon/web/modules/common/vee/validationMonitorEditor</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/commandRequestExecution</value>
                <value>classpath:com/cannontech/yukon/web/deviceGroups</value>
                <value>classpath:com/cannontech/yukon/dr/appliance</value>

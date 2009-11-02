@@ -44,9 +44,9 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.cannontech.services.validation.dao.AnalysisDescriptionDao;
+import com.cannontech.services.validation.dao.ValidationMonitorDao;
 import com.cannontech.services.validation.dao.RphTagDao;
-import com.cannontech.services.validation.model.AnalysisDescription;
+import com.cannontech.services.validation.model.ValidationMonitor;
 import com.cannontech.services.validation.model.RphTag;
 import com.cannontech.user.UserUtils;
 import com.google.common.collect.HashMultimap;
@@ -65,7 +65,7 @@ public class RawPointHistoryValidationService {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private PointReadService pointReadService;
     private ScheduledExecutorService executorService;
-    private AnalysisDescriptionDao analysisDescriptionDao;
+    private ValidationMonitorDao validationMonitorDao;
     private AttributeService attributeService;
     private RphTagDao rphTagDao;
     private RawPointHistoryDao rawPointHistoryDao;
@@ -118,14 +118,14 @@ public class RawPointHistoryValidationService {
                         long lastChangeIdProcessed = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
                         startingIdForLoggingPurposes = lastChangeIdProcessed + 1;
                         newLast = processChunkOfRows(lastChangeIdProcessed);
-                        log.info("Processed " + lastChangeIdProcessed + " to " + newLast + "(" + changeIdsEvaluated + ", " + rowsPulled + ")");
+                        log.debug("Processed " + lastChangeIdProcessed + " to " + newLast + "(" + changeIdsEvaluated + ", " + rowsPulled + ")");
                         didSomething = newLast != lastChangeIdProcessed;
                         lastChunkSize.set(newLast - lastChangeIdProcessed);
                         lastChangeIdProcessed = newLast;
                         persistedSystemValueDao.setValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID, lastChangeIdProcessed);
                         lastChunkCommitted.set(lastChangeIdProcessed);
                     } catch (Exception e) {
-                        log.info("Unable to process from " + startingIdForLoggingPurposes + ", sleeping", e);
+                        log.debug("Unable to process from " + startingIdForLoggingPurposes + ", sleeping", e);
                         didSomething = false;
                     }
                 } while (didSomething);
@@ -170,7 +170,7 @@ public class RawPointHistoryValidationService {
             return lastChangeIdProcessed;
         }
         
-        final SetMultimap<AnalysisDescription, Integer> deviceGroupCache = analysisDescriptionDao.loadAnalysisDescriptions();
+        final SetMultimap<ValidationMonitor, Integer> deviceGroupCache = validationMonitorDao.loadAnalysisDescriptions();
 
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("select rph.ChangeId, rph.Value, rph.Timestamp, ");
@@ -206,7 +206,7 @@ public class RawPointHistoryValidationService {
                     public void run() {
                         if (!attributeService.isPointAttribute(paoPointIdentifier, BuiltInAttribute.USAGE)) return;
                         
-                        ImmutableSet<AnalysisDescription> descriptions = findAnalysisDescriptions(deviceGroupCache,
+                        ImmutableSet<ValidationMonitor> descriptions = findAnalysisDescriptions(deviceGroupCache,
                                                                                                   paoPointIdentifier);
                         if (descriptions.isEmpty()) return;
                         
@@ -228,19 +228,19 @@ public class RawPointHistoryValidationService {
         return stopChangeId;
     }
     
-    private ImmutableSet<AnalysisDescription> findAnalysisDescriptions(SetMultimap<AnalysisDescription, Integer> deviceGroupCache,
+    private ImmutableSet<ValidationMonitor> findAnalysisDescriptions(SetMultimap<ValidationMonitor, Integer> deviceGroupCache,
                                                                        PaoPointIdentifier paoPointIdentifier) {
-        ImmutableSet.Builder<AnalysisDescription> builder = ImmutableSet.builder();
-        for (AnalysisDescription analysisDescription : deviceGroupCache.keySet()) {
-            if (deviceGroupCache.containsEntry(analysisDescription, paoPointIdentifier.getPaoIdentifier().getPaoId())) {
-                builder.add(analysisDescription);
+        ImmutableSet.Builder<ValidationMonitor> builder = ImmutableSet.builder();
+        for (ValidationMonitor validationMonitor : deviceGroupCache.keySet()) {
+            if (deviceGroupCache.containsEntry(validationMonitor, paoPointIdentifier.getPaoIdentifier().getPaoId())) {
+                builder.add(validationMonitor);
             }
         }
-        ImmutableSet<AnalysisDescription> descriptions = builder.build();
+        ImmutableSet<ValidationMonitor> descriptions = builder.build();
         return descriptions;
     }
 
-    private void processWorkUnit(final RawPointHistoryWorkUnit workUnit, Collection<AnalysisDescription> analysisDescriptions) {
+    private void processWorkUnit(final RawPointHistoryWorkUnit workUnit, Collection<ValidationMonitor> validationMonitors) {
         long startTime = System.currentTimeMillis();
         
         VendorSpecificSqlBuilder builder1 = vendorSpecificSqlBuilderFactory.create();
@@ -308,15 +308,15 @@ public class RawPointHistoryValidationService {
 
         if (values.size() == 2) {
             // special case handling for two rows
-            for (AnalysisDescription analysisDescription : analysisDescriptions) {
-                processThreeHistoryRows(workUnit, analysisDescription, values, tags);
+            for (ValidationMonitor validationMonitor : validationMonitors) {
+                processThreeHistoryRows(workUnit, validationMonitor, values, tags);
             }
         } else {
             // process every set of three rows, starting with the least recent
             for (int i = 0; i + 2 < values.size(); ++i) {
                 List<RawPointHistoryWrapper> subList = values.subList(values.size() - 3 - i, values.size() - i);
-                for (AnalysisDescription analysisDescription : analysisDescriptions) {
-                    processThreeHistoryRows(workUnit, analysisDescription, subList, tags);
+                for (ValidationMonitor validationMonitor : validationMonitors) {
+                    processThreeHistoryRows(workUnit, validationMonitor, subList, tags);
                 }
             }
         }
@@ -355,11 +355,11 @@ public class RawPointHistoryValidationService {
      * <li>!values.get(1).getTime().isAfter(values.get(0).getTime()) 
      * </ul>
      * @param workUnit
-     * @param analysisDescription
+     * @param validationMonitor
      * @param values
      * @param tags
      */
-    private void processThreeHistoryRows(RawPointHistoryWorkUnit workUnit, AnalysisDescription analysisDescription, List<RawPointHistoryWrapper> values,
+    private void processThreeHistoryRows(RawPointHistoryWorkUnit workUnit, ValidationMonitor validationMonitor, List<RawPointHistoryWrapper> values,
             Multimap<RawPointHistoryWrapper, RphTag> tags) {
         
         boolean peakInTheMiddle = false;
@@ -367,12 +367,12 @@ public class RawPointHistoryValidationService {
         
         // look for peaks if there are at least 3 pieces of history
         if (values.size() >= 3) {
-            boolean jumpUp = values.get(1).getValue() > values.get(2).getValue() + analysisDescription.getKwhReadingError();
-            boolean jumpDown = values.get(1).getValue() < values.get(2).getValue() - analysisDescription.getKwhReadingError();
-            boolean fall = values.get(0).getValue() < values.get(1).getValue() - analysisDescription.getKwhReadingError();
-            boolean increasing = values.get(0).getValue() >= values.get(2).getValue() - analysisDescription.getKwhReadingError();
+            boolean jumpUp = values.get(1).getValue() > values.get(2).getValue() + validationMonitor.getKwhReadingError();
+            boolean jumpDown = values.get(1).getValue() < values.get(2).getValue() - validationMonitor.getKwhReadingError();
+            boolean fall = values.get(0).getValue() < values.get(1).getValue() - validationMonitor.getKwhReadingError();
+            boolean increasing = values.get(0).getValue() >= values.get(2).getValue() - validationMonitor.getKwhReadingError();
             double height = calculateHeight(values.get(2), values.get(1), values.get(0));
-            boolean peakIsGreatEnough = height > analysisDescription.getPeakHeightMinimum();
+            boolean peakIsGreatEnough = height > validationMonitor.getPeakHeightMinimum();
             LogHelper.trace(log, "for %d: jumpUp=%b, jumpDown=%b, fall=%b, increasing=%b, height=%.1f, peakIsGreatEnough=%b", workUnit.thisValue.changeId, jumpUp, jumpDown, fall, increasing, height, peakIsGreatEnough);
 
 
@@ -402,8 +402,8 @@ public class RawPointHistoryValidationService {
 
             // look for Unreasonable Up
             RawPointHistoryWrapper currentValue = values.get(0);
-            double avgKwhPerDay = calculateLowerAvgKwhPerDay(previousValue, currentValue, analysisDescription.getKwhSlopeError());
-            if (avgKwhPerDay > analysisDescription.getReasonableMaxKwhPerDay()) {
+            double avgKwhPerDay = calculateLowerAvgKwhPerDay(previousValue, currentValue, validationMonitor.getKwhSlopeError());
+            if (avgKwhPerDay > validationMonitor.getReasonableMaxKwhPerDay()) {
                 tags.put(values.get(0), RphTag.UU);
 
                 // Check if re read should be performed. The goal here is to get
@@ -417,8 +417,8 @@ public class RawPointHistoryValidationService {
 
                 considerReRead = true;
                 if (values.size() > 2 && !peakInTheMiddle) {
-                    double avgKwhPerDay2to1 = calculateLowerAvgKwhPerDay(values.get(2), values.get(1), analysisDescription.getKwhSlopeError());
-                    if (avgKwhPerDay2to1 > analysisDescription.getReasonableMaxKwhPerDay()) {
+                    double avgKwhPerDay2to1 = calculateLowerAvgKwhPerDay(values.get(2), values.get(1), validationMonitor.getKwhSlopeError());
+                    if (avgKwhPerDay2to1 > validationMonitor.getReasonableMaxKwhPerDay()) {
                         // no need for another read
                         considerReRead = false;
                     }
@@ -427,13 +427,13 @@ public class RawPointHistoryValidationService {
             }
 
             // look for Unreasonable Down
-            if (currentValue.getValue() < previousValue.getValue() - analysisDescription.getKwhReadingError()) {
+            if (currentValue.getValue() < previousValue.getValue() - validationMonitor.getKwhReadingError()) {
                 RphTag resultTag = RphTag.UD;
                 considerReRead = true;
 
                 // look for Unreasonable Down from Changeout
                 double avgKwhPerDayFromZero = calculateLowerAvgKwhPerDayFromZero(previousValue, currentValue);
-                if (avgKwhPerDayFromZero <= analysisDescription.getReasonableMaxKwhPerDay()) {
+                if (avgKwhPerDayFromZero <= validationMonitor.getReasonableMaxKwhPerDay()) {
                     resultTag = RphTag.UDC;
                     considerReRead = false;
                 }
@@ -444,7 +444,7 @@ public class RawPointHistoryValidationService {
 
         }
 
-        if (considerReRead && analysisDescription.isReReadOnUnreasonable() ) {
+        if (considerReRead && validationMonitor.isReReadOnUnreasonable() ) {
             // there is no point rereading if the data is over a day old
             DateTime readingTime = values.get(0).getTime();
             Duration timeSinceReading = new Duration(readingTime, null); // null means now
@@ -457,7 +457,7 @@ public class RawPointHistoryValidationService {
             }
         }
         
-        if (analysisDescription.isSetQuestionableOnPeak() && peakInTheMiddle) {
+        if (validationMonitor.isSetQuestionableOnPeak() && peakInTheMiddle) {
             int changeId = values.get(1).changeId; // peak in the "middle" means the 1 value
             rawPointHistoryDao.changeQuality(changeId, PointQuality.Questionable);
             validationEventLogService.changedQualityOnPeakedValue(workUnit.paoPointIdentifier.getPaoIdentifier(), changeId);
@@ -580,8 +580,8 @@ public class RawPointHistoryValidationService {
     }
     
     @Autowired
-    public void setAnalysisDescriptionDao(AnalysisDescriptionDao analysisDescriptionDao) {
-        this.analysisDescriptionDao = analysisDescriptionDao;
+    public void setAnalysisDescriptionDao(ValidationMonitorDao validationMonitorDao) {
+        this.validationMonitorDao = validationMonitorDao;
     }
     
     @Autowired

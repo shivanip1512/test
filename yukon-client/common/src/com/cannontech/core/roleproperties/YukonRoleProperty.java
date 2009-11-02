@@ -376,6 +376,7 @@ public enum YukonRoleProperty {
     OUTAGE_PROCESSING(METERING, com.cannontech.roles.operator.MeteringRole.OUTAGE_PROCESSING, booleanType()),
     TAMPER_FLAG_PROCESSING(METERING, com.cannontech.roles.operator.MeteringRole.TAMPER_FLAG_PROCESSING, booleanType()),
     PHASE_DETECT(METERING, com.cannontech.roles.operator.MeteringRole.PHASE_DETECT, booleanType()),
+    VALIDATION_ENGINE(METERING, com.cannontech.roles.operator.MeteringRole.VALIDATION_ENGINE, booleanType()),
     
     ODDS_FOR_CONTROL_LABEL(ODDS_FOR_CONTROL, com.cannontech.roles.operator.OddsForControlRole.ODDS_FOR_CONTROL_LABEL, stringType()),
     

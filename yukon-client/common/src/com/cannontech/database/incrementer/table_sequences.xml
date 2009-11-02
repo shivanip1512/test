@@ -41,6 +41,7 @@
         <table name="CustomerFAQ" identitycolumn="QuestionID" initsequence="true"/>
         <table name="InterviewQuestion" identitycolumn="QuestionID" initsequence="true"/>
         <table name="LMProgramWebPublishing" identitycolumn="ProgramID" initsequence="true"/>
+        <table name="ValidationMonitor" identitycolumn="ValidationMonitorId" initsequence="true"/>
       </sequence>
       <sequence name="UsersRolesAndGroups">
       	<table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
