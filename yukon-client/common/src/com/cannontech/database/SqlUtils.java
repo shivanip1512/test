@@ -251,4 +251,20 @@ public final class SqlUtils {
     	}
     	return value;
     }
+    
+    /**
+     * Get null from result set instead of the default value of false if the column value is NULL.
+     * @param rs
+     * @param columnName
+     * @return
+     * @throws SQLException
+     */
+    public static Double getNullableDouble(ResultSet rs, String columnName) throws SQLException {
+    	
+    	Double value = rs.getDouble(columnName);
+    	if (rs.wasNull()) {
+    		return null;
+    	}
+    	return value;
+    }
 }

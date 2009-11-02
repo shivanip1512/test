@@ -1,11 +1,13 @@
 package com.cannontech.core.dao;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 /**
  * Data access object for raw point history values.
@@ -112,5 +114,28 @@ public interface RawPointHistoryDao {
      * @param questionable any valid quality
      */
     public void changeQuality(int changeId, PointQuality questionable);
+    
+    /**
+    * Gets values before or after a given changeId.
+    * All values for the point that changeId references are ordered by timestamp, the those values adjacent to the one with the given changeId are returned.
+    * Offsets are an array of integers that determine which adjacent points to return.
+    * Examples:
+    * offset = 0 => same value that changeId points to
+    * offset = -1 => value previous to value that changeId points to
+    * offset = 1 => value after value that changeId points to
+    * The list of values returned will have the same length as the offset array passed in.
+    * If an offset is out of range of the available values for the point, then null will be returned as its value.
+    * @param changeId
+    * @param offsets
+    * @return
+    * @throws SQLException
+    */
+   public List<PointValueQualityHolder> getAdjacentPointValues(final int changeId, int ... offsets) throws SQLException;
+   
+   /**
+    * Delete a row of RawPointHistory by ChangeId.
+    * @param changeId
+    */
+   public void deleteValue(int changeId);
 
 }

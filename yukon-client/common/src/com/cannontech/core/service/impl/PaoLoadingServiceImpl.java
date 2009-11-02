@@ -56,7 +56,13 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
         deviceCollectionReportDeviceLoaders = builder2.build();
     }
     
-    public List<DisplayablePao> getDisplayableDevices(Iterable<? extends YukonPao> paos) {
+    @Override
+    public Map<PaoIdentifier, DisplayablePao> getDisplayableDeviceLookup(Iterable<? extends YukonPao> paos) {
+    	return loadDevices(paos, displayablePaoloaders);
+    }
+    
+    @Override
+	public List<DisplayablePao> getDisplayableDevices(Iterable<? extends YukonPao> paos) {
         
         Map<PaoIdentifier, DisplayablePao> loadedDevices = loadDevices(paos, displayablePaoloaders);
         List<DisplayablePao> result = Lists.newArrayList(loadedDevices.values());

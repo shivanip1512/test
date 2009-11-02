@@ -32,6 +32,8 @@
     <bean id="DeviceDefinitionViewerController" class="com.cannontech.web.util.DeviceDefinitionViewerController">
     </bean>
     
+    <bean id="veeReviewController" class="com.cannontech.web.common.vee.review.VeeReviewController"/>
+    
     <bean id="viewResolver"
         class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass"

@@ -109,7 +109,16 @@ public class PointValueBuilder {
             public double getValue() {
                 return value;
             }
-            
+
+			@Override
+			public boolean equals(Object obj) {
+				
+				PointValueQualityHolder other = (PointValueQualityHolder)obj;
+				
+				return this.getId() == other.getId() && 
+					   this.getValue() == other.getValue() && 
+					   this.getPointDataTimeStamp().equals(other.getPointDataTimeStamp());
+			}
         };
     }
     
