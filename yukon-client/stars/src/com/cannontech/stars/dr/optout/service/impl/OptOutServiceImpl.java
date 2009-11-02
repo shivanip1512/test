@@ -133,7 +133,7 @@ public class OptOutServiceImpl implements OptOutService {
     		
 			// Create and save opt out event for this inventory
 			OptOutEvent event = new OptOutEvent();
-			
+			event.setEventId(request.getEventId());
 			event.setEventCounts(optOutCounts);
 			event.setCustomerAccountId(customerAccountId);
 			event.setInventoryId(inventoryId);
@@ -160,21 +160,32 @@ public class OptOutServiceImpl implements OptOutService {
 			} else {
 				// Do the opt out now 
 				
-				// Make sure the device is not already opted out
-				if(optOutEventDao.isOptedOut(inventoryId, customerAccountId)) {
-					throw new AlreadyOptedOutException(inventoryId, customerAccountId);
-				}
-				
-				// Get any overdue scheduled opt out - that is the event we should be starting
-				OptOutEvent overdueEvent = 
-					optOutEventDao.getOverdueScheduledOptOut(inventoryId, customerAccountId);
-				if(overdueEvent != null) {
-					event.setEventId(overdueEvent.getEventId());
-					event.setScheduledDate(overdueEvent.getScheduledDate());
-				}
-				
-				event.setState(OptOutEventState.START_OPT_OUT_SENT);
-			
+				// Already opted out exception, for requests from UI
+			    // Ignore/Cancel scheduled requests from automated OptOut task, if already opted out
+			    boolean alreadyOptedOut = optOutEventDao.isOptedOut(inventoryId, customerAccountId);
+			    if (alreadyOptedOut && request.getEventId() == null) {
+			        throw new AlreadyOptedOutException(inventoryId, customerAccountId);
+			    }
+			    if (request.getEventId() != null) {
+			        // Get any overdue scheduled opt out - that is the event we should be starting				    
+			        OptOutEvent overdueEvent = 
+			            optOutEventDao.getOptOutEventById(request.getEventId());
+
+			        if (alreadyOptedOut) {
+			            if (overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
+			                // Already opted out, cancel this scheduled one
+			                this.cancelOptOut(Collections.singletonList(request.getEventId()), user);                            
+			            } 
+			            return;
+			        } else {
+			            if (!overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
+			                return;
+			            }
+			            event.setScheduledDate(overdueEvent.getScheduledDate());
+			        }
+			    }
+                event.setState(OptOutEventState.START_OPT_OUT_SENT);
+                
 				// Send the command to the field
 				this.sendOptOutRequest(
 						inventory, 
@@ -303,9 +314,9 @@ public class OptOutServiceImpl implements OptOutService {
 				
 				// Cancel the scheduled opt out
 				event.setState(OptOutEventState.SCHEDULE_CANCELED);
-				// Set the stop date to the start date - keep track of when it was scheduled
-				// to happen but duration will be 0 hours
-				event.setStopDate(event.getStopDate());
+				// No need to update schedule date or start/stop date;
+				// SCHEDULE_CANCELED entries are ignored by OptOut Counts logic, OptOut history WS calls
+				// Control history is calculated from actual LMHardwareControlGroup entries.
 				optOutEventDao.save(event, OptOutAction.CANCEL_SCHEDULE, user);
 				
 				ActivityLogger.logEvent(

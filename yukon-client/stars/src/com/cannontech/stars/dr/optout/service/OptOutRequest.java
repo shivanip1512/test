@@ -15,6 +15,7 @@ public class OptOutRequest {
     private int durationInHours;
     private List<Integer> inventoryIdList;
     private List<ScheduledOptOutQuestion> questions;
+    private Integer eventId;
     
     public Date getStartDate() {
         return startDate;
@@ -60,6 +61,14 @@ public class OptOutRequest {
     	Date stopDate = cal.getTime();
     	
     	return stopDate;
+    }
+
+    public Integer getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(Integer eventId) {
+        this.eventId = eventId;
     }
     
 }

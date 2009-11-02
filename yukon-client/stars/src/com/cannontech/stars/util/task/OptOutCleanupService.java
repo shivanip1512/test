@@ -64,8 +64,8 @@ public class OptOutCleanupService implements InitializingBean {
                 // Get a list of all currently opted out inventory (according to the LMHardwareControlGroup
                 // table)
                 List<Integer> inventoryIds = enrollmentDao.getCurrentlyOptedOutInventory();
-                List<LiteStarsLMHardware> optedOutInventory = getOptedOutInventory(inventoryIds);
-                cleanUpCompletedOptOuts(optedOutInventory, user);
+                List<LiteStarsLMHardware> completedOptOuts = getCompletedOptOuts(inventoryIds);
+                cleanUpCompletedOptOuts(completedOptOuts, user);
         
             }
         }, 1, 5, TimeUnit.MINUTES);
@@ -103,11 +103,12 @@ public class OptOutCleanupService implements InitializingBean {
     	// Update event start to get duration (in case we missed this opt out by more than an hour)
     	event.setStartDate(new Date());
     	optOutRequest.setDurationInHours(event.getDurationInHours());
+    	optOutRequest.setEventId(event.getEventId());
     	
     	return optOutRequest;
     }
     
-    private List<LiteStarsLMHardware> getOptedOutInventory(List<Integer> inventoryIds) {
+    private List<LiteStarsLMHardware> getCompletedOptOuts(List<Integer> inventoryIds) {
     	
     	List<LiteStarsLMHardware> inventoryList = new ArrayList<LiteStarsLMHardware>();
     	for(Integer inventoryId : inventoryIds) {

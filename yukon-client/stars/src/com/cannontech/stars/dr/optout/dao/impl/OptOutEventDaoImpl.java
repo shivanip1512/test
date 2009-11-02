@@ -174,9 +174,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
 		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE CustomerAccountId = ? ");
-		sql.append("	AND StartDate < ? ");
-		sql.append("	AND StopDate < ? ");
+		sql.append("WHERE CustomerAccountId = ?");
+		sql.append("	AND ((StartDate < ? AND StopDate < ?) OR (EventState = ?))");
 		sql.append("ORDER BY StartDate DESC");
 		
 		Date now = new Date();
@@ -189,7 +188,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 			eventList = (List<OptOutEventDto>) yukonJdbcTemplate.getJdbcOperations().query(
 													sql.toString(), 
-													new Object[]{customerAccountId, now, now}, 
+													new Object[]{customerAccountId, now, now, OptOutEventState.SCHEDULE_CANCELED.toString()}, 
 													new OptOutEventDtoExtractor(maxNumberOfRecords));
 		} else {
 			// Process and return all records
@@ -199,7 +198,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 					new OptOutEventDtoRowMapper(), 
 					customerAccountId,
 					now,
-					now);
+					now,
+					OptOutEventState.SCHEDULE_CANCELED.toString());
 		}
 		
 		return eventList;
