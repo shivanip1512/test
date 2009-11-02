@@ -1,6 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:verifyRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA"/>
+<cti:verifyRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_CREATE"/>
 
 <%@ page import="com.cannontech.database.data.customer.Customer" %>
 <%@ page import="com.cannontech.database.Transaction" %>

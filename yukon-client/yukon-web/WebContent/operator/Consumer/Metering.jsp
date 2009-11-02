@@ -1,6 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:verifyRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_CREATE"/>
+<cti:verifyRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA"/>
 
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
