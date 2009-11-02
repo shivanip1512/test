@@ -29,7 +29,6 @@
     </bean>
       
 	<bean id="validationMonitorDao" class="com.cannontech.services.validation.dao.impl.ValidationMonitorDaoImpl"/>
-	<bean class="com.cannontech.services.validation.dao.impl.RphTagDaoImpl"/>    
 	<bean class="com.cannontech.services.validation.RawPointHistoryValidationService"/>    
 
 </beans>
