@@ -161,7 +161,7 @@ void CtiCCOriginalParent::dumpDynamicData(RWDBConnection& conn, CtiTime& current
 
     {
 
-        RWDBTable dynamicCtiCCOriginalParent = getDatabase().table( "dynamicCtiCCOriginalParentinfo" );
+        RWDBTable dynamicCtiCCOriginalParent = getDatabase().table( "dynamicccoriginalparent" );
         if( !_insertDynamicDataFlag )
         {
             RWDBUpdater updater = dynamicCtiCCOriginalParent.updater();

@@ -3253,6 +3253,8 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
         if (conn.isValid())
         {
 
+            CtiTime currentDateTime = CtiTime();
+            
             RWDBTable ccFeederSubAssignmentTable = getDatabase().table("ccfeedersubassignment");
             RWDBDeleter deleter = ccFeederSubAssignmentTable.deleter();
 
@@ -3267,6 +3269,8 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
             for(LONG i=0;i<ccFeeders.size();i++)
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[i];
+
+                currentFeeder->dumpDynamicData(conn, currentDateTime);
 
                 inserter << bus->getPAOId()
                          << currentFeeder->getPAOId()
