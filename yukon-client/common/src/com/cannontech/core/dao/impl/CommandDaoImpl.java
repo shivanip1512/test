@@ -151,8 +151,11 @@ public final class CommandDaoImpl implements CommandDao {
 
 		    char charAt = promptString.charAt(0);
 		    if(charAt == DEFAULT_VALUE_PROMPT) {
-		        // found a double ?, ignore and look for another prompt value
-		        promptIndex = promptIndex + 2;
+		        // found a double ?, remove one of the ?s and look for another prompt value
+		        valueString = 
+		            valueString.substring(0, promptIndex) + valueString.substring(promptIndex + 1);
+		        
+		        promptIndex = promptIndex + 1;
 		        String substring = valueString.trim().substring(promptIndex);
                 int nextPromptIndex = substring.indexOf(DEFAULT_VALUE_PROMPT);
                 if(nextPromptIndex == -1) {
@@ -214,7 +217,7 @@ public final class CommandDaoImpl implements CommandDao {
 		}
 		
 		// Replace double ? with single ?
-		return valueString.replaceAll("\\?\\?", "?");
+		return valueString;//.replaceAll("\\?\\?", "?");
 	}
 	
 	public List<LiteCommand> getAuthorizedCommands(List<LiteCommand> possibleCommands, LiteYukonUser user) {
