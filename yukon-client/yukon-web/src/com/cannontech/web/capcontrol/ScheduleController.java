@@ -166,7 +166,7 @@ public class ScheduleController {
 			map.addAttribute("failedReason", failedReason);
 		}
 		
-		return "redirect:schedule";
+		return "redirect:scheduleAssignments";
 	}
 
 	@Autowired
