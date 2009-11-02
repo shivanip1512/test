@@ -5317,16 +5317,28 @@ INT CtiDeviceMCT470::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &Time
         CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         point_info  pi, pi_time;
-        pi = getData(DSt.Message, 2, ValueType_IED);
+        pi = getData(DSt.Message, 2, ValueType_IED);  
+        //current reported back from mct in mA.
+        //converting to Amps.
+        pi.value /= 1000;  
         insertPointDataReport(AnalogPointType, PointOffset_CurrentNeutral,
                               ReturnMsg, pi, "Neutral Current");
         pi = getData(DSt.Message + 2, 2, ValueType_IED);
+        //current reported back from mct in mA.
+        //converting to Amps.
+        pi.value /= 1000;  
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseA,
                               ReturnMsg, pi, "Phase A Current");
         pi = getData(DSt.Message + 4, 2, ValueType_IED);
+        //current reported back from mct in mA.
+        //converting to Amps.
+        pi.value /= 1000;  
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseB,
                               ReturnMsg, pi, "Phase B Current");
         pi = getData(DSt.Message + 6, 2, ValueType_IED);
+        //current reported back from mct in mA.
+        //converting to Amps.
+        pi.value /= 1000;  
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
                               ReturnMsg, pi, "Phase C Current");
 
