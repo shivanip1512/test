@@ -77,6 +77,7 @@ singleOverrideChecked = function(boxChecked) {
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.startMultiplePrograms.programs"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
+    <div class="dialogScrollArea">
     <table class="compactResultsTable" id="startMultipleProgramsOverridePrograms">
         <tr>
             <c:if test="${constraintsViolated}">
@@ -124,6 +125,7 @@ singleOverrideChecked = function(boxChecked) {
             </c:if>
         </c:forEach>
     </table>
+    </div>
     </tags:abstractContainer>
 
     <c:forEach var="programStartInfo" varStatus="status" items="${backingBean.programStartInfo}">

@@ -112,6 +112,7 @@ singleProgramChecked = function(boxChecked) {
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.startMultiplePrograms.programs"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
+    <div class="dialogScrollArea">
     <table class="compactResultsTable">
         <tr class="<tags:alternateRow odd="" even="altRow"/>">
             <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startProgramName"/></th>
@@ -136,6 +137,7 @@ singleProgramChecked = function(boxChecked) {
             </tr>
         </c:forEach>
     </table>
+    </div>
     </tags:abstractContainer>
     <br>
 

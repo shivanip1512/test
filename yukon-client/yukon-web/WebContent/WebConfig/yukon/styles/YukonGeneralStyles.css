@@ -632,6 +632,7 @@ div.pagedBox table .titleArea {
 div.pagedBox table .filterArea {
     width: 20%;
     vertical-align: middle;
+    text-align: right;
 }
 
 div.pagedBox table .pagingArea {
@@ -640,6 +641,7 @@ div.pagedBox table .pagingArea {
 }
 
 div.pagedBox table .perPageArea {
+    text-align: right;
     width: 70%;
 }
 
@@ -805,7 +807,7 @@ h1.dialogQuestion {
 .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE,
 .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE,
 .LOADGROUP_STATE_ACTIVE {
-	    color: green;
+    color: green;
 }
 
 .CONTROLAREA_STATE_INACTIVE,
@@ -830,4 +832,10 @@ h1.dialogQuestion {
 
 .drDisabled {
     color: red;
+}
+
+div.dialogScrollArea {
+    width: 100%;
+    height: 200px;
+	overflow: scroll;
 }
