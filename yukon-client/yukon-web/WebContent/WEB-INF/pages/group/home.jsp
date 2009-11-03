@@ -118,10 +118,10 @@
     <br>
 
     <c:if test="${not empty param.errorMessage}">
-        <div style="color: red;">
+        <div class="errorRed">
             ${param.errorMessage}
         </div>
-        <br/><br/>
+        <br>
     </c:if>
     
     <table>

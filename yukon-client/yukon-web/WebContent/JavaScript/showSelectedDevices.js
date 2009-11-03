@@ -13,7 +13,7 @@ function showSelectedDevices(imgEl, divId, innerDivId, url, mag, magOverDisabled
             
         'parameters': {},
         
-        'onSuccess': function(transport) {
+        'onComplete': function(transport) {
         
             $(innerDivId).update(transport.responseText);
             $(divId).show();

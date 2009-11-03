@@ -82,7 +82,15 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("rootGroup", rootGroup);
 
         if (!StringUtils.isEmpty(groupName)) {
-            group = deviceGroupService.resolveGroupName(groupName);
+        	
+        	try {
+        		group = deviceGroupService.resolveGroupName(groupName);
+        	} catch (NotFoundException e) {
+        		mav.setViewName("redirect:/spring/group/editor/home");
+        		mav.addObject("errorMessage", e.getMessage());
+        		return mav;
+        	}
+            
         } else {
             group = rootGroup;
         }
