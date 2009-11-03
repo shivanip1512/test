@@ -30,7 +30,7 @@
 					<ct:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
                     
                     <%-- VALIDATION MONITORS WIDGET --%>
-                    <cti:msg var="validationMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.validationMonitorsWidget.popupInfo"/>
+                    <cti:msg var="validationMonitorsWidgetPopupInfoText" key="yukon.common.vee.monitor.widget.popupInfo"/>
                     <ct:widget bean="validationMonitorsWidget" helpText="${validationMonitorsWidgetPopupInfoText}"/>
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>

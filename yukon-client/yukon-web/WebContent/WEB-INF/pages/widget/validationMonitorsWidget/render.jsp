@@ -7,13 +7,13 @@
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
-<cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.validationMonitorsWidget.noMonitorsSetup"/>
-<cti:msg var="nameText" key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.name"/>
-<cti:msg var="thresholdText" key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.threshold"/>
-<cti:msg var="monitoringText" key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.monitoring"/>
-<cti:msg var="statusText" key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.status"/>
-<cti:msg var="createNewText" key="yukon.web.modules.amr.validationMonitorsWidget.createNew"/>
-<cti:msg var="thresholdUnits" key="yukon.web.modules.amr.validationMonitorsWidget.thresholdUnits"/>
+<cti:msg var="noMonitorsSetupText" key="yukon.common.vee.monitor.widget.noMonitorsSetup"/>
+<cti:msg var="nameText" key="yukon.common.vee.monitor.widget.tableHeader.name"/>
+<cti:msg var="thresholdText" key="yukon.common.vee.monitor.widget.tableHeader.threshold"/>
+<cti:msg var="monitoringText" key="yukon.common.vee.monitor.widget.tableHeader.monitoring"/>
+<cti:msg var="statusText" key="yukon.common.vee.monitor.widget.tableHeader.status"/>
+<cti:msg var="createNewText" key="yukon.common.vee.monitor.widget.createNew"/>
+<cti:msg var="thresholdUnits" key="yukon.common.vee.monitor.widget.thresholdUnits"/>
 
 <%-- CREATE NEW VALIDATION MONITOR FORM --%>
 <form id="createNewValidationMonitorForm_${widgetParameters.widgetId}" action="/spring/common/vee/monitor/edit" method="get">
