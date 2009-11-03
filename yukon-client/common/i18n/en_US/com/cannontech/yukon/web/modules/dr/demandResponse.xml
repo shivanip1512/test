@@ -156,6 +156,8 @@
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.title">Start Programs</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea">Are you sure you want to start control area {0}?</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.scenario">Are you sure you want to start scenario {0}?</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.noPrograms.controlArea">Control area {0} has no programs.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.noPrograms.scenario">Scenario {0} has no programs.</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.programs">Programs to Start</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.startProgramName">Start</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.startTime">Start Time</entry>

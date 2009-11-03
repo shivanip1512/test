@@ -42,6 +42,7 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.service.DemandResponseService;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -602,6 +603,7 @@ public class ProgramController {
 
         UiFilter<DisplayablePao> filter = null;
 
+        String paoName = null;
         if (backingBean.controlAreaId != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
@@ -609,6 +611,7 @@ public class ProgramController {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("controlArea", controlArea);
+            paoName = controlArea.getName();
             filter = new ForControlAreaFilter(backingBean.controlAreaId);
         }
         if (backingBean.scenarioId != null) {
@@ -618,6 +621,7 @@ public class ProgramController {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("scenario", scenario);
+            paoName = scenario.getName();
             filter = new ForScenarioFilter(backingBean.scenarioId);
         }
 
@@ -629,6 +633,15 @@ public class ProgramController {
             programService.filterPrograms(filter, null, 0, Integer.MAX_VALUE,
                                           userContext);
         List<DisplayablePao> programs = searchResult.getResultList();
+        if (programs == null || programs.size() == 0) {
+            modelMap.addAttribute("popupId", "drDialog");
+            YukonMessageSourceResolvable error =
+                new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.noPrograms." +
+                                                 (backingBean.controlAreaId != null ? "controlArea" : "scenario"),
+                                                 paoName);
+            modelMap.addAttribute("userMessage", error);
+            return "common/userMessage.jsp";
+        }
         modelMap.addAttribute("programs", programs);
 
         // TODO:  need to not do this if they came via the "back" button...

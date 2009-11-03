@@ -122,6 +122,7 @@
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
             <list>
+               <value>classpath:com/cannontech/yukon/common/general</value>
                <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
                <value>classpath:com/cannontech/yukon/common/durationFormatting</value>
                <value>classpath:com/cannontech/yukon/common/pointFormatting</value>
