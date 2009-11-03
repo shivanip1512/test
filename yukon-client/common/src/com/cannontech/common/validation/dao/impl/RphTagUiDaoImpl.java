@@ -1,4 +1,4 @@
-package com.cannontech.services.validation.dao.impl;
+package com.cannontech.common.validation.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,15 +13,15 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.validation.dao.RphTagUiDao;
+import com.cannontech.common.validation.model.ReviewPoint;
+import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.services.validation.dao.RphTagUiDao;
-import com.cannontech.services.validation.model.ReviewPoint;
-import com.cannontech.services.validation.model.RphTag;
 
 public class RphTagUiDaoImpl implements RphTagUiDao {
 

@@ -1,6 +1,7 @@
-package com.cannontech.services.validation.dao;
+package com.cannontech.common.validation.dao;
 
 import com.cannontech.core.dao.NotFoundException;
+
 
 public class ValidationMonitorNotFoundException extends NotFoundException {
 

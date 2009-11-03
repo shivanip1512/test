@@ -1,4 +1,4 @@
-package com.cannontech.services.validation.dao.impl;
+package com.cannontech.common.validation.dao.impl;
 
 import java.util.Set;
 
@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.validation.dao.RphTagDao;
+import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.services.validation.dao.RphTagDao;
-import com.cannontech.services.validation.model.RphTag;
 
 public class RphTagDaoImpl implements RphTagDao {
     private YukonJdbcTemplate yukonJdbcTemplate;

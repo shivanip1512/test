@@ -7,7 +7,7 @@
   xmlns:jms="http://www.springframework.org/schema/integration/jms"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd   
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.2.0.xsd   
   http://activemq.apache.org/camel/schema/spring http://camel.apache.org/schema/spring/camel-spring-1.5.0.xsd
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
@@ -24,7 +24,7 @@
     <!-- Enabling @AspectJ Support -->
     <aop:aspectj-autoproxy/>
       
-    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" >
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="yukonServiceManagerBroker" >
 
         <!-- Destination specific policies using destination names or wildcards -->
         <destinationPolicy>

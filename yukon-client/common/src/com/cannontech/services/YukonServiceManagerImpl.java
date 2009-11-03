@@ -1,9 +1,11 @@
-package com.cannontech.services.server;
+package com.cannontech.services;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
@@ -27,7 +29,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     private CountDownLatch shutdownLatch = new CountDownLatch(1);
     private List<ConfigurableApplicationContext> contexts = Lists.newArrayList();
     
-    
+    @PostConstruct
     public void loadCustomServices() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ServiceID, ServiceName, ServiceClass, ParamNames, ParamValues"); 

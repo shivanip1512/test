@@ -26,7 +26,7 @@
       
     <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
         <property name="brokerURL"
-            value="vm://localhost?create=false&amp;waitForStart=10000" />
+            value="tcp://localhost:61616" />
     </bean>
     
     <bean id="yukonRichPointUpdateDestination" class="org.apache.activemq.command.ActiveMQTopic">
@@ -40,10 +40,5 @@
     <jms:outbound-channel-adapter id="jmsOut"  destination="yukonRichPointUpdateDestination" channel="yukonRichPointData"/>
     
     
-
-    <!-- Uncomment to create a command agent to respond to message based admin commands on the ActiveMQ.Agent topic -->
-    <!--
-    <commandAgent xmlns="http://activemq.apache.org/schema/core" brokerUrl="vm://localhost" username="${activemq.username}" password="${activemq.password}"/>
-    -->
 
 </beans>

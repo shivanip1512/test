@@ -1,9 +1,9 @@
-package com.cannontech.services.validation.dao;
+package com.cannontech.common.validation.dao;
 
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.services.validation.model.ValidationMonitor;
+import com.cannontech.common.validation.model.ValidationMonitor;
 import com.google.common.collect.SetMultimap;
 
 public interface ValidationMonitorDao {

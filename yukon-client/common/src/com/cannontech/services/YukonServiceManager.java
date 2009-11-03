@@ -1,4 +1,4 @@
-package com.cannontech.services.server;
+package com.cannontech.services;
 
 public interface YukonServiceManager {
     public void loadCustomServices();

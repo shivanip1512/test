@@ -31,6 +31,7 @@
         <webClassPathEntry>/third-party</webClassPathEntry>
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/activemq-all-5.2.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/antlr-2.7.6rc1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm-attrs.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm.jar</webClassPathEntry>
@@ -85,6 +86,9 @@
         <webClassPathEntry>/third-party/mx4j-tools.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ojdbc6.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/org.springframework.integration-1.0.3.RELEASE.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/poi.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/quartz-all-1.6.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
@@ -94,6 +98,7 @@
         <webClassPathEntry>/third-party/spring.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/xbean-spring-3.4.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/xercesImpl.jar</webClassPathEntry>
         <webClassPathEntry>/tools/bin</webClassPathEntry>
         <webClassPathEntry>/trending/bin</webClassPathEntry>

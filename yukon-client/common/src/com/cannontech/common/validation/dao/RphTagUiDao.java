@@ -1,9 +1,9 @@
-package com.cannontech.services.validation.dao;
+package com.cannontech.common.validation.dao;
 
 import java.util.List;
 
-import com.cannontech.services.validation.model.ReviewPoint;
-import com.cannontech.services.validation.model.RphTag;
+import com.cannontech.common.validation.model.ReviewPoint;
+import com.cannontech.common.validation.model.RphTag;
 
 public interface RphTagUiDao {
 

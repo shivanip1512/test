@@ -1,4 +1,4 @@
-package com.cannontech.services.validation;
+package com.cannontech.common.validation;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,6 +35,10 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.WaitableExecutor;
+import com.cannontech.common.validation.dao.RphTagDao;
+import com.cannontech.common.validation.dao.ValidationMonitorDao;
+import com.cannontech.common.validation.model.RphTag;
+import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -44,10 +48,6 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.cannontech.services.validation.dao.ValidationMonitorDao;
-import com.cannontech.services.validation.dao.RphTagDao;
-import com.cannontech.services.validation.model.ValidationMonitor;
-import com.cannontech.services.validation.model.RphTag;
 import com.cannontech.user.UserUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -118,14 +118,19 @@ public class RawPointHistoryValidationService {
                         long lastChangeIdProcessed = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
                         startingIdForLoggingPurposes = lastChangeIdProcessed + 1;
                         newLast = processChunkOfRows(lastChangeIdProcessed);
-                        log.debug("Processed " + lastChangeIdProcessed + " to " + newLast + "(" + changeIdsEvaluated + ", " + rowsPulled + ")");
+                        String logMessage = "Processed " + lastChangeIdProcessed + " to " + newLast + " (" + changeIdsEvaluated + ", " + rowsPulled + ")";
+                        if (lastChangeIdProcessed == newLast) {
+                            log.debug(logMessage);
+                        } else {
+                            log.info(logMessage);
+                        }
                         didSomething = newLast != lastChangeIdProcessed;
                         lastChunkSize.set(newLast - lastChangeIdProcessed);
                         lastChangeIdProcessed = newLast;
                         persistedSystemValueDao.setValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID, lastChangeIdProcessed);
                         lastChunkCommitted.set(lastChangeIdProcessed);
                     } catch (Exception e) {
-                        log.debug("Unable to process from " + startingIdForLoggingPurposes + ", sleeping", e);
+                        log.info("Unable to process from " + startingIdForLoggingPurposes + ", sleeping", e);
                         didSomething = false;
                     }
                 } while (didSomething);

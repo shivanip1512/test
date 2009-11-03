@@ -17,13 +17,13 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.validation.dao.RphTagDao;
+import com.cannontech.common.validation.dao.RphTagUiDao;
+import com.cannontech.common.validation.model.ReviewPoint;
+import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.services.validation.dao.RphTagDao;
-import com.cannontech.services.validation.dao.RphTagUiDao;
-import com.cannontech.services.validation.model.ReviewPoint;
-import com.cannontech.services.validation.model.RphTag;
 import com.cannontech.util.ServletUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;

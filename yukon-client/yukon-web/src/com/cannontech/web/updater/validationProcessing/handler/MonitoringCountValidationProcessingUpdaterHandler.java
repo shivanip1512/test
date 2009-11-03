@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.validation.dao.ValidationMonitorDao;
+import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
+import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.services.validation.dao.ValidationMonitorDao;
-import com.cannontech.services.validation.dao.ValidationMonitorNotFoundException;
-import com.cannontech.services.validation.model.ValidationMonitor;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.validationProcessing.ValidationMonitorUpdaterTypeEnum;
 

@@ -1,4 +1,4 @@
-package com.cannontech.services.validation.dao.impl;
+package com.cannontech.common.validation.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.validation.dao.ValidationMonitorDao;
+import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
+import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.services.validation.dao.ValidationMonitorDao;
-import com.cannontech.services.validation.dao.ValidationMonitorNotFoundException;
-import com.cannontech.services.validation.model.ValidationMonitor;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;

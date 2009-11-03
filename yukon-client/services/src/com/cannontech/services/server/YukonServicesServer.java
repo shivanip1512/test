@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.services.YukonServiceManager;
 import com.cannontech.spring.YukonSpringHook;
 
 public class YukonServicesServer {
@@ -14,16 +15,8 @@ public class YukonServicesServer {
         Logger log = YukonLogManager.getLogger(YukonServicesServer.class);
         try {
 
-            //Assume the default server login operation
-            //            ClientSession session = ClientSession.getInstance(); 
-            //            if(!session.establishDefServerSession())
-            //                System.exit(-1);          
-            //                
-            //            if(session == null) 
-            //                System.exit(-1);
-
             YukonServiceManager serviceManager = YukonSpringHook.getBean(YukonServiceManager.class);
-            serviceManager.loadCustomServices();
+            //serviceManager.loadCustomServices();
             serviceManager.waitForShutdown();
             log.info("main thread done");
         } catch( Throwable t ) {

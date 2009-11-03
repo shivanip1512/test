@@ -1,4 +1,4 @@
-package com.cannontech.services.validation;
+package com.cannontech.common.validation;
 
 public class ProcessingException extends Exception {
 

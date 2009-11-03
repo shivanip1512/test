@@ -164,9 +164,6 @@
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
-  <bean id="rphTagDao" class="com.cannontech.services.validation.dao.impl.RphTagDaoImpl"/> 
-  <bean id="rphTagUiDao" class="com.cannontech.services.validation.dao.impl.RphTagUiDaoImpl"/>    
-  
   <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl">
       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>

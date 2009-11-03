@@ -1,4 +1,4 @@
-package com.cannontech.services.validation.model;
+package com.cannontech.common.validation.model;
 
 import java.util.Date;
 

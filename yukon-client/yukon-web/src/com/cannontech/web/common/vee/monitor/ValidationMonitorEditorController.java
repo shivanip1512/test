@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.validation.dao.ValidationMonitorDao;
+import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
+import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.services.validation.dao.ValidationMonitorDao;
-import com.cannontech.services.validation.dao.ValidationMonitorNotFoundException;
-import com.cannontech.services.validation.model.ValidationMonitor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RequestMapping("/vee/monitor/*")
