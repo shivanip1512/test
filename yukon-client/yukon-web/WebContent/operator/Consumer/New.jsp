@@ -88,6 +88,10 @@ function validate(form) {
 			return false;
 		}
 	}
+    if(form.PropNo.value.length > 0 && form.PropNo.value.length < 2){
+      alert("Map # must be at least 2 digits or characters.");
+      return false;  
+    }
 	return true;
 }
 
