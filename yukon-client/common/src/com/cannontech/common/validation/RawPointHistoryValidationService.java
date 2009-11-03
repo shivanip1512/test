@@ -175,7 +175,7 @@ public class RawPointHistoryValidationService {
             return lastChangeIdProcessed;
         }
         
-        final SetMultimap<ValidationMonitor, Integer> deviceGroupCache = validationMonitorDao.loadAnalysisDescriptions();
+        final SetMultimap<ValidationMonitor, Integer> deviceGroupCache = validationMonitorDao.loadValidationMonitors();
 
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("select rph.ChangeId, rph.Value, rph.Timestamp, ");
@@ -211,7 +211,7 @@ public class RawPointHistoryValidationService {
                     public void run() {
                         if (!attributeService.isPointAttribute(paoPointIdentifier, BuiltInAttribute.USAGE)) return;
                         
-                        ImmutableSet<ValidationMonitor> descriptions = findAnalysisDescriptions(deviceGroupCache,
+                        ImmutableSet<ValidationMonitor> descriptions = findValidationMonitors(deviceGroupCache,
                                                                                                   paoPointIdentifier);
                         if (descriptions.isEmpty()) return;
                         
@@ -233,7 +233,7 @@ public class RawPointHistoryValidationService {
         return stopChangeId;
     }
     
-    private ImmutableSet<ValidationMonitor> findAnalysisDescriptions(SetMultimap<ValidationMonitor, Integer> deviceGroupCache,
+    private ImmutableSet<ValidationMonitor> findValidationMonitors(SetMultimap<ValidationMonitor, Integer> deviceGroupCache,
                                                                        PaoPointIdentifier paoPointIdentifier) {
         ImmutableSet.Builder<ValidationMonitor> builder = ImmutableSet.builder();
         for (ValidationMonitor validationMonitor : deviceGroupCache.keySet()) {
@@ -585,7 +585,7 @@ public class RawPointHistoryValidationService {
     }
     
     @Autowired
-    public void setAnalysisDescriptionDao(ValidationMonitorDao validationMonitorDao) {
+    public void setValidationMonitorDao(ValidationMonitorDao validationMonitorDao) {
         this.validationMonitorDao = validationMonitorDao;
     }
     

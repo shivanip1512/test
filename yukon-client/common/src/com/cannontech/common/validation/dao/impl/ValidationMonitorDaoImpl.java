@@ -57,7 +57,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     }
     
     @Override
-    public SetMultimap<ValidationMonitor, Integer> loadAnalysisDescriptions() {
+    public SetMultimap<ValidationMonitor, Integer> loadValidationMonitors() {
         SetMultimap<ValidationMonitor, Integer> deviceGroupCache = HashMultimap.create();
         for (ValidationMonitor validationMonitor : getValidationMonitors()) {
             Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(deviceGroupService.findGroupName(validationMonitor.getDeviceGroupName())));

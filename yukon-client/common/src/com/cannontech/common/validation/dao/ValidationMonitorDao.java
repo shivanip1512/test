@@ -8,7 +8,7 @@ import com.google.common.collect.SetMultimap;
 
 public interface ValidationMonitorDao {
 
-    public SetMultimap<ValidationMonitor, Integer> loadAnalysisDescriptions();
+    public SetMultimap<ValidationMonitor, Integer> loadValidationMonitors();
 
     public ValidationMonitor getById(int validationMonitorId) throws ValidationMonitorNotFoundException;
 
