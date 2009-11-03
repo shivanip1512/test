@@ -3,54 +3,54 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msg var="pageTitle" key="yukon.common.vee.monitor.editor.pageTitle" />
-<cti:msg var="setupSectiontext" key="yukon.common.vee.monitor.editor.section.setup" />
-<cti:msg var="editSetupSectionText" key="yukon.common.vee.monitor.editor.section.editSetup" />
+<cti:msg var="pageTitle" key="yukon.web.modules.common.vee.monitor.editor.pageTitle" />
+<cti:msg var="setupSectiontext" key="yukon.web.modules.common.vee.monitor.editor.section.setup" />
+<cti:msg var="editSetupSectionText" key="yukon.web.modules.common.vee.monitor.editor.section.editSetup" />
 
-<cti:msg var="nameText" key="yukon.common.vee.monitor.editor.label.name"/>
+<cti:msg var="nameText" key="yukon.web.modules.common.vee.monitor.editor.label.name"/>
 
-<cti:msg var="deviceGroupText" key="yukon.common.vee.monitor.editor.label.deviceGroup"/>
-<cti:msg var="deviceGroupPopupInfoText" key="yukon.common.vee.monitor.editor.popupInfo.deviceGroup"/>
+<cti:msg var="deviceGroupText" key="yukon.web.modules.common.vee.monitor.editor.label.deviceGroup"/>
+<cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.deviceGroup"/>
 
-<cti:msg var="thresholdText" key="yukon.common.vee.monitor.editor.label.thresholdText"/>
-<cti:msg var="thresholdUnits" key="yukon.common.vee.monitor.editor.label.thresholdUnits"/>
-<cti:msg var="thresholdPopupInfoText" key="yukon.common.vee.monitor.editor.popupInfo.thresholdPopupInfoText"/>
+<cti:msg var="thresholdText" key="yukon.web.modules.common.vee.monitor.editor.label.thresholdText"/>
+<cti:msg var="thresholdUnits" key="yukon.web.modules.common.vee.monitor.editor.label.thresholdUnits"/>
+<cti:msg var="thresholdPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.thresholdPopupInfoText"/>
 
-<cti:msg var="rereadThresholdText" key="yukon.common.vee.monitor.editor.label.rereadThresholdText"/>
-<cti:msg var="rereadThresholdPopupInfoText" key="yukon.common.vee.monitor.editor.popupInfo.rereadThresholdPopupInfoText"/>
+<cti:msg var="rereadThresholdText" key="yukon.web.modules.common.vee.monitor.editor.label.rereadThresholdText"/>
+<cti:msg var="rereadThresholdPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.rereadThresholdPopupInfoText"/>
 
-<cti:msg var="slopeErrorText" key="yukon.common.vee.monitor.editor.label.slopeErrorText"/>
-<cti:msg var="slopeErrorUnits" key="yukon.common.vee.monitor.editor.label.slopeErrorUnits"/>
-<cti:msg var="slopeErrorPopupInfoText" key="yukon.common.vee.monitor.editor.popupInfo.slopeErrorPopupInfoText"/>
+<cti:msg var="slopeErrorText" key="yukon.web.modules.common.vee.monitor.editor.label.slopeErrorText"/>
+<cti:msg var="slopeErrorUnits" key="yukon.web.modules.common.vee.monitor.editor.label.slopeErrorUnits"/>
+<cti:msg var="slopeErrorPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.slopeErrorPopupInfoText"/>
 
-<cti:msg var="readingErrorText" key="yukon.common.vee.monitor.editor.label.readingErrorText"/>
-<cti:msg var="readingErrorUnits" key="yukon.common.vee.monitor.editor.label.readingErrorUnits"/>
-<cti:msg var="readingErrorPopupInfoText" key="yukon.common.vee.monitor.editor.popupInfo.readingErrorPopupInfoText"/>
+<cti:msg var="readingErrorText" key="yukon.web.modules.common.vee.monitor.editor.label.readingErrorText"/>
+<cti:msg var="readingErrorUnits" key="yukon.web.modules.common.vee.monitor.editor.label.readingErrorUnits"/>
+<cti:msg var="readingErrorPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.readingErrorPopupInfoText"/>
 
-<cti:msg var="peakHeightMinimumText" key="yukon.common.vee.monitor.editor.label.peakHeightMinimumText"/>
-<cti:msg var="peakHeightMinimumUnits" key="yukon.common.vee.monitor.editor.label.peakHeightMinimumUnits"/>
-<cti:msg var="peakHeightMinimumPopupInfoText" key="yukon.common.vee.monitor.editor.popupInfo.peakHeightMinimumPopupInfoText"/>
+<cti:msg var="peakHeightMinimumText" key="yukon.web.modules.common.vee.monitor.editor.label.peakHeightMinimumText"/>
+<cti:msg var="peakHeightMinimumUnits" key="yukon.web.modules.common.vee.monitor.editor.label.peakHeightMinimumUnits"/>
+<cti:msg var="peakHeightMinimumPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.peakHeightMinimumPopupInfoText"/>
 
-<cti:msg var="setQuestionableText" key="yukon.common.vee.monitor.editor.label.setQuestionableText"/>
-<cti:msg var="setQuestionablePopupInfoText" key="yukon.common.vee.monitor.editor.popupInfo.setQuestionablePopupInfoText"/>
+<cti:msg var="setQuestionableText" key="yukon.web.modules.common.vee.monitor.editor.label.setQuestionableText"/>
+<cti:msg var="setQuestionablePopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.setQuestionablePopupInfoText"/>
 
-<cti:msg var="updateBusyText" key="yukon.common.vee.monitor.editor.label.update.updateBusyText"/>
-<cti:msg var="updateText" key="yukon.common.vee.monitor.editor.label.update.updateText"/>
+<cti:msg var="updateBusyText" key="yukon.web.modules.common.vee.monitor.editor.label.update.updateBusyText"/>
+<cti:msg var="updateText" key="yukon.web.modules.common.vee.monitor.editor.label.update.updateText"/>
 
-<cti:msg var="deleteText" key="yukon.common.vee.monitor.editor.label.delete.deleteText"/>
-<cti:msg var="deleteConfirmText" key="yukon.common.vee.monitor.editor.label.delete.deleteConfirmText"/>
+<cti:msg var="deleteText" key="yukon.web.modules.common.vee.monitor.editor.label.delete.deleteText"/>
+<cti:msg var="deleteConfirmText" key="yukon.web.modules.common.vee.monitor.editor.label.delete.deleteConfirmText"/>
 
-<cti:msg var="createBusyText" key="yukon.common.vee.monitor.editor.label.create.createBusyText"/>
-<cti:msg var="createText" key="yukon.common.vee.monitor.editor.label.create.createText"/>
+<cti:msg var="createBusyText" key="yukon.web.modules.common.vee.monitor.editor.label.create.createBusyText"/>
+<cti:msg var="createText" key="yukon.web.modules.common.vee.monitor.editor.label.create.createText"/>
 
-<cti:msg var="validationMonitoringText" key="yukon.common.vee.monitor.editor.label.validationMonitoring"/>
-<cti:msg var="validationMonitoringEnableText" key="yukon.common.vee.monitor.editor.label.validationMonitoringEnable"/>
-<cti:msg var="validationMonitoringDisableText" key="yukon.common.vee.monitor.editor.label.validationMonitoringDisable"/>
-<cti:msg var="validationMonitoringDisableText" key="yukon.common.vee.monitor.editor.label.validationMonitoringDisable"/>
-<cti:msg var="validationMonitoringEnablePopupInfo" key="yukon.common.vee.monitor.editor.popupInfo.validationMonitoringEnable"/>
-<cti:msg var="validationMonitoringDisablePopupInfo" key="yukon.common.vee.monitor.editor.popupInfo.validationMonitoringDisable"/>
+<cti:msg var="validationMonitoringText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoring"/>
+<cti:msg var="validationMonitoringEnableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringEnable"/>
+<cti:msg var="validationMonitoringDisableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringDisable"/>
+<cti:msg var="validationMonitoringDisableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringDisable"/>
+<cti:msg var="validationMonitoringEnablePopupInfo" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.validationMonitoringEnable"/>
+<cti:msg var="validationMonitoringDisablePopupInfo" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.validationMonitoringDisable"/>
 
-<cti:msg var="saveOkText" key="yukon.common.vee.monitor.editor.saveOk"/>
+<cti:msg var="saveOkText" key="yukon.web.modules.common.vee.monitor.editor.saveOk"/>
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>

@@ -61,61 +61,61 @@
     <!-- ValidationMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.noMonitorsSetup">No Validation Monitors Setup</entry>
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.popupInfo">???</entry>
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.name">Name</entry>
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.threshold">Threshold</entry>
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.status">Status</entry>
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.createNew">Create</entry>
-    <entry key="yukon.web.modules.amr.validationMonitorsWidget.thresholdUnits">kWh/day</entry>
+    <entry key="yukon.web.modules.common.vee.widget.noMonitorsSetup">No Validation Monitors Setup</entry>
+    <entry key="yukon.web.modules.common.vee.widget.popupInfo">???</entry>
+    <entry key="yukon.web.modules.common.vee.widget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.modules.common.vee.widget.tableHeader.threshold">Threshold</entry>
+    <entry key="yukon.web.modules.common.vee.widget.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.modules.common.vee.widget.tableHeader.status">Status</entry>
+    <entry key="yukon.web.modules.common.vee.widget.createNew">Create</entry>
+    <entry key="yukon.web.modules.common.vee.widget.thresholdUnits">kWh/day</entry>
 
     <!-- ValidationMonitorEditorController edit.jsp -->
     <!-- ================================================================== -->
     <!-- ================================================================== -->
-    <entry key="yukon.common.vee.monitor.editor.pageTitle">Validation Monitoring</entry>
-    <entry key="yukon.common.vee.monitor.editor.section.setup">Setup</entry>
-    <entry key="yukon.common.vee.monitor.editor.section.editSetup">Edit Setup</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.name">Name</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.deviceGroup">Device Group</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.deviceGroup">???</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.thresholdText">Unreasonable Threshold</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.thresholdUnits">kWh/day</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.thresholdPopupInfoText">???</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.rereadThresholdText">Reread on Unreasonable</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.rereadThresholdPopupInfoText">???</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.slopeErrorText">Slope Error</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.slopeErrorUnits">kWh/day</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.slopeErrorPopupInfoText">???</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.readingErrorText">Reading Error</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.readingErrorUnits">kWh</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.readingErrorPopupInfoText">???</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.peakHeightMinimumText">Peak Height Minimum</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.peakHeightMinimumUnits">kWh</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.peakHeightMinimumPopupInfoText">???</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.setQuestionableText">Set 'Questionable' Quality</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.setQuestionablePopupInfoText">
+    <entry key="yukon.web.modules.common.vee.monitor.editor.pageTitle">Validation Monitoring</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.section.setup">Setup</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.section.editSetup">Edit Setup</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.name">Name</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.deviceGroup">???</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.thresholdText">Unreasonable Threshold</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.thresholdUnits">kWh/day</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.thresholdPopupInfoText">???</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.rereadThresholdText">Reread on Unreasonable</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.rereadThresholdPopupInfoText">???</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.slopeErrorText">Slope Error</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.slopeErrorUnits">kWh/day</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.slopeErrorPopupInfoText">???</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.readingErrorText">Reading Error</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.readingErrorUnits">kWh</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.readingErrorPopupInfoText">???</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.peakHeightMinimumText">Peak Height Minimum</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.peakHeightMinimumUnits">kWh</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.peakHeightMinimumPopupInfoText">???</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.setQuestionableText">Set 'Questionable' Quality</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.setQuestionablePopupInfoText">
     <![CDATA[Set Questionable Quality:
         If checked, the quality flag of any Raw Point History row that violates the Peak Height Minimum will be set to 'Questionable'.
     ]]></entry>
-    <entry key="yukon.common.vee.monitor.editor.label.update.updateBusyText">Saving</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.update.updateText">Save</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.delete.deleteText">Delete</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.delete.deleteConfirmText">Are you sure you want to delete this Validation Monitor?</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.create.createBusyText">Saving</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.create.createText">Save</entry>
-    <entry key="yukon.common.vee.monitor.editor.saveOk">Validation Monitor Has Been Saved</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.validationMonitoring">Validation Monitoring</entry>
-    <entry key="yukon.common.vee.monitor.editor.label.validationMonitoringEnable">Enable</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.validationMonitoringEnable"><![CDATA[
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.update.updateBusyText">Saving</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.update.updateText">Save</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.delete.deleteText">Delete</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.delete.deleteConfirmText">Are you sure you want to delete this Validation Monitor?</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.create.createBusyText">Saving</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.create.createText">Save</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.saveOk">Validation Monitor Has Been Saved</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoring">Validation Monitoring</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringEnable">Enable</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.validationMonitoringEnable"><![CDATA[
          <br>
          Enable validation monitoring.
          <br><br>
          ???
          <br><br>
     ]]></entry>
-    <entry key="yukon.common.vee.monitor.editor.label.validationMonitoringDisable">Disable</entry>
-    <entry key="yukon.common.vee.monitor.editor.popupInfo.validationMonitoringDisable"><![CDATA[
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringDisable">Disable</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.validationMonitoringDisable"><![CDATA[
          <br>
          Disable validation monitoring.
          <br><br>
