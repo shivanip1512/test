@@ -140,7 +140,7 @@ RWDBStatus CtiTableDynamicTag::Insert(RWDBConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = inserter.asString();
         {
@@ -271,7 +271,7 @@ RWDBStatus CtiTableDynamicTag::Delete()
 
     deleter.where( table["instanceid"] == getInstanceId() );
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {
@@ -299,7 +299,7 @@ RWDBStatus CtiTableDynamicTag::Delete(int instance)
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {

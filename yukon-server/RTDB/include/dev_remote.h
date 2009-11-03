@@ -224,7 +224,7 @@ public:
             }
             else
             {
-                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+                if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** ERROR ****  Invalid DIALUPDEVICESETTINGS row for device (phonenumber is too short) " << getID() << " = " << getName() << endl;

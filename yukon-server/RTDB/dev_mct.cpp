@@ -3151,7 +3151,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 }
 
 
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -4083,7 +4083,7 @@ void CtiDeviceMCT::setConfigData( const string &configName, int configType, cons
     else if( !findStringIgnoreCase(configMode,"minmax") )    _peakMode = PeakModeMinMax;
     else
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - invalid peak mode string \"" + configMode + "\" - defaulting to minmax **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -4100,7 +4100,7 @@ void CtiDeviceMCT::setConfigData( const string &configName, int configType, cons
         else if( mctwire[i] == WireConfigTwoWire )      _wireConfig[i] = WireConfigTwoWire;
         else
         {
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - invalid wire config \"" << mctwire[i] << " for channel " << i+1 << " - defaulting to three-wire **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

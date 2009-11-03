@@ -700,7 +700,7 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     // currently defaulted at billing data only
     header.lastLoadProfileTime = 0;
     //_lastLPTime = header.lastLoadProfileTime;
-   /* if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   /* if( isDebugLudicrous() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << "lastLPTime "<<getLastLPTime()<< endl;

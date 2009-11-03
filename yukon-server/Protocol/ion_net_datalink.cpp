@@ -408,7 +408,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             case PORTREAD:
             default:
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint -- comm error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -676,7 +676,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                             }
                             else  //  not an ACK or a NACK - re-read or re-sed
                             {
-                                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                if( isDebugLudicrous() )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint - loop averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -148,7 +148,7 @@ void CtiPortShare::createNexus(string nexusName)
 
    strcpy(ListenNexus.Name, nexusName.data());
 
-   if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
+   if( isDebugLudicrous() )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -179,7 +179,7 @@ void CtiPortShare::createNexus(string nexusName)
    }
 
    /* Someone has connected to us.. */
-   if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
+   if( isDebugLudicrous() )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " closing listener nexus for in/outthread connection " << nexusName << endl;
@@ -187,7 +187,7 @@ void CtiPortShare::createNexus(string nexusName)
 
    ListenNexus.CTINexusClose();  // Don't need this anymore.
 
-   if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
+   if( isDebugLudicrous() )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " closed " << nexusName << endl;
@@ -231,7 +231,7 @@ void CtiPortShare::connectNexus()
 {
    INT i, j = 0;
 
-   if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
+   if( isDebugLudicrous() )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -61,7 +61,7 @@ int CtiDeviceCBC::getCBCRetries( void )
             //  default to 3 attempts (2 retries)
             _cbcTries = 3;
 
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

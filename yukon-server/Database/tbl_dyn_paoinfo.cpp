@@ -402,7 +402,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
                  <<  tmp_value
                  <<  CtiTime();
 
-        if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+        if(isDebugLudicrous())
         {
             string loggedSQLstring = inserter.asString();
             {
@@ -540,7 +540,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Delete()
 
     deleter.where(table["entryid"] == getEntryID());
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {

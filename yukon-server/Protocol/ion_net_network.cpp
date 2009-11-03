@@ -195,7 +195,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 
     if( _datalinkLayer.errorCondition() )
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint -- _datalinkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -263,7 +263,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
-                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        if( isDebugLudicrous() )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint -- network layer packet contains incorrect address **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -368,7 +368,7 @@ int CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
 
 void CtiProtocolLMI::queueCode(CtiOutMessage *om)
 {
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( isDebugLudicrous() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << om->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1175,7 +1175,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                     {
                                         _command = Command_ClearEchoedCodes;
 
-                                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                        if( isDebugLudicrous() )
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " **** Checkpoint - !_codes_ready in CtiProtocolLMI::decode() for device " << _name << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -156,7 +156,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                             if(NewOMess)
                             {
-                                if(status != DEVICEINHIBITED && getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+                                if(status != DEVICEINHIBITED && isDebugLudicrous())
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

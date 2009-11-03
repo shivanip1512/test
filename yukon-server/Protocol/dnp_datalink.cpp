@@ -218,7 +218,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
 
             default:
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - unexpected error " << status << " on port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

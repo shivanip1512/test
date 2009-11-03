@@ -4798,8 +4798,11 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 #endif
             Now = Now.now();
 
-            // Update our Bookkeeping data!!!
-            loadAlarmToDestinationTranslation();
+            if( pChg == NULL || (pChg->getDatabase() == ChangeAlarmCategoryDb) )
+            {
+                // Update our Bookkeeping data!!!
+                loadAlarmToDestinationTranslation();
+            }
 
             deltaT = Now.now().seconds() - Now.seconds();
             if( deltaT > 5 )
@@ -7059,7 +7062,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandM
                     MainQueue_.putQueue( pTagDat );
                 }
 
-                if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+                if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -351,7 +351,7 @@ void CtiDeviceION::initEventLogPosition( void )
             }
             else
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "**** Checkpoint: Invalid Reader/No DynamicPointDispatch for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -458,7 +458,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
         {
             case CtiProtocolION::Command_ExternalPulseTrigger:
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -565,7 +565,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
             {
                 if( !_ion.areEventLogsComplete() )
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( isDebugLudicrous() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

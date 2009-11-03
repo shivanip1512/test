@@ -168,7 +168,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 
     if( _networkLayer.errorCondition() )
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint -- _networkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

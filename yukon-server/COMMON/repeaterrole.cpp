@@ -21,7 +21,8 @@ CtiDeviceRepeaterRole::CtiDeviceRepeaterRole() :
     _roleNumber(0),
     _inBits(31),
     _outBits(7),
-    _stagesToFollow(0)
+    _stagesToFollow(0),
+    _fixBits(0)
 {
 
 }

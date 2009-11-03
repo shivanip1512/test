@@ -116,7 +116,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 InMessage->Buffer.InMessage[2] == expectedBytes[0] &&
                 InMessage->Buffer.InMessage[3] == expectedBytes[1] )
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

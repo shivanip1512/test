@@ -106,6 +106,7 @@ IM_EX_CTIBASE extern set<long>      gScanForceDevices;
 
 IM_EX_CTIBASE void         InitYukonBaseGlobals(void);
 IM_EX_CTIBASE INT          getDebugLevel(void);
+IM_EX_CTIBASE bool         isDebugLudicrous(void);
 IM_EX_CTIBASE INT          isForeignCcuPort(INT portid);
 
 #endif // #ifndef __DLLBASE_H__

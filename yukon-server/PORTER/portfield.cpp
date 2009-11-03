@@ -630,7 +630,7 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
         {
             if(Port->getType() == PortTypeTServerDirect)
             {
-                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+                if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << Port->getName() << ": IP ports open on usage." << endl;
@@ -1200,7 +1200,7 @@ void processPreloads(CtiPortSPtr Port)
             preload_ideal *= gConfigParms.getValueAsDouble("PRELOAD_MULTIPLIER", 1.2);
             preload_ideal += gConfigParms.getValueAsULong("PRELOAD_PADDING", 5);
 
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadEndTime() = " << dev->getPreloadEndTime() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1644,7 +1644,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         //debug
                         if( error != 0 )
                         {
-                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                            if( isDebugLudicrous() )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " ! comm error !" << endl;
@@ -2938,7 +2938,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     else if(CommResult == ErrPortSimulated)
     {
         // There is no retry submitted on a simulated port??
-        if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+        if(isDebugLudicrous())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -4413,7 +4413,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
             }
             else
             {
-                if((getDebugLevel() & DEBUGLEVEL_LUDICROUS) && (getDebugLevel() & DEBUGLEVEL_EXCLUSIONS))
+                if(isDebugLudicrous() && (getDebugLevel() & DEBUGLEVEL_EXCLUSIONS))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;

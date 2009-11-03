@@ -1006,7 +1006,7 @@ int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
       {
       case 0xe000:
             {
-                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+                if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getName() << " quality is " << string(CtiNumStr(quality).xhex().zpad(2)) << endl;

@@ -408,7 +408,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     {
         if(OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_LoadProfile)
         {
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Cleaning Excess LP Entries for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1115,7 +1115,7 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
     {
         if(Device->getType() == TYPE_TAPTERM)
         {
-            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+            if(isDebugLudicrous())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Port is about to communicate with a TAP device. " << Device->getName() << endl;
@@ -1127,7 +1127,7 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
         else if(Device->getType() == TYPE_RTM ||
                 Device->getType() == TYPE_RTC)
         {
-            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+            if(isDebugLudicrous())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Port is about to communicate with RTM/RTC \"" << Device->getName() << "\"." << endl;
@@ -1138,7 +1138,7 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
         }
         else
         {
-            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+            if(isDebugLudicrous())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Port is about to communicate with a NON - TAP device. " << Device->getName() << endl;

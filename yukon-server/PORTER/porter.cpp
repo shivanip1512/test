@@ -1740,7 +1740,7 @@ void LoadPorterGlobals(void)
 
     }
 
-    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Using CCU Delay information from " << gDelayDatFile << endl;

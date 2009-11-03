@@ -337,7 +337,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
 
     if(ip.second != true)
     {
-        if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+        if(isDebugLudicrous())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -351,7 +351,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
 
             if(pOriginalTag)
             {
-                if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+                if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -363,7 +363,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
                 *pOriginalTag = *pTag;
                 failure = false;
 
-                if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+                if(isDebugLudicrous())
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -149,7 +149,7 @@ RWDBStatus CtiTableTagLog::Insert(RWDBConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = inserter.asString();
         {
@@ -283,7 +283,7 @@ RWDBStatus CtiTableTagLog::Delete()
 
     deleter.where( table["logid"] == getLogId() );
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {
@@ -306,7 +306,7 @@ RWDBStatus CtiTableTagLog::Delete(int log)
 
     deleter.where( table["logid"] == log );
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {

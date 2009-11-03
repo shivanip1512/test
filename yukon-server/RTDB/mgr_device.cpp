@@ -1661,7 +1661,7 @@ void CtiDeviceManager::refreshMCT400Configs(id_range_t &paoids)
                     {
                         tmpMCT410->setDisconnectAddress(0);
 
-                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        if( isDebugLudicrous() )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - invalid disconnect address " << tmpdisconnectaddress << " for device \"" << tmpMCT410->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

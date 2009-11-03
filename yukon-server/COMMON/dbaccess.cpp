@@ -22,6 +22,7 @@
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "logger.h"
+#include "cparms.h"
 
 using namespace std;
 
@@ -345,7 +346,7 @@ RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater,
         *rowsAffected = myResult.rowCount();
     }
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = updater.asString();
         {
@@ -391,7 +392,7 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
 {
     RWDBStatus stat = inserter.execute( conn ).status();
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = inserter.asString();
         {
@@ -647,7 +648,7 @@ string makeLeftOuterJoinSQL92Compliant(const string &sql)
         select_part += " " + rest;
     }
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "\nTranslating SQL from:\n" 

@@ -119,7 +119,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
     getLogType() <<
     getUser();
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = inserter.asString();
         {
@@ -204,7 +204,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
     long rowsAffected;
     RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = updater.asString();
         {
@@ -286,7 +286,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete()
 
     deleter.where( table["pointid"] == getPointID() && table["alarmcondition"] == getAlarmCondition() );
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {
@@ -309,7 +309,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_conditio
 
     deleter.where( table["pointid"] == pointid && table["alarmcondition"] == alarm_condition );
 
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {

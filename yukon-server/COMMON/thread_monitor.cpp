@@ -403,7 +403,7 @@ void CtiThreadMonitor::tickle( CtiThreadRegData *in )
 
                 _queue.putQueue( in );
 
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                     messageOut( "tsis", "Thread", in->getId(), "Inserted" );
 
                 //our thread may have shut down, so we don't want the queue to keep growing

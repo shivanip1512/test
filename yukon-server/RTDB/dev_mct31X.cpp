@@ -331,7 +331,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                              lpDescriptorString.c_str(),
                              sizeof(tmpOutMess->Request.CommandStr) - strlen(tmpOutMess->Request.CommandStr));
 
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
+                    if( isDebugLudicrous()  );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -343,7 +343,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                 }
                 else
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( isDebugLudicrous() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -368,7 +368,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     bool retVal = false;
     int lpBlockAddress, lpChannel;
 
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( isDebugLudicrous() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2349,7 +2349,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
         if( (retrieved_channel   = parse.getiValue("scan_loadprofile_channel", 0)) &&
             (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
         {
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2457,7 +2457,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                         //  but we want interval *ending* times, so add on one more interval
                         timestamp += demand_rate;
 
-                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        if( isDebugLudicrous() )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2512,7 +2512,7 @@ void CtiDeviceMCT31X::DecodeDatabaseReader(RWDBReader &rdr)
     {
         _iedPort.DecodeDatabaseReader( rdr );
 
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT31X::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -1745,7 +1745,7 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
         }
     }
 
-    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

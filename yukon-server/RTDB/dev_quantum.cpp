@@ -1421,7 +1421,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                             }
                             else
                             {
-                                if( getDebugLevel( ) & DEBUGLEVEL_LUDICROUS )
+                                if( isDebugLudicrous() )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " Skipping load profile for " << getName( ) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1818,7 +1818,7 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( QuantumRawScanData_t
         {
             programmedRegisters[i] = registerToFloat( &(rawScan->programmedRegisters[j*6]), translated, i );
 
-            if( getDebugLevel( ) & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> dout_guard( dout );
                 dout << CtiTime( ) << " " << getName() << " -  register " << i << "(" << translated->programTable[i].regNum << "," <<

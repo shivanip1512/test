@@ -522,6 +522,12 @@ DLLEXPORT INT getDebugLevel(void)
     return DebugLevel;
 }
 
+DLLEXPORT bool isDebugLudicrous(void)
+{
+    static const string debug_high = "DEBUG_GENERAL_HIGH";
+    return gConfigParms.isTrue(debug_high);
+}
+
 DLLEXPORT INT isForeignCcuPort(INT portid)
 {
     return ForeignCCUPorts.find(portid) != ForeignCCUPorts.end();

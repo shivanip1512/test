@@ -291,7 +291,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
 
     if( _appLayer.errorCondition() )
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint -- _appLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -367,7 +367,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
 
     if( _protocolErrors > Protocol_ErrorMax )
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1041,7 +1041,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                 }
                 else
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( isDebugLudicrous() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1107,7 +1107,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                 }
                 else
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( isDebugLudicrous() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1838,7 +1838,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                             }
 
                             //  output only for debug
-                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                            if( isDebugLudicrous() )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1848,7 +1848,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                                 dout << "Log Values:" << endl;
                             }
 
-                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                            if( isDebugLudicrous() )
                             {
                                 if( record->getLogValues()->isStructType(CtiIONStruct::StructType_Event) )
                                 {
@@ -2479,7 +2479,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 
     restoreCommand(tmpOM.cmd_struct.command, tmpOM.cmd_struct.unsigned_int_parameter);
 
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( isDebugLudicrous() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -441,7 +441,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     }
     else
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -451,7 +451,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     //  was never assigned
     if( newArray == NULL )
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

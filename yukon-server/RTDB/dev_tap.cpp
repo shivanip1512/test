@@ -843,7 +843,7 @@ INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
         else
         {
             Str.append( string("<0x") + CtiNumStr(Char).hex().zpad(2) + string(">") );
-            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+            if(isDebugLudicrous())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1447,7 +1447,7 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
 {
     if( oldid > 0 && getUniqueIdentifier() == oldid)
     {
-        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+        if(isDebugLudicrous())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "  Port has indicated a connected device swap. " << endl;

@@ -190,7 +190,7 @@ void CtiPorterVerification::verificationThread( void )
                             }
                             else
                             {
-                                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                if( isDebugLudicrous() )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint - no associations found for for transmitter id \"" << work->getTransmitterID() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -237,7 +237,7 @@ void CtiPorterVerification::verificationThread( void )
 
                                 if( report )
                                 {
-                                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                    if( isDebugLudicrous() )
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << CtiTime() << " **** Checkpoint - record not found for code \"" << report->getCode() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -251,7 +251,7 @@ void CtiPorterVerification::verificationThread( void )
                             }
                             else
                             {
-                                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                if( isDebugLudicrous() )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint - entry received for unknown receiver \"" << report->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -322,7 +322,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 
             status = work->processResult(/* pass in any previous entry with a matching om->VerificationSequence */);
 
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** Expires at " << to_simple_string(work->getExpiration()) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -664,7 +664,7 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
              << "Y"
              << cs;
 
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( isDebugLudicrous() )
     {
         string loggedSQLstring = inserter.asString();
         {
@@ -700,7 +700,7 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 
     deleter.where(table["timearrival"] < toRWDBDT(CtiTime(prune_date)));
 
-    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    if(isDebugLudicrous())
     {
         string loggedSQLstring = deleter.asString();
         {

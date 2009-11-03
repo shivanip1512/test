@@ -5404,7 +5404,7 @@ void CtiDeviceMCT470::DecodeDatabaseReader(RWDBReader &rdr)
 
     _iedPort.DecodeDatabaseReader( rdr );
 
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( isDebugLudicrous() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT470::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

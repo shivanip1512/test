@@ -319,7 +319,7 @@ INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                          lpDescriptorString.c_str(),
                          sizeof(tmpOutMess->Request.CommandStr) - strlen(tmpOutMess->Request.CommandStr));
 
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
+                if( isDebugLudicrous()  );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -331,7 +331,7 @@ INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             }
             else
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( isDebugLudicrous() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1043,7 +1043,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
         if( (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
         {
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1150,7 +1150,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                         //  but we want interval *ending* times, so add on one more interval
                         timestamp += demand_rate;
 
-                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        if( isDebugLudicrous() )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -647,7 +647,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 case NoIndex_ByteQty:
                 case NoIndex_ShortQty:
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( isDebugLudicrous() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

@@ -49,6 +49,7 @@ using namespace std;
 #include "utility.h"
 #include "rwutil.h"
 #include "ctidate.h"
+#include "cparms.h"
 
 LONG GetMaxLMControl(long pao)
 {
@@ -616,7 +617,7 @@ void identifyProject(const compileinfo_t &Info)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if((DebugLevel & DEBUGLEVEL_LUDICROUS) && Info.date)      // DEBUGLEVEL added 012903 CGP
+        if(isDebugLudicrous() && Info.date)      // DEBUGLEVEL added 012903 CGP
         {
             dout << CtiTime() << " " << Info.project << " [Version " << Info.version << "]" /* << endl */ << " [Version Details: " << Info.details << ", " << Info.date << "]" << endl;
         }
@@ -819,7 +820,7 @@ LONG GetPAOIdOfPoint(long pid)
     {
         rdr >> id;
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -849,7 +850,7 @@ INT GetPIDFromDeviceAndOffset(int device, int offset)
     {
         rdr >> id;
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -880,7 +881,7 @@ INT GetPIDFromDeviceAndControlOffset(int device, int offset)
     {
         rdr >> id;
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -913,7 +914,7 @@ INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type)
     {
         rdr >> id;
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2103,7 +2104,7 @@ bool findLPRequestEntries(void *om, void *d)
             string oldstr(OutMessage->Request.CommandStr);
             string newstr(NewGuy->Request.CommandStr);
 
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( isDebugLudicrous() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Comparing Outmessage->CommandStr" << endl;
@@ -2131,7 +2132,7 @@ bool findLPRequestEntries(void *om, void *d)
         }
     }
 
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( isDebugLudicrous() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " bRet = " << bRet << endl;
@@ -2486,7 +2487,7 @@ LONG GetPAOIdOfEnergyPro(long devicesn)
     {
         rdr["PAOBJECTID"] >> id;
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2519,7 +2520,7 @@ vector<int> getPointIdsOnPao(long paoid)
             ids.push_back(id);
         }
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2558,7 +2559,7 @@ std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId)
             params.push_back(parameters);
         }
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2589,7 +2590,7 @@ void GetPseudoPointIDs(std::vector<unsigned long> &pointIDs)
             pointIDs.push_back(id);
         }
     }
-    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    else if(isDebugLudicrous())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2617,7 +2618,7 @@ string getEncodingTypeForPort(long portId)
     }
     else
     {
-        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+        if(isDebugLudicrous())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2646,7 +2647,7 @@ string getEncodingKeyForPort(long portId)
     }
     else
     {
-        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+        if(isDebugLudicrous())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

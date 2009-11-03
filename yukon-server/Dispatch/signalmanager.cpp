@@ -114,7 +114,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
 
                     if(ip.second != true)
                     {
-                        if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+                        if(isDebugLudicrous())
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -129,7 +129,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
 
                                 if(pOriginalSig)
                                 {
-                                    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+                                    if(isDebugLudicrous())
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -140,7 +140,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
 
                                     *pOriginalSig = sig;
 
-                                    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+                                    if(isDebugLudicrous())
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

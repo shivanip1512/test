@@ -51,6 +51,7 @@ void CtiNumStr::init( unsigned int width )
     _padding = -1;
     _zeroes  = false;
 
+    _float     = 0;
     _integer   = 0;
     _unsigned  = 0;
     _pointer   = 0x00000000;
