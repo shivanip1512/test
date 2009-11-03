@@ -7,7 +7,9 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="searchResults">
-    <cti:standardMenu />
+    <cti:standardMenu/>
+
+    <dr:favoriteIconSetup/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
@@ -27,10 +29,16 @@
             <tr>
                 <th></th>
                 <th>
-                    <cti:msg key="yukon.web.modules.dr.searchResults.nameHeader"></cti:msg>
+                    <cti:msg key="yukon.web.modules.dr.searchResults.nameHeader"/>
                 </th>
                 <th>
-                    <cti:msg key="yukon.web.modules.dr.searchResults.typeHeader"></cti:msg>
+                    <cti:msg key="yukon.web.modules.dr.searchResults.typeHeader"/>
+                </th>
+                <th>
+                    <cti:msg key="yukon.web.modules.dr.searchResults.stateHeader"/>
+                </th>
+                <th>
+                    <cti:msg key="yukon.web.modules.dr.searchResults.actionsHeader"/>
                 </th>
             </tr>
             <c:forEach var="pao" items="${searchResult.resultList}">
@@ -43,6 +51,12 @@
                     </td>
                     <td>
                         <cti:msg key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}"/>
+                    </td>
+                    <td>
+                        <dr:stateText pao="${pao}"/>
+                    </td>
+                    <td class="nonwrapping">
+                        <dr:listActions pao="${pao}"/>
                     </td>
                 </tr>
             </c:forEach>

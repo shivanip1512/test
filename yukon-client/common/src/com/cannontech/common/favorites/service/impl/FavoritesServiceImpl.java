@@ -26,11 +26,7 @@ public class FavoritesServiceImpl implements FavoritesService {
 
     @Override
     public List<DisplayablePao> getRecentlyViewed(LiteYukonUser user,
-            int count, UiFilter<DisplayablePao> filterIn) {
-        List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
-        filters.add(filterIn);
-        filters.add(new NotInFavoritesFilter(user.getUserID()));
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+            int count, UiFilter<DisplayablePao> filter) {
         RecentlyViewedRowMapper rowMapper = new RecentlyViewedRowMapper();
         SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, null, 0, count, rowMapper);
@@ -100,37 +96,6 @@ public class FavoritesServiceImpl implements FavoritesService {
         @Override
         public boolean needsWhere() {
             return true;
-        }
-    }
-
-    private static class NotInFavoritesFilter implements
-            UiFilter<DisplayablePao> {
-        private int userId;
-
-        private NotInFavoritesFilter(int userId) {
-            this.userId = userId;
-        }
-
-        @Override
-        public Iterable<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
-            return null;
-        }
-
-        @Override
-        public Iterable<SqlFilter> getSqlFilters() {
-            List<SqlFilter> sqlFilter = Lists.newArrayList();
-            sqlFilter.add(new SqlFilter() {
-                @Override
-                public SqlFragmentSource getWhereClauseFragment() {
-                    SqlStatementBuilder whereClause = new SqlStatementBuilder();
-                    whereClause.append("yukonPaobject.paobjectId NOT IN");
-                    whereClause.append(" (SELECT paobjectId FROM paoFavorites WHERE userId =");
-                    whereClause.appendArgument(userId);
-                    whereClause.append(")");
-                    return whereClause;
-                }
-            });
-            return sqlFilter;
         }
     }
 

@@ -1,8 +1,9 @@
 package com.cannontech.web.dr;
 
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,6 +47,11 @@ public class HomeController {
         List<DisplayablePao> recentlyViewed = favoritesService.getRecentlyViewed(user, 20, filter);
         model.addAttribute("recents", recentlyViewed);
 
+        Map<Integer, Boolean> favoritesByPaoId =
+            favoritesDao.favoritesByPao(recentlyViewed,
+                                        userContext.getYukonUser());
+        model.addAttribute("favoritesByPaoId", favoritesByPaoId);
+
         return "dr/home.jsp";
     }
 
@@ -74,19 +80,17 @@ public class HomeController {
     }
 
     @RequestMapping("/addFavorite")
-    public String addFavorite(HttpServletRequest request, int paoId,
+    public String addFavorite(HttpServletResponse response, int paoId,
             YukonUserContext userContext) {
         favoritesDao.addFavorite(paoId, userContext.getYukonUser());
-        String referer = request.getHeader("Referer");
-        return "redirect:"+ referer;
+        return "common/empty.jsp";
     }
 
     @RequestMapping("/removeFavorite")
-    public String removeFavorite(HttpServletRequest request, int paoId,
+    public String removeFavorite(HttpServletResponse response, int paoId,
             YukonUserContext userContext) {
         favoritesDao.removeFavorite(paoId, userContext.getYukonUser());
-        String referer = request.getHeader("Referer");
-        return "redirect:"+ referer;
+        return "common/empty.jsp";
     }
 
     @Autowired

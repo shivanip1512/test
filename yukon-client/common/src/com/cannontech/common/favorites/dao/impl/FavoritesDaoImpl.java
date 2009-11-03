@@ -1,9 +1,7 @@
 package com.cannontech.common.favorites.dao.impl;
 
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,8 +18,6 @@ import com.google.common.collect.Sets;
 
 public class FavoritesDaoImpl implements FavoritesDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private Map<Integer, Set<Integer>> favoritesByUser =
-        Collections.synchronizedMap(new HashMap<Integer, Set<Integer>>());
 
     @Override
     public void detailPageViewed(int paoId) {
@@ -43,7 +39,6 @@ public class FavoritesDaoImpl implements FavoritesDao {
         simpleJdbcTemplate.update("INSERT INTO" +
                                   " paoFavorites (userId, paobjectId) VALUES (?, ?)",
                                   user.getUserID(), paoId);
-        favoritesByUser.remove(user.getUserID());
     }
 
     @Override
@@ -51,35 +46,36 @@ public class FavoritesDaoImpl implements FavoritesDao {
         simpleJdbcTemplate.update("DELETE FROM paoFavorites" +
                                   " WHERE userId = ? AND paobjectId = ?",
                                   user.getUserID(), paoId);
-        favoritesByUser.remove(user.getUserID());
     }
 
     @Override
     public boolean isFavorite(int paoId, LiteYukonUser user) {
-        Set<Integer> userFavorites = favoritesByUser.get(user.getUserID());
+        int isFavorite =
+            simpleJdbcTemplate.queryForInt("SELECT count(*) FROM paoFavorites" +
+                                           " WHERE userId = ? AND paobjectId = ?",
+                                           user.getUserID(),
+                                           paoId);
 
-        if (userFavorites == null) {
-            List<Integer> favoritesFromDB =
-                simpleJdbcTemplate.query("SELECT paobjectId FROM paoFavorites" +
-                                         " WHERE userId = ?",
-                                         new IntegerRowMapper(),
-                                         user.getUserID());
-
-            userFavorites = Sets.newHashSet();
-            userFavorites.addAll(favoritesFromDB);
-            favoritesByUser.put(user.getUserID(), userFavorites);
-        }
-
-        return userFavorites.contains(paoId);
+        return isFavorite > 0;
     }
 
     @Override
     public Map<Integer, Boolean> favoritesByPao(
             Iterable<? extends YukonPao> paos, LiteYukonUser user) {
+
+        List<Integer> favoritesFromDB =
+            simpleJdbcTemplate.query("SELECT paobjectId FROM paoFavorites" +
+                                     " WHERE userId = ?",
+                                     new IntegerRowMapper(),
+                                     user.getUserID());
+
+        Set<Integer> userFavorites = Sets.newHashSet();
+        userFavorites.addAll(favoritesFromDB);
+
         Map<Integer, Boolean> retVal = Maps.newHashMap();
         for (YukonPao pao : paos) {
             int paoId = pao.getPaoIdentifier().getPaoId();
-            retVal.put(paoId, isFavorite(paoId, user));
+            retVal.put(paoId, userFavorites.contains(paoId));
         }
         return retVal;
     }

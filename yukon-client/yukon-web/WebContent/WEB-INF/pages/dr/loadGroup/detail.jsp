@@ -13,6 +13,7 @@
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+    <dr:favoriteIconSetup/>
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp">
