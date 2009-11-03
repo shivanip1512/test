@@ -42,22 +42,22 @@ table.nameValueTable tr.indent1 td.value {
 				<c:if test="${isMCT4xx}">
 					<ct:nameValue name="${mct410Devices}">
 						<ct:nameValue name="${stateGroups[0]}" nameColumnWidth="200px">
-							${connectedMsg}
+							${confirmedDisconnectMsg}
 						</ct:nameValue>
 						<ct:nameValueGap gapHeight="6px" />
 				
 						<ct:nameValue name="${stateGroups[1]}">
-							${connectArmedMsg}
+							${connectedMsg}
 						</ct:nameValue>
 						<ct:nameValueGap gapHeight="6px" />
 					
 						<ct:nameValue name="${stateGroups[2]}">
-							${confirmedDisconnectMsg}
+							${unconfirmedDisconnectMsg}
 						</ct:nameValue>
 						<ct:nameValueGap gapHeight="6px" />
 					
 						<ct:nameValue name="${stateGroups[3]}">
-							${unconfirmedDisconnectMsg}
+							${connectArmedMsg}
 						</ct:nameValue>
 						<ct:nameValueGap gapHeight="6px" />
 					</ct:nameValue>
