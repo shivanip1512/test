@@ -2,9 +2,21 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<!-- ValidationMonitorEditorController edit.jsp -->
-    <!-- ==================================================================-->
-    <!-- ==================================================================-->
+    <!-- ValidationMonitorsWidget render.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.noMonitorsSetup">No Validation Monitors Setup</entry>
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.popupInfo">???</entry>
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.threshold">Threshold</entry>
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.tableHeader.status">Status</entry>
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.createNew">Create</entry>
+    <entry key="yukon.web.modules.amr.validationMonitorsWidget.thresholdUnits">kWh/day</entry>
+
+    <!-- ValidationMonitorEditorController edit.jsp -->
+    <!-- ================================================================== -->
+    <!-- ================================================================== -->
     <entry key="yukon.web.modules.common.vee.validationMonitorConfig.pageTitle">Validation Monitoring</entry>
     <entry key="yukon.web.modules.common.vee.validationMonitorConfig.section.setup">Setup</entry>
     <entry key="yukon.web.modules.common.vee.validationMonitorConfig.section.editSetup">Edit Setup</entry>
