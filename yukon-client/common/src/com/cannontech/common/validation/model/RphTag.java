@@ -29,6 +29,6 @@ public enum RphTag {
     }
     
     public String getKey() {
-    	return "yukon.common.vee.rphTag." + this.name();
+    	return "yukon.web.modules.common.vee.rphTag." + this.name();
     }
 }

@@ -3,19 +3,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.vee.review.home.pageTitle"/>
-<cti:msg var="displayTypes" key="yukon.common.vee.review.home.displayTypes"/>
-<cti:msg var="displayTypesPopupInfo" key="yukon.common.vee.review.home.displayTypes.popupInfo"/>
-<cti:msg var="device" key="yukon.common.vee.review.home.header.device"/>
-<cti:msg var="previous" key="yukon.common.vee.review.home.header.previous"/>
-<cti:msg var="flagged" key="yukon.common.vee.review.home.header.flagged"/>
-<cti:msg var="next" key="yukon.common.vee.review.home.header.next"/>
-<cti:msg var="delete" key="yukon.common.vee.review.home.header.delete"/>
-<cti:msg var="deletePopupInfo" key="yukon.common.vee.review.home.header.delete.popupInfo"/>
-<cti:msg var="accept" key="yukon.common.vee.review.home.header.accept"/>
-<cti:msg var="acceptPopupInfo" key="yukon.common.vee.review.home.header.accept.popupInfo"/>
-<cti:msg var="saveAndContinue" key="yukon.common.vee.review.home.saveAndContinue"/>
-<cti:msg var="save" key="yukon.common.vee.review.home.save"/>
+<cti:msg var="pageTitle" key="yukon.web.modules.common.vee.review.home.pageTitle"/>
+<cti:msg var="displayTypes" key="yukon.web.modules.common.vee.review.home.displayTypes"/>
+<cti:msg var="displayTypesPopupInfo" key="yukon.web.modules.common.vee.review.home.displayTypes.popupInfo"/>
+<cti:msg var="device" key="yukon.web.modules.common.vee.review.home.header.device"/>
+<cti:msg var="previous" key="yukon.web.modules.common.vee.review.home.header.previous"/>
+<cti:msg var="flagged" key="yukon.web.modules.common.vee.review.home.header.flagged"/>
+<cti:msg var="next" key="yukon.web.modules.common.vee.review.home.header.next"/>
+<cti:msg var="delete" key="yukon.web.modules.common.vee.review.home.header.delete"/>
+<cti:msg var="deletePopupInfo" key="yukon.web.modules.common.vee.review.home.header.delete.popupInfo"/>
+<cti:msg var="accept" key="yukon.web.modules.common.vee.review.home.header.accept"/>
+<cti:msg var="acceptPopupInfo" key="yukon.web.modules.common.vee.review.home.header.accept.popupInfo"/>
+<cti:msg var="saveAndContinue" key="yukon.web.modules.common.vee.review.home.saveAndContinue"/>
+<cti:msg var="save" key="yukon.web.modules.common.vee.review.home.save"/>
 
 <cti:url var="deleteDisabledImg" value="/WebConfig/yukon/Icons/delete_disabled_gray.gif"/>
 <cti:url var="acceptDisabledImg" value="/WebConfig/yukon/Icons/tick_disabled_gray.gif"/>

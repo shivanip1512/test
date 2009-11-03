@@ -2,6 +2,62 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+	<!--RphTag -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+	<entry key="yukon.web.modules.common.vee.rphTag.PU">Peak Up</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.PD">Peak Down</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UU">Unreasonable Up</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UD">Unreasonable Down</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UDC">Changeout</entry>
+    
+	<!-- VeeReviewController review.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.common.vee.review.home.pageTitle">VEE Review</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.displayTypes">Display Types</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.header.device">Device</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.header.previous">Previous</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.header.flagged">Flagged</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.header.next">Next</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.header.delete">Delete</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.header.accept">Accept</entry>
+    <entry key="yukon.web.modules.common.vee.review.home.saveAndContinue"><![CDATA[Save & Continue]]></entry>
+    <entry key="yukon.web.modules.common.vee.review.home.save">Save</entry>
+    
+    <entry key="yukon.web.modules.common.vee.review.home.displayTypes.popupInfo"><![CDATA[
+    	<br><div style="font-weight:normal;">
+    	Only display flagged data matching those types that are checked below.
+    	<br><br>
+	    </div>
+    ]]></entry>
+    
+    <entry key="yukon.web.modules.common.vee.review.home.header.delete.popupInfo"><![CDATA[
+    	<br><div style="font-weight:normal;color:black;">
+    	Mark flagged values that you would like to remove from the database.
+    	<br><br>
+    	To mark a row for deletion, change it's delete icon from <img src="/WebConfig/yukon/Icons/delete_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/delete.gif"> by clicking on it.
+    	<br>
+    	You may un-mark a row by clicking it's icon again. 
+    	<br><br>
+    	To mark/unmark all rows, click the word "Delete" in the column header.
+    	<br><br>
+	    </div>
+    ]]></entry>
+    
+    <entry key="yukon.web.modules.common.vee.review.home.header.accept.popupInfo"><![CDATA[
+    	<br><div style="font-weight:normal;color:black;">
+    	Mark flagged values that you would like to unflag by marking them as accepted values.
+    	<br><br>
+    	To mark a row as accepted, change it's accept icon from <img src="/WebConfig/yukon/Icons/tick_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/accept.gif"> by clicking on it.
+    	<br>
+    	You may un-mark a row by clicking it's icon again. 
+    	<br><br>
+    	To mark/unmark all rows, click the word "Accept" in the column header.
+    	<br><br>
+	    </div>
+    ]]></entry>
+    
     <!-- ValidationMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
@@ -66,4 +122,6 @@
          ???
          <br><br>
     ]]></entry>
+    
+    
 </properties>
