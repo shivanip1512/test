@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 
 <c:url var="pencil" value="/WebConfig/yukon/Icons/pencil.gif"/>
 <c:url var="pencilOver" value="/WebConfig/yukon/Icons/pencil_over.gif"/>
@@ -22,6 +23,12 @@
 <cti:msg var="deleteTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.delete" />
 <cti:msg var="deleteConfirmText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.deleteConfirm" />
 <cti:msg var="createButtonText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton" />
+<cti:msg var="infoLink" key="yukon.common.device.scheduledGroupRequstExecutionWidget.infoLink" />
+<cti:msg var="title" key="yukon.common.device.scheduledGroupRequstExecutionWidget.title" />
+
+<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}">
+	${infoLink}
+</ct:widgetActionPopup>
 
 <script type="text/javascript">
 

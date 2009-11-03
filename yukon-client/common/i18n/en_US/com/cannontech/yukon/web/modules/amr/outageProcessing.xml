@@ -6,16 +6,9 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.noMonitorsSetup">No Outage Monitors Setup</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"><![CDATA[
-    	 <br><div style="font-weight:normal;">
-    	 <img src="/WebConfig/yukon/Icons/pencil.gif"> Edit the Outage Monitor (change name, monitor parameters, or status).
-	     <br><br>
-	     <img src="/WebConfig/yukon/Icons/cog.gif"> View the Outage Processing page (read outage logs, view outages report, clear Outages group, etc).
-	     <br><br>
-	     <img src="/WebConfig/yukon/Icons/delete.gif"> Delete the Outage Monitor.
-	     <br><br>
-	     </div>
-    ]]></entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.editIconHelpText">Edit the Outage Monitor (change name, monitor parameters, or status).</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.viewIconHelpText">View the Outage Processing page (read outage logs, view outages report, clear Outages group, etc).</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.deleteIconHelpText">Delete the Outage Monitor.</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.name">Name</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.violations">Violations</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
@@ -26,7 +19,8 @@
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.edit">Edit Outage Monitor</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing">Manage Processor Output</entry>
     <entry key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.delete">Delete Outage Monitor</entry>
-    
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.infoLink">Outage Monitor Information</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorsWidget.title">Outage Monitors</entry>
     
     <!-- OutageMonitorEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->

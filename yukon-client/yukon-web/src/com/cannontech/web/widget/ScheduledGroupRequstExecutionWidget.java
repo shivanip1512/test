@@ -65,6 +65,12 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 		return mav;
 	}
 	
+	public ModelAndView helpInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	    ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/helpInfo.jsp");
+	    
+	    return mav;
+	}
+	
 	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);

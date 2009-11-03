@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 
 <c:url var="pencil" value="/WebConfig/yukon/Icons/pencil.gif"/>
 <c:url var="pencilOver" value="/WebConfig/yukon/Icons/pencil_over.gif"/>
@@ -29,6 +30,13 @@
 <cti:msg var="editActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.edit"/>
 <cti:msg var="outageProcessingActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing"/>
 <cti:msg var="deleteActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.delete"/>
+<cti:msg var="infoLink" key="yukon.web.modules.amr.outageMonitorsWidget.infoLink"/>
+<cti:msg var="title" key="yukon.web.modules.amr.outageMonitorsWidget.title"/>
+
+<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}">
+	${infoLink}
+</ct:widgetActionPopup>
+
 
 <%-- CREATE NEW OUTAGE MONITOR FORM --%>
 <form id="createNewOutageMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">

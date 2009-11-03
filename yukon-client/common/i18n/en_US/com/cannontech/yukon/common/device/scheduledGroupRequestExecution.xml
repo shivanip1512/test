@@ -33,16 +33,9 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.noSchedulesSetup">No Schedules Setup</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.popupInfo"><![CDATA[
-    	 <br><div style="font-weight:normal;">
-	     <img src="/WebConfig/yukon/Icons/pencil.gif"> Edit the schedule (change name, run time, or command/attribute).
-	     <br><br>
-	     <img src="/WebConfig/yukon/Icons/script.gif"> View the details of the schedule (view results, enable/disable).
-	     <br><br>
-	     <img src="/WebConfig/yukon/Icons/delete.gif"> Delete the schedule.
-	     <br><br>
-	     </div>
-    ]]></entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.editIconHelpText">Edit the schedule (change name, run time, or command/attribute).</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.viewIconHelpText">View the details of the schedule (view results, enable/disable).</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.deleteIconHelpText">Delete the schedule.</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName">Name</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.attributeOrCommand">Attribute/Command</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
@@ -53,6 +46,8 @@
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.delete">Delete Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.deleteConfirm">Are you sure you want to delete this Schedule?</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton">Create</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.infoLink">Scheduled Requests Information</entry>
+    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.title">Scheduled Requests</entry>
     
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->

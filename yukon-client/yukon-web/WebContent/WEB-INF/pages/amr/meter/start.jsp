@@ -22,11 +22,9 @@
 				<td class="widgetColumnCell" valign="top">
 				
 					<%-- OUTAGE MONITORS WIDGET --%>
-					<cti:msg var="outageMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.outageMonitorsWidget.popupInfo"/>
 					<ct:widget bean="outageMonitorsWidget" helpText="${outageMonitorsWidgetPopupInfoText}"/>
 					
 					<%-- TAMPER FLAGS WIDGET --%>
-					<cti:msg var="tamperFlagMonitorsWidgetPopupInfoText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.popupInfo"/>
 					<ct:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
                     
                     <%-- VALIDATION MONITORS WIDGET --%>
@@ -35,7 +33,6 @@
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">
-						<cti:msg var="scheduledGroupRequstExecutionWidgetPopupInfoText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.popupInfo"/>
 						<ct:widget bean="scheduledGroupRequstExecutionWidget" helpText="${scheduledGroupRequstExecutionWidgetPopupInfoText}"/>
 					</cti:checkRolesAndProperties>
 					

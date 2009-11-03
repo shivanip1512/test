@@ -6,16 +6,9 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.noMonitorsSetup">No Tamper Flag Monitors Setup</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.popupInfo"><![CDATA[
-    	 <br><div style="font-weight:normal;">
-    	 <img src="/WebConfig/yukon/Icons/pencil.gif"> Edit the Tamper Flag Monitor (change name or status).
-	     <br><br>
-	     <img src="/WebConfig/yukon/Icons/cog.gif"> View the Tamper Flag Processing page (read flags, clear Tamper Flags group, etc).
-	     <br><br>
-	     <img src="/WebConfig/yukon/Icons/delete.gif"> Delete the Tamper Flag Monitor.
-	     <br><br>
-	     </div>
-    ]]></entry>
+    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.editIconHelpText">Edit the Tamper Flag Monitor (change name or status).</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.viewIconHelpText">View the Tamper Flag Processing page (read flags, clear Tamper Flags group, etc).</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.deleteIconHelpText">Delete the Tamper Flag Monitor.</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.name">Name</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.violations">Violations</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
@@ -26,6 +19,8 @@
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.edit">Edit Tamper Flag Monitor</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing">Manage Processor Output</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.delete">Delete Tamper Flag Monitor</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.infoLink">Tamper Flag Monitor Information</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.title">Tamper Flag Monitor</entry>
 
     <!-- TamperFlagProcessingEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->

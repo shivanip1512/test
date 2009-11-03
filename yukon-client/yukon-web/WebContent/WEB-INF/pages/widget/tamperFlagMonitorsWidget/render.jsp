@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 
 <c:url var="pencil" value="/WebConfig/yukon/Icons/pencil.gif"/>
 <c:url var="pencilOver" value="/WebConfig/yukon/Icons/pencil_over.gif"/>
@@ -29,6 +30,12 @@
 <cti:msg var="editActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.edit"/>
 <cti:msg var="tamperFlagProcessingActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing"/>
 <cti:msg var="deleteActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.delete"/>
+<cti:msg var="infoLink" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.infoLink"/>
+<cti:msg var="title" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.title"/>
+
+<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}">
+	${infoLink}
+</ct:widgetActionPopup>
 
 <%-- CREATE NEW TAMPERFLAG MONITOR FORM --%>
 <form id="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/tamperFlagProcessing/edit" method="get">
