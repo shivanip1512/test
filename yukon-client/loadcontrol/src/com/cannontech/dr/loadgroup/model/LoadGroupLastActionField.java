@@ -1,8 +1,10 @@
 package com.cannontech.dr.loadgroup.model;
 
 import java.util.Comparator;
+import java.util.Date;
 
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
@@ -16,9 +18,13 @@ public class LoadGroupLastActionField extends LoadGroupBackingFieldBase {
     
     @Override
     public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
-        ResolvableTemplate template = new ResolvableTemplate(getKey(getFieldName()));
-        template.addData("date", group.getGroupTime());
-        return template;
+        Date lastActionTime = group.getGroupTime();
+        if (lastActionTime.after(CtiUtilities.get1990GregCalendar().getTime())) {
+            ResolvableTemplate template = new ResolvableTemplate(getKey(getFieldName()));
+            template.addData("date", lastActionTime);
+            return template;
+        }
+        return buildResolvable("noLastAction");
     }
     
     @Override
