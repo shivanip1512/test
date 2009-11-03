@@ -90,7 +90,7 @@ public class DailyCronTagStyleHandler extends CronTagStyleHandlerBase {
 	}
 	
 	// DESCRIPTION
-	public String generateDescription(CronExpressionTagState state) {
+	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
 		
 		String desc = state.getCronExpressionDailyOption().getDescription() + ", at " + getTimeDescription(state);
 		return desc;

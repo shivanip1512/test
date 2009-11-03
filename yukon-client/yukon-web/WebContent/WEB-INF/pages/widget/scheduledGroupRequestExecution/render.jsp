@@ -21,10 +21,27 @@
 <cti:msg var="viewScheduleDetailsTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails" />
 <cti:msg var="deleteTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.delete" />
 <cti:msg var="deleteConfirmText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.deleteConfirm" />
-<cti:msg var="enabledText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.enabled" />
-<cti:msg var="disabledText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.disabled" />
 <cti:msg var="createButtonText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton" />
 
+<script type="text/javascript">
+
+	function setTrClassByJobState(jobId) {
+	    return function(data) {
+	        var trEl = $('tr_' + jobId);
+	        var state = data['state'];
+	        if (state == 'DISABLED') {
+				trEl.className = 'subtleGray';
+	        } else if (state == 'RUNNING') {
+	        	trEl.className = 'okGreen';
+	        } else {
+				trEl.className = '';
+	        }
+	    };
+	} 
+
+</script>
+    
+    
 <%-- CREATE NEW SCHEDULE FORM --%>
 <form id="createNewSchduleForm_${widgetParameters.widgetId}" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
 </form>
@@ -47,7 +64,7 @@
 <table class="compactResultsTable">
 	
 	<tr>
-		<th style="width:70px;">&nbsp;</th>
+		<th style="width:20px;">&nbsp;</th>
 		<th>${scheduleNameText}</th>
 		<th>${scheduleDescriptionText}</th>
 		<th style="text-align:center;width:80px;">${enabledStatusText}</th>
@@ -58,27 +75,12 @@
 
 	<c:forEach var="jobWrapper" items="${jobWrappers}">
 	
-		<c:set var="tdClass" value=""/>
-		<c:if test="${jobWrapper.job.disabled}">
-			<c:set var="tdClass" value="subtleGray"/>
-		</c:if>
-				
-		<tr>
+		<tr id="tr_${jobWrapper.job.id}">
 			
 			<%-- actions --%>	
 			<td>
-
-				<%-- edit schedule --%>
-				<c:if test="${canManage}">
-					<cti:url var="editScheduleUrl" value="/spring/group/scheduledGroupRequestExecution/home">
-						<cti:param name="editJobId" value="${jobWrapper.job.id}"/>
-					</cti:url>
-					
-					<a href="${editScheduleUrl}" title="${editScheduleTitleText} (${jobWrapper.name})" style="text-decoration:none;">
-						<img src="${pencil}" onmouseover="javascript:this.src='${pencilOver}'" onmouseout="javascript:this.src='${pencil}'">
-					</a>
-					&nbsp;&nbsp;
-				</c:if>
+			
+				<cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>
 			
 				<%-- view details --%>
 				<cti:url var="viewScheduleDetailsUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail" >
@@ -92,26 +94,33 @@
 			</td>
 			
 			<%-- name --%>	
-			<td class="${tdClass}" style="white-space:nowrap;">${jobWrapper.name}</td>
-			
-			<%-- schedule description --%>
-			<td class="${tdClass}" style="white-space:nowrap;">${jobWrapper.scheduleDescription}</td>
-			
-			<%-- status --%>
-			<td class="${tdClass}" style="text-align:center;" title="${jobWrapper.job.id}">
+			<td style="white-space:nowrap;">
 				<c:choose>
-					<c:when test="${jobWrapper.job.disabled}">
-						<span class="subtleGray">${disabledText}</span>
+					<c:when test="${canManage}">
+						<cti:url var="editScheduleUrl" value="/spring/group/scheduledGroupRequestExecution/home">
+							<cti:param name="editJobId" value="${jobWrapper.job.id}"/>
+						</cti:url>
+						<a href="${editScheduleUrl}" title="${editScheduleTitleText} (${jobWrapper.name})">
+							${jobWrapper.name}
+						</a>
 					</c:when>
 					<c:otherwise>
-						${enabledText}
+						${jobWrapper.name}
 					</c:otherwise>
 				</c:choose>
 			</td>
 			
+			<%-- schedule description --%>
+			<td style="white-space:nowrap;">${jobWrapper.scheduleDescription}</td>
+			
+			<%-- status --%>
+			<td style="text-align:center;" title="${jobWrapper.job.id}">
+				<cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
+			</td>
+			
 			<%-- delete --%>
 			<c:if test="${canManage}">
-				<td class="${tdClass}" style="text-align:right;">
+				<td style="text-align:right;">
 					<tags:widgetActionRefreshImage jobId="${jobWrapper.job.id}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteTitleText} (${jobWrapper.name})" method="delete"/>
 				</td>
 			</c:if>
@@ -137,6 +146,7 @@
 		<tags:slowInput myFormId="createNewSchduleForm_${widgetParameters.widgetId}" labelBusy="${createButtonText}" label="${createButtonText}"/>
 	</div>
 </c:if>
+
 
 
 

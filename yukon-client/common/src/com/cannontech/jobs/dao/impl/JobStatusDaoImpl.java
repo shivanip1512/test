@@ -77,21 +77,22 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         return resultList;
     }
     
-    public JobStatus<YukonJob> getStatusByJobId(int jobId) {
+    public JobStatus<YukonJob> findLatestStatusByJobId(int jobId) {
         
-        JobStatus<YukonJob> result = null;
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select *");
-            sql.append("from JobStatus js");
-            sql.append("join Job j on js.jobid = j.jobid");
-            sql.append("where js.jobid = ?");
-            JobStatusRowMapper<YukonJob> jobStatusRowMapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
-            result = jdbcTemplate.queryForObject(sql.toString(), jobStatusRowMapper, jobId);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append("from JobStatus js");
+        sql.append("join Job j on js.jobid = j.jobid");
+        sql.append("where js.jobid = ?");
+        sql.append("order by js.startTime desc");
+        JobStatusRowMapper<YukonJob> jobStatusRowMapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
+        List<JobStatus<YukonJob>> results = jdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobId);
+        
+        if (results.size() == 0) {
+        	return null;
         }
-        return result;
+        
+        return results.get(0);
     }
     
     public Date getJobLastSuccessfulRunDate(int jobId) {

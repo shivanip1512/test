@@ -1,6 +1,7 @@
 package com.cannontech.web.widget;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -13,10 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -53,14 +51,12 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 		}
 		
 		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(0, null, null, types, ScheduleGroupRequestExecutionDaoEnabledFilter.ANY, ScheduleGroupRequestExecutionDaoPendingFilter.ANY, false);
+		List<ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new ArrayList<ScheduledGroupRequestExecutionJobWrapper>();
 		
-		ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> mapper = new ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>() {
-			public ScheduledGroupRequestExecutionJobWrapper map(ScheduledRepeatingJob from) throws ObjectMappingException {
-                return scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(from, null, null, userContext);
-            }
-		};
-		
-		MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>(jobs, mapper);
+		for (ScheduledRepeatingJob job : jobs) {
+			jobWrappers.add(scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext));
+		}
+		Collections.sort(jobWrappers);
 		mav.addObject("jobWrappers", jobWrappers);
 		
 		boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());

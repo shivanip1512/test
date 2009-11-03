@@ -87,7 +87,7 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService, I
 		CronTagStyleType cronTagStyleType = cronExpressionTagState.getCronTagStyleType();
 		
 		CronTagStyleHandler cronTagStyleHandler = handlerMap.get(cronTagStyleType);
-		return cronTagStyleHandler.generateDescription(cronExpressionTagState);
+		return cronTagStyleHandler.generateDescription(cronExpressionTagState, userContext);
 	}
 	
 	private void validateExpression(String cronExpression) throws IllegalArgumentException {

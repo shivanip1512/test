@@ -182,7 +182,7 @@ public class JobManagerImpl implements JobManager {
     private boolean isJobStillRunnable(YukonJob job) {
         if (!job.isDisabled()) {
             int jobId = job.getId();
-            JobStatus<YukonJob> jobStatus = jobStatusDao.getStatusByJobId(jobId);
+            JobStatus<YukonJob> jobStatus = jobStatusDao.findLatestStatusByJobId(jobId);
             if (jobStatus == null || jobStatus.getJobState() == JobState.RESTARTED) {
                 return true;
             }

@@ -18,7 +18,7 @@ public interface CronTagStyleHandler extends Comparable<CronTagStyleHandler> {
 	
 	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext);
 	
-	public String generateDescription(CronExpressionTagState state);
+	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext);
 	
 	public CronTagStyleType getType();
 }

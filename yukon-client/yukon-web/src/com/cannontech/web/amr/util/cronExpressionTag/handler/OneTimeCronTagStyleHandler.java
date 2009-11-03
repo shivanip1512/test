@@ -11,6 +11,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
@@ -93,9 +94,10 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 	}
 	
 	// DESCRIPTION
-	public String generateDescription(CronExpressionTagState state) {
+	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
 		
-		String desc = "One-time, " +state.getDate() + ", at " + getTimeDescription(state);
+		String dateStr = dateFormattingService.format(state.getDate(), DateFormatEnum.DATE, userContext);
+		String desc = "One-time, " + dateStr + ", at " + getTimeDescription(state);
 		return desc;
 	}
 }

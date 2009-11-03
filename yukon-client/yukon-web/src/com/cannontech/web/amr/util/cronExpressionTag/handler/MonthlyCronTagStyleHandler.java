@@ -101,7 +101,7 @@ public class MonthlyCronTagStyleHandler extends CronTagStyleHandlerBase {
 	}
 	
 	// DESCRIPTION
-	public String generateDescription(CronExpressionTagState state) {
+	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
 		
 		String desc = "";
 		

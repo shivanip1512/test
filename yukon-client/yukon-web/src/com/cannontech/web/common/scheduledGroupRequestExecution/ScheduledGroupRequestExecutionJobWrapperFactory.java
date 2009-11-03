@@ -31,7 +31,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, userContext, scheduledGroupRequestExecutionDao, jobStatusDao, jobManager);
 	}
 	
-	public class ScheduledGroupRequestExecutionJobWrapper {
+	public class ScheduledGroupRequestExecutionJobWrapper implements Comparable<ScheduledGroupRequestExecutionJobWrapper> {
 
 		private ScheduledRepeatingJob job;
 		private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
@@ -60,7 +60,9 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		public ScheduledRepeatingJob getJob() {
 			return job;
 		}
-		
+		public ScheduledGroupRequestExecutionTask getTask() {
+			return this.task;
+		}
 		public String getCommandRequestTypeShortName() {
 			return this.task.getCommandRequestExecutionType().getShortName();
 		}
@@ -125,6 +127,11 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		
 		public String getScheduleDescription() {
 			return cronExpressionTagService.getDescription(this.job.getCronString(), this.userContext);
+		}
+		
+		@Override
+		public int compareTo(ScheduledGroupRequestExecutionJobWrapper o) {
+			return this.task.getName().compareToIgnoreCase(o.getTask().getName());
 		}
 	}
 	

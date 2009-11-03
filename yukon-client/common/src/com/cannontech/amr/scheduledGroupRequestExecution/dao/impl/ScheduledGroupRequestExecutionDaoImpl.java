@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
@@ -31,6 +32,8 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 
 public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequestExecutionDao, InitializingBean {
@@ -38,6 +41,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	private CommandRequestExecutionDao commandRequestExecutionDao;
 	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+	private JobManager jobManager;
 	
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -316,6 +320,32 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	String sql = "SELECT MAX(CRE.RequestCount) FROM CommandRequestExec CRE WHERE CRE.CommandRequestExecContextId = ?";
     	return yukonJdbcTemplate.queryForInt(sql, latestCre.getContextId());
     }
+    
+    public ScheduledGroupRequestExecutionStatus getStatusByJobId(int jobId) {
+    	
+    	YukonJob job = jobManager.getJob(jobId);
+		
+		if (job.isDeleted()) {
+			return ScheduledGroupRequestExecutionStatus.DELETED;
+		} else if (job.isDisabled()) {
+			return ScheduledGroupRequestExecutionStatus.DISABLED;
+		} else {
+			
+			CommandRequestExecution latestCre = findLatestCommandRequestExecutionForJobId(jobId, null);
+			if (latestCre != null) {
+				
+				Date now = new Date();
+				Date startTime = latestCre.getStartTime();
+				Date stopTime = latestCre.getStopTime();
+				
+				if (startTime != null && now.compareTo(startTime) >= 0 && (stopTime == null || now.compareTo(stopTime) <= 0)) {
+					return ScheduledGroupRequestExecutionStatus.RUNNING;
+				}
+			}
+		}
+		
+		return ScheduledGroupRequestExecutionStatus.ENABLED;
+    }
 
 	private FieldMapper<ScheduledGroupRequestExecutionPair> fieldMapper = new FieldMapper<ScheduledGroupRequestExecutionPair>() {
         public void extractValues(MapSqlParameterSource p, ScheduledGroupRequestExecutionPair pair) {
@@ -349,6 +379,10 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 	public void setScheduledRepeatingJobDao(
 			ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
 		this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
+	}
+	@Resource(name="jobManager")
+	public void setJobManager(JobManager jobManager) {
+		this.jobManager = jobManager;
 	}
 	@Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {

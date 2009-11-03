@@ -54,4 +54,8 @@
     <entry key="yukon.common.events.dr.loadGroup.loadGroupEnabled">Load group {0} was enabled</entry>
     <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {0} was disabled</entry>
     
+    <!-- Command Request Executor -->
+    <entry key="yukon.common.events.commandRequestExecutor.connectionException">No porter connection. creId={0} contextId={1}</entry>
+    <entry key="yukon.common.events.commandRequestExecutor.exception">Processing failed: {2}. creId={0} contextId={1}</entry>
+    
 </properties>

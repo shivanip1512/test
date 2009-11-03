@@ -46,6 +46,7 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDa
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
+import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.PorterRequestCancelService;
@@ -79,6 +80,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     private CommandRequestExecutionDao commandRequestExecutionDao;
 	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 	private NextValueHelper nextValueHelper;
+	private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
     
     private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new HashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
     
@@ -218,28 +220,6 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             }
         }
         
-        private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution) {
-        	
-        	commandRequestExecution.setStopTime(new Date());
-            commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
-        }
-        
-        private void saveCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status) {
-        	
-        	CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
-        	commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
-        	commandRequestExecutionResult.setCommand(command.getCommand());
-        	commandRequestExecutionResult.setCompleteTime(new Date());
-        	
-        	if (status != 0) {
-        		commandRequestExecutionResult.setErrorCode(status);
-        	}
-        	
-        	applyIdsToCommandRequestExecutionResult(command, commandRequestExecutionResult);
-            
-            commandRequestExecutionResultDao.saveOrUpdate(commandRequestExecutionResult);
-        }
-
         private synchronized void handleUnknownReturn(long userMessageID, Object aResult) {
             // figure out what the command was
             String origCommand = "unknown-command";
@@ -283,6 +263,27 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         }
     }
     
+    private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution) {
+    	
+    	commandRequestExecution.setStopTime(new Date());
+        commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
+    }
+    
+    private void saveCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status) {
+    	
+    	CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
+    	commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
+    	commandRequestExecutionResult.setCommand(command.getCommand());
+    	commandRequestExecutionResult.setCompleteTime(new Date());
+    	
+    	if (status != 0) {
+    		commandRequestExecutionResult.setErrorCode(status);
+    	}
+    	
+    	applyIdsToCommandRequestExecutionResult(command, commandRequestExecutionResult);
+        
+        commandRequestExecutionResultDao.saveOrUpdate(commandRequestExecutionResult);
+    }
 
     // EXECUTE SINGLE, WAIT (wraps single command in list then calls execute-multiple-wait)
     public CommandResultHolder execute(T command, CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException {
@@ -351,7 +352,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         final int priority = commandPriority;
         
         // create CommandRequestExection record
-        CommandRequestExecutionContextId contextId = parameterDto.getContextId();
+        final CommandRequestExecutionContextId contextId = parameterDto.getContextId();
         CommandRequestExecutionType type = parameterDto.getType();
         
         final CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
@@ -438,11 +439,15 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
 		        	
+		        	commandRequestExecutorEventLogService.connectionException(commandRequestExecution.getId(), contextId.getId());
+		        	
 		        } catch (Exception e) {
 		        	
 		        	callback.processingExceptionOccured(e.getMessage());
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
+		        	
+		        	commandRequestExecutorEventLogService.exception(commandRequestExecution.getId(), contextId.getId(), e.getMessage());
 		        	
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {
@@ -453,6 +458,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            if (completeAndRemoveListener) {
 		            	callback.complete();
 		            	messageListener.removeListener();
+		            	completeCommandRequestExecutionRecord(commandRequestExecution);
 		            }
 		            
 		            messageListener.getCommandsAreWritingLatch().countDown();
@@ -660,4 +666,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
+    
+    @Autowired
+    public void setCommandRequestExecutorEventLogService(CommandRequestExecutorEventLogService commandRequestExecutorEventLogService) {
+		this.commandRequestExecutorEventLogService = commandRequestExecutorEventLogService;
+	}
 }

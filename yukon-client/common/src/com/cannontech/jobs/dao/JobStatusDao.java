@@ -21,7 +21,7 @@ public interface JobStatusDao {
     public List<JobStatus<YukonJob>> getAllStatus(Date start, Date end);
     
     /**
-     * Get JobStatus for givin jobId. 
+     * Get most recent JobStatus for givin jobId. 
      * 
      * NOTE: Assumes valid jobId. If no status is found for jobId, assumption
      * will be made that the job has not run yet.
@@ -29,7 +29,7 @@ public interface JobStatusDao {
      * @param jobId
      * @return
      */
-    public JobStatus<YukonJob> getStatusByJobId(int jobId);
+    public JobStatus<YukonJob> findLatestStatusByJobId(int jobId);
     
     /**
      * Gets the most recent StopTime for given job whose status is 'COMPLETED'

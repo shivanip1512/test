@@ -66,7 +66,7 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
 	}
 	
 	// DESCRIPTION
-	public String generateDescription(CronExpressionTagState state) {
+	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
 		
 		String desc = "Custom, " + state.getCustomExpression();
 		return desc;

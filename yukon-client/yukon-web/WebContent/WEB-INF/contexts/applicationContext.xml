@@ -733,6 +733,8 @@
     <bean id="lastRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.LastRunJobUpdaterHandler"/>
     <bean id="nextRunJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.NextRunJobUpdaterHandler"/>
     <bean id="scheduleDescriptionJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.ScheduleDescriptionJobUpdaterHandler"/>
+    <bean id="stateJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.StateJobUpdaterHandler"/>
+    <bean id="stateTextJobUpdaterHandler" class="com.cannontech.web.updater.job.handler.StateTextJobUpdaterHandler"/>
 
     <bean id="drControlAreaBackingService" class="com.cannontech.web.updater.dr.ControlAreaBackingService"/>
     <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    

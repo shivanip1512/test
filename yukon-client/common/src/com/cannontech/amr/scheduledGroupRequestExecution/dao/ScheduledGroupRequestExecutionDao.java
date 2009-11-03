@@ -58,4 +58,10 @@ public interface ScheduledGroupRequestExecutionDao {
 	 */
 	public int getLatestRequestCountByJobId(int jobId);
 	
+	/**
+	 * Returns ScheduledGroupRequestExecutionStatus for given jobId
+	 * @param jobId
+	 * @return
+	 */
+	public ScheduledGroupRequestExecutionStatus getStatusByJobId(int jobId);
 }

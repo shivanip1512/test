@@ -5,5 +5,7 @@ public enum JobUpdaterTypeEnum {
 	LAST_RUN_DATE,
 	NEXT_RUN_DATE,
 	SCHEDULE_DESCRIPTION,
+	STATE,
+	STATE_TEXT,
 	;
 }
