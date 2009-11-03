@@ -995,7 +995,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if (preScan && appFieldsList == null)
 							appFieldsList = new ArrayList<String[]>();
 						
-						if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() >= 0) &&
+						if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) &&
                             (!applianceNameList.contains(appFields[ImportManagerUtil.IDX_APP_TYPE]))) {
 						    hwFileErrors++;
                             String[] value = hwLines.get(lineNoKey);
