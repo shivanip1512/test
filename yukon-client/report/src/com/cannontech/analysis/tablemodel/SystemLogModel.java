@@ -4,17 +4,24 @@ import java.sql.ResultSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.util.ServletUtil;
+import com.google.common.collect.Lists;
 
 /**
  * Created on Dec 15, 2003
@@ -30,6 +37,8 @@ import com.cannontech.database.db.point.SystemLog;
  */
 public class SystemLogModel extends ReportModelBase
 {
+    private LiteYukonUser liteUser;
+    
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 7;
 	
@@ -153,41 +162,84 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
+	    List<Integer> paoIds = Lists.newArrayList();
+	    for(int i : getPaoIDs()){
+	        paoIds.add(i);
+	    }
+	    List<LiteYukonPAObject> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
 		StringBuffer sql = new StringBuffer("SELECT DATETIME, SL.POINTID, PRIORITY, ACTION, SL.DESCRIPTION, USERNAME "+ 
 			" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO ");
 			sql.append(" WHERE (DATETIME > ?) AND (DATETIME <= ?)" + 
 						" AND P.POINTID = SL.POINTID " + 
 						" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 
-			if( getPaoIDs()!= null)	//null load groups means ALL groups!
+		//if LMControlLog model, let's trust the YUKONPAOBJECT.class value = 'GROUP'
+		// rather than the SYSTEMLOG.type value == 3 (LOADMANAGMENT)	SN / COREY
+		if(this instanceof LMControlLogModel) {
+		    /*
+             *  Restrict results based on PaoPermissions of LM Groups.
+             *  An empty list means let them see everything.
+             */
+		    if(getPaoIDs() != null){ /* They picked some groups */
+                if(!restrictedGroups.isEmpty()){ /* They are using paoPermissions */
+                    
+                    List<String> finalPaoIdsList = Lists.newArrayList();
+                    for(LiteYukonPAObject group : restrictedGroups){
+                        if(paoIds.contains(group.getLiteID())){
+                            finalPaoIdsList.add(String.valueOf(group.getLiteID()));
+                        }
+                    }
+                    String sqlList = SqlStatementBuilder.convertToSqlLikeList(finalPaoIdsList);
+                    sql.append("AND P.PAOBJECTID in (" + sqlList + ")");
+                    
+                } else { /* They are not using paoPermissions */
+                    
+                    sql.append(" AND P.PAOBJECTID in (" + getPaoIDs()[0] ); 
+                    for (int i = 1; i < getPaoIDs().length; i++){
+                        sql.append(", " + getPaoIDs()[i]+" ");
+                    }
+                    sql.append(") ");
+                    
+                }
+		    } else { /* They didn't pick any groups */
+		        if(!restrictedGroups.isEmpty()){ /* They are using paoPermissions */
+		            
+		            List<String> finalPaoIdsList = Lists.newArrayList();
+		            for(LiteYukonPAObject group : restrictedGroups){
+		                finalPaoIdsList.add(String.valueOf(group.getLiteID()));
+		            }
+		            String sqlList = SqlStatementBuilder.convertToSqlLikeList(finalPaoIdsList);
+                    sql.append("AND P.PAOBJECTID in (" + sqlList + ")");
+                    
+		        }
+		    }
+		    
+			sql.append(" AND PAOCLASS = '" + DeviceClasses.STRING_CLASS_GROUP + "' ");
+		} else {
+		    if( getPaoIDs()!= null)  //null load groups means ALL groups!
+            {
+                sql.append(" AND P.PAOBJECTID in (" + getPaoIDs()[0] ); 
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(", " + getPaoIDs()[i]+" ");
+                sql.append(") ");
+            }
+			if( getLogTypes() != null)
 			{
-				sql.append(" AND P.PAOBJECTID in (" + getPaoIDs()[0] ); 
-				for (int i = 1; i < getPaoIDs().length; i++)
-					sql.append(", " + getPaoIDs()[i]+" ");
-				sql.append(") ");
+				sql.append(" AND SL.TYPE IN (" + getLogTypes()[0]);
+				for (int i = 1; i < getLogTypes().length; i++)
+					sql.append(" , " + getLogTypes()[i]);
+				sql.append(" )");
 			}
-			
-			//if LMControlLog model, let's trust the YUKONPAOBJECT.class value = 'GROUP'
-			// rather than the SYSTEMLOG.type value == 3 (LOADMANAGMENT)	SN / COREY
-			if(this instanceof LMControlLogModel) {
-				sql.append(" AND PAOCLASS = '" + DeviceClasses.STRING_CLASS_GROUP + "' ");
-			}
-			else 
-			{
-				if( getLogTypes() != null)
-				{
-					sql.append(" AND SL.TYPE IN (" + getLogTypes()[0]);
-					for (int i = 1; i < getLogTypes().length; i++)
-						sql.append(" , " + getLogTypes()[i]);
-					sql.append(" )");
-				}
-				if( getPointID() != null)
-					sql.append(" AND SL.POINTID = " + getPointID().intValue());
-			}
-			sql.append(" ORDER BY DATETIME ");
-			if( getSortOrder() == DESCENDING )
-				sql.append(" DESC " );
-
+			if( getPointID() != null)
+				sql.append(" AND SL.POINTID = " + getPointID().intValue());
+		}
+		
+		sql.append(" ORDER BY DATETIME ");
+		
+		if( getSortOrder() == DESCENDING ) {
+			sql.append(" DESC " );
+		}
+		
 		return sql;
 	}
 	@Override
@@ -475,6 +527,14 @@ public class SystemLogModel extends ReportModelBase
 				else
 					setLogType(null);
 			}
+			setLiteUser(ServletUtil.getYukonUser(req));
 		}
 	}
+	
+	public LiteYukonUser getLiteUser() {
+        return liteUser;
+    }
+    public void setLiteUser(LiteYukonUser liteUser) {
+        this.liteUser = liteUser;
+    }
 }
