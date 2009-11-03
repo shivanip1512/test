@@ -311,6 +311,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         List<String[]> custFieldsList = null;
 		List<String[]> hwFieldsList = null;
 		List<String[]> appFieldsList = null;
+        int lineNo = 0;
 		
 		int[] custColIdx = new int[ CUST_COLUMNS.length ];
 		int[] hwColIdx = new int [ HW_COLUMNS.length ];
@@ -391,7 +392,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				InputStreamReader isReader = new InputStreamReader(fiStream);
 				BufferedReader reader = new BufferedReader(isReader);
 				String line = null;
-				int lineNo = 0;
+				lineNo = 0;
 				int custFileErrors = 0;
 				Integer lineNoKey;
 				
@@ -831,7 +832,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(hwFile)));
 				String line = null;
 				hwLines = new TreeMap<Integer, String[]>();
-				int lineNo = 0;
+				lineNo = 0;
 				int hwFileErrors = 0;
 				Integer lineNoKey;
 				
@@ -960,7 +961,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							String[] value = hwLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " will be removed by the import program]";
 							hwLines.put(lineNoKey, value);
-							continue;
+							addToLog(lineNoKey, value, importLog);
+	                        continue;
 						}
 					}
 					else 
@@ -1110,10 +1112,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					errorMsg += " after " + position + " is processed";
 			}
 			else {
-				CTILogger.error( e.getMessage(), e );
+                CTILogger.error( e.getMessage(), e );
+                
+				importLog.println("Error Occured");
+				String[] error = new String[3];
+				error[1] = "[line: "+lineNo+" error: "+e.getMessage()+"]";
+				custLines.put(lineNo,error);
+				addToLog(lineNo, error, importLog);
 				status = STATUS_ERROR;
-
-				errorMsg = e.getMessage();
 			}
 
             ActivityLogger.logEvent( userID, ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, errorMsg );
