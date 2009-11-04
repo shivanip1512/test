@@ -2,6 +2,7 @@ package com.cannontech.web.editor;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -204,9 +205,6 @@ public class CBControllerEditor implements ICBControllerModel {
     /* (non-Javadoc)
      * @see com.cannontech.web.editor.ICBControllerEditor#getPointList()
      */
-    /* (non-Javadoc)
-     * @see com.cannontech.web.editor.ICBControllerEditor#getPointList()
-     */
     @SuppressWarnings("unchecked")
     public TreeNode getPointList() {
         if (pointList == null) {
@@ -218,9 +216,24 @@ public class CBControllerEditor implements ICBControllerModel {
                 int deviceId = deviceCBC.getPAObjectID();
                 List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
 		
-		        TreeSet<LitePoint> statusSet = new TreeSet<LitePoint>();
-		        TreeSet<LitePoint> analogSet = new TreeSet<LitePoint>();
-		        TreeSet<LitePoint> accumSet = new TreeSet<LitePoint>();
+		        Comparator pointOffsetComparator = 
+		            new Comparator(){
+		                public int compare(Object object1, Object object2){
+		                    LitePoint point1 = (LitePoint) object1;
+		                    LitePoint point2 = (LitePoint) object2;
+		                    if(point1.getPointOffset() < point2.getPointOffset()){
+		                        return -1;
+		                    } else if(point1.getPointOffset() > point2.getPointOffset()){
+		                        return 1;
+		                    }
+		                    return 0;
+		                }
+		            };
+                
+		        //using the comparator to sort by point offset instead of default sort by LiteID
+                TreeSet<LitePoint> statusSet = new TreeSet<LitePoint>(pointOffsetComparator);
+		        TreeSet<LitePoint> analogSet = new TreeSet<LitePoint>(pointOffsetComparator);
+		        TreeSet<LitePoint> accumSet = new TreeSet<LitePoint>(pointOffsetComparator);
 
                 for (LitePoint litePoint : litePoints) {
 		            int pointType = litePoint.getPointType();
@@ -232,7 +245,7 @@ public class CBControllerEditor implements ICBControllerModel {
 		                accumSet.add(litePoint);
 		            }
 		        }
-		
+                
 		        analog = JSFTreeUtils.createTreeFromPointList(analogSet, analog);
 		        status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
 		        accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
