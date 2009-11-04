@@ -133,49 +133,4 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
 		this.paoLoadingService = paoLoadingService;
 	}
-
-    
-    
-//  public List<ReviewPoint> getReviewPoints(boolean includeOk) {
-//  	
-//  	SqlStatementBuilder sql = new SqlStatementBuilder();
-//  	sql.append("SELECT");
-//  	sql.append("ypo.PAOName,");
-//  	sql.append("rph.PointId,");
-//  	sql.append("p.PointType,");
-//  	sql.append("rph.VALUE AS val, rph.TIMESTAMP AS t,");
-//  	sql.append("prevRph.VALUE AS prevVal, prevRph.TIMESTAMP AS prevT,");
-//  	sql.append("nextRph.VALUE AS nextVal, nextRph.TIMESTAMP AS nextT");
-//  	sql.append("FROM (");
-//  	sql.append("	SELECT ROW_NUMBER() OVER(PARTITION BY pointid ORDER BY Timestamp, changeid) orderid, pointId, value, timestamp, changeId");
-//  	sql.append("	FROM RAWPOINTHISTORY");
-//  	sql.append(") rph");
-//  	sql.append("LEFT JOIN (");
-//  	sql.append("	SELECT ROW_NUMBER() OVER(PARTITION BY pointid ORDER BY Timestamp, changeid)  orderid, pointId, value, timestamp");
-//  	sql.append("	FROM RAWPOINTHISTORY");
-//  	sql.append(") prevRph on rph.POINTID = prevRph.POINTID AND rph.orderid = prevRph.orderid + 1");
-//  	sql.append("LEFT JOIN (");
-//  	sql.append("	SELECT ROW_NUMBER() OVER(PARTITION BY pointid ORDER BY Timestamp, changeid)  orderid, pointId, value, timestamp");
-//  	sql.append("	FROM RAWPOINTHISTORY");
-//  	sql.append(") nextRph on rph.POINTID = nextRph.POINTID AND rph.orderid = nextRph.orderid - 1");
-//  	sql.append("JOIN Point p ON (rph.POINTID = p.POINTID)");
-//  	sql.append("JOIN RphTag rt ON (rph.CHANGEID = rt.ChangeId)");
-//  	sql.append("JOIN YukonPAObject ypo ON (p.PAObjectID = ypo.PAObjectID)");
-//  	
-//  	if (!includeOk) {
-//  		
-//  		sql.append("WHERE rt.ChangeId NOT IN (");
-//      	sql.append("	SELECT rt2.ChangeId FROM RphTag rt2 ");
-//      	sql.append("	WHERE rt2.TagName ").eq(RphTag.OK.name());
-//      	sql.append(")");
-//      	sql.append("AND");
-//      	
-//  	} else {
-//  		sql.append("WHERE");
-//  	}
-//  	
-//  	sql.append("rt.TagName ").neq(RphTag.OK.name());
-//  	
-//  	return yukonJdbcTemplate.query(sql, new ReviewPointRowMapper());
-//  }
 }

@@ -220,10 +220,6 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public List<PointValueQualityHolder> getAdjacentPointValues(final int changeId, int ... offsets) throws SQLException {
     	
-    	if (changeId == 5795738) {
-    		System.out.print(true);
-    	}
-    	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT rph.*, p.PointType");
     	sql.append("FROM RawPointHistory rph");
