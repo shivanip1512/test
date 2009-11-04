@@ -97,7 +97,7 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
 	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
 		
 		String dateStr = dateFormattingService.format(state.getDate(), DateFormatEnum.DATE, userContext);
-		String desc = "One-time, " + dateStr + ", at " + getTimeDescription(state);
+		String desc = "One-time, " + dateStr + ", at " + getTimeDescription(state, userContext);
 		return desc;
 	}
 }

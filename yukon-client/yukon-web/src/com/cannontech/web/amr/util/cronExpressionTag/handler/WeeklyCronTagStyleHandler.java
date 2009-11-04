@@ -121,15 +121,15 @@ public class WeeklyCronTagStyleHandler extends CronTagStyleHandlerBase {
 		}
 		
 		if (days == 1) {
-			desc += daysFulls.get(0) + ", at " + getTimeDescription(state);
+			desc += daysFulls.get(0) + ", at " + getTimeDescription(state, userContext);
 		} else if (days == 2) {
-			desc += daysFulls.get(0) + " and " + daysFulls.get(1) + ", at " + getTimeDescription(state);
+			desc += daysFulls.get(0) + " and " + daysFulls.get(1) + ", at " + getTimeDescription(state, userContext);
 		} else if (days > 2) {
 			
 			List<String> allButLast = daysAbbrs.subList(0, daysAbbrs.size() - 1);
 			String last = daysAbbrs.get(daysAbbrs.size() - 1);
 			
-			desc += StringUtils.join(allButLast, ", ") + " and " + last + ", at " + getTimeDescription(state);
+			desc += StringUtils.join(allButLast, ", ") + " and " + last + ", at " + getTimeDescription(state, userContext);
 		}
 		
 		return desc;

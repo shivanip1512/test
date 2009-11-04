@@ -113,7 +113,7 @@ public class MonthlyCronTagStyleHandler extends CronTagStyleHandlerBase {
 			desc += "Monthly, on the " + dayX + CtiUtilities.getOrdinalFor(dayX);
 		}
 		
-		desc += ", at " + getTimeDescription(state);
+		desc += ", at " + getTimeDescription(state, userContext);
 		
 		return desc;
 	}

@@ -1,13 +1,19 @@
 package com.cannontech.web.amr.util.cronExpressionTag.handler;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExprTagAmPmOptionEnum;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 
@@ -121,15 +127,27 @@ public abstract class CronTagStyleHandlerBase implements CronTagStyleHandler {
 		return false;
 	}
 	
-	protected String getTimeDescription(CronExpressionTagState state) {
+	protected String getTimeDescription(CronExpressionTagState state, YukonUserContext yukonUserContext) {
 		
+		int hour = state.getHour();
 		int min = state.getMinute();
-		String minStr = String.valueOf(min);
-		if (min < 10) {
-			minStr = "0" + minStr;
+		CronExprTagAmPmOptionEnum cronExpressionAmPm = state.getCronExpressionAmPm();
+		if (cronExpressionAmPm.equals(CronExprTagAmPmOptionEnum.PM) && hour < 12) {
+			hour += 12;
+		} else if (cronExpressionAmPm.equals(CronExprTagAmPmOptionEnum.AM) && hour == 12) {
+			hour = 0;
 		}
 		
-		String timeDesc = state.getHour() + ":" + minStr + " " + state.getCronExpressionAmPm().name();
+		Date date = state.getDate();
+		if (date == null) {
+			date = new Date();
+		}
+		date = DateUtils.truncate(date, Calendar.DATE);
+		date = DateUtils.addHours(date, hour);
+		date = DateUtils.addMinutes(date, min);
+		
+		String timeDesc = dateFormattingService.format(date, DateFormatEnum.TIME, yukonUserContext);
+		
 		return timeDesc;
 	}
 	
