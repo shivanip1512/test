@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/28/2009 1:10:38 PM                        */
+/* Created on:     11/4/2009 11:40:54 AM                        */
 /*==============================================================*/
 
 
@@ -2040,6 +2040,13 @@ if exists (select 1
            where  id = object_id('DynamicCCMonitorPointResponse')
             and   type = 'U')
    drop table DynamicCCMonitorPointResponse
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicCCOriginalParent')
+            and   type = 'U')
+   drop table DynamicCCOriginalParent
 go
 
 if exists (select 1
@@ -7226,8 +7233,6 @@ create table DynamicCCCapBank (
    LastStatusChangeTime datetime             not null,
    TagsControlStatus    numeric              not null,
    CTITimeStamp         datetime             not null,
-   OriginalFeederID     numeric              not null,
-   OriginalSwitchingOrder numeric              not null,
    AssumedStartVerificationStatus numeric              not null,
    PrevVerificationControlStatus numeric              not null,
    VerificationControlIndex numeric              not null,
@@ -7313,6 +7318,19 @@ create table DynamicCCMonitorPointResponse (
    PreOpValue           float                not null,
    Delta                float                not null,
    constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
+)
+go
+
+/*==============================================================*/
+/* Table: DynamicCCOriginalParent                               */
+/*==============================================================*/
+create table DynamicCCOriginalParent (
+   PAObjectId           numeric              not null,
+   OriginalParentId     numeric              not null,
+   OriginalSwitchingOrder float                not null,
+   OriginalCloseOrder   float                not null,
+   OriginalTripOrder    float                not null,
+   constraint PK_DynCCOrigParent primary key nonclustered (PAObjectId)
 )
 go
 
@@ -14459,6 +14477,11 @@ go
 alter table DynamicCCMonitorPointResponse
    add constraint FK_DYN_CCMONPTRSP_PTID foreign key (PointID)
       references POINT (POINTID)
+go
+
+alter table DynamicCCOriginalParent
+   add constraint FK_DynCCOrigParent_YukonPAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
 go
 
 alter table DynamicCCSubstationBus

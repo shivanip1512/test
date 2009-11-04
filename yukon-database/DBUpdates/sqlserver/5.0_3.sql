@@ -84,6 +84,40 @@ SET DefaultValue = 'true'
 WHERE RolePropertyID = -10814;
 /* End YUK-6820 */
 
+/* Start YUK-7993 */
+CREATE TABLE DynamicCCOriginalParent (
+   PAObjectId           NUMERIC              NOT NULL,
+   OriginalParentId     NUMERIC              NOT NULL,
+   OriginalSwitchingOrder FLOAT                NOT NULL,
+   OriginalCloseOrder   FLOAT                NOT NULL,
+   OriginalTripOrder    FLOAT                NOT NULL,
+   CONSTRAINT PK_DynCCOrigParent PRIMARY KEY (PAObjectId)
+);
+GO
+
+ALTER TABLE DynamicCCOriginalParent
+   ADD CONSTRAINT FK_DynCCOrigParent_YukonPAO FOREIGN KEY (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId);
+GO
+
+INSERT INTO DynamicCCOriginalParent
+SELECT DeviceId, 0, 0, 0, 0
+FROM CapBank;
+
+INSERT INTO DynamicCCOriginalParent
+SELECT FeederId, 0, 0, 0, 0
+FROM CapControlFeeder;
+
+UPDATE DynamicCCOriginalParent
+SET OriginalParentId = DCCCB.OriginalFeederId,
+    OriginalSwitchingOrder = DCCCB.OriginalSwitchingOrder
+FROM DynamicCCOriginalparent DCCOP, DynamicCCCapBank DCCCB
+WHERE DCCCB.CapBankId = DCCOP.PAObjectId;
+
+ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalFeederId;
+ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalSwitchingOrder;
+/* End YUK-7993 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
