@@ -889,10 +889,13 @@ public class YC extends Observable implements MessageListener
 				for (int i = 0; i < getLiteDeviceTypeCommandsVector().size(); i++)
 				{
 					LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getLiteDeviceTypeCommandsVector().get(i);
-					LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
-					if (lc.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
-						lc.getCommand().trim().equalsIgnoreCase(friendlyCommand))
-						return lc.getCommand();
+					if (ldtc.isVisible()) {
+    					LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
+    					if (lc.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
+    						lc.getCommand().trim().equalsIgnoreCase(friendlyCommand)) {
+    						return lc.getCommand();
+    					}
+					}
 				}
 			}				
 		}
