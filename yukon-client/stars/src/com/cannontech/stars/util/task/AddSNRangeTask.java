@@ -19,6 +19,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -106,11 +107,17 @@ public class AddSNRangeTask extends TimeConsumingTask {
 					YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
 					devTypeID);
         StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-        List<LiteStarsLMHardware> existingHardware = starsSearchDao.searchLMHardwareBySerialNumberRange(
-											        		snFrom, 
-											        		snTo, 
-											        		deviceTypeDefinitionId, 
-											        		Collections.singletonList(energyCompany));
+        List<LiteStarsLMHardware> existingHardware = null;
+        try {
+            existingHardware = starsSearchDao.searchLMHardwareBySerialNumberRange(snFrom,
+                                                                                  snTo,
+                                                                                  deviceTypeDefinitionId,
+                                                                                  Collections.singletonList(energyCompany));           
+        } catch (PersistenceException e){
+            status = STATUS_ERROR;
+            errorMsg = e.getMessage();
+            return;
+        }
         
         Map<String, LiteStarsLMHardware> foundMap = new HashMap<String, LiteStarsLMHardware>();
         for(LiteStarsLMHardware hardware : existingHardware) {

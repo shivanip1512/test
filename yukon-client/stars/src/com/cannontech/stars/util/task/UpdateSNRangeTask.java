@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -111,7 +112,14 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getYukonDefID();
-        List<LiteStarsLMHardware> hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
+        List<LiteStarsLMHardware> hwList = null;
+        try {
+            hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
+        } catch (PersistenceException e){
+            status = STATUS_ERROR;
+            errorMsg = e.getMessage();
+            return;
+        }        
 		
 		numToBeUpdated = hwList.size();
 		if (numToBeUpdated == 0) {

@@ -126,7 +126,7 @@ function goCheckAgain(form)
                             <tr>        
                                 <td>
                                     <div align="left"><c:out value="${filterEntry.filterText}"/></div>
-                                <td>
+                                </td>
                             </tr>
                         </c:forEach>
                         </table>
@@ -143,16 +143,25 @@ function goCheckAgain(form)
                         </table>
                     </c:otherwise> 
                 </c:choose>
-                
-                <table width="80%" border="0" cellspacing="0" cellpadding="1">
-                  <tr> 
-                    <td class="MainText" align="center">Check the radio button 
-                      of the hardware you want to select, then click Select.</td>
-                  </tr>
-                </table>
-              </form>
-              <%= inventoryBean.getHTML(request) %> 
-              <p>&nbsp; </p>
+              </form>  
+              <c:set target="${inventoryBean}" property="internalRequest" value="${pageContext.request}" />
+              <table width="80%" border="0" cellspacing="0" cellpadding="1" class="TableCell">
+                <tr> 
+                  <td class="HeaderCell" align="center">
+                    <c:out value="${inventoryBean.filterInventoryHTML}"/></td>
+                </tr>
+              </table>
+              <c:if test="${inventoryBean.numberOfRecords > 0}">                              
+	              <table width="80%" border="0" cellspacing="0" cellpadding="1">
+	                <tr> 
+	                  <td class="MainText" align="center">Check the radio button 
+	                    of the hardware you want to select, then click Select.</td>
+	                </tr>
+	              </table>
+	              
+	              <%= inventoryBean.getHTML(request) %> 
+	              <p>&nbsp; </p>
+              </c:if>
             </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>

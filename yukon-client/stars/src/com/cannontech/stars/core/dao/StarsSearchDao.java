@@ -2,6 +2,7 @@ package com.cannontech.stars.core.dao;
 
 import java.util.List;
 
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -113,12 +114,13 @@ public interface StarsSearchDao {
 	 * @param deviceTypeDefinitionId - Type of device to look for
 	 * @param energyCompanyList - Energy companies to look for device in
 	 * @return List of hardware found
+	 * @throws PersistenceException
 	 */
 	public List<LiteStarsLMHardware> searchLMHardwareBySerialNumberRange(
 			long startSerialNumber, 
 			long endSerialNumber, 
 			int deviceTypeDefinitionId, 
-			List<LiteStarsEnergyCompany> energyCompanyList);
+			List<LiteStarsEnergyCompany> energyCompanyList) throws PersistenceException;
 	
 	
 }

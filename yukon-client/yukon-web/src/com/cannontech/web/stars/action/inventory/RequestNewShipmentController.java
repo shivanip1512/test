@@ -19,6 +19,7 @@ public class RequestNewShipmentController extends StarsInventoryActionController
     	
         PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
         pBean.setCurrentShipment(new Shipment());
+        pBean.setCurrentSerialNumberError(false);
         
         String redirect = request.getContextPath() + "/operator/Hardware/Shipment.jsp";
     	response.sendRedirect(redirect);

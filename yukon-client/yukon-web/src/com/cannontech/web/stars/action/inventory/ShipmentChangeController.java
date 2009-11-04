@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -150,18 +151,26 @@ public class ShipmentChangeController extends StarsInventoryActionController {
                 tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialEnd, serialEnd));
                 tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, serialStart));
                 iBean.setFilterByList(tempList);
-                
-                List<LiteInventoryBase> found = iBean.getInventoryList(request);
-                
-                pBean.setAllowSerialNumberInput(true);
+                List<LiteInventoryBase> found = null;
+                String errMsg = null;
+                try {
+                    found = iBean.getInventoryList(request);
+                } catch (PersistenceException e){
+                    errMsg = e.getMessage();
+                }
                 if(found == null)
                 {
-                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Inventory was unable to determine if serial range is pre-existing.  It is unsafe to create this range.");
+                    if (errMsg == null) {
+                        errMsg = "Inventory was unable to determine if serial range is pre-existing.  It is unsafe to create this range.";
+                    }
+                    pBean.setCurrentSerialNumberError(true);
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errMsg);
                     redirect = request.getContextPath() + "/operator/Hardware/Shipment.jsp";
                 }
                 //found some, better not create this range
                 else if(found.size() > 0)
                 {
+                    pBean.setCurrentSerialNumberError(true);
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The specified serial range includes switches already in inventory.  Unable to create new range.");
                     redirect = request.getContextPath() + "/operator/Hardware/Shipment.jsp";
                 }
@@ -169,7 +178,6 @@ public class ShipmentChangeController extends StarsInventoryActionController {
                 {
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Actual serial range has not yet been created in inventory.  Please verify the following information and click submit.");
                     redirect = request.getContextPath() + "/operator/Hardware/ShipmentSNRangeAdd.jsp";
-                    pBean.setAllowSerialNumberInput(false);
                 }
                     
             }

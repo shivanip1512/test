@@ -3,10 +3,13 @@ package com.cannontech.stars.core.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -17,6 +20,7 @@ import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.web.bean.InventoryBean;
 
 public class StarsSearchDaoImpl implements StarsSearchDao {
     private static final ParameterizedRowMapper<LiteInventoryBase> inventoryRowMapper =
@@ -306,7 +310,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	public List<LiteStarsLMHardware> searchLMHardwareBySerialNumberRange(
 			long startSerialNumber, long endSerialNumber,
 			int deviceTypeDefinitionId,
-			List<LiteStarsEnergyCompany> energyCompanyList) {
+			List<LiteStarsEnergyCompany> energyCompanyList) throws PersistenceException {
 
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -329,13 +333,19 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		sql.append(ecIdList);
 		sql.append(")");
 		
-		
-		List<LiteStarsLMHardware> hardwareList = jdbcTemplate.query(
-				sql.toString(), 
-				new LiteStarsLMHardwareRowMapper(),
-				deviceTypeDefinitionId,
-				startSerialNumber,
-				endSerialNumber);
+		List<LiteStarsLMHardware> hardwareList = null;
+        try {
+            hardwareList = jdbcTemplate.query(
+                                      sql.toString(), 
+                                      new LiteStarsLMHardwareRowMapper(),
+                                      deviceTypeDefinitionId,
+                                      startSerialNumber,
+                                      endSerialNumber);
+        } catch (BadSqlGrammarException e){
+            throw new PersistenceException(InventoryBean.INVENTORY_SQL_ERROR_FUNCTION, e);
+        } catch (DataIntegrityViolationException e) {
+            throw new PersistenceException(InventoryBean.INVENTORY_SQL_ERROR_FUNCTION, e);
+        }		
 		
 		return hardwareList;
 		

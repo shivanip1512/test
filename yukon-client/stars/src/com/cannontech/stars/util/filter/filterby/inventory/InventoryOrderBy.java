@@ -11,7 +11,7 @@ public enum InventoryOrderBy implements OrderBy {
     
     SERIAL_NUMBER(
         YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO,
-        "CAST(lmhb.ManufacturerSerialNumber AS NUMERIC)"),
+        "lmhb.ManufacturerSerialNumber"),
     
     INSTALL_DATE(
         YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE,

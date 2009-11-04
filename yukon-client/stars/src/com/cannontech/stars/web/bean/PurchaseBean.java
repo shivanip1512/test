@@ -46,7 +46,7 @@ public class PurchaseBean
     private String currentOtherCharges;
     private String currentTotal;
     private String currentAmountPaid;
-    private boolean allowSerialNumberInput;
+    private boolean currentSerialNumberError;
     private LiteStarsEnergyCompany serialNumberMember; 
     private Warehouse serialNumberWarehouse;
     private YukonListEntry serialNumberDeviceState;
@@ -260,15 +260,15 @@ public class PurchaseBean
 
     public boolean isAllowSerialNumberInput() 
     {
-        if(currentShipment.getShipmentID() == null || currentShipment.getSerialNumberStart().length() < 2 || currentShipment.getSerialNumberEnd().length() < 2)
-            allowSerialNumberInput = true;
-
-        return allowSerialNumberInput;
+        return (currentShipment.getShipmentID() == null || currentSerialNumberError) ? true : false;
     }
-    
-    public void setAllowSerialNumberInput(boolean allow)
-    {
-        allowSerialNumberInput = allow;
+
+    public boolean isCurrentSerialNumberError() {
+        return currentSerialNumberError;
+    }
+
+    public void setCurrentSerialNumberError(boolean currentSerialNumberError) {
+        this.currentSerialNumberError = currentSerialNumberError;
     }
 
     public LiteStarsEnergyCompany getSerialNumberMember() {

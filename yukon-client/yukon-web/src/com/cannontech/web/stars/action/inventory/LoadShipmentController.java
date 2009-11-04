@@ -22,6 +22,7 @@ public class LoadShipmentController extends StarsInventoryActionController {
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
     	
         PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        pBean.setCurrentSerialNumberError(false);
         List<Shipment> shipments = pBean.getAvailableShipments();
         Integer idToLoad = ServletRequestUtils.getIntParameter(request, "shipments");
         

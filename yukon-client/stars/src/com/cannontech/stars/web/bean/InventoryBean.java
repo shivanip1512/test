@@ -7,10 +7,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.BadSqlGrammarException;
+
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
@@ -67,9 +71,11 @@ public class InventoryBean {
     private final int MAX_ALLOW_DISPLAY = 500;
 	
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	public static final String INVENTORY_SQL_ERROR_FUNCTION = "SQL error occurred, you may not use this function if database has non-numeric serial numbers";
+    public static final String INVENTORY_SQL_ERROR_FILTER = "SQL error occurred, you may not use Serial number filters if database has non-numeric serial numbers";
     
     private HttpServletRequest internalRequest;
-    private String numberOfRecords = "0";
+    private int numberOfRecords = 0;
     private boolean viewResults = false;
     private boolean overHardwareDisplayLimit = false;
     private boolean checkInvenForAccount = false;
@@ -198,15 +204,25 @@ public class InventoryBean {
 		SimpleCollection<LiteInventoryBase> simpleCollection = getSimpleCollection(showEnergyCompany);
 		
 		String errorMsg = null;
-        int numberOfHardware = simpleCollection.getCount();
-        
-        if (numberOfHardware == 0) {
-            errorMsg = "No hardware found.";
+        int numberOfHardware = 0;
+        try {
+            numberOfHardware = simpleCollection.getCount();
+        } catch (BadSqlGrammarException e){
+            errorMsg = INVENTORY_SQL_ERROR_FILTER;
+        } catch (DataIntegrityViolationException e) {
+            errorMsg = INVENTORY_SQL_ERROR_FILTER;
+        }
+        numberOfRecords = numberOfHardware;
+        if (numberOfHardware == 0 && errorMsg == null) {
+            errorMsg = "No matching hardware records found";
         }
         
-        if(style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY)
-        {
-            return Integer.toString(numberOfHardware);
+        if(style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY) {
+            String hwRecordsMsg = errorMsg;
+            if (errorMsg == null) {
+                hwRecordsMsg = Integer.toString(numberOfHardware) + " hardware records found";
+            }
+            return hwRecordsMsg;
         }
 
         StringBuilder htmlBuf = new StringBuilder();
@@ -730,13 +746,12 @@ public class InventoryBean {
         setHtmlStyle(HTML_STYLE_FILTERED_INVENTORY_SUMMARY);
         
         setFilterByList((List) internalRequest.getSession().getAttribute(ServletUtils.FILTER_INVEN_LIST));
-        String hardwareNum = getHTML(internalRequest);
+        String hwRecordsMessage = getHTML(internalRequest);
         setHtmlStyle(HTML_STYLE_LIST_INVENTORY);
-        numberOfRecords = hardwareNum;
-        return hardwareNum;
+        return hwRecordsMessage;
     }
     
-    public String getNumberOfRecords()
+    public int getNumberOfRecords()
     {
         return numberOfRecords;
     }
@@ -760,7 +775,7 @@ public class InventoryBean {
         viewResults = truth;
     }
 
-    public void setNumberOfRecords(String numberOfRecords) {
+    public void setNumberOfRecords(int numberOfRecords) {
         this.numberOfRecords = numberOfRecords;
     }
 
@@ -769,12 +784,19 @@ public class InventoryBean {
     }
     
     public List<LiteInventoryBase> getInventoryList(HttpServletRequest request) 
-        throws WebClientException {
+        throws WebClientException, PersistenceException {
         
         boolean showEnergyCompany = isShowEnergyCompany(request);
         SimpleCollection<LiteInventoryBase> simpleCollection = getSimpleCollection(showEnergyCompany);
         
-        List<LiteInventoryBase> list = simpleCollection.getList();
+        List<LiteInventoryBase> list;
+        try {
+            list = simpleCollection.getList();
+        } catch (BadSqlGrammarException e){
+            throw new PersistenceException(INVENTORY_SQL_ERROR_FUNCTION, e);
+        } catch (DataIntegrityViolationException e) {
+            throw new PersistenceException(INVENTORY_SQL_ERROR_FUNCTION, e);
+        }        
         return list;
     }
     
@@ -784,7 +806,7 @@ public class InventoryBean {
 
     public boolean isOverHardwareDisplayLimit() 
     {
-        overHardwareDisplayLimit = Integer.parseInt(numberOfRecords) > MAX_ALLOW_DISPLAY;
+        overHardwareDisplayLimit = numberOfRecords > MAX_ALLOW_DISPLAY;
         return overHardwareDisplayLimit;
     }
 

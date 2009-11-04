@@ -125,39 +125,40 @@ function applyOrdering(form)
 							  	<tr>
 									<td width="100%" class="headeremphasis"> INVENTORY RESULTS: 
 										<c:out value="${inventoryBean.filterInventoryHTML}"/>
-										hardware records returned.
 									</td>
 								</tr>
 				 			</table>
-							 <table width="80%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
-							 	<tr>
-									<td width="100" align="right"> 
-                                        <c:if test="${inventoryBean.viewResults}">
-                                            <input type="button" name="ViewSet" value="Hide All Results" onclick="viewAll(this.form)">
-                                        </c:if>
-                                        <c:if test="${!inventoryBean.viewResults}">
-                                            <c:choose>
-        					                   	<c:when test="${inventoryBean.overHardwareDisplayLimit}">
-                                                    <input type="button" name="ViewSet" value="View All Results" onclick="viewDisabled(this.form)">
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <input type="button" name="ViewSet" value="View All Results" onclick="viewAll(this.form)">
-                                                </c:otherwise>
-                                            </c:choose>
-                                         </c:if>                    
-					               	</td>
-					               	<td width="200"> 
-					                   	<input type="button" name="Manipulate" value="Manipulate Results" onclick="manipulateAll(this.form)">
-					               	</td>
-					               	<td width="100"> 
-					               	</td>
-					               	<td width="200"> 
-					                   	<div align="right">
-					                   		<input type="button" name="LMConfigure" value="LM Configure" onclick="configureAll(this.form)">
-					               		</div>
-					               	</td>
-				                </tr>
-							</table>
+				 			<c:if test="${inventoryBean.numberOfRecords > 0}">
+								 <table width="80%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
+								 	<tr>
+										<td width="100" align="right"> 
+	                                        <c:if test="${inventoryBean.viewResults}">
+	                                            <input type="button" name="ViewSet" value="Hide All Results" onclick="viewAll(this.form)">
+	                                        </c:if>
+	                                        <c:if test="${!inventoryBean.viewResults}">
+	                                            <c:choose>
+	        					                   	<c:when test="${inventoryBean.overHardwareDisplayLimit}">
+	                                                    <input type="button" name="ViewSet" value="View All Results" onclick="viewDisabled(this.form)">
+	                                                </c:when>
+	                                                <c:otherwise>
+	                                                    <input type="button" name="ViewSet" value="View All Results" onclick="viewAll(this.form)">
+	                                                </c:otherwise>
+	                                            </c:choose>
+	                                         </c:if>                    
+						               	</td>
+						               	<td width="200"> 
+						                   	<input type="button" name="Manipulate" value="Manipulate Results" onclick="manipulateAll(this.form)">
+						               	</td>
+						               	<td width="100"> 
+						               	</td>
+						               	<td width="200"> 
+						                   	<div align="right">
+						                   		<input type="button" name="LMConfigure" value="LM Configure" onclick="configureAll(this.form)">
+						               		</div>
+						               	</td>
+					                </tr>
+								</table>
+							</c:if>
 				      		<br>
 				      		<c:if test="${inventoryBean.viewResults}">
 					      		<table width="80%" border="0" cellspacing="0" cellpadding="0">

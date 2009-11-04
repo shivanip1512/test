@@ -24,9 +24,9 @@ public class ShipmentSNRangeAddController extends StarsInventoryActionController
             final HttpSession session, final StarsYukonUser user, 
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
     	
-    	String redirect = this.getRedirect(request);
-    	String referer = this.getReferer(request);
-    	
+    	String redirect = request.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+    	String referer = request.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+
     	PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
         Shipment shipment = pBean.getCurrentShipment();
         
@@ -60,6 +60,7 @@ public class ShipmentSNRangeAddController extends StarsInventoryActionController
                 {
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Database error.  Serial range was added to inventory, but the shipment serial range fields could not be saved.");
                 }
+                response.sendRedirect(redirect);
                 return;
             }
             
@@ -67,12 +68,10 @@ public class ShipmentSNRangeAddController extends StarsInventoryActionController
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
                 ProgressChecker.removeTask( id );
                 redirect = referer;
+                response.sendRedirect(redirect);
                 return;
             }
         }
-        
-        referer = request.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
-        redirect = request.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
         
         session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
         session.setAttribute(ServletUtils.ATT_REFERRER, referer);

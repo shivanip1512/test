@@ -15,6 +15,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -103,40 +104,45 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& energyCompany.hasChildEnergyCompanies();
 		hwsToConfig = new ArrayList();
-		
-		for (int i = 0; i < invToConfig.size(); i++) {
-			if (invToConfig.get(i) instanceof Long[]) {
-			    Long[] snRange = (Long[]) invToConfig.get(i);
-				int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(snRange[0].intValue()).getYukonDefID();
-				
-				if (!searchMembers) {
-                    List<LiteStarsLMHardware> hwsInRange = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );
-					for (int j = 0; j < hwsInRange.size(); j++) {
-						if (!hwsToConfig.contains( hwsInRange.get(j) ))
-							hwsToConfig.add( hwsInRange.get(j) );
-					}
-				}
-				else {
-                    List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-					for (int j = 0; j < descendants.size(); j++) {
-						LiteStarsEnergyCompany company = descendants.get(j);
-                        List<LiteStarsLMHardware> hwsInRange = InventoryUtils.getLMHardwareInRange( company, devTypeDefID, snRange[1], snRange[2] );
-						for (int k = 0; k < hwsInRange.size(); k++) {
-							if (!isHardwareContained( hwsToConfig, hwsInRange.get(k) ))
-								hwsToConfig.add( new Pair(hwsInRange.get(k), company) );
-						}
-					}
-				}
-			}
-			else if (invToConfig.get(i) instanceof Pair) {
-				if (!isHardwareContained( hwsToConfig, (LiteStarsLMHardware)((Pair)invToConfig.get(i)).getFirst() ))
-					hwsToConfig.add( invToConfig.get(i) );
-			}
-			else {
-				if (!hwsToConfig.contains( invToConfig.get(i) ))
-					hwsToConfig.add( invToConfig.get(i) );
-			}
-		}
+		try {
+		    for (int i = 0; i < invToConfig.size(); i++) {
+		        if (invToConfig.get(i) instanceof Long[]) {
+		            Long[] snRange = (Long[]) invToConfig.get(i);
+		            int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(snRange[0].intValue()).getYukonDefID();
+
+		            if (!searchMembers) {
+		                List<LiteStarsLMHardware> hwsInRange = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );
+		                for (int j = 0; j < hwsInRange.size(); j++) {
+		                    if (!hwsToConfig.contains( hwsInRange.get(j) ))
+		                        hwsToConfig.add( hwsInRange.get(j) );
+		                }
+		            }
+		            else {
+		                List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
+		                for (int j = 0; j < descendants.size(); j++) {
+		                    LiteStarsEnergyCompany company = descendants.get(j);
+		                    List<LiteStarsLMHardware> hwsInRange = InventoryUtils.getLMHardwareInRange( company, devTypeDefID, snRange[1], snRange[2] );
+		                    for (int k = 0; k < hwsInRange.size(); k++) {
+		                        if (!isHardwareContained( hwsToConfig, hwsInRange.get(k) ))
+		                            hwsToConfig.add( new Pair(hwsInRange.get(k), company) );
+		                    }
+		                }
+		            }
+		        }
+		        else if (invToConfig.get(i) instanceof Pair) {
+		            if (!isHardwareContained( hwsToConfig, (LiteStarsLMHardware)((Pair)invToConfig.get(i)).getFirst() ))
+		                hwsToConfig.add( invToConfig.get(i) );
+		        }
+		        else {
+		            if (!hwsToConfig.contains( invToConfig.get(i) ))
+		                hwsToConfig.add( invToConfig.get(i) );
+		        }
+		    }
+        } catch (PersistenceException e){
+            status = STATUS_ERROR;
+            errorMsg = e.getMessage();
+            return;
+        }
 		
 		numToBeConfigured = hwsToConfig.size();
 		if (numToBeConfigured == 0) {

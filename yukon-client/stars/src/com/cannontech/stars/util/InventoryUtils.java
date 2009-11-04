@@ -15,6 +15,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.spring.YukonSpringHook;
@@ -146,7 +147,8 @@ public class InventoryUtils {
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
 	}
 	
-	public static List<LiteStarsLMHardware> getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, long snFrom, long snTo) {
+	public static List<LiteStarsLMHardware> getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, long snFrom, long snTo)
+	    throws PersistenceException {
 		
 		StarsSearchDao starsSearchDao = 
 			YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);

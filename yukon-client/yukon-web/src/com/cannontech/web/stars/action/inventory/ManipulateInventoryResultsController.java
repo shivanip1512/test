@@ -25,7 +25,7 @@ public class ManipulateInventoryResultsController extends StarsInventoryActionCo
         List<LiteInventoryBase> selectedInventoryList = Collections.unmodifiableList(inventoryList);
 
         inventoryBean.setInventoryList(selectedInventoryList);
-        inventoryBean.setNumberOfRecords(String.valueOf((inventoryList.size())));
+        inventoryBean.setNumberOfRecords(inventoryList.size());
 
         String redirect = request.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
         response.sendRedirect(redirect);
