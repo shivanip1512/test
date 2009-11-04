@@ -3,39 +3,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 
-<c:url var="pencil" value="/WebConfig/yukon/Icons/pencil.gif"/>
-<c:url var="pencilOver" value="/WebConfig/yukon/Icons/pencil_over.gif"/>
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
-<c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
-<c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
-<c:url var="lightning" value="/WebConfig/yukon/Icons/lightning_go.gif"/>
-<c:url var="lightningOver" value="/WebConfig/yukon/Icons/lightning_go_over.gif"/>
-<c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
-<c:url var="placeholder" value="/WebConfig/yukon/Icons/placeholder.gif"/>
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
+<c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
+<c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
 <cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.noMonitorsSetup"/>
-<cti:msg var="nameText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.name"/>
-<cti:msg var="violationsText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.violations"/>
-<cti:msg var="monitoringText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.monitoring"/>
-<cti:msg var="statusText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.status"/>
-<cti:msg var="deleteText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.delete"/>
+<cti:msg var="nameHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.name"/>
+<cti:msg var="violationsHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.violations"/>
+<cti:msg var="monitoringHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.monitoring"/>
+<cti:msg var="enabledHeaderText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.enabled"/>
 <cti:msg var="createNewText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.createNew"/>
-<cti:msg var="deleteConfirmText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.deleteConfirm"/>
 <cti:msg var="editActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.edit"/>
 <cti:msg var="tamperFlagProcessingActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing"/>
-<cti:msg var="deleteActionTitleText" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.delete"/>
-<cti:msg var="infoLink" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.infoLink"/>
-<cti:msg var="title" key="yukon.web.modules.amr.tamperFlagMonitorsWidget.title"/>
-
-<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}">
-	${infoLink}
-</ct:widgetActionPopup>
+<cti:msg var="enableText" key="yukon.common.enable"/> 
+<cti:msg var="disableText" key="yukon.common.disable"/> 
 
 <%-- CREATE NEW TAMPERFLAG MONITOR FORM --%>
 <form id="createNewTamperFlagMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/tamperFlagProcessing/edit" method="get">
@@ -53,13 +36,11 @@
 <table class="compactResultsTable">
 	
 	<tr>
-		<th style="width:70px;">&nbsp;</th>
-		<th>${nameText}</th>
-		<th style="text-align:right;">${violationsText}</th>
-		<th style="text-align:right;">${monitoringText}</th>
-		<th style="text-align:center;width:80px;">${statusText}</th>
-		<th style="text-align:right;width:20px;"></th>
-		
+		<th style="width:20px;">&nbsp;</th>
+		<th>${nameHeaderText}</th>
+		<th style="text-align:right;">${violationsHeaderText}</th>
+		<th style="text-align:right;">${monitoringHeaderText}</th>
+		<th style="text-align:right;width:80px;">${enabledHeaderText}</th>
 	</tr>
 
 	<c:forEach var="monitor" items="${monitors}">
@@ -77,16 +58,6 @@
 			<%-- action icons --%>
 			<td>
 			
-				<%-- edit monitor --%>
-				<cti:url var="viewTamperFlagMonitorEditorUrl" value="/spring/amr/tamperFlagProcessing/edit">
-					<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
-				</cti:url>
-				
-				<a href="${viewTamperFlagMonitorEditorUrl}" title="${editActionTitleText} (${monitorName})" style="text-decoration:none;">
-					<img src="${pencil}" onmouseover="javascript:this.src='${pencilOver}'" onmouseout="javascript:this.src='${pencil}'">
-				</a>
-				&nbsp;&nbsp;
-				
 				<%-- monitor widget --%>
 				<cti:url var="viewTamperFlagProcessingUrl" value="/spring/amr/tamperFlagProcessing/process/process">
 					<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
@@ -99,7 +70,13 @@
 			</td>
 			
 			<%-- monitor name --%>
-			<td class="${tdClass}">${monitorName}</td>
+			<cti:url var="viewTamperFlagMonitorEditorUrl" value="/spring/amr/tamperFlagProcessing/edit">
+				<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
+			</cti:url>
+				
+			<td class="${tdClass}">
+				<a href="${viewTamperFlagMonitorEditorUrl}" title="${editActionTitleText}">${monitorName}</a>
+			</td>
 			
 			<%-- violations count --%>
 			<td class="${tdClass}" style="text-align:right;">
@@ -111,12 +88,16 @@
 				<cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${monitorId}/MONITORING_COUNT"/>
 			</td>
 			
-			<%-- status --%>
-			<td class="${tdClass}" style="text-align:center;">${monitor.evaluatorStatus.description}</td>
-			
-			<%-- delete --%>
+			<%-- enable/disable --%>
 			<td class="${tdClass}" style="text-align:right;">
-				<tags:widgetActionRefreshImage tamperFlagMonitorId="${monitorId}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteActionTitleText} (${monitorName})" method="delete"/>
+				<c:choose>
+					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
+						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" tamperFlagMonitorId="${monitorId}" title="${disableText} (${monitorName})"/>
+					</c:when>
+					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
+						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" tamperFlagMonitorId="${monitorId}" title="${enableText} (${monitorName})" checked="false"/>
+					</c:when>
+				</c:choose>
 			</td>
 			
 		</tr>

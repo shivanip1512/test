@@ -5,7 +5,7 @@ import org.springframework.core.style.ToStringCreator;
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
 
-public class OutageMonitor implements PointMonitor {
+public class OutageMonitor implements PointMonitor, Comparable<OutageMonitor> {
 
 	private Integer outageMonitorId;
 	private String outageMonitorName;
@@ -74,4 +74,9 @@ public class OutageMonitor implements PointMonitor {
         tsc.append("evaluatorStatus", getEvaluatorStatus());
         return tsc.toString();
     }
+	
+	@Override
+	public int compareTo(OutageMonitor o) {
+		return this.getOutageMonitorName().compareToIgnoreCase(o.getOutageMonitorName());
+	}
 }

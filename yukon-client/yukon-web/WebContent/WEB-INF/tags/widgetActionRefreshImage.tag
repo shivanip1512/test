@@ -39,7 +39,7 @@
 
 
 <span id="${thisId}">
-<a href="javascript:void(0);" title="${label}" style="text-decoration:none;background: white;" onclick="widgetActionRefreshImageConfirm_${uniqueId}();">
+<a href="javascript:void(0);" title="${title}" style="text-decoration:none;background: white;" onclick="widgetActionRefreshImageConfirm_${uniqueId}();">
 	<img id="linkImg_${uniqueId}" src="${safe_imgSrc}" border="0" onClick="this.style.display='none';" onMouseOver="this.src='${safe_imgSrcHover}';" onMouseOut="this.src='${safe_imgSrc}';">
 </a>
 <span class="widgetAction_waiting" style="display:none">

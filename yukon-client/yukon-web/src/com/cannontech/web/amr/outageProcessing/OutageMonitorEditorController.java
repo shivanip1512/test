@@ -275,33 +275,15 @@ public class OutageMonitorEditorController extends MultiActionController {
 	}
 	
 	// TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED
-	public ModelAndView toggleMonitorEvaluationEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
+	public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:edit");
         
         int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorId");
-        boolean enable = ServletRequestUtils.getRequiredBooleanParameter(request, "enable");
         
         try {
-        
-	        // get monitor
-	        OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
-	        
-	        // set status
-	        MonitorEvaluatorStatus newEvaluatorStatus;
-	        if (enable) {
-	        	newEvaluatorStatus = MonitorEvaluatorStatus.ENABLED;
-	        } else {
-	        	newEvaluatorStatus = MonitorEvaluatorStatus.DISABLED;
-	        }
-	        outageMonitor.setEvaluatorStatus(newEvaluatorStatus);
-	        
-	        // update
-    		outageMonitorDao.saveOrUpdate(outageMonitor);
-    		log.debug("Updated outageMonitor evaluator status: status=" + newEvaluatorStatus + ",outageMonitor=" + outageMonitor.toString());
-    		
+	        outageMonitorService.toggleEnabled(outageMonitorId);
         	mav.addObject("outageMonitorId", outageMonitorId);
-	        
         } catch (OutageMonitorNotFoundException e) {
         	mav.addObject("editError", e.getMessage());
         	return mav;

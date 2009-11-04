@@ -8,9 +8,7 @@
 <cti:msg var="scheduleNameText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.scheduleName" />
 <cti:msg var="jobTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.jobType" />
 <cti:msg var="creTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.creType" />
-<cti:msg var="enabledText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabled" />
-<cti:msg var="enabledYesText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabledYes" />
-<cti:msg var="enabledNoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.enabledNo" />
+<cti:msg var="scheduleStatusText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.status" />
 <cti:msg var="attributeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.attribute" />
 <cti:msg var="commandText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.command" />
 <cti:msg var="scheduleDescriptionText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.scheduleDescription" />
@@ -141,15 +139,8 @@
 			<tags:nameValueGap gapHeight="20px"/>
 			
 			<%-- enabled --%>
-			<tags:nameValue name="${enabledText}">
-				<c:choose>
-					<c:when test="${jobWrapper.job.disabled}">
-						${enabledNoText}
-					</c:when>
-					<c:otherwise>
-						${enabledYesText}
-					</c:otherwise>
-				</c:choose>
+			<tags:nameValue name="${scheduleStatusText}">
+				<cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
 			</tags:nameValue>
 			
 			<%-- schedule description --%>

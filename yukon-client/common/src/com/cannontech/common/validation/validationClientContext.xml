@@ -9,6 +9,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
   <bean id="validationMonitorDao" class="com.cannontech.common.validation.dao.impl.ValidationMonitorDaoImpl"/>
+  <bean id="validationMonitorService" class="com.cannontech.common.validation.service.impl.ValidationMonitorServiceImpl"/>
   <bean id="rphTagDao" class="com.cannontech.common.validation.dao.impl.RphTagDaoImpl"/> 
   <bean id="rphTagUiDao" class="com.cannontech.common.validation.dao.impl.RphTagUiDaoImpl"/>    
   

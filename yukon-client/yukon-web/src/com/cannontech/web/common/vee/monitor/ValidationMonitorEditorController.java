@@ -15,6 +15,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
+import com.cannontech.common.validation.service.ValidationMonitorService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -24,6 +25,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class ValidationMonitorEditorController {
 
     private ValidationMonitorDao validationMonitorDao;
+    private ValidationMonitorService validationMonitorService;
     private Logger log = YukonLogManager.getLogger(ValidationMonitorEditorController.class);
 
     @RequestMapping
@@ -184,24 +186,10 @@ public class ValidationMonitorEditorController {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public String toggleMonitorEvaluationEnabled(ModelMap model, int validationMonitorId, boolean enable) throws Exception, ServletException {
+    public String toggleEnabled(ModelMap model, int validationMonitorId) throws Exception, ServletException {
         try {
-        
-            ValidationMonitor validationMonitor = validationMonitorDao.getById(validationMonitorId);
-            
-            MonitorEvaluatorStatus newEvaluatorStatus;
-            if (enable) {
-                newEvaluatorStatus = MonitorEvaluatorStatus.ENABLED;
-            } else {
-                newEvaluatorStatus = MonitorEvaluatorStatus.DISABLED;
-            }
-            validationMonitor.setEvaluatorStatus(newEvaluatorStatus);
-            
-            validationMonitorDao.saveOrUpdate(validationMonitor);
-            log.debug("Updated validationMonitor evaluator status: status=" + newEvaluatorStatus + ", validationMonitor=" + validationMonitor.toString());
-            
+        	validationMonitorService.toggleEnabled(validationMonitorId);
             model.addAttribute("validationMonitorId", validationMonitorId);
-            
         } catch (ValidationMonitorNotFoundException e) {
             model.addAttribute("editError", e.getMessage());
         }
@@ -213,4 +201,9 @@ public class ValidationMonitorEditorController {
     public void setValidationMonitorDao(ValidationMonitorDao validationMonitorDao){
         this.validationMonitorDao = validationMonitorDao;
     }
+    
+    @Autowired
+    public void setValidationMonitorService(ValidationMonitorService validationMonitorService) {
+		this.validationMonitorService = validationMonitorService;
+	}
 }

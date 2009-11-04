@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
 		ModelAndView mav = new ModelAndView("outageMonitorsWidget/render.jsp");
 		
 		List<OutageMonitor> monitors = outageMonitorDao.getAll();
+		Collections.sort(monitors);
 		mav.addObject("monitors", monitors);
 		
 		return mav;
@@ -40,14 +42,14 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
 	    return mav;
 	}
 	
-	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         int outageMonitorId = WidgetParameterHelper.getRequiredIntParameter(request, "outageMonitorId");
         
         String outageMonitorsWidgetError = null;
         
         try {
-        	outageMonitorService.deleteOutageMonitor(outageMonitorId);
+        	outageMonitorService.toggleEnabled(outageMonitorId);
         } catch (OutageMonitorNotFoundException e) {
         	outageMonitorsWidgetError = e.getMessage();
         }
@@ -57,7 +59,6 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
         
         return mav;
 	}
-
 	
 	@Autowired
 	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {

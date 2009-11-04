@@ -71,14 +71,8 @@
 			<input type="hidden" id="deleteTamperFlagMonitorId" name="deleteTamperFlagMonitorId" value="">
 		</form>
 		
-		<form id="enableMonitoringForm" action="/spring/amr/tamperFlagProcessing/toggleMonitorEvaluationEnabled" method="post">
+		<form id="toggleEnabledForm" action="/spring/amr/tamperFlagProcessing/toggleEnabled" method="post">
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
-			<input type="hidden" name="enable" value="true">
-		</form>
-		
-		<form id="disableMonitoringForm" action="/spring/amr/tamperFlagProcessing/toggleMonitorEvaluationEnabled" method="post">
-			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
-			<input type="hidden" name="enable" value="false">
 		</form>
 		
 		<%-- UPDATE FORM --%>
@@ -123,29 +117,7 @@
 				<%-- enable/disable monitoring --%>
 				<c:if test="${tamperFlagMonitorId > 0}">
 					<tags:nameValue name="${tamperFlagMonitoringText}">
-						<c:choose>
-							<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
-								
-								<tags:slowInput myFormId="disableMonitoringForm" labelBusy="${tamperFlagMonitoringDisableText}" label="${tamperFlagMonitoringDisableText}"/>
-								
-								<tags:helpInfoPopup title="${tamperFlagMonitoringDisableText} ${tamperFlagMonitoringText}">
-				            		${tamperFlagMonitoringDisablePopupInfo}
-								</tags:helpInfoPopup>
-								
-							</c:when>
-							<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'DISABLED'}">
-
-								<tags:slowInput myFormId="enableMonitoringForm" labelBusy="${tamperFlagMonitoringEnableText}" label="${tamperFlagMonitoringEnableText}"/>
-								
-								<tags:helpInfoPopup title="${tamperFlagMonitoringEnableText} ${tamperFlagMonitoringText}">
-				            		${tamperFlagMonitoringEnablePopupInfo}
-								</tags:helpInfoPopup>
-								
-							</c:when>
-							<c:otherwise>
-								${tamperFlagMonitor.evaluatorStatus.description}
-							</c:otherwise>
-						</c:choose>
+						${tamperFlagMonitor.evaluatorStatus.description}
 					</tags:nameValue>
 				</c:if>
 				
@@ -157,11 +129,19 @@
 			<br>
 			<c:choose>
 				<c:when test="${tamperFlagMonitorId > 0}">
-					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}"/>
-					<input type="button" onclick="tamperFlagMonitorEditor_deleteTamperFlagMonitor(${tamperFlagMonitorId});" value="${deleteText}"/>
+					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" width="80px"/>
+					<c:choose>
+						<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
+							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringDisableText}" label="${tamperFlagMonitoringDisableText}" width="80px"/>
+						</c:when>
+						<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'DISABLED'}">
+							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringEnableText}" label="${tamperFlagMonitoringEnableText}" width="80px"/>
+						</c:when>
+					</c:choose>
+					<input type="button" onclick="tamperFlagMonitorEditor_deleteTamperFlagMonitor(${tamperFlagMonitorId});" value="${deleteText}" style="width:80px;"/>
 				</c:when>
 				<c:otherwise>
-					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}"/>
+					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px"/>
 				</c:otherwise>
 			</c:choose>
 			

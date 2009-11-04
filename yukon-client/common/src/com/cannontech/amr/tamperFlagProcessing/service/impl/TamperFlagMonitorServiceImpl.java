@@ -1,10 +1,13 @@
 package com.cannontech.amr.tamperFlagProcessing.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
 import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -15,6 +18,7 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
 
 	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private TamperFlagMonitorDao tamperFlagMonitorDao;
+	private Logger log = YukonLogManager.getLogger(TamperFlagMonitorServiceImpl.class);
 	
 	@Override
 	public StoredDeviceGroup getTamperFlagGroup(String name) {
@@ -40,6 +44,27 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
         
         // delete monitor
         return tamperFlagMonitorDao.delete(tamperFlagMonitorId);
+	}
+	
+	@Override
+	public MonitorEvaluatorStatus toggleEnabled(int tamperFlagMonitorId) throws TamperFlagMonitorNotFoundException {
+		
+		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
+        
+		// set status
+        MonitorEvaluatorStatus newEvaluatorStatus;
+        if (tamperFlagMonitor.getEvaluatorStatus().equals(MonitorEvaluatorStatus.DISABLED)) {
+        	newEvaluatorStatus = MonitorEvaluatorStatus.ENABLED;
+        } else {
+        	newEvaluatorStatus = MonitorEvaluatorStatus.DISABLED;
+        }
+        tamperFlagMonitor.setEvaluatorStatus(newEvaluatorStatus);
+        
+        // update
+        tamperFlagMonitorDao.saveOrUpdate(tamperFlagMonitor);
+		log.debug("Updated tamperFlagMonitor evaluator status: status=" + newEvaluatorStatus + ", tamperFlagMonitor=" + tamperFlagMonitor.toString());
+		
+		return newEvaluatorStatus;
 	}
 	
 	@Autowired

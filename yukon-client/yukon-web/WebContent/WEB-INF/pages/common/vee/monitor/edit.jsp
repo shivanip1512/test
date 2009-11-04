@@ -99,14 +99,8 @@
         <input type="hidden" id="deleteValidationMonitorId" name="deleteValidationMonitorId" value="">
     </form>
     
-    <form id="enableMonitoringForm" action="/spring/common/vee/monitor/toggleMonitorEvaluationEnabled" method="post">
+    <form id="toggleEnabledForm" action="/spring/common/vee/monitor/toggleEnabled" method="post">
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
-        <input type="hidden" name="enable" value="true">
-    </form>
-    
-    <form id="disableMonitoringForm" action="/spring/common/vee/monitor/toggleMonitorEvaluationEnabled" method="post">
-        <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
-        <input type="hidden" name="enable" value="false">
     </form>
     
     <%-- UPDATE FORM --%>
@@ -212,29 +206,7 @@
                 <%-- enable/disable monitoring --%>
                 <c:if test="${validationMonitorId > 0}">
                     <tags:nameValue name="${validationMonitoringText}">
-                        <c:choose>
-                            <c:when test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
-                                
-                                <tags:slowInput myFormId="disableMonitoringForm" labelBusy="${validationMonitoringDisableText}" label="${validationMonitoringDisableText}"/>
-                                
-                                <tags:helpInfoPopup title="${validationMonitoringDisableText} ${validationMonitoringText}">
-                                    ${validationMonitoringDisablePopupInfo}
-                                </tags:helpInfoPopup>
-                            
-                            </c:when>
-                            <c:when test="${validationMonitor.evaluatorStatus eq 'DISABLED'}">
-                                
-                                <tags:slowInput myFormId="enableMonitoringForm" labelBusy="${validationMonitoringEnableText}" label="${validationMonitoringEnableText}"/>
-                                
-                                <tags:helpInfoPopup title="${validationMonitoringEnableText} ${validationMonitoringText}">
-                                    ${validationMonitoringEnablePopupInfo}
-                                </tags:helpInfoPopup>
-                                
-                            </c:when>
-                            <c:otherwise>
-                                ${validationMonitor.evaluatorStatus.description}
-                            </c:otherwise>
-                        </c:choose>
+                        ${validationMonitor.evaluatorStatus.description}
                     </tags:nameValue>
                 </c:if>
                 
@@ -245,11 +217,19 @@
         <br>
         <c:choose>
             <c:when test="${validationMonitorId >= 0}">
-                <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}"/>
-                <input type="button" onclick="validationMonitorEditor_deleteValidationMonitor(${validationMonitorId});" value="${deleteText}"/>
+                <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" width="80px"/>
+                <c:choose>
+				    <c:when test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
+				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringDisableText}" label="${validationMonitoringDisableText}" width="80px"/>
+				    </c:when>
+				    <c:when test="${validationMonitor.evaluatorStatus eq 'DISABLED'}">
+				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringEnableText}" label="${validationMonitoringEnableText}" width="80px"/>
+				    </c:when>
+				</c:choose>
+				<input type="button" onclick="validationMonitorEditor_deleteValidationMonitor(${validationMonitorId});" value="${deleteText}" style="width:80px;"/>
             </c:when>
             <c:otherwise>
-                <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}"/>
+                <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px"/>
             </c:otherwise>
         </c:choose>
         

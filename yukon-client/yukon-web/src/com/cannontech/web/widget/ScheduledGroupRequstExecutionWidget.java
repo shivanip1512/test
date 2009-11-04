@@ -71,20 +71,24 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 	    return mav;
 	}
 	
-	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+	// TOGGLE JOB ENABLED
+    public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
 		
 		int jobId = WidgetParameterHelper.getRequiredIntParameter(request, "jobId");
-		
 		YukonJob job = jobManager.getJob(jobId);
-		jobManager.deleteJob(job);
-	
-		ModelAndView mav = render(request, response);
+        
+        if (job.isDisabled()) {
+            jobManager.enableJob(job);
+        } else {
+            jobManager.disableJob(job);
+        }
+        
+        ModelAndView mav = render(request, response);
         return mav;
-	}
-	
+    }
 	
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {

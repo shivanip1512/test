@@ -196,31 +196,13 @@ public class TamperFlagEditorController {
 	
 	// TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED
 	@RequestMapping
-	public String toggleMonitorEvaluationEnabled(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws Exception, ServletException {
+	public String toggleEnabled(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws Exception, ServletException {
         
 		int tamperFlagMonitorId = ServletRequestUtils.getIntParameter(request, "tamperFlagMonitorId", 0);
-        boolean enable = ServletRequestUtils.getRequiredBooleanParameter(request, "enable");
         
         try {
-        
-	        // get monitor
-	        TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
-	        
-	        // set status
-	        MonitorEvaluatorStatus newEvaluatorStatus;
-	        if (enable) {
-	        	newEvaluatorStatus = MonitorEvaluatorStatus.ENABLED;
-	        } else {
-	        	newEvaluatorStatus = MonitorEvaluatorStatus.DISABLED;
-	        }
-	        tamperFlagMonitor.setEvaluatorStatus(newEvaluatorStatus);
-	        
-	        // update
-    		tamperFlagMonitorDao.saveOrUpdate(tamperFlagMonitor);
-    		log.debug("Updated tamperFlagMonitor evaluator status: status=" + newEvaluatorStatus + ", tamperFlagMonitor=" + tamperFlagMonitor.toString());
-    		
+	        tamperFlagMonitorService.toggleEnabled(tamperFlagMonitorId);
         	model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
-	        
         } catch (OutageMonitorNotFoundException e) {
         	model.addAttribute("editError", e.getMessage());
         }

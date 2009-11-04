@@ -5,7 +5,7 @@ import com.cannontech.amr.monitors.PointMonitor;
 
 
 
-public class TamperFlagMonitor implements PointMonitor {
+public class TamperFlagMonitor implements PointMonitor, Comparable<TamperFlagMonitor> {
 
 	private Integer tamperFlagMonitorId;
 	private String tamperFlagMonitorName;
@@ -37,5 +37,8 @@ public class TamperFlagMonitor implements PointMonitor {
 		this.evaluatorStatus = evaluatorStatus;
 	}
 	
-	
+	@Override
+	public int compareTo(TamperFlagMonitor o) {
+		return this.getTamperFlagMonitorName().compareToIgnoreCase(o.getTamperFlagMonitorName());
+	}
 }

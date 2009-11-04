@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.jobs.dao.JobStatusDao;
@@ -65,6 +66,10 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		public String getCommandRequestTypeShortName() {
 			return this.task.getCommandRequestExecutionType().getShortName();
+		}
+		
+		public ScheduledGroupRequestExecutionStatus getJobStatus() {
+			return scheduledGroupRequestExecutionDao.getStatusByJobId(this.job.getId());
 		}
 		
 		public Date getLastRun() {

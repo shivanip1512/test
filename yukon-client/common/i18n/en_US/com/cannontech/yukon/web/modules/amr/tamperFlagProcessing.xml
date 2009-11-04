@@ -8,19 +8,13 @@
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.noMonitorsSetup">No Tamper Flag Monitors Setup</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.editIconHelpText">Edit the Tamper Flag Monitor (change name or status).</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.viewIconHelpText">View the Tamper Flag Processing page (read flags, clear Tamper Flags group, etc).</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.deleteIconHelpText">Delete the Tamper Flag Monitor.</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.name">Name</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.violations">Violations</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.status">Status</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.delete">Delete</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.tableHeader.enabled">Enabled</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.createNew">Create</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.deleteConfirm">Are you sure you want to delete this Tamper Flag Monitor?</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.edit">Edit Tamper Flag Monitor</entry>
     <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.tamperFlagProcessing">Manage Processor Output</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.actionTitle.delete">Delete Tamper Flag Monitor</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.infoLink">Tamper Flag Monitor Information</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagMonitorsWidget.title">Tamper Flag Monitor</entry>
 
     <!-- TamperFlagProcessingEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->
@@ -51,8 +45,8 @@
 	     Devices will not be checked for tamper flags and will no longer be added to the Tamper Flag Group.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update">Save</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update.busy">Saving</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update">Update</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update.busy">Updating</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create">Save</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create.busy">Saving</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.label.delete">Delete</entry>

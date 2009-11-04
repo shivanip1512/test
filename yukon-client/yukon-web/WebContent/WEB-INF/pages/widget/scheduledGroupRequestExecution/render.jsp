@@ -3,32 +3,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 
-<c:url var="pencil" value="/WebConfig/yukon/Icons/pencil.gif"/>
-<c:url var="pencilOver" value="/WebConfig/yukon/Icons/pencil_over.gif"/>
 <c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
 <c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
-<c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
+<c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
+<c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
 <cti:msg var="noSchedulesSetupText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.noSchedulesSetup"/>
-<cti:msg var="scheduleNameText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName"/>
-<cti:msg var="attributeOrCommandText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.attributeOrCommand"/>
-<cti:msg var="scheduleDescriptionText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription"/>
-<cti:msg var="enabledStatusText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.enabledStatus"/>
-<cti:msg var="attributeWord" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.attributeOrCommand.attribute" />
+<cti:msg var="scheduleNameHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName"/>
+<cti:msg var="scheduleDescriptionHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription"/>
+<cti:msg var="statusHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.status"/>
+<cti:msg var="enabledHeaderText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.enabled"/>
 <cti:msg var="editScheduleTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.editSchedule" />
 <cti:msg var="viewScheduleDetailsTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.viewScheduleDetails" />
-<cti:msg var="deleteTitleText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.delete" />
-<cti:msg var="deleteConfirmText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.actions.deleteConfirm" />
 <cti:msg var="createButtonText" key="yukon.common.device.scheduledGroupRequstExecutionWidget.createButton" />
-<cti:msg var="infoLink" key="yukon.common.device.scheduledGroupRequstExecutionWidget.infoLink" />
-<cti:msg var="title" key="yukon.common.device.scheduledGroupRequstExecutionWidget.title" />
-
-<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}">
-	${infoLink}
-</ct:widgetActionPopup>
+<cti:msg var="enableText" key="yukon.common.enable"/> 
+<cti:msg var="disableText" key="yukon.common.disable"/> 
 
 <script type="text/javascript">
 
@@ -38,10 +28,16 @@
 	        var state = data['state'];
 	        if (state == 'DISABLED') {
 				trEl.className = 'subtleGray';
+				$('disableTd_' + jobId).hide();
+				$('enableTd_' + jobId).show();
 	        } else if (state == 'RUNNING') {
 	        	trEl.className = 'okGreen';
-	        } else {
+	        	$('disableTd_' + jobId).hide();
+				$('enableTd_' + jobId).hide();
+	        } else if (state == 'ENABLED') {
 				trEl.className = '';
+				$('disableTd_' + jobId).show();
+				$('enableTd_' + jobId).hide();
 	        }
 	    };
 	} 
@@ -72,11 +68,11 @@
 	
 	<tr>
 		<th style="width:20px;">&nbsp;</th>
-		<th>${scheduleNameText}</th>
-		<th>${scheduleDescriptionText}</th>
-		<th style="text-align:center;width:80px;">${enabledStatusText}</th>
+		<th>${scheduleNameHeaderText}</th>
+		<th>${scheduleDescriptionHeaderText}</th>
+		<th>${statusHeaderText}</th>
 		<c:if test="${canManage}">
-			<th style="text-align:right;width:20px;"></th>
+			<th style="text-align:right;width:80px;">${enabledHeaderText}</th>
 		</c:if>
 	</tr>
 
@@ -107,7 +103,7 @@
 						<cti:url var="editScheduleUrl" value="/spring/group/scheduledGroupRequestExecution/home">
 							<cti:param name="editJobId" value="${jobWrapper.job.id}"/>
 						</cti:url>
-						<a href="${editScheduleUrl}" title="${editScheduleTitleText} (${jobWrapper.name})">
+						<a href="${editScheduleUrl}" title="${editScheduleTitleText}">
 							${jobWrapper.name}
 						</a>
 					</c:when>
@@ -121,14 +117,19 @@
 			<td style="white-space:nowrap;">${jobWrapper.scheduleDescription}</td>
 			
 			<%-- status --%>
-			<td style="text-align:center;" title="${jobWrapper.job.id}">
+			<td title="${jobWrapper.job.id}">
 				<cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
 			</td>
 			
 			<%-- delete --%>
 			<c:if test="${canManage}">
-				<td style="text-align:right;">
-					<tags:widgetActionRefreshImage jobId="${jobWrapper.job.id}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteTitleText} (${jobWrapper.name})" method="delete"/>
+			
+				<td id="disableTd_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if> style="text-align:right;">
+					<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" jobId="${jobWrapper.job.id}" title="${disableText} (${jobWrapper.name})"/>
+				</td>
+				
+				<td id="enableTd_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if> style="text-align:right;">
+					<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title="${enableText} (${jobWrapper.name})"/>
 				</td>
 			</c:if>
 				

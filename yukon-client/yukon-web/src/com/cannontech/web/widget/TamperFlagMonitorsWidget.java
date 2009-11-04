@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ public class TamperFlagMonitorsWidget extends WidgetControllerBase {
 		ModelAndView mav = new ModelAndView("tamperFlagMonitorsWidget/render.jsp");
 		
 		List<TamperFlagMonitor> monitors = tamperFlagMonitorDao.getAll();
+		Collections.sort(monitors);
 		mav.addObject("monitors", monitors);
 		
 		return mav;
@@ -40,14 +42,14 @@ public class TamperFlagMonitorsWidget extends WidgetControllerBase {
 	    return mav;
 	}
 	
-	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
 		int tamperFlagMonitorId = WidgetParameterHelper.getRequiredIntParameter(request, "tamperFlagMonitorId");
-		
-        String tamperFlagMonitorsWidgetError = null;
+        
+		String tamperFlagMonitorsWidgetError = null;
         
         try {
-        	tamperFlagMonitorService.deleteTamperFlagMonitor(tamperFlagMonitorId);
+        	tamperFlagMonitorService.toggleEnabled(tamperFlagMonitorId);
         } catch (TamperFlagMonitorNotFoundException e) {
         	tamperFlagMonitorsWidgetError = e.getMessage();
         }
@@ -57,7 +59,6 @@ public class TamperFlagMonitorsWidget extends WidgetControllerBase {
         
         return mav;
 	}
-
 	
 	@Autowired
 	public void setTamperFlagMonitorDao(TamperFlagMonitorDao tamperFlagMonitorDao) {

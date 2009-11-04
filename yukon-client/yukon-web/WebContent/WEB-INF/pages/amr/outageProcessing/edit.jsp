@@ -111,14 +111,8 @@
 			<input type="hidden" id="deleteOutageMonitorId" name="deleteOutageMonitorId" value="">
 		</form>
 		
-		<form id="enableMonitoringForm" action="/spring/amr/outageProcessing/monitorEditor/toggleMonitorEvaluationEnabled" method="post">
+		<form id="toggleEnabledForm" action="/spring/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
 			<input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
-			<input type="hidden" name="enable" value="true">
-		</form>
-		
-		<form id="disableMonitoringForm" action="/spring/amr/outageProcessing/monitorEditor/toggleMonitorEvaluationEnabled" method="post">
-			<input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
-			<input type="hidden" name="enable" value="false">
 		</form>
 		
 		<%-- UPDATE FORM --%>
@@ -187,29 +181,7 @@
 					<%-- enable/disable monitoring --%>
 					<c:if test="${outageMonitorId > 0}">
 						<tags:nameValue name="${outageMonitoringText}">
-							<c:choose>
-								<c:when test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
-									
-									<tags:slowInput myFormId="disableMonitoringForm" labelBusy="${outageMonitoringDisableText}" label="${outageMonitoringDisableText}"/>
-									
-									<tags:helpInfoPopup title="${outageMonitoringDisableText} ${outageMonitoringText}">
-					            		${outageMonitoringDisablePopupInfo}
-									</tags:helpInfoPopup>
-								
-								</c:when>
-								<c:when test="${outageMonitor.evaluatorStatus eq 'DISABLED'}">
-									
-									<tags:slowInput myFormId="enableMonitoringForm" labelBusy="${outageMonitoringEnableText}" label="${outageMonitoringEnableText}"/>
-									
-									<tags:helpInfoPopup title="${outageMonitoringEnableText} ${outageMonitoringText}">
-					            		${outageMonitoringEnablePopupInfo}
-									</tags:helpInfoPopup>
-									
-								</c:when>
-								<c:otherwise>
-									${outageMonitor.evaluatorStatus.description}
-								</c:otherwise>
-							</c:choose>
+							${outageMonitor.evaluatorStatus.description}
 						</tags:nameValue>
 					</c:if>
 					
@@ -266,11 +238,19 @@
 			<br>
 			<c:choose>
 				<c:when test="${outageMonitorId > 0}">
-					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}"/>
-					<input type="button" onclick="outageMonitorEditor_deleteOutageMonitor(${outageMonitorId});" value="${deleteText}"/>
+					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" width="80px"/>
+					<c:choose>
+						<c:when test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
+							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${outageMonitoringDisableText}" label="${outageMonitoringDisableText}" width="80px"/>
+						</c:when>
+						<c:when test="${outageMonitor.evaluatorStatus eq 'DISABLED'}">
+							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${outageMonitoringEnableText}" label="${outageMonitoringEnableText}" width="80px"/>
+						</c:when>
+					</c:choose>
+					<input type="button" onclick="outageMonitorEditor_deleteOutageMonitor(${outageMonitorId});" value="${deleteText}" style="width:80px;"/>
 				</c:when>
 				<c:otherwise>
-					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}"/>
+					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px"/>
 				</c:otherwise>
 			</c:choose>
 			

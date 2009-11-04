@@ -19,6 +19,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -63,6 +64,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private CronExpressionTagService cronExpressionTagService;
 	private AttributeSelectorHelperService attributeSelectorHelperService;
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	
 	private List<LiteCommand> meterCommands;
 	
@@ -153,6 +155,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("editJobId", editJobId);
 		if (editMode) {
 		    mav.addObject("disabled", existingJob.isDisabled());
+		    mav.addObject("status", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
 		}
 		mav.addObject("editMode", editMode);
 		mav.addObject("errorMsg", errorMsg);
@@ -538,4 +541,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	public void setScheduledRepeatingJobDao(ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
         this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
     }
+	
+	@Autowired
+	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
+		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
+	}
 }

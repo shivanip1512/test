@@ -19,6 +19,7 @@
 <cti:msg var="scheduleNameLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleName"/>
 <cti:msg var="timeFrequencyLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency"/>
 <cti:msg var="retryLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.retry"/>
+<cti:msg var="scheduleStateLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleState"/>
 <cti:msg var="scheduleButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton"/>
 <cti:msg var="updateButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton"/>
 <cti:msg var="enableJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.enableJobButton" />
@@ -124,6 +125,12 @@
         		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" retryCount="${retryCount}" stopRetryAfterHoursCount="${stopRetryAfterHoursCount}" turnOffQueuingAfterRetryCount="${turnOffQueuingAfterRetryCount}" />
         		 		</tags:nameValue>
         		 		
+        		 		<c:if test="${editMode}">
+	        		 		<tags:nameValue name="${scheduleStateLabel}">
+	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequstExecution.state.${status}"/>
+	        		 		</tags:nameValue>
+	        		 	</c:if>
+        		 		
         			</tags:nameValueContainer>
         			
         		</form>
@@ -140,6 +147,7 @@
 						
 						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" width="80px"/>
 						
+						<c:if test="${status ne 'RUNNING'}">
 						<c:choose>
 							<c:when test="${disabled}">
 								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" width="80px"/>
@@ -148,6 +156,8 @@
 								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" width="80px"/>
 							</c:otherwise>
 						</c:choose>
+						</c:if>
+						
 						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" width="80px"/>
 						
 					</c:otherwise>
@@ -201,6 +211,12 @@
         		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" retryCount="${retryCount}" stopRetryAfterHoursCount="${stopRetryAfterHoursCount}" turnOffQueuingAfterRetryCount="${turnOffQueuingAfterRetryCount}" />
         		 		</tags:nameValue>
         		 		
+        		 		<c:if test="${editMode}">
+	        		 		<tags:nameValue name="${scheduleStateLabel}">
+	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequstExecution.state.${status}"/>
+	        		 		</tags:nameValue>
+	        		 	</c:if>
+        		 		
         			</tags:nameValueContainer>
         			
         		</form>
@@ -217,6 +233,7 @@
 	
 						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" width="80px"/>
 						
+						<c:if test="${status ne 'RUNNING'}">
 						<c:choose>
 							<c:when test="${disabled}">
 								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" width="80px"/>
@@ -225,6 +242,8 @@
 								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" width="80px"/>
 							</c:otherwise>
 						</c:choose>
+						</c:if>
+						
 						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" width="80px"/>
 	
 					</c:otherwise>

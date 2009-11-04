@@ -3,40 +3,23 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 
-<c:url var="pencil" value="/WebConfig/yukon/Icons/pencil.gif"/>
-<c:url var="pencilOver" value="/WebConfig/yukon/Icons/pencil_over.gif"/>
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
-<c:url var="script" value="/WebConfig/yukon/Icons/script.gif"/>
-<c:url var="scriptOver" value="/WebConfig/yukon/Icons/script_over.gif"/>
-<c:url var="lightning" value="/WebConfig/yukon/Icons/lightning_go.gif"/>
-<c:url var="lightningOver" value="/WebConfig/yukon/Icons/lightning_go_over.gif"/>
-<c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
-<c:url var="placeholder" value="/WebConfig/yukon/Icons/placeholder.gif"/>
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
+<c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
+<c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
 
 <cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.outageMonitorsWidget.noMonitorsSetup"/>
-<cti:msg var="nameText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.name"/>
-<cti:msg var="violationsText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.violations"/>
-<cti:msg var="monitoringText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.monitoring"/>
-<cti:msg var="statusText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.status"/>
-<cti:msg var="deleteText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.delete"/>
+<cti:msg var="nameHeaderText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.name"/>
+<cti:msg var="violationsHeaderText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.violations"/>
+<cti:msg var="monitoringHeaderText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.monitoring"/>
+<cti:msg var="statusHeaderText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.status"/>
+<cti:msg var="enabledHeaderText" key="yukon.web.modules.amr.outageMonitorsWidget.tableHeader.enabled"/>
 <cti:msg var="createNewText" key="yukon.web.modules.amr.outageMonitorsWidget.createNew"/>
-<cti:msg var="deleteConfirmText" key="yukon.web.modules.amr.outageMonitorsWidget.deleteConfirm"/>
 <cti:msg var="editActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.edit"/>
 <cti:msg var="outageProcessingActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.outageProcessing"/>
-<cti:msg var="deleteActionTitleText" key="yukon.web.modules.amr.outageMonitorsWidget.actionTitle.delete"/>
-<cti:msg var="infoLink" key="yukon.web.modules.amr.outageMonitorsWidget.infoLink"/>
-<cti:msg var="title" key="yukon.web.modules.amr.outageMonitorsWidget.title"/>
-
-<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}">
-	${infoLink}
-</ct:widgetActionPopup>
-
+<cti:msg var="enableText" key="yukon.common.enable"/> 
+<cti:msg var="disableText" key="yukon.common.disable"/> 
 
 <%-- CREATE NEW OUTAGE MONITOR FORM --%>
 <form id="createNewOutageMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
@@ -54,12 +37,11 @@
 <table class="compactResultsTable">
 	
 	<tr>
-		<th style="width:70px;">&nbsp;</th>
-		<th>${nameText}</th>
-		<th style="text-align:right;">${violationsText}</th>
-		<th style="text-align:right;">${monitoringText}</th>
-		<th style="text-align:center;width:80px;">${statusText}</th>
-		<th style="text-align:right;width:20px;"></th>
+		<th style="width:20px;">&nbsp;</th>
+		<th>${nameHeaderText}</th>
+		<th style="text-align:right;">${violationsHeaderText}</th>
+		<th style="text-align:right;">${monitoringHeaderText}</th>
+		<th style="text-align:right;width:80px;">${enabledHeaderText}</th>
 		
 	</tr>
 
@@ -77,16 +59,6 @@
 			
 			<%-- action icons --%>
 			<td>
-			
-				<%-- edit monitor --%>
-				<cti:url var="viewOutageMonitorEditorUrl" value="/spring/amr/outageProcessing/monitorEditor/edit">
-					<cti:param name="outageMonitorId" value="${monitorId}"/>
-				</cti:url>
-				
-				<a href="${viewOutageMonitorEditorUrl}" title="${editActionTitleText} (${monitorName})" style="text-decoration:none;">
-					<img src="${pencil}" onmouseover="javascript:this.src='${pencilOver}'" onmouseout="javascript:this.src='${pencil}'">
-				</a>
-				&nbsp;&nbsp;
 				
 				<%-- monitor widget --%>
 				<cti:url var="viewOutageProcessingUrl" value="/spring/amr/outageProcessing/process/process">
@@ -100,7 +72,13 @@
 			</td>
 			
 			<%-- monitor name --%>
-			<td class="${tdClass}">${monitorName}</td>
+			<cti:url var="viewOutageMonitorEditorUrl" value="/spring/amr/outageProcessing/monitorEditor/edit">
+				<cti:param name="outageMonitorId" value="${monitorId}"/>
+			</cti:url>
+				
+			<td class="${tdClass}">
+				<a href="${viewOutageMonitorEditorUrl}" title="${editActionTitleText}">${monitorName}</a>
+			</td>
 			
 			<%-- violations count --%>
 			<td class="${tdClass}" style="text-align:right;">
@@ -112,12 +90,16 @@
 				<cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${monitorId}/MONITORING_COUNT"/>
 			</td>
 			
-			<%-- status --%>
-			<td class="${tdClass}" style="text-align:center;">${monitor.evaluatorStatus.description}</td>
-			
-			<%-- delete --%>
+			<%-- enable/disable --%>
 			<td class="${tdClass}" style="text-align:right;">
-				<tags:widgetActionRefreshImage outageMonitorId="${monitorId}" confirmText="${deleteConfirmText}" imgSrc="${delete}" imgSrcHover="${deleteOver}"  title="${deleteActionTitleText} (${monitorName})" method="delete"/>
+				<c:choose>
+					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
+						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${enabledImg}" imgSrcHover="${enabledImg}" outageMonitorId="${monitorId}" title="${disableText} (${monitorName})"/>
+					</c:when>
+					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
+						<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" outageMonitorId="${monitorId}" title="${enableText} (${monitorName})" checked="false"/>
+					</c:when>
+				</c:choose>
 			</td>
 			
 		</tr>

@@ -4,5 +4,7 @@
 <properties>
 
 <entry key="yukon.common.okButton">OK</entry>
+<entry key="yukon.common.disable">Disable</entry>
+<entry key="yukon.common.enable">Enable</entry>
 
 </properties>
