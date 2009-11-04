@@ -125,6 +125,12 @@ CREATE TABLE ValidationMonitor  (
 );
 /* End YUK-7995 */
 
+/* Start YUK-7994 */
+DELETE FROM YukonServices WHERE ServiceId = 7;
+
+INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:com/cannontech/services/validation/validationServerContext.xml', '(none)', '(none)', 'ServiceManager');
+/* End YUK-7994 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
