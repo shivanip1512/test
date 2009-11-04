@@ -79,6 +79,11 @@ public class TrendWidget extends WidgetControllerBase {
             }
         }
         
+        //can't create a graph for this device
+        if(availableAttributeGraphs.size() == 0){
+            return mav;
+        }
+        
         if (attributeGraphType == null) {
             attributeGraphType = availableAttributeGraphs.get(0);
             attribute = attributeGraphType.getAttribute();
