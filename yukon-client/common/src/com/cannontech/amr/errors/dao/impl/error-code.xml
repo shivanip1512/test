@@ -11,8 +11,7 @@
          <ul> 
          <li>Attempt the command again</li> 
          <li>From Commander, remotely reset the CCU and attempt the command again</li>
-         <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
-     </ul>
+         <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>     </ul>
   </troubleshooting>
   </error>
 
@@ -757,6 +756,16 @@
   <porter>Transmitter is busy</porter>
   <description>The transmitter is busy with another request.</description>
   <troubleshooting>The transmitter is busy with another request, possibly from another system.  Attempt the command again.
+  	<ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
+<error code="274">
+  <category>Data Validation</category>
+  <porter>Daily read request already in progress</porter>
+  <description>The daily read request is already in progress.</description>
+  <troubleshooting>The daily read request is already in progress with another daily read request.  Only one daily read can be in progress at a time.  Wait for a moment and attempt the command again.
   	<ul>
       <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
     </ul>
