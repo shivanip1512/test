@@ -1318,6 +1318,7 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 public boolean isInputValid() {
     String constraintName = getJTextFieldConstraintName().getText();
     if (StringUtils.isEmpty(constraintName)) {
+        setErrorString("The program constraint must have a name.");
         return false;
     }else {
         return true;
