@@ -5,7 +5,7 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, width, height) {
         $(dialogId + '_title').innerHTML = title;
     }
 
-    var dlgWidth = 0;
+    var dlgWidth = 800;
     var dlgHeight = 0;
     if (arguments.length > 3) {
         dlgWidth = width;
@@ -27,7 +27,7 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, width, height) {
         }
 
         var windowWidth = 790, windowHeight = 580;
-        if (navigator.appName.indexOf("Microsoft")!=-1) {
+        if (Prototype.Browser.IE) {
             windowWidth = document.body.offsetWidth;
             windowHeight = document.body.offsetHeight;
         } else {
@@ -35,19 +35,23 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, width, height) {
             windowHeight = window.innerHeight;
         }
 
+        var borderWidth = 12;
         var dialogWidth = dialogDiv.getWidth();
         var dialogHeight = dialogDiv.getHeight();
         var x = 0, y = 0;
-        if (windowWidth > dialogWidth) {
-            x = (windowWidth - dialogWidth) / 2;
+        if (dialogWidth + borderWidth * 2 > windowWidth - 50) {
+            dialogWidth = windowWidth - 50 - 2 * borderWidth;
+            dialogDiv.setStyle({
+                'width': dialogWidth + "px"
+            });
         }
-        if (windowHeight > dialogHeight) {
-            y = (windowHeight - dialogHeight) / 2;
-        }
+        var dialogWidth = dialogDiv.getWidth();
+        x = (windowWidth - dialogWidth) / 2 - borderWidth;
 
-        // annoyingly, IE uses the document size and not actually the window
-        // height, so the calculated y won't work...
-        y = 150;
+        // For now, we hard-code y.  Once we update prototype, it would be
+        // nice to take advantage of document.viewport and roughly center the
+        // dialog on the browser window.
+        y = 125;
 
         dialogDiv.setStyle({
             'top': y + "px",

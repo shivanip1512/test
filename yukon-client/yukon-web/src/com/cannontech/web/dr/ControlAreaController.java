@@ -39,6 +39,7 @@ import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaNameField;
 import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
+import com.cannontech.dr.controlarea.service.TriggerFieldService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -94,6 +95,7 @@ public class ControlAreaController {
     private DurationFormattingService durationFormattingService;
     private DemandResponseEventLogService demandResponseEventLogService;
     private ControlAreaFieldService controlAreaFieldService;
+    private TriggerFieldService triggerFieldService;
     private FavoritesDao favoritesDao;
     private ControlAreaNameField controlAreaNameField;
 
@@ -108,37 +110,52 @@ public class ControlAreaController {
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
 
+        boolean isFiltered = false;
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
+            isFiltered = true;
         }
         String stateFilter = backingBean.getState();
         if (!StringUtils.isEmpty(stateFilter)) {
             if (stateFilter.equals("active")) {
                 filters.add(new StateFilter(controlAreaService, true));
+                isFiltered = true;
             } else if (stateFilter.equals("inactive")) {
                 filters.add(new StateFilter(controlAreaService, false));
+                isFiltered = true;
             }
         }
         if (!backingBean.getPriority().isUnbounded()) {
             filters.add(new PriorityFilter(controlAreaService, backingBean.getPriority()));
+            isFiltered = true;
         }
-        
+        modelMap.addAttribute("isFiltered", isFiltered);
+
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = controlAreaNameField.getSorter(userContext);
         Comparator<DisplayablePao> sorter = defaultSorter;
-        if(!StringUtils.isEmpty(backingBean.getSort())) {
+        if (!StringUtils.isEmpty(backingBean.getSort())) {
             // If there is a custom sorter, add it
-            
-            DemandResponseBackingField<LMControlArea> sortField = 
-                controlAreaFieldService.getBackingField(backingBean.getSort());
-            
-            sorter = sortField.getSorter(userContext);
-            if(backingBean.getDescending()) {
+
+            boolean backWithNameSorter = true;
+            String sortFieldName = backingBean.getSort();
+            if (sortFieldName.startsWith("CA_")) {
+                DemandResponseBackingField<LMControlArea> sortField = controlAreaFieldService.getBackingField(sortFieldName.substring(3));
+                sorter = sortField.getSorter(userContext);
+                backWithNameSorter = controlAreaNameField != sortField;
+            } else if (sortFieldName.startsWith("TR_")) {
+                DemandResponseBackingField<LMControlAreaTrigger> sortField = triggerFieldService.getBackingField(sortFieldName.substring(3));
+                sorter = sortField.getSorter(userContext);
+            } else {
+                throw new RuntimeException("invalid sort field name");
+            }
+
+            if (backingBean.getDescending()) {
                 sorter = Collections.reverseOrder(sorter);
             }
-            
+
             // Don't double sort if name is the sort field
-            if(controlAreaNameField != sortField) {
+            if (backWithNameSorter) {
                 sorter = Ordering.from(sorter).compound(defaultSorter);
             }
         }
@@ -467,6 +484,11 @@ public class ControlAreaController {
     @Autowired
     public void setControlAreaFieldService(ControlAreaFieldService controlAreaFieldService) {
         this.controlAreaFieldService = controlAreaFieldService;
+    }
+
+    @Autowired
+    public void setTriggerFieldService(TriggerFieldService triggerFieldService) {
+        this.triggerFieldService = triggerFieldService;
     }
 
     @Autowired

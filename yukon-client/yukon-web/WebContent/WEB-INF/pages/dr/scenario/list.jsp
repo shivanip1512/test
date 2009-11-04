@@ -77,7 +77,8 @@
 
     <cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios"/>
     <tags:pagedBox title="${scenarioTitle}" searchResult="${searchResult}"
-        filterDialog="filterPopup" baseUrl="${baseUrl}">
+        filterDialog="filterPopup" baseUrl="${baseUrl}" isFiltered="${isFiltered}"
+        showAllUrl="${clearFilterUrl}">
         <table id="scenarioList" class="compactResultsTable rowHighlighting">
             <tr>
                 <th width="1"></th>

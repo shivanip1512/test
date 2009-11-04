@@ -1,7 +1,10 @@
 package com.cannontech.dr.controlarea.model;
 
+import java.util.Comparator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
@@ -21,7 +24,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
     
     @Override
     public Object getTriggerValue(LMControlAreaTrigger trigger, YukonUserContext userContext) {
-        
+
         ControlAreaTrigger.TriggerType triggerType =
             ControlAreaTrigger.TriggerType.valueOf(trigger.getTriggerType().toUpperCase());
 
@@ -41,6 +44,21 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
         }
         
         return template;
+    }
+
+    @Override
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
+        return new TriggerComparator() {
+            @Override
+            public int triggerCompare(
+                    ControlAreaTrigger.TriggerType triggerType,
+                    LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2) {
+
+                if (triggerType == ControlAreaTrigger.TriggerType.STATUS) {
+                    return getTriggerStateValue(trigger1).compareTo(getTriggerStateValue(trigger2));
+                }
+                return trigger1.getPointValue().compareTo(trigger2.getPointValue());
+            }};
     }
 
     private String getTriggerStateValue(LMControlAreaTrigger trigger) {

@@ -2,6 +2,8 @@ package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
@@ -36,10 +38,12 @@ public class ProgramStateField extends ProgramBackingFieldBase {
                 if (program2 == null) {
                     return -1;
                 }
-                Integer state1 = program1.getProgramStatus();
-                Integer state2 = program2.getProgramStatus();
-                int retVal = state1.compareTo(state2);
-                return retVal;
+
+                return new CompareToBuilder().append(program1.getDisableFlag(),
+                                                     program2.getDisableFlag())
+                                             .append(program1.getProgramStatus(),
+                                                     program2.getProgramStatus())
+                                             .toComparison();
             }};
     }
 

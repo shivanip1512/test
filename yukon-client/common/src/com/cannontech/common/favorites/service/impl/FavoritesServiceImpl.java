@@ -1,5 +1,6 @@
 package com.cannontech.common.favorites.service.impl;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.impl.DisplayablePaoRowMapper;
+import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
@@ -30,7 +31,9 @@ public class FavoritesServiceImpl implements FavoritesService {
         RecentlyViewedRowMapper rowMapper = new RecentlyViewedRowMapper();
         SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, null, 0, count, rowMapper);
-        return searchResult.getResultList();
+        List<DisplayablePao> retVal = searchResult.getResultList();
+        Collections.sort(retVal, new DisplayablePaoComparator());
+        return retVal;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class FavoritesServiceImpl implements FavoritesService {
     }
 
     private static class RecentlyViewedRowMapper extends
-            DisplayablePaoRowMapper implements
+            PaoNameDisplayablePaoRowMapper implements
             RowMapperWithBaseQuery<DisplayablePao> {
 
         @Override
@@ -78,7 +81,7 @@ public class FavoritesServiceImpl implements FavoritesService {
         }
     }
 
-    private static class FavoriteRowMapper extends DisplayablePaoRowMapper
+    private static class FavoriteRowMapper extends PaoNameDisplayablePaoRowMapper
             implements RowMapperWithBaseQuery<DisplayablePao> {
 
         @Override

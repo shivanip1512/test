@@ -125,7 +125,8 @@
 
     <cti:msg var="controlAreaTitle" key="yukon.web.modules.dr.controlAreaList.controlAreas"/>
     <tags:pagedBox title="${controlAreaTitle}" searchResult="${searchResult}"
-        filterDialog="filterPopup" baseUrl="${baseUrl}">
+        filterDialog="filterPopup" baseUrl="${baseUrl}" isFiltered="${isFiltered}"
+        showAllUrl="${clearFilterUrl}">
         <table id="controlAreaList" class="compactResultsTable rowHighlighting">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 
@@ -135,48 +136,57 @@
                 <c:set var="numColumns" value="1"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.name"
-                        baseUrl="${baseUrl}" fieldName="NAME"/>
+                        baseUrl="${baseUrl}" fieldName="CA_NAME"/>
                 </th>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
                     <th>
                         <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.state"
-                            baseUrl="${baseUrl}" fieldName="STATE"/>
+                            baseUrl="${baseUrl}" fieldName="CA_STATE"/>
                     </th>
                 </cti:checkRolesAndProperties>
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.actions"/></th>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
-                    <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold"/></th>
+                    <th>
+                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.valueThreshold"
+                            baseUrl="${baseUrl}" fieldName="TR_VALUE_THRESHOLD"/>
+                    </th>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
-                    <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.peakProjection"/></th>
+                    <th>
+                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.peakProjection"
+                            baseUrl="${baseUrl}" fieldName="TR_PEAK_PROJECTION"/>
+                    </th>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
-                    <th><cti:msg key="yukon.web.modules.dr.controlAreaList.heading.atku"/></th>
+                    <th>
+                        <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.atku"
+                            baseUrl="${baseUrl}" fieldName="TR_ATKU"/>
+                    </th>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
                     <th>
                         <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.priority"
-                            baseUrl="${baseUrl}" fieldName="PRIORITY"/>
+                            baseUrl="${baseUrl}" fieldName="CA_PRIORITY"/>
                     </th>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
                     <th>
                         <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.timeWindow"
-                            baseUrl="${baseUrl}" fieldName="START"/>
+                            baseUrl="${baseUrl}" fieldName="CA_START"/>
                     </th>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
                     <th>
                         <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.loadCapacity"
-                            baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
+                            baseUrl="${baseUrl}" fieldName="CA_LOAD_CAPACITY"/>
                     </th>
                 </cti:checkRolesAndProperties>
             </tr>

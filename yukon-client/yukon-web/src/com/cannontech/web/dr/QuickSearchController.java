@@ -27,6 +27,7 @@ import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.dr.quicksearch.QuickSearchFilter;
 import com.cannontech.dr.quicksearch.QuickSearchRowMapper;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.pao.PaoDetailUrlHelper;
 
 @Controller
 /**
@@ -36,6 +37,7 @@ public class QuickSearchController {
     private FilterService filterService;
     private RolePropertyDao rolePropertyDao;
     private FavoritesDao favoritesDao;
+    private PaoDetailUrlHelper paoDetailUrlHelper;
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String search(ModelMap modelMap, YukonUserContext userContext, 
@@ -67,7 +69,15 @@ public class QuickSearchController {
                                      startIndex, 
                                      quickSearchBean.getItemsPerPage(), 
                                      new QuickSearchRowMapper());
-            
+
+        if (searchResult.getHitCount() == 1) {
+            DisplayablePao pao = searchResult.getResultList().get(0);
+            String detailUrl = paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+            if (detailUrl != null) {
+                return "redirect:" + detailUrl;
+            }
+        }
+
         modelMap.addAttribute("searchResult", searchResult);
         Map<Integer, Boolean> favoritesByPaoId =
             favoritesDao.favoritesByPao(searchResult.getResultList(),
@@ -90,5 +100,10 @@ public class QuickSearchController {
     @Autowired
     public void setFavoritesDao(FavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
+    }
+
+    @Autowired
+    public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
+        this.paoDetailUrlHelper = paoDetailUrlHelper;
     }
 }

@@ -55,10 +55,13 @@ public class ScenarioController {
         filters.add(new AuthorizedFilter(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
-        
+
+        boolean isFiltered = false;
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
+            isFiltered = true;
         }
+        modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();

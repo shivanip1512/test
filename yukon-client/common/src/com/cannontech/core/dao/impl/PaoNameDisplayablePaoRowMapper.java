@@ -10,7 +10,7 @@ import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 
-public class DisplayablePaoRowMapper implements
+public class PaoNameDisplayablePaoRowMapper implements
         ParameterizedRowMapper<DisplayablePao> {
 
     public DisplayablePao mapRow(ResultSet rs, int rowNum) throws SQLException {

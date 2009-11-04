@@ -142,7 +142,8 @@ function clearFilter() {
 
 <cti:msg var="programTitle" key="yukon.web.modules.dr.programList.programs"/>
 <tags:pagedBox title="${programTitle}" searchResult="${searchResult}"
-    filterDialog="filterPopup" baseUrl="${baseUrl}">
+    filterDialog="filterPopup" baseUrl="${baseUrl}" isFiltered="${isFiltered}"
+        showAllUrl="${clearFilterUrl}">
     <table id="programList" class="compactResultsTable rowHighlighting">
         <tr>
             <th></th>

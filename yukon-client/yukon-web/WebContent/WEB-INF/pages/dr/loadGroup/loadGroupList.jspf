@@ -113,7 +113,8 @@
 
 <cti:msg var="loadGroupTitle" key="yukon.web.modules.dr.loadGroupList.loadGroups"/>
 <tags:pagedBox title="${loadGroupTitle}" searchResult="${searchResult}"
-    filterDialog="filterPopup" baseUrl="${baseUrl}">
+    filterDialog="filterPopup" baseUrl="${baseUrl}" isFiltered="${isFiltered}"
+        showAllUrl="${clearFilterUrl}">
     <table id="loadGroupList" class="compactResultsTable rowHighlighting">
         <tr>
             <th></th>

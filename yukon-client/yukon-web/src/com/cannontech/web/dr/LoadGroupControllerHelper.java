@@ -100,24 +100,31 @@ public class LoadGroupControllerHelper {
         filters.add(new AuthorizedFilter(paoAuthorizationService, 
                                          userContext.getYukonUser(), 
                                          Permission.LM_VISIBLE));
-        
+
+        boolean isFiltered = false;
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
+            isFiltered = true;
         }
         String stateFilter = backingBean.getState();
         if (!StringUtils.isEmpty(stateFilter)) {
             if (stateFilter.equals("active")) {
                 filters.add(new LoadGroupStateFilter(loadGroupService, true));
+                isFiltered = true;
             } else if (stateFilter.equals("inactive")) {
                 filters.add(new LoadGroupStateFilter(loadGroupService, false));
+                isFiltered = true;
             }
         }
         if (!backingBean.getLastAction().isUnbounded()) {
             filters.add(new LoadGroupLastActionFilter(loadGroupService, backingBean.getLastAction()));
+            isFiltered = true;
         }
         if (!backingBean.getLoadCapacity().isUnbounded()) {
             filters.add(new LoadGroupLoadCapacityFilter(loadGroupService, backingBean.getLoadCapacity()));
+            isFiltered = true;
         }
+        modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(userContext);

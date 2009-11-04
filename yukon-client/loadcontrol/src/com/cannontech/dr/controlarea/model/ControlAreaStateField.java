@@ -2,6 +2,8 @@ package com.cannontech.dr.controlarea.model;
 
 import java.util.Comparator;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
@@ -36,10 +38,12 @@ public class ControlAreaStateField extends ControlAreaBackingFieldBase {
                 if (controlArea2 == null) {
                     return -1;
                 }
-                Integer state1 = controlArea1.getControlAreaState();
-                Integer state2 = controlArea2.getControlAreaState();
-                int retVal = state1.compareTo(state2);
-                return retVal;
+
+                return new CompareToBuilder().append(controlArea1.getDisableFlag(),
+                                                     controlArea2.getDisableFlag())
+                                             .append(controlArea1.getControlAreaState(),
+                                                     controlArea2.getControlAreaState())
+                                             .toComparison();
             }};
     }
 

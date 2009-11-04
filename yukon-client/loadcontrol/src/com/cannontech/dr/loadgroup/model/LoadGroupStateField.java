@@ -2,6 +2,8 @@ package com.cannontech.dr.loadgroup.model;
 
 import java.util.Comparator;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
@@ -25,21 +27,23 @@ public class LoadGroupStateField extends LoadGroupBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                LMDirectGroupBase group1 = getGroupFromYukonPao(pao1);
-                LMDirectGroupBase group2 = getGroupFromYukonPao(pao2);
-                if (group1 == group2) {
+                LMDirectGroupBase loadGroup1 = getGroupFromYukonPao(pao1);
+                LMDirectGroupBase loadGroup2 = getGroupFromYukonPao(pao2);
+                if (loadGroup1 == loadGroup2) {
                     return 0;
                 }
-                if (group1 == null) {
+                if (loadGroup1 == null) {
                     return 1;
                 }
-                if (group2 == null) {
+                if (loadGroup2 == null) {
                     return -1;
                 }
-                Integer state1 = group1.getGroupControlState();
-                Integer state2 = group2.getGroupControlState();
-                int retVal = state1.compareTo(state2);
-                return retVal;
+
+                return new CompareToBuilder().append(loadGroup1.getDisableFlag(),
+                                                     loadGroup2.getDisableFlag())
+                                             .append(loadGroup1.getGroupControlState(),
+                                                     loadGroup2.getGroupControlState())
+                                             .toComparison();
             }};
     }
 

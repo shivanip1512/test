@@ -135,26 +135,34 @@ public class ProgramControllerHelper {
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
         
+        boolean isFiltered = false;
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
+            isFiltered = true;
         }
         String stateFilter = backingBean.getState();
         if (!StringUtils.isEmpty(stateFilter)) {
             if (stateFilter.equals("active")) {
                 filters.add(new StateFilter(programService, true));
+                isFiltered = true;
             } else if (stateFilter.equals("inactive")) {
                 filters.add(new StateFilter(programService, false));
+                isFiltered = true;
             }
         }
         if (!backingBean.getStart().isUnbounded()) {
             filters.add(new StartStopFilter(programService, backingBean.getStart(), true));
+            isFiltered = true;
         }
         if (!backingBean.getStop().isUnbounded()) {
             filters.add(new StartStopFilter(programService, backingBean.getStop(), false));
+            isFiltered = true;
         }
         if (!backingBean.getPriority().isUnbounded()) {
             filters.add(new PriorityFilter(programService, backingBean.getPriority()));
+            isFiltered = true;
         }
+        modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(userContext);
