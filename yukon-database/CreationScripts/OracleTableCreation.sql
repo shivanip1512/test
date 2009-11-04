@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/4/2009 12:33:59 PM                        */
+/* Created on:     11/4/2009 1:28:32 PM                         */
 /*==============================================================*/
 
 
@@ -904,6 +904,8 @@ drop table TemplateDisplay cascade constraints;
 drop table UNITMEASURE cascade constraints;
 
 drop table UserPaoPermission cascade constraints;
+
+drop table ValidationMonitor cascade constraints;
 
 drop table VersacomRoute cascade constraints;
 
@@ -7903,6 +7905,23 @@ alter table UserPaoPermission
    add constraint AK_USRPAOPERM unique (UserID, PaoID, Permission);
 
 /*==============================================================*/
+/* Table: ValidationMonitor                                     */
+/*==============================================================*/
+create table ValidationMonitor  (
+   ValidationMonitorId  NUMBER                          not null,
+   ValidationMonitorName VARCHAR2(255)                   not null,
+   GroupName            VARCHAR2(255)                   not null,
+   Threshold            FLOAT                           not null,
+   ReRead               NUMBER                          not null,
+   SlopeError           FLOAT                           not null,
+   ReadingError         FLOAT                           not null,
+   PeakHeightMinimum    FLOAT                           not null,
+   QuestionableQuality  NUMBER                          not null,
+   EvaluatorStatus      VARCHAR2(255)                   not null,
+   constraint PK_ValidMon primary key (ValidationMonitorId)
+);
+
+/*==============================================================*/
 /* Table: VersacomRoute                                         */
 /*==============================================================*/
 create table VersacomRoute  (
@@ -9386,6 +9405,7 @@ INSERT INTO YukonRoleProperty VALUES(-20212,-202,'CIS Info Type','NONE','Defines
 INSERT INTO YukonRoleProperty VALUES(-20213,-202,'Outage Processing','true','Controls access to Outage Processing');
 INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','true','Controls access to Tamper Flag Processing');
 INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
+INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','true','Controls access to Validation Processing');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');

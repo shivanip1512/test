@@ -122,6 +122,25 @@ ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalSwitchingOrder;
 INSERT INTO YukonRoleProperty VALUES(-1604,-7,'Meter Lookup Field','Meter Number','Defines the field used to lookup a meter by in Yukon. Valid values: Meter Number, Device Name, or Address.');
 /* End YUK-8002 */
 
+/* Start YUK-7995 */
+INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','true','Controls access to Validation Processing');
+
+CREATE TABLE ValidationMonitor (
+   ValidationMonitorId  NUMERIC              NOT NULL,
+   ValidationMonitorName VARCHAR(255)         NOT NULL,
+   GroupName            VARCHAR(255)         NOT NULL,
+   Threshold            FLOAT                NOT NULL,
+   ReRead               NUMERIC              NOT NULL,
+   SlopeError           FLOAT                NOT NULL,
+   ReadingError         FLOAT                NOT NULL,
+   PeakHeightMinimum    FLOAT                NOT NULL,
+   QuestionableQuality  NUMERIC              NOT NULL,
+   EvaluatorStatus      VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_ValidMon PRIMARY KEY (ValidationMonitorId)
+);
+GO
+/* End YUK-7995 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
