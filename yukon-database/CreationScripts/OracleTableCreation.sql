@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/4/2009 11:38:34 AM                        */
+/* Created on:     11/4/2009 12:33:59 PM                        */
 /*==============================================================*/
 
 
@@ -9228,6 +9228,7 @@ INSERT INTO YukonRoleProperty VALUES(-1600,-7,'PAOName Alias','0','Defines a Yuk
 INSERT INTO YukonRoleProperty VALUES(-1601,-7,'Primary CIS Vendor','0','Defines the primary CIS vendor for CB interfaces.');
 INSERT INTO YukonRoleProperty VALUES(-1602,-7,'Msp BillingCycle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
 INSERT INTO YukonRoleProperty VALUES(-1603,-7,'Msp LM Interface Mapping Setup','false','Controls access to setup the MultiSpeak LM interface mappings.');
+INSERT INTO YukonRoleProperty VALUES(-1604,-7,'Meter Lookup Field','Meter Number','Defines the field used to lookup a meter by in Yukon. Valid values: Meter Number, Device Name, or Address.');
 
 /* Configuration */
 INSERT INTO YukonRoleProperty VALUES(-1700,-8,'Device Display Template','DEVICE_NAME','Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER, ID, ADDRESS');

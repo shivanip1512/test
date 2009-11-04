@@ -118,6 +118,10 @@ ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalFeederId;
 ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalSwitchingOrder;
 /* End YUK-7993 */
 
+/* Start YUK-8002 */
+INSERT INTO YukonRoleProperty VALUES(-1604,-7,'Meter Lookup Field','Meter Number','Defines the field used to lookup a meter by in Yukon. Valid values: Meter Number, Device Name, or Address.');
+/* End YUK-8002 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
