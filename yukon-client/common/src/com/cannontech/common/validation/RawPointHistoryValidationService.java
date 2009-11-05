@@ -381,7 +381,7 @@ public class RawPointHistoryValidationService {
             boolean fall = values.get(0).getValue() < values.get(1).getValue() - validationMonitor.getKwhReadingError();
             boolean increasing = values.get(0).getValue() >= values.get(2).getValue() - validationMonitor.getKwhReadingError();
             double height = calculateHeight(values.get(2), values.get(1), values.get(0));
-            boolean peakIsGreatEnough = height > validationMonitor.getPeakHeightMinimum();
+            boolean peakIsGreatEnough = Math.abs(height) > validationMonitor.getPeakHeightMinimum();
             LogHelper.trace(log, "for %d: jumpUp=%b, jumpDown=%b, fall=%b, increasing=%b, height=%.1f, peakIsGreatEnough=%b", workUnit.thisValue.changeId, jumpUp, jumpDown, fall, increasing, height, peakIsGreatEnough);
 
 
