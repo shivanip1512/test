@@ -8,6 +8,7 @@ import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.AuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Lists;
 
 /**
  * Base implementation of AuthorizationService. Generic for easy reuse.
@@ -54,6 +55,22 @@ public class AuthorizationServiceBase<T> implements AuthorizationService<T> {
                                                  object.toString());
             }
         }
+    }
+
+    @Override
+    public List<T> filterAuthorized(LiteYukonUser user, Iterable<? extends T> objectsToFilter, Permission... permissions) {
+        /* Start with a copy of the original list and then filter out an object if */
+        /* it doesn't pass one of the permissions. */
+        List<T> filteredList = Lists.newArrayList(objectsToFilter);
+        for(T t : objectsToFilter){
+            for(Permission permission : permissions){
+                if(!isAuthorized(user, permission, t)){
+                    filteredList.remove(t);
+                    break;
+                }
+            }
+        }
+        return filteredList;
     }
 
 }

@@ -100,7 +100,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	protected String[] columnNames;
 	
 	/** Array of Class values representing the column object classes. */
-	protected Class[] columnTypes;
+	protected Class<?>[] columnTypes;
 	
 	/** Array of ColumnProperties values representing the columns. */
 	protected ColumnProperties[] columnProperties;
@@ -276,7 +276,8 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 		paoIDs = is;
 	}
 
-	public Date getStartDate()
+	@SuppressWarnings("deprecation")
+    public Date getStartDate()
 	{
 		if (startDate == null)
 		{
@@ -285,7 +286,8 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 		return startDate;
 	}
 
-	public Date getStopDate()
+	@SuppressWarnings("deprecation")
+    public Date getStopDate()
 	{
 		if( stopDate == null)
 		{

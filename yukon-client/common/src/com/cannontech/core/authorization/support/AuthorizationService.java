@@ -1,5 +1,7 @@
 package com.cannontech.core.authorization.support;
 
+import java.util.List;
+
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -25,4 +27,14 @@ public interface AuthorizationService<T> {
      */
     public void verifyAllPermissions(LiteYukonUser user, T object, Permission... permissions)
             throws NotAuthorizedException;
+    
+    /**
+     * Takes an Iterable<? extends T>, LiteYukonUser, some Permissions and returns the
+     * subset list that the user is authorized to use. 
+     * @param user
+     * @param objectsToFilter
+     * @param permissions
+     * @return
+     */
+    public List<T> filterAuthorized(LiteYukonUser user, Iterable<? extends T> objectsToFilter, Permission... permissions);
 }

@@ -12,8 +12,8 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
@@ -102,7 +102,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                                                             getStartDate(),
                                                                             getStopDate());
         }
-        List<LiteYukonPAObject> restrictedPrograms = ReportFuncs.getRestrictedPrograms(liteUser);
+        List<YukonPao> restrictedPrograms = ReportFuncs.getRestrictedPrograms(liteUser);
         data = new ArrayList<ModelRow>(accounts.size());
         for (CustomerAccountWithNames account : accounts) {
             try {

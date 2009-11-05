@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.PageDefinition;
@@ -21,6 +20,7 @@ import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.modules.output.pageable.pdf.PDFReportUtil;
 
+import com.cannontech.analysis.report.CapBankRecentMaxDailyOpsReport;
 import com.cannontech.analysis.report.CapBankReport;
 import com.cannontech.analysis.report.CapControlCurrentStatusReport;
 import com.cannontech.analysis.report.CapControlEventLogReport;
@@ -38,7 +38,6 @@ import com.cannontech.analysis.report.LGAccountingReport;
 import com.cannontech.analysis.report.LPDataSummaryReport;
 import com.cannontech.analysis.report.LPSetupDBReport;
 import com.cannontech.analysis.report.LoadControlVerificationReport;
-import com.cannontech.analysis.report.CapBankRecentMaxDailyOpsReport;
 import com.cannontech.analysis.report.MeterOutageCountReport;
 import com.cannontech.analysis.report.MeterOutageReport;
 import com.cannontech.analysis.report.MeterReadReport;
@@ -62,6 +61,7 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
+import com.cannontech.analysis.tablemodel.CapBankRecentMaxDailyOpsModel;
 import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
 import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
@@ -77,7 +77,6 @@ import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
 import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
-import com.cannontech.analysis.tablemodel.CapBankRecentMaxDailyOpsModel;
 import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
@@ -105,9 +104,10 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -132,7 +132,7 @@ import com.keypoint.PngEncoder;
  */
 public class ReportFuncs
 {
-    public static YukonReportBase createYukonReport(ReportModelBase model)
+    public static YukonReportBase createYukonReport(ReportModelBase<?> model)
     {
         YukonReportBase returnVal = null;
         if( model instanceof StatisticModel)
@@ -232,7 +232,7 @@ public class ReportFuncs
             PDFReportUtil.createPDF(report, out);
 
         else if (ext.equalsIgnoreCase("csv"))
-            ((ReportModelBase)report.getData()).buildByteStream(out);
+            ((ReportModelBase<?>)report.getData()).buildByteStream(out);
     }
     
     /**
@@ -400,7 +400,7 @@ public class ReportFuncs
              * This also means there is no way to hide all programs from a user. They will either see their visible subset, or all programs.
              */
             if(programs != null && user != null) {
-                List<LiteYukonPAObject> restrictedPrograms = getRestrictedPrograms(user);
+                List<YukonPao> restrictedPrograms = getRestrictedPrograms(user);
                 if(restrictedPrograms.isEmpty()) {
                     return programs;
                 }else {
@@ -429,41 +429,56 @@ public class ReportFuncs
         }
     }
     
-    /**
-     * Returns the a List<LiteYukonPAObject> of programs that the user or their usergroups is allowed to see. 
-     * @param user
-     * @return
-     */
-    public static List<LiteYukonPAObject> getRestrictedPrograms(LiteYukonUser user){
+//    /**
+//     * Returns the a List<LiteYukonPAObject> of programs that the user or their usergroups is allowed to see. 
+//     * @param user
+//     * @return
+//     */
+//    public static List<LiteYukonPAObject> getRestrictedPrograms(LiteYukonUser user){
+//        IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
+//        List<LiteYukonPAObject> programs = cache.getAllLMPrograms();
+//        List <LiteYukonPAObject> restrictedPrograms = getRestrictedPAOs(user, programs, Permission.LM_VISIBLE);
+//        return restrictedPrograms;
+//    }
+    
+//    /**
+//     * Returns the a List<LiteYukonPAObject> of lm groups that the user or their usergroups is allowed to see. 
+//     * If none, an empty list is returned.
+//     * @param user
+//     * @return
+//     */
+//    public static List<LiteYukonPAObject> getRestrictedLMGroups(LiteYukonUser user){
+//        IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
+//        List<LiteYukonPAObject> groups = cache.getAllLMGroups();
+//        List <LiteYukonPAObject> restrictedGroups = getRestrictedPAOs(user, groups, Permission.LM_VISIBLE);
+//        return restrictedGroups;
+//    }
+    
+//    public static List<LiteYukonPAObject> getRestrictedPAOs(LiteYukonUser user, List<LiteYukonPAObject> paobjects, Permission permission){
+//        PaoPermissionService paoPermissionService = YukonSpringHook.getBean("paoPermissionService", PaoPermissionService.class);
+//        Set<Integer> permittedPaoIDs = paoPermissionService.getPaoIdsForUserPermission(user, permission);
+//        List <LiteYukonPAObject> restrictedPAOs = new ArrayList<LiteYukonPAObject>();
+//        for (LiteYukonPAObject pao : paobjects) {
+//            if(permittedPaoIDs.contains(pao.getYukonID())) {
+//                restrictedPAOs.add(pao);
+//            }
+//        }
+//        return restrictedPAOs;
+//    }
+    
+    public static List<YukonPao> getRestrictedPrograms(LiteYukonUser user){
+        PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
         IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
         List<LiteYukonPAObject> programs = cache.getAllLMPrograms();
-        List <LiteYukonPAObject> restrictedPrograms = getRestrictedPAOs(user, programs, Permission.LM_VISIBLE);
-        return restrictedPrograms;
+        return paoAuthService.filterAuthorized(user, programs, Permission.LM_VISIBLE);
     }
     
-    /**
-     * Returns the a List<LiteYukonPAObject> of lm groups that the user or their usergroups is allowed to see. 
-     * If none, an empty list is returned.
-     * @param user
-     * @return
-     */
-    public static List<LiteYukonPAObject> getRestrictedLMGroups(LiteYukonUser user){
+    public static List<YukonPao> getRestrictedLMGroups(LiteYukonUser user){
+        PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
         IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
         List<LiteYukonPAObject> groups = cache.getAllLMGroups();
-        List <LiteYukonPAObject> restrictedGroups = getRestrictedPAOs(user, groups, Permission.LM_VISIBLE);
-        return restrictedGroups;
-    }
-    
-    public static List<LiteYukonPAObject> getRestrictedPAOs(LiteYukonUser user, List<LiteYukonPAObject> paobjects, Permission permission){
-        PaoPermissionService paoPermissionService = YukonSpringHook.getBean("paoPermissionService", PaoPermissionService.class);
-        Set<Integer> permittedPaoIDs = paoPermissionService.getPaoIdsForUserPermission(user, permission);
-        List <LiteYukonPAObject> restrictedPAOs = new ArrayList<LiteYukonPAObject>();
-        for (LiteYukonPAObject pao : paobjects) {
-            if(permittedPaoIDs.contains(pao.getYukonID())) {
-                restrictedPAOs.add(pao);
-            }
-        }
-        return restrictedPAOs;
+        List<YukonPao> filtered = paoAuthService.filterAuthorized(user, groups, Permission.LM_VISIBLE); 
+        return filtered;
     }
     
     /**
@@ -473,14 +488,15 @@ public class ReportFuncs
      * @param restrictedPrograms
      * @return
      */
-    public static List<ProgramLoadGroup> filterProgramsByPermission(List<ProgramLoadGroup> programAndGroupList, List<LiteYukonPAObject> restrictedPrograms){
+    public static List<ProgramLoadGroup> filterProgramsByPermission(List<ProgramLoadGroup> programAndGroupList, List<YukonPao> restrictedPrograms){
         if(!restrictedPrograms.isEmpty()) {
             List<ProgramLoadGroup> filterProgramList = new ArrayList<ProgramLoadGroup>();
-            PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
             for(ProgramLoadGroup programLoadGroup : programAndGroupList) {
-                LiteYukonPAObject program = paoDao.getLiteYukonPAO(programLoadGroup.getPaobjectId());
-                if(restrictedPrograms.contains(program)) {
-                    filterProgramList.add(programLoadGroup);
+                for(YukonPao restrictedProgram : restrictedPrograms){
+                    if(restrictedProgram.getPaoIdentifier().getPaoId() == programLoadGroup.getPaobjectId()){
+                        filterProgramList.add(programLoadGroup);
+                        break;
+                    }
                 }
             }
             return filterProgramList;

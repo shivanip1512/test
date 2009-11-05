@@ -12,12 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -217,7 +217,7 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 	 * @return StringBuffer  an sqlstatement
 	 */
 	public StringBuffer buildSQLStatement() {
-		List<LiteYukonPAObject> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
+		List<YukonPao> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
 		StringBuffer sql = new StringBuffer("SELECT LMCH.LMCTRLHISTID, LMCH.PAOBJECTID, LMCH.STARTDATETIME, LMCH.STOPDATETIME, "+
 				" LMCH.CONTROLDURATION, LMCH.CONTROLTYPE, "+
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
@@ -233,16 +233,14 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 				}
 				/*
 				 *  Restrict results based on PaoPermissions of LM Groups.
-				 *  An empty list means let them see everything.
 				 */
-				if(!restrictedGroups.isEmpty()){
-					List<String> groupIds = new ArrayList<String>();
-					for(LiteYukonPAObject group : restrictedGroups){
-						groupIds.add(String.valueOf(group.getLiteID()));
-					}
-					String sqlList = SqlStatementBuilder.convertToSqlLikeList(groupIds);
-					sql.append(" AND LMCH.PAOBJECTID in (" + sqlList + ")"); 
+				List<String> groupIds = new ArrayList<String>();
+				for(YukonPao group : restrictedGroups){
+					groupIds.add(String.valueOf(group.getPaoIdentifier().getPaoId()));
 				}
+				String sqlList = SqlStatementBuilder.convertToSqlLikeList(groupIds);
+				sql.append(" AND LMCH.PAOBJECTID in (" + sqlList + ")"); 
+				
 				if( getPaoIDs()!= null){	// null load groups means ALL groups!
 					sql.append(" AND (LMCH.PAOBJECTID in (" + getPaoIDs()[0] ); 
 					for (Integer paoId :  getPaoIDs()) {
