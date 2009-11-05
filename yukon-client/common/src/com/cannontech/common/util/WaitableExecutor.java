@@ -7,6 +7,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.sun.xml.internal.txw2.IllegalSignatureException;
 
 
@@ -16,6 +19,7 @@ import com.sun.xml.internal.txw2.IllegalSignatureException;
  *
  */
 public class WaitableExecutor implements Executor {
+    private final Logger log = YukonLogManager.getLogger(WaitableExecutor.class);
     private ExecutorService executorService;
     private ConcurrentLinkedQueue<Future<?>> futures = new ConcurrentLinkedQueue<Future<?>>();
     private AtomicBoolean waitStarted = new AtomicBoolean(false);
@@ -35,8 +39,19 @@ public class WaitableExecutor implements Executor {
             throw new IllegalStateException("await may only be called once");
         }
         
+        ExecutionException lastException = null;
         for (Future<?> future : futures) {
-            future.get();
+            try {
+                future.get();
+            } catch (ExecutionException e) {
+                if (lastException != null) {
+                    log.warn("Overwriting last exception", lastException);
+                }
+                lastException = e;
+            }
+        }
+        if (lastException != null) {
+            throw lastException;
         }
     }
 

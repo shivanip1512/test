@@ -209,13 +209,17 @@ public class RawPointHistoryValidationService {
                 
                 waitableExecutor.execute(new Runnable() {
                     public void run() {
-                        if (!attributeService.isPointAttribute(paoPointIdentifier, BuiltInAttribute.USAGE)) return;
-                        
-                        ImmutableSet<ValidationMonitor> descriptions = findValidationMonitors(deviceGroupCache,
+                        try {
+                            if (!attributeService.isPointAttribute(paoPointIdentifier, BuiltInAttribute.USAGE)) return;
+                            
+                            ImmutableSet<ValidationMonitor> descriptions = findValidationMonitors(deviceGroupCache,
                                                                                                   paoPointIdentifier);
-                        if (descriptions.isEmpty()) return;
-                        
-                        processWorkUnit(workUnit, descriptions);
+                            if (descriptions.isEmpty()) return;
+                            
+                            processWorkUnit(workUnit, descriptions);
+                        } catch (Exception e) {
+                            log.warn("Unable to processWorkUnit for changeId " + workUnit.thisValue.changeId, e);
+                        }
                     }
 
                 });
@@ -226,7 +230,7 @@ public class RawPointHistoryValidationService {
         try {
             waitableExecutor.await(); // wait for completion
         } catch (Exception e) {
-            log.warn("Unable to processWorkUnit: " + e.getMessage());
+            log.warn("Caught unexpected exception while waiting for executor", e);
             throw new ProcessingException(e);
         } 
 
@@ -457,7 +461,7 @@ public class RawPointHistoryValidationService {
             if (timeSinceReading.isShorterThan(Duration.standardDays(1))) {
                 // re read meter
                 pointReadService.backgroundReadPoint(workUnit.paoPointIdentifier, CommandRequestExecutionType.VEE_RE_READ,  UserUtils.getYukonUser());
-                LogHelper.debug(log, "Sumbitting reread for a %.1f old reading for %s", timeSinceReading.toPeriod(), workUnit.paoPointIdentifier);
+                LogHelper.debug(log, "Sumbitting reread for a %s old reading for %s", timeSinceReading.toPeriod(), workUnit.paoPointIdentifier);
                 validationEventLogService.unreasonableValueCausedReRead(workUnit.paoPointIdentifier.getPaoIdentifier(), workUnit.paoPointIdentifier.getPointIdentifier());
             }
         }
