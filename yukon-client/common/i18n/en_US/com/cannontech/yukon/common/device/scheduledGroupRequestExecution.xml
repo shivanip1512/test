@@ -30,12 +30,10 @@
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.disableJobButton">Disable</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.disableAndDeleteJobButton">Delete</entry>
     
-    <!-- ScheduledGroupRequstExecutionWidget render.jsp -->
+    <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.noSchedulesSetup">No Schedules Setup</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.editIconHelpText">Edit the schedule (change name, run time, or command/attribute).</entry>
-    <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.viewIconHelpText">View the details of the schedule (view results, enable/disable).</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleName">Name</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequstExecutionWidget.tableHeader.status">Status</entry>

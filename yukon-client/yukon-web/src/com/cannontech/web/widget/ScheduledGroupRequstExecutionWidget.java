@@ -65,12 +65,6 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 		return mav;
 	}
 	
-	public ModelAndView helpInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
-	    ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/helpInfo.jsp");
-	    
-	    return mav;
-	}
-	
 	// TOGGLE JOB ENABLED
     public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
         

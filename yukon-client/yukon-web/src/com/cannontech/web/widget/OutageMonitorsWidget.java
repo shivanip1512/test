@@ -36,12 +36,6 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
 		return mav;
 	}
 	
-	public ModelAndView helpInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
-	    ModelAndView mav = new ModelAndView("outageMonitorsWidget/helpInfo.jsp");
-	    
-	    return mav;
-	}
-	
 	public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         int outageMonitorId = WidgetParameterHelper.getRequiredIntParameter(request, "outageMonitorId");

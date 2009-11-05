@@ -36,12 +36,6 @@ public class TamperFlagMonitorsWidget extends WidgetControllerBase {
 		return mav;
 	}
 	
-	public ModelAndView helpInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
-	    ModelAndView mav = new ModelAndView("tamperFlagMonitorsWidget/helpInfo.jsp");
-	    
-	    return mav;
-	}
-	
 	public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
 		int tamperFlagMonitorId = WidgetParameterHelper.getRequiredIntParameter(request, "tamperFlagMonitorId");
