@@ -2250,7 +2250,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                 secondsControlling >= currentGearObject->getChangeDuration() &&
                 _currentgearnumber+1 < _lmprogramdirectgears.size() )
             {
-                _currentgearnumber++;
+                setCurrentGearNumber(getCurrentGearNumber() + 1);
                 {
                     string text("Duration Gear Change Up Program: ");
                     text += getPAOName();
@@ -2281,7 +2281,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
             if( currentPriority >= currentGearObject->getChangePriority() &&
                 _currentgearnumber+1 < _lmprogramdirectgears.size() )
             {
-                _currentgearnumber++;
+                setCurrentGearNumber(getCurrentGearNumber() + 1);
                 {
                     string text("Priority Gear Change Up Program: ");
                     text += getPAOName();
@@ -2320,7 +2320,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                          trigger->getProjectedPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ) &&
                         _currentgearnumber+1 < _lmprogramdirectgears.size() )
                     {
-                        _currentgearnumber++;
+                        setCurrentGearNumber(getCurrentGearNumber() + 1);
                         {
                             string text("Trigger Offset Gear Change Up Program: ");
                             text += getPAOName();
@@ -2350,7 +2350,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                              (trigger->getPointValue() < (trigger->getThreshold() + prevGearObject->getChangeTriggerOffset()) ||
                               (trigger->getProjectedPointValue() < (trigger->getThreshold() + prevGearObject->getChangeTriggerOffset()) && trigger->getProjectedPointValue() > 0)) )
                     {
-                        _currentgearnumber--;
+                        setCurrentGearNumber(getCurrentGearNumber() - 1);
 
                         string text("Trigger Offset Gear Change Down Program: ");
                         text += getPAOName();
@@ -2436,7 +2436,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
                         }
                     }
-                    _currentgearnumber--;
+                    setCurrentGearNumber(getCurrentGearNumber() - 1);
 
                     if( isControlling() )
                     {
@@ -2473,7 +2473,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
                             }
                         }
-                        _currentgearnumber--;
+                        setCurrentGearNumber(getCurrentGearNumber() - 1);
 
                         if( isControlling() )
                         {
