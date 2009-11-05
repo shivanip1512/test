@@ -7202,7 +7202,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["verificationstrategy"].assign( _verificationStrategy )
             << dynamicCCSubstationBusTable["cbinactivitytime"].assign( _capBankToVerifyInactivityTime )
             << dynamicCCSubstationBusTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
-            << dynamicCCSubstationBusTable["switchPointStatus"].assign( _switchOverStatus )
+            << dynamicCCSubstationBusTable["switchPointStatus"].assign( (_switchOverStatus?"Y":"N") )
             << dynamicCCSubstationBusTable["altSubControlValue"].assign( _altSubControlValue )
             << dynamicCCSubstationBusTable["eventSeq"].assign( _eventSeq )
             << dynamicCCSubstationBusTable["currentwattpointquality"].assign( _currentwattpointquality )
@@ -7285,7 +7285,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _verificationStrategy
             << _capBankToVerifyInactivityTime
             << _currentvoltloadpointvalue
-            << _switchOverStatus
+            << string((_switchOverStatus?"Y":"N"))
             << _altSubControlValue
             << _eventSeq
             << _currentwattpointquality
