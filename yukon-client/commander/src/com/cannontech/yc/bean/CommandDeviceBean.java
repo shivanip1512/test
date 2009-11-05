@@ -1231,8 +1231,6 @@ public class CommandDeviceBean implements DBChangeListener
 	                }
 	            }
 	        });
-
-	        System.out.println(loadGroupIDToLiteLoadGroupsMap.size());
 		}
 		return loadGroupIDToLiteLoadGroupsMap;
 	}
