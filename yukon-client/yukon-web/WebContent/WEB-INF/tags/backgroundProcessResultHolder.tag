@@ -118,11 +118,9 @@
     
     <%-- FAILURE DETAILS LINK --%>
     <c:if test="${callbackResult.failureReasonsListSupported}">
-    	<li style="padding-bottom:4px;">
 	    <a href="javascript:void(0);" onclick="$('processingErrorsDiv${resultsId}').toggle();refreshErrors($('processingErrorsDiv${resultsId}'));" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionErrorListLabel" /></a>
 	    
 	    <div id="processingErrorsDiv${resultsId}" style="display:none;"></div>
-		</li>
 	</c:if>
 	
 	<ul>

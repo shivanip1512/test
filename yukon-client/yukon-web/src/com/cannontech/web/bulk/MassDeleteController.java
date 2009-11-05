@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,6 +29,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_DELETE)
@@ -41,6 +41,7 @@ public class MassDeleteController extends BulkControllerBase {
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    private PaoLoadingService paoLoadingService;
     
     /**
      * CONFIRM MASS DELETE
@@ -126,9 +127,9 @@ public class MassDeleteController extends BulkControllerBase {
         try {
             deviceDao.removeDevice(device);
         } catch (DataRetrievalFailureException e) {
-            throw new ProcessingException("Could not find device with id: " + device.getDeviceId(), e);
-        } catch (UncategorizedSQLException e) {
-            throw new ProcessingException("Could not delete device with id: " + device.getDeviceId(), e);
+            throw new ProcessingException("Could not find device: " + paoLoadingService.getDisplayablePao(device).getName() + " (id=" + device.getDeviceId() + ")", e);
+        } catch (Exception e) {
+            throw new ProcessingException("Could not delete device: " + paoLoadingService.getDisplayablePao(device).getName() + " (id=" + device.getDeviceId() + ")", e);
         }
     }
     
@@ -180,5 +181,10 @@ public class MassDeleteController extends BulkControllerBase {
     @Autowired
     public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
 		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+	}
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+		this.paoLoadingService = paoLoadingService;
 	}
 }

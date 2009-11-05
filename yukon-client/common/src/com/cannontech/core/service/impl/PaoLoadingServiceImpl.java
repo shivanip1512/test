@@ -106,6 +106,13 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
         return result;
     }
     
+    @Override
+    public DisplayablePao getDisplayablePao(YukonPao pao) {
+
+    	List<DisplayablePao> displayableDevices = getDisplayableDevices(Collections.singletonList(pao));
+    	return displayableDevices.get(0);
+    }
+    
     @Autowired
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;

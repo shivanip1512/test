@@ -3,8 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- line number is key plus 2. (adjust for zero-indexed map key and header row) --%>
-<ul style="padding-left:0px;">
+<div style="padding-top:10px;padding-left:6px;">
 <c:forEach var="e" items="${exceptionRowNumberMap}">
-   <li><div style="font-size:11px;">Line ${e.key + 2} - ${e.value.message}</div></li>
+   <div style="font-size:11px;">&bull; Line ${e.key + 2} - ${e.value.message}</div>
 </c:forEach>
-</ul>
+</div>
