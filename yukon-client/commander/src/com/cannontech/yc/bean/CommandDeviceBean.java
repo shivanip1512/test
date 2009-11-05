@@ -1,22 +1,27 @@
 package com.cannontech.yc.bean;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -28,12 +33,6 @@ import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
-import com.cannontech.database.db.device.lm.LMGroup;
-import com.cannontech.database.db.device.lm.LMGroupEmetcon;
-import com.cannontech.database.db.device.lm.LMGroupExpressCom;
-import com.cannontech.database.db.device.lm.LMGroupVersacom;
-import com.cannontech.database.db.macro.GenericMacro;
-import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
@@ -92,6 +91,7 @@ public class CommandDeviceBean implements DBChangeListener
 	private static final String LMGROUP_SERIAL_STRING = "Group Serial Number";
 	private static final String LMGROUP_CAPACITY_STRING = "kW Capactiy";
 	private static final String LMGROUP_ROUTE_STRING = "Group Route";
+	private static final String LMGROUP_TYPE_STRING = "Group Type";
 	
     private static final String CBC_SERIAL_STRING = "Serial Number";
     
@@ -115,6 +115,7 @@ public class CommandDeviceBean implements DBChangeListener
     
 	public static final String[] orderByStrings_LoadGroup = new String[] { 
 			LOAD_GROUP_STRING,
+			LMGROUP_TYPE_STRING,
 			LMGROUP_ROUTE_STRING,
 			LMGROUP_SERIAL_STRING,
 			LMGROUP_CAPACITY_STRING};
@@ -1038,7 +1039,7 @@ public class CommandDeviceBean implements DBChangeListener
 			{
 				if( valueString.equalsIgnoreCase(LMGROUP_SERIAL_STRING))
 				{
-					return llg.getSerial();
+					return (llg.getSerial() == null ? NULL_OBJECT_STRING : llg.getSerial());
 				}
 				else if( valueString.equalsIgnoreCase(LMGROUP_CAPACITY_STRING))
 				{
@@ -1046,8 +1047,12 @@ public class CommandDeviceBean implements DBChangeListener
 				}
 				else if( valueString.equalsIgnoreCase(LMGROUP_ROUTE_STRING))
 				{
-					return DaoFactory.getPaoDao().getYukonPAOName(llg.getRouteID());
+					return (llg.getRouteID() >= 0 ? DaoFactory.getPaoDao().getYukonPAOName(llg.getRouteID()) : NULL_OBJECT_STRING);
 				}
+                else if( valueString.equalsIgnoreCase(LMGROUP_TYPE_STRING))
+                {
+                    return llg.getPaoType();
+                }
 			}
             
 		}
@@ -1056,7 +1061,8 @@ public class CommandDeviceBean implements DBChangeListener
     
 	private int getColumnWidth(String columnString)
 	{
-		if (columnString.equalsIgnoreCase(DEVICE_NAME_STRING))
+		if (columnString.equalsIgnoreCase(DEVICE_NAME_STRING) || 
+		        columnString.equalsIgnoreCase(LOAD_GROUP_STRING))
 			return 25;
         
 		return 15;        
@@ -1192,125 +1198,41 @@ public class CommandDeviceBean implements DBChangeListener
 	{
 		if (loadGroupIDToLiteLoadGroupsMap == null)
 		{
-			//Vector of Integer values(loadGroup or loadgroup(from within a macroGroup) ids)
-			Vector<Integer> groupIDs = null; 
+		    final PaoAuthorizationService paoAuthorizationService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
+		    final LiteYukonUser unloadedLiteYukonUser = new LiteYukonUser(getUserID());
 
-			StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID FROM " + YukonPAObject.TABLE_NAME  + " PAO " +
-				" WHERE PAO.PAOBJECTID IN ( " +
-					" SELECT DISTINCT GM.CHILDID FROM " + GenericMacro.TABLE_NAME + " GM ");
-					sql.append(" WHERE GM.MACROTYPE = '" + MacroTypes.GROUP + "') ");
-				sql.append(" OR PAO.PAOBJECTID IN ( " +
-					" SELECT DISTINCT LMG.DEVICEID FROM " + LMGroup.TABLE_NAME + " LMG )");
-                
-			java.sql.Connection conn = null;
-			java.sql.PreparedStatement stmt = null;
-			java.sql.ResultSet rset = null;
-			Set<Integer> permittedPaos = null;
-            LiteYukonUser user = new LiteYukonUser(userID);
-            if( userID != -1 ) {
-                PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                permittedPaos = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
-            }
-            
-			try {
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	
-				if( conn == null )
-				{
-					CTILogger.info("Error getting database connection.");
-					return null;
-				}
-				else
-				{
-					stmt = conn.prepareStatement(sql.toString());
-					rset = stmt.executeQuery();
-					Integer paoID = 0;
-                    groupIDs = new Vector<Integer>();
-					while( rset.next()) {
-                        paoID = rset.getInt(1);
-                        //no permissions for this user, they can see them all
-					    if(permittedPaos == null || permittedPaos.isEmpty())
-					        groupIDs.add(paoID);
-                        /*there are permissions for this user, only allow them to see this pao if
-                        it is permitted*/
-                        else if(permittedPaos.contains(paoID)) 
-                            groupIDs.add(paoID);
-                    }	
-					if( stmt != null )	//close the statement after every use.
-						stmt.close();
+		    loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>();
+			
+			SqlStatementBuilder sql = new SqlStatementBuilder();
+			sql.append(" SELECT LMG.DeviceId, Type, kWCapacity, RouteId, Serial ");
+			sql.append(" FROM LMGroup lmg JOIN ");
+			sql.append(" (SELECT DeviceId, RouteId, SerialAddress AS Serial FROM LMGroupVersacom "); 
+			sql.append(" UNION SELECT LMGroupId as DeviceId, RouteId, SerialNumber FROM LMGroupExpressCom "); 
+			sql.append(" UNION SELECT DeviceId, RouteId, NULL FROM LMGroupEmetcon ");
+			sql.append(" UNION SELECT OwnerId as DeviceId, -1, NULL FROM  GenericMacro ) as LMGroups ");
+			sql.append(" ON lmg.DeviceId = LMGroups.DeviceId ");
+			sql.append(" JOIN YukonPaobject pao on lmg.DeviceId = pao.PaobjectId");
 
-					loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>(groupIDs.size());
-					//Load all serial numbers for versacom and expresscom					
-					sql = new StringBuffer(" SELECT DISTINCT LMGV.DEVICEID, ROUTEID, KWCAPACITY, SERIALADDRESS " +
-							" FROM " + LMGroupVersacom.TABLE_NAME + " LMGV, " + LMGroup.TABLE_NAME + " LMG " +
-							" WHERE LMGV.DEVICEID = LMG.DEVICEID");
-					stmt = conn.prepareStatement(sql.toString());
-					rset = stmt.executeQuery();
-					while (rset.next())
-					{
-						Integer deviceID = new Integer(rset.getInt(1));
-						if (groupIDs.contains(deviceID))
-						{
-							int routeID = rset.getInt(2);
-							double capacity = rset.getDouble(3);
-							String serial = rset.getString(4);
-							YCLiteLoadGroup llg = new YCLiteLoadGroup(deviceID.intValue(), capacity, routeID, serial);
-							loadGroupIDToLiteLoadGroupsMap.put(deviceID, llg);
-						}
-					}
+			JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+	        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+	            @Override
+	            public void processRow(ResultSet rs) throws SQLException {
+	                int groupID = rs.getInt(1);
+	                String type = rs.getString(2);
+	                double kwCapacity = rs.getDouble(3);
+	                int routeID = rs.getInt(4);
+	                String serial = rs.getString(5);
 
-					if( stmt != null )	//close the statement after every use.
-						stmt.close();
-					
-					sql = new StringBuffer(" SELECT DISTINCT LMGROUPID, ROUTEID, KWCAPACITY, SERIALNUMBER " +
-							" FROM " + LMGroupExpressCom.TABLE_NAME + " LMGE, " + LMGroup.TABLE_NAME + " LMG " +
-							" WHERE LMGE.LMGROUPID = LMG.DEVICEID");
-					stmt = conn.prepareStatement(sql.toString());
-					rset = stmt.executeQuery();
-					while (rset.next())
-					{
-						Integer deviceID = new Integer(rset.getInt(1));
-						if (groupIDs.contains(deviceID))
-						{
-							int routeID = rset.getInt(2);
-							double capacity = rset.getDouble(3);
-							String serial = rset.getString(4);
-							YCLiteLoadGroup llg = new YCLiteLoadGroup(deviceID.intValue(), capacity, routeID, serial);
-							loadGroupIDToLiteLoadGroupsMap.put(deviceID, llg);
-						}
-					}
-					
-					if( stmt != null )	//close the statement after every use.
-						stmt.close();
-					
-					sql = new StringBuffer(" SELECT DISTINCT LME.DEVICEID, ROUTEID, KWCAPACITY " +
-							" FROM " + LMGroupEmetcon.tableName + " LME, " + LMGroup.TABLE_NAME + " LMG " +
-							" WHERE LME.DEVICEID = LMG.DEVICEID");
-					stmt = conn.prepareStatement(sql.toString());
-					rset = stmt.executeQuery();
-					while (rset.next())
-					{
-						Integer deviceID = new Integer(rset.getInt(1));
-						if (groupIDs.contains(deviceID))
-						{
-							int routeID = rset.getInt(2);
-							double capacity = rset.getDouble(3);
-							String serial = "0";	//no serial for emetcon
-							YCLiteLoadGroup llg = new YCLiteLoadGroup(deviceID.intValue(), capacity, routeID, serial);
-							loadGroupIDToLiteLoadGroupsMap.put(deviceID, llg);
-						}
-					}
-					
-				}
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
-			finally
-			{
-				SqlUtils.close(rset, stmt, conn );
-			}
+	                YCLiteLoadGroup ycLiteLoadGroup = new YCLiteLoadGroup(groupID, kwCapacity, routeID, serial, type);
+	                PaoType paoType = PaoType.getForDbString(type);
+	                PaoIdentifier paoIdentifier = new PaoIdentifier(groupID, paoType);
+	                if ( paoAuthorizationService.isAuthorized(unloadedLiteYukonUser, Permission.LM_VISIBLE, paoIdentifier)) {
+	                    loadGroupIDToLiteLoadGroupsMap.put(groupID, ycLiteLoadGroup);
+	                }
+	            }
+	        });
+
+	        System.out.println(loadGroupIDToLiteLoadGroupsMap.size());
 		}
 		return loadGroupIDToLiteLoadGroupsMap;
 	}

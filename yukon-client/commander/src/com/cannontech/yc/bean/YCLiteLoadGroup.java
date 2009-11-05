@@ -17,16 +17,18 @@ public class YCLiteLoadGroup{
 	private int routeID = -1;
 	private double kwCapacity = 0; 
 	private String serial = null;
+	private String paoType = null;
 	
 	/**
 	 * 
 	 */
-	public YCLiteLoadGroup(int groupID_, double kwCapacity_, int routeID_, String serial_) {
+	public YCLiteLoadGroup(int groupID_, double kwCapacity_, int routeID_, String serial_, String paoType) {
 		super();
 		groupID = groupID_;
 		kwCapacity = kwCapacity_;
 		routeID = routeID_;
 		serial = serial_;
+		this.paoType = paoType;
 	}
 	public int getGroupID()
 	{
@@ -43,5 +45,8 @@ public class YCLiteLoadGroup{
     public int getRouteID()
     {
         return routeID;
+    }
+    public String getPaoType() {
+        return paoType;
     }
 }
