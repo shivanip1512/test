@@ -3290,7 +3290,6 @@ void CtiCCSubstationBus::figureAndSetTargetVarValue()
 void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     CtiRequestMsg* request = NULL;
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     try
     {
@@ -10008,6 +10007,8 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     }
 }
 
+
+
 /*---------------------------------------------------------------------------
     saveGuts
 
@@ -10021,6 +10022,8 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     DOUBLE tempVolt;
     DOUBLE tempWatt;
 
+    LONG tempAltSubId = _altDualSubId;
+
     DOUBLE temppowerfactorvalue = _powerfactorvalue;
     DOUBLE tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue;
     if (_dualBusEnable && _switchOverStatus || getPrimaryBusFlag())
@@ -10028,6 +10031,11 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
         tempVolt = _altSubVoltVal;
         tempVar  = _altSubVarVal;
         tempWatt = _altSubWattVal;
+
+        if (getPrimaryBusFlag())
+        {
+            tempAltSubId = getAlterateBusIdForPrimary(_paoid);
+        }
     }
     else
     {
@@ -10104,9 +10112,32 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _voltReductionFlag
     << _usePhaseData
     << _primaryBusFlag
-    << _altDualSubId
+    << tempAltSubId
     << _ccfeeders;
 }
+
+
+LONG CtiCCSubstationBus::getAlterateBusIdForPrimary(long paoId) const
+{
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    int altSubIdCount = store->getNbrOfSubsWithAltSubID(_paoid);
+    while (altSubIdCount > 0)
+    {
+        long subId = store->findSubIDbyAltSubID(_paoid, altSubIdCount);
+        if (subId != NULL)
+        {
+            CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(subId);
+            if (altSub != NULL && altSub->getSwitchOverStatus())
+            {
+                return altSub->getPAOId();
+            }
+        }
+        altSubIdCount--;
+    }
+    return _paoid;
+}
+
 
 /*---------------------------------------------------------------------------
     operator=

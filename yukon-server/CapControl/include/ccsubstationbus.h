@@ -367,6 +367,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
     BOOL analyzeBusForVarImprovement(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
 
+    LONG getAlterateBusIdForPrimary(long paoId) const;
     BOOL isBusPerformingVerification();
     BOOL isBusReadyToStartVerification();
     BOOL isBusVerificationAlreadyStarted();
