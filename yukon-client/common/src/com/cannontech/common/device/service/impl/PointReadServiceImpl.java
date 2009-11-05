@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
@@ -50,6 +52,16 @@ public class PointReadServiceImpl implements PointReadService {
         }
         CommandCompletionCallbackAdapter<Object> dummyCallback = new CommandCompletionCallbackAdapter<Object>();
         executor.execute(commandRequests, dummyCallback, type, user);
+    }
+    
+    @Autowired
+    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
+        this.deviceDefinitionDao = deviceDefinitionDao;
+    }
+    
+    @Autowired
+    public void setCommandRequestDeviceExecutor(CommandRequestDeviceExecutor executor) {
+        this.executor = executor;
     }
 
 }
