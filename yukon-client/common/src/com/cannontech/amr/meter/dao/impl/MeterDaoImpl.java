@@ -256,10 +256,6 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     		            }
     		        });
     		    
-    		    
-    		    for (int i = 0; i < subList.size(); i++)
-    	            subList.set(i, subList.get(i).toUpperCase());
-
     		    SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
     			sql.append("WHERE UPPER(DeviceMeterGroup.MeterNumber) IN (").appendArgumentList(subListUppercase).append(")");
     			return sql;
