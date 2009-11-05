@@ -61,8 +61,8 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     public void afterPropertiesSet() throws Exception {
 
         retrieveOneByIdSql = meterRowMapper.getSql() + "where ypo.paObjectId = ? ";
-        retrieveOneByMeterNumberSql = meterRowMapper.getSql() + "where DeviceMeterGroup.MeterNumber = ? ";
-        retrieveOneByPaoNameSql = meterRowMapper.getSql() + "where ypo.PaoName = ? ";
+        retrieveOneByMeterNumberSql = meterRowMapper.getSql() + "WHERE UPPER(DeviceMeterGroup.MeterNumber) = UPPER(?) ";
+        retrieveOneByPaoNameSql = meterRowMapper.getSql() + "WHERE UPPER(ypo.PaoName) = UPPER(?) ";
         retrieveOneByPhysicalAddressSql = meterRowMapper.getSql() + "where DeviceCarrierSettings.Address = ? ";
         
     }
@@ -247,8 +247,11 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     	
     	List<Meter> meters = template.query(new SqlFragmentGenerator<String>() {
     		public SqlFragmentSource generate(List<String> subList) {
-    			SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
-    			sql.append("WHERE DeviceMeterGroup.MeterNumber IN (").appendArgumentList(subList).append(")");
+    		    for (String meter : subList)
+    		        meter = meter.toUpperCase();
+
+    		    SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
+    			sql.append("WHERE UPPER(DeviceMeterGroup.MeterNumber) IN (").appendArgumentList(subList).append(")");
     			return sql;
     		}
     	}, meterNumbers, meterRowMapper);
@@ -267,12 +270,14 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         if (lastReceived == null)
             lastReceived = "";
 
-        String sql = meterRowMapper.getSql() + " WHERE MeterNumber > ? ORDER BY MeterNumber";
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(meterRowMapper.getSql());
+        sqlBuilder.append("WHERE UPPER(MeterNumber) > UPPER(?) ");
+        sqlBuilder.append("ORDER BY MeterNumber");
 
         List<Meter> mspMeters = new ArrayList<Meter>();
         ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters,
                                                                        meterRowMapper);
-        jdbcOps.query(sql,
+        jdbcOps.query(sqlBuilder.getSql(),
                       new Object[] { lastReceived },
                       new MaxRowCalbackHandlerRse(lrcHandler, maxRecordCount));
         return mspMeters;
@@ -288,12 +293,14 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         if (lastReceived == null)
             lastReceived = "";
 
-        String sql = meterRowMapper.getSql() + " WHERE PaoName > ? ORDER BY PaoName";
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(meterRowMapper.getSql());
+        sqlBuilder.append("WHERE UPPER(PaoName) > UPPER(?) ");
+        sqlBuilder.append("ORDER BY PaoName ");
 
         List<Meter> mspMeters = new ArrayList<Meter>();
         ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters,
                                                                        meterRowMapper);
-        jdbcOps.query(sql,
+        jdbcOps.query(sqlBuilder.getSql(),
                       new Object[] { lastReceived },
                       new MaxRowCalbackHandlerRse(lrcHandler, maxRecordCount));
         return mspMeters;

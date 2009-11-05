@@ -111,14 +111,17 @@ public final class PaoDaoImpl implements PaoDao {
             final int category, final int paoClass, final int type) {
         
         try {
-            String sql = litePaoSql + "WHERE y.PAOName = ? AND y.Category = ? AND y.PAOClass = ? AND y.Type = ?";
+            SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
+            sqlBuilder.append("WHERE UPPER(y.PAOName) = UPPER(?) ");
+            sqlBuilder.append("AND y.Category = ? "); 
+            sqlBuilder.append("AND y.PAOClass = ? ");
+            sqlBuilder.append("AND y.Type = ? ");
             String stringCategory = PAOGroups.getCategory(category);
             String stringClass = PAOGroups.getPAOClass(category, paoClass);
             String stringType = PAOGroups.getPAOTypeString(type);
             
             LiteYukonPAObject pao = 
-                (LiteYukonPAObject) jdbcOps.queryForObject(
-                                                           sql, 
+                (LiteYukonPAObject) jdbcOps.queryForObject(sqlBuilder.getSql(), 
                                                            new Object[]{deviceName, stringCategory, stringClass, stringType}, 
                                                            litePaoRowMapper);
             return pao;
@@ -130,10 +133,12 @@ public final class PaoDaoImpl implements PaoDao {
     public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass) {
         
         try {
-            String sql = litePaoSql + "WHERE y.PAOName = ? AND y.Category = ? AND y.PAOClass = ? ";
+            SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
+            sqlBuilder.append("WHERE UPPER(y.PAOName) = UPPER(?) ");
+            sqlBuilder.append("AND y.Category = ? ");
+            sqlBuilder.append("AND y.PAOClass = ? ");
             LiteYukonPAObject pao = 
-                (LiteYukonPAObject) jdbcOps.queryForObject(
-                                                           sql, 
+                (LiteYukonPAObject) jdbcOps.queryForObject(sqlBuilder.getSql(), 
                                                            new Object[]{paoName, category, paoClass}, 
                                                            litePaoRowMapper);
             return pao;
@@ -308,35 +313,38 @@ public final class PaoDaoImpl implements PaoDao {
 
     public int countLiteYukonPaoByName(String name, boolean partialMatch)
             throws NotFoundException {
-        String sql;
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         if (partialMatch) {
-            sql = "select count(*) from YukonPAObject where paoname like '" + name + "%'";
+            sqlBuilder.append("SELECT COUNT(*) ");
+            sqlBuilder.append("FROM YukonPAObject ");
+            sqlBuilder.append("WHERE UPPER(PAOName) LIKE UPPER('" + name + "%')");
         } else {
-            sql = "select count(*) from YukonPAObject where paoname='" + name + "'";
+            sqlBuilder.append("SELECT COUNT(*) ");
+            sqlBuilder.append("FROM YukonPAObject ");
+            sqlBuilder.append("WHERE UPPER(PAOName) = UPPER('" + name + "')");
         }
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        return (Integer) jdbcOps.queryForObject(sql, Integer.class);
+        return (Integer) jdbcOps.queryForObject(sqlBuilder.getSql(), Integer.class);
     }
 
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name,
             boolean partialMatch) {
 
-        String sql = litePaoSql;
-
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
+        
         if (partialMatch) {
-            sql += "where y.PAOName like ? ";
+            sqlBuilder.append("WHERE UPPER(y.PAOName) LIKE UPPER(?) ");
         } else {
-            sql += "where y.PAOName=? ";
+            sqlBuilder.append("WHERE UPPER(y.PAOName) = UPPER(?) ");
         }
-
-        sql += "ORDER BY y.Category, y.PAOClass, y.PAOName";
+        sqlBuilder.append(" ORDER BY y.Category, y.PAOClass, y.PAOName ");
 
         if (partialMatch) {
             name += "%";
         }
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sql,
+        List<LiteYukonPAObject> paos = jdbcOps.query(sqlBuilder.getSql(),
                                                      new Object[] { name },
                                                      litePaoRowMapper);
         return paos;
@@ -432,15 +440,6 @@ public final class PaoDaoImpl implements PaoDao {
 
        return count;
    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     @Override
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader() {

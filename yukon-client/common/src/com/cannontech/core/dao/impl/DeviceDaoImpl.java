@@ -131,12 +131,13 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
     public SimpleDevice getYukonDeviceObjectByName(String name) {
 
-        String sql = "SELECT ypo.PAObjectID, ypo.Type " +
-                     "FROM YukonPaObject ypo " +
-                     "WHERE ypo.Category = 'DEVICE' " +
-                     "AND ypo.PAOClass IN ('CARRIER','METER','IED') " +
-                     "AND ypo.PAOName = ?";
-        SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sql, new Object[] {name}, this.yukonDeviceRowMapper);
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT PAO.PAObjectId, PAO.Type ");
+        sqlBuilder.append("FROM YukonPAObject PAO ");
+        sqlBuilder.append("WHERE PAO.Category = 'DEVICE' ");
+        sqlBuilder.append("AND PAO.PAOClass IN ('CARRIER','METER','IED') ");
+        sqlBuilder.append("AND UPPER(PAO.PAOName) = UPPER(?)");
+        SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sqlBuilder.getSql(), new Object[] {name}, this.yukonDeviceRowMapper);
         return device;
     }
 
@@ -153,11 +154,12 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
     public SimpleDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
 
-        String sql = "SELECT ypo.PAObjectID, ypo.Type " + 
-                     " FROM YukonPaObject ypo " +
-                     " INNER JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceID " +
-                     " WHERE dmg.METERNUMBER = ? ";
-        SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sql, new Object[] {meterNumber}, this.yukonDeviceRowMapper);
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT PAO.PAObjectID, PAO.Type "); 
+        sqlBuilder.append("FROM YukonPAObject PAO ");
+        sqlBuilder.append("INNER JOIN DeviceMeterGroup DMG ON PAO.PAObjectID = DMG.DeviceID ");
+        sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(?) ");
+        SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sqlBuilder.getSql(), new Object[] {meterNumber}, this.yukonDeviceRowMapper);
         return device;
     }
 
@@ -199,7 +201,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         for (int i = 0; i < allDevMtrGrps.size(); i++)
         {
             ldmn = (LiteDeviceMeterNumber)allDevMtrGrps.get(i);
-            if (ldmn.getMeterNumber().equals(meterNumber))
+            if (ldmn.getMeterNumber().equalsIgnoreCase(meterNumber))
             {
                 LiteYukonPAObject lPao = (LiteYukonPAObject)databaseCache.getAllPAOsMap().get(new Integer(ldmn.getDeviceID()));
                 return lPao;
@@ -214,12 +216,12 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber)
     {
 
-        StringBuilder sql = new StringBuilder(litePaoSql);
-        sql.append("left outer join devicemetergroup dmg on y.paobjectid=dmg.deviceid " +
-                   "where dmg.meternumber = ?");
+        StringBuilder sqlBuilder = new StringBuilder(litePaoSql);
+        sqlBuilder.append("LEFT OUTER JOIN DeviceMeterGroup DMG ON y.PAObjectId = DMG.DeviceId ");
+        sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(?)");
 
         List<LiteYukonPAObject> paos = 
-            simpleJdbcTemplate.query(sql.toString(), new LitePaoRowMapper(), meterNumber);
+            simpleJdbcTemplate.query(sqlBuilder.toString(), new LitePaoRowMapper(), meterNumber);
 
         return paos;
     }
@@ -235,7 +237,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         for (int i = 0; i < allDevices.size(); i++)
         {
             lPao = (LiteYukonPAObject)allDevices.get(i);
-            if (lPao.getPaoName().equals(deviceName))
+            if (lPao.getPaoName().equalsIgnoreCase(deviceName))
                 return lPao;
         }
         return null;
@@ -250,7 +252,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         for (Object obj : allDevices) {
             LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
             boolean foundMatch = true;
-            foundMatch &= lPao.getPaoName().equals(deviceName);
+            foundMatch &= lPao.getPaoName().equalsIgnoreCase(deviceName);
             foundMatch &= lPao.getCategory() == category;
             foundMatch &= lPao.getPaoClass() == paoClass;
             foundMatch &= lPao.getType() == type;
