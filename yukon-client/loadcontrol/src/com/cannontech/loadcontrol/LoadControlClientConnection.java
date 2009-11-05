@@ -32,6 +32,7 @@ import com.cannontech.loadcontrol.dynamic.receive.LMTriggerChanged;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
 import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
@@ -77,7 +78,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	deleteObservers();
     }
     
-    private void handleDeletedAreas(LMControlAreaMsg msg) {
+    private void handleDeletedItems(LMControlAreaMsg msg) {
         // When a message comes in with the "deleted" flag set, it contains all
         // of the control areas EXCEPT the deleted one(s).
         Set<Integer> controlAreasToKeep = Sets.newHashSet();
@@ -256,34 +257,30 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	return (countObservers() <= 0);
     }
 
-    public void messageReceived( MessageEvent e ) {
-    	Object obj = e.getMessage();
-    	if( obj instanceof LMControlArea ) {
-    		handleLMControlArea( (LMControlArea)obj );
-    	}
-        else if( obj instanceof LMControlAreaChanged ) {
+    public void messageReceived(MessageEvent msgEvent) {
+        log.debug("messageReceived: " + msgEvent);
+        Message obj = msgEvent.getMessage();
+        if (obj instanceof LMControlAreaChanged) {
             // The server only sends this type of message for minor control area changes
             // This helps prevent heavy messages constantly flowing on every little change
             handleLMControlAreaChange((LMControlAreaChanged)obj);
-        }
-        else if( obj instanceof LMProgramChanged ) {
+        } else if (obj instanceof LMProgramChanged) {
             handleLMProgramChange((LMProgramChanged)obj);
-        }
-        else if( obj instanceof LMGroupChanged ) {
-            handleLMGroupChange((LMGroupChanged)obj);
-        }
-    	else if( obj instanceof LMControlAreaMsg ) {
-    		LMControlAreaMsg msg = (LMControlAreaMsg)obj;
+        } else if (obj instanceof LMGroupChanged) {
+            handleLMGroupChange((LMGroupChanged) obj);
+        } else if (obj instanceof LMControlAreaMsg) {
+            // This message type contains a list of everything load management
+            // knows about.
+            LMControlAreaMsg msg = (LMControlAreaMsg) obj;
 
-            if (msg.isDeletedCntrlArea()) {
-                handleDeletedAreas(msg);
-            }
+            // We need to remove control areas, programs and load groups which
+            // aren't used any more.
+            handleDeletedItems(msg);
             for (int i = 0; i < msg.getNumberOfLMControlAreas(); i++) {
                 handleLMControlArea(msg.getLMControlArea(i));
             }
-    	}
-    	else if( obj instanceof ServerResponseMsg ) {
-    	    //CTILogger.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
+        } else if (obj instanceof ServerResponseMsg) {
+    	    //log.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
     	}
     }
     
@@ -309,7 +306,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         newControlArea.setCurrentDailyStopTime(changedArea.getCurrentDailyStopTime());
 
         for(LMTriggerChanged changedTrigger : changedArea.getTriggers()) {
-            log.warn("processing " + changedTrigger);
+            log.debug("processing " + changedTrigger);
             LMControlAreaTrigger currentTrigger = newControlArea.getTrigger(changedTrigger.getTriggerNumber());
 
             if(currentTrigger != null) {
