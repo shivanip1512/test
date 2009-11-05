@@ -12,11 +12,34 @@
         argument="${program.name}"/>
 </h1>
 
-<cti:url var="submitUrl" value="/spring/dr/program/startProgramConstraints"/>
+<c:choose>
+	<c:when test="${not empty program}">
+		<cti:url var="submitUrl" value="/spring/dr/program/startProgramConstraints"/>
+	</c:when>
+	<c:otherwise>
+		<cti:url var="submitUrl" value="/spring/dr/program/startMultipleProgramsConstraints"/>
+	</c:otherwise>
+</c:choose>
+
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
-    <form:hidden path="programId"/>
-    <form:hidden path="gearNumber"/>
+
+<c:choose>
+	<c:when test="${not empty program}">
+	    <form:hidden path="programId"/>
+	    <form:hidden path="gearNumber"/>
+    </c:when>
+	<c:otherwise>
+		<form:hidden path="controlAreaId"/>
+	    <form:hidden path="scenarioId"/>
+    	<c:forEach var="programStartInfo" varStatus="status" items="${backingBean.programStartInfo}">
+	        <form:hidden path="programStartInfo[${status.index}].programId"/>
+	        <form:hidden path="programStartInfo[${status.index}].startProgram"/>
+	        <form:hidden path="programStartInfo[${status.index}].gearNumber"/>
+	    </c:forEach>
+	</c:otherwise>
+</c:choose>
+    
     <form:hidden path="startNow"/>
     <form:hidden path="startDate"/>
     <form:hidden path="scheduleStop"/>

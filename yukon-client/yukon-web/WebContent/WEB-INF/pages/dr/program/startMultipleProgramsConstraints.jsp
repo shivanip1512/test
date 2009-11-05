@@ -40,7 +40,14 @@ singleOverrideChecked = function(boxChecked) {
     <form:hidden path="scheduleStop"/>
     <form:hidden path="stopDate"/>
     <form:hidden path="autoObserveConstraints"/>
-
+    <form:hidden path="addAdjustments"/>
+    <form:hidden path="numAdjustments"/>
+    <c:if test="${backingBean.numAdjustments > 0}">
+        <c:forEach var="index" begin="0" end="${backingBean.numAdjustments - 1}">
+            <form:hidden path="gearAdjustments[${index}]"/>
+        </c:forEach>
+    </c:if>
+    
     <h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea"

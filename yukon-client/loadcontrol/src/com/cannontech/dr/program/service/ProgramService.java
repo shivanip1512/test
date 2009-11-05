@@ -39,7 +39,8 @@ public interface ProgramService {
      *         returns the violated constraints.
      */
     public ConstraintViolations getConstraintViolationForStartProgram(
-            int programId, int gearNumber, Date startDate, Date stopDate);
+            int programId, int gearNumber, Date startDate, Date stopDate,
+            String additionalInfo);
 
     /**
      * Start the given program with the given gear number, start and end time.

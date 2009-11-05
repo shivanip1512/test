@@ -7,6 +7,7 @@
 
 <script type="text/javascript">
 targetCycleGears = {
+	<c:set var="sep" value=""/>
     <c:forEach var="gear" varStatus="status" items="${gears}">
         <c:if test="${gear.targetCycle}">
             ${sep}${status.index + 1} : true

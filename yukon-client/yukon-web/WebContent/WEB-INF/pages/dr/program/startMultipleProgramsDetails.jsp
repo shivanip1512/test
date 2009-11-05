@@ -5,12 +5,38 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-
 <script type="text/javascript">
+
+targetCycleGears = {
+	<c:set var="programSep" value=""/>
+	<c:forEach var="program" varStatus="programStatus" items="${programs}">
+		<c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+        <c:set var="gears" value="${gearsByProgramId[programId]}"/>
+            
+		${programSep}${programStatus.index}:{ 
+		<c:set var="gearSep" value=""/>
+	    <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
+	        <c:if test="${gear.targetCycle}">
+	            ${gearSep}${gearStatus.index + 1} : true
+	            <c:set var="gearSep" value=","/>
+	        </c:if>
+	    </c:forEach>
+	    <c:set var="programSep" value=","/>
+		}
+    </c:forEach>
+	};
+
 submitForm = function() {
     combineDateAndTimeFields('startDate');
     combineDateAndTimeFields('stopDate');
-    return submitFormViaAjax('drDialog', 'startMultipleProgramsForm');
+
+    if ($('addAdjustmentsCheckbox').checked) {
+        url = '<cti:url value="/spring/dr/program/startMultipleProgramsGearAdjustments"/>';
+    } else {
+        url = '<cti:url value="/spring/dr/program/startMultipleProgramsConstraints"/>';
+    }
+
+    return submitFormViaAjax('drDialog', 'startMultipleProgramsForm', url);
 }
 
 startNowChecked = function() {
@@ -22,7 +48,8 @@ scheduleStopChecked = function() {
 }
 
 updateSubmitButtons = function() {
-    if (!$('autoObserveConstraints').checked) {
+    if ($('addAdjustmentsCheckbox').checked ||
+        !$('autoObserveConstraints').checked) {
         $('okButton').disable();
         $('nextButton').enable();
     } else {
@@ -36,6 +63,7 @@ allProgramsChecked = function() {
     for (index = 0; index < ${fn:length(programs)}; index++) {
         $('startProgramCheckbox' + index).checked = allChecked;
     }
+    gearChanged();
 }
 
 updateAllProgramsChecked = function() {
@@ -53,7 +81,30 @@ singleProgramChecked = function(boxChecked) {
     } else {
         $('allProgramsCheckbox').checked = false;
     }
+    gearChanged();
 }
+
+gearChanged = function() {
+	var adjustButtonShown = false;
+
+	for (index = 0; index < ${fn:length(programs)}; index++) {
+		var gearNum = $('programStartInfo'+index+'.gearNumber').value;
+		var programChecked = $('startProgramCheckbox'+index).checked;
+		if (targetCycleGears[index][gearNum] && 
+			programChecked) {
+			adjustButtonShown = true;
+		}
+	}
+
+	if (adjustButtonShown) {
+		$('addAdjustmentsArea').show();
+    } else {
+        $('addAdjustmentsArea').hide();
+        $('addAdjustmentsCheckbox').checked = false;
+        updateSubmitButtons();
+    }
+}
+
 </script>
 
 <h1 class="dialogQuestion">
@@ -67,10 +118,8 @@ singleProgramChecked = function(boxChecked) {
     </c:if>
 </h1>
 
-<c:url var="submitUrl" value="/spring/dr/program/startMultipleProgramsConstraints"/>
-<form:form id="startMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
-    onsubmit="return submitForm();">
-    <form:hidden path="controlAreaId"/>
+<form:form id="startMultipleProgramsForm" commandName="backingBean" onsubmit="return submitForm();">
+	<form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
     <table class="compactResultsTable">
@@ -128,7 +177,7 @@ singleProgramChecked = function(boxChecked) {
                     id="startProgramCheckbox${status.index}"
                     onclick="singleProgramChecked(this);"/>
                 <label for="startProgramCheckbox${status.index}"><spring:escapeBody>${program.name}</spring:escapeBody></label></td>
-                <td><form:select path="programStartInfo[${status.index}].gearNumber">
+                <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()">
                     <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
                         <form:option value="${gearStatus.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
                     </c:forEach>
@@ -140,6 +189,18 @@ singleProgramChecked = function(boxChecked) {
     </div>
     </tags:abstractContainer>
     <br>
+
+    <c:set var="addAdjustmentAreaStyle" value="none"/>
+    <c:if test="${!empty gears && gears[0].targetCycle}">
+        <c:set var="addAdjustmentAreaStyle" value="block"/>
+    </c:if>
+	<div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
+        <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
+            onclick="updateSubmitButtons();"/>
+        <label for="addAdjustmentsCheckbox">
+            <cti:msg key="yukon.web.modules.dr.program.startProgram.addAdjustments"/>
+        </label><br>
+    </div>
 
     <input type="checkbox" id="allProgramsCheckbox" onclick="allProgramsChecked()"/>
     <script type="text/javascript">updateAllProgramsChecked();</script>

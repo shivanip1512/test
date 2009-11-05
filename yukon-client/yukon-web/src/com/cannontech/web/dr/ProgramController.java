@@ -88,6 +88,11 @@ public class ProgramController {
         private Date stopDate;
         private boolean autoObserveConstraints;
 
+        // only used for target cycle gears
+        private boolean addAdjustments;
+        private int numAdjustments;
+        private List<Integer> gearAdjustments = new ArrayList<Integer>();
+
         public boolean isStartNow() {
             return startNow;
         }
@@ -127,32 +132,8 @@ public class ProgramController {
         public void setAutoObserveConstraints(boolean autoObserveConstraints) {
             this.autoObserveConstraints = autoObserveConstraints;
         }
-    }
-
-    public static class StartProgramBackingBean extends StartProgramBackingBeanBase {
-        private int programId;
-        private int gearNumber;
-        // only used for target cycle gears
-        private boolean addAdjustments;
-        private int numAdjustments;
-        private List<Double> gearAdjustments = new ArrayList<Double>();
-
-        public int getProgramId() {
-            return programId;
-        }
-
-        public void setProgramId(int programId) {
-            this.programId = programId;
-        }
-
-        public int getGearNumber() {
-            return gearNumber;
-        }
-
-        public void setGearNumber(int gearNumber) {
-            this.gearNumber = gearNumber;
-        }
-
+        
+        
         public boolean isAddAdjustments() {
             return addAdjustments;
         }
@@ -169,12 +150,33 @@ public class ProgramController {
             this.numAdjustments = numAdjustments;
         }
 
-        public List<Double> getGearAdjustments() {
+        public List<Integer> getGearAdjustments() {
             return gearAdjustments;
         }
 
-        public void setGearAdjustments(List<Double> gearAdjustments) {
+        public void setGearAdjustments(List<Integer> gearAdjustments) {
             this.gearAdjustments = gearAdjustments;
+        }
+    }
+
+    public static class StartProgramBackingBean extends StartProgramBackingBeanBase {
+        private int programId;
+        private int gearNumber;
+        
+        public int getProgramId() {
+            return programId;
+        }
+
+        public void setProgramId(int programId) {
+            this.programId = programId;
+        }
+
+        public int getGearNumber() {
+            return gearNumber;
+        }
+
+        public void setGearNumber(int gearNumber) {
+            this.gearNumber = gearNumber;
         }
     }
 
@@ -483,11 +485,11 @@ public class ProgramController {
         int numTimeSlots = drService.getTimeSlotsForTargetCycle(backingBean.getStopDate(),
                                                                 backingBean.getStartDate(),
                                                                 gear.getMethodPeriod());
-        backingBean.numAdjustments = numTimeSlots;
-        backingBean.gearAdjustments.clear();
+        backingBean.setNumAdjustments(numTimeSlots);
+        backingBean.getGearAdjustments().clear();
         GearAdjustmentTimeSlot[] timeSlots = new GearAdjustmentTimeSlot[numTimeSlots];
         for (int index = 0; index < numTimeSlots; index++) {
-            backingBean.gearAdjustments.add(100.0);
+            backingBean.getGearAdjustments().add(100);
             timeSlots[index] = new GearAdjustmentTimeSlot(timeSlotStartCal.getTime());
             timeSlotStartCal.add(Calendar.HOUR_OF_DAY, 1);
             timeSlots[index].endTime = timeSlotStartCal.getTime();
@@ -545,11 +547,18 @@ public class ProgramController {
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
         modelMap.addAttribute("overrideAllowed", overrideAllowed);
 
+        String additionalInfo = null;
+        if (backingBean.getNumAdjustments() > 0) {
+            additionalInfo = "adjustments " +
+                    StringUtils.join(backingBean.getGearAdjustments(), ' ');
+        }
+        
         ConstraintViolations violations =
             programService.getConstraintViolationForStartProgram(backingBean.getProgramId(),
                                                                  backingBean.getGearNumber(),
                                                                  backingBean.getStartDate(),
-                                                                 backingBean.getStopDate());
+                                                                 backingBean.getStopDate(),
+                                                                 additionalInfo);
         modelMap.addAttribute("violations", violations);
 
         return "dr/program/startProgramConstraints.jsp";
@@ -573,9 +582,9 @@ public class ProgramController {
         assertOverrideAllowed(userContext, overrideConstraints);
 
         String additionalInfo = null;
-        if (backingBean.numAdjustments > 0) {
+        if (backingBean.getNumAdjustments() > 0) {
             additionalInfo = "adjustments " +
-            		StringUtils.join(backingBean.gearAdjustments, ' ');
+            		StringUtils.join(backingBean.getGearAdjustments(), ' ');
         }
         int gearNumber = backingBean.getGearNumber();
         Date startDate = backingBean.getStartDate();
@@ -663,6 +672,77 @@ public class ProgramController {
     }
 
     @RequestMapping
+    public String startMultipleProgramsGearAdjustments(
+            @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
+            ModelMap modelMap, YukonUserContext userContext) {
+
+        if (backingBean.controlAreaId != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         controlArea, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("controlArea", controlArea);
+        }
+        if (backingBean.scenarioId != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         scenario, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            modelMap.addAttribute("scenario", scenario);
+        }
+        
+        LMProgramDirectGear targetCycleGear = null;
+        List<ProgramStartInfo> programStartInfos = backingBean.programStartInfo;
+        for (ProgramStartInfo programStartInfo : programStartInfos) {
+            DisplayablePao program = programService.getProgram(programStartInfo.getProgramId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
+                                                         program, 
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            
+            // TODO:  validate
+            
+            LMProgramBase programBase = programService.getProgramForPao(program);
+            
+            LMProgramDirectGear gear =
+                ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
+            
+            if (gear.isTargetCycle()) {
+                targetCycleGear = gear;
+                break;
+            }
+        }
+        
+        if (targetCycleGear == null) {
+            // they really can't adjust gears; got here via bug or hack
+            throw new RuntimeException("startMultipleProgramsGearAdjustments called for non-target cycle gear");
+        }
+
+        // TODO:  when coming at this page from "back", don't reinitialize adjustments
+        Calendar timeSlotStartCal = Calendar.getInstance(userContext.getLocale());
+        timeSlotStartCal.setTime(backingBean.getStartDate());
+        timeSlotStartCal.set(Calendar.MINUTE, 0);
+        timeSlotStartCal.set(Calendar.SECOND, 0);
+        timeSlotStartCal.set(Calendar.MILLISECOND, 0);
+        int numTimeSlots = drService.getTimeSlotsForTargetCycle(backingBean.getStopDate(),
+                                                                backingBean.getStartDate(),
+                                                                targetCycleGear.getMethodPeriod());
+        backingBean.setNumAdjustments(numTimeSlots);
+        backingBean.getGearAdjustments().clear();
+        GearAdjustmentTimeSlot[] timeSlots = new GearAdjustmentTimeSlot[numTimeSlots];
+        for (int index = 0; index < numTimeSlots; index++) {
+            backingBean.getGearAdjustments().add(100);
+            timeSlots[index] = new GearAdjustmentTimeSlot(timeSlotStartCal.getTime());
+            timeSlotStartCal.add(Calendar.HOUR_OF_DAY, 1);
+            timeSlots[index].endTime = timeSlotStartCal.getTime();
+        }
+        modelMap.addAttribute("timeSlots", timeSlots);
+        return "dr/program/startProgramGearAdjustments.jsp";
+    }
+    
+    @RequestMapping
     public String startMultipleProgramsConstraints(
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
@@ -733,12 +813,25 @@ public class ProgramController {
             int programId = programStartInfo.getProgramId();
             DisplayablePao program = programService.getProgram(programId);
             programsByProgramId.put(programId, program);
+            
+            
+            LMProgramBase programBase = programService.getProgramForPao(program);
+            LMProgramDirectGear gear =
+                ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 
+            String additionalInfo = null;
+            if (gear.isTargetCycle() &&
+                backingBean.getNumAdjustments() > 0) {
+                additionalInfo = "adjustments " +
+                        StringUtils.join(backingBean.getGearAdjustments(), ' ');
+            }
+            
             ConstraintViolations violations =
                 programService.getConstraintViolationForStartProgram(programId,
                                                                      programStartInfo.gearNumber,
                                                                      backingBean.getStartDate(),
-                                                                     backingBean.getStopDate());
+                                                                     backingBean.getStopDate(),
+                                                                     additionalInfo);
             if (violations != null && violations.getViolations().size() > 0) {
                 violationsByProgramId.put(programId, violations);
                 constraintsViolated = true;
@@ -804,13 +897,26 @@ public class ProgramController {
                 throw new NotAuthorizedException("not authorized to override constraints");
             }
 
+            DisplayablePao program = programService.getProgram(programStartInfo.getProgramId());
+            LMProgramBase programBase = programService.getProgramForPao(program);
+            LMProgramDirectGear gear =
+                ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
+
+            
+            String additionalInfo = null;
+            if (gear.isTargetCycle() &&
+                backingBean.getNumAdjustments() > 0) {
+                additionalInfo = "adjustments " +
+                        StringUtils.join(backingBean.getGearAdjustments(), ' ');
+            }
+            
             programService.startProgram(programStartInfo.programId,
                                         programStartInfo.gearNumber,
                                         backingBean.getStartDate(),
                                         backingBean.isScheduleStop(),
                                         backingBean.getStopDate(),
                                         programStartInfo.overrideConstraints,
-                                        null);
+                                        additionalInfo);
         }
 
         return closeDialog(modelMap);

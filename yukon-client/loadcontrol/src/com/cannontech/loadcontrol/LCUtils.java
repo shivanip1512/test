@@ -608,6 +608,19 @@ public class LCUtils
 					: cntrlArea.getCurrentDailyStopTime().intValue() );
 	}
 
+    /**
+     * A method to create a LMManualControlRequest with some set values. 
+     * @param
+     */
+    public static synchronized LMManualControlRequest createProgMessage(
+                boolean doItNow, boolean isStop,
+                Date startTime, Date stopTime, LMProgramBase program,
+                Integer gearNum, int constraintFlag ) 
+    {
+        return createProgMessage(doItNow, isStop, startTime, stopTime, program,
+                                 gearNum, constraintFlag, null);
+    }
+    
 	/**
 	 * A method to create a LMManualControlRequest with some set values. 
 	 * Creation date: (5/14/2002 10:50:02 AM)
@@ -616,7 +629,7 @@ public class LCUtils
 	public static synchronized LMManualControlRequest createProgMessage(
 				boolean doItNow, boolean isStop,
 				Date startTime, Date stopTime, LMProgramBase program,
-				Integer gearNum, int constraintFlag ) 
+				Integer gearNum, int constraintFlag, String additionalInfo ) 
 	{
 		LMManualControlRequest msg = null;
 		
@@ -633,12 +646,12 @@ public class LCUtils
 							startTime, 
 							stopTime,
 							(gearNum == null ? 0 : gearNum.intValue()), 
-							null);							
+							additionalInfo);							
 		}
 		else
 		{
 			msg = createStartMessage(doItNow, startTime, stopTime, program, 
-                                     gearNum, constraintFlag, null);
+                                     gearNum, constraintFlag, additionalInfo);
 		}
 	
 		//return the message created
@@ -664,6 +677,25 @@ public class LCUtils
         return msg;
     }
 
+    /**
+     *
+     * Generates a scenario message based on the given params. If the given time is
+     * 1990 and we are to start/stop in the future, then we must change 
+     * the given start/stop time to the current time.
+     * @return
+     */
+
+    public static synchronized LMManualControlRequest createScenarioMessage( 
+        LMProgramBase program,
+        boolean isStop, boolean isNow, int startDelay,
+        int stopOffset, int gearNum, Date startTime,
+        Date stopTime, int constraintFlag) {
+                                                                    
+        return createScenarioMessage(program, isStop, isNow, startDelay, stopOffset, 
+                                     gearNum, startTime, stopTime, constraintFlag, null);
+
+    }
+    
 	/**
 	 *
 	 * Generates a scenario message based on the given params. If the given time is
@@ -675,7 +707,7 @@ public class LCUtils
 			LMProgramBase program,
 			boolean isStop, boolean isNow, int startDelay,
 			int stopOffset, int gearNum, Date startTime,
-			Date stopTime, int constraintFlag )
+			Date stopTime, int constraintFlag, String additionalInfo )
 	{
 		//we can not start/stop now if there is a delay for the program
 		boolean doItNow = false;
@@ -702,7 +734,7 @@ public class LCUtils
 		
 		LMManualControlRequest msg = LCUtils.createProgMessage(
 			doItNow, isStop, startGC.getTime(), stopGC.getTime(),
-			program, (isStop ? null : new Integer(gearNum)), constraintFlag );
+			program, (isStop ? null : new Integer(gearNum)), constraintFlag, additionalInfo);
 
 		return msg;				
 	}

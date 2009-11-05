@@ -107,7 +107,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public ConstraintViolations getConstraintViolationForStartProgram(
-            int programId, int gearNumber, Date startDate, Date stopDate) {
+            int programId, int gearNumber, Date startDate, Date stopDate,
+            String additionalInfo) {
         LMManualControlRequest controlRequest =
             getManualControlMessage(programId, gearNumber, startDate, stopDate,
                                     LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
@@ -116,9 +117,9 @@ public class ProgramServiceImpl implements ProgramService {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
 
         if (program instanceof LMProgramDirect) {
-            String additionalInfo = ((LMProgramDirect) program).getAddtionalInfo();
             if (additionalInfo != null) {
                 // When two d's just aren't enough...
+                ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
                 controlRequest.setAddditionalInfo(additionalInfo);
             }
         }
@@ -127,19 +128,22 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void startProgram(int programId, int gearNumber, Date startDate, boolean stopScheduled, 
-                             Date stopDate, boolean overrideConstraints, String additionalInfo) {
+    public void startProgram(int programId, int gearNumber, Date startDate,
+            boolean stopScheduled, Date stopDate, boolean overrideConstraints,
+            String additionalInfo) {
 
         int constraintId = overrideConstraints
             ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
             : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         LMManualControlRequest controlRequest =
-            getManualControlMessage(programId, gearNumber, startDate, stopDate, constraintId);
+            getManualControlMessage(programId, gearNumber, startDate, stopDate,
+                                    constraintId);
 
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         String gearName = getGearNameForProgram(program, gearNumber);
         if (additionalInfo != null) {
             ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
+            controlRequest.setAddditionalInfo(additionalInfo);
         }
 
         // TODO:  Do we need to check the response from the server here?
