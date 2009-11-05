@@ -150,6 +150,11 @@ ALTER TABLE RPHTag
             ON DELETE CASCADE;
 /* End YUK-8003 */
 
+/* Start YUK-8009 */
+INSERT INTO PersistedSystemValue VALUES ('VALIDATION_ENGINE_LAST_CHANGE_ID', (SELECT MAX(ChangeId) FROM RawPointHistory));
+INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1, 4, .1, 15, 1, 'ENABLED');
+/* End YUK-8009 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
