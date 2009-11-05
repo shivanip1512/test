@@ -2409,6 +2409,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                         else
                         {    
                             text += " Alt Sub Enabled";
+                            altSub->setPrimaryBusFlag(TRUE);
                             if (!stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
                                 !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                                 !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
@@ -2449,6 +2450,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                         }
                         else
                         {
+                            altSub->setPrimaryBusFlag(FALSE);
+
                             text += " Alt Sub Not Enabled";
                             if (!stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
                                 !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
@@ -3047,7 +3050,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                 !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) || 
                                 !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
                             {
-                                altSub->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2, 
+                                currentSubstationBus->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2, 
                                                            altSub->getCurrentVarLoadPointValue() + currentSubstationBus->getCurrentVarLoadPointValue(), 
                                                            altSub->getCurrentWattLoadPointValue() + currentSubstationBus->getCurrentWattLoadPointValue());
                             }

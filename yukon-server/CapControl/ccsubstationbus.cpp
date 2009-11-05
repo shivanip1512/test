@@ -10023,7 +10023,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
 
     DOUBLE temppowerfactorvalue = _powerfactorvalue;
     DOUBLE tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue;
-    if (_dualBusEnable && _switchOverStatus)
+    if (_dualBusEnable && _switchOverStatus || getPrimaryBusFlag())
     {
         tempVolt = _altSubVoltVal;
         tempVar  = _altSubVarVal;
