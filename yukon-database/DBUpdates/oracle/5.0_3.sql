@@ -131,6 +131,25 @@ DELETE FROM YukonServices WHERE ServiceId = 7;
 INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:com/cannontech/services/validation/validationServerContext.xml', '(none)', '(none)', 'ServiceManager');
 /* End YUK-7994 */
 
+/* Start YUK-8003 */
+CREATE TABLE PersistedSystemValue  (
+   Name                 VARCHAR2(50)                    NOT NULL,
+   Value                CLOB                            NOT NULL,
+   CONSTRAINT PK_PerSysValue PRIMARY KEY (Name)
+);
+
+CREATE TABLE RPHTag  (
+   ChangeId             NUMBER                          NOT NULL,
+   TagName              VARCHAR2(150)                   NOT NULL,
+   CONSTRAINT PK_RPHTag PRIMARY KEY (ChangeId, TagName)
+);
+
+ALTER TABLE RPHTag
+    ADD CONSTRAINT FK_RPHTag_RPH FOREIGN KEY (ChangeId)
+        REFERENCES RawPointHistory (ChangeId)
+            ON DELETE CASCADE;
+/* End YUK-8003 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

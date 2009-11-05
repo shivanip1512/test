@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/4/2009 1:53:06 PM                         */
+/* Created on:     11/5/2009 12:27:34 AM                        */
 /*==============================================================*/
 
 
@@ -3108,6 +3108,13 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('PersistedSystemValue')
+            and   type = 'U')
+   drop table PersistedSystemValue
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('PointAlarming')
             and   type = 'U')
    drop table PointAlarming
@@ -3132,6 +3139,13 @@ if exists (select 1
            where  id = object_id('RAWPOINTHISTORY')
             and   type = 'U')
    drop table RAWPOINTHISTORY
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('RPHTag')
+            and   type = 'U')
+   drop table RPHTag
 go
 
 if exists (select 1
@@ -10121,6 +10135,16 @@ create table PROFILEPEAKRESULT (
 go
 
 /*==============================================================*/
+/* Table: PersistedSystemValue                                  */
+/*==============================================================*/
+create table PersistedSystemValue (
+   Name                 varchar(50)          not null,
+   Value                text                 not null,
+   constraint PK_PerSysValue primary key (Name)
+)
+go
+
+/*==============================================================*/
 /* Table: PointAlarming                                         */
 /*==============================================================*/
 create table PointAlarming (
@@ -10205,6 +10229,16 @@ go
 create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 POINTID ASC,
 TIMESTAMP ASC
+)
+go
+
+/*==============================================================*/
+/* Table: RPHTag                                                */
+/*==============================================================*/
+create table RPHTag (
+   ChangeId             numeric              not null,
+   TagName              varchar(150)         not null,
+   constraint PK_RPHTag primary key (ChangeId, TagName)
 )
 go
 
@@ -15653,6 +15687,12 @@ go
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID)
+go
+
+alter table RPHTag
+   add constraint FK_RPHTag_RPH foreign key (ChangeId)
+      references RAWPOINTHISTORY (CHANGEID)
+         on delete cascade
 go
 
 alter table RepeaterRoute

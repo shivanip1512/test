@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/4/2009 1:54:33 PM                         */
+/* Created on:     11/5/2009 12:35:18 AM                        */
 /*==============================================================*/
 
 
@@ -839,6 +839,8 @@ drop table PORTTERMINALSERVER cascade constraints;
 
 drop table PROFILEPEAKRESULT cascade constraints;
 
+drop table PersistedSystemValue cascade constraints;
+
 drop table PointAlarming cascade constraints;
 
 drop table PortTiming cascade constraints;
@@ -846,6 +848,8 @@ drop table PortTiming cascade constraints;
 drop table PurchasePlan cascade constraints;
 
 drop table RAWPOINTHISTORY cascade constraints;
+
+drop table RPHTag cascade constraints;
 
 drop table RepeaterRoute cascade constraints;
 
@@ -7226,6 +7230,15 @@ create table PROFILEPEAKRESULT  (
 );
 
 /*==============================================================*/
+/* Table: PersistedSystemValue                                  */
+/*==============================================================*/
+create table PersistedSystemValue  (
+   Name                 VARCHAR2(50)                    not null,
+   Value                CLOB                            not null,
+   constraint PK_PerSysValue primary key (Name)
+);
+
+/*==============================================================*/
 /* Table: PointAlarming                                         */
 /*==============================================================*/
 create table PointAlarming  (
@@ -7304,6 +7317,15 @@ create index Indx_TimeStamp on RAWPOINTHISTORY (
 create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
    POINTID ASC,
    TIMESTAMP ASC
+);
+
+/*==============================================================*/
+/* Table: RPHTag                                                */
+/*==============================================================*/
+create table RPHTag  (
+   ChangeId             NUMBER                          not null,
+   TagName              VARCHAR2(150)                   not null,
+   constraint PK_RPHTag primary key (ChangeId, TagName)
 );
 
 /*==============================================================*/
@@ -12184,6 +12206,11 @@ alter table PortTiming
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID);
+
+alter table RPHTag
+   add constraint FK_RPHTag_RPH foreign key (ChangeId)
+      references RAWPOINTHISTORY (CHANGEID)
+      on delete cascade;
 
 alter table RepeaterRoute
    add constraint SYS_C0013269 foreign key (ROUTEID)
