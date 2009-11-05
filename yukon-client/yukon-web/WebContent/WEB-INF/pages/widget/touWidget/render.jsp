@@ -1,10 +1,10 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <cti:includeScript link="/JavaScript/touPreviousReadings.js"/>
 
-<ct:simpleDialog id="touDialog"/>
+<tags:simpleDialog id="touDialog"/>
 
 <c:choose>
 	<c:when test="${touAttributesAvailable}">
@@ -19,26 +19,26 @@
 		    </a>
 		</div>
 		<div id="touTable">
-			<ct:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateA"
+			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateA"
 			                 usageAttribute="${TOU_RATE_A_USAGE}"
 			                 peakAttribute="${TOU_RATE_A_PEAK_DEMAND}" />
 		
-			<ct:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateB"
+			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateB"
 			                 usageAttribute="${TOU_RATE_B_USAGE}"
 			                 peakAttribute="${TOU_RATE_B_PEAK_DEMAND}" />
 			        
-			<ct:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateC"
+			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateC"
 			                 usageAttribute="${TOU_RATE_C_USAGE}"
 			                 peakAttribute="${TOU_RATE_C_PEAK_DEMAND}" />
 			        
-			<ct:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateD"
+			<tags:touAttribute headerKey="yukon.web.modules.widgets.touWidget.rateD"
 			                 usageAttribute="${TOU_RATE_D_USAGE}"
 			                 peakAttribute="${TOU_RATE_D_PEAK_DEMAND}" />
 		</div>
 	
 		<div id="${widgetParameters.widgetId}_results"></div>
 		<div style="text-align: right">
-			<ct:widgetActionUpdate hide="${!readable}" method="read" label="Read Now"
+			<tags:widgetActionUpdate hide="${!readable}" method="read" label="Read Now"
 				labelBusy="Reading" container="${widgetParameters.widgetId}_results" />
 		</div>
 	</c:when>
