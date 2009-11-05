@@ -227,7 +227,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
 
                 if(DebugLevel & 0x00080000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCPIP Ports" << endl;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCPIP Terminal Server Ports" << endl;
                 }
                 CtiPortTCPIPDirect().getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader( conn );
@@ -243,7 +243,41 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
                 if(DebugLevel & 0x00080000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCPIP Ports" << endl;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCPIP Terminal Server Ports" << endl;
+                }
+            }
+
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+                // are out of scope when the release is called
+
+                RWDBDatabase db = conn.database();
+                RWDBSelector selector = conn.database().selector();
+                RWDBTable   keyTable;
+
+                if(DebugLevel & 0x00080000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCP Ports" << endl;
+                }
+                Cti::Ports::TcpPort().getSQL( db, keyTable, selector );
+
+                selector.where(selector.where() && keyTable["type"] == "TCP");
+
+                RWDBReader  rdr = selector.reader( conn );
+                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << loggedSQLstring << endl;
+                    }
+                }
+
+                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
+                if(DebugLevel & 0x00080000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCP Ports" << endl;
                 }
             }
 

@@ -133,9 +133,6 @@ protected:
 
     void refreshList(id_range_t &paoids, const long deviceType = 0);
 
-    //  should probably be moved to some more common location eventually (utility.cpp?)
-    static void addIDClause(RWDBSelector &selector, RWDBColumn &id_column, id_range_t &paoids);
-
     virtual void refreshDeviceProperties(id_range_t &paoids, int type);
 
     int getPortDevicePriority(long portid, long deviceid) const;

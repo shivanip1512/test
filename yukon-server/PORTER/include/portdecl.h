@@ -63,8 +63,6 @@ VOID PorterGWThread (PVOID);
 /*  */
 VOID PortThread(void *);
 VOID PortDialbackThread(void *);
-VOID PortTcpThread(void *);
-VOID PortUdpThread(void *);
 bool RemoteReset (CtiDeviceSPtr &Device, CtiPortSPtr pPort);
 
 /* Prototypes from PORTQUE.C */

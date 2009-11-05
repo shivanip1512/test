@@ -6,6 +6,7 @@
 #include "boost/noncopyable.hpp"
 
 #include "port_base.h"
+#include "mgr_device.h"
 #include "dev_single.h"
 
 namespace Cti    {
@@ -15,7 +16,7 @@ class UnsolicitedHandler : boost::noncopyable
 {
 protected:
 
-    typedef queue< CtiOutMessage * > om_queue;
+    typedef std::queue< CtiOutMessage * > om_queue;
 
     struct packet
     {
@@ -25,9 +26,16 @@ protected:
 
         u_long  ip;
         u_short port;
+
+        enum ProtocolType
+        {
+            ProtocolTypeDnp,
+            ProtocolTypeGpuff
+
+        } protocol;
     };
 
-    typedef queue< packet * > packet_queue;
+    typedef std::queue< packet * > packet_queue;
 
     struct device_work
     {
@@ -62,16 +70,25 @@ protected:
 
 private:
 
+    CtiDeviceManager &_deviceManager;
+
     CtiFIFOQueue< CtiMessage > _message_queue;
 
     void startLog( void );
     void haltLog ( void );
 
-    void checkDbReloads( void );
+    void initializeDeviceRecords( void );
+    static device_record *createDeviceRecord(const CtiDeviceSPtr &device);
 
-    bool getOutMessages( void );
+    bool addDeviceRecord   (long id);
+    bool updateDeviceRecord(long id);
+    bool deleteDeviceRecord(long id);
 
-    void generateOutbounds( void );
+    bool checkDbReloads( void );
+
+    bool getDeviceRequests( void );
+
+    bool generateOutbounds( void );
 
     bool generateKeepalives( om_queue &local_queue );
     static bool isDnpKeepaliveNeeded( const device_record &dr, const CtiTime &TimeNow );
@@ -79,58 +96,63 @@ private:
 
     void readPortQueue( CtiPortSPtr &port, om_queue &local_queue );
 
-    void processInbounds  (void);
-    void processDnpInbound  (device_record &dr);
-    void processGpuffInbound(device_record &dr);
+    bool processInbounds( void );
+    bool processDnpInbound  (device_record &dr);
+    bool processGpuffInbound(device_record &dr);
 
     void trace( void );
     string describeDevice( const device_record &dr ) const;
 
-    void sendResults( void );
+    bool sendResults( void );
 
     static void sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, CtiDeviceSingleSPtr &device, CtiConnection &connection);
 
     device_record *validateDeviceRecord( device_record *dr );
 
-    device_record *getDeviceRecordByID                   ( long device_id );
-    device_record *getDeviceRecordByDNPAddress           ( unsigned short master, unsigned short slave );
-    device_record *getDeviceRecordByGPUFFDeviceTypeSerial( unsigned short device_type, unsigned short serial );
-
     CtiPortSPtr _port;
     CtiLogger   _portLog;
 
+    typedef std::map< long, device_record * > device_record_map;
+
+    device_record_map _devices;
+
+    std::list< CtiMessage * > _traceList;
+
 protected:
-
-    typedef map< long, device_record * > dr_id_map;
-    typedef map< pair< unsigned short, unsigned short >, device_record * > dr_address_map;
-    typedef map< pair< unsigned short, unsigned short >, device_record * > dr_type_serial_map;
-
-    dr_id_map          _devices;
-    dr_address_map     _addresses;
-    dr_type_serial_map _types_serials;
-
-    list< CtiMessage * > _traceList;
 
     virtual string describePort( void ) const = 0;
 
-    virtual bool setup( void ) = 0;
+    virtual bool setupPort( void ) = 0;
+    virtual bool manageConnections( void ) = 0;
     virtual void sendOutbound( device_record &dr ) = 0;
-    virtual void collectInbounds( void ) = 0;
-    virtual void updateDeviceRecord(device_record &dr, const packet &p) = 0;
-    virtual void teardown( void ) = 0;
+    virtual bool collectInbounds( void ) = 0;
+    virtual void teardownPort( void ) = 0;
 
-    void traceOutbound( const device_record &dr, int socket_status, list< CtiMessage * > &trace_list );
-    void traceInbound ( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, list< CtiMessage * > &trace_list, const device_record *dr = 0 );
+    virtual void loadDeviceProperties( const std::set<long> &device_ids ) = 0;
 
-    void handleDnpPacket  (packet *&p);
-    void handleGpuffPacket(packet *&p);
+    virtual void addDeviceProperties   (const CtiDeviceSingle &device) = 0;
+    virtual void updateDeviceProperties(const CtiDeviceSingle &device) = 0;
+    virtual void deleteDeviceProperties(const CtiDeviceSingle &device) = 0;
+
+    virtual u_long  getDeviceIp  ( const long device_id ) const = 0;
+    virtual u_short getDevicePort( const long device_id ) const = 0;
+
+    device_record *getDeviceRecordById( long device_id );
+
+    static bool validatePacket(packet *&p);
+
+    void traceOutbound( const device_record &dr, int socket_status );
+    void traceInbound ( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, const device_record *dr = 0 );
+
+    static bool isDnpDevice  (const CtiDeviceSingle &ds);
+    static bool isGpuffDevice(const CtiDeviceSingle &ds);
 
     static string ip_to_string(u_long ip);
     static u_long string_to_ip(string ip_string);
 
 public:
 
-    UnsolicitedHandler(CtiPortSPtr &port);
+    UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &deviceManager);
     virtual ~UnsolicitedHandler();
 
     void run();
@@ -143,9 +165,9 @@ class UnsolicitedMessenger
 {
 private:
 
-    typedef list< UnsolicitedHandler * > client_list;
+    typedef std::list< UnsolicitedHandler * > client_list;
 
-    CtiCriticalSection _critical_section;
+    CtiCriticalSection _client_mux;
     client_list _clients;
 
 public:

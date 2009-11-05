@@ -686,7 +686,7 @@ bool CtiDeviceManager::loadDeviceType(id_range_t &paoids, const string &device_n
         }
     }
 
-    addIDClause(selector, keyTable["paobjectid"], paoids);
+    addIDClause(selector, keyTable["paobjectid"], set<long>(paoids.begin(), paoids.end()));
 
     RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
 
@@ -700,34 +700,6 @@ bool CtiDeviceManager::loadDeviceType(id_range_t &paoids, const string &device_n
     }
 
     return refreshDevices(rdr);
-}
-
-
-void CtiDeviceManager::addIDClause(RWDBSelector &selector, RWDBColumn &id_column, id_range_t &id_range)
-{
-    if( id_range.empty() )
-    {
-        return;
-    }
-
-    if( id_range.size() == 1 )
-    {
-        //  special single id case
-
-        selector.where(selector.where() && id_column == *(id_range.begin()));
-
-        return;
-    }
-
-    ostringstream in_list;
-
-    in_list << "(";
-
-    copy(id_range.begin(), id_range.end(), csv_output_iterator<long, ostringstream>(in_list));
-
-    in_list << ")";
-
-    selector.where(selector.where() && id_column.in(RWDBExpr(in_list.str().c_str(), false)));
 }
 
 
@@ -1195,7 +1167,7 @@ void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
     // The servers do not care about the LM subordination.
     selector.where(keyTable["functionid"] != CtiTablePaoExclusion::ExFunctionLMSubordination && selector.where());
 
-    addIDClause(selector, keyTable["paoid"], paoids);
+    addIDClause(selector, keyTable["paoid"], set<long>(paoids.begin(), paoids.end()));
 
     if(DebugLevel & 0x00020000)
     {
@@ -1294,7 +1266,7 @@ void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
     << tblMeterGroup["MeterNumber"];
     selector.where((tblMeterGroup["DeviceID"] == tblPAObject["PAObjectID"]) && (tblPAObject["Type"].like("ION%")));
 
-    addIDClause(selector, tblPAObject["PAObjectID"], paoids);
+    addIDClause(selector, tblPAObject["PAObjectID"], set<long>(paoids.begin(), paoids.end()));
 
     rdr = selector.reader(conn);
 
@@ -1370,7 +1342,7 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
         xmlDevice.getParametersSelector(db,keyTable,selector);
 
         //Add in PAO id specifics if there are any
-        addIDClause(selector, keyTable["lmgroupid"], paoids);
+        addIDClause(selector, keyTable["lmgroupid"], set<long>(paoids.begin(), paoids.end()));
 
         RWDBReader rdr = selector.reader(conn);
 
@@ -1434,7 +1406,7 @@ void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
         selector.from(tblGenericMacro);
         selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
 
-        addIDClause(selector, tblGenericMacro["OwnerID"], paoids);
+        addIDClause(selector, tblGenericMacro["OwnerID"], set<long>(paoids.begin(), paoids.end()));
 
         rdr = selector.reader(conn);
 
@@ -1453,7 +1425,7 @@ void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
     selector.from(tblGenericMacro);
     selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
 
-    addIDClause(selector, tblGenericMacro["OwnerID"], paoids);
+    addIDClause(selector, tblGenericMacro["OwnerID"], set<long>(paoids.begin(), paoids.end()));
 
     selector.orderBy(tblGenericMacro["ChildOrder"]);
 
@@ -1552,7 +1524,7 @@ void CtiDeviceManager::refreshMCTConfigs(id_range_t &paoids)
         selector.where( mappingTbl["mctid"]    == tblPAObject["paobjectid"] &&
                         mappingTbl["configid"] == configTbl["configid"] );
 
-        addIDClause(selector, tblPAObject["PAObjectID"], paoids);
+        addIDClause(selector, tblPAObject["PAObjectID"], set<long>(paoids.begin(), paoids.end()));
 
         rdr = selector.reader(conn);
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1625,7 +1597,7 @@ void CtiDeviceManager::refreshMCT400Configs(id_range_t &paoids)
         selector << configTbl["disconnectaddress"];
 
         //  no need to bring yukonpaobject into this yet, we'll just link straight to the config table
-        addIDClause(selector, configTbl["deviceid"], paoids);
+        addIDClause(selector, configTbl["deviceid"], set<long>(paoids.begin(), paoids.end()));
 
         rdr = selector.reader(conn);
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1720,7 +1692,7 @@ void CtiDeviceManager::refreshDynamicPaoInfo(id_range_t &paoids)
 
         CtiTableDynamicPaoInfo::getSQL(db, keyTable, selector, _app_id);
 
-        addIDClause(selector, keyTable["paobjectid"], paoids);
+        addIDClause(selector, keyTable["paobjectid"], set<long>(paoids.begin(), paoids.end()));
 
         rdr = selector.reader(conn);
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1739,7 +1711,7 @@ void CtiDeviceManager::refreshDynamicPaoInfo(id_range_t &paoids)
                 dynamic_paoinfo.DecodeDatabaseReader(rdr);
 
                 rdr["paobjectid"] >> tmp_paobjectid;
-                rdr["paobjectid"] >> tmp_entryid;
+                rdr["entryid"]    >> tmp_entryid;
 
                 device = getDeviceByID(tmp_paobjectid);
 

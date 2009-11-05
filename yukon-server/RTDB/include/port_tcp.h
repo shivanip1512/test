@@ -2,7 +2,6 @@
 #pragma warning( disable : 4786)
 
 #include "port_serial.h"
-#include "tbl_port_tcpip.h"
 
 namespace Cti   {
 namespace Ports {
@@ -35,7 +34,7 @@ public:
    }
 };
 
-typedef shared_ptr< TcpPort > TcpPortSPtr;
+typedef boost::shared_ptr< TcpPort > TcpPortSPtr;
 
 }
 }

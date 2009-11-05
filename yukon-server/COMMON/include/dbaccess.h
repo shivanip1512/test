@@ -60,5 +60,7 @@ IM_EX_CTIBASE void resetDBIgnore();
 
 IM_EX_CTIBASE string makeLeftOuterJoinSQL92Compliant(const string &sql);
 
+IM_EX_CTIBASE void addIDClause(RWDBSelector &selector, RWDBColumn &id_column, const std::set<long> &paoids);
+
 #endif
 

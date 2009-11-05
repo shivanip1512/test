@@ -119,7 +119,7 @@ void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
 
     CtiTableDeviceScanRate::getSQL(db, keyTable, selector);
 
-    addIDClause(selector, keyTable["deviceid"], paoids);
+    addIDClause(selector, keyTable["deviceid"], set<long>(paoids.begin(), paoids.end()));
 
     RWDBReader rdr = selector.reader(conn);
 
@@ -204,7 +204,7 @@ void ScannableDeviceManager::refreshDeviceWindows(id_range_t &paoids)
 
     CtiTableDeviceWindow::getSQL(db, keyTable, selector);
 
-    addIDClause(selector, keyTable["deviceid"], paoids);
+    addIDClause(selector, keyTable["deviceid"], set<long>(paoids.begin(), paoids.end()));
 
     if( !paoids.empty() )
     {

@@ -109,6 +109,9 @@ public:
     //int generate( CtiXfer &xfer );
     static unsigned decode( const unsigned char *p_data, unsigned last_seq, const std::string device_name, pointlist_t &point_list );
 
+    static bool isPacketValid( const unsigned char *buf, const int len );
+    static bool findPacket(unsigned char *&itr, unsigned char *&end);
+
     //bool isTransactionComplete( void ) const;
 };
 

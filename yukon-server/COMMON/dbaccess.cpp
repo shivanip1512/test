@@ -366,8 +366,8 @@ RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater,
             dout << CtiTime() << " Error Code = " << stat.errorCode() << ". ";
             if(file != 0) dout << file << " (" << line << ")";
             dout << endl << endl << loggedSQLstring << endl << endl;
-    
-    
+
+
             if(stat.vendorError1() != 0)
             {
                 dout << Now << " Thread id:        " << rwThreadId() << endl
@@ -410,10 +410,10 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
             CtiTime Now;
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << Now << " Error Code = " << stat.errorCode() << ". ";
-    
+
             if(file != 0) dout << file << " (" << line << ")";
             dout << endl << endl << loggedSQLstring << endl << endl;
-    
+
             if(stat.vendorError1() != 0)
             {
                 dout << Now << " Thread id:        " << rwThreadId() << endl
@@ -447,27 +447,27 @@ DLLEXPORT void resetDBIgnore()
 /*
     This function searches the input string for the pre-SQL92 style left outer join operator.
     It comes in two flavors:
- 
+
         1. Microsoft SQL:   a.x *= b.x
         2. Oracle:          a.x = b.x (+)
- 
+
     And replaces them with proper SQL92 standard syntax.
-        
+
         1 & 2.              A a LEFT OUTER JOIN B b ON a.x = b.x
- 
+
     REQUIRES:
- 
+
         1. SQL keywords are ALL CAPS ( SELECT, FROM, ... )      (RogueWave does this)
         2. all tables have aliases in the FROM clause           (RogueWave does this)
         3. if there are multiple left outer joins, the table
             on the left must be the same for all of them.
- 
+
                 eg:  a.x *= b.x AND a.x *= c.x
- 
+
         4. if there are multiple joins on the same pair of
            tables, the WHERE conditions for the same tables
            must be sequentially grouped.
- 
+
                 eg:  a.x = b.x (+) AND a.y = b.y (+) AND a.x = c.x (+)      (ab conditions together -> then ac)
                 NOT: a.x = b.x (+) AND a.x = c.x (+) AND a.y = b.y (+)      (ab then ac then ab again)
 */
@@ -518,7 +518,7 @@ string makeLeftOuterJoinSQL92Compliant(const string &sql)
 
         // Replace the commas with spaces to ensure proper alias name parsing for the mapping
         replace(tables_part.begin(), tables_part.end(), ',', ' ');
-            
+
         // Tokenize the table list and insert into the mapping.
         string          table_name, table_alias;
         istringstream   table_stream(tables_part);
@@ -651,14 +651,43 @@ string makeLeftOuterJoinSQL92Compliant(const string &sql)
     if(isDebugLudicrous())
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "\nTranslating SQL from:\n" 
-             << sql 
-             << "\nto:\n" 
+        dout << "\nTranslating SQL from:\n"
+             << sql
+             << "\nto:\n"
              << select_part
              << endl << endl;
     }
-    
+
     // Return the complete SQL statement.
     return (select_part);
+}
+
+
+DLLEXPORT
+void addIDClause(RWDBSelector &selector, RWDBColumn &id_column, const set<long> &id_range)
+{
+    if( id_range.empty() )
+    {
+        return;
+    }
+
+    if( id_range.size() == 1 )
+    {
+        //  special single id case
+
+        selector.where(selector.where() && id_column == *(id_range.begin()));
+
+        return;
+    }
+
+    ostringstream in_list;
+
+    in_list << "(";
+
+    copy(id_range.begin(), id_range.end(), csv_output_iterator<long, ostringstream>(in_list));
+
+    in_list << ")";
+
+    selector.where(selector.where() && id_column.in(RWDBExpr(in_list.str().c_str(), false)));
 }
 

@@ -77,6 +77,7 @@ tbl_meterreadlog.obj \
 tbl_pao.obj \
 tbl_pao_lite.obj \
 tbl_paoexclusion.obj \
+tbl_paoproperty.obj \
 tbl_port_base.obj \
 tbl_port_dialup.obj \
 tbl_port_serial.obj \

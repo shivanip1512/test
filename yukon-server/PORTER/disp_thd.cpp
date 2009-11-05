@@ -163,7 +163,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                 dev->setDirty(true);
                             }
 
-                            //  the UDP thread needs to reload each item individually, so we can't ever discard any
+                            //  the unsolicited threads need to reload each item individually, so we can't ever discard any
                             Cti::Porter::UnsolicitedPortsQueue.sendMessageToClients(MsgPtr->replicateMessage());
                         }
 

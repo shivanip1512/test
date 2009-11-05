@@ -396,7 +396,7 @@ void Datalink::constructDataPacket( Datalink::packet &packet, unsigned char *buf
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
 
-    packet.header.fmt.control.p.direction = (_slave_response)?(0):(1); 
+    packet.header.fmt.control.p.direction = (_slave_response)?(0):(1);
 
     packet.header.fmt.control.p.primary   = 1;  //  we're primary
 
@@ -1172,6 +1172,54 @@ void Datalink::putPacketPayload( const Datalink::packet &packet, unsigned char *
 
         *len = 0;
     }
+}
+
+
+IM_EX_PROT bool Datalink::isPacketValid( const unsigned char *buf, const int len )
+{
+    if( len < DatalinkPacket::HeaderLength )
+    {
+        return false;
+    }
+
+    if( buf[0] != 0x05 ||
+        buf[1] != 0x64 )
+    {
+        return false;
+    }
+
+    const packet *p = reinterpret_cast<const packet *>(buf);
+
+    if( len < calcPacketLength(p->header.fmt.len) )
+    {
+        return false;
+    }
+
+    if( !arePacketCRCsValid(*p) )
+    {
+        return false;
+    }
+
+    return true;
+}
+
+
+bool Datalink::findPacket(unsigned char *&itr, unsigned char *&end)
+{
+    //  just find the first framing byte and let isPacketValid() do the rest
+    for( ; (itr = std::find(itr, end, 0x05)) != end; ++itr )
+    {
+        if( isPacketValid(itr, std::distance(itr, end)) )
+        {
+            const packet *p = reinterpret_cast<const packet *>(&*itr);
+
+            end = itr + calcPacketLength(p->header.fmt.len);
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 

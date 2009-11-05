@@ -4,71 +4,93 @@
 #include <map>
 #include <queue>
 
-#include "queue.h"
-#include "dev_single.h"
-#include "EncodingFilterFactory.h"
-#include "port_tcp.h"
 #include "unsolicited_handler.h"
+#include "port_tcp.h"
 
 namespace Cti    {
 namespace Porter {
 
 void PortTcpThread(void *pid);
-/*
-class UdpPortHandler : public UnsolicitedHandler
+
+class TcpPortHandler : public UnsolicitedHandler
 {
 private:
 
-    Ports::UdpPortSPtr _udp_port;
+    typedef std::vector<unsigned char> datastream;
 
-    EncodingFilterFactory::EncodingFilterSPtr _encodingFilter;
-
-    bool bindSocket( void );
-
-    packet *recvPacket( unsigned char * const recv_buf, unsigned max_len );
-
-    static void sendDeviceInfo( const device_record &dr );
-
-    struct udp_load_info
+    struct connection
     {
-        udp_load_info(long p, dr_id_map &d, dr_address_map &a, dr_type_serial_map &ts) :
-            portid   (p),
-            devices  (d),
-            addresses(a),
-            types_serials(ts)
+        connection() :
+            state(Disconnected),
+            socket(INVALID_SOCKET),
+            connect_timeout(0)
+        {};
+
+        enum State
         {
-        }
+            Disconnected,
+            Connecting,
+            Connected
+        };
 
-        long portid;
+        State state;
 
-        dr_id_map          &devices;
-        dr_address_map     &addresses;
-        dr_type_serial_map &types_serials;
+        SOCKET socket;
+
+        unsigned long connect_timeout;
+
+        datastream stream;
     };
 
-    static void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid);
+    typedef std::map<long, connection> connection_map;
 
-    SOCKET _udp_socket;
+    typedef std::map<long, u_long>  ip_map;
+    typedef std::map<long, u_short> port_map;
+
+    Ports::TcpPortSPtr _tcp_port;
+
+    connection_map _connections;
+
+    ip_map     _ip_addresses;
+    port_map   _ports;
+
+    void loadDeviceTcpProperties(const std::set<long> &device_ids);
+    static u_long resolveIp(const string &ip);
+
+    bool connectToDevice     (const long device_id, connection &c);
+    void setConnectionOptions(const long device_id, connection &c);
+    void disconnectFromDevice(const long device_id, connection &c);
+
+    void readInput(const long device_id);
+
+    static void reportSocketError(const string function_name, const long device_id, const char *file, const int line);
+
 
 protected:
 
-    virtual bool setup( void );
+    virtual std::string describePort( void ) const;
 
-    virtual string describePort( void ) const;
-
+    virtual bool setupPort( void );
+    virtual bool manageConnections( void );
     virtual void sendOutbound( device_record &dr );
+    virtual bool collectInbounds( void );
+    virtual void teardownPort( void );
 
-    virtual void collectInbounds( void );
+    virtual void loadDeviceProperties(const std::set<long> &device_ids);
 
-    virtual void updateDeviceRecord( device_record &dr, const packet &p );
+    virtual void addDeviceProperties   (const CtiDeviceSingle &device);
+    virtual void updateDeviceProperties(const CtiDeviceSingle &device);
+    virtual void deleteDeviceProperties(const CtiDeviceSingle &device);
 
-    virtual void teardown( void );
+    virtual u_long  getDeviceIp  ( const long device_id ) const;
+    virtual u_short getDevicePort( const long device_id ) const;
 
 public:
 
-    UdpPortHandler( Ports::UdpPortSPtr &port );
+    TcpPortHandler( Ports::TcpPortSPtr &port, CtiDeviceManager &deviceManager );
+    virtual ~TcpPortHandler() {};
 };
-*/
+
 }
 }
 

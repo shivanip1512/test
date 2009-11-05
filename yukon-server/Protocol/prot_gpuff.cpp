@@ -2555,5 +2555,62 @@ void GpuffProtocol::add_to_csv_summary( string &keys, string &values, string key
 }
 
 
+bool GpuffProtocol::isPacketValid(const unsigned char *buf, const int len)
+{
+    if( len < HeaderLength )
+    {
+        return false;
+    }
+
+    if( buf[0] != 0xa5 ||
+        buf[1] != 0x96 )
+    {
+        return false;
+    }
+
+    unsigned packet_length = ((buf[2] & 0x03) << 8) | buf[3];
+
+    if( len < packet_length + 4 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - Cti::Protocols::GpuffProtocol::isPacketValid() - packet too small (" << len << " < " << packet_length << " + 4) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        return false;
+    }
+
+    bool crc_included = buf[2] & 0x80;
+
+    std::vector<unsigned char> mutable_copy(buf, buf + len);
+
+    if( crc_included && CheckCCITT16CRC(-1, &mutable_copy.front(), packet_length + 4) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - Cti::Protocols::GpuffProtocol::isPacketValid() - packet failed CRC check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        return false;
+    }
+
+    return true;
+}
+
+
+bool GpuffProtocol::findPacket(unsigned char *&itr, unsigned char *&end)
+{
+    for( ; (itr = std::find(itr, end, 0xa5)) != end; ++itr )
+    {
+        if( isPacketValid(itr, distance(itr, end)) )
+        {
+            unsigned packet_length = ((itr[2] & 0x03) << 8) | itr[3];
+
+            end = itr + packet_length;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 }
 }

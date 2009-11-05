@@ -176,6 +176,9 @@ public:
     bool getInPayload( unsigned char *buf );
     int  getInPayloadLength( void );
 
+    IM_EX_PROT static bool isPacketValid(const unsigned char  *buf, const int  len);
+    IM_EX_PROT static bool findPacket(unsigned char *&itr, unsigned char *&end);
+
     IM_EX_PROT static unsigned short crc(const unsigned char *buf, const int len);
 
     enum DatalinkError
