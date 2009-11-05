@@ -122,7 +122,7 @@ public class PoolManager {
         String password = configSource.getRequiredString("DB_PASSWORD");
         
         String maxActiveConns = configSource.getString("DB_JAVA_MAXCONS");
-        int maxActive = 6;
+        int maxActive = CtiUtilities.isRunningAsClient() ? 4 : 15;
         if (StringUtils.isNotBlank(maxActiveConns)) {
             maxActive = Integer.valueOf(maxActiveConns);
         }

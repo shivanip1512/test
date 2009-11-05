@@ -164,6 +164,7 @@ public final class CtiUtilities
 	public static final String OUTPUT_FILE_NAME = CtiUtilities.getConfigDirPath() + "TDCOut.DAT";
     
     public static String[] timeZones = null;
+    private static boolean runningAsClient = false;
 
 	private static final class CTIPrintStackTraceExc extends Exception
 	{
@@ -1912,6 +1913,14 @@ public static double convertTemperature(double temperature, String fromUnit, Str
 			return "th";
 		}
 	}
+
+     public static boolean isRunningAsClient() {
+         return runningAsClient;
+     }
+
+    public static void setRunningAsClient() {
+        runningAsClient  = true;
+    }
 }
 
 
