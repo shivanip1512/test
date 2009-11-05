@@ -132,7 +132,7 @@
                 
                 <%-- Table headers - columns are hidden/shown based on role props --%>
                 
-                <th></th>
+                <th class="favoritesColumn"></th>
                 <c:set var="numColumns" value="1"/>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.controlAreaList.heading.name"

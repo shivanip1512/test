@@ -839,3 +839,7 @@ div.dialogScrollArea {
     height: 200px;
 	overflow: scroll;
 }
+
+.favoritesColumn {
+	width: 16px;
+}

@@ -81,7 +81,7 @@
         showAllUrl="${clearFilterUrl}">
         <table id="scenarioList" class="compactResultsTable rowHighlighting">
             <tr>
-                <th width="1"></th>
+                <th class="favoritesColumn"></th>
                 <th>
                     <dr:sortByLink key="yukon.web.modules.dr.scenarioList.heading.name"
                         baseUrl="${baseUrl}" fieldName="NAME"/>
