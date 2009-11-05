@@ -72,12 +72,14 @@
                                 <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
+                        <%--
                         <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity"/>
                             <tags:nameValue name="${fieldName}">
                                 <cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
+                        --%>
                     </tags:nameValueContainer>
                 </tags:abstractContainer>
                 </div>

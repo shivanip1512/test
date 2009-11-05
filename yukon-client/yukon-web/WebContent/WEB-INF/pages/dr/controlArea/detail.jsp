@@ -66,12 +66,14 @@
                                 <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
+                        <%--
                         <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity"/>
                             <tags:nameValue name="${fieldName}">
                                 <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
+                        --%>
 
                         <c:if test="${!empty controlArea.triggers}">
                             <c:forEach var="trigger" items="${controlArea.triggers}">

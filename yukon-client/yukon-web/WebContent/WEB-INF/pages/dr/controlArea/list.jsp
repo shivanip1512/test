@@ -97,17 +97,17 @@
                             <form:input path="priority.max" size="5"/>&nbsp;${maxStr}
                         </td>
                     </cti:checkRolesAndProperties>
-    
+
+                   <%--
                     <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
-                        <!--
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.loadCapacity"/>
                         <td>${fieldName}:</td>
                         <td>
                             <form:input path="loadCapacity.min"/>${minStr}
                             <form:input path="loadCapacity.max"/>${maxStr}
                         </td>
-                        -->
                     </cti:checkRolesAndProperties>
+                    --%>
                 </tr>
                 </cti:checkRolesAndProperties>
         </table>
@@ -182,6 +182,7 @@
                             baseUrl="${baseUrl}" fieldName="CA_START"/>
                     </th>
                 </cti:checkRolesAndProperties>
+                <%--
                 <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
                     <c:set var="numColumns" value="${numColumns + 1}"/>
                     <th>
@@ -189,6 +190,7 @@
                             baseUrl="${baseUrl}" fieldName="CA_LOAD_CAPACITY"/>
                     </th>
                 </cti:checkRolesAndProperties>
+                --%>
             </tr>
             <c:forEach var="controlArea" items="${controlAreas}">
                 
@@ -255,11 +257,13 @@
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
                         </td>
                     </cti:checkRolesAndProperties>
+                    <%--
                     <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
                         <td>
                             <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
                         </td>
                     </cti:checkRolesAndProperties>
+                    --%>
                 </tr>
             </c:forEach>
             <c:if test="${searchResult.hitCount == 0}">

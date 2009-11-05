@@ -85,17 +85,17 @@
                             <tags:dateInputCalendar springInput="true" fieldName="lastAction.max"/>
                         </td>
                     </cti:checkRolesAndProperties>
-    
+
+                    <%--
                     <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
-                        <!--
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.loadCapacity"/>
                         <td>${fieldName}:</td>
                         <td>
                             <form:input path="loadCapacity.min"/>${minStr}
                             <form:input path="loadCapacity.max"/>${maxStr}
                         </td>
-                        -->
                     </cti:checkRolesAndProperties>
+                    --%>    
                 </tr>
             </cti:checkRolesAndProperties>
         </table>
@@ -155,6 +155,7 @@
                         baseUrl="${baseUrl}" fieldName="REDUCTION"/>        
                 </th>
             </cti:checkRolesAndProperties>
+            <%--
             <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
@@ -162,6 +163,7 @@
                         baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
                 </th>
             </cti:checkRolesAndProperties>
+            --%>
         </tr>
         <c:forEach var="loadGroup" items="${loadGroups}">
             <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
@@ -190,9 +192,11 @@
                 <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
                     <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/></td>
                 </cti:checkRolesAndProperties>
+                <%--
                 <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
                     <td class="nonwrapping"><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/LOAD_CAPACITY"/></td>
                 </cti:checkRolesAndProperties>
+                --%>
             </tr>
         </c:forEach>
         <c:if test="${searchResult.hitCount == 0}">

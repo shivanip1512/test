@@ -83,12 +83,14 @@
                                 <cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
+                        <%--
                         <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.loadCapacity"/>
                             <tags:nameValue name="${fieldName}">
                                 <cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
+                        --%>
                     </tags:nameValueContainer>
                 </tags:abstractContainer>
                 </div>

@@ -114,17 +114,17 @@ function clearFilter() {
                             <tags:dateInputCalendar springInput="true" fieldName="stop.max"/>
                         </td>
                     </cti:checkRolesAndProperties>
-    
+
+                    <%--
                     <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
-                        <!--
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.loadCapacity"/>
                         <td>${fieldName}:</td>
                         <td>
                             <form:input path="loadCapacity.min"/>${minStr}
                             <form:input path="loadCapacity.max"/>${maxStr}
                         </td>
-                        -->
                     </cti:checkRolesAndProperties>
+                    --%>
                 </tr>
             </cti:checkRolesAndProperties>
         </table>
@@ -198,6 +198,7 @@ function clearFilter() {
                         baseUrl="${baseUrl}" fieldName="REDUCTION"/>
                 </th>
             </cti:checkRolesAndProperties>
+            <%--
             <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
@@ -205,6 +206,7 @@ function clearFilter() {
                         baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
                 </th>
             </cti:checkRolesAndProperties>
+            --%>
         </tr>
         <c:forEach var="program" items="${programs}">
             <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
@@ -241,9 +243,11 @@ function clearFilter() {
                 <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
                     <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/></td>
                 </cti:checkRolesAndProperties>
+                <%--
                 <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
                     <td><cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/></td>
                 </cti:checkRolesAndProperties>
+                --%>
             </tr>
         </c:forEach>
         <c:if test="${searchResult.hitCount == 0}">
