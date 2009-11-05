@@ -14,10 +14,10 @@
 *
 *    PURPOSE:  ascii import
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrtextimport.cpp,v $
       Revision 1.30.2.1  2008/11/13 17:23:48  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -214,14 +214,14 @@ const CHAR * CtiFDR_TextImport::KEY_LEGACY_DRIVE_AND_PATH = "FDR_TEXTIMPORT_DRIV
 const CHAR * CtiFDR_TextImport::KEY_DB_RELOAD_RATE = "FDR_TEXTIMPORT_DB_RELOAD_RATE";
 const CHAR * CtiFDR_TextImport::KEY_QUEUE_FLUSH_RATE = "FDR_TEXTIMPORT_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_TextImport::KEY_DELETE_FILE = "FDR_TEXTIMPORT_DELETE_FILE";
-const CHAR * CtiFDR_TextImport::KEY_POINTIMPORT_DEFAULT_PATH = "FDR_TEXTIMPORT_DEFAULT_POINTIMPORT_PATH";//changed 
-const CHAR * CtiFDR_TextImport::KEY_RENAME_SAVE_FILE = "FDR_TEXTIMPORT_RENAME_SAVE_FILE"; 
+const CHAR * CtiFDR_TextImport::KEY_POINTIMPORT_DEFAULT_PATH = "FDR_TEXTIMPORT_DEFAULT_POINTIMPORT_PATH";//changed
+const CHAR * CtiFDR_TextImport::KEY_RENAME_SAVE_FILE = "FDR_TEXTIMPORT_RENAME_SAVE_FILE";
 
 
 // Constructors, Destructor, and Operators
 CtiFDR_TextImport::CtiFDR_TextImport()
 : CtiFDRTextFileBase(string("TEXTIMPORT"))
-{  
+{
 
 }
 
@@ -235,16 +235,16 @@ bool CtiFDR_TextImport::shouldDeleteFileAfterImport() const
     return _deleteFileAfterImportFlag;
 }
 
-bool CtiFDR_TextImport::shouldRenameSaveFileAfterImport() const 
-{ 
-    return _renameSaveFileAfterImportFlag; 
-} 
+bool CtiFDR_TextImport::shouldRenameSaveFileAfterImport() const
+{
+    return _renameSaveFileAfterImportFlag;
+}
 
-CtiFDR_TextImport &CtiFDR_TextImport::setRenameSaveFileAfterImport (bool aFlag) 
-{ 
-    _renameSaveFileAfterImportFlag = aFlag; 
-    return *this; 
-} 
+CtiFDR_TextImport &CtiFDR_TextImport::setRenameSaveFileAfterImport (bool aFlag)
+{
+    _renameSaveFileAfterImportFlag = aFlag;
+    return *this;
+}
 
 
 CtiFDR_TextImport &CtiFDR_TextImport::setDeleteFileAfterImport (bool aFlag)
@@ -256,13 +256,13 @@ CtiFDR_TextImport &CtiFDR_TextImport::setDeleteFileAfterImport (bool aFlag)
 BOOL CtiFDR_TextImport::init( void )
 {
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
     // init the base class
-    Inherited::init();    
-    _threadReadFromFile = rwMakeThreadFunction(*this, 
+    Inherited::init();
+    _threadReadFromFile = rwMakeThreadFunction(*this,
                                                &CtiFDR_TextImport::threadFunctionReadFromFile);
 
     _legacyDrivePath = false;
@@ -278,7 +278,7 @@ BOOL CtiFDR_TextImport::init( void )
 * Function Name: CtiFDR_TextImport::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_TextImport::run( void )
@@ -296,8 +296,8 @@ BOOL CtiFDR_TextImport::run( void )
 /*************************************************
 * Function Name: CtiFDR_TextImport::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_TextImport::stop( void )
@@ -312,24 +312,37 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
 {
     struct tm ts;
     CtiTime retVal;
+    int month,day,year,hour,minute,seconds;
 
     if (aTime.length() == 19)
     {
         if (sscanf (aTime.c_str(),
                     "%2ld/%2ld/%4ld %2ld:%2ld:%2ld",
-                    &ts.tm_mon,
-                    &ts.tm_mday,
-                    &ts.tm_year,
-                    &ts.tm_hour,
-                    &ts.tm_min,
-                    &ts.tm_sec) != 6)
+                    &month,
+                    &day,
+                    &year,
+                    &hour,
+                    &minute,
+                    &seconds) != 6)
         {
             retVal = PASTDATE;
         }
         else
         {
-            ts.tm_year -= 1900;
-            ts.tm_mon--;
+            //Constructing a date since boost will exception and return 1/1/1970 if it is invalid.
+            CtiDate dateValidCheck = CtiDate(day,month,year);
+
+            if (dateValidCheck == CtiDate(1,1,1970))
+            {
+                return PASTDATE;
+            }
+
+            ts.tm_mon = month - 1;
+            ts.tm_mday = day;
+            ts.tm_year = year - 1900;
+            ts.tm_hour = hour;
+            ts.tm_min = minute;
+            ts.tm_sec = seconds;
 
             if( aDstFlag == 'D' || aDstFlag == 'd' )
             {
@@ -390,7 +403,7 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
 {
     bool retCode = false;
     bool pointValidFlag=true;
-         
+
     CtiFDRPoint point;
     CtiFDRPointSPtr pointPtr;
     int fieldNumber=1,quality;
@@ -415,19 +428,19 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
             dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
             return retCode;
         }
-		tempString1 = string(*tok_iter); 
+                tempString1 = string(*tok_iter);
         ++tok_iter;
         //Param 2 - Point Name
         translationName = tempString1;
         {
-            CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+            CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
             std::transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
             std::map<string,int>::iterator iter = nameToPointId.find(translationName);
             if( iter != nameToPointId.end() ) {
                 pointPtr = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
                 point = *pointPtr;
                 pointValidFlag = true;
-            } 
+            }
             else
             {
                 pointValidFlag = false;
@@ -495,7 +508,7 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
                 dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
                 return retCode;
             }
-            tempString1 = string(*tok_iter); 
+            tempString1 = string(*tok_iter);
             ++tok_iter;
             linetimestamp = tempString1;
             /** Error Check: unexpected end of input */
@@ -505,14 +518,14 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
                 dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
                 return retCode;
             }
-            tempString1 = string(*tok_iter);   
-            pointtimestamp = ForeignToYukonTime ( linetimestamp, tempString1[0] );
+            tempString1 = string(*tok_iter);
+            pointtimestamp = ForeignToYukonTime(linetimestamp, tempString1[0]);
 
             if (pointtimestamp != PASTDATE && pointValidFlag == true)
             {
                 retCode = buildAndAddPoint (point,value,pointtimestamp,quality,translationName,aRetMsg);
             }
-            else 
+            else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 if (pointtimestamp == PASTDATE)
@@ -522,7 +535,8 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
                 dout << CtiTime() << " ERROR: Input for point invalid, not sending the update. Check log for errors." << endl;
            }
         }
-    }catch(...)
+    }
+    catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error Parsing data. Bad input from the file.\n";
@@ -532,9 +546,9 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
 }
 
 
-bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint, 
-                                          DOUBLE aValue, 
-                                          CtiTime aTimestamp, 
+bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
+                                          DOUBLE aValue,
+                                          CtiTime aTimestamp,
                                           int aQuality,
                                           string aTranslationName,
                                           CtiMessage **aRetMsg)
@@ -556,9 +570,9 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
             value *= aPoint.getMultiplier();
             value += aPoint.getOffset();
 
-            *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(), 
-                                           value, 
-                                           aQuality, 
+            *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(),
+                                           value,
+                                           aQuality,
                                            AnalogPointType);
             ((CtiPointDataMsg *)*aRetMsg)->setTime(aTimestamp);
 
@@ -600,7 +614,7 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                     ((CtiCommandMsg *)*aRetMsg)->insert( -1 );                // This is the dispatch token and is unimplemented at this time
                     ((CtiCommandMsg *)*aRetMsg)->insert(0);                   // device id, unknown at this point, dispatch will find it
                     ((CtiCommandMsg *)*aRetMsg)->insert(aPoint.getPointID());  // point for control
-                    ((CtiCommandMsg *)*aRetMsg)->insert(aValue);       
+                    ((CtiCommandMsg *)*aRetMsg)->insert(aValue);
                     retCode = true;
 
                 } else
@@ -613,7 +627,7 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + string (" control point received with an invalid state ") + string (state);
-                    _snprintf(action,60,"%s for pointID %d", 
+                    _snprintf(action,60,"%s for pointID %d",
                               aTranslationName.c_str(),
                               aPoint.getPointID());
                     logEvent (desc,string (action));
@@ -630,9 +644,9 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                     {
                         tracestate = string ("Closed");
                     }
-                    *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(), 
-                                                   aValue, 
-                                                   aQuality, 
+                    *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(),
+                                                   aValue,
+                                                   aQuality,
                                                    StatusPointType);
                     ((CtiPointDataMsg*)*aRetMsg)->setTime(aTimestamp);
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -654,7 +668,7 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + string (" status point received with an invalid state ") + string (state);
-                    _snprintf(action,60,"%s for pointID %d", 
+                    _snprintf(action,60,"%s for pointID %d",
                               aTranslationName.c_str(),
                               aPoint.getPointID());
                     logEvent (desc,string (action));
@@ -678,7 +692,7 @@ bool CtiFDR_TextImport::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
 
     Separator sep(",\r\n", "", boost::keep_empty_tokens);
     Tokenizer cmdLine(aLine, sep);
-    Tokenizer::iterator tok_iter = cmdLine.begin();     
+    Tokenizer::iterator tok_iter = cmdLine.begin();
 
     CtiFDRPoint         point;
     int function;
@@ -712,7 +726,7 @@ bool CtiFDR_TextImport::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
 
 
 int CtiFDR_TextImport::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -739,14 +753,14 @@ int CtiFDR_TextImport::readConfig( void )
     {
         setFileName(string ("yukon.txt"));
     }
-    tempStr = getCparmValueAsString(KEY_POINTIMPORT_DEFAULT_PATH); 
+    tempStr = getCparmValueAsString(KEY_POINTIMPORT_DEFAULT_PATH);
     if (tempStr.length() > 0)
     {
-        setFileImportBaseDrivePath(tempStr); 
+        setFileImportBaseDrivePath(tempStr);
     } else
     {
-        setFileImportBaseDrivePath(CtiString ("c:\\yukon\\server\\import")); 
-    } 
+        setFileImportBaseDrivePath(CtiString ("c:\\yukon\\server\\import"));
+    }
 
     tempStr = getCparmValueAsString(KEY_LEGACY_DRIVE_AND_PATH);
     if (tempStr.length() > 0)
@@ -792,13 +806,13 @@ int CtiFDR_TextImport::readConfig( void )
         }
     }
 
-    setRenameSaveFileAfterImport(false); 
-    tempStr = getCparmValueAsString(KEY_RENAME_SAVE_FILE); 
+    setRenameSaveFileAfterImport(false);
+    tempStr = getCparmValueAsString(KEY_RENAME_SAVE_FILE);
     if (tempStr.length() > 0)
     {
         if (!stringCompareIgnoreCase(tempStr,"true"))
         {
-            setRenameSaveFileAfterImport (true); 
+            setRenameSaveFileAfterImport (true);
         }
     }
 
@@ -808,11 +822,11 @@ int CtiFDR_TextImport::readConfig( void )
 
         if ( _legacyDrivePath )
         {
-            dout << CtiTime() << " Legacy method of setting the Drive Path. Please update to the new Method using the Points." << endl; 
+            dout << CtiTime() << " Legacy method of setting the Drive Path. Please update to the new Method using the Points." << endl;
         }
-        dout << CtiTime() << " Text import file name " << getFileName() << endl;          
-        dout << CtiTime() << " Text import directory " << getDriveAndPath() << endl;//obsolete? 
-        dout << CtiTime() << " Text import interval " << getInterval() << endl;           
+        dout << CtiTime() << " Text import file name " << getFileName() << endl;
+        dout << CtiTime() << " Text import directory " << getDriveAndPath() << endl;//obsolete?
+        dout << CtiTime() << " Text import interval " << getInterval() << endl;
         dout << CtiTime() << " Text import dispatch queue flush rate " << getQueueFlushRate() << endl;
         dout << CtiTime() << " Text import db reload rate " << getReloadRate() << endl;
 
@@ -824,7 +838,7 @@ int CtiFDR_TextImport::readConfig( void )
         }else if( !shouldDeleteFileAfterImport() && !shouldRenameSaveFileAfterImport() )
         {
             dout << CtiTime() << " Configuration Error please specify what to do with the file after the import. Defaulting to delete.\n";
-            setDeleteFileAfterImport(true); 
+            setDeleteFileAfterImport(true);
         }
         if (shouldDeleteFileAfterImport() )
             dout << CtiTime() << " Import file will be deleted after import" << endl;
@@ -840,9 +854,9 @@ int CtiFDR_TextImport::readConfig( void )
 /************************************************************************
 * Function Name: CtiFDRTextFileBase::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*                               specified direction
+*
 *************************************************************************
 */
 bool CtiFDR_TextImport::loadTranslationLists()
@@ -873,8 +887,8 @@ bool CtiFDR_TextImport::loadTranslationLists()
             {
                 if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                    dout << "pointList->entries() " << pointList->entries()<< endl; 
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "pointList->entries() " << pointList->entries()<< endl;
                 }
 
                 // get iterator on send list
@@ -889,7 +903,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
 
                 // lock the receive list and remove the old one
                 {
-                    CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                    CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
                     if (getReceiveFromList().getPointList() != NULL)
                     {
                         getReceiveFromList().deletePointList();
@@ -952,19 +966,19 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
     string tempString2;
     string pointID;
     CtiString translationName;
-    CtiString translationDrivePath; 
-    CtiString translationFilename; 
-    CtiString translationFolderName; 
+    CtiString translationDrivePath;
+    CtiString translationFilename;
+    CtiString translationFolderName;
 
-    translationDrivePath = getFileImportBaseDrivePath(); 
-    translationFilename = getFileName(); 
+    translationDrivePath = getFileImportBaseDrivePath();
+    translationFilename = getFileName();
 
     if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); 
-        dout << CtiTime() << " translationPoint " << translationPoint->getPointID() <<endl; 
-        dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
-        dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " translationPoint " << translationPoint->getPointID() <<endl;
+        dout << CtiTime() << " translationFolderName " << translationFolderName <<endl;
+        dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl;
     }
 
 
@@ -976,7 +990,7 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
             dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
         }
-        translationName = ""; 
+        translationName = "";
 
         pointID = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
 
@@ -991,29 +1005,29 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
         {
             successful = true;
 
-            translationName += " "; 
-            translationName += pointID; 
+            translationName += " ";
+            translationName += pointID;
             translationName.toUpper();
 
             tempString1 = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
             if (!tempString1.empty())
             {
-                // now we have a Drive/Path 
-                translationFolderName = tempString1; 
-                translationFolderName.toLower(); 
+                // now we have a Drive/Path
+                translationFolderName = tempString1;
+                translationFolderName.toLower();
 
                 if ((translationDrivePath = translationFolderName.match(boost::regex("([A-Z]|[a-z]):\\\\"))).empty())
                 {
-                    translationDrivePath = getFileImportBaseDrivePath(); 
-                    translationDrivePath.toUpper(); 
+                    translationDrivePath = getFileImportBaseDrivePath();
+                    translationDrivePath.toUpper();
                 } else
-                    translationDrivePath = translationFolderName; 
+                    translationDrivePath = translationFolderName;
 
                 if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                    dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
-                    dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " translationFolderName " << translationFolderName <<endl;
+                    dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl;
                 }
 
                 translationName += " ";
@@ -1035,8 +1049,8 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
 
             if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                dout << " translationFilename ** "<< translationFilename<<" translationDrivePath ** "<<translationDrivePath<< endl; 
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << " translationFilename ** "<< translationFilename<<" translationDrivePath ** "<<translationDrivePath<< endl;
             }
 
             //check if its already there before putting it in the list.
@@ -1047,7 +1061,7 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
 
             bool found = false;
             for( ; itr != fInfoList->end(); itr++ )
-            {    
+            {
                 string fn2 = itr->getDriveAndPath() + itr->getFileName();
                 if( fn2.compare(fn) == 0 ) {
                     found = true;
@@ -1056,17 +1070,17 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
             }
 
             if( !found ) {//unique
-                CtiFDRTextFileInterfaceParts tempFileInfoList ( translationFilename, translationDrivePath, 0); 
+                CtiFDRTextFileInterfaceParts tempFileInfoList ( translationFilename, translationDrivePath, 0);
                 fInfoList->push_back(tempFileInfoList);
             }
 
             if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                dout << CtiTime() << " Point ID " << translationPoint->getPointID(); 
-                dout << " translated: " << translationName << endl; 
-                dout << " FILE INFO LIST SIZE = " << getFileInfoList()->size() << endl; 
-                dout << " Translation... = " << translationPoint->getDestinationList()[x].getTranslation() << endl; 
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Point ID " << translationPoint->getPointID();
+                dout << " translated: " << translationName << endl;
+                dout << " FILE INFO LIST SIZE = " << getFileInfoList()->size() << endl;
+                dout << " Translation... = " << translationPoint->getDestinationList()[x].getTranslation() << endl;
             }
         }
     }
@@ -1082,7 +1096,7 @@ void CtiFDR_TextImport::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoi
         {
             return;
         }
-            
+
         int size = translationPoint->getDestinationList().size();
         for ( int i = 0 ; i < size; i++) {
             string str = translationPoint->getDestinationList()[i].getTranslation();
@@ -1100,9 +1114,9 @@ void CtiFDR_TextImport::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoi
 
 /***
 * Function Name: list<string> GetFileNames()
-* 
+*
 * Depending on which method will determine if there could be more than one file.
-* 
+*
 */
 
 std::list<string> CtiFDR_TextImport::getFileNames()
@@ -1124,7 +1138,7 @@ std::list<string> CtiFDR_TextImport::getFileNames()
             lst.push_back(fn);
         }
     }
-    
+
     return lst;
 }
 
@@ -1153,7 +1167,7 @@ std::list<string> CtiFDR_TextImport::parseFiles()
         {
             string input;
             while( std::getline( *((std::iostream*)strm), input ) )
-            {    
+            {
                 //Test on input to see if its ok?  >1 : <500 : invalid characters?
                 lst.push_back(input);
             }
@@ -1177,7 +1191,7 @@ std::list<string> CtiFDR_TextImport::parseFiles()
 *       listed on that point and process all points in that file.
 *       Point: Loop through finding all unique file names listed under points.
 *              Process each of those files input. loop back and sleep.
-* 
+*
 ****************************************************************************/
 void CtiFDR_TextImport::threadFunctionReadFromFile( void )
 {
@@ -1204,7 +1218,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                 {
                     CtiMessage* msg = NULL;
                     bool ok = validateAndDecodeLine( *itr3, &msg );
-                    
+
                     if ( ok )
                     {
                         queueMessageToDispatch( msg );
@@ -1212,7 +1226,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                 }
 
                 pointUpdates.clear();
-                refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval(); 
+                refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval();
             }//end if (timeNow >= refreshTime)
         }//end for
 
@@ -1286,19 +1300,19 @@ bool CtiFDR_TextImport::moveFile( string fileName )
         }
         else
         {
-            tempTime = tempTime.replace(pos,1,"_"); 
+            tempTime = tempTime.replace(pos,1,"_");
         }
     }
 
     string newFilename = oldFileName + "." + tempTime + ".txt";
 
-    bool success = MoveFileEx( fileNameAndPath.c_str(),newFilename.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
+    bool success = MoveFileEx( fileNameAndPath.c_str(),newFilename.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
     if ( !success )
     {
         noErrors = false;
-        DWORD lastError = GetLastError(); 
-        CtiLockGuard<CtiLogger> doubt_guard(dout); 
-        dout << "Error moving file " <<  fileNameAndPath << ". Code: " << lastError << " for MoveFile()" << endl; 
+        DWORD lastError = GetLastError();
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Error moving file " <<  fileNameAndPath << ". Code: " << lastError << " for MoveFile()" << endl;
     }
     return noErrors;
 }
@@ -1323,37 +1337,37 @@ bool CtiFDR_TextImport::deleteFile( string fileName )
     if ( !success )
     {
         noErrors = false;
-        DWORD lastError = GetLastError(); 
-        CtiLockGuard<CtiLogger> doubt_guard(dout); 
-        dout << "Error deleting " <<  fileNameAndPath << ". Code: " << lastError << " for DeleteFile()" << endl; 
+        DWORD lastError = GetLastError();
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Error deleting " <<  fileNameAndPath << ". Code: " << lastError << " for DeleteFile()" << endl;
     }
     return noErrors;
 }
-CtiString& CtiFDR_TextImport::getFileImportBaseDrivePath() 
-{ 
-    return _fileImportBaseDrivePath; 
-} 
+CtiString& CtiFDR_TextImport::getFileImportBaseDrivePath()
+{
+    return _fileImportBaseDrivePath;
+}
 
-CtiString& CtiFDR_TextImport::setFileImportBaseDrivePath(CtiString importBase) 
-{ 
-    _fileImportBaseDrivePath = importBase; 
-    return _fileImportBaseDrivePath; 
-} 
+CtiString& CtiFDR_TextImport::setFileImportBaseDrivePath(CtiString importBase)
+{
+    _fileImportBaseDrivePath = importBase;
+    return _fileImportBaseDrivePath;
+}
 
 bool CtiFDR_TextImport::getLegacy()
-{ 
-    return _legacyDrivePath; 
+{
+    return _legacyDrivePath;
 }
 void CtiFDR_TextImport::setLegacy( bool val )
-{ 
-    _legacyDrivePath = val; 
+{
+    _legacyDrivePath = val;
 }
 
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -1364,11 +1378,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -1385,11 +1399,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )
