@@ -684,10 +684,10 @@ var setChoosenYukonDevice = function() {
                     %><%=name%><br><%}
                 %>
                                   <%if (homePhone.length() > 0) {
-                    %>Home #: <cti:formatPhoneNumber value="<%=homePhone%>"/><br><%}
+                    %>Home #: <cti:formatPhoneNumber value="<%=homePhone%>" htmlEscape="true"/><br><%}
                 %>
                                   <%if (workPhone.length() > 0) {
-                    %>Work #: <cti:formatPhoneNumber value="<%=workPhone%>"/><br><%}
+                    %>Work #: <cti:formatPhoneNumber value="<%=workPhone%>" htmlEscape="true"/><br><%}
                 %>
                                   <%if (address.length() > 0) {
                     %><%=address%><br><%}

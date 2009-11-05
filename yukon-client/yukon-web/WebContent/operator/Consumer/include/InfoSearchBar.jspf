@@ -8,8 +8,8 @@
 	String contHomePhoneVal = (contHomePhone == null) ? "" : contHomePhone.getNotification();
 	String contWorkPhoneVal = (contWorkPhone == null) ? "" : contWorkPhone.getNotification();
 %>
-      <cti:formatPhoneNumber var="contHomePhoneFmt" value="<%=contHomePhoneVal%>"/>
-      <cti:formatPhoneNumber var="contWorkPhoneFmt" value="<%=contWorkPhoneVal%>"/>
+      <cti:formatPhoneNumber var="contHomePhoneFmt" value="<%=contHomePhoneVal%>" htmlEscape="true"/>
+      <cti:formatPhoneNumber var="contWorkPhoneFmt" value="<%=contWorkPhoneVal%>" htmlEscape="true"/>
 <%
 StringBuffer contPhoneNo = new StringBuffer();
 if (contHomePhone != null)

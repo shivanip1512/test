@@ -47,7 +47,7 @@
 				    	<ct:nameValueGap gapHeight="6px" />
 					    
 					    <ct:nameValue name="Phone Number">
-				    		<cti:formatPhoneNumber value="${phoneInfo.phoneNumber}"/>
+				    		<cti:formatPhoneNumber value="${phoneInfo.phoneNumber}" htmlEscape="true"/>
 				    	</ct:nameValue>
 				    	<ct:nameValueGap gapHeight="6px" />
 					    

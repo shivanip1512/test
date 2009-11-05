@@ -413,8 +413,8 @@ function sendWorkOrder() {
                                 <td class="TableCell"><a href="" onclick="if (warnUnsavedChanges()) {document.cusForm.submit();return false;}"> 
                                   Account # <%= liteAccount.getAccountNumber() %></a><br>
                                   <% if (name.length() > 0) { %><%= name %><br><% } %>
-                                  <% if (homePhone.length() > 0) { %>Home #: <cti:formatPhoneNumber value="<%=homePhone%>"/><br><% } %>
-                                  <% if (workPhone.length() > 0) { %>Work #: <cti:formatPhoneNumber value="<%=workPhone%>"/><br><% } %>
+                                  <% if (homePhone.length() > 0) { %>Home #: <cti:formatPhoneNumber value="<%=homePhone%>" htmlEscape="true"/><br><% } %>
+                                  <% if (workPhone.length() > 0) { %>Work #: <cti:formatPhoneNumber value="<%=workPhone%>" htmlEscape="true"/><br><% } %>
                                 </td>
                               </tr>
                             </table>

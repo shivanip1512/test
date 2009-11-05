@@ -517,7 +517,7 @@ var setChoosenYukonDevice = function() {
 <% } else { %>
                                   <%= company.getCompanyName() %><br>
                                   <%= ServletUtils.formatAddress( company.getCompanyAddress() ) %><br>
-                                  <cti:formatPhoneNumber value="<%=company.getMainPhoneNumber()%>"/>
+                                  <cti:formatPhoneNumber value="<%=company.getMainPhoneNumber()%>" htmlEscape="true"/>
                                   </td>
 <% } %>
                               </tr>

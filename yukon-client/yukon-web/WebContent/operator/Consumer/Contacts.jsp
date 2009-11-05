@@ -98,7 +98,7 @@
                               </td>
                               <td width="146">
                                 <cti:formatNotification var="notif" value="<%=notif %>" />
-                                <input type="text" name="Notification" size="24" value="<spring:escapeBody htmlEscape="true">${notif}</spring:escapeBody>" onchange="setContentChanged(true)">
+                                <input type="text" name="Notification" size="24" value="${notif}" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -195,7 +195,7 @@ for (LiteContactNotification notif : additionalNotifs) {
                               </td>
                               <td width="146">
                                 <cti:formatNotification var="notif" value="<%=notif %>" />
-                                <input type="text" name="Notification" size="24" value="<spring:escapeBody htmlEscape="true">${notif}</spring:escapeBody>" onchange="setContentChanged(true)">
+                                <input type="text" name="Notification" size="24" value="${notif}" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%

@@ -214,8 +214,8 @@ function navPage()
                     LiteContactNotification workNotif = 
                             DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
 %>
-					<cti:formatNotification var="homePhone" value="<%=homeNotif%>" />
-					<cti:formatNotification var="workPhone" value="<%=workNotif%>" />
+					<cti:formatNotification var="homePhone" value="<%=homeNotif%>" htmlEscape="true" />
+					<cti:formatNotification var="workPhone" value="<%=workNotif%>" htmlEscape="true" />
 <%                    
                     StringBuffer phoneNo = new StringBuffer();
 					String homePhone = (String) pageContext.getAttribute("homePhone");

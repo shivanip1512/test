@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -21,10 +22,15 @@ public class FormatNotificationTag extends YukonTagSupport {
     private String var;
     private boolean isVarSet = false;
     
+    private boolean htmlEscape;
+    
     @Override
     public void doTag() throws JspException, IOException {
         if (!isValueSet) throw new JspException("value is not set.");
         String formattedNotification = formattingService.formatNotification(value, getUserContext());
+        if (htmlEscape) {
+            formattedNotification = StringEscapeUtils.escapeHtml(formattedNotification);
+        }        
                 
         if (isVarSet) {
             getJspContext().setAttribute(var, formattedNotification);
@@ -43,6 +49,10 @@ public class FormatNotificationTag extends YukonTagSupport {
         this.var = var;
         this.isVarSet = true;
     }
+    
+    public void setHtmlEscape(boolean htmlEscape) {
+        this.htmlEscape = htmlEscape;
+    }    
     
     @Autowired
     public void setFormattingService(ContactNotificationFormattingService formattingService) {
