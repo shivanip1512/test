@@ -118,7 +118,6 @@ public class ProgramServiceImpl implements ProgramService {
 
         if (program instanceof LMProgramDirect) {
             if (additionalInfo != null) {
-                // When two d's just aren't enough...
                 ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
                 controlRequest.setAddditionalInfo(additionalInfo);
             }
