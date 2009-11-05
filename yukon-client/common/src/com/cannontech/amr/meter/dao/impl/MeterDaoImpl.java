@@ -42,6 +42,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MeterDaoImpl implements MeterDao, InitializingBean {
@@ -247,11 +248,20 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     	
     	List<Meter> meters = template.query(new SqlFragmentGenerator<String>() {
     		public SqlFragmentSource generate(List<String> subList) {
-    		    for (String meter : subList)
-    		        meter = meter.toUpperCase();
+    		    
+    		    List<String> subListUppercase = 
+    		        Lists.transform(subList, new Function<String, String>() {
+    		            public String apply(String str) {
+    		                return str.toUpperCase();
+    		            }
+    		        });
+    		    
+    		    
+    		    for (int i = 0; i < subList.size(); i++)
+    	            subList.set(i, subList.get(i).toUpperCase());
 
     		    SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
-    			sql.append("WHERE UPPER(DeviceMeterGroup.MeterNumber) IN (").appendArgumentList(subList).append(")");
+    			sql.append("WHERE UPPER(DeviceMeterGroup.MeterNumber) IN (").appendArgumentList(subListUppercase).append(")");
     			return sql;
     		}
     	}, meterNumbers, meterRowMapper);
@@ -271,7 +281,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
             lastReceived = "";
 
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(meterRowMapper.getSql());
-        sqlBuilder.append("WHERE UPPER(MeterNumber) > UPPER(?) ");
+        sqlBuilder.append("WHERE MeterNumber > ? ");
         sqlBuilder.append("ORDER BY MeterNumber");
 
         List<Meter> mspMeters = new ArrayList<Meter>();
@@ -294,7 +304,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
             lastReceived = "";
 
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(meterRowMapper.getSql());
-        sqlBuilder.append("WHERE UPPER(PaoName) > UPPER(?) ");
+        sqlBuilder.append("WHERE PaoName > ? ");
         sqlBuilder.append("ORDER BY PaoName ");
 
         List<Meter> mspMeters = new ArrayList<Meter>();
