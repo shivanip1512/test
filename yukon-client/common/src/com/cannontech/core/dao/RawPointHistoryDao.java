@@ -116,6 +116,13 @@ public interface RawPointHistoryDao {
     public void changeQuality(int changeId, PointQuality questionable);
     
     /**
+     * Get a PointValueQualityHolder for a particular changeId.
+     * @param changeId
+     * @return
+     */
+    public PointValueQualityHolder getPointValueQualityForChangeId(int changeId);
+    
+    /**
     * Gets values before or after a given changeId.
     * All values for the point that changeId references are ordered by timestamp, the those values adjacent to the one with the given changeId are returned.
     * Offsets are an array of integers that determine which adjacent points to return.

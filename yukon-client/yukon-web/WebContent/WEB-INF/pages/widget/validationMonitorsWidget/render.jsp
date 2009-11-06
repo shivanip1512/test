@@ -15,6 +15,7 @@
 <cti:msg var="createNewText" key="yukon.web.modules.common.vee.widget.createNew"/>
 <cti:msg var="editActionTitleText" key="yukon.web.modules.common.vee.widget.actionTitle.edit"/>
 <cti:msg var="thresholdUnits" key="yukon.web.modules.common.vee.widget.thresholdUnits"/>
+<cti:msg var="review" key="yukon.web.modules.common.vee.widget.review"/>
 <cti:msg var="enableText" key="yukon.common.enable"/> 
 <cti:msg var="disableText" key="yukon.common.disable"/> 
 
@@ -99,6 +100,11 @@
 </c:otherwise>
 </c:choose>
 
-<div style="text-align:right;padding-top:5px;">
+<div style="float:left;padding-top:5px;">
+    <cti:url var="reviewUrl" value="/spring/common/veeReview/home"/>
+    <a href="${reviewUrl}">${review}</a>
+</div>
+
+<div style="float:right;padding-top:5px;">
     <tags:slowInput myFormId="createNewValidationMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
 </div>

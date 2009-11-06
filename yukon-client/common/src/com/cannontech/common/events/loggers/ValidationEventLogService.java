@@ -7,13 +7,13 @@ import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 
 public interface ValidationEventLogService {
 
-    @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rphValidation")
+    @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rphValidation.validator")
     public void unreasonableValueCausedReRead(PaoIdentifier paoIdentifier, PointIdentifier pointIdentifier);
 
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation")
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.validator")
     public void validationEngineStartup(long lastChangeIdProcessed, int tagsCleared);
 
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation")
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.validator")
     public void changedQualityOnPeakedValue(PaoIdentifier paoIdentifier, int changeId);
 
 }

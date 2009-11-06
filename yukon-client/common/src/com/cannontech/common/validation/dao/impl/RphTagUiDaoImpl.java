@@ -17,11 +17,10 @@ import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
 import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.core.dynamic.PointValueBuilder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.point.PointTypes;
 
 public class RphTagUiDaoImpl implements RphTagUiDao {
 
@@ -29,7 +28,6 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     private PaoLoadingService paoLoadingService;
     
 	@Override
-    @SuppressWarnings("unchecked")
     public List<ReviewPoint> getReviewPoints(int afterPaoId, int pageCount, List<RphTag> tags, boolean includeOk) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -69,11 +67,13 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     	
     	sql.append("ORDER BY ypo.PAObjectID, rph.ChangeId, rph.TimeStamp, rt.TagName");
     	
+    	// get
     	PaoProvidingReviewPointsRse rse = new PaoProvidingReviewPointsRse(pageCount);
-		
-		List<ReviewPoint> reviewPoints = (List<ReviewPoint>)yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
-		
+    	yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
+    	
+		List<ReviewPoint> reviewPoints = rse.getResultList();
 		List<PaoIdentifier> paos = rse.getPaos();
+		
 		Map<PaoIdentifier, DisplayablePao> displayableDeviceLookup = paoLoadingService.getDisplayableDeviceLookup(paos);
 		for (int i = 0; i < reviewPoints.size(); i++) {
 			
@@ -88,6 +88,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     private final class PaoProvidingReviewPointsRse implements ResultSetExtractor {
     	
 		private List<PaoIdentifier> paos = new ArrayList<PaoIdentifier>();
+		private List<ReviewPoint> resultList = new ArrayList<ReviewPoint>();
 		private int pageCount;
 
 		private PaoProvidingReviewPointsRse(int pageCount) {
@@ -97,8 +98,6 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 		@Override
 		public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
 
-			List<ReviewPoint> resultList = new ArrayList<ReviewPoint>();
-			
 			YukonPaoRowMapper yukonPaoRowMapper = new YukonPaoRowMapper();
 			while(rs.next() && pageCount-- > 0){
 		        
@@ -110,8 +109,13 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 				ReviewPoint rp = new ReviewPoint();
 				rp.setChangeId(rs.getInt("ChangeId"));
 				rp.setRphTag(RphTag.valueOf(rs.getString("TagName")));
-				PointValueHolder pointValue = new SimplePointValue(rs.getInt("PointId"), rs.getTimestamp("TimeStamp"), PointTypes.getType(rs.getString("PointType")), rs.getDouble("Value"));
-				rp.setPointValue(pointValue);
+				
+				PointValueBuilder builder = PointValueBuilder.create();
+	            builder.withResultSet(rs);
+	            builder.withType(rs.getString("pointtype"));
+	            PointValueQualityHolder pvqh = builder.build();
+	            
+				rp.setPointValue(pvqh);
 				
 		        resultList.add(rp);
 		    }
@@ -119,6 +123,9 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 			return resultList;
 		}
 		
+		public List<ReviewPoint> getResultList() {
+			return resultList;
+		}
 		public List<PaoIdentifier> getPaos() {
 			return paos;
 		}

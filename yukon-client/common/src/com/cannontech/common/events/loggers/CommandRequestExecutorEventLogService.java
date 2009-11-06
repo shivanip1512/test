@@ -5,9 +5,9 @@ import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 
 public interface CommandRequestExecutorEventLogService {
 
-	@YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="commandRequestExecutor.connectionException")
+	@YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="commandRequestExecutor")
     public void connectionException(int id, int contextId);
 	
-	@YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="commandRequestExecutor.exception")
+	@YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="commandRequestExecutor")
     public void exception(int id, int contextId, String error);
 }

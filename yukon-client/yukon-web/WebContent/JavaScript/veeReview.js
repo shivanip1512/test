@@ -20,7 +20,7 @@ Event.observe(window, 'load', function() {
 });
 
 function checkUncheckAll(action) {
-
+	
 	var checkAllState = $('checkAllState');
 
 	$$('td.ACTION_TD').each(function(el) {
@@ -48,20 +48,20 @@ function checkUncheckAll(action) {
 function resetDeleteAccept(action, deleteImgEl, acceptImgEl) {
 
 	if (action == 'DELETE')
-		deleteImgEl.src = '/WebConfig/yukon/Icons/delete_disabled_gray.gif';
+		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete_disabled_gray.gif');
 	if (action == 'ACCEPT')
-		acceptImgEl.src = '/WebConfig/yukon/Icons/tick_disabled_gray.gif';
+		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick_disabled_gray.gif');
 }
 
 function toggleDeleteAccept(action, deleteImgEl, acceptImgEl) {
 	
 	if (action == 'DELETE') {
-		deleteImgEl.src = '/WebConfig/yukon/Icons/delete.gif';
-		acceptImgEl.src = '/WebConfig/yukon/Icons/tick_disabled_gray.gif';
+		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete.gif');
+		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick_disabled_gray.gif');
 	}
 	if (action == 'ACCEPT') {
-		deleteImgEl.src = '/WebConfig/yukon/Icons/delete_disabled_gray.gif';
-		acceptImgEl.src = '/WebConfig/yukon/Icons/accept.gif';
+		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete_disabled_gray.gif');
+		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick.gif');
 	}
 }
 
@@ -71,12 +71,13 @@ function getActionTdHash(el) {
 	var idParts = descendants[0].id.split('_');
 	var action = idParts[1];
 	var changeId = idParts[3];
+	var pointId = idParts[4];
 
 	var h = $H();
 	h['action'] = action;
-	h['deleteImgEl'] = $('ACTION_DELETE_IMG_' + changeId);
-	h['acceptImgEl'] = $('ACTION_ACCEPT_IMG_' + changeId);
-	h['valueEl'] = $('ACTION_' + changeId);
+	h['deleteImgEl'] = $('ACTION_DELETE_IMG_' + changeId + '_' + pointId);
+	h['acceptImgEl'] = $('ACTION_ACCEPT_IMG_' + changeId + '_' + pointId);
+	h['valueEl'] = $('ACTION_' + changeId + '_' + pointId);
 
 	return h;
 }

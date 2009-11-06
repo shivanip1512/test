@@ -216,6 +216,23 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         yukonTemplate.update(sql);
         
     }
+    
+    @Override
+    public PointValueQualityHolder getPointValueQualityForChangeId(int changeId) {
+    
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT");
+    	sql.append("rph.pointId,");
+    	sql.append("rph.timestamp,");
+    	sql.append("rph.value,");
+    	sql.append("rph.quality,");
+    	sql.append("p.pointtype");
+    	sql.append("FROM RawPointHistory rph");
+    	sql.append("JOIN Point p ON (rph.pointId = p.pointId)");
+    	sql.append("WHERE rph.changeId").eq(changeId);
+    	
+    	return (PointValueQualityHolder)yukonTemplate.queryForObject(sql, new LiteRPHRowMapper());
+    }
 
     @Override
     public List<PointValueQualityHolder> getAdjacentPointValues(final int changeId, int ... offsets) throws SQLException {

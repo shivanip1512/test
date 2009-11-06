@@ -15,8 +15,12 @@
 <cti:msg var="accept" key="yukon.web.modules.common.vee.review.home.header.accept"/>
 <cti:msg var="acceptPopupInfo" key="yukon.web.modules.common.vee.review.home.header.accept.popupInfo"/>
 <cti:msg var="saveAndContinue" key="yukon.web.modules.common.vee.review.home.saveAndContinue"/>
-<cti:msg var="save" key="yukon.web.modules.common.vee.review.home.save"/>
+<cti:msg var="reload" key="yukon.web.modules.common.vee.review.home.reload"/>
+<cti:msg var="reloading" key="yukon.web.modules.common.vee.review.home.reloading"/>
+<cti:msg var="instructionsHeader" key="yukon.web.modules.common.vee.review.home.instructions.header"/>
 
+<cti:url var="deleteImg" value="/WebConfig/yukon/Icons/delete.gif"/>
+<cti:url var="acceptImg" value="/WebConfig/yukon/Icons/tick.gif"/>
 <cti:url var="deleteDisabledImg" value="/WebConfig/yukon/Icons/delete_disabled_gray.gif"/>
 <cti:url var="acceptDisabledImg" value="/WebConfig/yukon/Icons/tick_disabled_gray.gif"/>
 	
@@ -24,7 +28,7 @@
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink title="${pageTitle}"/>
+	    <cti:crumbLink url="/spring/common/veeReview/home" title="${pageTitle}" />
 	</cti:breadCrumbs>
 	
 	<cti:standardMenu menuSelection=""/>
@@ -33,35 +37,138 @@
     <h2>${pageTitle}</h2>
     <br>
     
+    <script type="text/javascript">
+    
+    	function reloadForm() {
+        	
+        	$('saveButton').disable();
+        	$('reloadButton').value = '${reloading}';
+        	$('reloadButton').disable();
+        	$('reloadSpinner').show();
+
+    		$$('input.TYPE_CHECKBOX').each(function(el) {
+        		
+           		var h = document.createElement('input');
+           		h.setAttribute('type', 'hidden');
+           		h.setAttribute('name', el.getAttribute('name'));
+           		h.setAttribute('value', el.checked);
+    			$('reloadForm').appendChild(h);
+
+    			el.disable();
+    		});
+
+			$('reloadForm').submit();
+    	}
+    
+    </script>
+    
+    <cti:verifyRolesAndProperties value="VALIDATION_ENGINE"/>
+    
+    <form id="reloadForm" action="/spring/common/veeReview/home" method="get">
+   		<c:if test="${!noPoints}">
+   			<input type="hidden" name="afterPaoId" value="${afterPaoId}">
+   		</c:if>
+    </form>
+    
+    <c:choose>
+    
+    <c:when test="${fn:length(groupedExtendedReviewPoints) == 0}">
+    	<table class="resultsTable">
+    	<tr><td style="text-align:center;font-style:italic;" class="subtleGray">
+			<br>
+			<b>No More Points to Review<b>
+			<br><br>
+			<a href="/spring/common/veeReview/home">Reload to check for unreviewed points.</a> 
+			<br><br>
+		</td></tr>
+		</table>
+    </c:when>
+
+	<c:otherwise>
+	
     <form id="saveForm" action="/spring/common/veeReview/save" method="post">
     
-    	<input type="hidden" name="prevPaoId" value="${prevPaoId}">
+    	<input type="hidden" name="afterPaoId" value="${nextPaoId}">
     	<input type="hidden" id="checkAllState" value="">
     	
-	    <%-- DISPLAY TYPES --%>
-	    <table class="compactResultsTable" style="width:40%;">
-	    	<tr>
-				<th colspan="4">
-					${displayTypes}
-					<tags:helpInfoPopup title="${displayTypes}">
-			    		${displayTypesPopupInfo}
-			    	</tags:helpInfoPopup>
-				</th>
-			</tr>
-	    	<tr>
-	    		<td><label><input type="checkbox" name="PU" <c:if test="${PU}">checked</c:if>> <tags:rphTagIcon tag="${allTagsMap['PU']}"/> <cti:msg key="${allTagsMap['PU'].key}"/></label></td>
-	    		<td><label><input type="checkbox" name="PD" <c:if test="${PD}">checked</c:if>> <tags:rphTagIcon tag="${allTagsMap['PD']}"/> <cti:msg key="${allTagsMap['PD'].key}"/></label></td>
-	    	</tr>
-	    	<tr>
-	    		<td><label><input type="checkbox" name="UU" <c:if test="${UU}">checked</c:if>> <tags:rphTagIcon tag="${allTagsMap['UU']}"/> <cti:msg key="${allTagsMap['UU'].key}"/></label></td>
-	    		<td><label><input type="checkbox" name="UD" <c:if test="${UD}">checked</c:if>> <tags:rphTagIcon tag="${allTagsMap['UD']}"/> <cti:msg key="${allTagsMap['UD'].key}"/></label></td>
-	    	</tr>
-	    	<tr>
-	    		<td colspan="2"><label><input type="checkbox" name="UDC" <c:if test="${UDC}">checked</c:if>> <tags:rphTagIcon tag="${allTagsMap['UDC']}"/> <cti:msg key="${allTagsMap['UDC'].key}"/></label></td>
-	    	</tr>
-	    </table>
-	    
+    	<c:if test="${!noPoints}">
+    	<table cellpadding="0" cellspacing="0" style="width:95%;">
+    		<tr>
+
+				<%-- DISPLAY TYPES --%>
+				<td style="width:35%;vertical-align:top;padding-right:40px;">
+				
+					<tags:sectionContainer title="${displayTypes}">
+					<table class="compactResultsTable" style="width:90%;">
+				    	<tr>
+				    		<td>
+				    			<label>
+				    				<input type="checkbox" name="PU" class="TYPE_CHECKBOX" <c:if test="${PU}">checked</c:if>>
+				    				<tags:rphTagIcon tag="${allTagsMap['PU']}"/> 
+				    				<cti:msg key="${allTagsMap['PU'].key}"/>
+				    			</label>
+				    		</td>
+				    		<td>
+				    			<label>
+				    				<input type="checkbox" name="PD" class="TYPE_CHECKBOX" <c:if test="${PD}">checked</c:if>>
+				    				<tags:rphTagIcon tag="${allTagsMap['PD']}"/>
+				    				<cti:msg key="${allTagsMap['PD'].key}"/>
+				    			</label>
+				    		</td>
+				    	</tr>
+				    	<tr>
+				    		<td>
+				    			<label>
+					    			<input type="checkbox" name="UU" class="TYPE_CHECKBOX" <c:if test="${UU}">checked</c:if>>
+					    			<tags:rphTagIcon tag="${allTagsMap['UU']}"/>
+					    			<cti:msg key="${allTagsMap['UU'].key}"/>
+				    			</label>
+				    		</td>
+				    		<td>
+				    			<label>
+					    			<input type="checkbox" name="UD" class="TYPE_CHECKBOX" <c:if test="${UD}">checked</c:if>>
+					    			<tags:rphTagIcon tag="${allTagsMap['UD']}"/>
+					    			<cti:msg key="${allTagsMap['UD'].key}"/>
+				    			</label>
+				    		</td>
+				    	</tr>
+				    	<tr>
+				    		<td>
+				    			<label>
+					    			<input type="checkbox" name="UDC" class="TYPE_CHECKBOX" <c:if test="${UDC}">checked</c:if>>
+					    			<tags:rphTagIcon tag="${allTagsMap['UDC']}"/>
+					    			<cti:msg key="${allTagsMap['UDC'].key}"/>
+				    			</label>
+				    		</td>
+				    		<td>
+				    			<input id="reloadButton" type="button" onclick="reloadForm();" value="${reload}"> <img id="reloadSpinner" style="display:none;" src="/WebConfig/yukon/Icons/indicator_arrows.gif">
+				    		</td>
+				    	</tr>
+				    </table>
+				    </tags:sectionContainer>
+				</td>
+				
+				<%-- INSTRUCTION --%>
+				<td style="vertical-align:top;">
+					<tags:sectionContainer title="${instructionsHeader}">
+					<table class="compactResultsTable" style="width:100%;">
+				    	
+				    	<tr>
+				    		<td><b>${delete}</b></td>
+				    		<td><b>${accept}</b></td>
+				    	</tr>
+				    	<tr>
+				    		<td style="padding-left:10px;">${deletePopupInfo}</td>
+				    		<td style="padding-left:10px;">${acceptPopupInfo}</td>
+				    	</tr>
+				    </table>
+				    </tags:sectionContainer>
+				</td>
+    		
+    		</tr>
+    	</table>
 	    <br>
+	    </c:if>
 	    
 	    <%-- REVIEW TABLE --%>
 	    <table class="resultsTable rowHighlighting">
@@ -72,24 +179,25 @@
 	    		<th>${flagged}</th>
 	    		<th>${next}</th>
 	    		<th align="center">
-	    			<a href="javascript:void(0);" title="Check/Uncheck All" onclick="checkUncheckAll('DELETE');">${delete}</a>
-	    			<tags:helpInfoPopup title="${delete}">
-			    		${deletePopupInfo}
-			    	</tags:helpInfoPopup>
+	    			${delete}
+	    			<img src="${deleteImg}" title="Check/Uncheck All" onclick="checkUncheckAll('DELETE');" class="pointer">
 	    		</th>
 	    		<th align="center">
-	    			<a href="javascript:void(0);" title="Check/Uncheck All" onclick="checkUncheckAll('ACCEPT');">${accept}</a>
-	    			<tags:helpInfoPopup title="${accept}">
-			    		${acceptPopupInfo}
-			    	</tags:helpInfoPopup>
+	    			${accept}
+	    			<img src="${acceptImg}" title="Check/Uncheck All" onclick="checkUncheckAll('ACCEPT');" class="pointer">
 	    		</th>
 	    	</tr>
+	    	
+	    	
 	    	
 	    	<c:forEach var="entry" items="${groupedExtendedReviewPoints}">
 	    	
 	    		<c:set var="pList" value="${entry.value}"/>
 	    	
 	    		<c:forEach var="p" items="${pList}" varStatus="status">
+	    		
+	    			<c:set var="changeId" value="${p.reviewPoint.changeId}"/>
+	    			<c:set var="pointId" value="${p.reviewPoint.pointValue.id}"/>
 	    	
 		    		<tr>
 		    		
@@ -101,9 +209,15 @@
 			    			</td>
 			    		</c:if>
 			    	
-			    		<td><cti:pointValueFormatter value="${p.prevPointValue}" format="FULL"/></td>
+			    		<td>
+			    			<cti:pointValueFormatter value="${p.prevPointValue}" format="FULL"/>
+			    		</td>
+			    		
 			    		<td title="${p.reviewPoint.changeId}">
-			    			<cti:pointValueFormatter value="${p.reviewPoint.pointValue}" format="FULL"/> 
+			    		
+			    			<div style="float:left;">
+			    				<cti:pointValueFormatter value="${p.reviewPoint.pointValue}" format="FULL"/> 
+			    			</div>
 			    			
 			    			<div style="float:right;padding-right:10px;">
 			    				<c:forEach var="otherTag" items="${p.otherTags}">
@@ -112,9 +226,17 @@
 			    				<tags:rphTagIcon tag="${p.reviewPoint.rphTag}"/>
 			    			</div>
 			    		</td>
+			    		
 			    		<td><cti:pointValueFormatter value="${p.nextPointValue}" format="FULL"/></td>
-			    		<td align="center" class="ACTION_TD"><img id="ACTION_DELETE_IMG_${p.reviewPoint.changeId}" src="${deleteDisabledImg}"></td>
-			    		<td align="center" class="ACTION_TD"><img id="ACTION_ACCEPT_IMG_${p.reviewPoint.changeId}" src="${acceptDisabledImg}"><input id="ACTION_${p.reviewPoint.changeId}" name="ACTION_${p.reviewPoint.changeId}" type="hidden" value=""></td>
+			    		
+			    		<td align="center" class="ACTION_TD pointer">
+			    			<img id="ACTION_DELETE_IMG_${changeId}_${pointId}" src="${deleteDisabledImg}">
+			    		</td>
+			    		
+			    		<td align="center" class="ACTION_TD pointer">
+			    			<img id="ACTION_ACCEPT_IMG_${changeId}_${pointId}" src="${acceptDisabledImg}">
+			    			<input id="ACTION_${changeId}_${pointId}" name="ACTION_${changeId}_${pointId}" type="hidden" value="">
+			    		</td>
 			    	</tr>
 		    	
 		    	</c:forEach>
@@ -124,13 +246,13 @@
 	    </table>
 	    
 	    <br>
-	    <c:set var="saveButtonText" value="${saveAndContinue}"/>
-	    <c:if test="${!hasMore}">
-	    	<c:set var="saveButtonText" value="${save}"/>
+	    <c:if test="${fn:length(groupedExtendedReviewPoints) > 0}">
+	    	<tags:slowInput id="saveButton" myFormId="saveForm" labelBusy="${saveAndContinue}" label="${saveAndContinue}"/>
 	    </c:if>
-	    
-	    <tags:slowInput myFormId="saveForm" labelBusy="${saveButtonText}" label="${saveButtonText}"/>
     
     </form>
+    
+    </c:otherwise>
+    </c:choose>
         
 </cti:standardPage>
