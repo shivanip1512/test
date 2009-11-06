@@ -260,7 +260,7 @@
 
         <!-- Tomcat Component -->
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/Tomcat5" />
+            <fileset dir="${basedir}/yukon-install/Tomcat6" />
         </copy>
 
         <!-- WebStart Component -->
