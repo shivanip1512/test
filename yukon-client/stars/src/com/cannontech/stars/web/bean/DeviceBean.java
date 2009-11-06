@@ -85,7 +85,7 @@ public class DeviceBean {
 		        DisplayablePao pao = iterator.next();
 		        PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
 		        if(!paosToKeep.contains(paoIdentifier)) {
-		            currentDeviceList.remove(pao);
+		            iterator.remove();
 		        }
 		    }
 		    
@@ -105,7 +105,7 @@ public class DeviceBean {
                 DisplayablePao pao = iterator.next();
                 PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
                 if(!paosToKeep.contains(paoIdentifier)) {
-                    currentDeviceList.remove(pao);
+                    iterator.remove();
                 }
             }
 		    

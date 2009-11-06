@@ -390,7 +390,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
             ecIdList.add(energyCompany.getEnergyCompanyID());
         }
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.*");
+        sql.append("SELECT ypo.PAObjectID, ypo.Type");
         sql.append("FROM InventoryBase ib");
         sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
         sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
@@ -399,7 +399,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append("AND ib.AccountId = 0");
         sql.append("AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 
-        List<PaoIdentifier> paoList = simpleJdbcTemplate.query(sql.toString(),
+        List<PaoIdentifier> paoList = simpleJdbcTemplate.query(sql.getSql(),
                                                                 new YukonPaoRowMapper(),
                                                                 sql.getArguments());
 
