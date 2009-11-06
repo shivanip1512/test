@@ -126,10 +126,6 @@ function confirmCancel() {
 		
 		String categoryName = category.getStarsWebConfig().getAlternateDisplayName();
 		String categoryDesc = category.getStarsWebConfig().getDescription();
-		if (category.getStarsEnrLMProgramCount() == 1) {	// Use the program display name and description instead
-			categoryName = ServletUtils.getProgramDisplayNames(category.getStarsEnrLMProgram(0))[0];
-			categoryDesc = category.getStarsEnrLMProgram(0).getStarsWebConfig().getDescription();
-		}
 		categoryDesc = ServletUtils.getBriefText(categoryDesc, 150);
 		
 		String checkBoxDisabled = "";
