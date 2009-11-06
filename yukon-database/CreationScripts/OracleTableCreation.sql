@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/5/2009 3:21:32 PM                         */
+/* Created on:     11/5/2009 7:36:31 PM                         */
 /*==============================================================*/
 
 
@@ -2032,7 +2032,7 @@ create table CTIDatabase  (
    constraint PK_CTIDATABASE primary key (Version, Build)
 );
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('5.0', 'Matt K', '06-Nov-2009', 'Latest Update', 3 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -10356,12 +10356,13 @@ create or replace view TempMovedCapBanks_View as
 SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName, 
        YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder, 
        YPOF.PAOName OriginalFeederName, YPOF.PAObjectId OriginalFeederId 
-FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC, YukonPAObject YPOF, DynamicCCCapBank DC 
-WHERE FB.DeviceId = DC.CapBankId 
-AND YPC.PAObjectId = DC.CapBankId 
+FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC, 
+     YukonPAObject YPOF, DynamicCCOriginalParent DCCOP
+WHERE FB.DeviceId = YPC.PAObjectId
+AND YPC.PAObjectID = DCCOP.PAObjectId
 AND FB.FeederId = YPF.PAObjectId 
-AND YPOF.PAObjectId = DC.OriginalFeederId 
-AND DC.OriginalFeederId <> 0;
+AND YPOF.PAObjectId = DCCOP.OriginalParentId 
+AND DCCOP.OriginalParentId <> 0;
 
 alter table AccountSite
    add constraint FK_CUS_CSTS_CUS2 foreign key (SiteInformationID)

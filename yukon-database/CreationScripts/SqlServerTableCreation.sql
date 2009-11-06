@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/5/2009 3:26:25 PM                         */
+/* Created on:     11/5/2009 7:33:29 PM                         */
 /*==============================================================*/
 
 
@@ -4644,7 +4644,7 @@ create table CTIDatabase (
 )
 go
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('5.0', 'Matt K', '06-Nov-2009', 'Latest Update', 3 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -13383,12 +13383,13 @@ create view TempMovedCapBanks_View as
 SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName, 
        YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder, 
        YPOF.PAOName OriginalFeederName, YPOF.PAObjectId OriginalFeederId 
-FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC, YukonPAObject YPOF, DynamicCCCapBank DC 
-WHERE FB.DeviceId = DC.CapBankId 
-AND YPC.PAObjectId = DC.CapBankId 
+FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC, 
+     YukonPAObject YPOF, DynamicCCOriginalParent DCCOP
+WHERE FB.DeviceId = YPC.PAObjectId
+AND YPC.PAObjectID = DCCOP.PAObjectId
 AND FB.FeederId = YPF.PAObjectId 
-AND YPOF.PAObjectId = DC.OriginalFeederId 
-AND DC.OriginalFeederId <> 0
+AND YPOF.PAObjectId = DCCOP.OriginalParentId 
+AND DCCOP.OriginalParentId <> 0
 go
 
 alter table AccountSite

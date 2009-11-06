@@ -97,6 +97,18 @@ UPDATE DynamicCCOriginalParent
 SET OriginalParentId = (SELECT DCCCB.OriginalFeederId FROM DynamicCCCapBank DCCCB WHERE DCCCB.CAPBANKID = PAObjectId), 
     OriginalSwitchingOrder = (SELECT DCCCB.OriginalSwitchingOrder FROM DynamicCCCapBank DCCCB WHERE DCCCB.CAPBANKID = PAObjectId);
 
+CREATE OR REPLACE VIEW TempMovedCapBanks_View AS
+SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName, 
+       YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder, 
+       YPOF.PAOName OriginalFeederName, YPOF.PAObjectId OriginalFeederId 
+FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC, 
+     YukonPAObject YPOF, DynamicCCOriginalParent DCCOP
+WHERE FB.DeviceId = YPC.PAObjectId
+AND YPC.PAObjectID = DCCOP.PAObjectId
+AND FB.FeederId = YPF.PAObjectId 
+AND YPOF.PAObjectId = DCCOP.OriginalParentId 
+AND DCCOP.OriginalParentId <> 0;    
+    
 ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalFeederId;
 ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalSwitchingOrder;
 /* End YUK-7993 */
@@ -159,4 +171,4 @@ INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-INSERT INTO CTIDatabase VALUES ('5.0', 'Matt K', '05-NOV-2009', 'Latest Update', 3);
+INSERT INTO CTIDatabase VALUES ('5.0', 'Matt K', '06-NOV-2009', 'Latest Update', 3);
