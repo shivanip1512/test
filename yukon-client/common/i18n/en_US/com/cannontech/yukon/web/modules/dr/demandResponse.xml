@@ -208,7 +208,7 @@
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.gearSelect">Select Gear:</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.cancelButton">Cancel</entry>
-<entry key="yukon.web.modules.dr.program.getChangeGearValue.notEnoughGears">Program {0} does not have more than one gear.</entry>
+<entry key="yukon.web.modules.dr.program.getChangeGearValue.notEnoughGears">Program {0} does not have multiple gears.</entry>
 
 
 <!-- sendEnableConfirm.jsp -->
