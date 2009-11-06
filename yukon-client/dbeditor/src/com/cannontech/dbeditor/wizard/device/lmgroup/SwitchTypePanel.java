@@ -4,6 +4,8 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
  */
 import java.awt.Dimension;
 
+import javax.swing.ListSelectionModel;
+
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.database.data.device.lm.LMFactory;
@@ -262,6 +264,7 @@ private javax.swing.JList getSwitchList() {
 			// user code begin {1}
 
 			ivjSwitchList.setFont( new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12 ) );
+			ivjSwitchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
