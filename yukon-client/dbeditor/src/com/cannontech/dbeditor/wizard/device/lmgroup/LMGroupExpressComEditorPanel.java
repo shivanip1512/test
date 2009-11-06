@@ -3647,7 +3647,6 @@ public void jButtonGEOModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 		{
 			getJButtonGEOModify().setText(STRING_MODIFY);
 			getJComboBoxGEO().setEditable(false);
-			getJTextFieldGeoAddress().setEditable(false);
 			getJComboBoxPROG().addItem(getJComboBoxPROG().getSelectedItem());
 		}
 	}		
@@ -3697,7 +3696,6 @@ public void jButtonPROGModify_ActionPerformed(java.awt.event.ActionEvent actionE
 		{
 			getJButtonPROGModify().setText(STRING_MODIFY);
 			getJComboBoxPROG().setEditable(false);
-			getJTextFieldProgAddress().setEditable(false);
 			getJComboBoxPROG().addItem(getJComboBoxPROG().getSelectedItem());
 		}
 	}		
@@ -3747,7 +3745,6 @@ public void jButtonSPIDModify_ActionPerformed(java.awt.event.ActionEvent actionE
 		{
 			getJButtonSPIDModify().setText(STRING_MODIFY);
 			getJComboBoxSPID().setEditable(false);
-			getJTextFieldSPIDAddress().setEditable(false);
 			getJComboBoxSPID().addItem(getJComboBoxSPID().getSelectedItem());
 		}
 	}		
@@ -3797,7 +3794,6 @@ public void jButtonSplintModify_ActionPerformed(java.awt.event.ActionEvent actio
 		{
 			getJButtonSplintModify().setText(STRING_MODIFY);
 			getJComboBoxSPLINTER().setEditable(false);
-			getJTextFieldSplinterAddress().setEditable(false);
 			getJComboBoxSPLINTER().addItem(getJComboBoxSPLINTER().getSelectedItem());
 		}
 	}		
@@ -3847,7 +3843,6 @@ public void jButtonSUBModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 		{
 			getJButtonSUBModify().setText(STRING_MODIFY);
 			getJComboBoxSUB().setEditable(false);
-			getJTextFieldSubAddress().setEditable(false);
 			getJComboBoxSUB().addItem(getJComboBoxSUB().getSelectedItem());
 		}
 	}		
@@ -3897,7 +3892,6 @@ public void jButtonUSERModify_ActionPerformed(java.awt.event.ActionEvent actionE
 		{
 			getJButtonUSERModify().setText(STRING_MODIFY);
 			getJComboBoxUSER().setEditable(false);
-			getJTextFieldUserAddress().setEditable(false);
 			getJComboBoxUSER().addItem(getJComboBoxUSER().getSelectedItem());
 		}
 	}		
@@ -3947,7 +3941,6 @@ public void jButtonZIPModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 		{
 			getJButtonZIPModify().setText(STRING_MODIFY);
 			getJComboBoxZIP().setEditable(false);
-			getJTextFieldZipAddress().setEditable(false);
 			getJComboBoxZIP().addItem(getJComboBoxZIP().getSelectedItem());
 		}
 	}		
