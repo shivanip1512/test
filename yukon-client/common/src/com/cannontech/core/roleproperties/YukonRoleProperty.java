@@ -437,10 +437,11 @@ public enum YukonRoleProperty {
     APPLICABLE_POINT_TYPE_KEY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY, stringType()),
     INHERIT_PARENT_APP_CATS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.INHERIT_PARENT_APP_CATS, booleanType()),
     
-    MSP_PAONAME_ALIAS(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_ALIAS, stringType()),
+    MSP_PAONAME_ALIAS(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_ALIAS, integerType()),
     MSP_PRIMARY_CB_VENDORID(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID, integerType()),
     MSP_BILLING_CYCLE_PARENT_DEVICEGROUP(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP, stringType()),
     MSP_LM_MAPPING_SETUP(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_LM_MAPPING_SETUP, booleanType()),
+    MSP_METER_LOOKUP_FIELD(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_METER_LOOKUP_FIELD, stringType()),
     
     DISPATCH_MACHINE(SYSTEM, com.cannontech.roles.yukon.SystemRole.DISPATCH_MACHINE, stringType()),
     DISPATCH_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.DISPATCH_PORT, stringType()),
