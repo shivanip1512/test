@@ -19,9 +19,8 @@
 	${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 </script>
 
-<div id="popupDiv" style="text-align:right;font-size:12px;">
     <a href="javascript:void(0)"
-       style="align:right"
+       class="popupLink"
        onclick="${widgetParameters.jsWidget}.doActionPopup('${method}', '${thisId}', '${label}', '${dialogId}')">
         <jsp:doBody/>
     </a>

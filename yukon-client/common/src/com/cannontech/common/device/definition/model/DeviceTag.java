@@ -12,6 +12,9 @@ public enum DeviceTag {
 	VOLTAGE_PROFILE("Voltage Profile"),
 	DEVICE_CONFIGURATION_470("Device Configuration 470"),
 	DEVICE_CONFIGURATION_430("Device Configuration 430"),
+	DISCONNECT_410("410 Disconnect"),
+	DISCONNECT_310("310 Disconnect"),
+	DISCONNECT_213("213 Disconnect"),
 	METER_DETAIL_DISPLAYABLE("Meter Detail Displayable"),
 	;
 

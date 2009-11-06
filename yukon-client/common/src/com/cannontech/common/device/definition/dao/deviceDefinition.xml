@@ -1685,6 +1685,11 @@
             	<basicLookup point="Zero Usage (24 Hours)" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="DISCONNECT_410">
+                <value>true</value>
+            </tag>
+        </tags>
 	</device>
         
     <!-- MCT 410s -->
@@ -2688,9 +2693,19 @@
 	</device> 
     <device id="MCT310ID" inherits="MCT_310_D_BASE">
         <displayName>MCT-310ID</displayName>
+        <tags>
+            <tag name="DISCONNECT_310">
+                <value>true</value>
+            </tag>
+        </tags>
 	</device> 
     <device id="MCT310IDL" inherits="MCT_310_D_BASE, MCT_310_L_BASE">
         <displayName>MCT-310IDL</displayName>
+        <tags>
+            <tag name="DISCONNECT_310">
+                <value>true</value>
+            </tag>
+        </tags>
 	</device>
     <device id="MCT310IL" inherits="MCT_310_L_BASE">
         <displayName>MCT-310IL</displayName>
@@ -3039,6 +3054,11 @@
         		<basicLookup point="Disconnect Status" />
         	</attribute>
        	</attributes>
+       	<tags>
+            <tag name="DISCONNECT_213">
+                <value>true</value>
+            </tag>
+        </tags>
 	</device>
 	<device id="MCT210" inherits="MCT_210_213_BASE">
         <displayName>MCT-210</displayName>
