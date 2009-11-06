@@ -334,7 +334,7 @@ public class InventoryBean {
 		Map<Integer, LiteStarsEnergyCompany> ecMap = 
 			StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
 		
-		int fromIndex = minInvNo - 1;
+		int fromIndex = minInvNo;
 		int toIndex = maxInvNo;
 		
 		List<LiteInventoryBase> hardwareList = simpleCollection.getList(fromIndex, toIndex);
