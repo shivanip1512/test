@@ -450,6 +450,7 @@ function changeScheduleMode() {
 function updateTimePeriodUI() {
 	
 	// Hide everything
+	$('everyDayText').hide();
 	$('weekdayText').hide();
 	$('weekdayLink').hide();
 	$('saturdayText').hide();
@@ -460,9 +461,7 @@ function updateTimePeriodUI() {
 	$('weekendLink').hide();
 
 	if(currentScheduleMode == 'ALL') {
-
-		$('weekdayText').show();
-        
+		$('everyDayText').show();
     } else if(currentScheduleMode == 'WEEKDAY_SAT_SUN') {
 
     	if(currentTimePeriod == 'WEEKDAY') {

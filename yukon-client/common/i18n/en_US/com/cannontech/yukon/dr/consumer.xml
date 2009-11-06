@@ -286,6 +286,7 @@
     <entry key="yukon.dr.consumer.allThermostats.type">Type</entry>
     
     <!-- Time of week -->
+    <entry key="yukon.dr.consumer.thermostat.schedule.EVERYDAY">Everyday</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.WEEKDAY">Weekday</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.WEEKEND">Weekend</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.SATURDAY">Saturday</entry>

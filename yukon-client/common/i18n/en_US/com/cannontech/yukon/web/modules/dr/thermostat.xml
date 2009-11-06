@@ -77,7 +77,8 @@
     <entry key="yukon.dr.operator.actionComplete.header">Message</entry>
     <entry key="yukon.dr.operator.actionComplete.ok">Ok</entry>
     
-        <!-- Time of week -->
+    <!-- Time of week -->
+    <entry key="yukon.dr.operator.thermostat.schedule.EVERYDAY">Everyday</entry>
     <entry key="yukon.dr.operator.thermostat.schedule.WEEKDAY">Weekday</entry>
     <entry key="yukon.dr.operator.thermostat.schedule.WEEKEND">Weekend</entry>
     <entry key="yukon.dr.operator.thermostat.schedule.SATURDAY">Saturday</entry>
