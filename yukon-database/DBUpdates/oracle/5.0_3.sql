@@ -93,11 +93,9 @@ INSERT INTO DynamicCCOriginalParent
 SELECT FeederId, 0, 0, 0, 0
 FROM CapControlFeeder;
 
-UPDATE DynamicCCOriginalParent
-SET OriginalParentId = DCCCB.OriginalFeederId,
-    OriginalSwitchingOrder = DCCCB.OriginalSwitchingOrder
-FROM DynamicCCOriginalparent DCCOP, DynamicCCCapBank DCCCB
-WHERE DCCCB.CapBankId = DCCOP.PAObjectId;
+UPDATE DynamicCCOriginalParent 
+SET OriginalParentId = (SELECT DCCCB.OriginalFeederId FROM DynamicCCCapBank DCCCB WHERE DCCCB.CAPBANKID = PAObjectId), 
+    OriginalSwitchingOrder = (SELECT DCCCB.OriginalSwitchingOrder FROM DynamicCCCapBank DCCCB WHERE DCCCB.CAPBANKID = PAObjectId);
 
 ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalFeederId;
 ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalSwitchingOrder;
@@ -151,7 +149,9 @@ ALTER TABLE RPHTag
 /* End YUK-8003 */
 
 /* Start YUK-8009 */
+/* @error ignore-begin */
 INSERT INTO PersistedSystemValue VALUES ('VALIDATION_ENGINE_LAST_CHANGE_ID', (SELECT MAX(ChangeId) FROM RawPointHistory));
+/* @error ignore-end */
 INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1, 4, .1, 15, 1, 'ENABLED');
 /* End YUK-8009 */
 
@@ -159,3 +159,4 @@ INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.0', 'Matt K', '05-NOV-2009', 'Latest Update', 3);
