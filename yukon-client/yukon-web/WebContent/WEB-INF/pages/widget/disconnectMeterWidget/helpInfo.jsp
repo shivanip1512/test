@@ -39,7 +39,7 @@ table.nameValueTable tr.indent1 td.value {
 	<tr>
 		<td>
 			<ct:nameValueContainer>
-				<c:if test="${isMCT4xx}">
+				<c:if test="${is410Supported}">
 					<ct:nameValue name="${mct410Devices}">
 						<ct:nameValue name="${stateGroups[0]}" nameColumnWidth="200px">
 							${confirmedDisconnectMsg}
@@ -62,7 +62,7 @@ table.nameValueTable tr.indent1 td.value {
 						<ct:nameValueGap gapHeight="6px" />
 					</ct:nameValue>
 				</c:if>
-				<c:if test="${isMCT310}">
+				<c:if test="${is310Supported}">
 					<ct:nameValue name="${mct310Devices}">
 						<ct:nameValue name="${stateGroups[0]}" nameColumnWidth="200px">
 							${openMsg}
@@ -80,7 +80,7 @@ table.nameValueTable tr.indent1 td.value {
 						<ct:nameValueGap gapHeight="6px" />
 					</ct:nameValue>
 				</c:if>
-				<c:if test="${isMCT213}">
+				<c:if test="${is213Supported}">
 					<ct:nameValue name="${mct213Devices}">
 						<ct:nameValue name="${stateGroups[0]}" nameColumnWidth="200px">
 							${openMsg}

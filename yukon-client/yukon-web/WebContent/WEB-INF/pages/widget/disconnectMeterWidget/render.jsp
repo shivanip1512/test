@@ -28,9 +28,15 @@
 
 </script>
 
-<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}" deviceId="${device.deviceId}">
-	${infoLink}
-</ct:widgetActionPopup>
+<style>
+	A.popupLink {float: right;}
+</style>
+
+<div id="popupDiv">
+	<ct:widgetActionPopup method="helpInfo" container="helpInfo" labelBusy="${title}" label="${title}" deviceId="${device.deviceId}">
+		${infoLink}
+	</ct:widgetActionPopup>
+</div>
 
 <ct:simpleDialog id="disconnectInfo"/>
 

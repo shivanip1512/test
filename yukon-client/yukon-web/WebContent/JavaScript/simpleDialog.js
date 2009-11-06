@@ -1,4 +1,4 @@
-function openSimpleDialog(dialogId, innerHtmlUrl, title, width, height) {
+function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, width, height) {
     var dialogDiv = $(dialogId);
 
     if (arguments.length > 2) {
@@ -7,10 +7,10 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, width, height) {
 
     var dlgWidth = 800;
     var dlgHeight = 0;
-    if (arguments.length > 3) {
+    if (arguments.length > 4) {
         dlgWidth = width;
     }
-    if (arguments.length > 4) {
+    if (arguments.length > 5) {
         dlgHeight = height;
     }
 
@@ -65,6 +65,7 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, width, height) {
 
     new Ajax.Updater(dialogId + '_body', innerHtmlUrl, {
             'evalScripts': true,
+            'parameters': parameters,
             'onSuccess': successCallback,
             'onFailure' : errorCallback
         });

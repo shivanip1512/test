@@ -9,6 +9,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
+<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/widgetObject.js"/>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 <cti:beanLookup bean="${bean}" var="beanInst"/>
