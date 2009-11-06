@@ -90,25 +90,25 @@
     <entry key="yukon.dr.operator.scheduleHints.back">Back to Schedule</entry>
     <entry key="yukon.dr.operator.scheduleHints.hint"><![CDATA[
         <p>The schedule page allows you to set your ongoing temperature schedule.
-           Four time frames are available for weekdays (Monday through Friday),
-           Saturdays, and Sundays. Within each of these time frames, you may
-           select your cooling and heating temperatures. Simply use the
-           following procedures.</p>
-        <p><b>1)</b> Click <b>Weekday</b>, <b>Saturday</b>, or <b>Sunday</b> for
+           There are different time frames available depending on the schedule mode selected. 
+           Within each of these time frames, you may select your cooling and heating temperatures. 
+           Simply use the following procedures.</p>
+        <p><b>1)</b> Select the schedule mode: Click <b>Same schedule all days of week</b>, 
+            <b>Weekday, Saturday and Sunday schedules</b>, or <b>Weekday and Weekend schedules</b> if available.</p>
+        <p><b>2)</b> Click <b>Weekday</b>, <b>Saturday</b>, <b>Sunday</b> or <b>Weekend</b> for
            the day(s) you would like to set.</p>
-        <p><b>2)</b> The utility recommended settings are displayed the first
+        <p><b>3)</b> The utility recommended settings are displayed the first
            time the page is accessed. If at any time you would like to redisplay
            these settings, click the <b>Recommended Settings</b> button.</p>
-        <p><b>3)</b> Slide the thermostats across the timeline to change time
+        <p><b>4)</b> Slide the thermostats across the timeline to change time
            intervals for<b> Wake (W)</b>, <b>Leave (L)</b>, <b>Return (R)</b>,
            and<b> Sleep (S)</b>. Each of the time frames should be set to 1/2
            hour before you would like the temperature to reach the selected
            level. Times may be entered directly in the text boxes.</p>
-        <p><b>4)</b> Slide the enabled (red or blue) arrows to the temperature
-           you would like. The temperature is displayed at the top of each
-           thermostat for each time frame. Temperatures may be set differently
-           for Cooling and Heating.</p>
-        <p><b>5)</b> If you would like to temporarily change your thermostat,
+        <p><b>5)</b> Slide the enabled (red or blue) arrows to the temperature
+           you would like. The temperature is displayed in the input fields below the graphic for each 
+           time frame. Temperatures may be set differently for Cooling and Heating.</p>
+        <p><b>6)</b> If you would like to temporarily change your thermostat,
            click on the<b> Manual</b> link at left or at the link provided at
            the top of the page. This page is also a convenient location for
            holding a temperature for a short amount of time that is different
