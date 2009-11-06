@@ -67,6 +67,7 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
 import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
+import com.cannontech.multispeak.client.MspMeterLookup;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterDao;
@@ -543,12 +544,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                        
                         ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, "meterAddNotification");
                         if( errorObject == null) {
-                        	com.cannontech.amr.meter.model.Meter meterToAdd = getMeterToAdd(mspMeter, paoAlias);
-                            if (meterToAdd == null) {	//and NEW meter
+                            try {
+                                com.cannontech.amr.meter.model.Meter meterToAdd = getMeterToAdd(mspMeter, paoAlias);
+                                // have existing meter to "update"
+                                errorObject = addExistingMeter(mspMeter, meterToAdd, mspVendor, paoAlias);
+                            } catch (NotFoundException e) { //and NEW meter
                                 List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
                                 errorObjects.addAll(addMeterErrors);
-                            } else { //have existing meter to "update"
-                            	errorObject = addExistingMeter(mspMeter, meterToAdd, mspVendor, paoAlias);
                             }
                         } 
                         if (errorObject != null) { 
@@ -578,38 +580,32 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     
     /**
      * Helper method to return the Meter object to "add" to Yukon.
-     * Returns null when no existing meter is found in Yukon relating to mspMeter.
-     * Returns Meter when mspMeter is found in Yukon by MeterNumber, else by Physical Address, else by PaoName.
+     * Returns Meter when mspMeter is found in Yukon by the mspMeterLookup (roleProperty value field)
      * @param mspMeter
      * @param paoAlias
      * @return
+     * @throws NotFoundException
      */
-    private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias) {
-
+    private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias) throws NotFoundException {
+        
     	com.cannontech.amr.meter.model.Meter meter = null;
-    	try { //Lookup by MeterNo
-    		String mspMeterNo = mspMeter.getMeterNo().trim();
-    		meter = meterDao.getForMeterNumber(mspMeterNo);
-    	} catch (NotFoundException e) {	//Doesn't exist by MeterNumber
-	    	
-    		try { //Lookup by Address
+    	MspMeterLookup mspMeterLookup = multispeakFuncs.getMeterLookupField();
+
+    	if( mspMeterLookup == MspMeterLookup.METER_NUMBER) {
+            String mspMeterNo = mspMeter.getMeterNo().trim();
+            meter = meterDao.getForMeterNumber(mspMeterNo);
+    	} else if( mspMeterLookup == MspMeterLookup.ADDRESS ){ 
     			String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
     			meter = meterDao.getForPhysicalAddress(mspAddress);
-    		} catch (NotFoundException e2){ //Doesn't exist by Address
-    			
-            	try { //Lookup meter by PaoName
-            		String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
-            		if (paoName != null) {
-            			meter = meterDao.getForPaoName(paoName);
-            		}
-                } // doesn't exist by PaoName
-                catch (NotFoundException e3) {
-                	return null;
-                }
-	        }
+    	} else if ( mspMeterLookup == MspMeterLookup.DEVICE_NAME ) {
+    	    String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
+    	    
+    	    // TODO??? What should be done if we can't find a paoName to lookup by?  throw exception?
+            if (paoName != null) {
+                meter = meterDao.getForPaoName(paoName);
+           	}
     	}
     	return meter;
-    
     }
     
     @Override
@@ -891,19 +887,20 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	        
 	        // set route
 	        if (routeIds.size() > 0) {
-	            
+
+	            List<String> routeNames = new ArrayList<String>(routeIds.size());
+                for (int routeId : routeIds) {
+                    routeNames.add(paoDao.getRouteNameForRouteId(routeId));
+                }
+
 	            // initally set route to first sub mapping
 	            deviceUpdateService.changeRoute(meterDevice, routeIds.get(0));
-	            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route initially set to that of template device, will run route discovery.", mspVendor.getCompanyName());
+	            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route initially set to " + routeNames.get(0) + ", will run route discovery.", mspVendor.getCompanyName());
 	        
 	            // run route discovery
 	            LiteYukonUser liteYukonUser = UserUtils.getYukonUser(); 
 	            deviceUpdateService.routeDiscovery(meterDevice, routeIds, liteYukonUser);
 	            
-	            List<String> routeNames = new ArrayList<String>(routeIds.size());
-	            for (int routeId : routeIds) {
-	                routeNames.add(paoDao.getRouteNameForRouteId(routeId));
-	            }
 	            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor.getCompanyName());
 	        
 	        // no routes for sub

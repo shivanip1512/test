@@ -27,13 +27,13 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
-import com.cannontech.roles.yukon.MultispeakRole;
 
 /**
  * @author stacey
@@ -44,7 +44,7 @@ import com.cannontech.roles.yukon.MultispeakRole;
 public class MultispeakFuncs
 {
     public MultispeakDao multispeakDao;
-    public RoleDao roleDao;
+    public RolePropertyDao rolePropertyDao;
     public DeviceGroupService deviceGroupService;
     public AuthenticationService authenticationService;
 
@@ -256,19 +256,21 @@ public class MultispeakFuncs
         return returnStr;
     }
 
+    public MspMeterLookup getMeterLookupField() {
+        String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_METER_LOOKUP_FIELD, null);
+        return MspMeterLookup.getForRolePropertyString(value);
+    }
+    
     public int getPaoNameAlias() {
-        
-        String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PAONAME_ALIAS);
+        String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PAONAME_ALIAS, null);
         return Integer.valueOf(value).intValue();
     }
     
     /**
      * @return Returns the primaryCIS vendorID.
      */
-    public int getPrimaryCIS()
-    {
-        String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID);
-        return Integer.valueOf(value).intValue();
+    public int getPrimaryCIS() {
+        return rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, null);
     }
 
     /**
@@ -276,7 +278,7 @@ public class MultispeakFuncs
      */
     public DeviceGroup getBillingCycleDeviceGroup() throws NotFoundException{
         //WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO STOREDDEVICEGROUP....
-        String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
+        String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP, null);
         DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(value);
         return deviceGroup;
     }
@@ -333,10 +335,6 @@ public class MultispeakFuncs
         this.multispeakDao = multispeakDao;
     }
     @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-    @Autowired
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
@@ -345,4 +343,8 @@ public class MultispeakFuncs
 			AuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
 	}
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }
