@@ -6100,7 +6100,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                     if (paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId()) != paobject_subbus_map->end())
                                     {
                                         dualBus = paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId())->second;
-                                        if (!stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                                        if (!stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                                            !stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) || 
+                                            !stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
                                         {
                                             if (dualBus->getCurrentVarLoadPointId() > 0)
                                             {

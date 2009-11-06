@@ -2317,19 +2317,41 @@ DOUBLE convertPowerFactorToSend(DOUBLE powerFactor)
     return returnPowerFactor;
 }
 
-void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr primary)
+void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr currentBus)
 {
-    if (primary->getAltDualSubId() == primary->getPAOId() )
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    if (currentBus->getAltDualSubId() == currentBus->getPAOId() )
     {
-        if (!stringCompareIgnoreCase(primary->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) )
+        if (!stringCompareIgnoreCase(currentBus->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) )
         {
-            primary->setAltSubControlValue(value);
+            currentBus->setAltSubControlValue(value);
         }
         else
         {
-            primary->setAltSubControlValue(primary->getCurrentVarLoadPointValue());
+            currentBus->setAltSubControlValue(currentBus->getCurrentVarLoadPointValue());
         }
-        primary->setBusUpdatedFlag(TRUE);
+        currentBus->setBusUpdatedFlag(TRUE);
+    }
+    CtiCCSubstationBusPtr primarySub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
+    if (primarySub != NULL)
+    {
+        if( !stringCompareIgnoreCase(currentBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+            !stringCompareIgnoreCase(currentBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) || 
+            !stringCompareIgnoreCase(currentBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+        {
+            primarySub->setAllAltSubValues((primarySub->getCurrentVoltLoadPointValue() + currentBus->getCurrentVoltLoadPointValue()) / 2, 
+                                   primarySub->getCurrentVarLoadPointValue() + currentBus->getCurrentVarLoadPointValue(), 
+                                   primarySub->getCurrentWattLoadPointValue() + currentBus->getCurrentWattLoadPointValue());
+
+            currentBus->setAllAltSubValues(currentBus->getCurrentVoltLoadPointValue(), 
+                                             currentBus->getCurrentVarLoadPointValue(), 
+                                             currentBus->getCurrentWattLoadPointValue());
+
+            primarySub->setBusUpdatedFlag(TRUE);
+            currentBus->setBusUpdatedFlag(TRUE);
+        }
+
     }
 }
 
@@ -3030,10 +3052,10 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                 }
                 else
                 {
-                    // PROBABLY AN ALTERNATE SUB BUS ID
                     currentSubstationBus->setAltSubControlValue(value);
                     currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
+
                 }
 
                 // check for alt sub bus id, and update all sub's alt values
