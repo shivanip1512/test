@@ -64,7 +64,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private Double phaseC = new Double(0.0);
 	private Vector<CapBankDevice> ccCapBanks = null;
 	private Boolean usePhaseData = null;
-	
+	private Integer originalParentId = null;
 	
 /**
  * CapBankDevice constructor comment.
@@ -695,4 +695,10 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 		return (CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(controlUnits) || 
 				CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(controlUnits));
 	}
+    public Integer getOriginalParentId() {
+        return originalParentId;
+    }
+    public void setOriginalParentId(Integer originalParentId) {
+        this.originalParentId = originalParentId;
+    }
 }

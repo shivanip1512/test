@@ -195,6 +195,26 @@ function updateWarningImage(id) {
     }
 }
 
+function updateDualBusImage(id) {
+    return function(data) {
+        var primarySpan = $(id + '_primary');
+        var alternateSpan = $(id + '_alternate');
+        
+        var icon = data.value;
+        
+        if (icon == 'Primary') {
+        	primarySpan.show();
+        	alternateSpan.hide();
+        } else if (icon == 'Alternate'){
+        	primarySpan.hide();
+        	alternateSpan.show();
+        } else {
+        	primarySpan.hide();
+        	alternateSpan.hide();        	
+        }
+    }
+}
+
 function updateCapBankWarningImage(id) {
     return function(data) {
         var yellowSpan = $(id + '_yellow');

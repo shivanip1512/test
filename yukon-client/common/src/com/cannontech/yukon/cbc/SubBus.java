@@ -69,6 +69,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private Boolean usePhaseData = null;
     
     private Boolean primaryBusFlag = null;
+    private Boolean dualBusEnabled = null;
     private Integer alternateBusId = null;
     /**
      * constructor comment.
@@ -794,6 +795,14 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 
     public void setAlternateBusId(Integer alternateBusId) {
         this.alternateBusId = alternateBusId;
+    }
+
+    public Boolean getDualBusEnabled() {
+        return dualBusEnabled;
+    }
+
+    public void setDualBusEnabled(Boolean dualBusEnabled) {
+        this.dualBusEnabled = dualBusEnabled;
     }
 	
 }

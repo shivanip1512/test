@@ -12,6 +12,8 @@ public class ViewableSubBus {
 	private LitePoint varPoint = null;
 	private LitePoint voltPoint = null;
 	private LitePoint wattPoint = null;
+	private int alternateStationId;
+	private int alternateAreaId;
 	private List<ViewableFeeder> feeders = null;
 	
 	public SubBus getSubBus() {
@@ -53,4 +55,21 @@ public class ViewableSubBus {
     public void setFeeders(List<ViewableFeeder> feeders) {
         this.feeders = feeders;
     }
+
+    public int getAlternateStationId() {
+        return alternateStationId;
+    }
+
+    public void setAlternateStationId(int alternateStationId) {
+        this.alternateStationId = alternateStationId;
+    }
+
+    public int getAlternateAreaId() {
+        return alternateAreaId;
+    }
+
+    public void setAlternateAreaId(int alternateAreaId) {
+        this.alternateAreaId = alternateAreaId;
+    }
+    
 }

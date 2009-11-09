@@ -32,11 +32,26 @@ public class CapControlWebUtils {
     public static List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
         List<ViewableSubBus> viewableList = new ArrayList<ViewableSubBus>(subBusList.size());
         PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         
         for(SubBus subBus: subBusList) {
             ViewableSubBus viewable = new ViewableSubBus();
             viewable.setSubBus(subBus);
             
+            int alternateStationId = 0;
+            int alternateAreaId = 0;
+            
+            if (subBus.getAlternateBusId() > 0) {
+                SubBus linkedSub = cache.getSubBus(subBus.getAlternateBusId());
+                SubStation station = cache.getSubstation(linkedSub.getParentID());
+                
+                alternateStationId = station.getCcId();
+                alternateAreaId = station.getParentID();
+            }
+
+            viewable.setAlternateStationId(alternateStationId);
+            viewable.setAlternateAreaId(alternateAreaId);
+
             if(subBus.getCurrentVarLoadPointID() != 0) {
                 LitePoint point = pointDao.getLitePoint(subBus.getCurrentVarLoadPointID());
                 viewable.setVarPoint(point);
@@ -66,6 +81,12 @@ public class CapControlWebUtils {
             
             viewable.setFeeder(feeder);
             viewable.setSubBusName(subBusName);
+            
+            if (feeder.getOriginalParentId() > 0) {
+               viewable.setMovedFeeder(true); 
+            } else {
+                viewable.setMovedFeeder(false);
+            }
             
             viewableList.add(viewable);
         }

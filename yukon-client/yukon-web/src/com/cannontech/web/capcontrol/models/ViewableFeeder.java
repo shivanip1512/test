@@ -8,6 +8,7 @@ public class ViewableFeeder {
 
 	private Feeder feeder = null;
 	private String subBusName = null;
+	private boolean movedFeeder = false;
 	private List<ViewableCapBank> capbanks = null;
 	
 	public Feeder getFeeder() {
@@ -32,5 +33,13 @@ public class ViewableFeeder {
 	
 	public List<ViewableCapBank> getCapBanks() {
         return capbanks;
+    }
+
+    public boolean isMovedFeeder() {
+        return movedFeeder;
+    }
+
+    public void setMovedFeeder(boolean movedFeeder) {
+        this.movedFeeder = movedFeeder;
     }
 }

@@ -239,6 +239,9 @@
                     >
                     ${viewableSubBus.subBus.ccName}
                     </a>
+                    <a href="/spring/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&subStationId=${viewableSubBus.alternateStationId}&areaId=${viewableSubBus.alternateAreaId}">
+                    	<capTags:dualBusImg paoId="${thisSubBusId}" type="SUBBUS"/>
+                    </a>
                     <capTags:verificationImg paoId="${thisSubBusId}" type="SUBBUS"/>
 				</td>
                 
@@ -418,7 +421,9 @@
                     	<a title="Bank Locations" class="editImg" href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&specialArea=${isSpecialArea}" style="text-decoration:none;">
 	                        <img class="rAlign editImg" src="/WebConfig/yukon/Icons/find.gif" style="vertical-align: middle;"/>
 	                    </a>
-						<span>${viewfeeder.feeder.ccName}</span>
+						<span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
+							${viewfeeder.feeder.ccName}
+						</span>
 					</td>
 					
 					<td>        

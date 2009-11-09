@@ -29,7 +29,9 @@ public interface CapControlFormattingService<E> {
         KW_VOLTS,
         DAILY_MAX_OPS,
         VERIFICATION_FLAG,
-        SA_ENABLED
+        SA_ENABLED,
+        DUALBUS_MESSAGE,
+        DUALBUS
     }
     
     public String getValueString(E latestValue, Format format, LiteYukonUser user);

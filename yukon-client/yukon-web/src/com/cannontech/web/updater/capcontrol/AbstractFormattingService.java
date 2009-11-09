@@ -137,12 +137,30 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;
             }
             
+            case DUALBUS : {
+                value = getDualBus(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case DUALBUS_MESSAGE : {
+                value = getDualBusMessage(latestValue, cbcDisplay);
+                break;
+            }
+            
             default : throw new RuntimeException("Unsupported Format: " + format);
         }
         
         return value;
     }
 
+    protected String getDualBus(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getDualBusMessage(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
     protected String getCBName(E latestValue, CBCDisplay cbcDisplay) {
         throw new UnsupportedOperationException("Not supported at this level");
     }

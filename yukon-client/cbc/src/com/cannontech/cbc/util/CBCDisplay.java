@@ -473,8 +473,12 @@ public class CBCDisplay {
                 state += " Pending";
             }
             
-            if (subBus.getSwitchOverStatus().booleanValue() && CBCUtils.isDualBusEnabled(subBus)) {
+            if (subBus.getDualBusEnabled() && subBus.getSwitchOverStatus().booleanValue()) {
                 state += " -ALT BUS";
+            }
+
+            if (subBus.getPrimaryBusFlag().booleanValue()) {
+                state += " -PRIMARY BUS";
             }
             
             if (subBus.getOvUvDisabledFlag().booleanValue()) {

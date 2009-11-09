@@ -225,6 +225,10 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 	color: #FF0000;
 }
 
+.warningColor {
+	color: #F09100;
+}
+
 .warning {
 	color: #F09100;
 	cursor: help;
