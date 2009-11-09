@@ -52,6 +52,7 @@ import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
 
 /**
  * Spring controller class for bulk operations
@@ -157,6 +158,17 @@ public class BulkController extends BulkControllerBase {
         }
         
         return mav;
+    }
+    
+    public ModelAndView deviceSelectionGetDevices(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+    	try {
+    		return collectionActions(request, response);
+    	} catch (DeviceCollectionCreationException e) {
+    		ModelAndView mav = new ModelAndView("redirect:/spring/bulk/deviceSelection");
+            mav.addObject("errorMsg", e.getMessage());
+            return mav;
+    	}
     }
     
     // DEVICE COLLECTION REPORT

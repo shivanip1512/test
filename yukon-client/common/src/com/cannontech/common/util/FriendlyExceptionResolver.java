@@ -25,6 +25,10 @@ public class FriendlyExceptionResolver {
         if (knownExceptionType != null) {
             String friendlyExceptionPropertyKey = knownExceptionType.getFriendlyExceptionPropertyKey();
             friendlyExceptionMessage = exceptionStrings.getProperty(friendlyExceptionPropertyKey);
+            
+            if (knownExceptionType.isIncludeCauseMessage()) {
+            	friendlyExceptionMessage += " (" + knownExceptionType.getCauseMessage(exception) + ")";
+            }
         }
 
         return friendlyExceptionMessage;

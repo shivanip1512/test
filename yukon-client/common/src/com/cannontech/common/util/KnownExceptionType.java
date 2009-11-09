@@ -12,10 +12,29 @@ public class KnownExceptionType {
 
     private Class<? extends Throwable> exceptionClass = null;
     private String friendlyExceptionPropertyKey = null;
+    private boolean includeCauseMessage = false;
 
     public boolean matchesException(Throwable exception) {
 
-        List<Throwable> causes = new ArrayList<Throwable>();
+    	Throwable matchingCause = getMatchingCause(exception);
+    	return matchingCause != null;
+    }
+    
+    public String getCauseMessage(Throwable exception) {
+    	
+    	Throwable matchingCause = getMatchingCause(exception);
+    	if (matchingCause != null) {
+    		return matchingCause.getMessage();
+    	}
+    	
+    	return "";
+    }
+    
+    private Throwable getMatchingCause(Throwable exception) {
+    	
+    	Throwable matchingCause = null;
+    	
+    	List<Throwable> causes = new ArrayList<Throwable>();
         causes.add(exception);
         Throwable cause = ExceptionUtils.getCause(exception);
         while(cause != null) {
@@ -26,10 +45,12 @@ public class KnownExceptionType {
         
         for(Throwable c : causes) {
             if(this.exceptionClass.isInstance(c)) {
-                return true;
+            	matchingCause = c;
+            	break;
             }
         }
-        return false;
+        
+        return matchingCause;
     }
 
     public Class<? extends Throwable> getExceptionClass() {
@@ -48,6 +69,14 @@ public class KnownExceptionType {
             String friendlyExceptionPropertyKey) {
         this.friendlyExceptionPropertyKey = friendlyExceptionPropertyKey;
     }
+    
+    public boolean isIncludeCauseMessage() {
+		return includeCauseMessage;
+	}
+    
+    public void setIncludeCauseMessage(boolean includeCauseMessage) {
+		this.includeCauseMessage = includeCauseMessage;
+	}
     
     @Override
     public String toString() {

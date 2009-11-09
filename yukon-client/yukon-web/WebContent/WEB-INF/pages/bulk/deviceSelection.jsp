@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -23,15 +24,16 @@
     <h2>${pageTitle}</h2>
     <br>
     
+    <c:if test="${not empty errorMsg}">
+            <div class="errorRed">${errorMsg}</div>
+        <br>
+    </c:if>
+    
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.deviceSelection.header"/>
     <tags:boxContainer title="${headerTitle}" id="updateConfirmContainer" hideEnabled="false">
         
-        <c:if test="${not empty errorMsg}">
-            <span class="ErrorMsg">${errorMsg}</span>
-        </c:if>
-    
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-        <tags:deviceSelection action="/spring/bulk/collectionActions" groupDataJson="${groupDataJson}" pickerConstraint="com.cannontech.common.search.criteria.MeterCriteria"/>
+        <tags:deviceSelection action="/spring/bulk/deviceSelectionGetDevices" groupDataJson="${groupDataJson}" pickerConstraint="com.cannontech.common.search.criteria.MeterCriteria"/>
     
     </tags:boxContainer>
     
