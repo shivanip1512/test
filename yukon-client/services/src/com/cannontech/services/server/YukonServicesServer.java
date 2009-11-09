@@ -16,7 +16,7 @@ public class YukonServicesServer {
         try {
 
             YukonServiceManager serviceManager = YukonSpringHook.getBean(YukonServiceManager.class);
-            //serviceManager.loadCustomServices();
+            
             serviceManager.waitForShutdown();
             log.info("main thread done");
         } catch( Throwable t ) {
