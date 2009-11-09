@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -668,6 +669,9 @@ public class ProgramController {
         addConstraintsInfoToModel(modelMap, userContext, backingBean);
         addGearsToModel(searchResult.getResultList(), modelMap);
 
+        Map<Integer, Map<Integer, Boolean>> programIndexTargetGearMap = getIndexBasedIsTargetGearMap(programs);
+        
+        modelMap.addAttribute("targetGearMap",programIndexTargetGearMap);
         return "dr/program/startMultipleProgramsDetails.jsp";
     }
 
@@ -1250,6 +1254,25 @@ public class ProgramController {
         }
     }
     
+    private Map<Integer, Map<Integer, Boolean>> getIndexBasedIsTargetGearMap(List<DisplayablePao> programs) {
+        Map<Integer, Map<Integer, Boolean>> programIndexTargetGearMap = new HashMap<Integer, Map<Integer, Boolean>>();
+        for (int i = 0; i < programs.size(); i++){
+            DisplayablePao displayablePao = programs.get(i);
+            LMProgramBase programBase = programService.getProgramForPao(displayablePao);
+            List<LMProgramDirectGear> gears;
+            if (programBase instanceof IGearProgram) {
+                gears = ((IGearProgram) programBase).getDirectGearVector();
+                Map<Integer, Boolean> gearIndexIsTrueCycleMap = new HashMap<Integer, Boolean>();
+                programIndexTargetGearMap.put(i, gearIndexIsTrueCycleMap);
+                for (int j = 0; j < gears.size(); j++){
+                    LMProgramDirectGear lmProgramDirectGear = gears.get(j);
+                    gearIndexIsTrueCycleMap.put(j+1, lmProgramDirectGear.isTargetCycle());
+                }
+            }
+        }
+        return programIndexTargetGearMap;
+    }
+    
     private String closeDialog(ModelMap modelMap) {
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
@@ -1259,7 +1282,7 @@ public class ProgramController {
     public void setControlAreaService(ControlAreaService controlAreaService) {
         this.controlAreaService = controlAreaService;
     }
-
+    
     @Autowired
     public void setScenarioDao(ScenarioDao scenarioDao) {
         this.scenarioDao = scenarioDao;

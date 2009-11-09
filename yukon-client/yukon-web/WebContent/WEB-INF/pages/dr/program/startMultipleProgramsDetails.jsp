@@ -7,24 +7,7 @@
 
 <script type="text/javascript">
 
-targetCycleGears = {
-	<c:set var="programSep" value=""/>
-	<c:forEach var="program" varStatus="programStatus" items="${programs}">
-		<c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-        <c:set var="gears" value="${gearsByProgramId[programId]}"/>
-            
-		${programSep}${programStatus.index}:{ 
-		<c:set var="gearSep" value=""/>
-	    <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
-	        <c:if test="${gear.targetCycle}">
-	            ${gearSep}${gearStatus.index + 1} : true
-	            <c:set var="gearSep" value=","/>
-	        </c:if>
-	    </c:forEach>
-	    <c:set var="programSep" value=","/>
-		}
-    </c:forEach>
-	};
+targetPrograms = ${cti:jsonString(targetGearMap)}
 
 submitForm = function() {
     combineDateAndTimeFields('startDate');
@@ -90,9 +73,10 @@ gearChanged = function() {
 	for (index = 0; index < ${fn:length(programs)}; index++) {
 		var gearNum = $('programStartInfo'+index+'.gearNumber').value;
 		var programChecked = $('startProgramCheckbox'+index).checked;
-		if (targetCycleGears[index][gearNum] && 
+		if (targetPrograms[index][gearNum] && 
 			programChecked) {
 			adjustButtonShown = true;
+			break;
 		}
 	}
 
@@ -101,8 +85,8 @@ gearChanged = function() {
     } else {
         $('addAdjustmentsArea').hide();
         $('addAdjustmentsCheckbox').checked = false;
-        updateSubmitButtons();
     }
+    updateSubmitButtons();
 }
 
 </script>
@@ -226,7 +210,7 @@ gearChanged = function() {
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
             <input id="nextButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.nextButton"/>"/>
             <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.okButton"/>"/>
-            <script type="text/javascript">updateSubmitButtons();</script>
+            <script type="text/javascript">gearChanged();</script>
         </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.cancelButton"/>"
             onclick="parent.$('drDialog').hide()"/>

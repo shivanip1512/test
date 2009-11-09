@@ -112,7 +112,8 @@
 
 <entry key="yukon.web.modules.dr.program.startProgram.gear">Gear</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.addAdjustments">Add Adjustments</entry>
-<entry key="yukon.web.modules.dr.program.startProgram.enterdjustments">Enter adjustments for program {0} below.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.enterAdjustments">Enter adjustments for program {0} below.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.enterMultipleAdjustments">Enter adjustments for the target cycle programs below.</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.startTime">Start Time</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.startNow">Start Now</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.stopTime">Stop Time</entry>

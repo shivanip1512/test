@@ -7,16 +7,20 @@
 <script type="text/javascript">
 </script>
 
-<h1 class="dialogQuestion">
-    <cti:msg key="yukon.web.modules.dr.program.startProgram.enterdjustments"
-        argument="${program.name}"/>
-</h1>
 
 <c:choose>
 	<c:when test="${not empty program}">
+		<h1 class="dialogQuestion">
+		    <cti:msg key="yukon.web.modules.dr.program.startProgram.enterAdjustments"
+		        argument="${program.name}"/>
+		</h1>
 		<cti:url var="submitUrl" value="/spring/dr/program/startProgramConstraints"/>
 	</c:when>
 	<c:otherwise>
+		<h1 class="dialogQuestion">
+		    <cti:msg key="yukon.web.modules.dr.program.startProgram.enterMultipleAdjustments"
+		        argument="${program.name}"/>
+		</h1>
 		<cti:url var="submitUrl" value="/spring/dr/program/startMultipleProgramsConstraints"/>
 	</c:otherwise>
 </c:choose>
@@ -62,9 +66,19 @@
         <cti:msg var="submitButtonText" key="yukon.web.modules.dr.program.startProgram.okButton"/>
     </c:if>
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/startProgramDetails"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
-            onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
+	    <c:choose>
+			<c:when test="${not empty program}">
+		        <cti:url var="backUrl" value="/spring/dr/program/startProgramDetails"/>
+		        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
+		            onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
+           	</c:when>
+			<c:otherwise>
+		        <cti:url var="backUrl" value="/spring/dr/program/startMultipleProgramsDetails"/>
+		        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
+		            onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
+			</c:otherwise>
+		</c:choose>
+            
         <input type="submit" value="${submitButtonText}"/>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"
             onclick="parent.$('drDialog').hide()"/>
