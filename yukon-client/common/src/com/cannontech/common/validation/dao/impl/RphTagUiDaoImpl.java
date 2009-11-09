@@ -3,12 +3,14 @@ package com.cannontech.common.validation.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -130,7 +132,47 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 			return paos;
 		}
 	}
-
+    
+    public Map<RphTag, Integer> getTagCounts() {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT");
+    	sql.append("rt.TagName,");
+    	sql.append("COUNT(*) c");
+    	sql.append("FROM (");
+    	sql.append("	SELECT rt2.*");
+    	sql.append("	FROM RphTag rt2");
+    	sql.append("	WHERE rt2.ChangeId NOT IN (");
+    	sql.append("		SELECT rt3.ChangeId");
+    	sql.append("		FROM RphTag rt3");
+    	sql.append("		WHERE rt3.TagName").eq(RphTag.OK);
+    	sql.append("	)");
+    	sql.append(") rt");
+    	sql.append("GROUP BY rt.TagName");
+    	
+    	final Map<RphTag, Integer> countMap = new HashMap<RphTag, Integer>();
+    	
+    	RowCallbackHandler rch = new RowCallbackHandler() {
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				
+				RphTag rphTag = RphTag.valueOf(rs.getString("TagName"));
+				int count = rs.getInt("c");
+				countMap.put(rphTag, count);
+			}
+		};
+    	
+    	yukonJdbcTemplate.query(sql, rch);
+    	
+    	for (RphTag tag : RphTag.getAllValidation()) {
+    		if (!countMap.keySet().contains(tag)) {
+    			countMap.put(tag, 0);
+    		}
+    	}
+    		
+    	return countMap;
+    }
+    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
 		this.yukonJdbcTemplate = yukonJdbcTemplate;

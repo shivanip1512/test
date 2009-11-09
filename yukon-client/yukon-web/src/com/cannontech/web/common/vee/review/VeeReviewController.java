@@ -139,6 +139,14 @@ public class VeeReviewController {
         	finalPaoId = extRp.getReviewPoint().getDisplayablePao().getPaoIdentifier().getPaoId();
         }
         
+        // tag counts
+        Map<RphTag, Integer> tagCountsOrg = rphTagUiDao.getTagCounts();
+        Map<String, Integer> tagCounts = new HashMap<String, Integer>();
+        for (RphTag tag : tagCountsOrg.keySet()) {
+        	tagCounts.put(tag.name(), tagCountsOrg.get(tag));
+        }
+        mav.addObject("tagCounts", tagCounts);
+        
         // mav
         mav.addObject("afterPaoId", afterPaoId);
         mav.addObject("nextPaoId", finalPaoId);

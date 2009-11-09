@@ -106,13 +106,15 @@
 				    				<input type="checkbox" name="PU" class="TYPE_CHECKBOX" <c:if test="${PU}">checked</c:if>>
 				    				<tags:rphTagIcon tag="${allTagsMap['PU']}"/> 
 				    				<cti:msg key="${allTagsMap['PU'].key}"/>
+				    				(${tagCounts['PU']})
 				    			</label>
 				    		</td>
 				    		<td>
 				    			<label>
 				    				<input type="checkbox" name="PD" class="TYPE_CHECKBOX" <c:if test="${PD}">checked</c:if>>
 				    				<tags:rphTagIcon tag="${allTagsMap['PD']}"/>
-				    				<cti:msg key="${allTagsMap['PD'].key}"/>
+				    				<cti:msg key="${allTagsMap['PD'].key}"/> 
+				    				(${tagCounts['PD']})
 				    			</label>
 				    		</td>
 				    	</tr>
@@ -122,6 +124,7 @@
 					    			<input type="checkbox" name="UU" class="TYPE_CHECKBOX" <c:if test="${UU}">checked</c:if>>
 					    			<tags:rphTagIcon tag="${allTagsMap['UU']}"/>
 					    			<cti:msg key="${allTagsMap['UU'].key}"/>
+					    			(${tagCounts['UU']})
 				    			</label>
 				    		</td>
 				    		<td>
@@ -129,6 +132,7 @@
 					    			<input type="checkbox" name="UD" class="TYPE_CHECKBOX" <c:if test="${UD}">checked</c:if>>
 					    			<tags:rphTagIcon tag="${allTagsMap['UD']}"/>
 					    			<cti:msg key="${allTagsMap['UD'].key}"/>
+					    			(${tagCounts['UD']})
 				    			</label>
 				    		</td>
 				    	</tr>
@@ -138,6 +142,7 @@
 					    			<input type="checkbox" name="UDC" class="TYPE_CHECKBOX" <c:if test="${UDC}">checked</c:if>>
 					    			<tags:rphTagIcon tag="${allTagsMap['UDC']}"/>
 					    			<cti:msg key="${allTagsMap['UDC'].key}"/>
+					    			(${tagCounts['UDC']})
 				    			</label>
 				    		</td>
 				    		<td>
