@@ -133,7 +133,7 @@ ALTER TABLE DynamicCCCapBank DROP COLUMN OriginalSwitchingOrder;
 /* End YUK-7993 */
 
 /* Start YUK-8002 */
-INSERT INTO YukonRoleProperty VALUES(-1604,-7,'Meter Lookup Field','Meter Number','Defines the field used to lookup a meter by in Yukon. Valid values: Meter Number, Device Name, or Address.');
+INSERT INTO YukonRoleProperty VALUES(-1604,-7,'Meter Lookup Field','METER_NUMBER','Defines the field used to lookup a meter by in Yukon. Valid values: METER_NUMBER, DEVICE_NAME, or ADDRESS.');
 /* End YUK-8002 */
 
 /* Start YUK-7995 */
@@ -193,4 +193,4 @@ INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-INSERT INTO CTIDatabase VALUES ('5.0', 'Matt K', '06-NOV-2009', 'Latest Update', 3);
+INSERT INTO CTIDatabase VALUES ('5.0', 'Matt K', '09-NOV-2009', 'Latest Update', 3);
