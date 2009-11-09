@@ -19,7 +19,7 @@ using namespace std;
 extern CtiConnection VanGoghConnection;
 
 extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
-extern bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
+extern bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
 
 namespace Cti    {
 namespace Porter {
@@ -116,10 +116,10 @@ void UnsolicitedHandler::run( void )
 
                 if( active )
                 {
-					Sleep(50);
-				}
-				else
-				{
+                    Sleep(50);
+                }
+                else
+                {
                     Sleep(500);
                 }
 
@@ -171,18 +171,11 @@ void UnsolicitedHandler::initializeDeviceRecords( void )
 
 UnsolicitedHandler::device_record *UnsolicitedHandler::createDeviceRecord(const CtiDeviceSPtr &device)
 {
-    device_record *dr = CTIDBG_new device_record;
+    if( !device )  return 0;
 
-    //  assignment - we're just grabbing a reference, so when this reference goes away, so will
-    //    our hold on this pointer...  no need to delete it
-    dr->device = boost::static_pointer_cast<CtiDeviceSingle>(device);
-
-    dr->id = device->getID();
+    device_record *dr = CTIDBG_new device_record(device, device->getID());
 
     dr->dirty = device->isDirty();
-
-    dr->work.timeout = CtiTime(YUKONEOT).seconds();
-    dr->work.last_keepalive = CtiTime::now().seconds();
 
     return dr;
 }
@@ -361,7 +354,7 @@ bool UnsolicitedHandler::generateKeepalives(om_queue &local_queue)
             isDnpKeepaliveNeeded(*dr, TimeNow) )
         {
             generateDnpKeepalive(local_queue, *dr, TimeNow);
-            dr->work.last_keepalive = TimeNow.seconds();
+            dr->work.last_keepalive = TimeNow;
             keepalive_generated = true;
         }
     }
@@ -403,10 +396,10 @@ bool UnsolicitedHandler::isGpuffDevice(const CtiDeviceSingle &ds)
 
 bool UnsolicitedHandler::isDnpKeepaliveNeeded(const device_record &dr, const CtiTime &TimeNow)
 {
-    unsigned long last_communication = max(dr.work.last_outbound, dr.work.last_keepalive);
-    unsigned long keepalive_period   = gConfigParms.getValueAsULong("PORTER_DNPUDP_KEEPALIVE", 86400);
+    CtiTime last_communication = max(dr.work.last_outbound, dr.work.last_keepalive);
+    u_long  keepalive_period   = gConfigParms.getValueAsULong("PORTER_DNPUDP_KEEPALIVE", 86400);
 
-    return (last_communication + keepalive_period) < TimeNow.seconds();
+    return (last_communication + keepalive_period) < TimeNow;
 }
 
 void UnsolicitedHandler::generateDnpKeepalive(om_queue &local_queue, const device_record &dr, const CtiTime &TimeNow)
@@ -500,11 +493,11 @@ bool UnsolicitedHandler::generateOutbounds( void )
 
                 if( dr->work.xfer.getInCountExpected() > 0 )
                 {
-                    dr->work.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
+                    dr->work.timeout = CtiTime::now() + gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
                 }
                 else
                 {
-                    dr->work.timeout = CtiTime(YUKONEOT).seconds();
+                    dr->work.timeout = YUKONEOT;
                 }
             }
 
@@ -686,21 +679,18 @@ UnsolicitedHandler::device_record *UnsolicitedHandler::getDeviceRecordById( long
         {
             CtiDeviceSPtr device = _deviceManager.getDeviceByID(device_id);
 
-            if( device )
-            {
-                dr = createDeviceRecord(device);
+            dr = createDeviceRecord(device);
 
-                if( dr && dr->device )
-                {
-                    addDeviceProperties(*dr->device);
-                }
+            if( dr && dr->device )
+            {
+                addDeviceProperties(*dr->device);
             }
         }
 
-		if( dr )
-		{
-			retval = validateDeviceRecord(dr);
-		}
+        if( dr )
+        {
+            retval = validateDeviceRecord(dr);
+        }
     }
 
     return retval;
@@ -721,7 +711,7 @@ UnsolicitedHandler::device_record *UnsolicitedHandler::validateDeviceRecord( dev
 }
 
 
-bool UnsolicitedHandler::validatePacket(packet *&p)
+bool UnsolicitedHandler::validatePacket(packet *&p) const
 {
     if( Protocol::DNP::Datalink::isPacketValid(p->data, p->len) )
     {
@@ -791,7 +781,7 @@ bool UnsolicitedHandler::processDnpInbound(device_record &dr)
 
     int status = NORMAL;
 
-    if( dr.work.timeout < CtiTime::now().seconds() )
+    if( dr.work.timeout < CtiTime::now() )
     {
         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
@@ -862,14 +852,14 @@ bool UnsolicitedHandler::processDnpInbound(device_record &dr)
     {
         int om_retry = 0;
 
-        traceInbound(dr.ip, dr.port, dr.work.status, dr.work.xfer.getInBuffer(), dr.work.xfer.getInCountActual(), &dr);
+        traceInbound(getDeviceIp(dr.id), getDevicePort(dr.id), dr.work.status, dr.work.xfer.getInBuffer(), dr.work.xfer.getInCountActual(), &dr);
 
         if( !dr.work.outbound.empty() && dr.work.outbound.front() )
         {
             om_retry = dr.work.outbound.front()->Retry;
         }
 
-        processCommResult(status, dr.id, dr.id, om_retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr.device));
+        processCommStatus(status, dr.id, dr.id, om_retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr.device));
 
         if( status && !dr.device->isTransactionComplete() )
         {
@@ -926,7 +916,7 @@ bool UnsolicitedHandler::processGpuffInbound(device_record &dr)
 }
 
 
-void UnsolicitedHandler::sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, CtiDeviceSingleSPtr &device, CtiConnection &connection)
+void UnsolicitedHandler::sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection)
 {
     auto_ptr<CtiMultiMsg> m(new CtiMultiMsg());
 
@@ -1057,7 +1047,7 @@ bool UnsolicitedHandler::sendResults( void )
             im.EventCode = dr->work.status;
 
             //  om->Retry will never be nonzero for DNP devices - they handle retries internally
-            processCommResult(dr->work.status, dr->id, dr->id, om->Retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+            processCommStatus(dr->work.status, dr->id, dr->id, om->Retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
 
             /*
             bool commFailed = (dr->work.status == NORMAL);
@@ -1126,41 +1116,6 @@ void UnsolicitedMessenger::sendMessageToClients(CtiMessage *msg)
     }
 
     delete msg;
-}
-
-
-string UnsolicitedHandler::ip_to_string(u_long ip)
-{
-    ostringstream ostr;
-
-    ostr << ((ip >> 24) & 0xff) << ".";
-    ostr << ((ip >> 16) & 0xff) << ".";
-    ostr << ((ip >>  8) & 0xff) << ".";
-    ostr << ((ip >>  0) & 0xff);
-
-    return ostr.str();
-}
-
-u_long UnsolicitedHandler::string_to_ip(string ip_string)
-{
-    int pos = 0;
-    u_long ip = 0;
-
-    while( pos < ip_string.length() )
-    {
-        ip <<= 8;
-
-        ip |= atoi(ip_string.c_str() + pos);
-
-        pos = ip_string.find_first_of(".", pos + 1);
-
-        if( pos != string::npos )
-        {
-            pos++;  //  move past the dot if we found one
-        }
-    }
-
-    return ip;
 }
 
 

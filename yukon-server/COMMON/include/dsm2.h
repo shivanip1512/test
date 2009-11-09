@@ -321,13 +321,13 @@ IM_EX_CTIBASE LONG OutMessageCount();
 #define WRONGADDRESS_TXT  "Wrong Unique Address Received"
 #define WRONGADDRESS_TYPE ERRTYPECOMM
 #define TCPCONNECTERROR         89
-#define TCPCONNECTERROR_TXT     "Error Connecting to Terminal Server"
+#define TCPCONNECTERROR_TXT     "Error Connecting to TCP socket"
 #define TCPCONNECTERROR_TYPE    ERRTYPECOMM
 #define TCPWRITEERROR           90
-#define TCPWRITEERROR_TXT       "Error Writing to Terminal Server"
+#define TCPWRITEERROR_TXT       "Error Writing to TCP socket"
 #define TCPWRITEERROR_TYPE      ERRTYPECOMM
 #define TCPREADERROR            91
-#define TCPREADERROR_TXT        "Error Reading from Terminal Server"
+#define TCPREADERROR_TXT        "Error Reading from TCP socket"
 #define TCPREADERROR_TYPE       ERRTYPECOMM
 #define ADDRESSERROR            92
 #define ADDRESSERROR_TXT        "Address Does Not Match Expected Value"

@@ -40,7 +40,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
 
 CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
 BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
-bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
+bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
 void getNextExpirationTime(LONG timesPerDay, CtiTime &time);
 UINT purgeExpiredQueueEntries(CtiPortSPtr port);
 

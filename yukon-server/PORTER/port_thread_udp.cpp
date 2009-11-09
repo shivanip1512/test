@@ -45,7 +45,7 @@ VOID PortUdpThread(void *pid)
     {
         ostringstream thread_name;
 
-        thread_name << "UDP Port " << setw(4) << setfill('0') << Port->getPortID();
+        thread_name << "UDP PortID " << setw(4) << setfill('0') << Port->getPortID();
 
         SetThreadName(-1, thread_name.str().c_str());
 
@@ -55,301 +55,6 @@ VOID PortUdpThread(void *pid)
 
         udp.run();
     }
-
-#if 0
-    INT            status;
-
-    CtiTime        nowTime, nextExpireTime;
-    ULONG          i;
-    INMESS         InMessage;
-    OUTMESS        *OutMessage = 0;
-    ULONG          QueEntries;
-
-
-
-    bool           profiling = (portid == gConfigParms.getValueAsULong("PORTER_PORT_PROFILING"));
-    LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 0);
-    DWORD          ticks;
-
-    CtiDeviceSPtr  Device;
-    CtiDeviceSPtr  LastExclusionDevice;
-
-    /* make it clear who is the boss */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-
-    // Let the threads get up and running....
-    WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
-
-    getNextExpirationTime(expirationRate, nextExpireTime);
-
-    if( !Port )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Port == 0 in PortThread() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-        }
-
-        string thread_name = "Port " + CtiNumStr(Port->getPortID()).zpad(4);
-
-        SetThreadName(-1, thread_name.c_str());
-
-        /* and wait for something to come in */
-        for(;!PorterQuit;)
-        {
-            OutMessage = 0;
-            nowTime = nowTime.now();
-
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
-            {
-                PorterQuit = TRUE;
-                continue;
-            }
-
-            if( nowTime > nextExpireTime )
-            {
-                int entries = purgeExpiredQueueEntries(Port);
-                getNextExpirationTime(expirationRate, nextExpireTime);
-
-                if( entries > 0 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port "  << Port->getName() << " purged " << CtiNumStr(entries) << " expired OM's " << endl;
-                }
-            }
-
-            if( Port->isInhibited() )
-            {
-                Sleep(5000L);
-                continue;
-            }
-
-            if( !Port->isValid() && !PortManager.PortGetEqual(portid) )
-            {
-                //  we've been deleted - exit the thread
-                break;
-            }
-
-            if( CONTINUE_LOOP == (status = ResetChannel(Port, Device)) )
-            {
-                //  we're busted - don't make anyone else wait on our priorities
-                DeviceManager.setDevicePrioritiesForPort(portid, CtiDeviceManager::device_priorities_t());
-
-                Sleep(50);
-                status = 0;
-                continue;
-            }
-
-            Device = DeviceManager.chooseExclusionDevice( Port->getPortID() );
-
-            if(Device)
-            {
-                Device->getOutMessage(OutMessage);
-            }
-
-            if(profiling)
-            {
-                ticks = GetTickCount();
-            }
-
-            if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
-            {
-                if( profiling )
-                {
-                    ticks = GetTickCount() - ticks;
-
-                    if( ticks > 1000 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                Sleep(250);
-
-                continue;
-            }
-            else
-            {
-                if( profiling )
-                {
-                    ticks = GetTickCount() - ticks;
-
-                    if( ticks > 1000 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
-                {
-                    CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
-
-                    if(tempDev)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
-                        dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                        if(strlen(OutMessage->Request.CommandStr) > 0) dout << CtiTime() << " Command : " << OutMessage->Request.CommandStr << endl;
-                        if(QueEntries > 50) dout << CtiTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
-                    }
-                }
-            }
-
-
-            /*
-             *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
-             *   requesting client.
-             */
-            if( CheckIfOutMessageIsExpired(OutMessage) != NORMAL )
-            {
-                continue;
-            }
-
-            if(Port->getConnectedDevice() != OutMessage->DeviceID)
-            {
-                if(Device && Device->hasExclusions())
-                    DeviceManager.removeInfiniteExclusion(Device);
-            }
-
-            /*
-             *  This is the call which establishes the OutMessage's DeviceID as the Device we are operating upon.
-             *  Upon successful return, the Device pointer is set to nonNull.
-             */
-            if( CONTINUE_LOOP == IdentifyDeviceFromOutMessage(Port, OutMessage, Device) )
-            {
-                continue;
-            }
-
-            if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
-            }
-
-            // Copy a good portion of the OutMessage to the to-be-formed InMessage
-            OutEchoToIN(OutMessage, &InMessage);
-
-            if((status = CheckInhibitedState(Port, &InMessage, OutMessage, Device)) != NORMAL)
-            {
-                SendError(OutMessage, status);
-                continue;
-            }
-
-            /* Make sure everything is A-OK with this device */
-            if((status = ValidateDevice(Port, Device, OutMessage)) != NORMAL)
-            {
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            //  See if there is a reason to proceed...  Note that this is where OMs can be queued onto devices
-            if((status = DevicePreprocessing(Port, OutMessage, Device)) != NORMAL)   /* do any preprocessing according to type */
-            {
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            /* Check if this port is dial up and initiate connection. */
-            if((status = EstablishConnection(Port, &InMessage, OutMessage, Device)) != NORMAL)
-            {
-                if(status != RETRY_SUBMITTED)
-                {
-                    Port->reset(TraceFlag);
-                }
-
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            ticks = GetTickCount();
-
-            Port->setPortCommunicating();
-            try
-            {
-                /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
-                i = CommunicateDevice(Port, &InMessage, OutMessage, Device);
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            Port->addDeviceQueuedWork( Device->getID(), Device->queuedWorkCount() );
-
-            ticks = GetTickCount() - ticks;
-            if( profiling )
-            {
-                if( ticks > 1000 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            Port->setPortCommunicating(false, ticks);
-
-            //  if the device needs to schedule more work
-            if( Device->hasPreloadWork() )
-            {
-                Port->setDevicePreload(Device->getID());
-
-                processPreloads(Port);
-
-                DeviceManager.addPortExclusion(Device->getID());
-            }
-
-            /* Non wrap protcol specific communications stuff */
-            if(!i)      // No error yet.
-            {
-                i = NonWrapDecode(&InMessage, Device);
-            }
-
-            /*
-             * Check if we need to do a retry on this command. Returns RETRY_SUBMITTED if the message has
-             * been requeued, or the CommunicateDevice returned otherwise
-             */
-            LONG did = OutMessage->DeviceID;
-            LONG tid = OutMessage->TargetID;
-            bool rgtz = OutMessage->Retry > 0;
-
-            if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, Device) == RETRY_SUBMITTED)
-            {
-                continue;  // It has been re-queued!
-            }
-            else   /* we are either successful or retried out */
-            {
-                if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
-                {
-                    RequeueReportError(status, OutMessage);
-                    continue;
-                }
-            }
-
-            if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
-            {
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            if(OutMessage != NULL)
-            {
-                delete OutMessage; /* free up the OutMessage, it made a successful run! */
-                OutMessage = NULL;
-            }
-        }  /* and do it all again */
-    }
-#endif
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -671,7 +376,7 @@ void UdpPortHandler::sendOutbound( device_record &dr )
     {
         traceOutbound(dr, 0);
 
-        dr.work.last_outbound = CtiTime::now().seconds();
+        dr.work.last_outbound = CtiTime::now();
     }
 }
 
@@ -962,6 +667,41 @@ void UdpPortHandler::setDeviceIp( const long device_id, const u_long ip )
 void UdpPortHandler::setDevicePort( const long device_id, const u_short port )
 {
     _ports[device_id] = port;
+}
+
+
+string UdpPortHandler::ip_to_string(u_long ip) const
+{
+    ostringstream ostr;
+
+    ostr << ((ip >> 24) & 0xff) << ".";
+    ostr << ((ip >> 16) & 0xff) << ".";
+    ostr << ((ip >>  8) & 0xff) << ".";
+    ostr << ((ip >>  0) & 0xff);
+
+    return ostr.str();
+}
+
+u_long UdpPortHandler::string_to_ip(string ip_string)
+{
+    int pos = 0;
+    u_long ip = 0;
+
+    while( pos < ip_string.length() )
+    {
+        ip <<= 8;
+
+        ip |= atoi(ip_string.c_str() + pos);
+
+        pos = ip_string.find_first_of(".", pos + 1);
+
+        if( pos != string::npos )
+        {
+            pos++;  //  move past the dot if we found one
+        }
+    }
+
+    return ip;
 }
 
 

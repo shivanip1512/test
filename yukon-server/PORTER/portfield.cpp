@@ -1365,7 +1365,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 //  don't record boring outbounds - they don't indicate failure
                                 if( status || trx.getInCountExpected() )
                                 {
-                                    processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
+                                    processCommStatus(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
                                 }
 
                                 // Prepare for tracing
@@ -1443,7 +1443,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 ansi.decode( trx, status );
 
-                                processCommResult(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+                                processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
 
                                 // Prepare for tracing
                                 if( trx.doTrace( status ))
@@ -1533,7 +1533,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 ansi.decode( trx, status );
 
-                                processCommResult(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+                                processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
 
                                 // Prepare for tracing
                                 if( trx.doTrace( status ))
@@ -1622,7 +1622,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             error = transdata.decode( trx, status );
 
-                            processCommResult(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+                            processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
 
                             if( trx.doTrace( status ))
                             {
@@ -1846,7 +1846,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             IED->allocateDataBins(OutMessage);
                             status = InitializeHandshake (Port,Device, traceList);
 
-                            processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
+                            processCommStatus(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
 
                             if(!status)
                             {
@@ -2899,11 +2899,11 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         bool reportablechange = false;
         if(OutMessage)
         {
-            reportablechange = processCommResult(CommResult, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+            reportablechange = processCommStatus(CommResult, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
         }
         else if(InMessage)
         {
-            reportablechange = processCommResult(CommResult, InMessage->DeviceID, InMessage->TargetID, false, Device);
+            reportablechange = processCommStatus(CommResult, InMessage->DeviceID, InMessage->TargetID, false, Device);
         }
         else
         {
@@ -3634,7 +3634,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
                 status = ReturnLoadProfileData ( aPortRecord, dev, aInMessage, aOutMessage, traceList);
             }
 
-            if(aOutMessage) processCommResult(status, aOutMessage->DeviceID, aOutMessage->TargetID, aOutMessage->Retry > 0, dev);
+            if(aOutMessage) processCommStatus(status, aOutMessage->DeviceID, aOutMessage->TargetID, aOutMessage->Retry > 0, dev);
 
             if(status != NORMAL)
             {
@@ -4522,7 +4522,7 @@ BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
     return( match );
 }
 
-bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device)
+bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device)
 {
     bool status = false;
 

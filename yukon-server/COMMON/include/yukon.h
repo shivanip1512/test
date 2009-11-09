@@ -314,6 +314,8 @@ enum YukonError_t
 
     ErrorCommandAlreadyInProgress,
 
+    ErrorDeviceNotConnected,
+
     FinalError
 };
 

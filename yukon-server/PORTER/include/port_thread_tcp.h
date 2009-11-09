@@ -22,8 +22,7 @@ private:
     {
         connection() :
             state(Disconnected),
-            socket(INVALID_SOCKET),
-            connect_timeout(0)
+            socket(INVALID_SOCKET)
         {};
 
         enum State
@@ -37,12 +36,15 @@ private:
 
         SOCKET socket;
 
-        unsigned long connect_timeout;
+        CtiTime connect_timeout;
 
         datastream stream;
     };
 
     typedef std::map<long, connection> connection_map;
+
+    typedef connection_map::iterator       connection_itr;
+    typedef connection_map::const_iterator connection_const_itr;
 
     typedef std::map<long, u_long>  ip_map;
     typedef std::map<long, u_short> port_map;
@@ -57,14 +59,18 @@ private:
     void loadDeviceTcpProperties(const std::set<long> &device_ids);
     static u_long resolveIp(const string &ip);
 
+    void checkPendingConnections(vector<connection_itr> &in_progress);
+    void checkPendingConnectionBlock(const int socket_count, fd_set &writeable_sockets, vector<connection_itr> &candidate_connections);
+
     bool connectToDevice     (const long device_id, connection &c);
     void setConnectionOptions(const long device_id, connection &c);
     void disconnectFromDevice(const long device_id, connection &c);
 
+    void updateDeviceCommStatus(const long device_id, int status);
+
     void readInput(const long device_id);
 
-    static void reportSocketError(const string function_name, const long device_id, const char *file, const int line);
-
+    static void reportSocketError(const string method_name, const string winsock_function_name, const long device_id, const char *file, const int line);
 
 protected:
 
@@ -84,6 +90,8 @@ protected:
 
     virtual u_long  getDeviceIp  ( const long device_id ) const;
     virtual u_short getDevicePort( const long device_id ) const;
+
+    virtual std::string ip_to_string(u_long ip) const;
 
 public:
 

@@ -43,7 +43,7 @@ VOID PortTcpThread(void *pid)
     {
         ostringstream thread_name;
 
-        thread_name << "TCP Port " << setw(4) << setfill('0') << Port->getPortID();
+        thread_name << "TCP PortID " << setw(4) << setfill('0') << Port->getPortID();
 
         SetThreadName(-1, thread_name.str().c_str());
 
@@ -53,303 +53,7 @@ VOID PortTcpThread(void *pid)
 
         tcp.run();
     }
-#if 0
 
-    INT            status;
-
-    CtiTime        nowTime, nextExpireTime;
-    ULONG          i;
-    INMESS         InMessage;
-    OUTMESS        *OutMessage = 0;
-    ULONG          QueEntries;
-
-
-
-    bool           profiling = (portid == gConfigParms.getValueAsULong("PORTER_PORT_PROFILING"));
-    LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 0);
-    DWORD          ticks;
-
-    CtiDeviceSPtr  Device;
-    CtiDeviceSPtr  LastExclusionDevice;
-
-    /* make it clear who is the boss */
-    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-
-    // Let the threads get up and running....
-    WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
-
-    getNextExpirationTime(expirationRate, nextExpireTime);
-
-    if( !Port )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Port == 0 in PortThread() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-        }
-
-        ostringstream thread_name;
-
-        thread_name << "Port " << setw(4) << setfill('0') << Port->getPortID();
-
-        SetThreadName(-1, thread_name.str().c_str());
-
-        /* and wait for something to come in */
-        for(;!PorterQuit;)
-        {
-            OutMessage = 0;
-            nowTime = nowTime.now();
-
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
-            {
-                PorterQuit = TRUE;
-                continue;
-            }
-
-            if( nowTime > nextExpireTime )
-            {
-                int entries = purgeExpiredQueueEntries(Port);
-                getNextExpirationTime(expirationRate, nextExpireTime);
-
-                if( entries > 0 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port "  << Port->getName() << " purged " << CtiNumStr(entries) << " expired OM's " << endl;
-                }
-            }
-
-            if( Port->isInhibited() )
-            {
-                Sleep(5000L);
-                continue;
-            }
-
-            if( !Port->isValid() && !PortManager.PortGetEqual(portid) )
-            {
-                //  we've been deleted - exit the thread
-                break;
-            }
-
-            if( CONTINUE_LOOP == (status = ResetChannel(Port, Device)) )
-            {
-                //  we're busted - don't make anyone else wait on our priorities
-                DeviceManager.setDevicePrioritiesForPort(portid, CtiDeviceManager::device_priorities_t());
-
-                Sleep(50);
-                status = 0;
-                continue;
-            }
-
-            Device = DeviceManager.chooseExclusionDevice( Port->getPortID() );
-
-            if(Device)
-            {
-                Device->getOutMessage(OutMessage);
-            }
-
-            if(profiling)
-            {
-                ticks = GetTickCount();
-            }
-
-            if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
-            {
-                if( profiling )
-                {
-                    ticks = GetTickCount() - ticks;
-
-                    if( ticks > 1000 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                Sleep(250);
-
-                continue;
-            }
-            else
-            {
-                if( profiling )
-                {
-                    ticks = GetTickCount() - ticks;
-
-                    if( ticks > 1000 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Profiling - getWork() took " << ticks << " ms **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
-                {
-                    CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
-
-                    if(tempDev)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
-                        dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                        if(strlen(OutMessage->Request.CommandStr) > 0) dout << CtiTime() << " Command : " << OutMessage->Request.CommandStr << endl;
-                        if(QueEntries > 50) dout << CtiTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
-                    }
-                }
-            }
-
-
-            /*
-             *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
-             *   requesting client.
-             */
-            if( CheckIfOutMessageIsExpired(OutMessage) != NORMAL )
-            {
-                continue;
-            }
-
-            if(Port->getConnectedDevice() != OutMessage->DeviceID)
-            {
-                if(Device && Device->hasExclusions())
-                    DeviceManager.removeInfiniteExclusion(Device);
-            }
-
-            /*
-             *  This is the call which establishes the OutMessage's DeviceID as the Device we are operating upon.
-             *  Upon successful return, the Device pointer is set to nonNull.
-             */
-            if( CONTINUE_LOOP == IdentifyDeviceFromOutMessage(Port, OutMessage, Device) )
-            {
-                continue;
-            }
-
-            if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
-            }
-
-            // Copy a good portion of the OutMessage to the to-be-formed InMessage
-            OutEchoToIN(OutMessage, &InMessage);
-
-            if((status = CheckInhibitedState(Port, &InMessage, OutMessage, Device)) != NORMAL)
-            {
-                SendError(OutMessage, status);
-                continue;
-            }
-
-            /* Make sure everything is A-OK with this device */
-            if((status = ValidateDevice(Port, Device, OutMessage)) != NORMAL)
-            {
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            //  See if there is a reason to proceed...  Note that this is where OMs can be queued onto devices
-            if((status = DevicePreprocessing(Port, OutMessage, Device)) != NORMAL)   /* do any preprocessing according to type */
-            {
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            /* Check if this port is dial up and initiate connection. */
-            if((status = EstablishConnection(Port, &InMessage, OutMessage, Device)) != NORMAL)
-            {
-                if(status != RETRY_SUBMITTED)
-                {
-                    Port->reset(TraceFlag);
-                }
-
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            ticks = GetTickCount();
-
-            Port->setPortCommunicating();
-            try
-            {
-                /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
-                i = CommunicateDevice(Port, &InMessage, OutMessage, Device);
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            Port->addDeviceQueuedWork( Device->getID(), Device->queuedWorkCount() );
-
-            ticks = GetTickCount() - ticks;
-            if( profiling )
-            {
-                if( ticks > 1000 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            Port->setPortCommunicating(false, ticks);
-
-            //  if the device needs to schedule more work
-            if( Device->hasPreloadWork() )
-            {
-                Port->setDevicePreload(Device->getID());
-
-                processPreloads(Port);
-
-                DeviceManager.addPortExclusion(Device->getID());
-            }
-
-            /* Non wrap protcol specific communications stuff */
-            if(!i)      // No error yet.
-            {
-                i = NonWrapDecode(&InMessage, Device);
-            }
-
-            /*
-             * Check if we need to do a retry on this command. Returns RETRY_SUBMITTED if the message has
-             * been requeued, or the CommunicateDevice returned otherwise
-             */
-            LONG did = OutMessage->DeviceID;
-            LONG tid = OutMessage->TargetID;
-            bool rgtz = OutMessage->Retry > 0;
-
-            if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, Device) == RETRY_SUBMITTED)
-            {
-                continue;  // It has been re-queued!
-            }
-            else   /* we are either successful or retried out */
-            {
-                if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
-                {
-                    RequeueReportError(status, OutMessage);
-                    continue;
-                }
-            }
-
-            if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
-            {
-                RequeueReportError(status, OutMessage);
-                continue;
-            }
-
-            if(OutMessage != NULL)
-            {
-                delete OutMessage; /* free up the OutMessage, it made a successful run! */
-                OutMessage = NULL;
-            }
-        }  /* and do it all again */
-    }
-#endif
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Shutdown PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
@@ -379,9 +83,11 @@ bool TcpPortHandler::manageConnections( void )
 {
     bool active = false;
 
-    vector<connection_map::iterator> in_progress;
+    vector<connection_itr> in_progress;
 
-    for( connection_map::iterator itr = _connections.begin(); itr != _connections.end(); ++itr )
+    const CtiTime Now;
+
+    for( connection_itr itr = _connections.begin(); itr != _connections.end(); ++itr )
     {
         const long device_id = itr->first;
         connection &c        = itr->second;
@@ -390,9 +96,13 @@ bool TcpPortHandler::manageConnections( void )
         {
             case connection::Disconnected:
             {
-                connectToDevice(device_id, c);
+                //  only try to connect every connect_timeout seconds at max
+                if( c.connect_timeout < Now )
+                {
+                    connectToDevice(device_id, c);
 
-                active = true;
+                    active = true;
+                }
 
                 break;
             }
@@ -405,62 +115,76 @@ bool TcpPortHandler::manageConnections( void )
         }
     }
 
-    vector<connection_map::iterator>::iterator itr = in_progress.begin();
+    checkPendingConnections(in_progress);
+
+    return active;
+}
+
+
+void TcpPortHandler::checkPendingConnections(vector<connection_itr> &in_progress)
+{
+    vector<connection_itr>::iterator itr = in_progress.begin();
 
     while( itr != in_progress.end() )
     {
-        fd_set writable_sockets;
+        fd_set writeable_sockets;
 
-        vector<connection_map::iterator> candidate_connections;
+        vector<connection_itr> candidate_connections;
 
-        FD_ZERO(&writable_sockets);
+        FD_ZERO(&writeable_sockets);
 
-        int sockets = 0;
+        int socket_count = 0;
 
         //  check in blocks of up to FD_SETSIZE
-        for( ; itr != in_progress.end() && sockets < FD_SETSIZE; ++itr )
+        for( ; itr != in_progress.end() && socket_count < FD_SETSIZE; ++itr, ++socket_count )
         {
             const connection &c = (*itr)->second;
 
-            if( c.state == connection::Connecting )
-            {
-                candidate_connections.push_back(*itr);
+            candidate_connections.push_back(*itr);
 
-                FD_SET(c.socket, &writable_sockets);
-
-                sockets++;
-            }
+            FD_SET(c.socket, &writeable_sockets);
         }
 
-        if( sockets > 0 )
-        {
-            timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
+        checkPendingConnectionBlock(socket_count, writeable_sockets, candidate_connections);
+    }
+}
 
-            int result = select(sockets, NULL, &writable_sockets, NULL, &tv);
 
-            if( result == SOCKET_ERROR )
-            {
-                reportSocketError("select()", 0, __FILE__, __LINE__);
-            }
-            else if( result > 0 )
-            {
-                for each( connection_map::iterator itr in candidate_connections )
-                {
-                    const long device_id = itr->first;
-                    connection &c = itr->second;
+void TcpPortHandler::checkPendingConnectionBlock(const int socket_count, fd_set &writeable_sockets, vector<connection_itr> &candidate_connections)
+{
+    timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
+    const CtiTime Now;
 
-                    if( FD_ISSET(c.socket, &writable_sockets) )
-                    {
-                        c.state = connection::Connected;
+    //  check to see if any of the sockets are writable - a writable socket means the connection has completed
+    int ready_count = select(socket_count, NULL, &writeable_sockets, NULL, &tv);
 
-                        setConnectionOptions(device_id, c);
-                    }
-                }
-            }
-        }
+    if( ready_count == SOCKET_ERROR )
+    {
+        reportSocketError("checkPendingConnectionBlock", "select", 0, __FILE__, __LINE__);
+
+        ready_count = 0;
     }
 
-    return active;
+    for each( connection_itr conn_itr in candidate_connections )
+    {
+        const long device_id = conn_itr->first;
+        connection &c        = conn_itr->second;
+
+        if( ready_count && FD_ISSET(c.socket, &writeable_sockets) )
+        {
+            setConnectionOptions(device_id, c);
+
+            c.state = connection::Connected;
+
+            updateDeviceCommStatus(device_id, NoError);
+        }
+        else if( c.connect_timeout > Now )
+        {
+            disconnectFromDevice(device_id, c);
+
+            updateDeviceCommStatus(device_id, ErrorDeviceNotConnected);
+        }
+    }
 }
 
 
@@ -472,24 +196,35 @@ void TcpPortHandler::setConnectionOptions(const long device_id, connection &c)
     int socket_write_timeout = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
     if( setsockopt(c.socket, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char *>(&socket_write_timeout), sizeof(socket_write_timeout)) )
     {
-        reportSocketError("setsockopt()", device_id, __FILE__, __LINE__);
+        reportSocketError("setConnectionOptions", "setsockopt", device_id, __FILE__, __LINE__);
     }
 
     //  Turn on the keepalive timer
     int keepalive_timer = 1;
     if( setsockopt(c.socket, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char *>(&keepalive_timer), sizeof(keepalive_timer)) )
     {
-        reportSocketError("setsockopt()", device_id, __FILE__, __LINE__);
+        reportSocketError("setConnectionOptions", "setsockopt", device_id, __FILE__, __LINE__);
     }
 
     //  enable a hard close - erases all pending outbound data, sends a reset to the other side
     linger l = {1, 0};
     if( setsockopt(c.socket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&l), sizeof(l)) )
     {
-        reportSocketError("setsockopt()", device_id, __FILE__, __LINE__);
+        reportSocketError("setConnectionOptions", "setsockopt", device_id, __FILE__, __LINE__);
     }
 }
 
+
+
+void TcpPortHandler::updateDeviceCommStatus(const long device_id, int status)
+{
+    device_record *dr = getDeviceRecordById(device_id);
+
+    if( dr && dr->device )
+    {
+        processCommStatus(status, dr->id, dr->id, false, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+    }
+}
 
 
 void TcpPortHandler::loadDeviceProperties(const set<long> &device_ids)
@@ -633,10 +368,10 @@ void TcpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 }
 
 
-void TcpPortHandler::reportSocketError(const string function_name, const long device_id, const char *file, const int line)
+void TcpPortHandler::reportSocketError(const string method_name, const string winsock_function_name, const long device_id, const char *file, const int line)
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** Checkpoint - " << function_name << " returned (" << WSAGetLastError() << ") for device_id (" << device_id << ") in TcpPortHandler::connect() **** " << file << " (" << line << ")" << endl;
+    dout << CtiTime() << " **** Checkpoint - " << winsock_function_name << "() returned (" << WSAGetLastError() << ") for device_id (" << device_id << ") in TcpPortHandler::" << method_name << "() **** " << file << " (" << line << ")" << endl;
 }
 
 
@@ -646,7 +381,7 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
 
     if( s == INVALID_SOCKET)
     {
-        reportSocketError("socket()", device_id, __FILE__, __LINE__);
+        reportSocketError("connectToDevice", "socket", device_id, __FILE__, __LINE__);
 
         return false;
     }
@@ -654,7 +389,7 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
     unsigned long nonblocking = 1;
     if( ioctlsocket(s, FIONBIO, &nonblocking) )
     {
-        reportSocketError("ioctlsocket()", device_id, __FILE__, __LINE__);
+        reportSocketError("connectToDevice", "ioctlsocket", device_id, __FILE__, __LINE__);
 
         closesocket(s);
 
@@ -670,7 +405,7 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
     {
         if( WSAGetLastError() != WSAEWOULDBLOCK )
         {
-            reportSocketError("connect()", device_id, __FILE__, __LINE__);
+            reportSocketError("connectToDevice", "connect", device_id, __FILE__, __LINE__);
 
             closesocket(s);
 
@@ -680,6 +415,7 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
 
     c.state  = connection::Connecting;
     c.socket = s;
+    c.connect_timeout = CtiTime::now() + gConfigParms.getValueAsULong("PORTER_TCP_CONNECT_TIMEOUT", 15);
 
     return true;
 }
@@ -692,14 +428,17 @@ void TcpPortHandler::disconnectFromDevice(const long device_id, connection &c)
         return;
     }
 
-    if( shutdown(c.socket, SD_BOTH) )
+    if( c.state == connection::Connected )
     {
-        reportSocketError("shutdown()", device_id, __FILE__, __LINE__);
+        if( shutdown(c.socket, SD_BOTH) )
+        {
+            reportSocketError("disconnectFromDevice", "shutdown", device_id, __FILE__, __LINE__);
+        }
     }
 
     if( closesocket(c.socket) )
     {
-        reportSocketError("close()", device_id, __FILE__, __LINE__);
+        reportSocketError("disconnectFromDevice", "close", device_id, __FILE__, __LINE__);
     }
 
     c.socket = INVALID_SOCKET;
@@ -710,7 +449,7 @@ void TcpPortHandler::disconnectFromDevice(const long device_id, connection &c)
 void TcpPortHandler::teardownPort()
 {
     //  close all open sockets
-    for( connection_map::iterator itr = _connections.begin(); itr != _connections.end(); ++itr )
+    for( connection_itr itr = _connections.begin(); itr != _connections.end(); ++itr )
     {
         const long device_id = itr->first;
         connection &c        = itr->second;
@@ -730,11 +469,12 @@ void TcpPortHandler::sendOutbound( device_record &dr )
         return;
     }
 
-    connection_map::iterator itr = _connections.find(dr.id);
+    connection_itr itr = _connections.find(dr.id);
 
     if( itr == _connections.end() )
     {
-        dr.work.status = ErrorDeviceIPUnknown;
+        //  we don't know this ID?
+        dr.work.status = IDNF;
 
         return;
     }
@@ -743,7 +483,7 @@ void TcpPortHandler::sendOutbound( device_record &dr )
 
     if( c.state != connection::Connected )
     {
-        dr.work.status = BADSOCK;
+        dr.work.status = ErrorDeviceNotConnected;
 
         return;
     }
@@ -768,9 +508,11 @@ void TcpPortHandler::sendOutbound( device_record &dr )
 
     if( bytes_sent == SOCKET_ERROR )
     {
-        reportSocketError("send()", dr.id, __FILE__, __LINE__);
+        reportSocketError("sendOutbound", "send", dr.id, __FILE__, __LINE__);
 
         disconnectFromDevice(dr.id, c);
+
+        updateDeviceCommStatus(dr.id, TCPWRITEERROR);
 
         traceOutbound(dr, WSAGetLastError());
     }
@@ -780,7 +522,7 @@ void TcpPortHandler::sendOutbound( device_record &dr )
 
         traceOutbound(dr, 0);
 
-        dr.work.last_outbound = CtiTime::now().seconds();
+        dr.work.last_outbound = CtiTime::now();
     }
 }
 
@@ -799,13 +541,13 @@ bool TcpPortHandler::collectInbounds( void )
 {
     bool data_received = false;
 
-    connection_map::const_iterator itr = _connections.begin();
+    connection_const_itr itr = _connections.begin();
 
     while( itr != _connections.end() )
     {
         int sockets;
         fd_set readable_sockets;
-        vector<connection_map::const_iterator> candidate_sockets;
+        vector<connection_const_itr> candidate_sockets;
 
         FD_ZERO(&readable_sockets);
 
@@ -828,15 +570,15 @@ bool TcpPortHandler::collectInbounds( void )
         {
             timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
 
-            int result = select(sockets, &readable_sockets, NULL, NULL, &tv);
+            int ready_count = select(sockets, &readable_sockets, NULL, NULL, &tv);
 
-            if( result == SOCKET_ERROR )
+            if( ready_count == SOCKET_ERROR )
             {
-                reportSocketError("select()", 0, __FILE__, __LINE__);
+                reportSocketError("collectInbounds", "select", 0, __FILE__, __LINE__);
             }
-            else if( result > 0 )
+            else if( ready_count > 0 )
             {
-                for each( connection_map::const_iterator itr in candidate_sockets )
+                for each( connection_const_itr itr in candidate_sockets )
                 {
                     const connection &c = itr->second;
 
@@ -848,10 +590,6 @@ bool TcpPortHandler::collectInbounds( void )
             }
         }
     }
-
-    //  read from all ports, closing if necessary
-
-    //  should each device have a comm status point? - YES
 
     return data_received;
 }
@@ -866,7 +604,7 @@ void TcpPortHandler::readInput(const long device_id)
         return;
     }
 
-    connection_map::iterator itr = _connections.find(device_id);
+    connection_itr itr = _connections.find(device_id);
 
     if( itr == _connections.end() )
     {
@@ -879,7 +617,7 @@ void TcpPortHandler::readInput(const long device_id)
 
     if( ioctlsocket(c.socket, FIONREAD, &bytes_available) )
     {
-        reportSocketError("ioctlsocket()", device_id, __FILE__, __LINE__);
+        reportSocketError("readInput", "ioctlsocket", device_id, __FILE__, __LINE__);
         bytes_available = 0;
     }
 
@@ -887,6 +625,8 @@ void TcpPortHandler::readInput(const long device_id)
     if( !bytes_available )
     {
         disconnectFromDevice(device_id, c);
+
+        updateDeviceCommStatus(device_id, TCPREADERROR);
 
         return;
     }
@@ -899,6 +639,8 @@ void TcpPortHandler::readInput(const long device_id)
     if( !bytes_read )
     {
         disconnectFromDevice(device_id, c);
+
+        updateDeviceCommStatus(device_id, TCPREADERROR);
 
         return;
     }
@@ -991,6 +733,19 @@ u_long TcpPortHandler::getDeviceIp( const long device_id ) const
 u_short TcpPortHandler::getDevicePort( const long device_id ) const
 {
     return find_or_return_numeric_limits_max(_ports, device_id);
+}
+
+
+string TcpPortHandler::ip_to_string(u_long ip) const
+{
+    ostringstream ostr;
+
+    ostr << ((ip >>  0) & 0xff) << ".";
+    ostr << ((ip >>  8) & 0xff) << ".";
+    ostr << ((ip >> 16) & 0xff) << ".";
+    ostr << ((ip >> 24) & 0xff);
+
+    return ostr.str();
 }
 
 

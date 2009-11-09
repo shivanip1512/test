@@ -61,6 +61,8 @@ private:
     void setDeviceIp  ( const long device_id, const u_long ip );
     void setDevicePort( const long device_id, const u_short port );
 
+    static u_long string_to_ip(string ip_string);
+
     static void sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_long ip, u_short port );
 
 protected:
@@ -81,6 +83,8 @@ protected:
 
     virtual u_long  getDeviceIp  ( const long device_id ) const;
     virtual u_short getDevicePort( const long device_id ) const;
+
+    virtual string ip_to_string(u_long ip) const;
 
 public:
 

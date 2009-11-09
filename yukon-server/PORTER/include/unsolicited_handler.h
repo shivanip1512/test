@@ -14,9 +14,11 @@ namespace Porter {
 
 class UnsolicitedHandler : boost::noncopyable
 {
-protected:
+private:
 
     typedef std::queue< CtiOutMessage * > om_queue;
+
+protected:
 
     struct packet
     {
@@ -35,37 +37,47 @@ protected:
         } protocol;
     };
 
-    typedef std::queue< packet * > packet_queue;
-
-    struct device_work
-    {
-        //  always working on the first entry in the queue
-        om_queue      outbound;
-        packet_queue  inbound;
-        bool          pending_decode;
-        bool          active;
-        CtiXfer       xfer;
-        int           status;
-        unsigned long timeout;
-        unsigned long last_outbound;
-        unsigned long last_keepalive;
-    };
-
     struct device_record
     {
-        CtiDeviceSingleSPtr device;
+        device_record(const CtiDeviceSPtr &device_, const long id_) :
+            device(boost::static_pointer_cast<CtiDeviceSingle>(device_)),
+            id(id_),
+            dirty(false)
+        {}
+
+        const CtiDeviceSingleSPtr device;
+
+        const long id;
 
         bool dirty;
 
-        device_work work;
+        struct device_work
+        {
+            device_work() :
+                status(NoError),
+                pending_decode(false),
+                active(false),
+                timeout(YUKONEOT)
+            {
+            }
 
-        long id;
+            typedef std::queue< packet * > packet_queue;
 
-        u_short master;
-        u_short slave;
+            //  always working on the first entry in the queue
+            om_queue     outbound;
+            packet_queue inbound;
 
-        u_long  ip;
-        u_short port;
+            CtiXfer xfer;
+            int     status;
+
+            bool pending_decode;
+            bool active;
+
+            CtiTime timeout;
+            CtiTime last_outbound;
+            CtiTime last_keepalive;
+
+        } work;
     };
 
 private:
@@ -105,7 +117,7 @@ private:
 
     bool sendResults( void );
 
-    static void sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, CtiDeviceSingleSPtr &device, CtiConnection &connection);
+    static void sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection);
 
     device_record *validateDeviceRecord( device_record *dr );
 
@@ -139,7 +151,7 @@ protected:
 
     device_record *getDeviceRecordById( long device_id );
 
-    static bool validatePacket(packet *&p);
+    bool validatePacket(packet *&p) const;
 
     void traceOutbound( const device_record &dr, int socket_status );
     void traceInbound ( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, const device_record *dr = 0 );
@@ -147,8 +159,7 @@ protected:
     static bool isDnpDevice  (const CtiDeviceSingle &ds);
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
 
-    static string ip_to_string(u_long ip);
-    static u_long string_to_ip(string ip_string);
+    virtual string ip_to_string(u_long ip) const = 0;
 
 public:
 
