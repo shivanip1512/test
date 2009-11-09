@@ -6728,36 +6728,36 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
         if (currentCCFeeder->getPerformingVerificationFlag())
         {
             if ( currentCCFeeder->getLastVerificationMsgSentSuccessfulFlag())
-            {    
+            {
                 bool alreadyControlled = currentCCFeeder->isVerificationAlreadyControlled(minConfirmPercent, currentCCFeeder->getCurrentVarPointQuality(),
                                                                        currentCCFeeder->getPhaseAValueBeforeControl(),
-                                                                       currentCCFeeder->getPhaseBValueBeforeControl(), 
+                                                                       currentCCFeeder->getPhaseBValueBeforeControl(),
                                                                        currentCCFeeder->getPhaseCValueBeforeControl(),
-                                                                       currentCCFeeder->getPhaseAValue(), 
-                                                                       currentCCFeeder->getPhaseBValue(), 
-                                                                       currentCCFeeder->getPhaseCValue(), 
-                                                                       currentCCFeeder->getVarValueBeforeControl(), 
+                                                                       currentCCFeeder->getPhaseAValue(),
+                                                                       currentCCFeeder->getPhaseBValue(),
+                                                                       currentCCFeeder->getPhaseCValue(),
+                                                                       currentCCFeeder->getVarValueBeforeControl(),
                                                                        currentCCFeeder->getCurrentVarLoadPointValue(),
-                                                                       currentCCFeeder->getUsePhaseData(), 
+                                                                       currentCCFeeder->getUsePhaseData(),
                                                                        currentCCFeeder->getTotalizedControlFlag());
 
                 if (alreadyControlled || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,maxConfirmTime,sendRetries))
                 {
-                
-                    if ( getControlSendRetries() > 0 && !alreadyControlled && 
+
+                    if ( getControlSendRetries() > 0 && !alreadyControlled &&
                         currentDateTime.seconds() < currentCCFeeder->getLastOperationTime().seconds() + maxConfirmTime)
                     {
                         if(currentCCFeeder->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages, maxConfirmTime, sendRetries))
                         {
-                            setLastOperationTime(currentDateTime); 
+                            setLastOperationTime(currentDateTime);
                             setBusUpdatedFlag(TRUE);
                         }
                         verifyCapFound = TRUE;
                     }
-                    else if (currentCCFeeder->getWaitForReCloseDelayFlag() || 
-                             (!currentCCFeeder->capBankVerificationStatusUpdate(pointChanges, ccEvents, minConfirmPercent, failPercent, 
-                                                                                currentCCFeeder->getPhaseAValue(), 
-                                                                                currentCCFeeder->getPhaseBValue(), 
+                    else if (currentCCFeeder->getWaitForReCloseDelayFlag() ||
+                             (!currentCCFeeder->capBankVerificationStatusUpdate(pointChanges, ccEvents, minConfirmPercent, failPercent,
+                                                                                currentCCFeeder->getPhaseAValue(),
+                                                                                currentCCFeeder->getPhaseBValue(),
                                                                                 currentCCFeeder->getPhaseCValue()) &&
                              currentCCFeeder->getCurrentVerificationCapBankId() != -1) )
                     {
@@ -6776,7 +6776,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << getPAOName()<< "( "<<getPAOId()<<" ) FEED-"<<currentCCFeeder->getPAOName()<<" CB-"<<currentCCFeeder->getCurrentVerificationCapBankId() << endl;
                             }
-                
+
                             currentCCFeeder->setEventSequence(getEventSequence());
                             if (currentCCFeeder->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages))
                             {
@@ -6785,8 +6785,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
                             setPerformingVerificationFlag(TRUE);
                             verifyCapFound = TRUE;
                         }
-                        
-                
+
+
                     }
                 }
                 else //WAIT
@@ -9996,6 +9996,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _usePhaseData
     >> _primaryBusFlag
     >> _altDualSubId
+    >> _dualBusEnable
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -10113,6 +10114,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _usePhaseData
     << _primaryBusFlag
     << tempAltSubId
+    << _dualBusEnable
     << _ccfeeders;
 }
 
@@ -10669,7 +10671,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["phaseavalue"] >> _phaseAvalue;
         rdr["phasebvalue"] >> _phaseBvalue;
         rdr["phasecvalue"] >> _phaseCvalue;
-      
+
         rdr["lastwattpointtime"] >> _lastWattPointTime;
         rdr["lastvoltpointtime"] >> _lastVoltPointTime;
 
@@ -10677,7 +10679,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
         rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
 
-        
+
         _insertDynamicDataFlag = FALSE;
 
         _dirty = false;

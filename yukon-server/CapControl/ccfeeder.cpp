@@ -4730,7 +4730,7 @@ bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, Cti
 
             }
             else
-            {    
+            {
                 retVal = FALSE;
                 setLastVerificationMsgSentSuccessfulFlag(FALSE);
             }
@@ -4741,7 +4741,7 @@ bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, Cti
     return retVal;
 }
 
-CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                       CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control)
 {
 
@@ -4824,7 +4824,7 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                 setLastVerificationMsgSentSuccessfulFlag(TRUE);
                 return TRUE;
             }
-            
+
             if( request != NULL )
             {
                 retVal = TRUE;
@@ -4850,9 +4850,9 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
 
         }
     }
-    
-    
-    
+
+
+
 
     return retVal;
 }
@@ -5257,7 +5257,7 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
                     }
 
                 }
-            
+
 
             // Check all other banks on this feeder for a pending state...
             if (found == FALSE)
@@ -6702,7 +6702,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
         if( !_insertDynamicDataFlag )
         {
             RWDBUpdater updater = dynamicCCFeederTable.updater();
-            
+
             updater.where(dynamicCCFeederTable["feederid"]==_paoid);
 
             updater << dynamicCCFeederTable["currentvarpointvalue"].assign( _currentvarloadpointvalue )
@@ -6710,7 +6710,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["newpointdatareceivedflag"].assign( _newpointdatareceivedflag?"Y":"N" )
             << dynamicCCFeederTable["lastcurrentvarupdatetime"].assign( toRWDBDT((CtiTime)_lastcurrentvarpointupdatetime) );
 
-           
+
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6719,7 +6719,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             }
             else
             {
-                
+
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = updater.asString();
@@ -6740,7 +6740,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["recentlycontrolledflag"].assign( _recentlycontrolledflag?"Y":"N" )
             << dynamicCCFeederTable["lastoperationtime"].assign( toRWDBDT((CtiTime)_lastoperationtime) );
 
-            
+
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6769,7 +6769,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["busoptimizedvarcategory"].assign( _busoptimizedvarcategory )
             << dynamicCCFeederTable["busoptimizedvaroffset"].assign( _busoptimizedvaroffset );
 
-            
+
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6849,7 +6849,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["phasebvaluebeforecontrol"].assign(_phaseBvalueBeforeControl)
             << dynamicCCFeederTable["phasecvaluebeforecontrol"].assign(_phaseCvalueBeforeControl);
 
-            
+
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -6980,6 +6980,7 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     CtiTime tempTime2;
     LONG numberOfCapBanks;
     CtiCCCapBank* currentCapBank = NULL;
+    int originalParentId;
 
     RWCollectable::restoreGuts( istrm );
 
@@ -7035,7 +7036,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _phaseBvalue
     >> _phaseCvalue
     >> _likeDayControlFlag
-    >> _usePhaseData;
+    >> _usePhaseData
+    >> originalParentId;
 
     istrm >> numberOfCapBanks;
     for(LONG i=0;i<numberOfCapBanks;i++)
@@ -7046,6 +7048,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime1);
     _lastoperationtime = CtiTime(tempTime2);
+
+    _originalParent.setOriginalParentId(originalParentId);
 
 }
 
@@ -7122,7 +7126,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _phaseBvalue
     << _phaseCvalue
     << _likeDayControlFlag
-    << _usePhaseData;
+    << _usePhaseData
+    << _originalParent.getOriginalParentId();
 
 
     ostrm << _cccapbanks.size();
