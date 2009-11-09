@@ -28,6 +28,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -67,7 +68,6 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
 import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
-import com.cannontech.multispeak.client.MspMeterLookup;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterDao;
@@ -589,15 +589,15 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias) throws NotFoundException {
         
     	com.cannontech.amr.meter.model.Meter meter = null;
-    	MspMeterLookup mspMeterLookup = multispeakFuncs.getMeterLookupField();
+    	MeterDisplayFieldEnum meterDisplayFieldEnum = multispeakFuncs.getMeterLookupField();
 
-    	if( mspMeterLookup == MspMeterLookup.METER_NUMBER) {
+    	if( meterDisplayFieldEnum == MeterDisplayFieldEnum.METER_NUMBER) {
             String mspMeterNo = mspMeter.getMeterNo().trim();
             meter = meterDao.getForMeterNumber(mspMeterNo);
-    	} else if( mspMeterLookup == MspMeterLookup.ADDRESS ){ 
+    	} else if( meterDisplayFieldEnum == MeterDisplayFieldEnum.ADDRESS ){ 
     			String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
     			meter = meterDao.getForPhysicalAddress(mspAddress);
-    	} else if ( mspMeterLookup == MspMeterLookup.DEVICE_NAME ) {
+    	} else if ( meterDisplayFieldEnum == MeterDisplayFieldEnum.DEVICE_NAME ) {
     	    String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
     	    
     	    // TODO??? What should be done if we can't find a paoName to lookup by?  throw exception?

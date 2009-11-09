@@ -19,6 +19,7 @@ import org.apache.axis.message.SOAPHeader;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -256,9 +257,8 @@ public class MultispeakFuncs
         return returnStr;
     }
 
-    public MspMeterLookup getMeterLookupField() {
-        String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_METER_LOOKUP_FIELD, null);
-        return MspMeterLookup.getForRolePropertyString(value);
+    public MeterDisplayFieldEnum getMeterLookupField() {
+        return rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MSP_METER_LOOKUP_FIELD, MeterDisplayFieldEnum.class, null);
     }
     
     public int getPaoNameAlias() {
