@@ -1443,27 +1443,20 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
             {
                 CtiLMProgramDirectSPtr lm_program_direct = boost::static_pointer_cast< CtiLMProgramDirect >(lm_program);
                 lm_program_direct->setChangeReason("Reducing Control");
-                if( lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE ) //the program didn't refused to stop (maybe a constraint was violated like a groups min activate time?)
-                {
-                    //so count this program as still active
-                    num_active_programs++;
-                }
-                else
+                if( lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
                 {
                     // Let the world know we just auto stopped?
                     lm_program_direct->scheduleStopNotification(CtiTime());
                 }
             }
-            else
-            {
-                if( lm_program->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-                    lm_program->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-                    lm_program->getProgramState() == CtiLMProgramBase::TimedActiveState ||
-                    lm_program->getProgramState() == CtiLMProgramBase::ActiveState )
-                {
-                    num_active_programs++;
-                }
-            }
+        }
+
+        if( lm_program->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            lm_program->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+            lm_program->getProgramState() == CtiLMProgramBase::TimedActiveState ||
+            lm_program->getProgramState() == CtiLMProgramBase::ActiveState )
+        {
+            num_active_programs++;
         }
     }
 
