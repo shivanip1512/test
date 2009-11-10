@@ -1603,10 +1603,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             meterNumberLog = "Address (" + meter.getAddress() + ") MeterNumber Changed(OLD:" + currentMeterNumber + " NEW:" + newMeterNumber + ").";
         }
 
-        if (yukonPaobject.isDisabled()) {
-            yukonPaobject.setDisabled(false);
-            dbChange = true;
-        }
         //Update the meter
         if(dbChange) {
             dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
