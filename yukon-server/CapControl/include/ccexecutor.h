@@ -33,7 +33,7 @@ public:
 protected:
     CtiCCExecutor() {};
     void moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder);
-    void moveFeeder(INT permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder);
+    void moveFeeder(BOOL permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder);
 };
 
 class CtiCCClientMsgExecutor : public CtiCCExecutor

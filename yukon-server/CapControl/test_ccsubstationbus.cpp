@@ -32,12 +32,16 @@
 #include "ccexecutor.h"
 #include "ccmessage.h"
 #include "mgr_paosched.h"
+#include "pointdefs.h"
 #include "ccoriginalparent.h"
-
 #include "ccUnitTestUtil.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
+
+extern ULONG _MAX_KVAR;
+extern ULONG _SEND_TRIES;
+
 
 void initialize_area(CtiCCSubstationBusStore* store, CtiCCArea* area)
 {
@@ -56,8 +60,11 @@ void initialize_station(CtiCCSubstationBusStore* store, CtiCCSubstation* station
 }
 void initialize_bus(CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
 {
+
+
     bus->setParentId(parentStation->getPAOId());
     bus->setEventSequence(22);
+    bus->setCurrentVarLoadPointId(1);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     bus->setVerificationFlag(FALSE);
     parentStation->getCCSubIds()->push_back(bus->getPAOId());
@@ -80,6 +87,10 @@ void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCS
     feed->setVerificationFlag(FALSE);
     feed->setPerformingVerificationFlag(FALSE);
     feed->setVerificationDoneFlag(FALSE);
+    feed->setStrategyName("(none)");
+    feed->setStrategyId(0);
+    feed->setCurrentVarPointQuality(NormalQuality);
+    feed->setWaitForReCloseDelayFlag(false);
 
 }
 
@@ -97,8 +108,10 @@ void initialize_capbank(CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCC
     cap->setDisableFlag(FALSE);
     cap->setVerificationFlag(FALSE);          
     cap->setPerformingVerificationFlag(FALSE);
-    cap->setVerificationDoneFlag(FALSE);      
-    
+    cap->setVerificationDoneFlag(FALSE);   
+    cap->setBankSize(600);
+
+    cap->setControlPointId(1);
 }
 
 BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
@@ -178,7 +191,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
 
         CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(0, bus1->getPAOId(), currentFeeder->getPAOId(), bus2->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, bus1->getPAOId(), currentFeeder->getPAOId(), bus2->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
         executor->Execute();
         delete executor;
         j--;
@@ -213,7 +226,10 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 {
 
-  /*  CtiTime currentDateTime;
+    _MAX_KVAR = 20000;
+    _SEND_TRIES = 1;
+
+    CtiTime currentDateTime;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
     CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
@@ -276,10 +292,12 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
    
     bus1->setStrategyId(strat->getStrategyId());
     bus1->setStrategyValues(strat);
+    feed11->setCurrentVarLoadPointId(1);
+    feed11->setCurrentWattLoadPointId(1);
     feed11->setCurrentVarLoadPointValue(700, currentDateTime);
     feed11->setCurrentWattLoadPointValue(1200);
 
-    CtiCCExecutorFactory f;
+    /*CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, bus1->getPAOId(), CtiPAOScheduleManager::AllBanks, 0, false));
     executor->Execute();
     
@@ -293,7 +311,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     BOOST_CHECK_EQUAL(cap11c->getVerificationFlag(), TRUE);
     BOOST_CHECK_EQUAL(ccEvents.size(), 3);
 
-  bus1->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
+    bus1->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
     BOOST_CHECK_EQUAL(bus1->getPerformingVerificationFlag(), TRUE);
     BOOST_CHECK_EQUAL(feed11->getPerformingVerificationFlag(), TRUE);
     BOOST_CHECK_EQUAL(cap11a->getPerformingVerificationFlag(), TRUE);
@@ -331,7 +349,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     
     currentDateTime = currentDateTime + bus1->getMaxConfirmTime() + 1;
 
-    //should go to CloseFail, then OpenPending again.
+    //should go to CloseFail, then assumedWrongInitialState and go ClosePending again.
     bus1->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
 
     BOOST_CHECK_EQUAL(cap11c->getControlStatus(), CtiCCCapBank::OpenPending);
@@ -343,13 +361,6 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     BOOST_CHECK_EQUAL(cap11c->getControlStatus(), CtiCCCapBank::ClosePending);
 
-    currentDateTime = currentDateTime + 1;
-    feed11->setCurrentVarLoadPointValue(1, currentDateTime);
-
-    bus1->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
-
-    BOOST_CHECK_EQUAL(cap11c->getControlStatus(), CtiCCCapBank::Close);
-
 
     BOOST_CHECK_EQUAL(  bus1->getPerformingVerificationFlag(), FALSE);
     BOOST_CHECK_EQUAL(feed11->getPerformingVerificationFlag(), FALSE);
@@ -358,4 +369,5 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     BOOST_CHECK_EQUAL(feed11->getVerificationFlag(), FALSE);
     BOOST_CHECK_EQUAL(cap11a->getVerificationFlag(), FALSE);
     */
+    
 }

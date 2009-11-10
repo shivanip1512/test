@@ -6342,7 +6342,7 @@ void CtiCCCommandExecutor::ReturnFeederToOriginalSubBus()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Move Feeder to original SubBus PAO Id: " << originalSubBusId << endl;
         }
-        moveFeeder(1, tempSubBusId, movedFeederId, originalSubBusId, fdrSwitchingOrder);
+        moveFeeder(true, tempSubBusId, movedFeederId, originalSubBusId, fdrSwitchingOrder);
     }
     else
     {
@@ -6950,7 +6950,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 ---------------------------------------------------------------------------*/    
 void CtiCCFeederMoveExecutor::Execute()
 {
-    INT permanentFlag = _fdrMoveMsg->getPermanentFlag();
+    BOOL permanentFlag = _fdrMoveMsg->getPermanentFlag();
     LONG oldSubBusId = _fdrMoveMsg->getOldParentId();
     LONG movedFeederId = _fdrMoveMsg->getObjectId();
     LONG newSubBusId = _fdrMoveMsg->getNewParentId();
@@ -6962,7 +6962,7 @@ void CtiCCFeederMoveExecutor::Execute()
 /*---------------------------------------------------------------------------
     moveCapBank
 ---------------------------------------------------------------------------*/    
-void CtiCCExecutor::moveFeeder(INT permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder)
+void CtiCCExecutor::moveFeeder(BOOL permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());

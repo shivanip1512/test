@@ -2077,7 +2077,6 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         {
                             objType = CtiCCSubstationBusStore::SpecialArea;
 
-                            //CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
@@ -2476,7 +2475,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
 
                                     CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(0, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), altSub->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), altSub->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
                                     executor->Execute();
                                     delete executor;
                                     j--;

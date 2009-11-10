@@ -202,7 +202,7 @@ CtiMessage* CtiCCCommand::replicateMessage() const
 
 RWDEFINE_COLLECTABLE( CtiCCObjectMoveMsg, CTICCOBJECTMOVEMSG_ID )
 
-CtiCCObjectMoveMsg::CtiCCObjectMoveMsg(INT permanentflag, LONG oldparentid, LONG objectid,LONG newparentid,
+CtiCCObjectMoveMsg::CtiCCObjectMoveMsg(BOOL permanentflag, LONG oldparentid, LONG objectid,LONG newparentid,
                    float switchingorder, float closeOrder, float tripOrder) :
     CtiCCMessage( ),
     _permanentflag(permanentflag),
@@ -226,7 +226,7 @@ CtiCCObjectMoveMsg::~CtiCCObjectMoveMsg()
 }
 
 
-INT CtiCCObjectMoveMsg::getPermanentFlag() const
+BOOL CtiCCObjectMoveMsg::getPermanentFlag() const
 {
     return _permanentflag;
 }

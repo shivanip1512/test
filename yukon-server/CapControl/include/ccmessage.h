@@ -122,7 +122,7 @@ public:
         AUTO_ENABLE_OVUV, //36
         AUTO_DISABLE_OVUV, //37
 
-        RETURN_FEEDER_TO_ORIGINAL_SUBBUS,//38 - julie testing
+        RETURN_FEEDER_TO_ORIGINAL_SUBBUS,//38 
     };
 
     CtiCCCommand(LONG command);
@@ -184,11 +184,11 @@ class CtiCCObjectMoveMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCObjectMoveMsg )
 
 public:
-    CtiCCObjectMoveMsg(INT permanentflag, LONG oldparentid, LONG objectid, LONG newparentid, 
+    CtiCCObjectMoveMsg(BOOL permanentflag, LONG oldparentid, LONG objectid, LONG newparentid, 
                        float switchingorder, float closeOrder = 0, float tripOrder = 0);
     virtual ~CtiCCObjectMoveMsg();
 
-    INT getPermanentFlag() const;
+    BOOL getPermanentFlag() const;
     LONG getOldParentId() const;
     LONG getObjectId() const;
     LONG getNewParentId() const;
@@ -203,7 +203,7 @@ public:
 private:
     CtiCCObjectMoveMsg() { }; //provided for polymorphic persitence only
 
-    INT _permanentflag;
+    BOOL _permanentflag;
     LONG _oldparentid;
     LONG _objectid;
     LONG _newparentid;
