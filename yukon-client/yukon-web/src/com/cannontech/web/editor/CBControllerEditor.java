@@ -216,17 +216,12 @@ public class CBControllerEditor implements ICBControllerModel {
                 int deviceId = deviceCBC.getPAObjectID();
                 List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
 		
-		        Comparator pointOffsetComparator = 
-		            new Comparator(){
-		                public int compare(Object object1, Object object2){
-		                    LitePoint point1 = (LitePoint) object1;
-		                    LitePoint point2 = (LitePoint) object2;
-		                    if(point1.getPointOffset() < point2.getPointOffset()){
-		                        return -1;
-		                    } else if(point1.getPointOffset() > point2.getPointOffset()){
-		                        return 1;
-		                    }
-		                    return 0;
+		        Comparator<LitePoint> pointOffsetComparator = 
+		            new Comparator<LitePoint>(){
+		                public int compare(LitePoint point1, LitePoint point2){
+		                    Integer point1Offset = point1.getPointOffset();
+		                    Integer point2Offset = point2.getPointOffset();
+		                    return point1Offset.compareTo(point2Offset);
 		                }
 		            };
                 
