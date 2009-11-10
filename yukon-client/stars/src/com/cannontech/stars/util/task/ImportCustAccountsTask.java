@@ -749,7 +749,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		                        continue;
 							} catch (SQLException sqle) {
 	                            String[] value = custLines.get(lineNoKey);
-	                            addToLog(lineNoKey, value, importLog);
+	                            value[1] = "[line: " + lineNo + " error: " + sqle.getMessage() + "]";
+                                custLines.put(lineNoKey, value);
+                                addToLog(lineNoKey, value, importLog);
 	                            importLog.println(sqle.getStackTrace());
 								continue;
 							}
@@ -1027,7 +1029,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	                        continue;
 						} catch (SQLException sqle) {
 						    String[] value = hwLines.get(lineNoKey);
-						    addToLog(lineNoKey, value, importLog);
+						    value[1] = "[line: " + lineNo + " error: " + sqle.getMessage() + "]";
+                            hwLines.put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
                             importLog.println(sqle.getStackTrace());
 							continue;
 						}
