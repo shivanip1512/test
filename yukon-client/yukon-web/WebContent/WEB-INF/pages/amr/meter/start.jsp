@@ -22,17 +22,17 @@
 				<td class="widgetColumnCell" valign="top">
 				
 					<%-- OUTAGE MONITORS WIDGET --%>
-					<ct:widget bean="outageMonitorsWidget" helpText="${outageMonitorsWidgetPopupInfoText}"/>
+					<ct:widget bean="outageMonitorsWidget"/>
 					
 					<%-- TAMPER FLAGS WIDGET --%>
-					<ct:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
+					<ct:widget bean="tamperFlagMonitorsWidget"/>
                     
                     <%-- VALIDATION MONITORS WIDGET --%>
                     <ct:widget bean="validationMonitorsWidget"/>
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">
-						<ct:widget bean="scheduledGroupRequstExecutionWidget" helpText="${scheduledGroupRequstExecutionWidgetPopupInfoText}"/>
+						<ct:widget bean="scheduledGroupRequstExecutionWidget"/>
 					</cti:checkRolesAndProperties>
 					
 				</td>
