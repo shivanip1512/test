@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -362,8 +363,8 @@ public class CommandDeviceBean implements DBChangeListener
 		
 				if (thisVal.equalsIgnoreCase(anotherVal))
 				{
-					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
-					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
+					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
+					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -390,8 +391,8 @@ public class CommandDeviceBean implements DBChangeListener
 		
 				if (thisVal.equalsIgnoreCase(anotherVal))
 				{
-					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
-					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
+					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
+					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -418,8 +419,8 @@ public class CommandDeviceBean implements DBChangeListener
 				
 				if (thisVal == anotherVal)
 				{
-					String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
-					String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
+					String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
+					String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
 					return (thisValStr.compareToIgnoreCase(anotherValStr));
 				}
 			}
@@ -1051,7 +1052,7 @@ public class CommandDeviceBean implements DBChangeListener
 				}
                 else if( valueString.equalsIgnoreCase(LMGROUP_TYPE_STRING))
                 {
-                    return llg.getPaoType();
+                    return llg.getPaoIdentifier().getPaoType().getDbString();
                 }
 			}
             
@@ -1198,11 +1199,7 @@ public class CommandDeviceBean implements DBChangeListener
 	{
 		if (loadGroupIDToLiteLoadGroupsMap == null)
 		{
-		    final PaoAuthorizationService paoAuthorizationService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
-		    final LiteYukonUser unloadedLiteYukonUser = new LiteYukonUser(getUserID());
-
-		    loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>();
-			
+		    final List<YCLiteLoadGroup> liteLoadGroups = new ArrayList<YCLiteLoadGroup>();
 			SqlStatementBuilder sql = new SqlStatementBuilder();
 			sql.append(" SELECT LMG.DeviceId, Type, kWCapacity, RouteId, Serial ");
 			sql.append(" FROM LMGroup lmg JOIN ");
@@ -1223,14 +1220,21 @@ public class CommandDeviceBean implements DBChangeListener
 	                int routeID = rs.getInt(4);
 	                String serial = rs.getString(5);
 
-	                YCLiteLoadGroup ycLiteLoadGroup = new YCLiteLoadGroup(groupID, kwCapacity, routeID, serial, type);
 	                PaoType paoType = PaoType.getForDbString(type);
-	                PaoIdentifier paoIdentifier = new PaoIdentifier(groupID, paoType);
-	                if ( paoAuthorizationService.isAuthorized(unloadedLiteYukonUser, Permission.LM_VISIBLE, paoIdentifier)) {
-	                    loadGroupIDToLiteLoadGroupsMap.put(groupID, ycLiteLoadGroup);
-	                }
+	                YCLiteLoadGroup ycLiteLoadGroup = new YCLiteLoadGroup(groupID, kwCapacity, routeID, serial, paoType);
+	                liteLoadGroups.add(ycLiteLoadGroup);
 	            }
 	        });
+
+	        final PaoAuthorizationService paoAuthorizationService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
+	        final LiteYukonUser unloadedLiteYukonUser = new LiteYukonUser(getUserID());
+	        loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>();
+	        
+            List<YukonPao> filtered = paoAuthorizationService.filterAuthorized(unloadedLiteYukonUser, liteLoadGroups, Permission.LM_VISIBLE);
+            for (YukonPao yukonPao : filtered) {
+                YCLiteLoadGroup ycLiteLoadGroup = (YCLiteLoadGroup)yukonPao;
+                loadGroupIDToLiteLoadGroupsMap.put(ycLiteLoadGroup.getPaoIdentifier().getPaoId(), ycLiteLoadGroup);
+            }
 		}
 		return loadGroupIDToLiteLoadGroupsMap;
 	}

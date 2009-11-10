@@ -6,34 +6,33 @@
  */
 package com.cannontech.yc.bean;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
+
 /**
  * @author stacey
  *
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class YCLiteLoadGroup{
-	private int groupID = -1;
+public class YCLiteLoadGroup implements YukonPao {
+    private PaoIdentifier paoIdentifier = null;
 	private int routeID = -1;
 	private double kwCapacity = 0; 
 	private String serial = null;
-	private String paoType = null;
 	
 	/**
 	 * 
 	 */
-	public YCLiteLoadGroup(int groupID_, double kwCapacity_, int routeID_, String serial_, String paoType) {
+	public YCLiteLoadGroup(int groupID_, double kwCapacity_, int routeID_, String serial_, PaoType paoType) {
 		super();
-		groupID = groupID_;
+		paoIdentifier = new PaoIdentifier(groupID_, paoType); 
 		kwCapacity = kwCapacity_;
 		routeID = routeID_;
 		serial = serial_;
-		this.paoType = paoType;
 	}
-	public int getGroupID()
-	{
-		return groupID;
-	}
+
 	public String getSerial()
 	{
 		return serial;
@@ -46,7 +45,8 @@ public class YCLiteLoadGroup{
     {
         return routeID;
     }
-    public String getPaoType() {
-        return paoType;
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return paoIdentifier;
     }
 }
