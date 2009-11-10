@@ -28,8 +28,7 @@
 					<ct:widget bean="tamperFlagMonitorsWidget" helpText="${tamperFlagMonitorsWidgetPopupInfoText}"/>
                     
                     <%-- VALIDATION MONITORS WIDGET --%>
-                    <cti:msg var="validationMonitorsWidgetPopupInfoText" key="yukon.web.modules.common.vee.widget.popupInfo"/>
-                    <ct:widget bean="validationMonitorsWidget" helpText="${validationMonitorsWidgetPopupInfoText}"/>
+                    <ct:widget bean="validationMonitorsWidget"/>
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">
