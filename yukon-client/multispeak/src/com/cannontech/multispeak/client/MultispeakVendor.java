@@ -46,6 +46,7 @@ public class MultispeakVendor
     public static final int EA_LOCATION_PAONAME = 4;
     public static final int GRID_LOCATION_PAONAME = 5;
     public static final int SERVICE_LOCATION_WITH_POSITION_NO_PAONAME = 6;
+    public static final int POLE_NUMBER_PAONAME = 7;
 
     public static String DEFAULT_PAONAME_STRING = "Meter Number (Default)";
     public static String ACCOUNT_NUMBER_PAONAME_STRING = "Account Number";
@@ -54,6 +55,7 @@ public class MultispeakVendor
     public static String EA_LOCATION_PAONAME_STRING = "EA Location";
     public static String GRID_LOCATION_PAONAME_STRING = "Grid Location";
     public static String SERVICE_LOCATION_WITH_POSITION_STRING = "Service Location [Position]";
+    public static String POLE_NUMBER_PAONAME_STRING = "Pole Number";
     
     public static String[] paoNameAliasStrings = new String[]{
            DEFAULT_PAONAME_STRING,
@@ -62,7 +64,8 @@ public class MultispeakVendor
            CUSTOMER_PAONAME_STRING,
            EA_LOCATION_PAONAME_STRING,
            GRID_LOCATION_PAONAME_STRING,
-           SERVICE_LOCATION_WITH_POSITION_STRING
+           SERVICE_LOCATION_WITH_POSITION_STRING,
+           POLE_NUMBER_PAONAME_STRING
        };
     private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
     

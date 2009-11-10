@@ -545,7 +545,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, "meterAddNotification");
                         if( errorObject == null) {
                             try {
-                                com.cannontech.amr.meter.model.Meter meterToAdd = getMeterToAdd(mspMeter, paoAlias);
+                                com.cannontech.amr.meter.model.Meter meterToAdd = getMeterToAdd(mspMeter, paoAlias, mspVendor);
                                 // have existing meter to "update"
                                 errorObject = addExistingMeter(mspMeter, meterToAdd, mspVendor, paoAlias);
                             } catch (NotFoundException e) { //and NEW meter
@@ -586,7 +586,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @return
      * @throws NotFoundException
      */
-    private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias) throws NotFoundException {
+    private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias, MultispeakVendor mspVendor) throws NotFoundException {
         
     	com.cannontech.amr.meter.model.Meter meter = null;
     	MeterDisplayFieldEnum meterDisplayFieldEnum = multispeakFuncs.getMeterLookupField();
@@ -598,7 +598,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     			String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
     			meter = meterDao.getForPhysicalAddress(mspAddress);
     	} else if ( meterDisplayFieldEnum == MeterDisplayFieldEnum.DEVICE_NAME ) {
-    	    String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
+    	    String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null, mspVendor);
     	    
     	    // TODO??? What should be done if we can't find a paoName to lookup by?  throw exception?
             if (paoName != null) {
@@ -844,7 +844,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         // NAME
         int paoAlias = multispeakFuncs.getPaoNameAlias();
-        String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, meterNumber);
+        String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, meterNumber, mspVendor);
         
         // ADDRESS
         String address = mspMeter.getNameplate().getTransponderID().trim();
@@ -1137,7 +1137,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param defaultValue
      * @return
      */
-    private String getPaoNameFromMspMeter(Meter mspMeter, int paoNameAlias, String defaultValue) {
+    private String getPaoNameFromMspMeter(Meter mspMeter, int paoNameAlias, String defaultValue, MultispeakVendor mspVendor ) {
 			
 		switch (paoNameAlias) {
 			case MultispeakVendor.ACCOUNT_NUMBER_PAONAME:
@@ -1187,7 +1187,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 				String serviceLocation = mspMeter.getUtilityInfo().getServLoc();
 				String positionNumber = getMeterPosition(mspMeter);
 				return multispeakFuncs.buildServiceLocationWithPosition(serviceLocation, positionNumber);
-			}	
+			}
+            case MultispeakVendor.POLE_NUMBER_PAONAME:
+            {
+                if (StringUtils.isBlank(mspMeter.getMeterNo())) {
+                    return null;
+                }
+                ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(mspMeter.getMeterNo(), mspVendor);
+                if( mspServiceLocation.getNetwork()== null || StringUtils.isBlank(mspServiceLocation.getNetwork().getPoleNo())){
+                    return null;
+                }
+                return mspServiceLocation.getNetwork().getPoleNo();                
+            }			
 			default:
 				return defaultValue;
 		}
@@ -1255,6 +1266,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 				String registerNo = getMeterRegister(mspServiceLocation.getExtensionsList());
 				return multispeakFuncs.buildServiceLocationWithRegister(serviceLocation, registerNo);
             } 
+            case MultispeakVendor.POLE_NUMBER_PAONAME:
+            {
+                if( mspServiceLocation.getNetwork()== null || StringUtils.isBlank(mspServiceLocation.getNetwork().getPoleNo())){
+                    return null;
+                }
+                return mspServiceLocation.getNetwork().getPoleNo();
+            }   
+
             default:
                 return defaultValue;
         }
@@ -1485,7 +1504,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         //Update PaoName
         String currentPaoName = meter.getName();
-        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName);
+        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName, mspVendor);
         
         if( newPaoName == null) {
             logString = "PAOName(" + paoAliasStr + ")No Change - MSP " + paoAliasStr + " is empty;";
@@ -1559,7 +1578,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String paoNameLog = "";
         String meterNumberLog = "";
         String currentPaoName = meter.getName();
-        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName);
+        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName, mspVendor);
         
         if( newPaoName == null) {
             paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") No Change - MSP " + paoAliasStr + " is empty.";
