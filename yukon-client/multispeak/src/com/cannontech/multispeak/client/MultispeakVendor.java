@@ -55,8 +55,8 @@ public class MultispeakVendor
     public static String EA_LOCATION_PAONAME_STRING = "EA Location";
     public static String GRID_LOCATION_PAONAME_STRING = "Grid Location";
     public static String SERVICE_LOCATION_WITH_POSITION_STRING = "Service Location [Position]";
-    public static String POLE_NUMBER_PAONAME_STRING = "Pole Number";
-    
+    public static String POLE_NUMBER_PAONAME_STRING = "Pole Number (Location)";
+
     public static String[] paoNameAliasStrings = new String[]{
            DEFAULT_PAONAME_STRING,
            ACCOUNT_NUMBER_PAONAME_STRING,
