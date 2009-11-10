@@ -7020,64 +7020,64 @@ void CtiCCExecutor::moveFeeder(INT permanentFlag, LONG oldSubBusId, LONG movedFe
    
     if( oldSubBusPtr!=NULL && newSubBusPtr!=NULL && movedFeederPtr!=NULL && !verificationFlag)
     {
+        
+        CtiFeeder_vec& oldFeeders = oldSubBusPtr->getCCFeeders();
+
+        CtiFeeder_vec::iterator itr = oldFeeders.begin();
+        while( itr != oldFeeders.end() )
         {
-            CtiFeeder_vec& oldFeeders = oldSubBusPtr->getCCFeeders();
-
-            CtiFeeder_vec::iterator itr = oldFeeders.begin();
-            while( itr != oldFeeders.end() )
-            {
-                if (*itr == movedFeederPtr) {
-                    itr = oldFeeders.erase( itr );
-                }else
-                    ++itr;
-            }
-
-            store->removeItemsFromMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, movedFeederId);
-            for (int i = 0; i < movedFeederPtr->getCCCapBanks().size(); i++)
-            {
-                store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap,  movedFeederPtr->getCCCapBanks()[i]->getPAOId());
-            }
-
-
-            
-            if( !permanentFlag )
-            {
-                movedFeederPtr->getOriginalParent().setOriginalParentId(oldSubBusPtr->getPAOId());
-                movedFeederPtr->getOriginalParent().setOriginalSwitchingOrder(movedFeederPtr->getDisplayOrder());
-            }
-            else
-            {
-                movedFeederPtr->getOriginalParent().setOriginalParentId(0);
-                movedFeederPtr->getOriginalParent().setOriginalSwitchingOrder(0.0);
-
-            }
-
-            movedFeederPtr->setParentId(newSubBusId);
-            movedFeederPtr->setDisplayOrder(fdrSwitchingOrder);
-          
+            if (*itr == movedFeederPtr) {
+                itr = oldFeeders.erase( itr );
+            }else
+                ++itr;
         }
+
+        store->removeItemsFromMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, movedFeederId);
+        for (int i = 0; i < movedFeederPtr->getCCCapBanks().size(); i++)
         {
-            CtiFeeder_vec& newFeeders = newSubBusPtr->getCCFeeders();
-            int insertPoint = newFeeders.size();
-            int j = insertPoint;
-
-            while (j > 0)
-            {
-                if (fdrSwitchingOrder <= ((CtiCCFeeder*)newFeeders.at(j-1))->getDisplayOrder())
-                {
-                    insertPoint =  j - 1;
-                }
-
-                j--;
-            }
-            CtiFeeder_vec& ccF = newSubBusPtr->getCCFeeders();
-            ccF.insert( ccF.begin()+insertPoint, movedFeederPtr );
-            store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &movedFeederId, &newSubBusId);
-            for (int i = 0; i < movedFeederPtr->getCCCapBanks().size(); i++)
-            {
-                store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap,  movedFeederPtr->getCCCapBanks()[i]->getPAOId());
-            }
+            store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap,  movedFeederPtr->getCCCapBanks()[i]->getPAOId());
         }
+
+
+        
+        if( !permanentFlag )
+        {
+            movedFeederPtr->getOriginalParent().setOriginalParentId(oldSubBusPtr->getPAOId());
+            movedFeederPtr->getOriginalParent().setOriginalSwitchingOrder(movedFeederPtr->getDisplayOrder());
+        }
+        else
+        {
+            movedFeederPtr->getOriginalParent().setOriginalParentId(0);
+            movedFeederPtr->getOriginalParent().setOriginalSwitchingOrder(0.0);
+
+        }
+
+        movedFeederPtr->setParentId(newSubBusId);
+        movedFeederPtr->setDisplayOrder(fdrSwitchingOrder);
+        
+        
+       
+        CtiFeeder_vec& newFeeders = newSubBusPtr->getCCFeeders();
+        int insertPoint = newFeeders.size();
+        int j = insertPoint;
+
+        while (j > 0)
+        {
+            if (fdrSwitchingOrder <= ((CtiCCFeeder*)newFeeders.at(j-1))->getDisplayOrder())
+            {
+                insertPoint =  j - 1;
+            }
+
+            j--;
+        }
+        CtiFeeder_vec& ccF = newSubBusPtr->getCCFeeders();
+        ccF.insert( ccF.begin()+insertPoint, movedFeederPtr );
+        store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &movedFeederId, &newSubBusId);
+        for (int i = 0; i < movedFeederPtr->getCCCapBanks().size(); i++)
+        {
+            store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap,  movedFeederPtr->getCCCapBanks()[i]->getPAOId());
+        }
+        
         store->UpdateFeederSubAssignmentInDB(oldSubBusPtr);
         store->UpdateFeederSubAssignmentInDB(newSubBusPtr);
         
