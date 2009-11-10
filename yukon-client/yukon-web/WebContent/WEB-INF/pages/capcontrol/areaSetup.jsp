@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var areaVoltReductionPointPicker = new PointPicker('areaVoltReductionPointValue','com.cannontech.common.search.criteria.StatusPointCriteria','pointName:areaVoltReductionPoint;deviceName:areaDevice','areaVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+        var areaVoltReductionPointPicker = new PointPicker('areaVoltReductionPointValue','com.cannontech.common.search.criteria.VoltReductionCriteria','pointName:areaVoltReductionPoint;deviceName:areaDevice','areaVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
     </script>
 </f:verbatim>
 
