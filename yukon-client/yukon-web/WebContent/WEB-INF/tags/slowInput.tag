@@ -10,8 +10,8 @@
 <cti:includeScript link="/JavaScript/slowInput.js"/>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="slowinput_"/>
-<c:if test="${not empty id}">
-	<c:set var="uniqueId" value="${id}"/>
+<c:if test="${not empty pageScope.id}">
+	<c:set var="uniqueId" value="${pageScope.id}"/>
 </c:if>
 
 <span id="slowInputSpan${uniqueId}"> 

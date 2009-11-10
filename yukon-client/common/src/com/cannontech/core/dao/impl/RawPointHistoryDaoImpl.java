@@ -86,7 +86,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     public PointValueHolder getPointData(int pointId, Date date) {
-        PointValueHolder result;
+    	PointValueHolder result;
         List<PointValueHolder> results = yukonTemplate.query(sqlBasePoint, new LiteRPHRowMapper(), pointId, date);
         if(results.isEmpty()){
             return null;
@@ -152,7 +152,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             builder.withType(rs.getString("pointtype"));
             return builder.build();
         }
+    }
+    
+    private class LiteRPHQualityRowMapper implements ParameterizedRowMapper<PointValueQualityHolder> {
 
+        public PointValueQualityHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+            PointValueBuilder builder = PointValueBuilder.create();
+            builder.withResultSet(rs);
+            builder.withType(rs.getString("pointtype"));
+            return builder.build();
+        }
     }
 
     public List<PointValueHolder> getIntervalPointData(int pointId, Date startDate, Date stopDate, ChartInterval resolution, Mode mode) {
@@ -231,7 +240,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     	sql.append("JOIN Point p ON (rph.pointId = p.pointId)");
     	sql.append("WHERE rph.changeId").eq(changeId);
     	
-    	return (PointValueQualityHolder)yukonTemplate.queryForObject(sql, new LiteRPHRowMapper());
+    	return yukonTemplate.queryForObject(sql, new LiteRPHQualityRowMapper());
     }
 
     @Override
@@ -248,49 +257,11 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     	sql.append(")");
     	sql.append("ORDER BY rph.TimeStamp desc, rph.ChangeId desc");
     	
-    	final List<PointValueQualityHolder> resultsTail = new ArrayList<PointValueQualityHolder>();
-    	List<Integer> offsetsCollection = Arrays.asList(ArrayUtils.toObject(offsets));
-    	final int minimumIndex = Ordering.natural().min(offsetsCollection);
-    	
-    	ResultSetExtractor rse = new ResultSetExtractor() {
-			
-			@Override
-			public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-				
-				Integer indexOfChange = null;
-				int currentChangeId = 0;
-				PointValueQualityHolder prevHolder = null;
-				
-				while (rs.next()) {
-					
-					currentChangeId = rs.getInt("ChangeId");
-					
-					PointValueBuilder builder = PointValueBuilder.create();
-					builder.withResultSet(rs);
-					builder.withType(rs.getString("PointType"));
-					PointValueQualityHolder holder = builder.build();
-					
-					if (prevHolder == null || !holder.equals(prevHolder)) {
-						resultsTail.add(holder);
-						prevHolder = holder;
-					}
-					
-	            	if (currentChangeId == changeId) {
-	            		indexOfChange = resultsTail.size() - 1;
-	            	}
-	            	
-	            	if (indexOfChange != null && (resultsTail.size() - 1) >= indexOfChange - minimumIndex) {
-	            		return indexOfChange;
-	            	}
-				}
-				if (indexOfChange == null) {
-					throw new IllegalStateException();
-				}
-				return indexOfChange;
-			}
-		};
-    	
-        Integer indexOfChange = (Integer)yukonTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
+    	AdjacentPointValuesRse rse = new AdjacentPointValuesRse(changeId, Arrays.asList(ArrayUtils.toObject(offsets)));
+        yukonTemplate.query(sql, rse);
+        
+        int indexOfChange = rse.getIndexOfChange();
+        List<PointValueQualityHolder> resultsTail = rse.getResultsTail();
         
         List<PointValueQualityHolder> adjacentPointValues = new ArrayList<PointValueQualityHolder>(offsets.length);
         for (int offset : offsets) {
@@ -305,6 +276,60 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return adjacentPointValues;
     }
     
+    private final class AdjacentPointValuesRse implements ResultSetExtractor {
+    
+    	private Integer indexOfChange = null;
+    	private List<PointValueQualityHolder> resultsTail = new ArrayList<PointValueQualityHolder>();
+    	int minimumIndex;
+    	int changeId;
+    	
+    	public AdjacentPointValuesRse(int changeId, List<Integer> offsetsCollection) {
+    		this.changeId = changeId;
+    		this.minimumIndex = Ordering.natural().min(offsetsCollection);
+    	}
+		
+		public int getIndexOfChange() {
+			return this.indexOfChange;
+		}
+		public List<PointValueQualityHolder> getResultsTail() {
+			return resultsTail;
+		}
+		
+		@Override
+		public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+			
+			int currentChangeId = 0;
+			PointValueQualityHolder prevHolder = null;
+			
+			while (rs.next()) {
+				
+				currentChangeId = rs.getInt("ChangeId");
+				
+				PointValueBuilder builder = PointValueBuilder.create();
+				builder.withResultSet(rs);
+				builder.withType(rs.getString("PointType"));
+				PointValueQualityHolder holder = builder.build();
+				
+				if (prevHolder == null || !holder.equals(prevHolder)) {
+					resultsTail.add(holder);
+					prevHolder = holder;
+				}
+				
+            	if (currentChangeId == changeId) {
+            		indexOfChange = resultsTail.size() - 1;
+            	}
+            	
+            	if (indexOfChange != null && (resultsTail.size() - 1) >= indexOfChange - minimumIndex) {
+            		return indexOfChange;
+            	}
+			}
+			if (indexOfChange == null) {
+				throw new IllegalStateException();
+			}
+			return null;
+		}
+	}
+    
     @Override
     public void deleteValue(int changeId) {
     	
@@ -313,6 +338,6 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     	sql.append("FROM RawPointHistory");
     	sql.append("WHERE ChangeId").eq(changeId);
     	
-    	yukonTemplate.update(sql.getSql(), sql.getArguments());
+    	yukonTemplate.update(sql);
     }
 }

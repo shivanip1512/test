@@ -124,7 +124,7 @@ public interface RawPointHistoryDao {
     
     /**
     * Gets values before or after a given changeId.
-    * All values for the point that changeId references are ordered by timestamp, the those values adjacent to the one with the given changeId are returned.
+    * All values for the point that changeId references are ordered by timestamp and changeId, the those values adjacent to the one with the given changeId are returned.
     * Offsets are an array of integers that determine which adjacent points to return.
     * Examples:
     * offset = 0 => same value that changeId points to

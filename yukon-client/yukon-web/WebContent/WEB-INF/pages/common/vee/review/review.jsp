@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.common.vee.review.home.pageTitle"/>
-<cti:msg var="displayTypes" key="yukon.web.modules.common.vee.review.home.displayTypes"/>
+<cti:msg var="displayTypesSectionHeader" key="yukon.web.modules.common.vee.review.home.displayTypes"/>
 <cti:msg var="displayTypesPopupInfo" key="yukon.web.modules.common.vee.review.home.displayTypes.popupInfo"/>
 <cti:msg var="device" key="yukon.web.modules.common.vee.review.home.header.device"/>
 <cti:msg var="previous" key="yukon.web.modules.common.vee.review.home.header.previous"/>
@@ -62,8 +62,6 @@
     
     </script>
     
-    <cti:verifyRolesAndProperties value="VALIDATION_ENGINE"/>
-    
     <form id="reloadForm" action="/spring/common/veeReview/home" method="get">
    		<c:if test="${!noPoints}">
    			<input type="hidden" name="afterPaoId" value="${afterPaoId}">
@@ -98,58 +96,29 @@
 				<%-- DISPLAY TYPES --%>
 				<td style="width:35%;vertical-align:top;padding-right:40px;">
 				
-					<tags:sectionContainer title="${displayTypes}">
-					<table class="compactResultsTable" style="width:90%;">
-				    	<tr>
-				    		<td>
-				    			<label>
-				    				<input type="checkbox" name="PU" class="TYPE_CHECKBOX" <c:if test="${PU}">checked</c:if>>
-				    				<tags:rphTagIcon tag="${allTagsMap['PU']}"/> 
-				    				<cti:msg key="${allTagsMap['PU'].key}"/>
-				    				(${tagCounts['PU']})
-				    			</label>
-				    		</td>
-				    		<td>
-				    			<label>
-				    				<input type="checkbox" name="PD" class="TYPE_CHECKBOX" <c:if test="${PD}">checked</c:if>>
-				    				<tags:rphTagIcon tag="${allTagsMap['PD']}"/>
-				    				<cti:msg key="${allTagsMap['PD'].key}"/> 
-				    				(${tagCounts['PD']})
-				    			</label>
-				    		</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<label>
-					    			<input type="checkbox" name="UU" class="TYPE_CHECKBOX" <c:if test="${UU}">checked</c:if>>
-					    			<tags:rphTagIcon tag="${allTagsMap['UU']}"/>
-					    			<cti:msg key="${allTagsMap['UU'].key}"/>
-					    			(${tagCounts['UU']})
-				    			</label>
-				    		</td>
-				    		<td>
-				    			<label>
-					    			<input type="checkbox" name="UD" class="TYPE_CHECKBOX" <c:if test="${UD}">checked</c:if>>
-					    			<tags:rphTagIcon tag="${allTagsMap['UD']}"/>
-					    			<cti:msg key="${allTagsMap['UD'].key}"/>
-					    			(${tagCounts['UD']})
-				    			</label>
-				    		</td>
-				    	</tr>
-				    	<tr>
-				    		<td>
-				    			<label>
-					    			<input type="checkbox" name="UDC" class="TYPE_CHECKBOX" <c:if test="${UDC}">checked</c:if>>
-					    			<tags:rphTagIcon tag="${allTagsMap['UDC']}"/>
-					    			<cti:msg key="${allTagsMap['UDC'].key}"/>
-					    			(${tagCounts['UDC']})
-				    			</label>
-				    		</td>
-				    		<td>
-				    			<input id="reloadButton" type="button" onclick="reloadForm();" value="${reload}"> <img id="reloadSpinner" style="display:none;" src="/WebConfig/yukon/Icons/indicator_arrows.gif">
-				    		</td>
-				    	</tr>
-				    </table>
+					<tags:sectionContainer title="${displayTypesSectionHeader}">
+					
+						<cti:dataGrid cols="2" tableClasses="compactResultsTable" tableStyle="width:90%;">
+						
+							<c:forEach var="displayType" items="${displayTypes}">
+	
+								<cti:dataGridCell>
+									<label>
+					    				<input type="checkbox" name="${displayType.rphTag}" class="TYPE_CHECKBOX" <c:if test="${displayType.checked}">checked</c:if>>
+					    				<cti:logo key="${displayType.rphTag.logoKey}"/>
+					    				<cti:msg key="${displayType.rphTag.formatKey}"/>
+					    				(${displayType.count})
+					    			</label>
+								</cti:dataGridCell>
+							
+							</c:forEach>
+							
+							<cti:dataGridCell>
+								<input id="reloadButton" type="button" onclick="reloadForm();" value="${reload}"> <img id="reloadSpinner" style="display:none;" src="/WebConfig/yukon/Icons/indicator_arrows.gif">
+							</cti:dataGridCell>
+						
+						</cti:dataGrid>
+				     
 				    </tags:sectionContainer>
 				</td>
 				
@@ -202,7 +171,6 @@
 	    		<c:forEach var="p" items="${pList}" varStatus="status">
 	    		
 	    			<c:set var="changeId" value="${p.reviewPoint.changeId}"/>
-	    			<c:set var="pointId" value="${p.reviewPoint.pointValue.id}"/>
 	    	
 		    		<tr>
 		    		
@@ -235,12 +203,12 @@
 			    		<td><cti:pointValueFormatter value="${p.nextPointValue}" format="FULL"/></td>
 			    		
 			    		<td align="center" class="ACTION_TD pointer">
-			    			<img id="ACTION_DELETE_IMG_${changeId}_${pointId}" src="${deleteDisabledImg}">
+			    			<img id="ACTION_DELETE_IMG_${changeId}" src="${deleteDisabledImg}">
 			    		</td>
 			    		
 			    		<td align="center" class="ACTION_TD pointer">
-			    			<img id="ACTION_ACCEPT_IMG_${changeId}_${pointId}" src="${acceptDisabledImg}">
-			    			<input id="ACTION_${changeId}_${pointId}" name="ACTION_${changeId}_${pointId}" type="hidden" value="">
+			    			<img id="ACTION_ACCEPT_IMG_${changeId}" src="${acceptDisabledImg}">
+			    			<input id="ACTION_${changeId}" name="ACTION_${changeId}" type="hidden" value="">
 			    		</td>
 			    	</tr>
 		    	

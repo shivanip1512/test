@@ -1,7 +1,6 @@
 package com.cannontech.web.common.vee.review;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +74,7 @@ public class VeeReviewController {
         }
         
         // narrow - group by changeId
+        // loop over rpsByName by key to keep order intact
         ListMultimap<Integer, ReviewPoint> commonChangeIdReviewPoints = LinkedListMultimap.create();
         for (String nameKey : rpsByName.keySet()) {
         	List<ReviewPoint> rpsForName = rpsByName.get(nameKey);
@@ -85,26 +85,21 @@ public class VeeReviewController {
         
         // narrow - if changeId has multiple review points only keep the one with highest display precedence
         // add keepers until the next distinct device and count >= IDEAL_PAGE_COUNT
+        int lastPaoId = 0;
         List<ReviewPoint> keepReviewPoints = new ArrayList<ReviewPoint>();
         List<Integer> changeIdList = new ArrayList<Integer>(commonChangeIdReviewPoints.keySet());
-        for (int i = 0; i < changeIdList.size(); i++) {
+        for (int changeId : changeIdList) {
         	
-        	int changeId = changeIdList.get(i);
         	List<ReviewPoint> rpList = commonChangeIdReviewPoints.get(changeId);
         	ReviewPoint keeper = reviewPointingOrdering.min(rpList);
-        	keepReviewPoints.add(keeper);
         	
         	int keeperPaoId = keeper.getDisplayablePao().getPaoIdentifier().getPaoId();
-        	int nextPaoId = 0;
-        	if (i +1 < changeIdList.size()) {
-        		int nextChangeId = changeIdList.get(i + 1);
-        		List<ReviewPoint> nextRpList = commonChangeIdReviewPoints.get(nextChangeId);
-        		nextPaoId = nextRpList.get(0).getDisplayablePao().getPaoIdentifier().getPaoId();
-        	}
-        	
-        	if (nextPaoId != keeperPaoId && keepReviewPoints.size() >= IDEAL_PAGE_COUNT) {
+        	if (lastPaoId > 0 && keeperPaoId != lastPaoId && keepReviewPoints.size() >= IDEAL_PAGE_COUNT) {
         		break;
         	}
+        	
+        	keepReviewPoints.add(keeper);
+        	lastPaoId = keeperPaoId;
         }
         
         // make extended
@@ -140,17 +135,13 @@ public class VeeReviewController {
         }
         
         // tag counts
-        Map<RphTag, Integer> tagCountsOrg = rphTagUiDao.getTagCounts();
-        Map<String, Integer> tagCounts = new HashMap<String, Integer>();
-        for (RphTag tag : tagCountsOrg.keySet()) {
-        	tagCounts.put(tag.name(), tagCountsOrg.get(tag));
-        }
+        Map<RphTag, Integer> tagCounts = rphTagUiDao.getTagCounts();
         mav.addObject("tagCounts", tagCounts);
         
         // mav
         mav.addObject("afterPaoId", afterPaoId);
         mav.addObject("nextPaoId", finalPaoId);
-        addSelectedTagsToMav(selectedTags, mav);
+        addDisplayTypesToMav(selectedTags, tagCounts, mav);
         mav.addObject("groupedExtendedReviewPoints", groupedExtendedReviewPoints);
         
         return mav;
@@ -163,74 +154,99 @@ public class VeeReviewController {
         int afterPaoId = ServletRequestUtils.getIntParameter(request, "afterPaoId", 0);
         
         // gather changeIds
-        List<String[]> deleteChangeIdPointIdStrs = new ArrayList<String[]>();
-        List<String[]> acceptChangeIdPointIdStrs = new ArrayList<String[]>();
+        List<Integer> deleteChangeIds = new ArrayList<Integer>();
+        List<Integer> acceptChangeIds = new ArrayList<Integer>();
         
         Map<String, String> actionParameters = ServletUtil.getStringParameters(request, "ACTION_");
-        for (String changeIdPointIdStr : actionParameters.keySet()) {
+        for (String changeIdStr : actionParameters.keySet()) {
         	
-        	String[] changeIdPointIdStrParts = StringUtils.split(changeIdPointIdStr, "_");
-        	String actionTypeStr = actionParameters.get(changeIdPointIdStr);
+        	String actionTypeStr = actionParameters.get(changeIdStr);
         	if (!StringUtils.isBlank(actionTypeStr)) {
 	        	ActionType actionType = ActionType.valueOf(actionTypeStr);
 	        	if (ActionType.DELETE.equals(actionType)) {
-	        		deleteChangeIdPointIdStrs.add(changeIdPointIdStrParts);
+	        		deleteChangeIds.add(Integer.valueOf(changeIdStr));
 	        	} else if (ActionType.ACCEPT.equals(actionType)) {
-	        		acceptChangeIdPointIdStrs.add(changeIdPointIdStrParts);
+	        		acceptChangeIds.add(Integer.valueOf(changeIdStr));
 	        	}
         	}
         }
         
         // delete
-        for (String[] deleteChangeIdPointIdStr : deleteChangeIdPointIdStrs) {
-        	deleteAction(Integer.valueOf(deleteChangeIdPointIdStr[0]), Integer.valueOf(deleteChangeIdPointIdStr[1]));
+        for (int deleteChangeId : deleteChangeIds) {
+        	deleteAction(deleteChangeId);
         }
         
         // accept
-        for (String[] acceptChangeIdPointIdStr : acceptChangeIdPointIdStrs) {
-        	
-        	acceptAction(Integer.valueOf(acceptChangeIdPointIdStr[0]), Integer.valueOf(acceptChangeIdPointIdStr[1]));
+        for (int acceptChangeId : acceptChangeIds) {
+        	acceptAction(acceptChangeId);
         }
         
         // mav
         mav.addObject("afterPaoId", afterPaoId);
-        addSelectedTagsToMav(getSelectedTags(request), mav);
+        for (RphTag tag : getSelectedTags(request)) {
+        	mav.addObject(tag.name(), true);
+        }
         
         return mav;
 	}
 	
-	private void deleteAction(int changeId, int pointId) {
+	private void deleteAction(int changeId) {
+		
+		PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
 		
 		rawPointHistoryDao.deleteValue(changeId);
-		veeReviewEventLogService.deletePointValue(changeId, pointId);
+		veeReviewEventLogService.deletePointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
 	}
 	
-	private void acceptAction(int changeId, int pointId) {
+	private void acceptAction(int changeId) {
+		
+		PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
 		
 		rphTagDao.insertTag(changeId, RphTag.OK);
-		veeReviewEventLogService.acceptPointValue(changeId, pointId);
+		veeReviewEventLogService.acceptPointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
 		
 		PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
     	if (pointValueQualityHolder.getPointQuality().equals(PointQuality.Questionable)) {
     		rawPointHistoryDao.changeQuality(changeId, PointQuality.Normal);
-    		veeReviewEventLogService.updateQuestionableQuality(changeId, pointId);
+    		veeReviewEventLogService.updateQuestionableQuality(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
     	}
 	}
 	
-	private void addSelectedTagsToMav(List<RphTag> selectedTags, ModelAndView mav) {
+	private void addDisplayTypesToMav(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelAndView mav) {
 		
-		Map<String, RphTag> allTagsMap = new HashMap<String, RphTag>();
-		
+		List<DisplayType> displayTypes = new ArrayList<DisplayType>();
 		for (RphTag tag : RphTag.getAllValidation()) {
-			mav.addObject(tag.name(), false);
+			boolean checked = false;
 			if (selectedTags.contains(tag)) {
-				mav.addObject(tag.name(), true);
+				checked = true;
 			}
-			
-			allTagsMap.put(tag.name(), tag);
+			displayTypes.add(new DisplayType(tag, checked, tagCounts.get(tag)));
 		}
 		
-		mav.addObject("allTagsMap", allTagsMap);
+		mav.addObject("displayTypes", displayTypes);
+	}
+	
+	public class DisplayType {
+		
+		private RphTag rphTag;
+		private boolean checked;
+		private int count;
+		
+		public DisplayType(RphTag rphTag, boolean checked, int count) {
+			this.rphTag = rphTag;
+			this.checked = checked;
+			this.count = count;
+		}
+		
+		public RphTag getRphTag() {
+			return rphTag;
+		}
+		public boolean isChecked() {
+			return checked;
+		}
+		public int getCount() {
+			return count;
+		}
 	}
 	
 	private List<RphTag> getSelectedTags(HttpServletRequest request) {

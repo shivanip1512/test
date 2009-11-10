@@ -253,7 +253,7 @@ public final class SqlUtils {
     }
     
     /**
-     * Get null from result set instead of the default value of false if the column value is NULL.
+     * Get null from result set instead of the default value of 0 if the column value is NULL.
      * @param rs
      * @param columnName
      * @return

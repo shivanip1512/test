@@ -11,6 +11,12 @@
     <entry key="yukon.web.modules.common.vee.rphTag.UD">Unreasonable Down</entry>
     <entry key="yukon.web.modules.common.vee.rphTag.UDC">Changeout</entry>
     
+    <entry key="yukon.web.modules.common.vee.rphTag.PU.img">/WebConfig/yukon/Icons/arrow_up_red.gif</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.PD.img">/WebConfig/yukon/Icons/arrow_down_red.gif</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UU.img">/WebConfig/yukon/Icons/arrow_trend_up_right.gif</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UD.img">/WebConfig/yukon/Icons/arrow_trend_down_right.gif</entry>
+    <entry key="yukon.web.modules.common.vee.rphTag.UDC.img">/WebConfig/yukon/Icons/changeout.gif</entry>
+    
 	<!-- VeeReviewController review.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
@@ -35,16 +41,16 @@
     
     <entry key="yukon.web.modules.common.vee.review.home.header.delete.popupInfo"><![CDATA[
     	&bull; Mark flagged values that you would like to remove from the database.
-    	<br>&bull; To mark a row for deletion, change it's delete icon from <img src="/WebConfig/yukon/Icons/delete_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/delete.gif"> by clicking on it.
-    	<br>&bull; You may un-mark a row by clicking it's icon again.
+    	<br>&bull; To mark a row for deletion, change its delete icon from <img src="/WebConfig/yukon/Icons/delete_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/delete.gif"> by clicking on it.
+    	<br>&bull; You may un-mark a row by clicking its icon again.
     	<br>&bull; To mark/unmark all rows, click the <img src="/WebConfig/yukon/Icons/delete.gif"> icon in the column header.
     	<br><br>
     ]]></entry>
     
     <entry key="yukon.web.modules.common.vee.review.home.header.accept.popupInfo"><![CDATA[
     	&bull; Mark flagged values that you would like to unflag by marking them as accepted values.
-    	<br>&bull; To mark a row as accepted, change it's accept icon from <img src="/WebConfig/yukon/Icons/tick_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/tick.gif"> by clicking on it.
-    	<br>&bull; You may un-mark a row by clicking it's icon again.
+    	<br>&bull; To mark a row as accepted, change its accept icon from <img src="/WebConfig/yukon/Icons/tick_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/tick.gif"> by clicking on it.
+    	<br>&bull; You may un-mark a row by clicking its icon again.
     	<br>&bull; To mark/unmark all rows, click the <img src="/WebConfig/yukon/Icons/tick.gif"> icon in the column header.
     	<br><br>
     ]]></entry>

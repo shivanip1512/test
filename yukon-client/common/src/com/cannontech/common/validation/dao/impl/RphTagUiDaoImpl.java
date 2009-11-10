@@ -48,17 +48,17 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     	if (!includeOk) {
     		sql.append("AND rt.ChangeId NOT IN (");
         	sql.append("	SELECT rt2.ChangeId FROM RphTag rt2 ");
-        	sql.append("	WHERE rt2.TagName ").eq(RphTag.OK.name());
+        	sql.append("	WHERE rt2.TagName ").eq(RphTag.OK);
         	sql.append(")");
     	}
     	
-    	sql.append("AND rt.TagName").neq(RphTag.OK.name());
+    	sql.append("AND rt.TagName").neq(RphTag.OK);
     	
     	if (tags != null && tags.size() > 0) {
     		sql.append("AND rt.TagName IN (");
     		int i = 1;
     		for (RphTag tag : tags) {
-    			sql.append("'" + tag.name() + "'");
+    			sql.append("'" + tag + "'");
     			if (i != tags.size()) {
     				sql.append(", ");
     			}

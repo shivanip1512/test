@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -27,6 +28,10 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
     @Override
     public void query(SqlFragmentSource sql, RowCallbackHandler rch) throws DataAccessException {
         getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
+    }
+    
+    public void query(SqlFragmentSource sql, ResultSetExtractor rse) throws DataAccessException {
+        getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
     }
 
     @Override

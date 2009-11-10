@@ -5,9 +5,11 @@ package com.cannontech.common.validation.model;
 
 import java.util.Set;
 
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.LogoableEnum;
 import com.google.common.collect.ImmutableSet;
 
-public enum RphTag {
+public enum RphTag implements DisplayableEnum, LogoableEnum {
     PU, // leave these in an order that makes sense for "display precedence" purposes. i.e PU > UU, PD > UD > UDC
     PD, 
     UU, 
@@ -28,7 +30,13 @@ public enum RphTag {
         return ImmutableSet.of(PU, PD, UU, UD, UDC); // good enough for now
     }
     
-    public String getKey() {
+    @Override
+    public String getFormatKey() {
     	return "yukon.web.modules.common.vee.rphTag." + this.name();
+    }
+    
+    @Override
+    public String getLogoKey() {
+    	return getFormatKey() + ".img";
     }
 }

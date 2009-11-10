@@ -55,13 +55,13 @@
     <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {0} was disabled</entry>
     
     <!-- Command Request Executor -->
-    <entry key="yukon.common.events.commandRequestExecutor.connectionException">No porter connection. creId={0} contextId={1}</entry>
-    <entry key="yukon.common.events.commandRequestExecutor.exception">Processing failed: {2}. creId={0} contextId={1}</entry>
+    <entry key="yukon.common.events.porterRequests.connectionException">Processing failed: {0}</entry>
+    <entry key="yukon.common.events.porterRequests.exception">Processing failed: {0}</entry>
     
     <!-- VEE -->
-    <entry key="yukon.common.events.system.rphValidation.review.deletePointValue">Deleted point value: changeId={6} pointId={7}</entry>
-    <entry key="yukon.common.events.system.rphValidation.review.acceptPointValue">Accepted point value: changeId={6} pointId={7}</entry>
-    <entry key="yukon.common.events.system.rphValidation.review.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={6} pointId={7}</entry>
+    <entry key="yukon.common.events.system.rphValidation.review.deletePointValue">Deleted point value: changeId={6} value={7} type={8} timestamp={10}</entry>
+    <entry key="yukon.common.events.system.rphValidation.review.acceptPointValue">Accepted point value: changeId={6} value={7} type={8} timestamp={10}</entry>
+    <entry key="yukon.common.events.system.rphValidation.review.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={6} value={7} type={8} timestamp={10}</entry>
     
     <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoIdentifier={6} pointIdentifier={7}</entry>
     <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup">Validation engine startup: lastChangeIdProcessed={6} tagsCleared={7}</entry>

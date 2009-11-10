@@ -434,12 +434,12 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
 		        
 		        } catch (ConnectionException e) {
-		        	
-		        	callback.processingExceptionOccured("No porter connection.");
+		        	String error = "No porter connection.";
+		        	callback.processingExceptionOccured(error);
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
 		        	
-		        	commandRequestExecutorEventLogService.connectionException(commandRequestExecution.getId(), contextId.getId());
+		        	commandRequestExecutorEventLogService.connectionException(error);
 		        	
 		        } catch (Exception e) {
 		        	
@@ -447,7 +447,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
 		        	
-		        	commandRequestExecutorEventLogService.exception(commandRequestExecution.getId(), contextId.getId(), e.getMessage());
+		        	commandRequestExecutorEventLogService.exception(e.getMessage());
 		        	
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {
