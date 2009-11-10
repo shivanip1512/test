@@ -1115,11 +1115,19 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                 CTILogger.error( e.getMessage(), e );
                 
 				importLog.println("Error Occured");
-				String[] error = new String[3];
-				error[1] = "[line: "+lineNo+" error: "+e.getMessage()+"]";
-				custLines.put(lineNo,error);
-				addToLog(lineNo, error, importLog);
-				status = STATUS_ERROR;
+				String[] value;
+
+				if (custLines != null){
+                    value = custLines.get(lineNo);
+                    custLines.put(lineNo, value);
+                } else {
+                    value = hwLines.get(lineNo);
+                    hwLines.put(lineNo, value);
+                }                    
+                
+				value[1] = "[line: "+lineNo+" error: "+e.getMessage()+"]";
+                addToLog(lineNo, value, importLog);
+                status = STATUS_ERROR;
 			}
 
             ActivityLogger.logEvent( userID, ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, errorMsg );
