@@ -11,27 +11,29 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 
 public class MetaDataDatabaseVendorResolver implements DatabaseVendorResolver {
-    private DataSource dataSource;
+    private DatabaseVendor databaseVendor;
 
     @Override
     public DatabaseVendor getDatabaseVendor() {
-        try {
-            DatabaseVendor result = (DatabaseVendor) JdbcUtils.extractDatabaseMetaData(dataSource, new DatabaseMetaDataCallback() {
-                @Override
-                public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
-                    return DatabaseVendor.MS2008;
-                }
-            });
-            return result;
-        } catch (MetaDataAccessException e) {
-            throw new RuntimeException("Unable to determine DB Vendor");
-        }
-
+        return databaseVendor;
     }
     
     @Resource(name="yukonDataSource")
     public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+        try {
+            DatabaseVendor result = (DatabaseVendor) JdbcUtils.extractDatabaseMetaData(dataSource, new DatabaseMetaDataCallback() {
+                @Override
+                public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
+                    String vendorText = dbmd.getDatabaseProductName();
+                    String productVersion = dbmd.getDatabaseProductVersion();
+                    
+                    return DatabaseVendor.getDatabaseVender(vendorText, productVersion);
+                }
+            });
+            this.databaseVendor = result;
+        } catch (MetaDataAccessException e) {
+            throw new RuntimeException("Unable to determine DB Vendor");
+        }
     }
 
 }
