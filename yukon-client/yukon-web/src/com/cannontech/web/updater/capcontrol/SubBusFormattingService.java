@@ -89,10 +89,12 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     protected String getDualBus(SubBus latestValue, CBCDisplay cbcDisplay) {
         String ret = "Disabled";
         
-        if (latestValue.getPrimaryBusFlag()) {
-            ret = "Primary";
-        } else if (latestValue.getSwitchOverStatus()) {
-            ret = "Alternate";
+        if (latestValue.getDualBusEnabled()) {        	
+        	if (latestValue.getPrimaryBusFlag()) {
+	            ret = "Primary";
+	        } else if (latestValue.getSwitchOverStatus()) {
+	            ret = "Alternate";
+	        }
         }
         
         return ret;
