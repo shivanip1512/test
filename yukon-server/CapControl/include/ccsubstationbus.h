@@ -39,6 +39,14 @@ using boost::shared_ptr;
 #include "ccmonitorpoint.h"
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
+//For Sorted Vector, the vector will use this to determine position in the vector.
+struct CtiFeeder_less
+{
+    bool operator()( const CtiCCFeeder* _X , const CtiCCFeeder *_Y)
+        { return ( _X->getDisplayOrder() < _Y->getDisplayOrder() ); }
+};
+//Typedef for Sanity using sorted vectors
+typedef codeproject::sorted_vector<CtiCCFeeder*,false,CtiFeeder_less> CtiFeeder_SVector;
 
 enum CtiCCMultiBusState
 {
@@ -317,6 +325,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastVoltPointTime(const CtiTime& lastpointupdate);
 
 
+    void reOrderFeederDisplayOrders();
     void figureAndSetTargetVarValue();
     DOUBLE getSetPoint();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);

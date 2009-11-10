@@ -7072,7 +7072,6 @@ void CtiCCExecutor::moveFeeder(INT permanentFlag, LONG oldSubBusId, LONG movedFe
             }
             CtiFeeder_vec& ccF = newSubBusPtr->getCCFeeders();
             ccF.insert( ccF.begin()+insertPoint, movedFeederPtr );
-
             store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &movedFeederId, &newSubBusId);
             for (int i = 0; i < movedFeederPtr->getCCCapBanks().size(); i++)
             {

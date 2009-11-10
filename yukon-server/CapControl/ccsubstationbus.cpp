@@ -2846,6 +2846,19 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMultiMonitorFlag(BOOL flag)
     return *this;
 }
 
+void CtiCCSubstationBus::reOrderFeederDisplayOrders()
+{
+    CtiFeeder_vec& feeders = getCCFeeders();
+    CtiFeeder_SVector orderedFdrs;
+    for (int i = 0; i < feeders.size(); i ++)
+    {
+        orderedFdrs.push_back((CtiCCFeeder*)feeders.at(i));
+    }
+    for (int i = 0; i < orderedFdrs.size(); i ++)
+    {
+        ((CtiCCFeeder*)orderedFdrs.at(i))->setDisplayOrder(i + 1);
+    }
+} 
 /*---------------------------------------------------------------------------
     figureEstimatedVarLoadPointValue
 
