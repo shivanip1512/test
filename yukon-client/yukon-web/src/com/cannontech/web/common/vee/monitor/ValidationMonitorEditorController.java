@@ -33,48 +33,42 @@ public class ValidationMonitorEditorController {
                        Double threshold, Boolean reread, Double slopeError, Double readingError, Double peakHeightMinimum, Boolean setQuestionable){
         if(validationMonitorId == null) validationMonitorId = -1;
         ValidationMonitor validationMonitor = null;
-        if( validationMonitorId > -1 ){
-            try {
+        try {
+            if( validationMonitorId > -1 ){
                 validationMonitor = validationMonitorDao.getById(validationMonitorId);
-                
-                /* Use entered values instead of existing values if present. */
-                /* When validation failed, they don't have to retype everything. */
-                if (name == null) {
-                    name = validationMonitor.getName();
-                }
-                if (deviceGroupName == null) {
-                    deviceGroupName = validationMonitor.getDeviceGroupName();
-                }
-                if (threshold == null) {
-                    threshold = validationMonitor.getReasonableMaxKwhPerDay();
-                }
-                if (reread == null) {
-                    reread = validationMonitor.isReReadOnUnreasonable();
-                }
-                if(slopeError == null){
-                    slopeError = validationMonitor.getKwhSlopeError();
-                }
-                if(readingError == null){
-                    readingError = validationMonitor.getKwhReadingError();
-                }
-                if(peakHeightMinimum == null){
-                    peakHeightMinimum = validationMonitor.getPeakHeightMinimum();
-                }
-                if(setQuestionable == null){
-                    setQuestionable = validationMonitor.isSetQuestionableOnPeak();
-                }
-            } catch (ValidationMonitorNotFoundException e ){
-                model.addAttribute("editError", e.getMessage());
-                return "redirect:edit";
+            } else {
+                validationMonitor = new ValidationMonitor();
             }
-        } else {
-            /* Creating new monitor, use some defaults. */
-            threshold = 150.0;
-            reread = false;
-            slopeError = 4.0;
-            readingError = 0.1;
-            peakHeightMinimum = 1.0;
-            setQuestionable = false;
+            
+            /* Use entered values instead of existing values if present. */
+            /* When validation failed, they don't have to retype everything. */
+            if (name == null) {
+                name = validationMonitor.getName();
+            }
+            if (deviceGroupName == null) {
+                deviceGroupName = validationMonitor.getDeviceGroupName();
+            }
+            if (threshold == null) {
+                threshold = validationMonitor.getReasonableMaxKwhPerDay();
+            }
+            if (reread == null) {
+                reread = validationMonitor.isReReadOnUnreasonable();
+            }
+            if(slopeError == null){
+                slopeError = validationMonitor.getKwhSlopeError();
+            }
+            if(readingError == null){
+                readingError = validationMonitor.getKwhReadingError();
+            }
+            if(peakHeightMinimum == null){
+                peakHeightMinimum = validationMonitor.getPeakHeightMinimum();
+            }
+            if(setQuestionable == null){
+                setQuestionable = validationMonitor.isSetQuestionableOnPeak();
+            }
+        } catch (ValidationMonitorNotFoundException e ){
+            model.addAttribute("editError", e.getMessage());
+            return "redirect:edit";
         }
             
         model.addAttribute("editError", editError);

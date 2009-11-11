@@ -10,10 +10,10 @@ import com.cannontech.amr.monitors.PointMonitor;
 
 public class ValidationMonitor implements PointMonitor {
     private Integer validationMonitorId;
-    private double reasonableMaxKwhPerDay = 250;
-    private double kwhReadingError = .1;
-    private double kwhSlopeError = 4;
-    private double peakHeightMinimum = 2;
+    private double reasonableMaxKwhPerDay = 150.0;
+    private double kwhReadingError = 0.1;
+    private double kwhSlopeError = 4.0;
+    private double peakHeightMinimum = 1.0;
     private boolean reReadOnUnreasonable = false;
     private boolean setQuestionableOnPeak = false;
     private String deviceGroupName;
