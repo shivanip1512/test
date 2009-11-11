@@ -330,8 +330,7 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
 
     RWDBConnection conn = getConnection();
 
-    RWDBStatus retStatus = selector.execute(conn).status();
-
+    RWDBStatus retStatus = conn.status();
     if(retStatus.errorCode() == RWDBStatus::ok)
     {
         RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
