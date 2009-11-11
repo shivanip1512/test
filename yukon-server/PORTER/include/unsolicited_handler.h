@@ -41,15 +41,12 @@ protected:
     {
         device_record(const CtiDeviceSPtr &device_, const long id_) :
             device(boost::static_pointer_cast<CtiDeviceSingle>(device_)),
-            id(id_),
-            dirty(false)
+            id(id_)
         {}
 
         const CtiDeviceSingleSPtr device;
 
         const long id;
-
-        bool dirty;
 
         struct device_work
         {
@@ -90,13 +87,13 @@ private:
     void haltLog ( void );
 
     void initializeDeviceRecords( void );
-    static device_record *createDeviceRecord(const CtiDeviceSPtr &device);
+    const device_record *insertDeviceRecord(const CtiDeviceSPtr &device);
 
-    bool addDeviceRecord   (long id);
-    bool updateDeviceRecord(long id);
-    bool deleteDeviceRecord(long id);
+    bool addDeviceRecord   (const long device_id);
+    bool updateDeviceRecord(const long device_id);
+    bool deleteDeviceRecord(const long device_id);
 
-    bool checkDbReloads( void );
+    bool handleDbReloads( void );
 
     bool getDeviceRequests( void );
 
@@ -126,7 +123,7 @@ private:
 
     typedef std::map< long, device_record * > device_record_map;
 
-    device_record_map _devices;
+    device_record_map _device_records;
 
     std::list< CtiMessage * > _traceList;
 
@@ -189,6 +186,9 @@ public:
 
     void sendMessageToClients(CtiMessage *msg);
 };
+
+//  define the instance for disp_thd to write to and all UnsolicitedHandler child classes to register with
+extern UnsolicitedMessenger UnsolicitedPortsQueue;
 
 }
 }

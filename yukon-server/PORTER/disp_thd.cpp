@@ -59,17 +59,14 @@
 #include "guard.h"
 #include "utility.h"
 
-#include "port_thread_udp.h"
+#include "unsolicited_handler.h"
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 CtiConnection VanGoghConnection;
 
-namespace Cti { namespace Porter {
-
-    extern UnsolicitedMessenger UnsolicitedPortsQueue;
-}
-}
+using namespace Cti;
+using namespace Porter;
 
 extern INT RefreshPorterRTDB(void *ptr = NULL);
 extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
@@ -89,10 +86,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     CtiTime         LastThreadMonitorTime;
     CtiThreadMonitor::State previous;
     CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
-    CtiMessage     *MsgPtr              = NULL;
-    UINT           changeCnt = 0;
     UCHAR          checkCount = 0;
-    CtiDBChangeMsg *pChg = NULL;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
 
     {
@@ -135,62 +129,31 @@ void DispatchMsgHandlerThread(VOID *Arg)
             }
 
 
-            MsgPtr = VanGoghConnection.ReadConnQue(2000L);
+            auto_ptr<CtiMessage> MsgPtr(VanGoghConnection.ReadConnQue(2000L));
 
-            TimeNow = TimeNow.now();
+            TimeNow = CtiTime::now();
 
-            if(MsgPtr != NULL)
+            auto_ptr<CtiDBChangeMsg> dbchg;
+
+            if(MsgPtr.get() != NULL)
             {
                 switch(MsgPtr->isA())
                 {
                 case MSG_DBCHANGE:
                     {
-                        changeCnt++;
+                        //  grab a copy of the message, since it'll be deleted at the end of the loop
+                        dbchg.reset(static_cast<CtiDBChangeMsg *>(MsgPtr->replicateMessage()));
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " Porter has received a " << ((CtiDBChangeMsg*)MsgPtr)->getCategory() << " DBCHANGE message from Dispatch." << endl;
+                            dout << TimeNow << " Porter has received a " << dbchg->getCategory() << " DBCHANGE message from Dispatch." << endl;
                         }
-
-                        const CtiDBChangeMsg *dbchg = (CtiDBChangeMsg *)MsgPtr;
-
-                        if( dbchg->getDatabase() == ChangePAODb )
-                        {
-                            CtiDeviceSPtr dev;
-
-                            if( dev = DeviceManager.getDeviceByID(dbchg->getId()) )
-                            {
-                                dev->setDirty(true);
-                            }
-
-                            //  the unsolicited threads need to reload each item individually, so we can't ever discard any
-                            Cti::Porter::UnsolicitedPortsQueue.sendMessageToClients(MsgPtr->replicateMessage());
-                        }
-
-                        if(pChg)
-                        {
-                            delete pChg;
-                            pChg = NULL;
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << TimeNow << "  Pending DBCHANGE message has been preempted." << endl;
-                            }
-                        }
-
-                        if(changeCnt < 2)           // If we have more than one change we must reload all items.
-                        {
-                            pChg = (CtiDBChangeMsg *)MsgPtr->replicateMessage();
-                        }
-
-                        RefreshTime = TimeNow;        // We will update two minutes after db changes cease!
-                        SetEvent(hPorterEvents[P_REFRESH_EVENT]);
 
                         break;
                     }
                 case MSG_COMMAND:
                     {
-                        CtiCommandMsg* Cmd = (CtiCommandMsg*)MsgPtr;
+                        CtiCommandMsg* Cmd = (CtiCommandMsg*)MsgPtr.get();
 
                         switch(Cmd->getOperation())
                         {
@@ -262,16 +225,15 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         break;
                     }
                 }
-
-                delete MsgPtr;
             }
 
-            if(TimeNow > RefreshTime || ( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_REFRESH_EVENT], 0L) ))
+            if(TimeNow > RefreshTime || dbchg.get())
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " DispatchMsgHandlerThd beginning a database reload";
-                    if(pChg)
+
+                    if(dbchg.get())
                     {
                         dout << " - DBChange message." << endl;
                     }
@@ -280,12 +242,13 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         dout << " - No DBChange message." << endl;
                     }
                 }
-                ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
-                RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
-                RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
-                changeCnt = 0;
-                pChg = NULL;
+                RefreshPorterRTDB((void*)dbchg->replicateMessage());
+
+                //  RTDB has been updated, tell the unsolicited ports
+                UnsolicitedPortsQueue.sendMessageToClients(dbchg->replicateMessage());
+
+                RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

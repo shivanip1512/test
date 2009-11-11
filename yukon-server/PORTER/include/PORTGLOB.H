@@ -39,10 +39,9 @@
 #define P_SCANNER_EVENT                2
 #define P_PERFORM_EVENT                3
 #define P_QUIT_EVENT                   4
-#define P_REFRESH_EVENT                5
-#define P_GWRESULT_EVENT               6
+#define P_GWRESULT_EVENT               5
 
-#define NUMPORTEREVENTS                7
+#define NUMPORTEREVENTS                6
 
 extern IM_EX_PORTGLOB INT           PorterRefreshRate;
 

@@ -38,7 +38,7 @@ UnsolicitedHandler::UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &devi
 UnsolicitedHandler::~UnsolicitedHandler()
 {
     //  delete the device records
-    delete_assoc_container(_devices);
+    delete_assoc_container(_device_records);
 }
 
 
@@ -98,7 +98,7 @@ void UnsolicitedHandler::run( void )
         {
             try
             {
-                active  = checkDbReloads();
+                active  = handleDbReloads();
 
                 active |= manageConnections();
 
@@ -154,12 +154,10 @@ void UnsolicitedHandler::initializeDeviceRecords( void )
     {
         if( device )
         {
-            device_record *dr = createDeviceRecord(device);
+            const device_record *dr = insertDeviceRecord(device);
 
             if( dr )
             {
-                _devices[dr->id] = dr;
-
                 device_ids.insert(dr->id);
             }
         }
@@ -169,24 +167,27 @@ void UnsolicitedHandler::initializeDeviceRecords( void )
 }
 
 
-UnsolicitedHandler::device_record *UnsolicitedHandler::createDeviceRecord(const CtiDeviceSPtr &device)
+const UnsolicitedHandler::device_record *UnsolicitedHandler::insertDeviceRecord(const CtiDeviceSPtr &device)
 {
-    if( !device )  return 0;
+    if( !device )
+    {
+        return 0;
+    }
 
     device_record *dr = CTIDBG_new device_record(device, device->getID());
 
-    dr->dirty = device->isDirty();
+    _device_records[dr->id] = dr;
 
     return dr;
 }
 
 
-bool UnsolicitedHandler::checkDbReloads( void )
+bool UnsolicitedHandler::handleDbReloads( void )
 {
     bool anythingForUs = false;
 
     //  limit the number we pull off each time through to make sure
-    //    we don't get stuck in an producer/consumer loop
+    //    we don't get stuck in a producer/consumer loop
     unsigned max_entries = _message_queue.entries();
 
     while( max_entries-- && _message_queue.entries() )
@@ -218,11 +219,11 @@ bool UnsolicitedHandler::checkDbReloads( void )
 }
 
 
-bool UnsolicitedHandler::deleteDeviceRecord(long id)
+bool UnsolicitedHandler::deleteDeviceRecord(const long device_id)
 {
-    device_record *dr = getDeviceRecordById(id);
+    device_record *dr = getDeviceRecordById(device_id);
 
-    _devices.erase(id);
+    _device_records.erase(device_id);
 
     if( dr )
     {
@@ -235,26 +236,34 @@ bool UnsolicitedHandler::deleteDeviceRecord(long id)
 }
 
 
-bool UnsolicitedHandler::addDeviceRecord(long id)
+bool UnsolicitedHandler::addDeviceRecord(const long device_id)
 {
-    //  insert a placeholder - we'll try to load it later
-    _devices[id] = 0;
+    CtiDeviceSPtr device = _deviceManager.getDeviceByID(device_id);
+
+    if( device && device->getPortID() == _port->getPortID() )
+    {
+        const device_record *dr = insertDeviceRecord(device);
+
+        if( dr && dr->device )
+        {
+            addDeviceProperties(*dr->device);
+        }
+    }
 
     return true;
 }
 
 
-bool UnsolicitedHandler::updateDeviceRecord(long id)
+bool UnsolicitedHandler::updateDeviceRecord(const long device_id)
 {
-    device_record *dr = getDeviceRecordById(id);
+    device_record *dr = getDeviceRecordById(device_id);
 
     if( !dr )
     {
         return false;
     }
 
-    //  mark it for closer inspection later - we have to wait for the main DB thread to reload the device first
-    dr->dirty = true;
+    updateDeviceProperties(*dr->device);
 
     return true;
 }
@@ -292,30 +301,7 @@ bool UnsolicitedHandler::getDeviceRequests(void)
 
                 //  return an error - this deletes the OM
                 INMESS im;
-                ReturnResultMessage(ErrorDeviceIPUnknown, &im, om);
-            }
-            else if( dr->dirty )
-            {
-                if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - waiting for device reload for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                VanGoghConnection.WriteConnQue(CTIDBG_new CtiReturnMsg(dr->device->getID(),
-                                                                       om->Request.CommandStr,
-                                                                       "Waiting for device reload for device \"" + dr->device->getName() + "\"",
-                                                                       NOTNORMAL,
-                                                                       om->Request.RouteID,
-                                                                       om->Request.MacroOffset,
-                                                                       om->Request.Attempt,
-                                                                       om->Request.GrpMsgID,
-                                                                       om->Request.UserID,
-                                                                       om->Request.SOE,
-                                                                       CtiMultiMsg_vec()));
-
-                delete om;
-                om = 0;
+                ReturnResultMessage(IDNF, &im, om);
             }
             else
             {
@@ -341,7 +327,7 @@ bool UnsolicitedHandler::generateKeepalives(om_queue &local_queue)
     const CtiTime TimeNow;
 
     //  check all of our devices to see if we need to issue a keepalive
-    for each( const pair<long, device_record *> &dr_pair in _devices )
+    for each( const pair<long, device_record *> &dr_pair in _device_records )
     {
         device_record *dr = dr_pair.second;
 
@@ -427,7 +413,7 @@ bool UnsolicitedHandler::generateOutbounds( void )
 {
     bool areDevicesActive = false;
 
-    for each( const pair<long, device_record *> &dr_pair in _devices )
+    for each( const pair<long, device_record *> &dr_pair in _device_records )
     {
         device_record *dr = dr_pair.second;
 
@@ -666,48 +652,14 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_queue &local_queue)
 
 UnsolicitedHandler::device_record *UnsolicitedHandler::getDeviceRecordById( long device_id )
 {
-    device_record *retval = 0;
+    device_record_map::iterator itr = _device_records.find(device_id);
 
-    device_record_map::iterator itr = _devices.find(device_id);
-
-    if( itr != _devices.end() )
+    if( itr == _device_records.end() )
     {
-        device_record *&dr = itr->second;
-
-        //  it's a placeholder - try to load it from the device manager
-        if( !dr )
-        {
-            CtiDeviceSPtr device = _deviceManager.getDeviceByID(device_id);
-
-            dr = createDeviceRecord(device);
-
-            if( dr && dr->device )
-            {
-                addDeviceProperties(*dr->device);
-            }
-        }
-
-        if( dr )
-        {
-            retval = validateDeviceRecord(dr);
-        }
+        return 0;
     }
 
-    return retval;
-}
-
-
-UnsolicitedHandler::device_record *UnsolicitedHandler::validateDeviceRecord( device_record *dr )
-{
-    //  should we reload the device?
-    if( dr && dr->device && dr->dirty && !dr->device->isDirty() )
-    {
-        updateDeviceProperties(*dr->device);
-
-        dr->dirty = false;  //  the RTDB copy isn't dirty any more - reset our dirty flag
-    }
-
-    return dr;
+    return itr->second;
 }
 
 
@@ -742,7 +694,7 @@ bool UnsolicitedHandler::processInbounds( void )
 {
     bool devicesActive = false;
 
-    for each( const pair<long, device_record *> &dr_pair in _devices )
+    for each( const pair<long, device_record *> &dr_pair in _device_records )
     {
         device_record *dr = dr_pair.second;
 
@@ -1005,7 +957,7 @@ bool UnsolicitedHandler::sendResults( void )
 {
     bool resultsSent = false;
 
-    for each( const pair<long, device_record *> &dr_pair in _devices )
+    for each( const pair<long, device_record *> &dr_pair in _device_records )
     {
         device_record *dr = dr_pair.second;
 
