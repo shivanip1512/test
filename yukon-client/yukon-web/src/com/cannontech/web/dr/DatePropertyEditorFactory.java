@@ -5,6 +5,7 @@ import java.beans.PropertyEditorSupport;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.service.DateFormattingService;
@@ -70,6 +71,34 @@ public class DatePropertyEditorFactory {
         }
     }
 
+    private class LocalTimePropertyEditor extends PropertyEditorSupport {
+        private DateFormatEnum timeFormat;
+        private YukonUserContext userContext;
+
+        private LocalTimePropertyEditor(DateFormatEnum timeFormat,
+                YukonUserContext userContext) {
+            this.timeFormat = timeFormat;
+            this.userContext = userContext;
+        }
+
+        @Override
+        public void setAsText(String localTimeStr) throws IllegalArgumentException {
+            try {
+                setValue(dateFormattingService.parseLocalTime(localTimeStr,
+                                                              userContext));
+            } catch (ParseException exception) {
+                throw new IllegalArgumentException("Could not parse date", exception);
+            }
+        }
+
+        @Override
+        public String getAsText() {
+            LocalTime localTime = (LocalTime) getValue();
+            return localTime == null
+                ? "" : dateFormattingService.format(localTime, timeFormat, userContext);
+        }
+    }
+
     public PropertyEditor getPropertyEditor(DateFormattingService.DateOnlyMode dateOnlyMode,
             YukonUserContext userContext) {
         return new DatePropertyEditor(dateOnlyMode, userContext);
@@ -78,6 +107,11 @@ public class DatePropertyEditorFactory {
     public PropertyEditor getPropertyEditor(DateFormatEnum dateFormat,
             YukonUserContext userContext) {
         return new DateTimePropertyEditor(dateFormat, userContext);
+    }
+
+    public PropertyEditor getLocalTimePropertyEditor(DateFormatEnum dateFormat,
+            YukonUserContext userContext) {
+        return new LocalTimePropertyEditor(dateFormat, userContext);
     }
 
     @Autowired

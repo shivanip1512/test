@@ -68,20 +68,20 @@ singleProgramChecked = function(boxChecked) {
 }
 
 gearChanged = function() {
-	var adjustButtonShown = false;
+    var adjustButtonShown = false;
 
-	for (index = 0; index < ${fn:length(programs)}; index++) {
-		var gearNum = $('programStartInfo'+index+'.gearNumber').value;
-		var programChecked = $('startProgramCheckbox'+index).checked;
-		if (targetPrograms[index][gearNum] && 
-			programChecked) {
-			adjustButtonShown = true;
-			break;
-		}
-	}
+    for (index = 0; index < ${fn:length(programs)}; index++) {
+        var gearNum = $('programStartInfo'+index+'.gearNumber').value;
+        var programChecked = $('startProgramCheckbox'+index).checked;
+        if (targetPrograms[index][gearNum] &&
+            programChecked) {
+            adjustButtonShown = true;
+            break;
+        }
+    }
 
-	if (adjustButtonShown) {
-		$('addAdjustmentsArea').show();
+    if (adjustButtonShown) {
+        $('addAdjustmentsArea').show();
     } else {
         $('addAdjustmentsArea').hide();
         $('addAdjustmentsCheckbox').checked = false;
@@ -103,7 +103,7 @@ gearChanged = function() {
 </h1>
 
 <form:form id="startMultipleProgramsForm" commandName="backingBean" onsubmit="return submitForm();">
-	<form:hidden path="controlAreaId"/>
+    <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
     <table class="compactResultsTable">
@@ -151,6 +151,10 @@ gearChanged = function() {
             <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startProgramName"/></th>
             <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.gear"/></th>
             <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.currentState"/></th>
+            <c:if test="${!empty scenarioPrograms}">
+                <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startOffset"/></th>
+                <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.stopOffset"/></th>
+            </c:if>
         </tr>
         <c:forEach var="program" varStatus="status" items="${programs}">
             <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
@@ -167,6 +171,11 @@ gearChanged = function() {
                     </c:forEach>
                 </form:select></td>
                 <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                <c:if test="${!empty scenarioPrograms}">
+                    <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
+                    <td><cti:formatDate type="TIME24H" value="${scenarioProgram.startOffset}"/></td>
+                    <td><cti:formatDate type="TIME24H" value="${scenarioProgram.stopOffset}"/></td>
+                </c:if>
             </tr>
         </c:forEach>
     </table>
@@ -174,11 +183,17 @@ gearChanged = function() {
     </tags:abstractContainer>
     <br>
 
+    <input type="checkbox" id="allProgramsCheckbox" onclick="allProgramsChecked()"/>
+    <script type="text/javascript">updateAllProgramsChecked();</script>
+    <label for="allProgramsCheckbox">
+        <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startAllPrograms"/>
+    </label><br>
+
     <c:set var="addAdjustmentAreaStyle" value="none"/>
     <c:if test="${!empty gears && gears[0].targetCycle}">
         <c:set var="addAdjustmentAreaStyle" value="block"/>
     </c:if>
-	<div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
+    <div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
         <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
             onclick="updateSubmitButtons();"/>
         <label for="addAdjustmentsCheckbox">
@@ -186,11 +201,6 @@ gearChanged = function() {
         </label><br>
     </div>
 
-    <input type="checkbox" id="allProgramsCheckbox" onclick="allProgramsChecked()"/>
-    <script type="text/javascript">updateAllProgramsChecked();</script>
-    <label for="allProgramsCheckbox">
-        <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startAllPrograms"/>
-    </label><br>
     <c:if test="${autoObserveConstraintsAllowed}">
         <c:if test="${checkConstraintsAllowed}">
             <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints"

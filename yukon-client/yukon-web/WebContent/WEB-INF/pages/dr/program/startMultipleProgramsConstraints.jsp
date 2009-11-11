@@ -1,8 +1,10 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <script type="text/javascript">
 overrideAllChecked = function() {
@@ -41,13 +43,14 @@ singleOverrideChecked = function(boxChecked) {
     <form:hidden path="stopDate"/>
     <form:hidden path="autoObserveConstraints"/>
     <form:hidden path="addAdjustments"/>
-    <form:hidden path="numAdjustments"/>
-    <c:if test="${backingBean.numAdjustments > 0}">
-        <c:forEach var="index" begin="0" end="${backingBean.numAdjustments - 1}">
-            <form:hidden path="gearAdjustments[${index}]"/>
+    <c:if test="${backingBean.addAdjustments}">
+        <c:forEach var="index" begin="0" end="${fn:length(backingBean.gearAdjustments) - 1}">
+            <form:hidden path="gearAdjustments[${index}].beginTime"/>
+            <form:hidden path="gearAdjustments[${index}].endTime"/>
+            <form:hidden path="gearAdjustments[${index}].adjustmentValue"/>
         </c:forEach>
     </c:if>
-    
+
     <h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea"
@@ -59,28 +62,7 @@ singleOverrideChecked = function(boxChecked) {
     </c:if>
     </h1>
 
-<!-- TODO:  combine with similar code from startProgramConstraints.jsp -->
-    <p>
-    <c:if test="${backingBean.startNow}">
-        <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startingNow"/>
-    </c:if>
-    <c:if test="${!backingBean.startNow}">
-        <cti:formatDate var="formattedStartDate" type="BOTH" value="${backingBean.startDate}"/>
-        <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startingAt"
-            argument="${formattedStartDate}"/>
-    </c:if>
-    </p>
-
-    <p>
-    <c:if test="${backingBean.scheduleStop}">
-        <cti:formatDate var="formattedStopDate" type="BOTH" value="${backingBean.stopDate}"/>
-        <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.stoppingAt"
-            argument="${formattedStopDate}"/>
-    </c:if>
-    <c:if test="${!backingBean.scheduleStop}">
-        <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.stopNotScheduled"/>
-    </c:if>
-    </p><br>
+    <dr:programStartInfo page="startMultiplePrograms"/>
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.startMultiplePrograms.programs"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
@@ -158,6 +140,9 @@ singleOverrideChecked = function(boxChecked) {
 
     <div class="actionArea">
         <cti:url var="backUrl" value="/spring/dr/program/startMultipleProgramsDetails"/>
+        <c:if test="${backingBean.addAdjustments}">
+            <cti:url var="backUrl" value="/spring/dr/program/startMultipleProgramsGearAdjustments"/>
+        </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.backButton"/>"
             onclick="submitFormViaAjax('drDialog', 'startMultipleProgramsForm', '${backUrl}')"/>
         <c:if test="${!constraintsViolated || overrideAllowed}">

@@ -10,10 +10,17 @@ import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
+import org.joda.time.ReadableDuration;
 import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePartial;
+import org.joda.time.ReadablePeriod;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.service.DateFormattingService;
@@ -61,11 +68,21 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         		DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
         		return formatter.print(partial);
         		
-        	} else if (object instanceof ReadableInstant) {
-        		ReadableInstant instant = (ReadableInstant) object;
-        		
-        		DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
-        		return formatter.print(instant);
+            } else if (object instanceof ReadableInstant) {
+                ReadableInstant instant = (ReadableInstant) object;
+
+                DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
+                return formatter.print(instant);
+            } else if (object instanceof ReadablePeriod) {
+                ReadablePeriod period = (ReadablePeriod) object;
+
+                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
+                return formatter.print(period);
+            } else if (object instanceof ReadableDuration) {
+                ReadablePeriod period = new Period(object, PeriodType.time());
+
+                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
+                return formatter.print(period);
         	} else {
         		throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.formatDate()");
         	}
@@ -91,10 +108,26 @@ public class DateFormattingServiceImpl implements DateFormattingService {
     	String format = 
     		messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(type.getFormatKey());
     	DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
-    	DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(userContext.getTimeZone());
+    	DateTimeZone dateTimeZone = userContext.getJodaTimeZone();
     	formatter.withZone(dateTimeZone);
         
         return formatter;
+    }
+
+    @Override
+    public PeriodFormatter getPeriodFormatter(DateFormatEnum type,
+            YukonUserContext userContext) {
+
+        // Currently Joda doesn't support formatting configurable with a string
+        // for periods so for now, we only support "h:mm" for periods and
+        // durations.
+        PeriodFormatterBuilder formatBuilder = new PeriodFormatterBuilder();
+        formatBuilder.printZeroAlways()
+                     .appendHours()
+                     .appendSuffix(":")
+                     .minimumPrintedDigits(2)
+                     .appendMinutes();
+        return formatBuilder.toFormatter();
     }
 
     public synchronized Date flexibleDateParser(String dateStr,
@@ -117,6 +150,16 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
         FlexibleDateParser flexibleDateParser = dateParserLookup.get(parserName);
         Date result = flexibleDateParser.parseDate(dateStr, mode, userContext.getLocale(), systemDateFormattingService.getSystemTimeZone());
+        return result;
+    }
+
+    public LocalTime parseLocalTime(String localTimeStr,
+            YukonUserContext userContext) throws ParseException {
+        String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
+        FlexibleDateParser flexibleDateParser = dateParserLookup.get(parserName);
+        LocalTime result = flexibleDateParser.parseTimeAsLocalTime(localTimeStr,
+                                                                   userContext.getLocale(),
+                                                                   userContext.getTimeZone());
         return result;
     }
     

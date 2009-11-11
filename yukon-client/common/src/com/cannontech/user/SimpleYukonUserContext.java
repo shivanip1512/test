@@ -3,6 +3,7 @@ package com.cannontech.user;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.joda.time.DateTimeZone;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -11,6 +12,7 @@ public class SimpleYukonUserContext implements YukonUserContext {
     private Locale locale;
     private LiteYukonUser yukonUser;
     private TimeZone timeZone;
+    private DateTimeZone jodaTimeZone;
     private String themeName;
     public String getThemeName() {
         return themeName;
@@ -33,13 +35,17 @@ public class SimpleYukonUserContext implements YukonUserContext {
     public TimeZone getTimeZone() {
         return timeZone;
     }
+    public DateTimeZone getJodaTimeZone() {
+        return jodaTimeZone;
+    }
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
+        this.jodaTimeZone = DateTimeZone.forTimeZone(timeZone);
     }
     public SimpleYukonUserContext(LiteYukonUser yukonUser, Locale locale, TimeZone timeZone, String themeName) {
         this.yukonUser = yukonUser;
         this.locale = locale;
-        this.timeZone = timeZone;
+        setTimeZone(timeZone);
         this.themeName = themeName;
     }
     public SimpleYukonUserContext() {

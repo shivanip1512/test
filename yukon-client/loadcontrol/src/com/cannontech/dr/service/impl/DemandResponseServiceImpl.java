@@ -12,8 +12,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
     private SystemDateFormattingService systemDateFormattingService;
 
     @Override
-    public int getTimeSlotsForTargetCycle(Date stopTime, Date startTime,
-            Integer period) {
+    public int getTimeSlotsForTargetCycle(Date stopTime, Date startTime) {
         Calendar stopCal = systemDateFormattingService.getSystemCalendar();
         stopCal.setTime(stopTime);
         stopCal.set(Calendar.MINUTE, 0);
@@ -31,7 +30,6 @@ public class DemandResponseServiceImpl implements DemandResponseService {
         // see if we roll over on the last hour
         Calendar tempCal = systemDateFormattingService.getSystemCalendar();
         tempCal.setTime(stopTime);
-        tempCal.add(Calendar.SECOND, period);
         int newHr = tempCal.get(Calendar.HOUR_OF_DAY);
         if (newHr > stopCal.get(Calendar.HOUR_OF_DAY)) {
             timeSlots++;

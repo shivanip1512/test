@@ -280,11 +280,11 @@
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
-                                <a id="enableLink_${programId}" href="javascript:void(0)" class="simpleLink"
-                                    onclick="openSimpleDialog('drDialog', '${sendEnableUrl}', '<cti:msg key="yukon.web.modules.dr.program.sendEnableConfirm.title"/>')">
-                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.enableIcon"/>
-                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.enable"/>
-                                </a>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
+                                                       dialogId="drDialog" 
+                                                       actionUrl="${sendEnableUrl}" 
+                                                       logoKey="yukon.web.modules.dr.programDetail.actions.enableIcon"
+                                                       labelKey="yukon.web.modules.dr.programDetail.actions.enable"/>
                                 <br>
                             </tags:dynamicChooseOption>
                         </tags:dynamicChoose>

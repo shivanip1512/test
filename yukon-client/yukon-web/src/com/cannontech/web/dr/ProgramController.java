@@ -2,18 +2,13 @@ package com.cannontech.web.dr;
 
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.list.LazyList;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -29,6 +24,7 @@ import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -39,10 +35,11 @@ import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
+import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
-import com.cannontech.dr.service.DemandResponseService;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -64,324 +61,6 @@ public class ProgramController {
     private RolePropertyDao rolePropertyDao;
     private DemandResponseEventLogService demandResponseEventLogService;
     private FavoritesDao favoritesDao;
-    private DemandResponseService drService;
-
-    public static class GearAdjustmentTimeSlot {
-        private Date startTime;
-        private Date endTime;
-        private GearAdjustmentTimeSlot(Date startTime) {
-            this.startTime = startTime;
-        }
-
-        public Date getStartTime() {
-            return startTime;
-        }
-
-        public Date getEndTime() {
-            return endTime;
-        }
-    }
-
-    public abstract static class StartProgramBackingBeanBase {
-        private boolean startNow;
-        private Date startDate;
-        private boolean scheduleStop;
-        private Date stopDate;
-        private boolean autoObserveConstraints;
-
-        // only used for target cycle gears
-        private boolean addAdjustments;
-        private int numAdjustments;
-        private List<Integer> gearAdjustments = new ArrayList<Integer>();
-
-        public boolean isStartNow() {
-            return startNow;
-        }
-
-        public void setStartNow(boolean startNow) {
-            this.startNow = startNow;
-        }
-
-        public Date getStartDate() {
-            return startDate;
-        }
-
-        public void setStartDate(Date startDate) {
-            this.startDate = startDate;
-        }
-
-        public boolean isScheduleStop() {
-            return scheduleStop;
-        }
-
-        public void setScheduleStop(boolean scheduleStop) {
-            this.scheduleStop = scheduleStop;
-        }
-
-        public Date getStopDate() {
-            return stopDate;
-        }
-
-        public void setStopDate(Date stopDate) {
-            this.stopDate = stopDate;
-        }
-
-        public boolean isAutoObserveConstraints() {
-            return autoObserveConstraints;
-        }
-
-        public void setAutoObserveConstraints(boolean autoObserveConstraints) {
-            this.autoObserveConstraints = autoObserveConstraints;
-        }
-        
-        
-        public boolean isAddAdjustments() {
-            return addAdjustments;
-        }
-
-        public void setAddAdjustments(boolean addAdjustments) {
-            this.addAdjustments = addAdjustments;
-        }
-
-        public int getNumAdjustments() {
-            return numAdjustments;
-        }
-
-        public void setNumAdjustments(int numAdjustments) {
-            this.numAdjustments = numAdjustments;
-        }
-
-        public List<Integer> getGearAdjustments() {
-            return gearAdjustments;
-        }
-
-        public void setGearAdjustments(List<Integer> gearAdjustments) {
-            this.gearAdjustments = gearAdjustments;
-        }
-    }
-
-    public static class StartProgramBackingBean extends StartProgramBackingBeanBase {
-        private int programId;
-        private int gearNumber;
-        
-        public int getProgramId() {
-            return programId;
-        }
-
-        public void setProgramId(int programId) {
-            this.programId = programId;
-        }
-
-        public int getGearNumber() {
-            return gearNumber;
-        }
-
-        public void setGearNumber(int gearNumber) {
-            this.gearNumber = gearNumber;
-        }
-    }
-
-    public static class ProgramStartInfo {
-        private int programId;
-        private int gearNumber;
-        private boolean startProgram;
-        private boolean overrideConstraints;
-
-        public ProgramStartInfo() {
-        }
-
-        public ProgramStartInfo(int programId, int gearNumber,
-                boolean startProgram) {
-            this.programId = programId;
-            this.gearNumber = gearNumber;
-            this.startProgram = startProgram;
-        }
-
-        public int getProgramId() {
-            return programId;
-        }
-
-        public void setProgramId(int programId) {
-            this.programId = programId;
-        }
-
-        public int getGearNumber() {
-            return gearNumber;
-        }
-
-        public void setGearNumber(int gearNumber) {
-            this.gearNumber = gearNumber;
-        }
-
-        public boolean isStartProgram() {
-            return startProgram;
-        }
-
-        public void setStartProgram(boolean startProgram) {
-            this.startProgram = startProgram;
-        }
-
-        public boolean isOverrideConstraints() {
-            return overrideConstraints;
-        }
-
-        public void setOverrideConstraints(boolean overrideConstraints) {
-            this.overrideConstraints = overrideConstraints;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static class StartMultipleProgramsBackingBean extends StartProgramBackingBeanBase {
-        private Integer controlAreaId;
-        private Integer scenarioId;
-        private List<ProgramStartInfo> programStartInfo =
-            LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ProgramStartInfo.class));
-
-        public Integer getControlAreaId() {
-            return controlAreaId;
-        }
-
-        public void setControlAreaId(Integer controlAreaId) {
-            this.controlAreaId = controlAreaId;
-        }
-
-        public Integer getScenarioId() {
-            return scenarioId;
-        }
-
-        public void setScenarioId(Integer scenarioId) {
-            this.scenarioId = scenarioId;
-        }
-
-        public List<ProgramStartInfo> getProgramStartInfo() {
-            return programStartInfo;
-        }
-
-        public void setProgramStartInfo(List<ProgramStartInfo> programStartInfo) {
-            this.programStartInfo = programStartInfo;
-        }
-    }
-
-    public static class StopProgramBackingBeanBase {
-        private boolean stopNow;
-        private Date stopDate;
-
-        public boolean isStopNow() {
-            return stopNow;
-        }
-
-        public void setStopNow(boolean stopNow) {
-            this.stopNow = stopNow;
-        }
-
-        public Date getStopDate() {
-            return stopDate;
-        }
-
-        public void setStopDate(Date stopDate) {
-            this.stopDate = stopDate;
-        }
-    }
-
-    public static class StopProgramBackingBean extends StopProgramBackingBeanBase {
-        private int programId;
-        private boolean useStopGear;
-        private int gearNumber;
-
-        public int getProgramId() {
-            return programId;
-        }
-
-        public void setProgramId(int programId) {
-            this.programId = programId;
-        }
-
-        public boolean isUseStopGear() {
-            return useStopGear;
-        }
-
-        public void setUseStopGear(boolean useStopGear) {
-            this.useStopGear = useStopGear;
-        }
-
-        public int getGearNumber() {
-            return gearNumber;
-        }
-
-        public void setGearNumber(int gearNumber) {
-            this.gearNumber = gearNumber;
-        }
-    }
-
-    public static class ProgramStopInfo {
-        private int programId;
-        private boolean stopProgram;
-        private boolean overrideConstraints;
-
-        public ProgramStopInfo() {
-        }
-
-        public ProgramStopInfo(int programId, boolean stopProgram) {
-            this.programId = programId;
-            this.stopProgram = stopProgram;
-        }
-
-        public int getProgramId() {
-            return programId;
-        }
-
-        public void setProgramId(int programId) {
-            this.programId = programId;
-        }
-
-        public boolean isStopProgram() {
-            return stopProgram;
-        }
-
-        public void setStopProgram(boolean stopProgram) {
-            this.stopProgram = stopProgram;
-        }
-
-        public boolean isOverrideConstraints() {
-            return overrideConstraints;
-        }
-
-        public void setOverrideConstraints(boolean overrideConstraints) {
-            this.overrideConstraints = overrideConstraints;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static class StopMultipleProgramsBackingBean extends StopProgramBackingBeanBase {
-        private Integer controlAreaId;
-        private Integer scenarioId;
-        private List<ProgramStopInfo> programStopInfo =
-            LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ProgramStopInfo.class));
-
-        public Integer getControlAreaId() {
-            return controlAreaId;
-        }
-
-        public void setControlAreaId(Integer controlAreaId) {
-            this.controlAreaId = controlAreaId;
-        }
-
-        public Integer getScenarioId() {
-            return scenarioId;
-        }
-
-        public void setScenarioId(Integer scenarioId) {
-            this.scenarioId = scenarioId;
-        }
-
-        public List<ProgramStopInfo> getProgramStopInfo() {
-            return programStopInfo;
-        }
-
-        public void setProgramStopInfo(List<ProgramStopInfo> programStopInfo) {
-            this.programStopInfo = programStopInfo;
-        }
-    }
 
     @RequestMapping
     public String list(ModelMap modelMap, YukonUserContext userContext,
@@ -438,11 +117,7 @@ public class ProgramController {
                                                      Permission.CONTROL_COMMAND);
 
         // TODO:  need to not do this if they came via the "back" button...
-        backingBean.setGearNumber(1);
-        backingBean.setStartNow(true);
-        backingBean.setStartDate(new Date());
-        backingBean.setScheduleStop(true);
-        backingBean.setStopDate(new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusHours(4).toDate());
+        backingBean.initDefaults(userContext);
 
         modelMap.addAttribute("program", program);
 
@@ -478,24 +153,13 @@ public class ProgramController {
 
         // TODO:  when coming at this page from "back", don't reinitialize adjustments
         modelMap.addAttribute("gear", gear);
-        Calendar timeSlotStartCal = Calendar.getInstance(userContext.getLocale());
-        timeSlotStartCal.setTime(backingBean.getStartDate());
-        timeSlotStartCal.set(Calendar.MINUTE, 0);
-        timeSlotStartCal.set(Calendar.SECOND, 0);
-        timeSlotStartCal.set(Calendar.MILLISECOND, 0);
-        int numTimeSlots = drService.getTimeSlotsForTargetCycle(backingBean.getStopDate(),
-                                                                backingBean.getStartDate(),
-                                                                gear.getMethodPeriod());
-        backingBean.setNumAdjustments(numTimeSlots);
-        backingBean.getGearAdjustments().clear();
-        GearAdjustmentTimeSlot[] timeSlots = new GearAdjustmentTimeSlot[numTimeSlots];
-        for (int index = 0; index < numTimeSlots; index++) {
-            backingBean.getGearAdjustments().add(100);
-            timeSlots[index] = new GearAdjustmentTimeSlot(timeSlotStartCal.getTime());
-            timeSlotStartCal.add(Calendar.HOUR_OF_DAY, 1);
-            timeSlots[index].endTime = timeSlotStartCal.getTime();
-        }
-        modelMap.addAttribute("timeSlots", timeSlots);
+        List<GearAdjustment> gearAdjustments =
+            programService.getDefaultAdjustmentForProgram(backingBean.getStartDate(),
+                                                          backingBean.getActualStopDate(),
+                                                          backingBean.getProgramId(),
+                                                          userContext);
+        backingBean.setGearAdjustments(gearAdjustments);
+
         return "dr/program/startProgramGearAdjustments.jsp";
     }
 
@@ -510,20 +174,6 @@ public class ProgramController {
                                                      program, 
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
-
-        // With start and stop, it's important that we get the values
-        // squared away up front and don't change them after checking
-        // constraints so when we actually schedule the program, we are
-        // scheduling exactly what we checked for constraints.
-        // We keep the "startNow" and "scheduleStop" booleans around so we
-        // always know if the user chose those options.
-        if (backingBean.isStartNow()) {
-            backingBean.setStartDate(new Date());
-        }
-        if (!backingBean.isScheduleStop()) {
-            backingBean.setStopDate(
-                new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusYears(1).toDate());
-        }
 
         // TODO:  validate
 
@@ -548,18 +198,16 @@ public class ProgramController {
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
         modelMap.addAttribute("overrideAllowed", overrideAllowed);
 
-        String additionalInfo = null;
-        if (backingBean.getNumAdjustments() > 0) {
-            additionalInfo = "adjustments " +
-                    StringUtils.join(backingBean.getGearAdjustments(), ' ');
+        List<GearAdjustment> gearAdjustments = null;
+        if (backingBean.isAddAdjustments()) {
+            gearAdjustments = backingBean.getGearAdjustments();
         }
-        
         ConstraintViolations violations =
             programService.getConstraintViolationForStartProgram(backingBean.getProgramId(),
                                                                  backingBean.getGearNumber(),
-                                                                 backingBean.getStartDate(),
-                                                                 backingBean.getStopDate(),
-                                                                 additionalInfo);
+                                                                 backingBean.getStartDate(), null,
+                                                                 backingBean.getActualStopDate(), null,
+                                                                 gearAdjustments);
         modelMap.addAttribute("violations", violations);
 
         return "dr/program/startProgramConstraints.jsp";
@@ -582,27 +230,22 @@ public class ProgramController {
 
         assertOverrideAllowed(userContext, overrideConstraints);
 
-        String additionalInfo = null;
-        if (backingBean.getNumAdjustments() > 0) {
-            additionalInfo = "adjustments " +
-            		StringUtils.join(backingBean.getGearAdjustments(), ' ');
+        List<GearAdjustment> gearAdjustments = null;
+        if (backingBean.isAddAdjustments()) {
+            gearAdjustments = backingBean.getGearAdjustments();
         }
         int gearNumber = backingBean.getGearNumber();
         Date startDate = backingBean.getStartDate();
         boolean scheduleStop = backingBean.isScheduleStop();
-        Date stopDate = backingBean.getStopDate();
-        programService.startProgram(programId,
-                                    gearNumber,
-                                    startDate,
-                                    scheduleStop,
-                                    stopDate,
+        programService.startProgram(programId, gearNumber, startDate, null,
+                                    scheduleStop, backingBean.getActualStopDate(), null,
                                     overrideConstraints != null && overrideConstraints,
-                                    additionalInfo);
+                                    gearAdjustments);
 
         demandResponseEventLogService.threeTierProgramScheduled(userContext.getYukonUser(),
                                                                 program.getName(),
                                                                 startDate);
-        
+
         return closeDialog(modelMap);
     }
 
@@ -614,7 +257,8 @@ public class ProgramController {
         UiFilter<DisplayablePao> filter = null;
 
         String paoName = null;
-        if (backingBean.controlAreaId != null) {
+        Map<Integer, ScenarioProgram> scenarioPrograms = null;
+        if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          controlArea, 
@@ -622,9 +266,9 @@ public class ProgramController {
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("controlArea", controlArea);
             paoName = controlArea.getName();
-            filter = new ForControlAreaFilter(backingBean.controlAreaId);
+            filter = new ForControlAreaFilter(backingBean.getControlAreaId());
         }
-        if (backingBean.scenarioId != null) {
+        if (backingBean.getScenarioId() != null) {
             DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          scenario, 
@@ -632,7 +276,10 @@ public class ProgramController {
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("scenario", scenario);
             paoName = scenario.getName();
-            filter = new ForScenarioFilter(backingBean.scenarioId);
+            filter = new ForScenarioFilter(backingBean.getScenarioId());
+            scenarioPrograms =
+                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
+            modelMap.addAttribute("scenarioPrograms", scenarioPrograms);
         }
 
         if (filter == null) {
@@ -640,14 +287,14 @@ public class ProgramController {
         }
 
         SearchResult<DisplayablePao> searchResult =
-            programService.filterPrograms(filter, null, 0, Integer.MAX_VALUE,
-                                          userContext);
+            programService.filterPrograms(filter, new DisplayablePaoComparator(),
+                                          0, Integer.MAX_VALUE, userContext);
         List<DisplayablePao> programs = searchResult.getResultList();
         if (programs == null || programs.size() == 0) {
             modelMap.addAttribute("popupId", "drDialog");
             YukonMessageSourceResolvable error =
                 new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.noPrograms." +
-                                                 (backingBean.controlAreaId != null ? "controlArea" : "scenario"),
+                                                 (backingBean.getControlAreaId() != null ? "controlArea" : "scenario"),
                                                  paoName);
             modelMap.addAttribute("userMessage", error);
             return "common/userMessage.jsp";
@@ -655,16 +302,7 @@ public class ProgramController {
         modelMap.addAttribute("programs", programs);
 
         // TODO:  need to not do this if they came via the "back" button...
-        backingBean.setStartNow(true);
-        backingBean.setStartDate(new Date());
-        backingBean.setScheduleStop(true);
-        backingBean.setStopDate(new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusHours(4).toDate());
-        List<ProgramStartInfo> programStartInfo = new ArrayList<ProgramStartInfo>(programs.size());
-        for (DisplayablePao program : programs) {
-            programStartInfo.add(new ProgramStartInfo(program.getPaoIdentifier().getPaoId(),
-                                                      1, true));
-        }
-        backingBean.setProgramStartInfo(programStartInfo);
+        backingBean.initDefaults(userContext, programs, scenarioPrograms);
 
         addConstraintsInfoToModel(modelMap, userContext, backingBean);
         addGearsToModel(searchResult.getResultList(), modelMap);
@@ -680,7 +318,8 @@ public class ProgramController {
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
 
-        if (backingBean.controlAreaId != null) {
+        Map<Integer, ScenarioProgram> scenarioPrograms = null;
+        if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          controlArea, 
@@ -688,71 +327,67 @@ public class ProgramController {
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("controlArea", controlArea);
         }
-        if (backingBean.scenarioId != null) {
+        if (backingBean.getScenarioId() != null) {
             DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          scenario, 
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("scenario", scenario);
+            scenarioPrograms =
+                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
         }
         
-        LMProgramDirectGear targetCycleGear = null;
-        List<ProgramStartInfo> programStartInfos = backingBean.programStartInfo;
+        List<ProgramStartInfo> programStartInfos = backingBean.getProgramStartInfo();
+        List<Integer> programsWithTargetCycleGears = Lists.newArrayList();
         for (ProgramStartInfo programStartInfo : programStartInfos) {
+            if (!programStartInfo.isStartProgram()) {
+                continue;
+            }
+
             DisplayablePao program = programService.getProgram(programStartInfo.getProgramId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          program, 
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
-            
+
             // TODO:  validate
-            
+
             LMProgramBase programBase = programService.getProgramForPao(program);
-            
+
             LMProgramDirectGear gear =
                 ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
-            
+
             if (gear.isTargetCycle()) {
-                targetCycleGear = gear;
-                break;
+                programsWithTargetCycleGears.add(programStartInfo.getProgramId());
             }
         }
-        
-        if (targetCycleGear == null) {
+
+        if (programsWithTargetCycleGears.size() == 0) {
             // they really can't adjust gears; got here via bug or hack
             throw new RuntimeException("startMultipleProgramsGearAdjustments called for non-target cycle gear");
         }
 
         // TODO:  when coming at this page from "back", don't reinitialize adjustments
-        Calendar timeSlotStartCal = Calendar.getInstance(userContext.getLocale());
-        timeSlotStartCal.setTime(backingBean.getStartDate());
-        timeSlotStartCal.set(Calendar.MINUTE, 0);
-        timeSlotStartCal.set(Calendar.SECOND, 0);
-        timeSlotStartCal.set(Calendar.MILLISECOND, 0);
-        int numTimeSlots = drService.getTimeSlotsForTargetCycle(backingBean.getStopDate(),
-                                                                backingBean.getStartDate(),
-                                                                targetCycleGear.getMethodPeriod());
-        backingBean.setNumAdjustments(numTimeSlots);
-        backingBean.getGearAdjustments().clear();
-        GearAdjustmentTimeSlot[] timeSlots = new GearAdjustmentTimeSlot[numTimeSlots];
-        for (int index = 0; index < numTimeSlots; index++) {
-            backingBean.getGearAdjustments().add(100);
-            timeSlots[index] = new GearAdjustmentTimeSlot(timeSlotStartCal.getTime());
-            timeSlotStartCal.add(Calendar.HOUR_OF_DAY, 1);
-            timeSlots[index].endTime = timeSlotStartCal.getTime();
-        }
-        modelMap.addAttribute("timeSlots", timeSlots);
+        List<GearAdjustment> gearAdjustments =
+            programService.getDefaultAdjustmentForPrograms(backingBean.getStartDate(),
+                                                           backingBean.getActualStopDate(),
+                                                           programsWithTargetCycleGears,
+                                                           scenarioPrograms,
+                                                           userContext);
+        backingBean.setGearAdjustments(gearAdjustments);
+
         return "dr/program/startProgramGearAdjustments.jsp";
     }
-    
+
     @RequestMapping
     public String startMultipleProgramsConstraints(
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
 
-        if (backingBean.controlAreaId != null) {
+        Map<Integer, ScenarioProgram> scenarioPrograms = null;
+        if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          controlArea, 
@@ -760,27 +395,15 @@ public class ProgramController {
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("controlArea", controlArea);
         }
-        if (backingBean.scenarioId != null) {
+        if (backingBean.getScenarioId() != null) {
             DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          scenario, 
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("scenario", scenario);
-        }
-
-        // With start and stop, it's important that we get the values
-        // squared away up front and don't change them after checking
-        // constraints so when we actually schedule the controlArea, we are
-        // scheduling exactly what we checked for constraints.
-        // We keep the "startNow" and "scheduleStop" booleans around so we
-        // always know if the user chose those options.
-        if (backingBean.isStartNow()) {
-            backingBean.setStartDate(new Date());
-        }
-        if (!backingBean.isScheduleStop()) {
-            backingBean.setStopDate(
-                new DateTime(DateTimeZone.forTimeZone(userContext.getTimeZone())).plusYears(1).toDate());
+            scenarioPrograms =
+                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
         }
 
         // TODO:  validate
@@ -809,7 +432,7 @@ public class ProgramController {
         boolean constraintsViolated = false;
         int numProgramsToStart = 0;
         for (ProgramStartInfo programStartInfo : backingBean.getProgramStartInfo()) {
-            if (!programStartInfo.startProgram) {
+            if (!programStartInfo.isStartProgram()) {
                 continue;
             }
 
@@ -817,25 +440,32 @@ public class ProgramController {
             int programId = programStartInfo.getProgramId();
             DisplayablePao program = programService.getProgram(programId);
             programsByProgramId.put(programId, program);
-            
-            
+
             LMProgramBase programBase = programService.getProgramForPao(program);
             LMProgramDirectGear gear =
                 ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 
-            String additionalInfo = null;
+            List<GearAdjustment> gearAdjustments = null;
             if (gear.isTargetCycle() &&
-                backingBean.getNumAdjustments() > 0) {
-                additionalInfo = "adjustments " +
-                        StringUtils.join(backingBean.getGearAdjustments(), ' ');
+                backingBean.isAddAdjustments()) {
+                gearAdjustments = backingBean.getGearAdjustments();
             }
-            
+
+            Duration startOffset = null;
+            Duration stopOffset = null;
+            if (scenarioPrograms != null) {
+                ScenarioProgram scenarioProgram = scenarioPrograms.get(programStartInfo.getProgramId());
+                startOffset = scenarioProgram.getStartOffset();
+                stopOffset = scenarioProgram.getStopOffset();
+            }
             ConstraintViolations violations =
                 programService.getConstraintViolationForStartProgram(programId,
-                                                                     programStartInfo.gearNumber,
+                                                                     programStartInfo.getGearNumber(),
                                                                      backingBean.getStartDate(),
-                                                                     backingBean.getStopDate(),
-                                                                     additionalInfo);
+                                                                     startOffset,
+                                                                     backingBean.getActualStopDate(),
+                                                                     stopOffset,
+                                                                     gearAdjustments);
             if (violations != null && violations.getViolations().size() > 0) {
                 violationsByProgramId.put(programId, violations);
                 constraintsViolated = true;
@@ -863,7 +493,8 @@ public class ProgramController {
 
         // TODO:  validate
 
-        if (backingBean.controlAreaId != null) {
+        Map<Integer, ScenarioProgram> scenarioPrograms = null;
+        if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          controlArea, 
@@ -873,7 +504,7 @@ public class ProgramController {
             demandResponseEventLogService.threeTierControlAreaStarted(userContext.getYukonUser(),
                                                                       controlArea.getName());
         }
-        if (backingBean.scenarioId != null) {
+        if (backingBean.getScenarioId() != null) {
             DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          scenario, 
@@ -882,6 +513,8 @@ public class ProgramController {
             modelMap.addAttribute("scenario", scenario);
             demandResponseEventLogService.threeTierScenarioStarted(userContext.getYukonUser(),
                                                                    scenario.getName());
+            scenarioPrograms =
+                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
         }
 
         // TODO:  validate permissions on programs too...or at least check to
@@ -893,11 +526,11 @@ public class ProgramController {
                                           userContext.getYukonUser());
 
         for (ProgramStartInfo programStartInfo : backingBean.getProgramStartInfo()) {
-            if (!programStartInfo.startProgram) {
+            if (!programStartInfo.isStartProgram()) {
                 continue;
             }
 
-            if (programStartInfo.overrideConstraints && !overrideAllowed) {
+            if (programStartInfo.isOverrideConstraints() && !overrideAllowed) {
                 throw new NotAuthorizedException("not authorized to override constraints");
             }
 
@@ -906,21 +539,27 @@ public class ProgramController {
             LMProgramDirectGear gear =
                 ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 
-            
-            String additionalInfo = null;
+            List<GearAdjustment> gearAdjustments = null;
             if (gear.isTargetCycle() &&
-                backingBean.getNumAdjustments() > 0) {
-                additionalInfo = "adjustments " +
-                        StringUtils.join(backingBean.getGearAdjustments(), ' ');
+                backingBean.isAddAdjustments()) {
+                gearAdjustments = backingBean.getGearAdjustments();
             }
-            
-            programService.startProgram(programStartInfo.programId,
-                                        programStartInfo.gearNumber,
-                                        backingBean.getStartDate(),
+
+            Duration startOffset = null;
+            Duration stopOffset = null;
+            if (scenarioPrograms != null) {
+                ScenarioProgram scenarioProgram = scenarioPrograms.get(programStartInfo.getProgramId());
+                startOffset = scenarioProgram.getStartOffset();
+                stopOffset = scenarioProgram.getStopOffset();
+            }
+
+            programService.startProgram(programStartInfo.getProgramId(),
+                                        programStartInfo.getGearNumber(),
+                                        backingBean.getStartDate(), startOffset,
                                         backingBean.isScheduleStop(),
-                                        backingBean.getStopDate(),
-                                        programStartInfo.overrideConstraints,
-                                        additionalInfo);
+                                        backingBean.getActualStopDate(), stopOffset,
+                                        programStartInfo.isOverrideConstraints(),
+                                        gearAdjustments);
         }
 
         return closeDialog(modelMap);
@@ -936,7 +575,7 @@ public class ProgramController {
         backingBean.setGearNumber(1);
         backingBean.setStopDate(new Date());
 
-        DisplayablePao program = programService.getProgram(backingBean.programId);
+        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
         modelMap.addAttribute("program", program);
         boolean stopGearAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                                 userContext.getYukonUser());
@@ -988,11 +627,11 @@ public class ProgramController {
                                                      Permission.CONTROL_COMMAND);
 
         Date stopDate = backingBean.getStopDate();
-        int gearNumber = backingBean.gearNumber;
-        if (backingBean.useStopGear) {
+        int gearNumber = backingBean.getGearNumber();
+        if (backingBean.isUseStopGear()) {
             assertStopGearAllowed(userContext);
             assertOverrideAllowed(userContext, overrideConstraints);
-            programService.stopProgramWithGear(backingBean.programId,
+            programService.stopProgramWithGear(backingBean.getProgramId(),
                                                gearNumber,
                                                stopDate,
                                                overrideConstraints != null && overrideConstraints);
@@ -1001,12 +640,13 @@ public class ProgramController {
                                                                   program.getName(), 
                                                                   stopDate);
         } else if (backingBean.isStopNow()) {
-            programService.stopProgram(backingBean.programId);
+            programService.stopProgram(backingBean.getProgramId());
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
                                                                   program.getName(), 
                                                                   stopDate);
         } else {
-            programService.scheduleProgramStop(backingBean.programId, stopDate);
+            programService.scheduleProgramStop(backingBean.getProgramId(),
+                                               stopDate, null);
             demandResponseEventLogService.threeTierProgramStopScheduled(yukonUser,
                                                                         program.getName(), 
                                                                         stopDate);
@@ -1022,23 +662,26 @@ public class ProgramController {
 
         UiFilter<DisplayablePao> filter = null;
 
-        if (backingBean.controlAreaId != null) {
+        if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          controlArea, 
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("controlArea", controlArea);
-            filter = new ForControlAreaFilter(backingBean.controlAreaId);
+            filter = new ForControlAreaFilter(backingBean.getControlAreaId());
         }
-        if (backingBean.scenarioId != null) {
+        if (backingBean.getScenarioId() != null) {
             DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          scenario, 
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("scenario", scenario);
-            filter = new ForScenarioFilter(backingBean.scenarioId);
+            filter = new ForScenarioFilter(backingBean.getScenarioId());
+            Map<Integer, ScenarioProgram> scenarioPrograms =
+                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
+            modelMap.addAttribute("scenarioPrograms", scenarioPrograms);
         }
 
         if (filter == null) {
@@ -1046,8 +689,8 @@ public class ProgramController {
         }
 
         SearchResult<DisplayablePao> searchResult =
-            programService.filterPrograms(filter, null, 0, Integer.MAX_VALUE,
-                                          userContext);
+            programService.filterPrograms(filter, new DisplayablePaoComparator(),
+                                          0, Integer.MAX_VALUE, userContext);
         List<DisplayablePao> programs = searchResult.getResultList();
         modelMap.addAttribute("programs", programs);
 
@@ -1071,7 +714,8 @@ public class ProgramController {
             ModelMap modelMap, YukonUserContext userContext) {
 
         Date stopDate = backingBean.getStopDate();
-        if (backingBean.controlAreaId != null) {
+        Map<Integer, ScenarioProgram> scenarioPrograms = null;
+        if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          controlArea, 
@@ -1081,7 +725,7 @@ public class ProgramController {
             demandResponseEventLogService.threeTierControlAreaStopped(userContext.getYukonUser(),
                                                                       controlArea.getName());
         }
-        if (backingBean.scenarioId != null) {
+        if (backingBean.getScenarioId() != null) {
             DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                          scenario, 
@@ -1090,6 +734,8 @@ public class ProgramController {
             modelMap.addAttribute("scenario", scenario);
             demandResponseEventLogService.threeTierScenarioStopped(userContext.getYukonUser(),
                                                                    scenario.getName());
+            scenarioPrograms =
+                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
         }
 
         // TODO:  validate permissions on programs too...or at least check to
@@ -1097,14 +743,21 @@ public class ProgramController {
         // or scenario that we've checked permissions on.
 
         for (ProgramStopInfo programStopInfo : backingBean.getProgramStopInfo()) {
-            if (!programStopInfo.stopProgram) {
+            if (!programStopInfo.isStopProgram()) {
                 continue;
             }
 
-            if (backingBean.isStopNow()) {
-                programService.stopProgram(programStopInfo.programId);
+            Duration stopOffset = null;
+            if (scenarioPrograms != null) {
+                ScenarioProgram scenarioProgram = scenarioPrograms.get(programStopInfo.getProgramId());
+                stopOffset = scenarioProgram.getStopOffset();
+            }
+
+            if (backingBean.isStopNow() && stopOffset == null) {
+                programService.stopProgram(programStopInfo.getProgramId());
             } else {
-                programService.scheduleProgramStop(programStopInfo.programId, stopDate);
+                programService.scheduleProgramStop(programStopInfo.getProgramId(),
+                                                   stopDate, stopOffset);
             }
         }
 
@@ -1323,10 +976,5 @@ public class ProgramController {
     @Autowired
     public void setFavoritesDao(FavoritesDao favoritesDao) {
         this.favoritesDao = favoritesDao;
-    }
-
-    @Autowired
-    public void setDrService(DemandResponseService drService) {
-        this.drService = drService;
     }
 }

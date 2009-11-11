@@ -1,7 +1,6 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.jsp.JspException;
 
@@ -14,7 +13,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 public class FormatDateTag extends YukonTagSupport {
 //    private YukonUserDao userDao;
     private DateFormattingService dateFormattingService;
-    private Date value;
+    private Object value;
     private String type;
     private DateFormatEnum enumValue;
     private String var;
@@ -44,7 +43,7 @@ public class FormatDateTag extends YukonTagSupport {
         }
     }
 
-    public void setValue(final Date value) {
+    public void setValue(final Object value) {
         this.value = value;
     }
 

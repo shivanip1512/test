@@ -211,38 +211,10 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
         final JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this) );
         Date start  = getStartTime();
         Date stop = getStopTime();
-        LMProgramDirectGear gear = (LMProgramDirectGear)getSelectedGear();
-        
-        /* There is more than one gear.  Looking for the first target cycle gear to build up
-         * the adjustment segment.
-         */
-        MultiSelectProg[] multiSelectObject = getMultiSelectObject();
-        if (multiSelectObject.length > 1){
-            for (MultiSelectProg multiSelectProg : multiSelectObject) {
-                LMProgramBase programBase = multiSelectProg.getBaseProgram();
-                if(programBase instanceof IGearProgram) {
-                    List<LMProgramDirectGear> directGearVector = ((IGearProgram) programBase).getDirectGearVector();
-                    
-                    for (LMProgramDirectGear lmProgramDirectGear : directGearVector) {
-                    
-                        //Getting first target cycle program gear as an adjustment place holder.
-                        if(lmProgramDirectGear.isTargetCycle()){
-                            gear = lmProgramDirectGear;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
 
-        Integer p = gear.getMethodPeriod();
-        gearConfigJPanel = new TargetCycleConfigPanel(start, stop, p) {   
+        gearConfigJPanel = new TargetCycleConfigPanel(start, stop) {   
             public void exit() {
                 d.dispose();
-            }
-
-            public void setParentWidth( int x ) {
-                d.setSize( d.getWidth() + x, d.getHeight() );
             }
         };
         d.setModal(true);
@@ -251,7 +223,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
         d.setSize( 350, (gearConfigJPanel.getTimeSlots() * 30) + 85 );
         d.setLocationRelativeTo(this);
         d.setLocation(d.getLocation().x, d.getLocation().y + 150);
-        d.show();
+        d.setVisible(true);
 
         d.dispose();
     }

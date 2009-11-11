@@ -121,6 +121,8 @@
 <entry key="yukon.web.modules.dr.program.startProgram.autoObserveConstraints">Automatically Observe Constraints</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.constraintsWillBeObserved">All constraints will be observed.</entry>
 
+<entry key="yukon.web.modules.dr.program.startProgram.timeFrame">Time Frame</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.adjustmentValue">Adjustment (0 - 250%)</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.startingNow">The program will be started now.</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.startingAt">The program will be scheduled to start at {0}.</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.stopNotScheduled">The program will not be scheduled to stop.</entry>
@@ -170,6 +172,8 @@
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.constraintsWillBeObserved">All constraints will be observed.</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.gear">Gear</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.currentState">Current State</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.startOffset">Start Offset</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.stopOffset">Stop Offset</entry>
 
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.startingNow">The programs will be started now.</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.startingAt">The programs will be scheduled to start at {0}.</entry>
@@ -196,6 +200,7 @@
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.programs">Programs to Stop</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopProgramName">Stop</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.currentState">Current State</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopOffset">Stop Offset</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopAllPrograms">Stop All Programs</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.autoObserveConstraints">Automatically Observe Constraints</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.constraintsWillBeObserved">All constraints will be observed.</entry>

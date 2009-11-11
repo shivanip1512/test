@@ -3,6 +3,7 @@ package com.cannontech.dr.scenario.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -13,6 +14,8 @@ import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
+import com.google.common.collect.Maps;
 
 public class ScenarioDaoImpl implements ScenarioDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -39,6 +42,19 @@ public class ScenarioDaoImpl implements ScenarioDao {
             return retVal;
         }};
 
+    private final static ParameterizedRowMapper<ScenarioProgram> scenarioProgramRowMapper =
+        new ParameterizedRowMapper<ScenarioProgram>() {
+        @Override
+        public ScenarioProgram mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+            ScenarioProgram scenarioProgram = new ScenarioProgram(rs.getInt("scenarioId"),
+                                                                  rs.getInt("programId"),
+                                                                  rs.getInt("startOffset"),
+                                                                  rs.getInt("stopOffset"),
+                                                                  rs.getInt("startGear"));
+            return scenarioProgram;
+        }};
+
     @Override
     public DisplayablePao getScenario(int scenarioId) {
         return simpleJdbcTemplate.queryForObject(singleScenarioByIdQuery,
@@ -51,6 +67,23 @@ public class ScenarioDaoImpl implements ScenarioDao {
         List<DisplayablePao> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
                                                                scenarioRowMapper,
                                                                programId);
+        return retVal;
+    }
+
+    @Override
+    public Map<Integer, ScenarioProgram> findScenarioProgramsForScenario(
+            int scenarioId) {
+        Map<Integer, ScenarioProgram> retVal = Maps.newHashMap();
+
+        List<ScenarioProgram> scenarioPrograms =
+            simpleJdbcTemplate.query("SELECT scenarioId, programId, " +
+            		"startOffset, stopOffset, startGear" +
+            		" FROM lmControlScenarioProgram WHERE scenarioid = ?",
+            		scenarioProgramRowMapper, scenarioId);
+        for (ScenarioProgram scenarioProgram : scenarioPrograms) {
+            retVal.put(scenarioProgram.getProgramId(), scenarioProgram);
+        }
+
         return retVal;
     }
 

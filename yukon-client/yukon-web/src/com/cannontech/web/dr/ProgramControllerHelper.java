@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.ui.ModelMap;
@@ -99,6 +100,10 @@ public class ProgramControllerHelper {
         PropertyEditor fullDateTimeEditor =
             datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
         binder.registerCustomEditor(Date.class, fullDateTimeEditor);
+
+        PropertyEditor localTimeEditor =
+            datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.TIME24H, userContext);
+        binder.registerCustomEditor(LocalTime.class, localTimeEditor);
 
         // Since Range uses generics, spring can't determine the type of the
         // min and max values on its own.  In any case, for dates, we need

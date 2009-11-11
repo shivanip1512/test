@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormatter;
 
 import com.cannontech.user.YukonUserContext;
 
@@ -88,6 +90,9 @@ public interface DateFormattingService {
      */
     public DateTimeFormatter getDateTimeFormatter(DateFormatEnum type, YukonUserContext userContext);
 
+    public PeriodFormatter getPeriodFormatter(DateFormatEnum type,
+            YukonUserContext userContext);
+
     public Date flexibleDateParser(String dateStr, DateOnlyMode mode,
                                    YukonUserContext userContext) throws ParseException;
 
@@ -107,6 +112,9 @@ public interface DateFormattingService {
      * @throws ParseException
      */
     public Date flexibleDateParserWithSystemTimeZone(String dateStr, DateOnlyMode mode,
+            YukonUserContext userContext) throws ParseException;
+
+    public LocalTime parseLocalTime(String localTimeStr,
             YukonUserContext userContext) throws ParseException;
 
     public Calendar getCalendar(YukonUserContext userContext);

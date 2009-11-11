@@ -85,6 +85,9 @@ singleProgramChecked = function(boxChecked) {
         <tr class="<tags:alternateRow odd="" even="altRow"/>">
             <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopProgramName"/></th>
             <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.currentState"/></th>
+            <c:if test="${!empty scenarioPrograms}">
+                <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopOffset"/></th>
+            </c:if>
         </tr>
         <c:forEach var="program" varStatus="status" items="${programs}">
             <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
@@ -95,6 +98,10 @@ singleProgramChecked = function(boxChecked) {
                     onclick="singleProgramChecked(this);"/>
                 <label for="stopProgramCheckbox${status.index}">${program.name}</label></td>
                 <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                <c:if test="${!empty scenarioPrograms}">
+                    <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
+                    <td><cti:formatDate type="TIME24H" value="${scenarioProgram.stopOffset}"/></td>
+                </c:if>
             </tr>
         </c:forEach>
     </table>

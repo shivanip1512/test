@@ -1,7 +1,9 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <script type="text/javascript">
 overrideConstraintsChecked = function() {
@@ -21,37 +23,18 @@ overrideConstraintsChecked = function() {
     <form:hidden path="stopDate"/>
     <form:hidden path="autoObserveConstraints"/>
     <form:hidden path="addAdjustments"/>
-    <form:hidden path="numAdjustments"/>
-    <c:if test="${backingBean.numAdjustments > 0}">
-        <c:forEach var="index" begin="0" end="${backingBean.numAdjustments - 1}">
-            <form:hidden path="gearAdjustments[${index}]"/>
+    <c:if test="${backingBean.addAdjustments}">
+        <c:forEach var="index" begin="0" end="${fn:length(backingBean.gearAdjustments) - 1}">
+            <form:hidden path="gearAdjustments[${index}].beginTime"/>
+            <form:hidden path="gearAdjustments[${index}].endTime"/>
+            <form:hidden path="gearAdjustments[${index}].adjustmentValue"/>
         </c:forEach>
     </c:if>
 
     <h1 class="dialogQuestion"><cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
         argument="${program.name}"/></h1>
 
-    <p>
-    <c:if test="${backingBean.startNow}">
-        <cti:msg key="yukon.web.modules.dr.program.startProgram.startingNow"/>
-    </c:if>
-    <c:if test="${!backingBean.startNow}">
-        <cti:formatDate var="formattedStartDate" type="BOTH" value="${backingBean.startDate}"/>
-        <cti:msg key="yukon.web.modules.dr.program.startProgram.startingAt"
-            argument="${formattedStartDate}"/>
-    </c:if>
-    </p>
-
-    <p>
-    <c:if test="${backingBean.scheduleStop}">
-        <cti:formatDate var="formattedStopDate" type="BOTH" value="${backingBean.stopDate}"/>
-        <cti:msg key="yukon.web.modules.dr.program.startProgram.stoppingAt"
-            argument="${formattedStopDate}"/>
-    </c:if>
-    <c:if test="${!backingBean.scheduleStop}">
-        <cti:msg key="yukon.web.modules.dr.program.startProgram.stopNotScheduled"/>
-    </c:if>
-    </p><br>
+    <dr:programStartInfo page="startProgram"/>
 
     <c:if test="${empty violations.violations}">
         <p><cti:msg key="yukon.web.modules.dr.program.startProgram.noConstraintsViolated"/></p>

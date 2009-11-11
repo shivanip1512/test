@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 
@@ -19,6 +21,7 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
     private List<String[]> alternativeAmPmList = new ArrayList<String[]>(2);
     private List<String> dateTimeFormats = new ArrayList<String>();
     private List<String> dateFormats = new ArrayList<String>();
+    private List<String> timeFormats = new ArrayList<String>();
 
     @Override
     public Date parseDate(String dateStr, DateOnlyMode mode, Locale locale, TimeZone timeZone)
@@ -54,10 +57,7 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
         for (String pattern : dateTimeFormats) {
             for (String[] alternativeAmPm : alternativeAmPmList) {
                 try {
-                    DateFormatSymbols dateFormatSymbols = new DateFormatSymbols(locale);
-                    if (alternativeAmPm.length == 2) {
-                        dateFormatSymbols.setAmPmStrings(alternativeAmPm);
-                    }
+                    DateFormatSymbols dateFormatSymbols = getDateFormatSymbolsWithAlternateAmPm(alternativeAmPm, locale);
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, dateFormatSymbols);
                     simpleDateFormat.setTimeZone(timeZone);
                     simpleDateFormat.setLenient(false);
@@ -72,14 +72,50 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
         throw new ParseException(dateStr, 0);
     }
 
+    @Override
+    public LocalTime parseTimeAsLocalTime(String timeStr, Locale locale,
+            TimeZone timeZone) throws ParseException {
+        for (String pattern : timeFormats) {
+            for (String[] alternativeAmPm : alternativeAmPmList) {
+                DateFormatSymbols dateFormatSymbols = getDateFormatSymbolsWithAlternateAmPm(alternativeAmPm, locale);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, dateFormatSymbols);
+                simpleDateFormat.setTimeZone(timeZone);
+                simpleDateFormat.setLenient(false);
+                Date result = null;
+                try {
+                    result = simpleDateFormat.parse(timeStr);
+                    
+                } catch (ParseException pe) {
+                    // try next pattern
+                    continue;
+                }
+                DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+                return new LocalTime(result, dateTimeZone);
+            }
+        }
+        throw new ParseException(timeStr, 0);
+    }
+
+    private DateFormatSymbols getDateFormatSymbolsWithAlternateAmPm(String[] alternativeAmPm, Locale locale) {
+        DateFormatSymbols dateFormatSymbols = new DateFormatSymbols(locale);
+        if (alternativeAmPm.length == 2) {
+            dateFormatSymbols.setAmPmStrings(alternativeAmPm);
+        }
+        return dateFormatSymbols;
+    }
+
     public void setDateFormats(List<String> dateFormats) {
         this.dateFormats = dateFormats;
     }
-    
+
     public void setDateTimeFormats(List<String> dateTimeFormats) {
         this.dateTimeFormats = dateTimeFormats;
     }
-    
+
+    public void setTimeFormats(List<String> timeFormats) {
+        this.timeFormats = timeFormats;
+    }
+
     public void setAlternativeAmPmList(List<String[]> alternativeAmPmList) {
         this.alternativeAmPmList = alternativeAmPmList;
     }

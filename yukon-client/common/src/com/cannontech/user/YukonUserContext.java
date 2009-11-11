@@ -3,6 +3,8 @@ package com.cannontech.user;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.joda.time.DateTimeZone;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -19,6 +21,8 @@ public interface YukonUserContext {
     public LiteYukonUser getYukonUser();
 
     public TimeZone getTimeZone();
+
+    public DateTimeZone getJodaTimeZone();
     
     public String getThemeName();
 

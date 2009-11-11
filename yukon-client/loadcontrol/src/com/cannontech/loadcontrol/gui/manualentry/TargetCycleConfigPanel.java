@@ -20,7 +20,6 @@ import com.cannontech.spring.YukonSpringHook;
 public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     Date startTime = null;
     Date stopTime = null;
-    private Integer period = 0;
     private JTextField[] fields = null;
     private JLabel[] labels = null;
     private JButton okButton = null;
@@ -29,11 +28,10 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     private JPanel okCancelPanel = null;
     private String additonalInfo = null;
     
-    public TargetCycleConfigPanel(Date start_, Date stop_, Integer period_) {
+    public TargetCycleConfigPanel(Date start_, Date stop_) {
         super();
         startTime = start_;
         stopTime = stop_;
-        period = period_;
         initPanel();
     }
 
@@ -137,7 +135,7 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
 
     public int getTimeSlots() {
         if (timeSlots < 0 ) {
-            timeSlots = YukonSpringHook.getBean(DemandResponseService.class).getTimeSlotsForTargetCycle(stopTime, startTime, period);
+            timeSlots = YukonSpringHook.getBean(DemandResponseService.class).getTimeSlotsForTargetCycle(stopTime, startTime);
         }
         return timeSlots;
     }
@@ -286,13 +284,4 @@ public class TargetCycleConfigPanel extends JPanel implements ActionListener{
     public void setAdditonalInfo(String additonalInfo) {
         this.additonalInfo = additonalInfo;
     }
-
-    public Integer getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(Integer p) {
-        this.period = p;
-    }
-    
 }

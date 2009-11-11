@@ -3,12 +3,22 @@ package com.cannontech.dr.program.service.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
@@ -24,10 +34,14 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
+import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -41,12 +55,16 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 
 public class ProgramServiceImpl implements ProgramService {
+    private Logger log = YukonLogManager.getLogger(ProgramServiceImpl.class);
     private ProgramDao programDao = null;
     private LoadControlClientConnection loadControlClientConnection = null;
     private FilterService filterService;
     private DemandResponseEventLogService demandResponseEventLogService;
+    private SystemDateFormattingService systemDateFormattingService;
+    private DateFormattingService dateFormattingService;
 
     private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -106,44 +124,140 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
+    public List<GearAdjustment> getDefaultAdjustmentForProgram(
+            Date startDate, Date stopDate, int programId,
+            YukonUserContext userContext) {
+        List<Integer> programIds = Lists.newArrayList();
+        programIds.add(programId);
+        return getDefaultAdjustmentForPrograms(startDate, stopDate, programIds,
+                                               null, userContext);
+    }
+
+    @Override
+    public List<GearAdjustment> getDefaultAdjustmentForPrograms(
+            Date startDate, Date stopDate,
+            Collection<Integer> programIds,
+            Map<Integer, ScenarioProgram> scenarioPrograms,
+            YukonUserContext userContext) {
+
+        DateTime firstStartDate = new DateTime(startDate);
+        DateTime lastStopDate = new DateTime(stopDate);
+        if (scenarioPrograms != null) {
+            for (Integer programId : programIds) {
+                ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
+                if (scenarioProgram != null) {
+                    Date programStartDate = datePlusOffset(startDate,
+                                                           scenarioProgram.getStartOffset());
+                    if (firstStartDate.isAfter(programStartDate.getTime())) {
+                        firstStartDate = new DateTime(programStartDate);
+                    }
+                    Date programStopDate = datePlusOffset(stopDate,
+                                                          scenarioProgram.getStopOffset());
+                    if (lastStopDate.isBefore(programStopDate.getTime())) {
+                        lastStopDate = new DateTime(programStopDate);
+                    }
+                }
+            }
+        }
+
+        List<GearAdjustment> retVal = Lists.newArrayList();
+
+        Calendar timeSlotStartCal = dateFormattingService.getCalendar(userContext);
+        timeSlotStartCal.setTime(startDate);
+        timeSlotStartCal.set(Calendar.MINUTE, 0);
+        timeSlotStartCal.set(Calendar.SECOND, 0);
+        timeSlotStartCal.set(Calendar.MILLISECOND, 0);
+        DateTimeZone timeZone = userContext.getJodaTimeZone();
+        LocalTime gearAdjustmentBegin = new LocalTime(timeSlotStartCal,
+                                                      timeZone);
+        LocalTime gearAdjustmentEnd = gearAdjustmentBegin.plusHours(1);
+
+        DateTime referenceDate = firstStartDate;
+
+        // TODO:  is this logic correct?  Can it be done better???
+        // What happens if we push a LocalTime past the 24th hour?
+        while (lastStopDate.compareTo(gearAdjustmentBegin.toDateTime(referenceDate)) > 0
+                && retVal.size() < 24) {
+            GearAdjustment gearAdjustment = new GearAdjustment();
+            gearAdjustment.setBeginTime(gearAdjustmentBegin);
+            gearAdjustment.setEndTime(gearAdjustmentEnd);
+            gearAdjustment.setAdjustmentValue(100);
+            retVal.add(gearAdjustment);
+            gearAdjustmentBegin = gearAdjustmentBegin.plusHours(1);
+            gearAdjustmentEnd = gearAdjustmentEnd.plusHours(1);
+            if (gearAdjustmentBegin.getHourOfDay() == 0) {
+                referenceDate = firstStartDate.plusDays(1);
+            }
+        }
+
+        return retVal;
+    }
+
+    @Override
     public ConstraintViolations getConstraintViolationForStartProgram(
-            int programId, int gearNumber, Date startDate, Date stopDate,
-            String additionalInfo) {
+            int programId, int gearNumber, Date startDate,
+            Duration startOffset, Date stopDate, Duration stopOffset,
+            List<GearAdjustment> gearAdjustments) {
+        Date programStartDate = datePlusOffset(startDate, startOffset);
+        Date programStopDate = datePlusOffset(stopDate, stopOffset);
+
         LMManualControlRequest controlRequest =
-            getManualControlMessage(programId, gearNumber, startDate, stopDate,
+            getManualControlMessage(programId, gearNumber,
+                                    programStartDate, programStopDate,
                                     LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
 
         // better be a program for this Request Message!
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
 
+        String additionalInfo = null;
         if (program instanceof LMProgramDirect) {
-            if (additionalInfo != null) {
-                ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
-                controlRequest.setAddditionalInfo(additionalInfo);
-            }
+            additionalInfo =
+                additionalInfoFromGearAdjustments(gearAdjustments,
+                                                  programStartDate,
+                                                  programStopDate);
         }
+
+        if (additionalInfo != null) {
+            ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
+            controlRequest.setAddditionalInfo(additionalInfo);
+        }
+
+        log.debug("checking constraints for program " + programId + " using gear " + gearNumber +
+                  " at " + startDate + " + " + startOffset + " = " + programStartDate +
+                  "; stopping at " + stopDate + " + " + stopOffset + " = " + programStopDate +
+                  "; additionalInfo = " + additionalInfo);
 
         return makeServerRequest(controlRequest);
     }
 
     @Override
     public void startProgram(int programId, int gearNumber, Date startDate,
-            boolean stopScheduled, Date stopDate, boolean overrideConstraints,
-            String additionalInfo) {
+            Duration startOffset, boolean stopScheduled, Date stopDate,
+            Duration stopOffset, boolean overrideConstraints,
+            List<GearAdjustment> gearAdjustments) {
 
+        Date programStartDate = datePlusOffset(startDate, startOffset);
+        Date programStopDate = datePlusOffset(stopDate, stopOffset);
         int constraintId = overrideConstraints
             ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
             : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         LMManualControlRequest controlRequest =
-            getManualControlMessage(programId, gearNumber, startDate, stopDate,
-                                    constraintId);
+            getManualControlMessage(programId, gearNumber, programStartDate,
+                                    programStopDate, constraintId);
 
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         String gearName = getGearNameForProgram(program, gearNumber);
+        String additionalInfo =
+            additionalInfoFromGearAdjustments(gearAdjustments, programStartDate,
+                                              programStopDate);
         if (additionalInfo != null) {
             ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
             controlRequest.setAddditionalInfo(additionalInfo);
         }
+        log.debug("starting program " + programId + " using gear " + gearNumber +
+                  " at " + startDate + " + " + startOffset + " = " + programStartDate +
+                  "; stopping at " + stopDate + " + " + stopOffset + " = " + programStopDate +
+                  "; additionalInfo = " + additionalInfo);
 
         // TODO:  Do we need to check the response from the server here?
         // (The old 3-tier didn't so what the response means exactly needs to
@@ -153,8 +267,47 @@ public class ProgramServiceImpl implements ProgramService {
 
         demandResponseEventLogService.programScheduled(program.getYukonName(),
                                                        overrideConstraints,
-                                                       gearName, startDate,
-                                                       stopScheduled, stopDate);
+                                                       gearName,
+                                                       programStartDate,
+                                                       stopScheduled,
+                                                       programStopDate);
+    }
+
+    private Date datePlusOffset(Date date, Duration offset) {
+        TimeZone timeZone = systemDateFormattingService.getSystemTimeZone();
+        DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+        DateTime dateTime = new DateTime(date, dateTimeZone);
+        return dateTime.plus(offset).toDate();
+    }
+
+    /**
+     * Combine gear adjustments into a string to use for the "additional info".
+     * This method ignores gear adjustments which are not valid for the
+     * program's start and stop times. It assumes the gear adjustments are in
+     * order by start/end time.
+     */
+    private String additionalInfoFromGearAdjustments(
+            List<GearAdjustment> gearAdjustments, Date startDate, Date stopDate) {
+        if (gearAdjustments == null) {
+            return null;
+        }
+
+        StringBuilder retVal = new StringBuilder("adjustments");
+        DateTime referenceDate = new DateTime(startDate);
+        for (GearAdjustment gearAdjustment : gearAdjustments) {
+            if (gearAdjustment.getBeginTime().getHourOfDay() == 0) {
+                referenceDate = referenceDate.plusDays(1);
+            }
+            Date gearBegin = gearAdjustment.getBeginTime().toDateTime(referenceDate).toDate();
+            Date gearEnd = gearAdjustment.getEndTime().toDateTime(referenceDate).toDate();
+            if (startDate.before(gearBegin) && !stopDate.before(gearBegin)
+                    || !startDate.before(gearBegin) && !startDate.after(gearEnd)) {
+                retVal.append(' ');
+                retVal.append(gearAdjustment.getAdjustmentValue());
+            }
+        }
+
+        return retVal.toString();
     }
 
     private String getGearNameForProgram(LMProgramBase program, int gearNumber) {
@@ -167,15 +320,17 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void scheduleProgramStop(int programId, Date stopDate) {
+    public void scheduleProgramStop(int programId, Date stopDate,
+            Duration stopOffset) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        Date programStopDate = datePlusOffset(stopDate, stopOffset);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
         LMManualControlRequest controlRequest =
-            program.createScheduledStopMsg(startDate, stopDate, 1, null);
+            program.createScheduledStopMsg(startDate, programStopDate, 1, null);
         loadControlClientConnection.write(controlRequest);
 
         demandResponseEventLogService.programStopScheduled(program.getYukonName(),
-                                                           stopDate, null);
+                                                           programStopDate, null);
     }
 
     @Override
@@ -325,6 +480,17 @@ public class ProgramServiceImpl implements ProgramService {
     public void setDemandResponseEventLogService(
             DemandResponseEventLogService demandResponseEventLogService) {
         this.demandResponseEventLogService = demandResponseEventLogService;
+    }
+
+    @Autowired
+    public void setSystemDateFormattingService(
+            SystemDateFormattingService systemDateFormattingService) {
+        this.systemDateFormattingService = systemDateFormattingService;
+    }
+
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
     }
 
     private LMManualControlRequest getManualControlMessage(
