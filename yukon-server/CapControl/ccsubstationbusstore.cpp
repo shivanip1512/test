@@ -363,6 +363,11 @@ int CtiCCSubstationBusStore::getNbrOfSubsWithAltSubID(long altSubId)
 {
     return _altsub_sub_idmap.count(altSubId);
 }
+pair<multimap<long,long>::iterator,multimap<long,long>::iterator> CtiCCSubstationBusStore::getSubsWithAltSubID(long altSubId)
+{
+    return _altsub_sub_idmap.equal_range(altSubId);
+}
+
 int CtiCCSubstationBusStore::getNbrOfFeedersWithPointID(long point_id)
 {
     return _pointid_feeder_map.count(point_id);

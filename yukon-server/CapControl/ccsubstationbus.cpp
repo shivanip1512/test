@@ -10048,7 +10048,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
 
         if (getPrimaryBusFlag())
         {
-            tempAltSubId = getAlterateBusIdForPrimary(_paoid);
+            tempAltSubId = getAlterateBusIdForPrimary();
         }
     }
     else
@@ -10132,23 +10132,22 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
 }
 
 
-LONG CtiCCSubstationBus::getAlterateBusIdForPrimary(long paoId) const
+LONG CtiCCSubstationBus::getAlterateBusIdForPrimary() const
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    int altSubIdCount = store->getNbrOfSubsWithAltSubID(_paoid);
-    while (altSubIdCount > 0)
+    
+    multimap<long,long>::iterator it;
+    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
+
+    ret = store->getSubsWithAltSubID(_paoid);
+    for (it = ret.first; it != ret.second; it++)
     {
-        long subId = store->findSubIDbyAltSubID(_paoid, altSubIdCount);
-        if (subId != NULL)
+        CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID((*it).second);
+        if (altSub != NULL && altSub->getSwitchOverStatus())
         {
-            CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(subId);
-            if (altSub != NULL && altSub->getSwitchOverStatus())
-            {
-                return altSub->getPAOId();
-            }
+            return altSub->getPAOId();
         }
-        altSubIdCount--;
     }
     return _paoid;
 }

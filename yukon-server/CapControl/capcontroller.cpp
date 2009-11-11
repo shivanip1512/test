@@ -3100,37 +3100,33 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                 }
 
                 // check for alt sub bus id, and update all sub's alt values
-                int altSubIdCount = store->getNbrOfSubsWithAltSubID(currentSubstationBus->getPAOId());
-                while (altSubIdCount > 0)
+                multimap<long,long>::iterator it;
+                pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
+
+                ret = store->getSubsWithAltSubID(currentSubstationBus->getPAOId());
+                for (it = ret.first; it != ret.second; it++)
                 {
-                    long subId = store->findSubIDbyAltSubID(currentSubstationBus->getPAOId(), altSubIdCount);
-                    if (subId != NULL)
+                    CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID((*it).second);
+                    if (altSub != NULL)
                     {
-                        CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(subId);
-                        if (altSub != NULL)
+                        if( !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                            !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) || 
+                            !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
                         {
-                            if( !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
-                                !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) || 
-                                !stringCompareIgnoreCase(altSub->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                            if (currentSubstationBus->getPrimaryBusFlag())
                             {
-                                if (currentSubstationBus->getPrimaryBusFlag())
-                                {
-                                    currentSubstationBus->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2, 
-                                                               altSub->getCurrentVarLoadPointValue() + currentSubstationBus->getCurrentVarLoadPointValue(), 
-                                                               altSub->getCurrentWattLoadPointValue() + currentSubstationBus->getCurrentWattLoadPointValue());
-                                }
-                            }
-                            else
-                            {
-                                 altSub->setAllAltSubValues(currentSubstationBus->getCurrentVoltLoadPointValue(), currentSubstationBus->getCurrentVarLoadPointValue(), 
-                                 currentSubstationBus->getCurrentWattLoadPointValue());
+                                currentSubstationBus->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2, 
+                                                           altSub->getCurrentVarLoadPointValue() + currentSubstationBus->getCurrentVarLoadPointValue(), 
+                                                           altSub->getCurrentWattLoadPointValue() + currentSubstationBus->getCurrentWattLoadPointValue());
                             }
                         }
+                        else
+                        {
+                             altSub->setAllAltSubValues(currentSubstationBus->getCurrentVoltLoadPointValue(), currentSubstationBus->getCurrentVarLoadPointValue(), 
+                             currentSubstationBus->getCurrentWattLoadPointValue());
+                        }
                     }
-                    altSubIdCount--;
                 }
-
-
 
                 if (currentSubstationBus->getVoltReductionControlId() == pointID)
                 {
