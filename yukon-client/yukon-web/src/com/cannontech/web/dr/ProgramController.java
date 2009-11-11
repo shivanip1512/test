@@ -662,6 +662,7 @@ public class ProgramController {
 
         UiFilter<DisplayablePao> filter = null;
 
+        String paoName = null;
         if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
@@ -669,6 +670,7 @@ public class ProgramController {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("controlArea", controlArea);
+            paoName = controlArea.getName();
             filter = new ForControlAreaFilter(backingBean.getControlAreaId());
         }
         if (backingBean.getScenarioId() != null) {
@@ -678,6 +680,7 @@ public class ProgramController {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             modelMap.addAttribute("scenario", scenario);
+            paoName = scenario.getName();
             filter = new ForScenarioFilter(backingBean.getScenarioId());
             Map<Integer, ScenarioProgram> scenarioPrograms =
                 scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
@@ -692,6 +695,15 @@ public class ProgramController {
             programService.filterPrograms(filter, new DisplayablePaoComparator(),
                                           0, Integer.MAX_VALUE, userContext);
         List<DisplayablePao> programs = searchResult.getResultList();
+        if (programs == null || programs.size() == 0) {
+            modelMap.addAttribute("popupId", "drDialog");
+            YukonMessageSourceResolvable error =
+                new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.noPrograms." +
+                                                 (backingBean.getControlAreaId() != null ? "controlArea" : "scenario"),
+                                                 paoName);
+            modelMap.addAttribute("userMessage", error);
+            return "common/userMessage.jsp";
+        }
         modelMap.addAttribute("programs", programs);
 
         // TODO:  don't do this if we're coming here from the back button
