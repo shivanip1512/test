@@ -74,16 +74,28 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
             AREA("Area"),
             PORT("Port"),
             PROGRAM("Program"),
+            PROGRAM_SINGLE_SELECT("Program", false),
             STRATEGY("Strategy");
 
 		private String filterTitle;
+		private boolean multiSelect;
 		
 		private ReportFilter(String filterTitle) {
-		this.filterTitle = filterTitle;
+		    this.filterTitle = filterTitle;
+		    this.multiSelect = true;
+		}
+		
+		private ReportFilter(String filterTitle, boolean multiSelect){
+		    this.filterTitle = filterTitle;
+		    this.multiSelect = multiSelect;
 		}
 		
 		public String getFilterTitle() {
-		return filterTitle;
+		    return filterTitle;
+		}
+		
+		public boolean isMultiSelect() {
+		    return multiSelect;
 		}
 	}
 	

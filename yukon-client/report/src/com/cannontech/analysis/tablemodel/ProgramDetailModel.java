@@ -26,7 +26,7 @@ import com.cannontech.database.data.lite.LiteContact;
  * 				statType - DynamicPaoStatistics.statisticType
  * @author snebben
  */
-public class ProgramDetailModel extends ReportModelBase
+public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 {
 	/** A string for the title of the data */
 	private static String title = "PROGRAM STATUS SUMMARY";
@@ -49,11 +49,7 @@ public class ProgramDetailModel extends ReportModelBase
 	public final static String STATUS_STRING = "Status";
 	
 	/** Class fields */
-	private int[] ecIDs = null;	
-
-	//Key = Str("AcctID_VirtProgID")
-	//Value = Most recent lmProgramEvent(Integer)
-	private HashMap acctProgPairs = null;
+	private HashMap<String, ProgramDetail> acctProgPairs = null;
 	
 	/**
 	 * Constructor class
@@ -63,6 +59,7 @@ public class ProgramDetailModel extends ReportModelBase
 	{
 		//use the stop (max) time for both date entries.
 		super(null, stop_);//default type
+		setFilterModelTypes(new ReportFilter[]{ReportFilter.PROGRAM_SINGLE_SELECT});
 	}
 
 	/**
@@ -72,6 +69,7 @@ public class ProgramDetailModel extends ReportModelBase
 	public ProgramDetailModel()
 	{
 		super();
+		setFilterModelTypes(new ReportFilter[]{ReportFilter.PROGRAM_SINGLE_SELECT});
 	}
 
 	/**
@@ -83,6 +81,7 @@ public class ProgramDetailModel extends ReportModelBase
 	{
 		this();//default type
 		setEnergyCompanyID(ecID_);
+		setFilterModelTypes(new ReportFilter[]{ReportFilter.PROGRAM_SINGLE_SELECT});
 	}
 	
 	@Override
@@ -91,7 +90,6 @@ public class ProgramDetailModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 				
@@ -147,9 +145,12 @@ public class ProgramDetailModel extends ReportModelBase
 		" FROM APPLIANCECATEGORY AC, YUKONWEBCONFIGURATION YWC, LMPROGRAMWEBPUBLISHING LPWP, "+
 		" ECTOACCOUNTMAPPING AM, ECTOGENERICMAPPING GM, CUSTOMERACCOUNT CA, ENERGYCOMPANY EC, YUKONPAOBJECT PAO " +
 		" WHERE LPWP.WEBSETTINGSID = YWC.CONFIGURATIONID "+  
-        " AND PAO.PAOBJECTID = LPWP.DEVICEID " +
-		" AND CA.ACCOUNTID = AM.ACCOUNTID " +
-		" AND LPWP.APPLIANCECATEGORYID = AC.APPLIANCECATEGORYID ");
+        " AND PAO.PAOBJECTID = LPWP.DEVICEID ");
+        
+		sql.append(" AND PAO.PAOBJECTID = " + getPaoIDs()[0] );
+        
+        sql.append(" AND CA.ACCOUNTID = AM.ACCOUNTID ");
+        sql.append(" AND LPWP.APPLIANCECATEGORYID = AC.APPLIANCECATEGORYID ");
 
 		if( getEnergyCompanyID() != null)
 			sql.append(" AND EC.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ");
@@ -173,16 +174,13 @@ public class ProgramDetailModel extends ReportModelBase
 		{
 			Integer acctID = new Integer(rset.getInt(1));
 			Integer virtualProgID = new Integer(rset.getInt(2));
-			Integer lmProgID = new Integer(rset.getInt(3));
-			String desc = rset.getString(4);
 			String altDisplayName = rset.getString(5);
 			Integer custID = new Integer(rset.getInt(6));
 			String acctNum = rset.getString(7);
 			String ecName = rset.getString(8);
-            if ( altDisplayName.equalsIgnoreCase(","))
+            if ( altDisplayName.equalsIgnoreCase(",")){
                 altDisplayName = rset.getString(9);
-			
-			//AM.ACCOUNTID, LPWP.PROGRAMID VirtualProgID, LPWP.DEVICEID LMProgID, AC.DESCRIPTION, YWC.ALTERNATEDISPLAYNAME, CA.CUSTOMERID, CA.ACCOUNTNUMBER 
+            }
 			ProgramDetail pd = new ProgramDetail(ecName, altDisplayName, custID, acctNum, acctID, new Integer(-1) );
 			getData().add(pd);
 
@@ -265,7 +263,7 @@ public class ProgramDetailModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	public Class<?>[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -302,15 +300,17 @@ public class ProgramDetailModel extends ReportModelBase
 	
 	public void buildAcctProgHashMap()
 	{
-		int rowCount = 0;
 		StringBuffer sql = new StringBuffer("SELECT LPE.ACCOUNTID, LPE.PROGRAMID, YLE.YUKONDEFINITIONID, YLE.ENTRYTEXT "+
 		" FROM LMPROGRAMEVENT LPE, LMCUSTOMEREVENTBASE CEB, YUKONLISTENTRY YLE "+
 		" WHERE LPE.EVENTID = CEB.EVENTID "+
 		" AND YLE.ENTRYID = CEB.ACTIONID " +
 		" AND LPE.EVENTID IN "+
 		" (SELECT MAX(LPE2.EVENTID) FROM LMPROGRAMEVENT LPE2, LMCUSTOMEREVENTBASE CEB2 "+
-		" WHERE CEB2.EVENTID = LPE2.EVENTID AND CEB2.EVENTDATETIME <= ? "+
-		" GROUP BY ACCOUNTID, PROGRAMID )" +
+		" WHERE CEB2.EVENTID = LPE2.EVENTID AND CEB2.EVENTDATETIME <= ? ");
+		
+		sql.append(" AND LPE.PROGRAMID = " + getPaoIDs()[0] );
+		
+        sql.append(" GROUP BY ACCOUNTID, PROGRAMID )" +
 		" ORDER BY LPE.ACCOUNTID, LPE.PROGRAMID");
 		
 		CTILogger.info(sql.toString());
@@ -341,7 +341,6 @@ public class ProgramDetailModel extends ReportModelBase
 					Integer actionID = new Integer(rset.getInt(3));
 					String entryText = rset.getString(4);
 					
-					//LPE.ACCOUNTID, LPE.PROGRAMID, LCEB.ACTIONID
 					//Key = "AcctID_ProgID"
 					String acctProgStr = acctID.toString()+ "_" + virtualProgID.toString(); 
 					ProgramDetail pd = (ProgramDetail)getAcctProgPairs().get(acctProgStr);
@@ -376,13 +375,19 @@ public class ProgramDetailModel extends ReportModelBase
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}	
+	
+	public String getHTMLOptionsTable() {
+        String html = "<span style='font-weight: bold;'> * You must select only one program.</span>";
+        return html;
+    }
+	
 	/**
 	 * @return
 	 */
-	public HashMap getAcctProgPairs()
+	public HashMap<String, ProgramDetail> getAcctProgPairs()
 	{
 		if( acctProgPairs == null)
-			acctProgPairs = new HashMap(10);
+			acctProgPairs = new HashMap<String, ProgramDetail>(10);
 		return acctProgPairs;
 	}
 	

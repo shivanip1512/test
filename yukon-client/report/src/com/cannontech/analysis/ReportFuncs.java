@@ -391,7 +391,7 @@ public class ReportFuncs
             return schedules;   
 
         }
-        else if( filter.equals(ReportFilter.PROGRAM)) {
+        else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {
             List <LiteYukonPAObject> programs = cache.getAllLMDirectPrograms();
             if(programs != null && user != null) {
                 List<YukonPao> restrictedPrograms = getRestrictedPrograms(user);

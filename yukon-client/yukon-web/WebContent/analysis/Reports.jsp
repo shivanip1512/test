@@ -469,7 +469,7 @@ function makeFirstSelectedFilterValueVisible() {
             			<% }else {%>
             				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
             				
-                    		<select id="selectFilterValues" name='filterValues' size='10' multiple style='width:350px;'>
+                    		<select id="selectFilterValues" name='filterValues' size='10' <%if(filter.isMultiSelect()) {%>multiple<%}%> style='width:350px;'>
                 			<%List objects = filterObjectsMap.get(filter);%>
                 			<%if (objects != null) {
                 				
@@ -523,8 +523,13 @@ function makeFirstSelectedFilterValueVisible() {
                     			}
                 			}%>
                         	</select>
-                			<BR><span class='NavText'>* Hold &lt;CTRL&gt; key down to select multiple values</span><br>
-                			<span class='NavText'>* Hold &lt;Shift&gt; key down to select range of values</span>
+                            <BR>
+                            <%if(filter.isMultiSelect()){ %>
+                    			<span class='NavText'>* Hold &lt;CTRL&gt; key down to select multiple values</span><br>
+                    			<span class='NavText'>* Hold &lt;Shift&gt; key down to select range of values</span>
+                            <%} else { %>
+                                <span class='NavText'>* Select one value to filter by</span>
+                            <%} %>
                       	</div>
             			<% } %>
             			<% isFirst = false; %>
