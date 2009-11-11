@@ -1657,12 +1657,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		if (tvp != null)
 			tvp.refresh();
 			
-		if (selectedItem instanceof com.cannontech.database.data.lite.LiteBase)
-		{
-			com.cannontech.database.data.lite.LiteBase lb = (com.cannontech.database.data.lite.LiteBase)selectedItem;
-			tvp.selectLiteBase( new javax.swing.tree.TreePath ( tvp.getTree().getModel().getRoot() ),lb );
-	
-		}
+		if (selectedItem instanceof LiteBase)
+        {
+            LiteBase lb = (LiteBase)selectedItem;
+            tvp.selectLiteBase(tvp.getTree().getModel(), lb);
+        }
 		else if( selectedItem instanceof String)
 		{
 			tvp.selectByString( selectedItem.toString());

@@ -1,5 +1,7 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.data.lite.LiteBase;
+
 /**
  * This type was created in VisualAge.
  */
@@ -12,6 +14,12 @@ public class MCTTreeModel extends DeviceTreeModel
 public MCTTreeModel() {
 	super( new DBTreeNode("MCTs") );
 }
+
+@Override
+public boolean isTreePrimaryForObject(LiteBase lb) {
+    return false;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/22/2002 4:11:23 PM)

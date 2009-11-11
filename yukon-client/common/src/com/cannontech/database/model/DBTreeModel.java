@@ -165,8 +165,9 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
         return lb;
     }
     
-    public boolean isLiteTypeSelectable(int liteType) {
-        return isLiteTypeSupported(liteType);
+    @Override
+    public boolean isTreePrimaryForObject(LiteBase lb) {
+        return isLiteTypeSupported(lb.getLiteType());
     }
     
     public String toString() {

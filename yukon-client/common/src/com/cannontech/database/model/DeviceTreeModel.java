@@ -7,12 +7,14 @@ import java.util.List;
 
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceTreeModel extends DBTreeModel 
@@ -275,6 +277,20 @@ public boolean insertTreeObject( LiteBase lb )
 
 	return false;
 }
+
+@Override
+public boolean isTreePrimaryForObject(LiteBase lb) {
+    if (lb instanceof LiteYukonPAObject) {
+        PaoType paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
+        return isDeviceValid(paoType.getPaoCategory().getCategoryId(), paoType.getPaoClass().getPaoClassId(), paoType.getDeviceTypeId());
+    }
+    
+    if (lb instanceof LitePoint) {
+        return true;
+    }
+    return false;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/22/2002 4:11:23 PM)

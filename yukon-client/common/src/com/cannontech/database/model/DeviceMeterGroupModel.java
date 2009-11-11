@@ -53,6 +53,11 @@ public class DeviceMeterGroupModel extends DBTreeModel
     			   || liteType == LiteTypes.DEVICE_METERNUMBER );	
     }
     
+    @Override
+    public boolean isTreePrimaryForObject(LiteBase lb) {
+        return false;
+    }
+    
     public boolean isDeviceValid( int category_, int class_, int type_ )
     {
     	return ( (DeviceTypesFuncs.isMCT(type_) || DeviceTypesFuncs.isMeter(type_))

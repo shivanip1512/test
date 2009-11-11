@@ -8,6 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -22,6 +23,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -31,12 +33,12 @@ import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.google.common.base.Predicate;
 
 public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, ItemListener
 {
@@ -349,11 +351,12 @@ public void itemStateChanged(ItemEvent event) {
 
 	if( event.getStateChange() == ItemEvent.SELECTED )
 	{
-//temp code
-java.util.Date timerStop = null;
-java.util.Date timerStart = new java.util.Date();
-//temp code
-
+	    final LiteBaseTreeModel model = 
+	        (LiteBaseTreeModel) getSortByComboBox().getSelectedItem();
+	    
+	    // nothing to do, model was likely programmatically set
+	    if (model == getTree().getModel()) return;
+	    
 		//Store the current selection before we switch models
 		Object value = getSelectedItem();
 
@@ -361,11 +364,10 @@ java.util.Date timerStart = new java.util.Date();
 		LiteBaseTreeModel previousModel = getCurrentTreeModel();
 		((DefaultMutableTreeNode)previousModel.getRoot()).removeAllChildren();
 
-		if( value != null )
-			selectedItems.put(  getCurrentTreeModel(), getSelectedItem() );
+		if (value != null ) {
+            selectedItems.put(getCurrentTreeModel(), value);
+        }
 		
-		final LiteBaseTreeModel model = 
-			(LiteBaseTreeModel) getSortByComboBox().getSelectedItem();
 
 		getTree().setModel(model);
 		try
@@ -381,8 +383,8 @@ java.util.Date timerStart = new java.util.Date();
 
 			        if( itemToRestore != null )
 			        {
-			            TreePath selectPath = com.cannontech.common.util.CtiUtilities.getTreePath( getTree(), itemToRestore );
-			            getTree().getSelectionModel().setSelectionPath( selectPath );
+			            TreePath selectPath = CtiUtilities.getTreePath( getTree(), itemToRestore );
+			            selectPath(model, selectPath);
 			        }
 			    }
 			});  //time hog on large DB's possibly!!
@@ -392,13 +394,6 @@ java.util.Date timerStart = new java.util.Date();
 			CTILogger.error( "caught exception while updating tree model", e );
 		}		
 
-		
-//temp code
-timerStop = new java.util.Date();
-com.cannontech.clientutils.CTILogger.info( 
-    (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for TreeViewPanel.itemStateChanged(ItemEvent) setModel" );
-//temp code
-		
 	}
 }
 
@@ -473,112 +468,113 @@ public boolean selectByString(String str)
 	return false;	
 }
 
-public boolean selectLiteBase(TreePath path, LiteBase lBase ) 
-{
-	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-	
-	if( node.getUserObject() instanceof com.cannontech.database.data.lite.LiteBase 
-		 && node.getUserObject().equals(lBase) )
-	{
-		getTree().setSelectionPath( path );
-		getTree().scrollPathToVisible( path );
-		return true;
-	}
-	else
-	if( node.getChildCount() == 0  )
-	{
-		return false;
-	}
-	else
-	{
-		for( int i = 0; i < node.getChildCount(); i++ )
-		{
-			Object nextPathObjs[] = new Object[path.getPath().length +1];
+public boolean selectLiteBase(TreeModel model, final LiteBase lBase ) {
+    TreePath foundPath = findMatchingPath(model, lBase);
 
-			System.arraycopy( path.getPath(), 0, nextPathObjs, 0, path.getPath().length );
+    if (foundPath != null) {
+        selectPath(model, foundPath);
+        return true;
+    }
 
-			nextPathObjs[path.getPath().length] = node.getChildAt(i);
-			
-			TreePath nextPath = new TreePath(nextPathObjs);
-			
-			if( selectLiteBase(nextPath, lBase) )
-				return true;
+    return false;
+}
 
-		}
+private void selectPath(TreeModel model, TreePath path) {
+    getTree().setModel(model);
+    getTree().setSelectionPath(path);
+    getTree().scrollPathToVisible(path);
+}
 
-		return false;
-	}
-	
-		
+private static TreePath findMatchingPath(TreeModel model, final LiteBase lBase) {
+    Predicate<DefaultMutableTreeNode> predicate = new Predicate<DefaultMutableTreeNode>() {
+        public boolean apply(DefaultMutableTreeNode node) {
+            Object userObject = node.getUserObject();
+            return (userObject instanceof LiteBase) && (userObject.equals(lBase));
+        }
+    };
+    
+    TreePath rootPath = new TreePath(model.getRoot());
+    TreePath foundPath = findPath(rootPath,
+                                  DefaultMutableTreeNode.class,
+                                  predicate);
+    return foundPath;
+}
+
+private static <T extends TreeNode> TreePath findPath(TreePath base, Class<T> treeNodeType,
+        Predicate<? super T> predicate) {
+    T node = treeNodeType.cast(base.getLastPathComponent());
+    if (predicate.apply(node)) {
+        return base;
+    }
+
+    Enumeration<?> children = node.children();
+    while (children.hasMoreElements()) {
+        TreeNode childNode = (TreeNode) children.nextElement();
+        TreePath childPath = base.pathByAddingChild(childNode);
+        TreePath foundPath = findPath(childPath, treeNodeType, predicate);
+        if (foundPath != null) {
+            return foundPath;
+        }
+    }
+
+    return null;
 }
 
 /**
  * This method will select objects looking in current tree model first
  */
-public boolean selectLiteObject(final LiteBase liteBase) {
-    if( liteBase == null ) {
-        getTree().getSelectionModel().setSelectionPath( null );
-        return false;
-    } else {
-        TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
+public void selectLiteObject(final LiteBase liteBase) {
+    if (liteBase == null) {
+        getTree().getSelectionModel().setSelectionPath(null);
+        return;
+    }
         
-        if( selectLiteBase(rootPath, liteBase) ) {
+    // look in the currently selected model
+    if (selectLiteBase(getCurrentTreeModel(), liteBase)) {
+        return;
+    }
+
+    for (int i = 0; i < getSortByComboBox().getModel().getSize(); i++) {
+        final DBTreeModel model = (DBTreeModel) getSortByComboBox().getItemAt(i);
+        final int sortByIndex = i;
+
+        // see if this is the appropriate tree for this object
+        // the first model that passes this test will be used (note return statement inside for loop)
+        if (!model.isTreePrimaryForObject(liteBase)) continue;
+
+        TreePath matchingPath = findMatchingPath(model, liteBase);
+        if (matchingPath != null) {
+            selectPath(model, matchingPath);
+            getSortByComboBox().setSelectedIndex(sortByIndex);
             invalidate();
             repaint();
-            return true;
-        } else {
-            for( int i = 0; i < getSortByComboBox().getModel().getSize(); i++ ) {
-                final DBTreeModel model = (DBTreeModel) getSortByComboBox().getItemAt(i);
-                final int sortByIndex = i;
-                
-                if (!model.isLiteTypeSelectable(liteBase.getLiteType()))continue;
-                
-                rootPath = new TreePath( model.getRoot() );
+            return;
+        }
 
-                if( selectLiteBase(rootPath, liteBase) ) {
-                    getSortByComboBox().setSelectedIndex( sortByIndex );
+        // try reloading model
+        model.update(new Runnable() {
+            public void run() {
+                TreePath matchingPath = findMatchingPath(model, liteBase);
+
+                if (matchingPath != null) {
+                    selectPath(model, matchingPath);
+                    getSortByComboBox().setSelectedIndex(sortByIndex);
                     invalidate();
                     repaint();
-                    return true;
                 }
-                
-                // try reloading model
-                model.update(new Runnable() {
-                    public void run() {
-                        getTree().setModel(model);
-
-                        TreePath rootPath = new TreePath( model.getRoot() );
-
-                        if( selectLiteBase(rootPath, liteBase) ) {
-                            getSortByComboBox().setSelectedIndex( sortByIndex );
-                            invalidate();
-                            repaint();
-                        }
-                    }
-                });
-            } 
-        }
-        
-        if(liteBase instanceof LitePoint) {  // Change to device tree for points.
-            getSortByComboBox().setSelectedIndex(1);
-            DBTreeModel model = (DBTreeModel) getSortByComboBox().getSelectedItem();
-            getTree().setModel(model);
-            rootPath = new TreePath( getCurrentTreeModel().getRoot() );
-            getTree().setSelectionPath( rootPath );
-            getTree().scrollPathToVisible( rootPath );
-            invalidate();
-            repaint();
-        }
-        return false;
+            }
+        });
+        return;
     }
+
 }
 
 /**
  * This method will select objects looking in current tree model first
  */
-public boolean selectObject(DBPersistent obj) {
+public void selectObject(DBPersistent obj) {
     final LiteBase liteBase = LiteFactory.createLite(obj);
-    return selectLiteObject(liteBase);
+    selectLiteObject(liteBase);
 }
 
 private boolean selectString(String val, TreePath path) {

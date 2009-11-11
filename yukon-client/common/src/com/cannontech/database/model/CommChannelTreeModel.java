@@ -5,6 +5,8 @@ package com.cannontech.database.model;
  */
 import javax.swing.tree.TreePath;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
@@ -42,6 +44,15 @@ public CommChannelTreeModel() {
 public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT );
+}
+
+@Override
+public boolean isTreePrimaryForObject(LiteBase lb) {
+    if (lb instanceof LiteYukonPAObject) {
+        PaoType paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
+        return paoType.getPaoCategory() == PaoCategory.PORT;
+    }
+    return false;
 }
 
 /**

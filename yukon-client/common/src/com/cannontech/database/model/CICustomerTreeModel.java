@@ -5,7 +5,6 @@ package com.cannontech.database.model;
  */
 import java.awt.Cursor;
 import java.awt.Frame;
-import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 import javax.swing.ProgressMonitor;
@@ -13,14 +12,12 @@ import javax.swing.SwingWorker;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.IDatabaseCache;
 
 
 /* *******
@@ -113,8 +110,8 @@ public boolean isLiteTypeSupported( int liteType )
 }
 
 @Override
-public boolean isLiteTypeSelectable(int liteType) {
-    return liteType == com.cannontech.database.data.lite.LiteTypes.CUSTOMER_CI;
+public boolean isTreePrimaryForObject(LiteBase liteBase) {
+    return liteBase.getLiteType() == com.cannontech.database.data.lite.LiteTypes.CUSTOMER_CI;
 }
 
 public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)

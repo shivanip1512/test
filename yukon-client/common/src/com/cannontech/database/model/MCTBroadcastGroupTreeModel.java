@@ -2,7 +2,9 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 //This models has the following:
 //		1st Level = MCT Broadcast Groupings YukonPAOBjects
@@ -43,6 +45,15 @@ public boolean insertTreeObject( LiteBase lb )
 public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT );
+}
+
+@Override
+public boolean isTreePrimaryForObject(LiteBase lb) {
+    if (lb instanceof LiteYukonPAObject) {
+        PaoType paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
+        return paoType == PaoType.MCTBROADCAST;
+    }
+    return false;
 }
 
 /**

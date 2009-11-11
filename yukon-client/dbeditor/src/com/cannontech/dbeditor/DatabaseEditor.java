@@ -372,20 +372,7 @@ public void viewMenuRefreshAction() {
     	treeViewPanel.refresh();
     	if(holder != null && holder instanceof LiteBase)
     	{
-    		//reselect the object, wherever it may have ended up now
-    		//make sure it isn't a point, as this will result in a failed selection
-    		//which will leave the treeviewpanel on the final sort-by model
-    		if(! (holder instanceof LitePoint))
-    			treeViewPanel.selectLiteObject((LiteBase)holder);
-    		DefaultMutableTreeNode tempNode = treeViewPanel.getSelectedNode();
-    		
-    		if(tempNode != null)
-    		{
-    			javax.swing.tree.TreeNode[] path = tempNode.getPath();
-    			javax.swing.tree.TreePath newPath = new javax.swing.tree.TreePath(path);
-    			
-    			treeViewPanel.selectLiteBase(newPath, (LiteBase)holder);
-    		}
+    	    treeViewPanel.selectLiteObject((LiteBase)holder);
     	}
     	
     	if( getConnToDispatch().isValid() )
@@ -2554,7 +2541,8 @@ public void selectionPerformed(WizardPanelEvent event)
 			//Bring the editor up for the newly created Object
 			if (successfullInsertion && selectInTree)
 			{
-			    selectWorked = getTreeViewPanel().selectObject(newItem);
+			    getTreeViewPanel().selectObject(newItem);
+			    selectWorked = true;
 			}
 
 		}
