@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
@@ -38,21 +39,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     private SimpleTableAccessTemplate<ValidationMonitor> template;
     private DeviceGroupService deviceGroupService;
     
-    private static final String selectAllSql;
-    private static final String selectById;
-    private static final String selectCountByName;
-    private static final String deleteById;
-    private static final String TABLE_NAME = "ValidationMonitor";
-    
     static {
-        
-        selectAllSql = "SELECT * FROM " + TABLE_NAME;
-
-        selectById = selectAllSql + " WHERE ValidationMonitorId = ?";
-        selectCountByName = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE ValidationMonitorName = ?";
-        
-        deleteById = "DELETE FROM " + TABLE_NAME + " WHERE ValidationMonitorId = ?";
-        
         rowMapper = ValidationMonitorDaoImpl.createRowMapper();
     }
     
@@ -85,11 +72,10 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public ValidationMonitor getById(int validationMonitorId) throws ValidationMonitorNotFoundException {
-        
         ValidationMonitor validationMonitor = null;
-        
+        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM ValidationMonitor WHERE ValidationMonitorId = ").appendArgument(validationMonitorId);
         try {
-            validationMonitor = simpleJdbcTemplate.queryForObject(selectById, rowMapper, validationMonitorId);
+            validationMonitor = simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper, sql.getArguments());
         } catch (EmptyResultDataAccessException e) {
             throw new ValidationMonitorNotFoundException();
         }
@@ -99,8 +85,8 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     
     @Override
     public boolean processorExistsWithName(String name) {
-
-        int c = simpleJdbcTemplate.queryForInt(selectCountByName, name);
+        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT COUNT(*) FROM ValidationMonitor WHERE ValidationMonitorName = ").appendArgument(name);
+        int c = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
         
         return c > 0;
     }
@@ -108,13 +94,14 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ValidationMonitor> getAll() {
-        return simpleJdbcTemplate.query(selectAllSql, rowMapper);
+        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM ValidationMonitor");
+        return simpleJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
     }
     
     @Override
     public boolean delete(int validationMonitorId) {
-        
-        return simpleJdbcTemplate.update(deleteById, validationMonitorId) > 0;
+        SqlStatementBuilder sql = new SqlStatementBuilder("DELETE FROM ValidationMonitor WHERE ValidationMonitorId = ").appendArgument(validationMonitorId);
+        return simpleJdbcTemplate.update(sql.getSql(), sql.getArguments()) > 0;
     }
     
     private static final ParameterizedRowMapper<ValidationMonitor> createRowMapper() {
@@ -161,7 +148,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<ValidationMonitor>(simpleJdbcTemplate, nextValueHelper);
-        template.withTableName(TABLE_NAME);
+        template.withTableName("ValidationMonitor");
         template.withPrimaryKeyField("ValidationMonitorId");
         template.withFieldMapper(validationMonitorFieldMapper); 
     }
