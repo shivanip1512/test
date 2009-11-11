@@ -87,8 +87,7 @@ public class VeeReviewController {
         // add keepers until the next distinct device and count >= IDEAL_PAGE_COUNT
         int lastPaoId = 0;
         List<ReviewPoint> keepReviewPoints = new ArrayList<ReviewPoint>();
-        List<Integer> changeIdList = new ArrayList<Integer>(commonChangeIdReviewPoints.keySet());
-        for (int changeId : changeIdList) {
+        for (int changeId : commonChangeIdReviewPoints.keySet()) {
         	
         	List<ReviewPoint> rpList = commonChangeIdReviewPoints.get(changeId);
         	ReviewPoint keeper = reviewPointingOrdering.min(rpList);
