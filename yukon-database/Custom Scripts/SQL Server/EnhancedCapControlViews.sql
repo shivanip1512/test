@@ -59,7 +59,7 @@ LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId 
 LEFT OUTER JOIN CapControlFeeder FDR ON FDR.FeederId = YP2.PAObjectId 
-LEFT OUTER JOIN CapControlSubstation CCS on CCS.SubstationId = YP5.PAObjectId;
+LEFT OUTER JOIN CapControlSubstation CCS on CCS.SubstationId = YP5.PAObjectId
 GO
 
 /* EnhancedCCOperationsASent View
@@ -79,7 +79,7 @@ CASE WHEN Text LIKE 'Manual%' THEN 'MAN'
      ELSE 'VAR' END  AS OPReason 
 FROM CCEventLog 
 WHERE EventType = 1 
-AND ActionId > -1;
+AND ActionId > -1
 GO
 
 /* EnhancedCCOperations View
@@ -117,7 +117,7 @@ LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = CCOAS.SubId
 LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationBusId 
 LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
 LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId 
-LEFT JOIN CapBankAdditional CBA ON CBA.DeviceID = Point.PAObjectID;
+LEFT JOIN CapBankAdditional CBA ON CBA.DeviceID = Point.PAObjectID
 GO
   
 /* EnhancedCCInventory View
@@ -166,7 +166,7 @@ LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
 LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId 
-LEFT OUTER JOIN CapControlFeeder FDR ON FDR.FeederId = YP2.PAObjectId;
+LEFT OUTER JOIN CapControlFeeder FDR ON FDR.FeederId = YP2.PAObjectId
 GO
 
 /* EnhancedCCCapInventory View
@@ -198,5 +198,5 @@ LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
                  FROM DynamicPAOInfo 
                  WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
-LEFT OUTER JOIN CapControlFeeder FDR ON FDR.FeederId = YP2.PAObjectId; 
+LEFT OUTER JOIN CapControlFeeder FDR ON FDR.FeederId = YP2.PAObjectId 
 GO
