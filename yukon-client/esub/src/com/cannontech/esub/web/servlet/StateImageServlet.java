@@ -25,13 +25,12 @@ public class StateImageServlet extends HttpServlet {
 	/**
 	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
 	 */
-	protected void service(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException {
-		
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String referrer = req.getParameter("referrer");
 		int id = Integer.parseInt(req.getParameter("id"));
 	
 		Writer writer = resp.getWriter();
-		writer.write(UpdateUtil.getStateImageName(id));	
+		writer.write(UpdateUtil.getStateImageName(id, referrer));	
 		writer.flush();
 	}
 

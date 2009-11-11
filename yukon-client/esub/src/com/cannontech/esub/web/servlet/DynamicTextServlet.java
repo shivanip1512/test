@@ -45,9 +45,8 @@ public class DynamicTextServlet extends HttpServlet {
 	/**
 	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
 	 */
-	protected void service(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException {
-		
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String refferer = req.getParameter("referrer");
 		String idStr = req.getParameter(POINT_ID_KEY);
 		String displayAttribStr = req.getParameter(DISPLAY_ATTRIBUTE_KEY);
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
@@ -56,7 +55,7 @@ public class DynamicTextServlet extends HttpServlet {
             int id = Integer.parseInt(idStr);
     		int dattrib = Integer.parseInt(displayAttribStr);
             Writer writer = resp.getWriter();     
-            String text = UpdateUtil.getDynamicTextString(id, dattrib, userContext);
+            String text = UpdateUtil.getDynamicTextString(id, dattrib, userContext, refferer);
             writer.write(text);
             writer.flush();
             }

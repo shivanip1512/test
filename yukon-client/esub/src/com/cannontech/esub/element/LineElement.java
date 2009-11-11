@@ -14,6 +14,8 @@ import java.util.Properties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -26,7 +28,7 @@ import com.loox.jloox.LxArrowElement;
 /**
  * @author: asolberg
  */
-public class LineElement extends LxAbstractLine implements DrawingElement {
+public class LineElement extends LxAbstractLine implements DrawingElement, IdAttachable {
     private static final String ELEMENT_ID = "lineElement";
     private static final int CURRENT_VERSION = 2;
     private boolean isNew = true;
@@ -588,5 +590,51 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
             }
         }
         setLineBlink(blink);
+    }
+
+    @Override
+    public boolean fixIds() {
+        PointDao pointDao = DaoFactory.getPointDao();
+        
+        if(colorPointID != -1){
+            try {
+                pointDao.getLitePoint(colorPointID);
+            } catch (NotFoundException e){
+                setColorPointID(-1);
+            }
+        }
+        
+        if(thicknessPointID != -1){
+            try {
+                pointDao.getLitePoint(thicknessPointID);
+            } catch (NotFoundException e){
+                setThicknessPointID(-1);
+            }
+        }
+        
+        if(arrowPointID != -1){
+            try {
+                pointDao.getLitePoint(arrowPointID);
+            } catch (NotFoundException e){
+                setArrowPointID(-1);
+            }
+        }
+        
+        if(opacityPointID != -1){
+            try {
+                pointDao.getLitePoint(opacityPointID);
+            } catch (NotFoundException e){
+                setOpacityPointID(-1);
+            }
+        }
+        
+        if(blinkPointID != -1){
+            try {
+                pointDao.getLitePoint(blinkPointID);
+            } catch (NotFoundException e){
+                setBlinkPointID(-1);
+            }
+        }
+        return false;
     }
 }

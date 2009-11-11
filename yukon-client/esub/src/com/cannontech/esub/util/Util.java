@@ -10,12 +10,16 @@ import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -26,6 +30,7 @@ import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.RectangleElement;
 import com.cannontech.user.SystemUserContext;
+import com.google.common.collect.Lists;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 import com.loox.jloox.LxRectangle;
@@ -317,5 +322,45 @@ public class Util {
         rectangle.setTransparency(lxRectangle.getTransparency());
         rectangle.setLineThickness(lxRectangle.getLineThickness());
         return rectangle;
+    }
+	
+	public static int[] fixDeviceIds(int[] oldArray){
+        PaoDao paoDao = DaoFactory.getPaoDao();
+        List<Integer> newDeviceIds = Lists.newArrayList();
+        for(int deviceId : oldArray){
+            try {
+                paoDao.getYukonPao(deviceId);
+                newDeviceIds.add(deviceId);
+            } catch (NotFoundException e){
+                CTILogger.error("DeviceId: " + deviceId + " not found.");
+            }
+        }
+        int newDeviceIdArray[] = new int[newDeviceIds.size()];
+        int i=0;
+        for(Integer deviceId : newDeviceIds){
+            newDeviceIdArray[i] = deviceId;
+            i++;
+        }
+        return newDeviceIdArray;
+    }
+    
+    public static int[] fixPointIds(int[] oldArray){
+        PointDao pointDao = DaoFactory.getPointDao();
+        List<Integer> newPointIds = Lists.newArrayList();
+        for(int pointId : oldArray){
+            try {
+                pointDao.getLitePoint(pointId);
+                newPointIds.add(pointId);
+            } catch (NotFoundException e){
+                CTILogger.error("PointId: " + pointId + " not found.");
+            }
+        }
+        int newPointIdArray[] = new int[newPointIds.size()];
+        int i=0;
+        for(Integer pointId : newPointIds){
+            newPointIdArray[i] = pointId;
+            i++;
+        }
+        return newPointIdArray;
     }
 }

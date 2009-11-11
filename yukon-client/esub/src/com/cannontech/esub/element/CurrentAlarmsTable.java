@@ -11,6 +11,7 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistCurrentAlarmsTable;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.esub.table.Table;
+import com.cannontech.esub.util.Util;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxAbstractRectangle;
 
@@ -20,7 +21,7 @@ import com.loox.jloox.LxAbstractRectangle;
  * 
  * @author alauinger
  */
-public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingElement {	
+public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingElement, IdAttachable {	
 	
 	private static final String ELEMENT_ID = "alarmsTable";
 	private static final int CURRENT_VERSION = 3;
@@ -44,7 +45,7 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 		getTable().setTitle(TABLE_TITLE);
 		
 		PointAlarmTableModel model = new PointAlarmTableModel();	
-		model.refresh();
+		model.refresh(null);
 		getTable().setModel(model);
 		
 		setSize(DEFAULT_WIDTH,DEFAULT_HEIGHT);
@@ -208,5 +209,18 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 	public void setUserContextOnTable(YukonUserContext userContext) {
 	    ((PointAlarmTableModel)getTable().getModel()).setUserContext(userContext);
 	}
+
+    @Override
+    public boolean fixIds() {
+        int newDeviceIds[] = Util.fixDeviceIds(getDeviceIds());
+        setDeviceIds(newDeviceIds);
+        int newPointIds[] = Util.fixPointIds(getPointIds());
+        setPointIds(newPointIds);
+        if(getDeviceIds().length == 0 && getPointIds().length == 0 && getAlarmCategoryIds().length == 0) {
+            getTable().setTitle("BROKEN ALARMS TABLE");
+            return true;
+        }
+        return false;
+    }
 
 }

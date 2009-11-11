@@ -12,6 +12,7 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.esub.element.IdAttachable;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.RectangleElement;
 import com.cannontech.esub.svg.ESubSVGGenerator;
@@ -101,7 +102,21 @@ public class Drawing implements Serializable {
 		
 		getLxView().setSize( getMetaElement().getDrawingWidth(), getMetaElement().getDrawingHeight());
 	}
-
+	
+	public synchronized boolean fixDrawing(){
+	    boolean needsAttention = false;
+	    LxComponent[] comps = lxGraph.getComponents();
+	    for (LxComponent component : comps) {
+	        if(component instanceof IdAttachable){
+	            IdAttachable idAttachable = (IdAttachable)component;
+	            if(idAttachable.fixIds()){
+	                needsAttention = true;
+	            }
+	        }
+	    }
+	    return needsAttention;
+	}
+	
 	public synchronized void save(String fileName) {						
         exportAs(fileName);
 	}

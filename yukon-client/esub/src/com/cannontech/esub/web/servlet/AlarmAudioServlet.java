@@ -18,9 +18,11 @@ import net.sf.json.JSONObject;
 
 import org.springframework.util.FileCopyUtils;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.Signal;
 
 /**
@@ -39,7 +41,7 @@ public class AlarmAudioServlet extends HttpServlet {
      *      HttpServletResponse)
      */
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        String referrer = req.getParameter("referrer");
         HttpSession session = req.getSession(false);
 
         // is audio even allowed?
@@ -68,14 +70,33 @@ public class AlarmAudioServlet extends HttpServlet {
         List<Integer> deviceIds = StringUtils.parseIntStringForList(deviceIdStr);
         List<Integer> pointIds = StringUtils.parseIntStringForList(pointIdStr);
         List<Integer> alarmCategoryIds = StringUtils.parseIntStringForList(alarmCategoryIdStr);
-
-        List<Signal> deviceSigs = DaoFactory.getAlarmDao().getSignalsForPaos(deviceIds);
-        List<Signal> pointSigs = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
-        List<Signal> alarmCategorySigs = DaoFactory.getAlarmDao().getSignalsForAlarmCategories(alarmCategoryIds);
-
         List<Signal> allSigs = new LinkedList<Signal>();
-        allSigs.addAll(deviceSigs);
-        allSigs.addAll(pointSigs);
+
+        try {
+            List<Signal> deviceSigs = DaoFactory.getAlarmDao().getSignalsForPaos(deviceIds);
+            allSigs.addAll(deviceSigs);
+        } catch (DynamicDataAccessException e){
+            Throwable cause = e.getCause();
+            if(cause.getMessage().contains("not found")){ /* Referencing bad device ids. */
+                CTILogger.error("Alarm Audio Check Error: devices ( " + deviceIds + " ) not found on page: " + referrer);
+            } else { /*  Maybe we lost our dispatch connection */
+                CTILogger.error("Alarm Audio Check Error: could not get dynamic data.", e);
+            }
+        }
+
+        try {
+            List<Signal> pointSigs = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
+            allSigs.addAll(pointSigs);
+        } catch (DynamicDataAccessException e){
+            Throwable cause = e.getCause();
+            if(cause.getMessage().contains("not found")){ /* Referencing bad point ids. */
+                CTILogger.error("Alarm Audio Check Error: points ( " + pointIds + " ) not found on page: " + referrer);
+            } else { /*  Maybe we lost our dispatch connection */
+                CTILogger.error("Alarm Audio Check Error: could not get dynamic data.", e);
+            }
+        }
+        
+        List<Signal> alarmCategorySigs = DaoFactory.getAlarmDao().getSignalsForAlarmCategories(alarmCategoryIds);
         allSigs.addAll(alarmCategorySigs);
         Date lastAlarmTimestamp = findLatestTimestamp(allSigs);
 

@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.message.dispatch.message.Signal;
@@ -128,26 +129,56 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * Fill up with fresh data!
 	 * This only loads alarms, not conditions!  * 
 	 */
-	public void refresh() {
+	public boolean refresh(String referrer) {
         // Since a given signal can be for a device, point, and alarm category
         // we need to only accept each signal once.
         // Use a hashset that only accepts unique objects
         HashSet<Signal> allSignals = new HashSet<Signal>();
 		rows = new ArrayList<AlarmRow>();
 		
+		boolean needsAttention = false;
+		
+		if(_pointIds.length == 0 && _deviceIds.length == 0 && _alarmCategoryIds.length == 0){
+            needsAttention = true;
+        }
+		
 		List<Integer> paoIdsList = new ArrayList<Integer>();
         for(int paoId : _deviceIds) {
             paoIdsList.add(paoId);
         }
-		List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
-        allSignals.addAll(deviceSignals);
+        
+        try{
+    		List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
+            allSignals.addAll(deviceSignals);
+    	} catch (DynamicDataAccessException e){
+            Throwable cause = e.getCause();
+            if(cause.getMessage().contains("not found")){ /* Referencing bad device ids. */
+                CTILogger.error("AlarmTable Error: devices ( " + paoIdsList + " ) not found" + referrer != null ? " on page: " + referrer : ".");
+                needsAttention = true;
+            } else { /*  Maybe we lost our dispatch connection */
+                CTILogger.error("AlarmTable Error: could not get dynamic data.", e);
+            }
+        }
 		
 		List<Integer> pointIdsList = new ArrayList<Integer>();
         for(int pointId : _pointIds) {
             pointIdsList.add(pointId);
         }
-		List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
-		allSignals.addAll(pointSignals);
+        try {
+            List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
+            allSignals.addAll(pointSignals);
+        } catch (DynamicDataAccessException e){
+            Throwable cause = e.getCause();
+            if(cause.getMessage().contains("not found")){ /* Referencing bad point ids. */
+                String message = cause.getMessage();
+                String badPointIds = message.substring(message.indexOf("(") +1 , message.indexOf(")"));
+                String endMessage = referrer != null ? " on page: " + referrer : ".";
+                CTILogger.error("AlarmTable Error: points ( " + badPointIds + " ) not found" + endMessage);
+                needsAttention = true;
+            } else { /*  Maybe we lost our dispatch connection */
+                CTILogger.error("AlarmTable Error: could not get dynamic data.", e);
+            }
+        }
 		
 		for (int i = 0; i < _alarmCategoryIds.length; i++) {
 			int alarmCategoryId = _alarmCategoryIds[i];
@@ -164,6 +195,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
         }
         
 		sortRows();
+		return needsAttention;
 	}	
 
 	/**

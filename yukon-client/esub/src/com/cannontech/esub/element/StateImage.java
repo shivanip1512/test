@@ -12,11 +12,11 @@ import java.util.Properties;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistStateImage;
 import com.cannontech.esub.util.Util;
@@ -27,12 +27,12 @@ import com.loox.jloox.LxAbstractImage;
  * Creation date: (1/8/2002 1:47:20 PM)
  * @author: Aaron Lauinger
  */
-public class StateImage extends LxAbstractImage implements DrawingElement, YukonImageElement  {
+public class StateImage extends LxAbstractImage implements DrawingElement, YukonImageElement, IdAttachable  {
 		
 	private static final String ELEMENT_ID = "stateImage";
 	private static final int CURRENT_VERSION = 3;
 	
-	private int pointID = PointTypes.SYSTEM_POINT;
+	private int pointID = -1;
 	
 	// Map<Integer - rawstate, Integer - image id>
 	// There may or may not be an entry for all of the points stategroups
@@ -302,4 +302,21 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 	public void setCustomImageMap(Map<Integer, Integer> m) {
 		customImageMap = m;
 	}
+
+    @Override
+    public boolean fixIds() {
+        PointDao pointDao = DaoFactory.getPointDao();
+        if(getPointID() != -1) {
+            try {
+                pointDao.getLitePoint(pointID);
+            } catch (NotFoundException e) {
+                setPointID(-1);
+                byte[] imgBuf = Util.DEFAULT_IMAGE_BYTES;
+                Image img = Util.prepareImage(imgBuf);      
+                setImage(img);
+                return true;
+            }
+        }
+        return false;
+    }
 }

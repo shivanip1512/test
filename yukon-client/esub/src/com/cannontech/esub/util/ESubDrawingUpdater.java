@@ -1,5 +1,6 @@
 package com.cannontech.esub.util;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,9 +10,11 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -25,8 +28,8 @@ import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.model.PointAlarmTableModel;
+import com.cannontech.esub.table.Table;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxComponent;
@@ -138,7 +141,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
-                CTILogger.error("The Color point (pointId:"+ colorPoint + ") might have been deleted!", nfe);
+                CTILogger.error("LineElement Error: color pointid: " + colorPoint + " not found.");
             }
 
             if (liteColorPoint != null) {
@@ -178,7 +181,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 liteThicknessPoint = DaoFactory.getPointDao().getLitePoint(thicknessPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
-                CTILogger.error("The Thickness point (pointId:"+ thicknessPoint + ") might have been deleted!", nfe);
+                CTILogger.error("LineElement Error: thickness pointid: " + thicknessPoint + " not found.");
             }
 
             if (liteThicknessPoint != null) {
@@ -216,7 +219,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 liteArrowPoint = DaoFactory.getPointDao().getLitePoint(arrowPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
-                CTILogger.error("The arrow point (pointId:"+ arrowPoint + ") might have been deleted!", nfe);
+                CTILogger.error("LineElement Error: arrow pointid: " + arrowPoint + " not found.");
             }
 
             if (liteArrowPoint != null) {
@@ -253,7 +256,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 liteOpacityPoint = DaoFactory.getPointDao().getLitePoint(opacityPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
-                CTILogger.error("The opacity point (pointId:"+ opacityPoint + ") might have been deleted!", nfe);
+                CTILogger.error("LineElement Error: opacity pointid: " + opacityPoint + " not found.");
             }
 
             if (liteOpacityPoint != null) {
@@ -297,14 +300,23 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         for(int paoId : paoIds) {
             paoIdsList.add(paoId);
         }
-        List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
-        for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
-            Signal signal = iter.next();
-            // find out why there is a null in the list!
-            if(signal != null) {
-                if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                    inAlarm = true;
+        try {
+            List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
+            for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
+                Signal signal = iter.next();
+                // find out why there is a null in the list!
+                if(signal != null) {
+                    if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                        inAlarm = true;
+                    }
                 }
+            }
+        } catch (DynamicDataAccessException e){
+            Throwable cause = e.getCause();
+            if(cause.getMessage().contains("not found")){
+                CTILogger.error("AlarmText Error: Some of these devices ( " + paoIdsList + " ) not found.");
+                te.setText("BROKEN ALARM TEXT");
+                return true;
             }
         }
 
@@ -313,14 +325,26 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         for(int pointId : pointIds) {
             pointIdsList.add(pointId);
         }
-        List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
-        for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
-            Signal signal = iter.next();
-            //find out why there is a null in the list!
-            if(signal != null) {
-                if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                    inAlarm = true;
+        
+        try {
+            List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
+            for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
+                Signal signal = iter.next();
+                //find out why there is a null in the list!
+                if(signal != null) {
+                    if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                        inAlarm = true;
+                    }
                 }
+            }
+        } catch (DynamicDataAccessException e){
+            Throwable cause = e.getCause();
+            if(cause.getMessage().contains("not found")){
+                String message = cause.getMessage();
+                String badPointIds = message.substring(message.indexOf("(") +1 , message.indexOf(")"));
+                CTILogger.error("AlarmText Error: points ( " + badPointIds + " ) not found.");
+                te.setText("BROKEN ALARM TEXT");
+                return true;
             }
         }
             
@@ -347,11 +371,17 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
     public boolean updateCurrentAlarmsTable(LxComponent lxComponent) {
         boolean change;
         CurrentAlarmsTable cat = (CurrentAlarmsTable) lxComponent;
-        PointAlarmTableModel tableModel = (PointAlarmTableModel) cat.getTable().getModel();
+        Table table = cat.getTable();
+        PointAlarmTableModel tableModel = (PointAlarmTableModel) table.getModel();
         tableModel.setHideInactive(cat.isHideInactive());
         tableModel.setHideEvents(cat.isHideEvents());
         tableModel.setHideAcknowledged(cat.isHideAcknowledged());
-        tableModel.refresh();
+        boolean needsAttention = tableModel.refresh(null); 
+        if(needsAttention){
+            table.setTitle("BROKEN ALARM TABLE");
+        } else {
+            table.setTitle("Alarms");
+        }
         change = true;
         return change;
     }
@@ -367,9 +397,16 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
     public boolean updateStateImage(boolean change, LxComponent lxComponent) {
         StateImage si = (StateImage) lxComponent;
-        LitePoint lp = si.getPoint();
+        if(si.getPointID() == -1){
+            setBrokenImage(si);
+            return true;
+        }
+        
+        LitePoint lp = null;
+        PointDao pointDao = DaoFactory.getPointDao();
+        try { 
+            lp = pointDao.getLitePoint(si.getPointID());
 
-        if (lp != null) {
             if (lp.getPointType() == PointTypes.ANALOG_POINT 
                     || lp.getPointType() == PointTypes.ACCUMULATOR_DEMAND
                     || lp.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
@@ -394,102 +431,108 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     }
                 }
             }
+            si.updateImage();
+            return change;
+        } catch (NotFoundException e) {
+            CTILogger.error("StateImage Error: point ( " + si.getPointID() + " ) not found.");
+            setBrokenImage(si);
+            return true;
         }
-        si.updateImage();
-        return change;
+    }
+    
+    private void setBrokenImage(StateImage si){
+        byte[] imgBuf = Util.DEFAULT_IMAGE_BYTES;
+        Image img = Util.prepareImage(imgBuf);      
+        si.setImage(img);
     }
 
     public boolean updateDynamicText(boolean change, LxComponent lxComponent) {
         DynamicText dt = (DynamicText) lxComponent;
-            int pointID = dt.getPointId();
+        int pointID = dt.getPointId();
 
-            int colorPoint = dt.getColorPointID();
-            int textPoint = -1;
-            if ((dt.getDisplayAttribs() & PointAttributes.STATE_TEXT) != 0) {
-                textPoint = pointID;
-            }
-            if (colorPoint > 0) {
-                LitePoint liteColorPoint = null;
-                try {
-                    liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
-                }catch(NotFoundException nfe) {
-                    //this point may have been deleted
-                    CTILogger.error("The Color point (pointId:"+ colorPoint + ") might have been deleted!", nfe);
-                }
+        int colorPoint = dt.getColorPointID();
+        int textPoint = -1;
+        if ((dt.getDisplayAttribs() & PointAttributes.STATE_TEXT) != 0) {
+            textPoint = pointID;
+        }
+        if (colorPoint > 0) {
+            try {
+                LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+                if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT
+                    || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
+                    || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
+                    || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
+                    || liteColorPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                    || liteColorPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
+                    || liteColorPoint.getPointType() == PointTypes.CALCULATED_POINT) {
+                    LiteState ls = pointService.getCurrentState(liteColorPoint.getPointID());
+                    if (ls != null) {
+                        dt.setCurrentColorState(ls);
+                        dt.updateColor();
+                        change = true;
+                    }
+                } else {
+                    PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
-                if (liteColorPoint != null) {
-                    if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT 
-                            || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                            || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                            || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
-                            || liteColorPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                            || liteColorPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
-                            || liteColorPoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                        LiteState ls = pointService.getCurrentState(liteColorPoint.getPointID());
+                    if (pData != null) {
+                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             dt.setCurrentColorState(ls);
                             dt.updateColor();
                             change = true;
                         }
-                    } else {
-                        PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
-
-                        if (pData != null) {
-                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
-                            if (ls != null) {
-                                dt.setCurrentColorState(ls);
-                                dt.updateColor();
-                                change = true;
-                            }
-                        }
                     }
                 }
+            } catch (NotFoundException nfe) {
+                // this point may have been deleted
+                CTILogger.error("DynamicText Error: Color point:" + colorPoint + " not found.");
             }
-            if (textPoint > 0) {
-                
-                LitePoint liteTextPoint = null;
-                try {
-                    liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
-                }catch(NotFoundException nfe) {
-                    //this point may have been deleted
-                    CTILogger.error("The text point (pointId:"+ textPoint + ") might have been deleted!", nfe);
-                }
+        }
+        
+        if (textPoint > 0) {
+            try {
+                LitePoint liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
 
-                if (liteTextPoint != null) {
-                    if (liteTextPoint.getPointType() == PointTypes.ANALOG_POINT 
-                            || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                            || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                            || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
-                            || liteTextPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                            || liteTextPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
-                            || liteTextPoint.getPointType() == PointTypes.CALCULATED_POINT) {
-                        LiteState ls = pointService.getCurrentState(liteTextPoint.getPointID());
+                if (liteTextPoint.getPointType() == PointTypes.ANALOG_POINT
+                    || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
+                    || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
+                    || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
+                    || liteTextPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+                    || liteTextPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
+                    || liteTextPoint.getPointType() == PointTypes.CALCULATED_POINT) {
+                    LiteState ls = pointService.getCurrentState(liteTextPoint.getPointID());
+                    if (ls != null) {
+                        dt.setCurrentTextState(ls);
+                        dt.updateText();
+                        change = true;
+                    }
+                } else {
+                    PointValueHolder pData = dynamicDataSource.getPointValue(liteTextPoint.getLiteID());
+
+                    if (pData != null) {
+                        LiteState ls = DaoFactory.getStateDao()
+                            .getLiteState(liteTextPoint.getStateGroupID(),
+                                          (int) pData.getValue());
                         if (ls != null) {
                             dt.setCurrentTextState(ls);
                             dt.updateText();
                             change = true;
                         }
-                    } else {
-                        PointValueHolder pData = dynamicDataSource.getPointValue(liteTextPoint.getLiteID());
-
-                        if (pData != null) {
-                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteTextPoint.getStateGroupID(), (int) pData.getValue());
-                            if (ls != null) {
-                                dt.setCurrentTextState(ls);
-                                dt.updateText();
-                                change = true;
-                            }
-                        }
                     }
                 }
-            }else {
-                String text = UpdateUtil.getDynamicTextString(pointID, dt.getDisplayAttribs(), userContext);
-                if (!text.equals(dt.getText())) {
-                    if (!text.equals(dt.getText())) {
-                        dt.setText(text);
-                    }
-                }
+            } catch (NotFoundException nfe) {
+                // this point may have been deleted
+                dt.setText("BROKEN DYNAMIC TEXT");
+                change = true;
+                CTILogger.error("DynamicText Error: Text point:" + textPoint + " not found.");
             }
+                
+        } else {
+            String text = UpdateUtil.getDynamicTextString(pointID, dt.getDisplayAttribs(), userContext, null);
+            if (!text.equals(dt.getText())) {
+                    dt.setText(text);
+            }
+        }
         return change;
     }
 

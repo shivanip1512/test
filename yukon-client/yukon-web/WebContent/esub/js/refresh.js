@@ -156,7 +156,9 @@ function updateAllTables() {
 function checkAlarmAudio(deviceIds, pointIds, alarmCategoryIds) {
 	var dataStr = '{\'deviceIds\': \'' + deviceIds + '\' ,\'pointIds\': \'' + pointIds + '\' ,\'alarmCategoryIds\': \'' + alarmCategoryIds + '\'}';
 	
-	postURL("/servlet/AlarmAudioServlet", dataStr, function(obj) {
+	url = '/servlet/AlarmAudioServlet?referrer=' + window.location;
+	
+	postURL(url, dataStr, function(obj) {
 		if(obj.content == 'true') {
 			playAlarmAudio();
 		}
@@ -205,7 +207,8 @@ function updateAlarmsTable(node,url) {
 				'&height=' + node.getAttribute('height') +
 				'&acked=' + node.getAttribute('acked') +
 				'&events=' + node.getAttribute('events') +
-				'&inactive=' + node.getAttribute('inactive');		
+				'&inactive=' + node.getAttribute('inactive') +
+				'&referrer=' + window.location;
 				
 				
 	getCtiURL(url,fn2);
@@ -252,8 +255,10 @@ function updateBlinker(node){
 	var blink = node.getAttribute('blink');
 	var blinkPointID = node.getAttribute('blinkid');
 
+	'&referrer=' + window.location;
+	
 	if(blinkPointID > 0) {
-		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + blinkPointID + '&dattrib=4096';
+		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + blinkPointID + '&dattrib=4096' + '&referrer=' + window.location;
         getCtiURL(url, bfn);
 	}else if(blink == "1"){
 		node.setAttribute('isBlinking', 'yes');
@@ -279,7 +284,7 @@ function updateNode(node) {
 
 		var colorPointID = node.getAttribute('colorid');
 		if(colorPointID > 0){
-	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
+	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096' + '&referrer=' + window.location;
 	        getCtiURL(url, cfn);
 	    }
     }
@@ -288,17 +293,17 @@ function updateNode(node) {
     	
 	    var currentStatePointID = node.getAttribute('currentstateid');
 	    if(currentStatePointID > 0){
-	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096';
+	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096' + '&referrer=' + window.location;
 	        getCtiURL(url, tfn);
 	    }else { 
 	    	if (node.getAttribute('dattrib')) {
-		    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
+		    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib') + '&referrer=' + window.location;
 				getCtiURL(url, fn);
 			}
 		}
 	}else{
 		if (node.getAttribute('dattrib')) {
-	    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
+	    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib') + '&referrer=' + window.location;
 			getCtiURL(url, fn);
 		}
 	}
@@ -334,7 +339,7 @@ function updateNode(node) {
 function updateImage(node) {
 	var pointId = node.getAttribute('id');
 	if( !isNaN(pointId) ) {
-		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + pointId + '&dattrib=4096';
+		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + pointId + '&dattrib=4096' + '&referrer=' + window.location;
 		getCtiURL(url, fn);		
 	}
 	
@@ -362,19 +367,19 @@ function updateLine(node) {
     var arrowPointID = node.getAttribute('arrowid');
     var opacityPointID = node.getAttribute('opacityid');
     if(colorPointID > 0){
-        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096' + '&referrer=' + window.location;
         getCtiURL(url, cfn);
     }
     if(thicknessPointID > 0){
-        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + thicknessPointID + '&dattrib=4096';
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + thicknessPointID + '&dattrib=4096' + '&referrer=' + window.location;
         getCtiURL(url, tfn);
     }
     if(arrowPointID > 0){
-        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + arrowPointID + '&dattrib=4096';
+        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + arrowPointID + '&dattrib=4096' + '&referrer=' + window.location;
         getCtiURL(url, afn);
     }
     if(opacityPointID > 0){
-	    url = '/servlet/DynamicTextServlet' + '?' + 'id=' + opacityPointID + '&dattrib=4096';
+	    url = '/servlet/DynamicTextServlet' + '?' + 'id=' + opacityPointID + '&dattrib=4096' + '&referrer=' + window.location;
 	    getCtiURL(url, ofn);
     }
     function cfn(obj) {
@@ -421,8 +426,8 @@ function updateAlarmText(node) {
 	var fill1 = node.getAttribute('fill1'); // not alarming
 	var fill2 = node.getAttribute('fill2'); // alarming
 	var dataStr = '{\'deviceIds\': \'' + deviceIds + '\', \'pointIds\': \'' + pointIds + '\', \'alarmCategoryIds\': \'' + alarmCategoryIds + '\', \'fill1\': \'' + fill1 + '\', \'fill2\': \'' + fill2 + '\'}';
-	
-	postURL("/servlet/AlarmTextStyleServlet", dataStr, function(obj) {
+	url = '/servlet/AlarmTextStyleServlet' + '?referrer=' + window.location;
+	postURL(url, dataStr, function(obj) {
 		if(obj.content) {
 			node.getStyle().setProperty('fill', obj.content);			
 		}

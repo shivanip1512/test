@@ -251,7 +251,6 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         return lineElem;            
     }
 
-    @SuppressWarnings("unchecked")
     private Element createDynamicText(SVGDocument doc, DynamicText text)  {
         
         int x = (int) Math.round(text.getBaseLinePoint1().getX());
@@ -295,10 +294,10 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         
         if(text.getColorPointID() > 0) {
             
-            List<Color> colors = text.getColors();
+            List<Paint> colors = text.getColors();
             for(int i = 0; i < colors.size(); i++) {
-                
-                String colorString = colors.get(i).getRed() +"," + colors.get(i).getGreen() + "," + colors.get(i).getBlue();
+                Color color = (Color)colors.get(i);
+                String colorString = color.getRed() +"," + color.getGreen() + "," + color.getBlue();
                 textElem.setAttributeNS(null, "color" + i, colorString);
             }
         }

@@ -60,7 +60,7 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setCustomTextMap(PersistUtils.readIntStringMap(in));
                     int blink = LxSaveUtils.readInt(in);
                     int blinkPointID = LxSaveUtils.readInt(in);
-                    Map customBlinkMap = PersistUtils.readIntIntMap(in);
+                    Map<Integer, Integer> customBlinkMap = PersistUtils.readIntIntMap(in);
                     elem.setTextBlink(blink);
                     elem.setBlinkPointID(blinkPointID);
                     elem.setCustomBlinkMap(customBlinkMap);
@@ -78,7 +78,7 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setCustomTextMap(PersistUtils.readIntStringMap(in));
                     int blink = LxSaveUtils.readInt(in);
                     int blinkPointID = LxSaveUtils.readInt(in);
-                    Map customBlinkMap = PersistUtils.readIntIntMap(in);
+                    Map<Integer, Integer> customBlinkMap = PersistUtils.readIntIntMap(in);
                     int controlPointId = LxSaveUtils.readInt(in);
                     int currentStateId = LxSaveUtils.readInt(in);
                     elem.setTextBlink(blink);

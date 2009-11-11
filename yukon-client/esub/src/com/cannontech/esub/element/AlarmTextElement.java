@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistAlarmText;
+import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractText;
 
 /**
@@ -20,7 +21,7 @@ import com.loox.jloox.LxAbstractText;
  */
 public class AlarmTextElement
 	extends LxAbstractText
-	implements DrawingElement, Serializable {
+	implements DrawingElement, Serializable, IdAttachable {
 	
 	private static final String ELEMENT_ID = "alarmText";
 	
@@ -170,5 +171,17 @@ public class AlarmTextElement
             pointIds = new int[0];
         }
 		_pointIds = pointIds;
+	}
+	
+	public boolean fixIds(){
+        int newDeviceIds[] = Util.fixDeviceIds(_deviceIds);
+        setDeviceIds(newDeviceIds);
+        int newPointIds[] = Util.fixPointIds(_pointIds);
+        setPointIds(newPointIds);
+        if(getDeviceIds().length == 0 && getPointIds().length == 0 && getAlarmCategoryIds().length == 0) {
+            setText("BROKEN ALARM TEXT");
+            return true;
+        }
+        return false;
 	}
 }

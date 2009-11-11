@@ -16,6 +16,7 @@ import java.util.Properties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -30,7 +31,7 @@ import com.loox.jloox.LxContainer;
  * Creation date: (12/17/2001 1:44:37 PM)
  * @author: 
  */
-public class DynamicText extends LxAbstractText implements DrawingElement, Serializable {
+public class DynamicText extends LxAbstractText implements DrawingElement, Serializable, IdAttachable {
 	
 	private static final String ELEMENT_ID = "dynamicText";
 	public static final int INVALID_POINT = -1;	
@@ -54,9 +55,9 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     private int colorPointID = -1;
     private int blinkPointID = -1;
     private int currentStateID = -1;
-    private Map customColorMap = new HashMap(13);
-    private Map customTextMap = new HashMap(13);
-    private Map customBlinkMap = new HashMap(13);
+    private Map<Integer, Color> customColorMap = new HashMap<Integer, Color>(13);
+    private Map<Integer, String> customTextMap = new HashMap<Integer, String>(13);
+    private Map<Integer, Integer> customBlinkMap = new HashMap<Integer, Integer>(13);
     private LiteState currentColorState;
     private LiteState currentTextState;
     private HashMap<Integer, Color> oldColorMap = new HashMap<Integer, Color>(11);
@@ -113,27 +114,27 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     	initialize();
     }
     
-    public Map getCustomColorMap() {
+    public Map<Integer, Color> getCustomColorMap() {
         return customColorMap;
     }
     
-    public void setCustomColorMap(Map m) {
+    public void setCustomColorMap(Map<Integer, Color> m) {
         customColorMap = m;
     }
     
-    public Map getCustomTextMap() {
+    public Map<Integer, String> getCustomTextMap() {
         return customTextMap;
     }
     
-    public void setCustomTextMap(Map m) {
+    public void setCustomTextMap(Map<Integer, String> m) {
         customTextMap = m;
     }
     
-    public Map getCustomBlinkMap() {
+    public Map<Integer, Integer> getCustomBlinkMap() {
         return customBlinkMap;
     }
     
-    public void setCustomBlinkMap(Map m) {
+    public void setCustomBlinkMap(Map<Integer, Integer> m) {
         customBlinkMap = m;
     }
     
@@ -260,7 +261,8 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
             lp = DaoFactory.getPointDao().getLitePoint( newPointId );
             point = lp;
         } catch (NotFoundException e) {
-            CTILogger.error(e);
+            // this point must have been deleted
+            CTILogger.error("The point (pointId:"+ newPointId + ") for DynamicText: " + getText() + " might have been deleted!", e);
         } 
     }
     
@@ -356,7 +358,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 				displayAttribs == PointAttributes.DATA_OFFSET );		
 	}
     
-    public List getColors() {
+    public List<Paint> getColors() {
         List<Paint> textColors = new ArrayList<Paint>(6);
         
         LitePoint point = null;
@@ -372,15 +374,15 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         }else {
         
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                Color colorObj = (Color) customColorMap.get(new Integer(i));
+                Color colorObj = customColorMap.get(i);
                 Color color; 
                 if(colorObj != null) {
                     color = colorObj;
                 } 
                 else {
-                    color = oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+                    color = oldColorMap.get(states.get(i).getFgColor());
                 }
                 textColors.add(color);
             }
@@ -388,7 +390,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         return textColors;
     }
     
-    public List getTextStrings() {
+    public List<String> getTextStrings() {
         List<String> textStrings = new ArrayList<String>(6);
         
         LitePoint point = null;
@@ -404,15 +406,15 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         }else {
         
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                String textObj = (String) customTextMap.get(new Integer(i));
+                String textObj = customTextMap.get(i);
                 String text;
                 if(textObj != null) {
                     text = textObj;
                 } 
                 else {
-                    text = ((LiteState) states.get(i)).getStateText();
+                    text = states.get(i).getStateText();
                 }
                 textStrings.add(text);
             }
@@ -444,7 +446,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         LiteState state = getCurrentColorState();
         if(state != null) {
             color = com.cannontech.common.gui.util.Colors.getColor(state.getFgColor());
-            Color customColor = (java.awt.Color) customColorMap.get(new Integer(state.getStateRawState()));
+            Color customColor = customColorMap.get(state.getStateRawState());
             if(customColor != null) {
                 color = customColor;
             }
@@ -462,7 +464,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         LiteState state = getCurrentTextState();
         if(state != null) {
             text = state.getStateText();
-            String customString = (String) customTextMap.get(new Integer(state.getStateRawState()));
+            String customString = customTextMap.get(state.getStateRawState());
             if(customString != null) {
                 text = customString;
             }
@@ -545,7 +547,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 		return ELEMENT_ID;
 	}
     
-    public List getBlinks() {
+    public List<Integer> getBlinks() {
         List<Integer> textBlinks = new ArrayList<Integer>(6);
         
         LitePoint point = null;
@@ -561,9 +563,9 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         }else {
         
             LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-            List states = lsg.getStatesList();
+            List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
-                Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
+                Integer blinkObj = customBlinkMap.get(new Integer(i));
                 Integer blink; 
                 if(blinkObj != null) {
                     blink =blinkObj;
@@ -575,5 +577,57 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
             }
         }
         return textBlinks;
+    }
+    
+    @Override
+    public boolean fixIds() {
+        boolean needsAttention = false;
+        PointDao pointDao = DaoFactory.getPointDao();
+        if(getPointId() == INVALID_POINT) {
+            setText("BROKEN DYNAMIC TEXT");
+            needsAttention = true;
+        } else {
+            try {
+                pointDao.getLitePoint(getPointId());
+            } catch (NotFoundException e){
+                setPointId(INVALID_POINT);
+                setText("BROKEN DYNAMIC TEXT");
+                needsAttention = true;
+            }
+        }
+        if(getBlinkPointID() != INVALID_POINT) {
+            try{
+                pointDao.getLitePoint(getBlinkPointID());
+            } catch (NotFoundException e){
+                setBlinkPointID(INVALID_POINT);
+            }
+        }
+        if(getControlPointId() != INVALID_POINT) {
+            try{
+                pointDao.getLitePoint(getControlPointId());
+            } catch (NotFoundException e){
+                setControlPointId(INVALID_POINT);
+                setControlEnabled(false);
+            }
+        }
+        if(getColorPointID() != INVALID_POINT) {
+            try{
+                pointDao.getLitePoint(getColorPointID());
+            } catch (NotFoundException e){
+                setColorPointID(INVALID_POINT);
+            }
+        }
+        if(getCurrentStateID() != INVALID_POINT) {
+            try{
+                pointDao.getLitePoint(getColorPointID());
+            } catch (NotFoundException e){
+                setCurrentStateID(INVALID_POINT);
+                if(displayAttribs == PointAttributes.CURRENT_STATE){
+                    setText("BROKEN DYNAMIC TEXT: current state");
+                    needsAttention = true;
+                }
+            }
+        }
+        return needsAttention;
     }
 }

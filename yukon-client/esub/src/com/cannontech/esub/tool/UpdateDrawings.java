@@ -17,14 +17,16 @@ import com.cannontech.user.SystemUserContext;
 public class UpdateDrawings implements Runnable {
 	
 	private File _drawingDir;
+	private boolean fixDrawings = false;
 	
 	public static void main(String[] args) {
-		if(args.length != 1){
+		if(args.length < 1){
 			CTILogger.error("Recursively loads and saves drawings.  Make a backup first!!");
-			CTILogger.error("Usage:\nUpdateDrawings <dir>");
+			CTILogger.error("Usage:\nUpdateDrawings <dir> \n...Loads and Saves Drawings");
+			CTILogger.error("\nUsage:\nUpdateDrawings <dir> fix\n...Loads, fixes bad point/device references, Saves Drawings");
 			System.exit(-1);
 		}
-		UpdateDrawings ud = new UpdateDrawings(args[0]);
+		UpdateDrawings ud = new UpdateDrawings(args);
 		ud.run();
 		CTILogger.info("Done!");
 		System.exit(0);
@@ -32,6 +34,7 @@ public class UpdateDrawings implements Runnable {
 	
 	public void run() {
 		CTILogger.info("Updating drawings located at " + _drawingDir.getAbsolutePath());
+		CTILogger.info("Fix drawing = " + fixDrawings);
 		processFile(getDrawingDir());
 	}
 	
@@ -39,27 +42,34 @@ public class UpdateDrawings implements Runnable {
 		if(f.isDirectory()) {
 			File files[] = f.listFiles();			
 			for(int i = 0; i < files.length; i++) {
-				if(files[i].isDirectory() ||
-					files[i].getName().toLowerCase().endsWith(".jlx")) {
+				if(files[i].isDirectory() || files[i].getName().toLowerCase().endsWith(".jlx")) {
 					processFile(files[i]);
 				}
 			}
-		}
-		else {
+		} else {
 			Drawing d = new Drawing();
 			d.setUserContext(new SystemUserContext());
 			
 			CTILogger.info(f.getAbsolutePath());
 			try {			
 				d.load(f.getAbsolutePath());
+				if(fixDrawings){
+				    if(d.fixDrawing()){
+				        CTILogger.info("File " + f.getName() + ": " + f.getAbsolutePath() + " has broken elements and needs attention.");
+				    }
+				}
 				d.save();
 			} catch(Exception e) {
 				CTILogger.error("An error occurred processing: " + f.getAbsolutePath(), e);
 			}
 		}
 	}
-	public UpdateDrawings(String drawingDir) {
-		setDrawingDir(drawingDir);
+	
+	public UpdateDrawings(String[] args) {
+		setDrawingDir(args[0]);
+		if(args.length > 1){
+		    fixDrawings = args[1].equalsIgnoreCase("fix");
+		}
 	}
 	
 	/**
