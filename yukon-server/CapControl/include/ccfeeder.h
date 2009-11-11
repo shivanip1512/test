@@ -333,7 +333,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag);
     CtiCCCapBank* getLastCapBankControlledDevice();
     CtiCCCapBank* findCapBankToChangeVars(double kvarSolution, CtiMultiMsg_vec& pointChanges,
-                                          double leadLevel = 0, double lagLevel = 0, double currentVarValue = 0);
+                                          double leadLevel = 0, double lagLevel = 0, double currentVarValue = 0,
+                                          BOOL checkLimits = true);
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
