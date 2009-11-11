@@ -341,6 +341,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
                                       deviceTypeDefinitionId,
                                       startSerialNumber,
                                       endSerialNumber);
+        // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
+        // that is the root of discrepancy in the Spring SQL error exception translator to throw
+        // BadSqlGrammarException vs. DataIntegrityViolationException
         } catch (BadSqlGrammarException e){
             throw new PersistenceException(InventoryBean.INVENTORY_SQL_ERROR_FUNCTION, e);
         } catch (DataIntegrityViolationException e) {

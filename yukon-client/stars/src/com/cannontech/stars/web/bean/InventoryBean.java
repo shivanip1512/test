@@ -207,6 +207,9 @@ public class InventoryBean {
         int numberOfHardware = 0;
         try {
             numberOfHardware = simpleCollection.getCount();
+        // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
+        // that is the root of discrepancy in the Spring SQL error exception translator to throw
+        // BadSqlGrammarException vs. DataIntegrityViolationException            
         } catch (BadSqlGrammarException e){
             errorMsg = INVENTORY_SQL_ERROR_FILTER;
         } catch (DataIntegrityViolationException e) {
@@ -792,6 +795,9 @@ public class InventoryBean {
         List<LiteInventoryBase> list;
         try {
             list = simpleCollection.getList();
+        // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
+        // that is the root of discrepancy in the Spring SQL error exception translator to throw
+        // BadSqlGrammarException vs. DataIntegrityViolationException            
         } catch (BadSqlGrammarException e){
             throw new PersistenceException(INVENTORY_SQL_ERROR_FUNCTION, e);
         } catch (DataIntegrityViolationException e) {
