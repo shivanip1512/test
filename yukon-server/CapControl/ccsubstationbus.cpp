@@ -2858,7 +2858,7 @@ void CtiCCSubstationBus::reOrderFeederDisplayOrders()
     {
         ((CtiCCFeeder*)orderedFdrs.at(i))->setDisplayOrder(i + 1);
     }
-} 
+}
 /*---------------------------------------------------------------------------
     figureEstimatedVarLoadPointValue
 
@@ -10040,6 +10040,8 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
 
     DOUBLE temppowerfactorvalue = _powerfactorvalue;
     DOUBLE tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue;
+    bool tempDualBusEnabled = _dualBusEnable;
+
     if (_dualBusEnable && _switchOverStatus || getPrimaryBusFlag())
     {
         tempVolt = _altSubVoltVal;
@@ -10048,6 +10050,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
 
         if (getPrimaryBusFlag())
         {
+            tempDualBusEnabled = true;
             tempAltSubId = getAlterateBusIdForPrimary();
         }
     }
@@ -10127,16 +10130,17 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _usePhaseData
     << _primaryBusFlag
     << tempAltSubId
-    << _dualBusEnable
+    << tempDualBusEnabled
     << _ccfeeders;
 }
+
 
 
 LONG CtiCCSubstationBus::getAlterateBusIdForPrimary() const
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    
+
     multimap<long,long>::iterator it;
     pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
 
