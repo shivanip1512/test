@@ -31,7 +31,7 @@
             <c:if test="${!empty favorites}">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.favorites"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
-                    <table class="compactResultsTable">
+                    <table class="compactResultsTable rowHighlighting">
                         <tr>
                             <th></th>
                             <th>
@@ -102,7 +102,7 @@
             <c:if test="${!empty recents}">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.recents"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
-                    <table class="compactResultsTable">
+                    <table class="compactResultsTable rowHighlighting">
                         <tr>
                             <th></th>
                             <th>

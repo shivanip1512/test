@@ -25,7 +25,7 @@
     <cti:msg var="searchTitle" key="yukon.web.modules.dr.searchResults.searchResult" argument="${quickSearchBean.name}"/>
     <tags:pagedBox title="${searchTitle}" searchResult="${searchResult}"
         baseUrl="${baseUrl}">
-        <table class="compactResultsTable">
+        <table class="compactResultsTable rowHighlighting">
             <tr>
                 <th></th>
                 <th>
