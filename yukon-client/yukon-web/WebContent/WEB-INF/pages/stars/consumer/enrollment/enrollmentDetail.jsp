@@ -61,8 +61,8 @@ function submitEnrollment() {
                     <tr>
                         <th></th>
                         <th><cti:msg key="yukon.dr.consumer.enrollment.category"/></th>
-                        <th><cti:msg key="yukon.dr.consumer.enrollment.programName"/></th>
-                        <th><cti:msg key="yukon.dr.consumer.enrollment.description"/></th>
+                        <th><cti:msg key="yukon.dr.consumer.enrollmentDetail.programName"/></th>
+                        <th colspan="2"><cti:msg key="yukon.dr.consumer.enrollmentDetail.description"/></th>
                         <th><cti:msg key="yukon.dr.consumer.enrollment.enrolledHardware"/></th>
                     </tr>
                 

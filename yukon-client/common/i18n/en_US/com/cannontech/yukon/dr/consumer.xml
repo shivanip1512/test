@@ -348,6 +348,8 @@
     <entry key="yukon.dr.consumer.enrollmentDetail.enrolledHardware">Enrolled Hardware</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.save">Save</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.reset">Reset</entry>
+    <entry key="yukon.dr.consumer.enrollmentDetail.programName">Program Name</entry>
+    <entry key="yukon.dr.consumer.enrollmentDetail.description">Description</entry>
 
     <!-- enrollmentResult.jsp -->
     <entry key="yukon.dr.consumer.enrollmentResult.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
