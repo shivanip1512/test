@@ -153,7 +153,8 @@ public class PointAlarmTableModel extends AbstractTableModel {
     	} catch (DynamicDataAccessException e){
             Throwable cause = e.getCause();
             if(cause.getMessage().contains("not found")){ /* Referencing bad device ids. */
-                CTILogger.error("AlarmTable Error: devices ( " + paoIdsList + " ) not found" + referrer != null ? " on page: " + referrer : ".");
+                String endMessage = referrer != null ? " on page: " + referrer : ".";
+                CTILogger.error("AlarmTable Error: devices ( " + paoIdsList + " ) not found" + endMessage);
                 needsAttention = true;
             } else { /*  Maybe we lost our dispatch connection */
                 CTILogger.error("AlarmTable Error: could not get dynamic data.", e);
