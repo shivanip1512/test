@@ -23,7 +23,7 @@ c.setTimeInMillis(( Date.parse(start)));
 
 Date sp = new Date(Date.parse (stop));
 Date st = new Date (Date.parse(start));
-int timeSlots = YukonSpringHook.getBean(DemandResponseService.class).getTimeSlotsForTargetCycle(sp, st, gearPeriod);
+int timeSlots = YukonSpringHook.getBean(DemandResponseService.class).getTimeSlotsForTargetCycle(sp, st);
 
 %>
 <html>
