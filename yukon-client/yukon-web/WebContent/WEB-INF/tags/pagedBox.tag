@@ -29,7 +29,7 @@
                     </c:if>
                 </td>
 
-                <tags:nextPrevLinks searchResult="${searchResults}" baseUrl="${baseUrl}"/>
+                <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${baseUrl}"/>
             </tr>
         </table>
     </div>
@@ -43,14 +43,14 @@
             <tr>
                 <td class="perPageArea">
                     <cti:msg key="yukon.common.paging.itemsPerPage"/>&nbsp;&nbsp;
-                    <tags:itemsPerPageLink searchResult="${searchResult}" itemsPerPage="10"
+                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="10"
                         baseUrl="${baseUrl}"/>&nbsp;
-                    <tags:itemsPerPageLink searchResult="${searchResult}" itemsPerPage="25"
+                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25"
                         baseUrl="${baseUrl}"/>&nbsp;
-                    <tags:itemsPerPageLink searchResult="${searchResult}" itemsPerPage="50"
+                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50"
                         baseUrl="${baseUrl}"/>
                 </td>
-                <tags:nextPrevLinks searchResult="${searchResults}" baseUrl="${baseUrl}"/>
+                <tags:nextPrevLinks searchResult="${pageScope.searchResults}" baseUrl="${baseUrl}"/>
             </tr>
         </table>
     </div>
