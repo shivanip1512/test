@@ -24,14 +24,14 @@
 <cti:url var="deleteDisabledImg" value="/WebConfig/yukon/Icons/delete_disabled_gray.gif"/>
 <cti:url var="acceptDisabledImg" value="/WebConfig/yukon/Icons/tick_disabled_gray.gif"/>
 	
-<cti:standardPage title="${pageTitle}" module="blank">
+<cti:standardPage title="${pageTitle}" module="monitors">
+	<cti:standardMenu menuSelection="validation|review"/>
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
 	    <cti:crumbLink url="/spring/common/veeReview/home" title="${pageTitle}" />
 	</cti:breadCrumbs>
 	
-	<cti:standardMenu menuSelection=""/>
 	<cti:includeScript link="/JavaScript/veeReview.js"/>
 
     <h2>${pageTitle}</h2>

@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1647,5 +1648,16 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         }
         return idList;
 
+    }
+    
+    public static <T extends Enum<T>> EnumSet<T> convertStringArrayToEnums(String[] enumStrings, Class<T> enumClass) {
+        EnumSet<T> result = EnumSet.noneOf(enumClass);
+        if (enumStrings != null) {
+            for (String enumStr : enumStrings) {
+                T value = Enum.valueOf(enumClass, enumStr);
+                result.add(value);
+            }
+        }
+        return result;
     }
 }

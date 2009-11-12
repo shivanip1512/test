@@ -59,7 +59,11 @@ public class EventLog {
     }
     
     public MessageSourceResolvable getMessageSourceResolvable() {
-        MessageSourceResolvable result = YukonMessageSourceResolvable.createDefaultWithArguments("yukon.common.events." + getEventType(), Arrays.toString(getArguments()), getArguments());
+        // put eventLogId in first argument slot (mostly to make array 1-based)
+        Object[] newArguments = new Object[arguments.length + 1];
+        newArguments[0] = eventLogId;
+        System.arraycopy(arguments, 0, newArguments, 1, arguments.length);
+        MessageSourceResolvable result = YukonMessageSourceResolvable.createDefaultWithArguments("yukon.common.events." + getEventType(), Arrays.toString(newArguments), newArguments);
         return result;
     }
     

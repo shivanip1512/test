@@ -321,6 +321,22 @@
   	</links>  
     <search action="/spring/meter/search" method="post" fieldname="Quick Search"/>
   </module>
+  
+  <module name="monitors">
+    <skin name="standard"/>
+   <links>
+      <option id="validation">
+        <links>
+	      <option id="review">
+	        <link>/spring/common/veeReview/home</link>
+	      </option>
+	      <option id="helper">
+	        <link>/spring/common/vee/helper/menu</link>
+	      </option>
+        </links>
+      </option>
+   </links>
+  </module>
 
   <module name="dr">
     <skin name="standard"/>
@@ -745,6 +761,9 @@
                 <links>
                     <option id="threadDump">
                         <link>/spring/support/threadDump</link>
+                    </option>
+                    <option id="events">
+                        <link>/spring/common/eventLog/view</link>
                     </option>
                 </links>
             </option>

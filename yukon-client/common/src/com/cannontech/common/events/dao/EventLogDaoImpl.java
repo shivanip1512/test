@@ -3,6 +3,7 @@ package com.cannontech.common.events.dao;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -153,8 +154,10 @@ public class EventLogDaoImpl implements EventLogDao {
     
     @Override
     public List<EventLog> findAllByCategories(
-            Iterable<EventCategory> eventCategories) {
+            Iterable<EventCategory> eventCategories, Date startDate, Date stopDate) {
         Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
+        
+        if (slimEventCategories.isEmpty()) return Collections.emptyList();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select * from EventLog");
@@ -167,6 +170,8 @@ public class EventLogDaoImpl implements EventLogDao {
             
         }
         sql.appendFragment(sqlFragmentCollection);
+        sql.append(  "and EventTime").lt(stopDate);
+        sql.append(  "and EventTime").gte(startDate);
         sql.append("order by EventTime, EventLogId");
         
         List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);

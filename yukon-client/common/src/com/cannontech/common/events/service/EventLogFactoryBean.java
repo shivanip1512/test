@@ -11,6 +11,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
@@ -123,6 +125,11 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
             }
         }));
         builder.add(ArgumentMapper.create(PointIdentifier.class, Types.VARCHAR));
+        builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
+            public Date map(ReadableInstant from) throws ObjectMappingException {
+                return new Instant(from).toDate();
+            }
+        }));
         argumentMappers = builder.build();
     }
     

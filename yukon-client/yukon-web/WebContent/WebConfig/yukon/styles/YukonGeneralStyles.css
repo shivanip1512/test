@@ -718,6 +718,19 @@ tr.lightRedBackground {
     font-style: italic;
 }
 
+.warningMessage {
+    color:#CC0000;
+    font-style: italic;
+    margin: 0 0 8px 0;
+}
+
+.flashMessage {
+    font-weight: bold;
+    margin: 15px auto 15px 45px;
+    padding: 8px;
+    border-left: 5px solid #ccc;
+}
+
 .subtleGray {
     color:#777777;
 }

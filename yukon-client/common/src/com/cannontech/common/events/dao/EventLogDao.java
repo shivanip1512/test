@@ -1,5 +1,6 @@
 package com.cannontech.common.events.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +11,7 @@ public interface EventLogDao {
 
     public void insert(EventLog eventLog);
     public List<ArgumentColumn> getArgumentColumns();
-    public List<EventLog> findAllByCategories(Iterable<EventCategory> eventCategory);
+    public List<EventLog> findAllByCategories(Iterable<EventCategory> eventCategory, Date startDate, Date stopDate);
     public Set<EventCategory> getAllCategories();
     
     public static class ArgumentColumn {

@@ -152,38 +152,38 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     }
     
     public SqlStatementBuilder eq(Object argument) {
-        statement.append("= ? ");
-        addArgument(argument);
+        statement.append("= ");
+        appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder neq(Object argument) {
-        statement.append("!= ? ");
-        addArgument(argument);
+        statement.append("!= ");
+        appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder lt(Object argument) {
-        statement.append("< ? ");
-        addArgument(argument);
+        statement.append("< ");
+        appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder gt(Object argument) {
-        statement.append("> ? ");
-        addArgument(argument);
+        statement.append("> ");
+        appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder gte(Object argument) {
-        statement.append(">= ? ");
-        addArgument(argument);
+        statement.append(">= ");
+        appendArgument(argument);
         return this;
     }
     
     public SqlStatementBuilder lte(Object argument) {
-        statement.append("<= ? ");
-        addArgument(argument);
+        statement.append("<= ");
+        appendArgument(argument);
         return this;
     }
     

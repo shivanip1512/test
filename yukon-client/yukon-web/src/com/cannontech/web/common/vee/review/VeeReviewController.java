@@ -15,12 +15,11 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.events.loggers.VeeReviewEventLogService;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.validation.dao.RphTagDao;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
 import com.cannontech.common.validation.model.RphTag;
+import com.cannontech.common.validation.service.ValidationHelperService;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -40,7 +39,7 @@ public class VeeReviewController {
 	private RphTagDao rphTagDao;
 	private RphTagUiDao rphTagUiDao;
 	private RawPointHistoryDao rawPointHistoryDao;
-	private VeeReviewEventLogService veeReviewEventLogService;
+	private ValidationHelperService validationHelperService;
 	
 	private static int IDEAL_PAGE_COUNT = 15;
 	private static int OVER_RETRIEVE_FACTOR = 3;
@@ -172,12 +171,12 @@ public class VeeReviewController {
         
         // delete
         for (int deleteChangeId : deleteChangeIds) {
-        	deleteAction(deleteChangeId);
+        	validationHelperService.deleteRawPointHistoryRow(deleteChangeId);
         }
         
         // accept
         for (int acceptChangeId : acceptChangeIds) {
-        	acceptAction(acceptChangeId);
+        	validationHelperService.acceptRawPointHistoryRow(acceptChangeId);
         }
         
         // mav
@@ -187,28 +186,6 @@ public class VeeReviewController {
         }
         
         return mav;
-	}
-	
-	private void deleteAction(int changeId) {
-		
-		PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
-		
-		rawPointHistoryDao.deleteValue(changeId);
-		veeReviewEventLogService.deletePointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
-	}
-	
-	private void acceptAction(int changeId) {
-		
-		PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
-		
-		rphTagDao.insertTag(changeId, RphTag.OK);
-		veeReviewEventLogService.acceptPointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
-		
-		PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
-    	if (pointValueQualityHolder.getPointQuality().equals(PointQuality.Questionable)) {
-    		rawPointHistoryDao.changeQuality(changeId, PointQuality.Normal);
-    		veeReviewEventLogService.updateQuestionableQuality(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
-    	}
 	}
 	
 	private void addDisplayTypesToMav(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelAndView mav) {
@@ -311,7 +288,7 @@ public class VeeReviewController {
 	}
 	
 	@Autowired
-	public void setVeeReviewEventLogService(VeeReviewEventLogService veeReviewEventLogService) {
-		this.veeReviewEventLogService = veeReviewEventLogService;
-	}
+	public void setValidationHelperService(ValidationHelperService validationHelperService) {
+        this.validationHelperService = validationHelperService;
+    }
 }

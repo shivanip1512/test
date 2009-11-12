@@ -3,67 +3,71 @@
 <properties>
 
     <!-- AMR -->
-    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={2} by {0}</entry>
+    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={3} by {1}</entry>
 
     <!-- Demand Response -->
 
     <!-- Scenario -->
-    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted">Scenario {1} was started by {0}</entry>
-    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped">Scenario {1} was stopped by {0}</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted">Scenario {2} was started by {1}</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped">Scenario {2} was stopped by {1}</entry>
 
     <!-- Control Area -->
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted">Control area {1} was started by {0}</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped">Control area {1} was stopped by {0}</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged">Control area {1} had its triggers changed by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged">Control area {1} had its time window changed to {6} - {7} (in seconds from midnight) by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled">Control area {1} was enabled by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled">Control area {1} was disabled by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset">Control area {1} had its triggers peak(s) reset by user {0} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted">Control area {2} was started by {1}</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped">Control area {2} was stopped by {1}</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged">Control area {2} had its triggers changed by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged">Control area {2} had its time window changed to {7} - {8} (in seconds from midnight) by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled">Control area {2} was enabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled">Control area {2} was disabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset">Control area {2} had its triggers peak(s) reset by user {1} via 3-Tier</entry>
 
-    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {0} was started at {3}</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {0} was stopped at {3}</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged">Control area {0} had its triggers changed</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged">Control area {0} had its time window changed to {6} - {7} (in seconds from midnight)</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaEnabled">Control area {0} was enabled</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {0} was disabled</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {0} had its triggers peak(s) reset</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {1} was started at {4}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {1} was stopped at {4}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged">Control area {1} had its triggers changed</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged">Control area {1} had its time window changed to {7} - {8} (in seconds from midnight)</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaEnabled">Control area {1} was enabled</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {1} was disabled</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {1} had its triggers peak(s) reset</entry>
 
     <!-- Program -->
-    <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {1} start scheduled at {10} by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramStopped">Program {1} was stopped at {10} by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled">Program {1} was scheduled to stop at {10} by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramChangeGear">Program {1} changed gears by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramEnabled">Program {1} was enabled by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramDisabled">Program {1} was disabled by user {0} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {2} start scheduled at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramStopped">Program {2} was stopped at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled">Program {2} was scheduled to stop at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramChangeGear">Program {2} changed gears by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramEnabled">Program {2} was enabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramDisabled">Program {2} was disabled by user {1} via 3-Tier</entry>
 
-    <entry key="yukon.common.events.dr.program.programScheduled">Program {0} start scheduled at {10} with gear {2}; stop scheduled {3}</entry>
-    <entry key="yukon.common.events.dr.program.programStopped">Program {0} was stopped at {10}</entry>
-    <entry key="yukon.common.events.dr.program.programStopScheduled">Program {0} was scheduled to stop at {10}</entry>
-    <entry key="yukon.common.events.dr.program.programChangeGear">Program {0} changed gears to {1}</entry>
-    <entry key="yukon.common.events.dr.program.programEnabled">Program {0} was enabled</entry>
-    <entry key="yukon.common.events.dr.program.programDisabled">Program {0} was disabled</entry>
+    <entry key="yukon.common.events.dr.program.programScheduled">Program {1} start scheduled at {11} with gear {3}; stop scheduled {4}</entry>
+    <entry key="yukon.common.events.dr.program.programStopped">Program {1} was stopped at {11}</entry>
+    <entry key="yukon.common.events.dr.program.programStopScheduled">Program {1} was scheduled to stop at {11}</entry>
+    <entry key="yukon.common.events.dr.program.programChangeGear">Program {1} changed gears to {2}</entry>
+    <entry key="yukon.common.events.dr.program.programEnabled">Program {1} was enabled</entry>
+    <entry key="yukon.common.events.dr.program.programDisabled">Program {1} was disabled</entry>
 
     <!-- Load Group -->
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupShed">Load group {1} was shed for {6} seconds by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupRestore">Load group {1} was restored by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupEnabled">Load group {1} was enabled by user {0} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupDisabled">Load group {1} was disabled by user {0} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupShed">Load group {2} was shed for {7} seconds by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupRestore">Load group {2} was restored by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupEnabled">Load group {2} was enabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupDisabled">Load group {2} was disabled by user {1} via 3-Tier</entry>
 
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupShed">Load group {0} was shed for {6} seconds</entry>
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupRestore">Load group {0} was restored</entry>
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupEnabled">Load group {0} was enabled</entry>
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {0} was disabled</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupShed">Load group {1} was shed for {7} seconds</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupRestore">Load group {1} was restored</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupEnabled">Load group {1} was enabled</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {1} was disabled</entry>
     
     <!-- Command Request Executor -->
-    <entry key="yukon.common.events.porterRequests.connectionException">Processing failed: {0}</entry>
-    <entry key="yukon.common.events.porterRequests.exception">Processing failed: {0}</entry>
+    <entry key="yukon.common.events.porterRequests.connectionException">Processing failed: {1}</entry>
+    <entry key="yukon.common.events.porterRequests.exception">Processing failed: {1}</entry>
     
     <!-- VEE -->
-    <entry key="yukon.common.events.system.rphValidation.review.deletePointValue">Deleted point value: changeId={6} value={7} type={8} timestamp={10}</entry>
-    <entry key="yukon.common.events.system.rphValidation.review.acceptPointValue">Accepted point value: changeId={6} value={7} type={8} timestamp={10}</entry>
-    <entry key="yukon.common.events.system.rphValidation.review.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={6} value={7} type={8} timestamp={10}</entry>
+    <entry key="yukon.common.events.system.rphValidation.review.deletePointValue">Deleted point value: changeId={7} value={8} type={9} timestamp={11}</entry>
+    <entry key="yukon.common.events.system.rphValidation.review.acceptPointValue">Accepted point value: changeId={7} value={8} type={9} timestamp={11}</entry>
+    <entry key="yukon.common.events.system.rphValidation.review.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={7} value={8} type={9} timestamp={11}</entry>
     
-    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoIdentifier={6} pointIdentifier={7}</entry>
-    <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup">Validation engine startup: lastChangeIdProcessed={6} tagsCleared={7}</entry>
-    <entry key="yukon.common.events.system.rphValidation.validator.changedQualityOnPeakedValue">Changed quality on peak value: paoIdentifier={6} changeId={7}</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoIdentifier={7} pointIdentifier={8}</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup">Validation engine startup: lastChangeIdProcessed={7} tagsCleared={8}</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.changedQualityOnPeakedValue">Changed quality on peak value: paoIdentifier={7} changeId={8}</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.acceptedAllTaggedRows">All rows tagged with {1} have been accepted by {2}</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.deletedAllTaggedRows">All rows tagged with {1} have been deleted by {2}</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.validationEngineReset">The Validation Engine has been reset to reprocess all rows</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.validationEnginePartialReset">The Validation Engine has been reset to reprocess all rows since {11}</entry>
 </properties>

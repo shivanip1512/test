@@ -3,8 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage title="Event Log" module="blank">
-<cti:standardMenu menuSelection="" />
+<cti:standardPage title="Event Log" module="support">
+<cti:standardMenu menuSelection="other|events" />
 
 <form method="get" action="view">
 <select name="categories" multiple="multiple" size="4">
@@ -13,6 +13,12 @@
 <option ${selected}>${eventCategory.fullName}</option>
 </c:forEach>
 </select>
+<cti:formatDate var="fromDateStr" type="DATE" value="${fromDate}" nullText=""/>
+<tags:dateInputCalendar fieldName="fromDate" fieldValue="${fromDateStr}"/>
+
+<cti:formatDate var="toDateStr" type="DATE" value="${toDate}" nullText=""/>
+<tags:dateInputCalendar fieldName="toDate" fieldValue="${toDateStr}"/>
+
 <input value="Filter" type="submit">
 </form>
 <br>    

@@ -2,6 +2,7 @@ package com.cannontech.common.events.service;
 
 
 import java.sql.Types;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -61,7 +62,7 @@ public class EventLogFactoryBeanTest {
             }
             @Override
             public List<EventLog> findAllByCategories(
-                    Iterable<EventCategory> eventCategory) {
+                    Iterable<EventCategory> eventCategory, Date startDate, Date stopDate) {
                 return null;
             }
             @Override
@@ -119,7 +120,7 @@ public class EventLogFactoryBeanTest {
             }
             @Override
             public List<EventLog> findAllByCategories(
-                    Iterable<EventCategory> eventCategory) {
+                    Iterable<EventCategory> eventCategory, Date startDate, Date stopDate) {
                 return null;
             }
             @Override

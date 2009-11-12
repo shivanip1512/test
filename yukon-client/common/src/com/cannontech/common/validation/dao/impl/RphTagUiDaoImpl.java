@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -22,6 +23,7 @@ import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class RphTagUiDaoImpl implements RphTagUiDao {
@@ -171,6 +173,22 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     	}
     		
     	return countMap;
+    }
+    
+    @Override
+    public List<Integer> findMatchingChangeIds(Set<RphTag> rphTags) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select distinct ChangeId");
+        sql.append("from RphTag rt");
+        sql.append("where");
+        sql.append(  "rt.ChangeId NOT IN (");
+        sql.append(    "select rt2.ChangeId FROM RphTag rt2 ");
+        sql.append(    "where rt2.TagName ").eq(RphTag.OK);
+        sql.append(  ")");
+        sql.append("  AND rt.TagName").in(rphTags);
+        
+        List<Integer> result = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return result;
     }
     
     @Autowired
