@@ -371,7 +371,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         return pointsMap;
     }
    
-    protected class PointTemplateWrapper {
+    public class PointTemplateWrapper {
     	
     	private PointTemplate pointTemplate;
     	private boolean masked;
