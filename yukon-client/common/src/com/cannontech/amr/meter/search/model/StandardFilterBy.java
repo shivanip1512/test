@@ -39,9 +39,9 @@ public class StandardFilterBy implements FilterBy {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
     	if (fieldList.size() == 1) {
-    	
-    		sql.append(fieldList.get(0).getSearchQueryField() + " LIKE ");
+    	    sql.append("UPPER("+fieldList.get(0).getSearchQueryField() + ") LIKE UPPER (");
     		sql.appendArgument(filterValue + "%");
+    		sql.append(")");
         
     	} else {
         	
@@ -56,8 +56,9 @@ public class StandardFilterBy implements FilterBy {
                     first = false;
                 }
 
-                sql.append(" " + field.getSearchQueryField() + " LIKE ");
+                sql.append("UPPER("+field.getSearchQueryField() + ") LIKE UPPER(");
                 sql.appendArgument(filterValue + "%");
+                sql.append(")");
             }
             
     		sql.append(")");
