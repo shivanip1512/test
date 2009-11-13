@@ -24,6 +24,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -146,7 +147,7 @@ public class VeeReviewController {
     }
 	
 	@RequestMapping
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView save(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
         
         ModelAndView mav = new ModelAndView("redirect:home");
         int afterPaoId = ServletRequestUtils.getIntParameter(request, "afterPaoId", 0);
@@ -171,12 +172,12 @@ public class VeeReviewController {
         
         // delete
         for (int deleteChangeId : deleteChangeIds) {
-        	validationHelperService.deleteRawPointHistoryRow(deleteChangeId);
+        	validationHelperService.deleteRawPointHistoryRow(deleteChangeId, user);
         }
         
         // accept
         for (int acceptChangeId : acceptChangeIds) {
-        	validationHelperService.acceptRawPointHistoryRow(acceptChangeId);
+        	validationHelperService.acceptRawPointHistoryRow(acceptChangeId, user);
         }
         
         // mav

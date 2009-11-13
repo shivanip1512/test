@@ -25,6 +25,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.google.common.collect.Sets;
 
 public class RphTagUiDaoImpl implements RphTagUiDao {
 
@@ -176,16 +177,19 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     }
     
     @Override
-    public List<Integer> findMatchingChangeIds(Set<RphTag> rphTags) {
+    public List<Integer> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask) {
+        Set<RphTag> mustNotHave = Sets.difference(mask, set);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct ChangeId");
         sql.append("from RphTag rt");
         sql.append("where");
         sql.append(  "rt.ChangeId NOT IN (");
-        sql.append(    "select rt2.ChangeId FROM RphTag rt2 ");
-        sql.append(    "where rt2.TagName ").eq(RphTag.OK);
+        sql.append(    "select rt2.ChangeId from RphTag rt2 ");
+        sql.append(    "where rt2.TagName ").in(mustNotHave);
         sql.append(  ")");
-        sql.append("  AND rt.TagName").in(rphTags);
+        sql.append("  AND rt.TagName").in(set);
+        sql.append("group by ChangeId");
+        sql.append("having count(*)").eq(set.size());
         
         List<Integer> result = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         return result;

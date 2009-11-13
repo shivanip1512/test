@@ -18,7 +18,7 @@ public interface ValidationHelperService {
      */
     public void resetValidationEngine(Date since);
 
-    public void acceptRawPointHistoryRow(int changeId);
+    public void acceptRawPointHistoryRow(int changeId, LiteYukonUser user);
 
-    public void deleteRawPointHistoryRow(int changeId);
+    public void deleteRawPointHistoryRow(int changeId, LiteYukonUser user);
 }

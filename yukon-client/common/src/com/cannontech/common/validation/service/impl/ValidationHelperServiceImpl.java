@@ -19,6 +19,8 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 public class ValidationHelperServiceImpl implements ValidationHelperService {
     private RawPointHistoryDao rawPointHistoryDao;
@@ -27,20 +29,27 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     private VeeReviewEventLogService veeReviewEventLogService;
     private PersistedSystemValueDao persistedSystemValueDao;
     private YukonJdbcOperations yukonJdbcOperations;
+    private Set<RphTag> validationPlusOkTags;
+    {
+        Builder<RphTag> builder = ImmutableSet.builder();
+        builder.addAll(RphTag.getAllValidation());
+        builder.add(RphTag.OK);
+        validationPlusOkTags = builder.build();
+    }
 
     @Override
     public void acceptAllMatchingRows(Set<RphTag> tags, LiteYukonUser liteYukonUser) {
-        List<Integer> changeIds = rphTagUiDao.findMatchingChangeIds(tags);
+        List<Integer> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
         for (int changeId : changeIds) {
-            acceptRawPointHistoryRow(changeId);
+            acceptRawPointHistoryRow(changeId, liteYukonUser);
         }
     }
 
     @Override
     public void deleteAllMatchingRows(Set<RphTag> tags, LiteYukonUser liteYukonUser) {
-        List<Integer> changeIds = rphTagUiDao.findMatchingChangeIds(tags);
+        List<Integer> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
         for (int changeId : changeIds) {
-            deleteRawPointHistoryRow(changeId);
+            deleteRawPointHistoryRow(changeId, liteYukonUser);
         }
     }
 
@@ -59,26 +68,26 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
     
     @Override
-    public void deleteRawPointHistoryRow(int changeId) {
+    public void deleteRawPointHistoryRow(int changeId, LiteYukonUser user) {
         
         PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
         
         rawPointHistoryDao.deleteValue(changeId);
-        veeReviewEventLogService.deletePointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
+        veeReviewEventLogService.deletePointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType(), user);
     }
     
     @Override
-    public void acceptRawPointHistoryRow(int changeId) {
+    public void acceptRawPointHistoryRow(int changeId, LiteYukonUser user) {
         
         PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
         
         rphTagDao.insertTag(changeId, RphTag.OK);
-        veeReviewEventLogService.acceptPointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
+        veeReviewEventLogService.acceptPointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType(), user);
         
         PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
         if (pointValueQualityHolder.getPointQuality().equals(PointQuality.Questionable)) {
             rawPointHistoryDao.changeQuality(changeId, PointQuality.Normal);
-            veeReviewEventLogService.updateQuestionableQuality(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType());
+            veeReviewEventLogService.updateQuestionableQuality(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType(), user);
         }
     }
     

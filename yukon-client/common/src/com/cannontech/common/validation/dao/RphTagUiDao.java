@@ -13,5 +13,11 @@ public interface RphTagUiDao {
 	
 	public Map<RphTag, Integer> getTagCounts();
 
-    public List<Integer> findMatchingChangeIds(Set<RphTag> rphTags);
+    /**
+     * Returns the changeIds where the set of tags associated
+     * with the changeId AND'd with the mask is EQUAL to the set.
+     * @param rphTags
+     * @return
+     */
+    public List<Integer> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask);
 }
