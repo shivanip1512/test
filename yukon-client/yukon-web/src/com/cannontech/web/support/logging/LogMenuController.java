@@ -167,6 +167,7 @@ public class LogMenuController extends LogController {
         for (File file : localLogList) {
             // using the default timezone on purpose
             LocalDate modificationAsDate = getLocalDateForFile.apply(file);
+            // DateFormattingService ignores the user's timezone when formatting a Partial
             String dateHeading = dateFormattingService.format(modificationAsDate, DateFormatEnum.LONG_DATE, userContext);
             result.put(dateHeading, file.getName());
         }
