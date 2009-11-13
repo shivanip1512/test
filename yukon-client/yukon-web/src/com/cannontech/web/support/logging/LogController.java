@@ -46,7 +46,7 @@ public class LogController {
     }
 
 	protected String getFileNameParameter(HttpServletRequest request) {
-		String fileName = ServletRequestUtils.getStringParameter(request, "file", "/");
+		String fileName = ServletRequestUtils.getStringParameter(request, "file", "");
 		return fileName;
 	}
 

@@ -1,21 +1,17 @@
 package com.cannontech.web.support.logging;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.log4j.Logger;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,12 +20,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.HtmlUtils;
 
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.LogSortUtil;
-import com.cannontech.common.version.VersionTools;
+import com.cannontech.common.i18n.CollationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.PoolManager;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.base.Function;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
 
 /**
  * LogMenuController handles the retrieving of log file names from the local and
@@ -41,8 +42,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @Controller
 public class LogMenuController extends LogController {
 
-    private PoolManager poolManager;
-    private static final Logger log = YukonLogManager.getLogger(LogMenuController.class);
+    private DateFormattingService dateFormattingService;
+    
+    private static final Function<File, String> fileToNameFunction = new Function<File, String> () {
+        public String apply(File from) {
+            return from.getName();
+        }
+    };
     
     /**
      * Stores all log filenames from local and remote directories in two lists
@@ -52,12 +58,8 @@ public class LogMenuController extends LogController {
      *         file names)
      */
     @RequestMapping(value = "/logging/menu", method = RequestMethod.GET)
-    public String menu(HttpServletRequest request,
+    public String menu(HttpServletRequest request, YukonUserContext userContext,
                        ModelMap map) throws Exception {
-
-        map.addAttribute("versionDetails", VersionTools.getYukonDetails());
-        map.addAttribute("dbUser", poolManager.getPrimaryUser());
-        map.addAttribute("dbUrl", poolManager.getPrimaryUrl());
 
         // Checks the request for parameters to update the defaults
         String sortType = ServletRequestUtils.getStringParameter(request,
@@ -66,63 +68,50 @@ public class LogMenuController extends LogController {
         File logDir = getLogFile(request);
         Validate.isTrue(logDir.isDirectory());
         
-        // boolean reverse = ServletRequestUtils.getBooleanParameter(request,
-        // "reverse", false);
-        List<File> localLogList = new ArrayList<File>();
-        List<String> dirSet = null;
-        Map<String, List<String>> resultSet = Collections.emptyMap();
+        List<File> localLogList = Lists.newArrayList();
+        List<File> localDirectoryList = Lists.newArrayList();
 
         // lists to hold log file names
-        localLogList = populateFileList(logDir);
+        populateFileLists(logDir, localLogList, localDirectoryList);
+        
+        // get directory names
+        List<String> directoryNameList = Lists.transform(localDirectoryList, fileToNameFunction);
 
-        if (!localLogList.isEmpty()) {
-            // Checks to see how the user wants the information setup
-            if (sortType.equalsIgnoreCase("date")) {
-            	resultSet = this.sortByDate(localLogList);
-            } else {
-            	resultSet = this.sortByAlphabet(localLogList);
-            	
-                // Separates the directories from the logFiles
-            }
-            if (resultSet.containsKey("Directories")) {
-            	dirSet = new ArrayList<String>(resultSet.get("Directories"));
-            	resultSet.remove("Directories");
-            }
+        Multimap<String, String> resultSet;
+        // Checks to see how the user wants the information setup
+        if (sortType.equalsIgnoreCase("date")) {
+            resultSet = sortByDate(localLogList, userContext);
+        } else {
+            resultSet = sortByAlphabet(localLogList, userContext);
         }
 
         // add local list to model
         map.addAttribute("oldStateSort", sortType);
         map.addAttribute("dirFile", logDir);
         map.addAttribute("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
-        map.addAttribute("dirList", dirSet);
-        map.addAttribute("localLogList", resultSet);
+        map.addAttribute("dirList", directoryNameList);
+        map.addAttribute("localLogList", resultSet.asMap());
 
         return "logging/menu.jsp";
     }
 
-    
-    
-    private List<File> populateFileList(File currentDir) {
-        List<File> folderListings = new ArrayList<File>();
+    private void populateFileLists(File currentDir, Collection<File> localLogList, Collection<File> localDirectoryList) {
+        // iterates through everything in the given directory and sort into files and directories
+        File[] localDirAndFiles = currentDir.listFiles();
+        for (File fileObj : localDirAndFiles) {
 
-        // Itereates through all the File objects in the given directory
-        if (currentDir != null) {
-            File[] localDirAndFiles = currentDir.listFiles();
-            for (File fileObj : localDirAndFiles) {
-
-                // Checks to see if the obj is a directory and adds it to the
-                // results
-                if (fileObj.isDirectory()) {
-                    folderListings.add(fileObj);
-                }
-                // Checks to see if the obj is a log file and adds it to the
-                // results
-                if (this.isLog(fileObj.getName())) {
-                    folderListings.add(fileObj);
-                }
+            if (fileObj.isDirectory()) {
+                localDirectoryList.add(fileObj);
+            } else if (this.isLog(fileObj.getName())) {
+                localLogList.add(fileObj);
             }
         }
-        return folderListings;
+    }
+    
+    private Ordering<File> getFileNameOrdering(YukonUserContext userContext) {
+        Ordering<String> caseInsensitiveOrdering = CollationUtils.getCaseInsensitiveOrdering(userContext);
+        Ordering<File> result = caseInsensitiveOrdering.onResultOf(fileToNameFunction);
+        return result;
     }
 
     /**
@@ -130,11 +119,29 @@ public class LogMenuController extends LogController {
      * @return
      * @throws Exception
      */
-    private SortedMap<String, List<String>> sortByAlphabet(List<File> localLogList) throws Exception {
-        Pattern logPattern = Pattern.compile("^(.*)\\.log$");
-        Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList,logPattern);
-        SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap, 2, null);
-        return sortResults;
+    private LinkedHashMultimap<String, String> sortByAlphabet(List<File> localLogList, YukonUserContext userContext){
+        Collections.sort(localLogList, getFileNameOrdering(userContext));
+        
+        LinkedHashMultimap<String, String> result = LinkedHashMultimap.create();
+        // The following pattern looks for a base file name (group 1) that is the
+        // leading part of the file name minus an optional underscore, a 1-2 
+        // digit number, and the extension.
+        Pattern dayNumberPattern = Pattern.compile("(.+?)_?\\d{1,2}\\.[^.]+$");
+        
+        for (File file : localLogList) {
+            String fileName = file.getName();
+            Matcher patternMatches = dayNumberPattern.matcher(fileName);
+            if (patternMatches.matches()){
+                String fileNameGroup = StringUtils.capitalize(patternMatches.group(1));
+                result.put(fileNameGroup, fileName);
+            } else {
+                // give the file name its own personal group
+                result.put(fileName, fileName);
+            }
+
+        }
+        
+        return result;
     }
 
     /**
@@ -142,25 +149,29 @@ public class LogMenuController extends LogController {
      * @return
      * @throws Exception
      */
-    private SortedMap<String, List<String>> sortByDate(List<File> localLogList)
-            throws Exception {
-    	Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList);
-    	SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap, 0, 
-    			new Comparator<String>() {
-
-    		@Override
-    		public int compare(String o1, String o2) {
-    			try {
-    				DateFormat df = DateFormat.getDateInstance();
-    				Date d1 = df.parse(o1);
-    				Date d2 = df.parse(o2);
-    				return d2.compareTo(d1);
-    			} catch (ParseException e) {
-    				log.error("Error in parsing the string to a date.", e );
-    				return 0;
-    			}
-    		}});
-    		return sortResults;
+    private LinkedHashMultimap<String, String> sortByDate(List<File> localLogList, YukonUserContext userContext) {
+        // LocalDate is a convenient class because it only knows about year, month, day
+        Function<File, LocalDate> getLocalDateForFile = new Function<File, LocalDate> () {
+            public LocalDate apply(File from) {
+                return new LocalDate(from.lastModified());
+            }
+        };
+        
+        // sort by reverse modification and use name to resolve ties (each "day" will be a tie)
+        Ordering<File> fileModificationOrdering = Ordering.natural().onResultOf(getLocalDateForFile).reverse();
+        Ordering<File> compoundOrdering = fileModificationOrdering.compound(getFileNameOrdering(userContext));
+        Collections.sort(localLogList, compoundOrdering);
+        
+        LinkedHashMultimap<String, String> result = LinkedHashMultimap.create();
+        
+        for (File file : localLogList) {
+            // using the default timezone on purpose
+            LocalDate modificationAsDate = getLocalDateForFile.apply(file);
+            String dateHeading = dateFormattingService.format(modificationAsDate, DateFormatEnum.LONG_DATE, userContext);
+            result.put(dateHeading, file.getName());
+        }
+        
+        return result;
     }
 
     /**
@@ -173,8 +184,8 @@ public class LogMenuController extends LogController {
     }
 
     @Autowired
-    public void setPoolManager(PoolManager poolManager) {
-        this.poolManager = poolManager;
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
     }
 
 }

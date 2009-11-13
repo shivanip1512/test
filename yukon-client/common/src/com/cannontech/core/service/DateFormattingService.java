@@ -35,6 +35,7 @@ public interface DateFormattingService {
         DATEH(MidnightMode.NORMAL),
         HOUR(MidnightMode.NORMAL),
         DATE_MIDNIGHT_PREV(MidnightMode.INCLUDES_MIDNIGHT),
+        LONG_DATE(MidnightMode.NORMAL),
         ;
         
         private MidnightMode midnightMode = null;

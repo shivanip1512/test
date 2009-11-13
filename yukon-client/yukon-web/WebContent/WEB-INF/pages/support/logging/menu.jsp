@@ -9,22 +9,24 @@
     <cti:crumbLink>Log File Menu</cti:crumbLink>
 </cti:breadCrumbs>
 
-<h4>SortBy:: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
+<h4>Sort By: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
 
 <!-- Display and link to the local log files -->
-<b id="dir" class="logLable">Directories</b><br/>
+<h3 class="indentedElementHeading">Directories</h3>
+<div>
 <c:forEach var="dirName" items="${dirList}">
-	&nbsp&nbsp&nbsp<a href="?file=${file}${dirName}&sortType=${oldStateSort}">${dirName}</a><br/>
+	<a href="?file=${file}${dirName}/&sortType=${oldStateSort}">${dirName}/</a><br/>
 </c:forEach>
-<br />
+</div>
 
 <!-- Display and link to the local log files -->
 <c:forEach var="logSection" items="${localLogList}">
-	<b id="logLable" class="logLable">${logSection.key}</b><br/>
+	<h3 class="indentedElementHeading">${logSection.key}</h3>
+    <div>
 	<c:forEach var="fileName" items="${logSection.value}">
-		&nbsp&nbsp&nbsp<a href="tail?file=${file}${fileName}" >${fileName}</a><br/>
+		<a href="tail?file=${file}${fileName}" >${fileName}</a><br/>
 	</c:forEach>
-	<br />
+	</div>
 </c:forEach>
 
 </cti:standardPage>
