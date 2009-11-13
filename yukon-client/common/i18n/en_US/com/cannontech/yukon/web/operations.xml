@@ -3,7 +3,7 @@
 <properties>
 
 <!-- General Demand Response -->
-<entry key="yukon.web.operatoins.3tier">3-Tier Direct</entry>
+<entry key="yukon.web.operations.3tier">3-Tier Direct</entry>
 <entry key="yukon.web.operations.demandResponse">Demand Response</entry>
 
 </properties>

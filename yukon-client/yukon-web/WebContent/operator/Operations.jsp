@@ -160,7 +160,7 @@
 		</cti:checkRole>
 		<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT"> 
             <tags:sectionLink>
-            	<a href="../loadmgmt/controlareas.jsp"><cti:msg key="yukon.web.operatoins.3tier"/></a>
+            	<a href="../loadmgmt/controlareas.jsp"><cti:msg key="yukon.web.operations.3tier"/></a>
             </tags:sectionLink>
             <tags:sectionLink>
             	<a href="/spring/dr/home"><cti:msg key="yukon.web.operations.demandResponse"/></a>
