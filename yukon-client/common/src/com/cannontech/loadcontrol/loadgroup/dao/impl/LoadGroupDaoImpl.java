@@ -12,11 +12,15 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 
@@ -137,6 +141,14 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                                         loadGroup.getLoadGroupId());
     }
     
+    public List<PaoIdentifier> getParentMacroGroups(YukonPao group) {
+        YukonPaoRowMapper mapper = new YukonPaoRowMapper();
+        SqlStatementBuilder sql = new SqlStatementBuilder("select gm.OwnerID PAObjectID, pao.type Type");
+        sql.append("from GenericMacro gm");
+        sql.append("join YukonPAObject pao on pao.PAObjectID = gm.OwnerID ");
+        sql.append("where gm.MacroType = ").appendArgument(MacroTypes.GROUP).append("and gm.ChildID = ").appendArgument(group.getPaoIdentifier().getPaoId());
+        return simpleJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+    }
     
     // rowMappers
     private ParameterizedRowMapper<LoadGroup> loadGroupDatabaseResultRowMapper() {
@@ -152,7 +164,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         };
         return mapper;
     }
-
+    
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;

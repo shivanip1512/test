@@ -297,6 +297,7 @@
 					<property name="paoAuthorizationService" ref="paoAuthorizationService" />
 					<property name="objectChecker" ref="loadManagementPaoCheck" />
                     <property name="demandResponseDao" ref="demandResponseDao" />
+                    <property name="loadGroupDao" ref="loadGroupDao" />
                     <property name="permission" value="LM_VISIBLE"/>
 				</bean>
 

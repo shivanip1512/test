@@ -2,6 +2,7 @@ package com.cannontech.core.authorization.support.pao;
 
 import java.util.List;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Checker;
@@ -10,6 +11,7 @@ import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DemandResponseDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 
 /**
  * Class used to determine if a user has permission to see an LM pao
@@ -20,6 +22,7 @@ public class LMParentAuthorization implements PaoAuthorization {
     private Checker<YukonPao> objectChecker;
     private Permission permission; 
     private DemandResponseDao demandResponseDao;
+    private LoadGroupDao loadGroupDao;
 
     public AuthorizationResponse isAuthorized(LiteYukonUser user, Permission permission, YukonPao pao) {
 
@@ -31,8 +34,7 @@ public class LMParentAuthorization implements PaoAuthorization {
                 return AuthorizationResponse.UNKNOWN;
             } else if (PaoType.LM_DIRECT_PROGRAM.equals(type)) {
                 
-                List<YukonPao> parents = 
-                    demandResponseDao.getControlAreasAndScenariosForProgram(pao);
+                List<YukonPao> parents = demandResponseDao.getControlAreasAndScenariosForProgram(pao);
                 for(YukonPao parent : parents) {
                     if(paoAuthorizationService.isAuthorized(user, permission, parent)) {
                         return AuthorizationResponse.AUTHORIZED;
@@ -41,6 +43,8 @@ public class LMParentAuthorization implements PaoAuthorization {
             }  else {
                 
                 List<YukonPao> parents = demandResponseDao.getProgramsForGroup(pao);
+                List<PaoIdentifier> macroGroupParents = loadGroupDao.getParentMacroGroups(pao);
+                parents.addAll(macroGroupParents);
                 for(YukonPao parent : parents) {
                     if(paoAuthorizationService.isAuthorized(user, permission, parent)) {
                         return AuthorizationResponse.AUTHORIZED;
@@ -68,6 +72,10 @@ public class LMParentAuthorization implements PaoAuthorization {
     
     public void setDemandResponseDao(DemandResponseDao demandResponseDao) {
         this.demandResponseDao = demandResponseDao;
+    }
+    
+    public void setLoadGroupDao(LoadGroupDao loadGroupDao){
+        this.loadGroupDao = loadGroupDao;        
     }
     
     public void setPermission(Permission permission) {

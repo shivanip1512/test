@@ -1,4 +1,10 @@
-
+<%@page import="com.cannontech.core.authorization.service.PaoAuthorizationService"%>
+<%@page import="com.cannontech.common.pao.YukonPao"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="com.cannontech.core.dao.PaoDao"%>
+<%@page import="com.google.common.collect.Lists"%>
 <jsp:directive.page import="com.cannontech.core.authorization.service.PaoPermissionService"/>
 <jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="java.util.Set"/>
@@ -17,66 +23,61 @@
     int textFieldRouteID = -1;
 
 	String sql = new String();
-	PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-    Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
-    if(permittedPaoIDs.isEmpty()) {
-    	sql = "select CHILDID from GENERICMACRO " +
-        	"WHERE MacroType = '" + MacroTypes.GROUP + "'" +
-            " ORDER BY CHILDORDER";
-    }
-    else {
-    	sql = "select CHILDID from GENERICMACRO " +
-        	"WHERE MacroType = '" + MacroTypes.GROUP + 
-            "' AND OWNERID IN (";
-   		Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
-        permittedIDs = permittedPaoIDs.toArray(permittedIDs);
-        for(Integer paoID : permittedIDs) {
-        	sql += paoID.toString() + ", ";
-        }
-        sql = sql.substring(0, sql.lastIndexOf(','));
-        sql += ") ORDER BY CHILDORDER";
-    }
-
-    Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { Integer.class } );
+    PaoAuthorizationService paoAuthorizationService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
+    
 	Object[][] versacomNameSerial = null;
 	Object[][] expresscomNameSerial = null;
     Object[][] nameSerial = null;
 
-	// get versacom serial groups
-    if( serialGroupIDs != null ) {
-    
+    /* Get authorized versacom groups. */
     sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPVERSACOM.SERIALADDRESS,LMGROUPVERSACOM.DEVICEID,LMGROUPVERSACOM.ROUTEID FROM YUKONPAOBJECT,LMGROUPVERSACOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPVERSACOM.DEVICEID ";
-
-    for( int i = 0; i < serialGroupIDs.length; i++ ) {
-
-        if( i == 0 ) {
-            sql += " AND (LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0] + " ";
-        }
-        else {
-            sql += " OR LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0] + " ";
-        }
-	}
-    if( serialGroupIDs.length > 0)
-        sql += " )";
-
-	versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
-  	// get expresscom serial groups 
-      
-	sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID ";
-
-    for( int i = 0; i < serialGroupIDs.length; i++ ) {
-
-        if( i == 0 ) {
-            sql += " AND (LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0] + " ";
-        }
-        else {
-            sql += " OR LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0] + " ";
+    List<YukonPao> versacomGroupPaos = Lists.newArrayList();
+    PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+	versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class<?>[] { String.class, Integer.class, Integer.class, Integer.class } );
+    for(int i = 0; i < versacomNameSerial.length; i++){
+        Integer deviceId = (Integer)versacomNameSerial[i][2];
+        versacomGroupPaos.add(paoDao.getYukonPao(deviceId));
+    }
+    List<YukonPao> permittedPaos = paoAuthorizationService.filterAuthorized(user, versacomGroupPaos, Permission.LM_VISIBLE);
+    Map<Integer, YukonPao> permittedPaoMap = new HashMap<Integer, YukonPao>();
+    for(YukonPao pao : permittedPaos){
+        permittedPaoMap.put(pao.getPaoIdentifier().getPaoId(), pao);
+    }
+    Object[][] filteredArray = new Object[permittedPaos.size()][4];
+    int newIndex = 0;
+    for(int i = 0; i < versacomNameSerial.length; i++){
+        Integer deviceId = (Integer)versacomNameSerial[i][2];
+        if(permittedPaoMap.get(deviceId) != null){
+            filteredArray[newIndex] = versacomNameSerial[i];
+            newIndex++;
         }
     }
-    if( serialGroupIDs.length > 0)
-        sql += " )";
+    versacomNameSerial = filteredArray;
     
-    expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
+    /* Get authorized expresscom groups. */
+	sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID ";
+    List<YukonPao> expresscomGroupPaos = Lists.newArrayList();
+    expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class<?>[] { String.class, Integer.class, Integer.class, Integer.class } );
+    for(int i = 0; i < expresscomNameSerial.length; i++){
+        Integer deviceId = (Integer)expresscomNameSerial[i][2];
+        expresscomGroupPaos.add(paoDao.getYukonPao(deviceId));
+    }
+    permittedPaos = paoAuthorizationService.filterAuthorized(user, expresscomGroupPaos, Permission.LM_VISIBLE);
+    permittedPaoMap = new HashMap<Integer, YukonPao>();
+    for(YukonPao pao : permittedPaos){
+        permittedPaoMap.put(pao.getPaoIdentifier().getPaoId(), pao);
+    }
+    filteredArray = new Object[permittedPaos.size()][4];
+    newIndex = 0;
+    for(int i = 0; i < expresscomNameSerial.length; i++){
+        Integer deviceId = (Integer)expresscomNameSerial[i][2];
+        if(permittedPaoMap.get(deviceId) != null){
+            filteredArray[newIndex] = expresscomNameSerial[i];
+            newIndex++;
+        }
+    }
+    expresscomNameSerial = filteredArray;
+    
 	int numSerial = 0;
 	if(versacomNameSerial != null) numSerial += versacomNameSerial.length;
 	if(expresscomNameSerial != null) numSerial += expresscomNameSerial.length;
@@ -95,21 +96,20 @@
 	
     if( nameSerial != null ) {
     
-    for( int i = 0; i < nameSerial.length; i++ ) {
-        if( ((Integer) nameSerial[i][1]).intValue() == 0 ) {
-            showSerialNumberTextField = true;
-            serialNumberTextFieldIndex = 0;
-            serialNumberDropDownIndex = 1;            
-            textFieldRouteID = ((Integer) nameSerial[i][3]).intValue();
+        for( int i = 0; i < nameSerial.length; i++ ) {
+            if( ((Integer) nameSerial[i][1]).intValue() == 0 ) {
+                showSerialNumberTextField = true;
+                serialNumberTextFieldIndex = 0;
+                serialNumberDropDownIndex = 1;            
+                textFieldRouteID = ((Integer) nameSerial[i][3]).intValue();
+            }
         }
     }
-    }
-    }
+//}
 
 %>
 
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
-  <!-- Hide the script from older browsers
   
 var textFieldRouteID = <%=textFieldRouteID%>;
 
