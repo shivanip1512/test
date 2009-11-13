@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -89,7 +90,8 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 
     private JButton targetAdjustButton = null;
     private TargetCycleConfigPanel gearConfigJPanel = null;
-    
+    private boolean isMulti = false;
+
     boolean canSpecifyStopGear = false;
     /**
 	 * ManualChangeJPanel constructor comment.
@@ -134,30 +136,21 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 
 			ArrayList selPrgs = new ArrayList( programs.length );
 
-			boolean containsTargetCycleGear = false;
 			for( int i = 0; i < programs.length; i++ )
 			{
 				LiteLMProgScenario p = programs[i];
 				
-				LMProgramBase programBase = 
+				LMProgramBase lmProg = 
 					(LMProgramBase)allPrograms.get( new Integer(p.getProgramID()) );
 					
-				if( programBase != null )
+				if( lmProg != null )
 				{
-					MultiSelectProg selProg = new MultiSelectProg( programBase );
+					MultiSelectProg selProg = new MultiSelectProg( lmProg );
 					selProg.setGearNum( new Integer(p.getStartGear()) );
 					selProg.setStartDelay( new Integer(p.getStartOffset()) );
 					selProg.setStopOffset( new Integer(p.getStopOffset()) );
 
 					selPrgs.add( selProg );
-					
-					if(programBase instanceof IGearProgram) {
-	                    List<LMProgramDirectGear> directGearVector = ((IGearProgram) programBase).getDirectGearVector();
-	                    for (LMProgramDirectGear lmProgramDirectGear : directGearVector) {
-	                        if(lmProgramDirectGear.isTargetCycle())
-	                            containsTargetCycleGear = true;
-                        }
-					}
 				}
 				else
 				{
@@ -168,7 +161,8 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 				
 				
 			}
-			getTargetAdjustButton().setEnabled(containsTargetCycleGear);
+
+			
 			MultiSelectProg[] progArray = new MultiSelectProg[ selPrgs.size() ];
             setMultiSelectObject( (MultiSelectProg[])selPrgs.toArray(progArray), true );
 		}
@@ -349,34 +343,26 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	 *
 	 * @param
 	 */
-	public synchronized LMManualControlRequest createScenarioMessage( MultiSelectProg multiSelectProg ) 
+	public synchronized LMManualControlRequest createScenarioMessage( MultiSelectProg program ) 
 	{
 		int constID =
 			LMManualControlRequest.getConstraintID( getJComboBoxConstraints().getSelectedItem().toString() );
 		
 		boolean doItNow = false;
 		if( getMode() == MODE_STOP )
-			doItNow = isStopStartNowSelected() && (multiSelectProg.getStopOffset().intValue() <= 0); 
+			doItNow = isStopStartNowSelected() && (program.getStopOffset().intValue() <= 0); 
 		else
-			doItNow = isStopStartNowSelected() && (multiSelectProg.getStartDelay().intValue() <= 0);
-
-		String additionalInfo = null;
-
-		LMProgramBase programBase = multiSelectProg.getBaseProgram();
-        if(programBase instanceof IGearProgram) {
-            additionalInfo = getGearConfigJPanel().getAdditionalInfo();
-        }
+			doItNow = isStopStartNowSelected() && (program.getStartDelay().intValue() <= 0); 
 
 		return LCUtils.createScenarioMessage(
-			multiSelectProg.getBaseProgram(),
+			program.getBaseProgram(),
 			getMode() == MODE_STOP,
 			doItNow,
-			multiSelectProg.getStartDelay().intValue(),
-			multiSelectProg.getStopOffset().intValue(),
-			multiSelectProg.getGearNum().intValue(),
+			program.getStartDelay().intValue(),
+			program.getStopOffset().intValue(),
+			program.getGearNum().intValue(),
 			getStartTime(), getStopTime(),
-			constID,
-			additionalInfo);
+			constID );
 	}
 
 
@@ -1510,11 +1496,27 @@ private void initialize() {
 	
 		//make sure we are not setting the target adjustments
         Object gear = getJComboBoxGear().getItemAt(getJComboBoxGear().getSelectedIndex());
+        resetForNonTargetCycleGear(gear);
+            
 		choice = OK_CHOICE;
 		exit();
 	
 		return;
 	}
+    private void resetForNonTargetCycleGear(Object gear) {
+        if (gear instanceof LMProgramDirectGear) 
+        {
+            //unless we selected target cycle disable the adjustment config
+            LMProgramDirectGear directGear = (LMProgramDirectGear) gear;
+            if (!directGear.getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
+            {
+                getGearConfigJPanel().setAdditonalInfo(null);
+            }
+        }
+        else 
+            getGearConfigJPanel().setAdditonalInfo(null);
+    }
+
 
 	/**
 	 * Comment
@@ -1525,22 +1527,21 @@ private void initialize() {
 		getJTextFieldStopTime().setEnabled( !getJCheckBoxNeverStop().isSelected() );
 		getJLabelLabelStopHRMN().setEnabled( !getJCheckBoxNeverStop().isSelected() );
 		getDateComboStop().setEnabled( !getJCheckBoxNeverStop().isSelected() );
-		getTargetAdjustButton().setEnabled(!getJCheckBoxNeverStop().isSelected());
+        getTargetAdjustButton().setEnabled(!getJCheckBoxNeverStop().isSelected());
         //make sure that we disable the button permanently
         int selectedIndex = getJComboBoxGear().getSelectedIndex();
         Object selectedGear = getJComboBoxGear().getItemAt( selectedIndex);
-        if (selectedGear instanceof LMProgramDirectGear ||
-            selectedGear == null) {
-            if (!((LMProgramDirectGear)selectedGear).getControlMethod().equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE))
-            {
+        if (!isMulti) {
+            if (selectedGear instanceof LMProgramDirectGear) {
+                if (!((LMProgramDirectGear) selectedGear).getControlMethod()
+                                                         .equalsIgnoreCase(IlmDefines.CONTROL_TARGET_CYCLE)) {
+                    getTargetAdjustButton().setEnabled(false);
+                }
+
+            } else {
                 getTargetAdjustButton().setEnabled(false);
+
             }
-            
-        }
-        else 
-        {
-            getTargetAdjustButton().setEnabled(false);
-            
         }
         
 		if( getJCheckBoxNeverStop().isSelected() )
@@ -1760,28 +1761,23 @@ private void initialize() {
 		if( rows == null )
 			return false;
 
-        boolean showMulti = rows.length  > 1 || isScenario;
-        
+		isMulti = rows.length  > 1 || isScenario;
+
         if( isScenario )
         {
             getJPanelMultiSelect().setSelectableData( rows );
-            getJComboBoxGear().setVisible(false);
             getJLabelGear().setVisible(false);
+            getTargetAdjustButton().setVisible(false);
         }
         else
         {
-            if(rows.length > 1) {
-                getJComboBoxGear().setVisible(false);
-                getJLabelGear().setVisible(false);
-            }
-
             //get all the programs and copy the needed values into a different object
     		MultiSelectProg[] prgs = new MultiSelectProg[ rows.length ]; 
     		for( int i = 0; i < rows.length; i++ )
     			prgs[i] = new MultiSelectProg( rows[i].getBaseProgram() );
-
+    				
     		getJPanelMultiSelect().setSelectableData( prgs );
-            setParentWidth( showMulti ? 285 : 0 ); //300, 250
+            setParentWidth( isMulti ? 285 : 0 ); //300, 250
 
             boolean multiSelectVisible = isMultiSelectVisible(rows, getTopLevelAncestor());
             getJPanelMultiSelect().setVisible( multiSelectVisible);     
@@ -1789,10 +1785,10 @@ private void initialize() {
 
         getJComboBoxGear().removeAllItems();
         
-		if( showMulti )
+		if( isMulti )
 		{
-            getTargetAdjustButton().setEnabled(false);
-		    
+            getJComboBoxGear().setVisible(false);
+
 		    //Do any column specific initialization here               
             javax.swing.table.TableColumn gearColumn = 
                     getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
@@ -1804,14 +1800,8 @@ private void initialize() {
                     IGearProgram progGear =(IGearProgram)rows[i].getBaseProgram();
                     
                     DefaultComboBoxModel combModel = new DefaultComboBoxModel();
-                    List<LMProgramDirectGear> directGearVector = progGear.getDirectGearVector();
-                    for( int j = 0; j < directGearVector.size(); j++ ) {
-                        LMProgramDirectGear lmProgramDirectGear = progGear.getDirectGearVector().get(j);
-                        combModel.addElement(lmProgramDirectGear);
-                        if (lmProgramDirectGear.isTargetCycle()){
-                            getTargetAdjustButton().setEnabled(true);
-                        }
-                    
+                    for( int j = 0; j < progGear.getDirectGearVector().size(); j++ ) {
+                        combModel.addElement(progGear.getDirectGearVector().get(j) );
                     }
                     
                     if(isScenario) {
