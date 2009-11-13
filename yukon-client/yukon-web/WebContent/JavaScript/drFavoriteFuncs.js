@@ -35,8 +35,13 @@ function updateFavorite(requestUrl, paoId, isAdd) {
     new Ajax.Request(requestUrl, {
             'method': 'get',
             'parameters': { 'paoId': paoId },
-            'onSuccess': function(transport) {
-            	favoriteUpdated(transport, paoId, isAdd);
+            'evalScripts': true,
+            'onSuccess': function(transport, json) {
+            	if (json['favoriteDidUpdate']) {
+            		favoriteUpdated(transport, paoId, isAdd);
+            	} else {
+            		favoriteUpdateFailed();
+            	}
             },
             'onFailure': favoriteUpdateFailed
         });

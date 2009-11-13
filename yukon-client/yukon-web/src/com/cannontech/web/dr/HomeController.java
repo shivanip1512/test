@@ -3,13 +3,11 @@ package com.cannontech.web.dr;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -23,7 +21,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.util.EmptyView;
+import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -77,22 +75,28 @@ public class HomeController {
                 link = "/spring/dr/program/list";
             }
         }
-        
+
         return "redirect:" + link;
     }
 
     @RequestMapping("/addFavorite")
-    public View addFavorite(HttpServletResponse response, int paoId,
-            YukonUserContext userContext) {
+    public ModelAndView addFavorite(int paoId, YukonUserContext userContext)
+            throws Exception {
         favoritesDao.addFavorite(paoId, userContext.getYukonUser());
-        return new EmptyView();
+        return favoriteUpdated();
     }
 
     @RequestMapping("/removeFavorite")
-    public View removeFavorite(HttpServletResponse response, int paoId,
-            YukonUserContext userContext) {
+    public ModelAndView removeFavorite(int paoId, YukonUserContext userContext)
+            throws Exception {
         favoritesDao.removeFavorite(paoId, userContext.getYukonUser());
-        return new EmptyView();
+        return favoriteUpdated();
+    }
+
+    private ModelAndView favoriteUpdated() {
+        ModelAndView mav = new ModelAndView(new JsonView());
+        mav.addObject("favoriteDidUpdate", true);
+        return mav;
     }
 
     @Autowired
