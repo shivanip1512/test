@@ -83,7 +83,7 @@ public class LogViewController extends LogController {
                 }
             });
         } 
-        return "logView.jsp";
+        return "logging/logView.jsp";
     }
     
     @Autowired
