@@ -7953,6 +7953,7 @@ CtiConnection* CtiVanGogh::getNotificationConnection()
             if( _notificationConnection == NULL )
             {
                 _notificationConnection  = new CtiConnection( NotificationPort, NotificationMachine );
+                _notificationConnection->setName("Dispatch to Notification");
             }
         }
 

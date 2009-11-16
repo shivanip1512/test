@@ -631,6 +631,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
                 dout << CtiTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
             }
             iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
+            iDispatchConn->setName("FDR to Dispatch");
 
             if (iDispatchConn->verifyConnection() != NORMAL)
             {

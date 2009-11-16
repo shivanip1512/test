@@ -388,18 +388,21 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     }
 
     PILConnection = new CtiConnection( pil_port, pil_host );
+    PILConnection->setName("MCCMD to Pil");
 
     //Send a registration message
     CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
     PILConnection->WriteConnQue( reg );
 
     VanGoghConnection = new CtiConnection( dispatch_port, dispatch_host );
+    VanGoghConnection->setName("MCCMD to Dispatch");
 
     //Send a registration message
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("MCCMD", 0, false );
     VanGoghConnection->WriteConnQue( reg2 );
 
     NotificationConnection = new CtiConnection( notification_port, notification_host.c_str() );
+    NotificationConnection->setName("MCCMD to Notification");
 
     RWThreadFunction thr_func = rwMakeThreadFunction( _MessageThrFunc );
     thr_func.start();

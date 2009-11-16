@@ -816,6 +816,15 @@ INT CtiConnection::ConnectPortal()
                                 WriteConnQue( _ptRegMsg->replicateMessage() );
                             }
                         }
+                        else
+                        {
+                            //The above prints, so here we print as well.
+                            string whoStr = who();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " " << whoStr << " has connected " << endl;
+                            }
+                        }
                     }
                 }
             }
@@ -1108,7 +1117,9 @@ INT CtiConnection::establishConnection(INT freq)
             }
         }
 
-        if( !(++sleepCount % 60) )      // once per minute....
+        //Print on the first try, then every hour or so. Note that this loop really lasts
+        // 1.13333 seconds due to the 2 second sleep every 15 seconds above, so 3176 is close to an hour.
+        if( !(sleepCount++ % 3176) )
         {
             string whoStr = who();
             {
@@ -1141,7 +1152,7 @@ INT CtiConnection::waitForConnect()
 
     while( !_valid )       /* We loop here until the connection goes valid... */
     {
-        if( !(++waitCount % 60) )
+        if( !(++waitCount % 3600) ) // This is intentionally a pre increment so it does not print on first loop
         {
             string whoStr = who();
             {

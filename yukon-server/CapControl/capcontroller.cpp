@@ -1457,6 +1457,7 @@ CtiConnection* CtiCapController::getDispatchConnection()
             {
                 //Connect to Dispatch
                 _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
+                _dispatchConnection->setName("CC to Dispatch");
 
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
@@ -1539,6 +1540,7 @@ CtiConnection* CtiCapController::getPILConnection()
             {
                 //Connect to Pil
                 _pilConnection = new CtiConnection( pil_port, pil_host );
+                _pilConnection->setName("CC to Pil");
 
                 //Send a registration message to Pil
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
