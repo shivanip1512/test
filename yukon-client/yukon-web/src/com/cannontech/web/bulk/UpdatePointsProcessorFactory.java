@@ -118,35 +118,41 @@ public class UpdatePointsProcessorFactory {
                 Set<PointTemplate> pointSet = pointTemplatesMap.get(deviceType);
                 for (PointTemplate pointTemplate : pointSet) {
 
-                    LitePoint litePoint = pointService.getPointForDevice(device, pointTemplate.getPointIdentifier());
-
-                    PointBase pointBase = (PointBase)dbPersistentDao.retrieveDBPersistent(litePoint);
-
-                    if (pointBase instanceof AnalogPoint) {
-                        AnalogPoint analogPoint = (AnalogPoint)pointBase;
-
-                        processAnalogPoint(analogPoint);
-
-                        dbPersistentDao.performDBChange(analogPoint, Transaction.UPDATE);
-
-                    } else if (pointBase instanceof StatusPoint) {
-
-                        StatusPoint statusPoint = (StatusPoint)pointBase;
-                        processStatusPoint(statusPoint);
-
-                    } else if (pointBase instanceof AccumulatorPoint) {
-
-                        AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
-
-                        processAccumulatorPoint(accumulatorPoint);
-
-                        dbPersistentDao.performDBChange(accumulatorPoint, Transaction.UPDATE);
-
-                    } else {
-
-                        log.debug("Point type not supported, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointId=" + litePoint.getLiteID() + " pointType=" + litePoint.getLiteType());
-                    }
-
+                	boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplate.getPointIdentifier());
+                	if (pointExistsForDevice) {
+                	
+	                    LitePoint litePoint = pointService.getPointForDevice(device, pointTemplate.getPointIdentifier());
+	
+	                    PointBase pointBase = (PointBase)dbPersistentDao.retrieveDBPersistent(litePoint);
+	
+	                    if (pointBase instanceof AnalogPoint) {
+	                        AnalogPoint analogPoint = (AnalogPoint)pointBase;
+	
+	                        processAnalogPoint(analogPoint);
+	
+	                        dbPersistentDao.performDBChange(analogPoint, Transaction.UPDATE);
+	
+	                    } else if (pointBase instanceof StatusPoint) {
+	
+	                        StatusPoint statusPoint = (StatusPoint)pointBase;
+	                        processStatusPoint(statusPoint);
+	
+	                    } else if (pointBase instanceof AccumulatorPoint) {
+	
+	                        AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
+	
+	                        processAccumulatorPoint(accumulatorPoint);
+	
+	                        dbPersistentDao.performDBChange(accumulatorPoint, Transaction.UPDATE);
+	
+	                    } else {
+	
+	                        log.debug("Point type not supported, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointId=" + litePoint.getLiteID() + " pointType=" + litePoint.getLiteType());
+	                    }
+	                    
+                	} else {
+                		log.debug("Point does not exist for device, not updating: point=" + pointTemplate + " deviceId=" + device.getPaoIdentifier().getPaoId());
+                	}
                 }
 
             } else {
