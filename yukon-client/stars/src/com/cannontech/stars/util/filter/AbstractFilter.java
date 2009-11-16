@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -23,6 +25,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.stars.util.DateRangeFilterWrapper;
@@ -46,7 +49,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
     @Override
     @Transactional(readOnly = true)
     public int getFilterCount(List<Integer> energyCompanyIdList, List<FilterWrapper> filterWrapperList,
-            Date startDate, Date stopDate) {
+            Date startDate, Date stopDate) throws PersistenceException {
         
         //Add Dates into any WorkOrderStatus FilterWrapper if they exist.
         addDateRange(filterWrapperList, startDate, stopDate);
@@ -57,7 +60,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
     @Override
     @Transactional(readOnly = true)
     public int getFilterCount(List<Integer> energyCompanyIdList, 
-            List<FilterWrapper> filterWrapperList) {
+            List<FilterWrapper> filterWrapperList) throws PersistenceException {
 
         Collection<FilterBy> filterBys = filterByFactory.createFilterBys(filterWrapperList);
         applyFilterBySpecificSettings(energyCompanyIdList, filterBys);
@@ -70,8 +73,17 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
         
         String sql = sqlFragmentHolder.getSql();
         Object[] args = sqlFragmentHolder.getArguments();
-        
-        int count = jdbcTemplate.queryForInt(sql, args);
+        int count = 0;
+        try {
+            count = jdbcTemplate.queryForInt(sql, args);
+        // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
+        // that is the root of discrepancy in the Spring SQL error exception translator to throw
+        // BadSqlGrammarException vs. DataIntegrityViolationException            
+        } catch (BadSqlGrammarException e){
+            throw new PersistenceException(e.getMessage(), e);
+        } catch (DataIntegrityViolationException e) {
+            throw new PersistenceException(e.getMessage(), e);
+        }
         return count;
     }
     
@@ -79,7 +91,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
     @Transactional(readOnly = true)
     public void filter(final int fromIndex, final int toIndex, final Processor<E> processor, 
             List<Integer> energyCompanyIdList, List<FilterWrapper> filterWrapperList,
-                DirectionAwareOrderBy orderBy, Date startDate, Date stopDate) {
+                DirectionAwareOrderBy orderBy, Date startDate, Date stopDate) throws PersistenceException {
         
         //Add Dates into any WorkOrderStatus FilterWrapper if they exist.
         addDateRange(filterWrapperList, startDate, stopDate);
@@ -91,7 +103,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
     @Transactional(readOnly = true)
     public void filter(final int fromIndex, final int toIndex, final Processor<E> processor, 
             List<Integer> energyCompanyIdList, List<FilterWrapper> filterWrapperList,
-                DirectionAwareOrderBy orderBy) {
+                DirectionAwareOrderBy orderBy) throws PersistenceException {
         
         filterForInteger(fromIndex, toIndex, new CollectionProcessor<Integer>() {
             @Override
@@ -104,7 +116,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
 
     private void filterForInteger(final int fromIndex, final int toIndex, final Processor<Integer> processor, 
             List<Integer> energyCompanyIdList, List<FilterWrapper> filterWrapperList,
-                DirectionAwareOrderBy orderBy) {
+                DirectionAwareOrderBy orderBy) throws PersistenceException {
         
         Collection<FilterBy> filterBys = filterByFactory.createFilterBys(filterWrapperList);
         applyFilterBySpecificSettings(energyCompanyIdList, filterBys);
@@ -119,35 +131,44 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
         String sql = sqlFragmentHolder.getSql();
         Object[] args = sqlFragmentHolder.getArguments();
         
-        jdbcTemplate.query(sql, args, new ResultSetExtractor() {
-            @Override
-            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+        try {
+            jdbcTemplate.query(sql, args, new ResultSetExtractor() {
+                @Override
+                public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
 
-                List<Integer> list = new ArrayList<Integer>(batchSize);
+                    List<Integer> list = new ArrayList<Integer>(batchSize);
 
-                int rowNum = 0;
-                while (rs.next()) {
-                    rowNum++;
+                    int rowNum = 0;
+                    while (rs.next()) {
+                        rowNum++;
 
-                    if (rowNum < fromIndex) continue;
-                    if (rowNum > toIndex) break;
+                        if (rowNum < fromIndex) continue;
+                        if (rowNum > toIndex) break;
 
-                    Integer id = idRowMapper.mapRow(rs, rowNum);
-                    list.add(id);
+                        Integer id = idRowMapper.mapRow(rs, rowNum);
+                        list.add(id);
 
-                    if (list.size() >= batchSize) {
-                        processor.process(list);
-                        list = new ArrayList<Integer>(batchSize);
+                        if (list.size() >= batchSize) {
+                            processor.process(list);
+                            list = new ArrayList<Integer>(batchSize);
+                        }
                     }
-                }
 
-                if (list.size() > 0) {
-                    processor.process(list);
-                }
+                    if (list.size() > 0) {
+                        processor.process(list);
+                    }
 
-                return null;
-            }
-        });
+                    return null;
+                }
+            });
+            // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
+            // that is the root of discrepancy in the Spring SQL error exception translator to throw
+            // BadSqlGrammarException vs. DataIntegrityViolationException            
+        } catch (BadSqlGrammarException e){
+            throw new PersistenceException(e.getMessage(), e);
+        } catch (DataIntegrityViolationException e) {
+            throw new PersistenceException(e.getMessage(), e);
+        }
     }
     
     protected void applyFilterBySpecificSettings(List<Integer> energyCompanyIdList, 

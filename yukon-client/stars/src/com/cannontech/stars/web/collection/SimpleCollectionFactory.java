@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.stars.util.FilterWrapper;
@@ -62,12 +63,12 @@ public class SimpleCollectionFactory {
         }
         
         @Override
-        public int getCount() {
+        public int getCount() throws PersistenceException {
             return filter.getFilterCount(energyCompanyIds, filterWrapperList, startDate, stopDate);
         }
         
         @Override
-        public List<E> getList(int fromIndex, int toIndex) {
+        public List<E> getList(int fromIndex, int toIndex) throws PersistenceException {
             CollectingProcessor<E> collectingProcessor = 
                 new CollectingProcessor<E>();
             
@@ -102,17 +103,17 @@ public class SimpleCollectionFactory {
         }
 
         @Override
-        public int getCount() {
+        public int getCount() throws PersistenceException {
             return filter.getFilterCount(energyCompanyIds, filterWrapperList);
         }
 
         @Override
-        public List<E> getList() {
+        public List<E> getList() throws PersistenceException {
             return getList(0, Integer.MAX_VALUE);
         }
 
         @Override
-        public List<E> getList(int fromIndex, int toIndex) {
+        public List<E> getList(int fromIndex, int toIndex) throws PersistenceException {
             CollectingProcessor<E> collectingProcessor = 
                 new CollectingProcessor<E>();
             
@@ -128,7 +129,7 @@ public class SimpleCollectionFactory {
         }
 
         @Override
-        public Iterator<E> iterator() {
+        public Iterator<E> iterator() throws PersistenceException {
             return getList().iterator();
         }
     }

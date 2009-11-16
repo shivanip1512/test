@@ -7,9 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.BadSqlGrammarException;
-
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
@@ -207,14 +204,11 @@ public class InventoryBean {
         int numberOfHardware = 0;
         try {
             numberOfHardware = simpleCollection.getCount();
-        // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
-        // that is the root of discrepancy in the Spring SQL error exception translator to throw
-        // BadSqlGrammarException vs. DataIntegrityViolationException            
-        } catch (BadSqlGrammarException e){
-            errorMsg = INVENTORY_SQL_ERROR_FILTER;
-        } catch (DataIntegrityViolationException e) {
+        // In case of SQL non-numeric serial number errors
+        } catch (PersistenceException e){
             errorMsg = INVENTORY_SQL_ERROR_FILTER;
         }
+        
         numberOfRecords = numberOfHardware;
         if (numberOfHardware == 0 && errorMsg == null) {
             errorMsg = "No matching hardware records found";
@@ -795,14 +789,10 @@ public class InventoryBean {
         List<LiteInventoryBase> list;
         try {
             list = simpleCollection.getList();
-        // Oracle seems to throw SQLSyntaxErrorException whereas MS-SQL throws SQLException, 
-        // that is the root of discrepancy in the Spring SQL error exception translator to throw
-        // BadSqlGrammarException vs. DataIntegrityViolationException            
-        } catch (BadSqlGrammarException e){
+        // In case of SQL non-numeric serial number errors
+        } catch (PersistenceException e){
             throw new PersistenceException(INVENTORY_SQL_ERROR_FUNCTION, e);
-        } catch (DataIntegrityViolationException e) {
-            throw new PersistenceException(INVENTORY_SQL_ERROR_FUNCTION, e);
-        }        
+        }
         return list;
     }
     
