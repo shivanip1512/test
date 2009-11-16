@@ -24,8 +24,7 @@
 <cti:msg var="executionsLastRunText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.lastRun" />
 <cti:msg var="executionsNextRunText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.nextRun" />
 <cti:msg var="executionsEnabledStatusText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.enabledStatus" />
-<cti:msg var="executionsUserText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.user" />
-<cti:msg var="noJobsText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.noJobs" />    
+<cti:msg var="executionsUserText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.user" />  
     
 <cti:standardPage title="${pageTitle}" module="amr">
 
@@ -171,7 +170,14 @@
 		<c:if test="${fn:length(jobWrappers) == 0}">
 			<tr>
 				<td colspan="8" style="text-align:center;font-style:italic;" class="subtleGray">
-					${noJobsText}
+					<c:choose>
+						<c:when test="${canManage}">
+							<cti:msg key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.noJobs.createAccess" />  
+						</c:when>
+						<c:otherwise>
+							<cti:msg key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.noJobs.noCreateAccess" />  
+						</c:otherwise>
+					</c:choose>
 				</td>
 			</tr>
 		</c:if>

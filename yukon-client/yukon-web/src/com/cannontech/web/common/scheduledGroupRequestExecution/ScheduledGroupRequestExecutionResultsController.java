@@ -139,6 +139,9 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>(jobs, mapper);
 		mav.addObject("jobWrappers", jobWrappers);
 		
+		boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
+		mav.addObject("canManage", canManage);
+		
 		return mav;
 	}
 	

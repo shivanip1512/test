@@ -1,12 +1,9 @@
 package com.cannontech.web.amr.util.cronExpressionTag.handler;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -138,15 +135,8 @@ public abstract class CronTagStyleHandlerBase implements CronTagStyleHandler {
 			hour = 0;
 		}
 		
-		Date date = state.getDate();
-		if (date == null) {
-			date = new Date();
-		}
-		date = DateUtils.truncate(date, Calendar.DATE);
-		date = DateUtils.addHours(date, hour);
-		date = DateUtils.addMinutes(date, min);
-		
-		String timeDesc = dateFormattingService.format(date, DateFormatEnum.TIME, yukonUserContext);
+		LocalTime time = new LocalTime(hour, min);
+		String timeDesc = dateFormattingService.format(time, DateFormatEnum.TIME, yukonUserContext);
 		
 		return timeDesc;
 	}
