@@ -9,6 +9,10 @@
 <cti:standardPage module="dr" page="searchResults">
     <cti:standardMenu/>
 
+    <tags:simpleDialog id="drDialog"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
+    <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
 
     <cti:breadCrumbs>
@@ -29,13 +33,16 @@
             <tr>
                 <th></th>
                 <th>
-                    <cti:msg key="yukon.web.modules.dr.searchResults.nameHeader"/>
+                    <tags:sortLink key="yukon.web.modules.dr.searchResults.nameHeader"
+                        baseUrl="${baseUrl}" fieldName="NAME"/>
                 </th>
                 <th>
-                    <cti:msg key="yukon.web.modules.dr.searchResults.typeHeader"/>
+                    <tags:sortLink key="yukon.web.modules.dr.searchResults.typeHeader"
+                        baseUrl="${baseUrl}" fieldName="TYPE"/>
                 </th>
                 <th>
-                    <cti:msg key="yukon.web.modules.dr.searchResults.stateHeader"/>
+                    <tags:sortLink key="yukon.web.modules.dr.searchResults.stateHeader"
+                        baseUrl="${baseUrl}" fieldName="STATE"/>
                 </th>
                 <th>
                     <cti:msg key="yukon.web.modules.dr.searchResults.actionsHeader"/>

@@ -8,8 +8,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum LoadGroupState {
     ACTIVE(LMGroupBase.STATE_ACTIVE),
-    INACTIVE(LMGroupBase.STATE_INACTIVE),
     ACTIVE_PENDING(LMGroupBase.STATE_ACTIVE_PENDING),
+    INACTIVE(LMGroupBase.STATE_INACTIVE),
     INACTIVE_PENDING(LMGroupBase.STATE_INACTIVE_PENDING),
     ;
 

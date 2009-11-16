@@ -83,7 +83,7 @@
             <tr>
                 <th class="favoritesColumn"></th>
                 <th>
-                    <dr:sortByLink key="yukon.web.modules.dr.scenarioList.heading.name"
+                    <tags:sortLink key="yukon.web.modules.dr.scenarioList.heading.name"
                         baseUrl="${baseUrl}" fieldName="NAME"/>
                 </th>
                 <th>

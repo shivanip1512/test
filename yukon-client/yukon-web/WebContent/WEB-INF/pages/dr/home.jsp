@@ -35,13 +35,19 @@
                         <tr>
                             <th></th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.nameHeader"></cti:msg>
+                                <tags:sortLink key="yukon.web.modules.dr.home.nameHeader"
+                                    baseUrl="${baseUrl}" fieldName="NAME"
+                                    sortParam="favSort" descendingParam="favDescending"/>
                             </th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.typeHeader"></cti:msg>
+                                <tags:sortLink key="yukon.web.modules.dr.home.typeHeader"
+                                    baseUrl="${baseUrl}" fieldName="TYPE"
+                                    sortParam="favSort" descendingParam="favDescending"/>
                             </th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.stateHeader"></cti:msg>
+                                <tags:sortLink key="yukon.web.modules.dr.home.stateHeader"
+                                    baseUrl="${baseUrl}" fieldName="STATE"
+                                    sortParam="favSort" descendingParam="favDescending"/>
                             </th>
                             <th>
                                 <cti:msg key="yukon.web.modules.dr.home.actionsHeader"></cti:msg>
@@ -106,13 +112,19 @@
                         <tr>
                             <th></th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.nameHeader"></cti:msg>
+                                <tags:sortLink key="yukon.web.modules.dr.home.nameHeader"
+                                    baseUrl="${baseUrl}" fieldName="NAME"
+                                    sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.typeHeader"></cti:msg>
+                                <tags:sortLink key="yukon.web.modules.dr.home.typeHeader"
+                                    baseUrl="${baseUrl}" fieldName="TYPE"
+                                    sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.stateHeader"></cti:msg>
+                                <tags:sortLink key="yukon.web.modules.dr.home.stateHeader"
+                                    baseUrl="${baseUrl}" fieldName="STATE"
+                                    sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
                             <th>
                                 <cti:msg key="yukon.web.modules.dr.home.actionsHeader"></cti:msg>

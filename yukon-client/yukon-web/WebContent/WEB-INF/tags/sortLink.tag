@@ -1,25 +1,34 @@
-<%@ attribute name="fieldName" required="true" type="java.lang.String" %>
-<%@ attribute name="baseUrl" required="true" type="java.lang.String" %>
-<%@ attribute name="key" required="true" type="java.lang.String" %>
+<%@ attribute name="fieldName" required="true" %>
+<%@ attribute name="baseUrl" required="true" %>
+<%@ attribute name="key" required="true" %>
+<%@ attribute name="sortParam" %>
+<%@ attribute name="descendingParam" %>
 <%@ tag body-content="empty" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<c:set var="currentSort" value="${param.sort}"/>
+<c:if test="${empty pageScope.sortParam}">
+    <c:set var="sortParam" value="sort" scope="page"/>
+</c:if>
+<c:if test="${empty pageScope.descendingParam}">
+    <c:set var="descendingParam" value="descending" scope="page"/>
+</c:if>
+
+<c:set var="currentSort" value="${param[sortParam]}"/>
 <c:if test="${empty currentSort}">
     <c:set var="currentSort" value="NAME"/>
 </c:if>
 <cti:url var="sortUrl" value="${baseUrl}">
     <%-- keep all parameters except sort and page number --%>
     <c:forEach var="aParam" items="${param}">
-        <c:if test="${aParam.key != 'sort' && aParam.key != 'descending' && aParam.key != 'page'}">
+        <c:if test="${aParam.key != sortParam && aParam.key != descendingParam && aParam.key != 'page'}">
             <cti:param name="${aParam.key}" value="${aParam.value}"/>
         </c:if>
     </c:forEach>
-    <cti:param name="sort" value="${fieldName}"/>
-    <c:if test="${currentSort == fieldName && !param.descending}">
-        <cti:param name="descending" value="true"/>
+    <cti:param name="${sortParam}" value="${fieldName}"/>
+    <c:if test="${currentSort == fieldName && !param[descendingParam]}">
+        <cti:param name="${descendingParam}" value="true"/>
     </c:if>
 </cti:url>
 
@@ -27,7 +36,7 @@
     <cti:msg key="${key}"/>
     <c:if test="${currentSort == fieldName}">
         <c:choose>
-            <c:when test="${!param.descending}">
+            <c:when test="${!param[descendingParam]}">
                 <span title="Sorted ascending">&#9650;</span>
             </c:when>
             <c:otherwise>

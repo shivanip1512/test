@@ -120,13 +120,13 @@
             <th class="favoritesColumn"></th>
             <c:set var="numColumns" value="1"/>
             <th>
-                <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.name"
+                <tags:sortLink key="yukon.web.modules.dr.loadGroupList.heading.name"
                     baseUrl="${baseUrl}" fieldName="NAME"/>        
             </th>
             <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
-                    <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.state"
+                    <tags:sortLink key="yukon.web.modules.dr.loadGroupList.heading.state"
                         baseUrl="${baseUrl}" fieldName="STATE"/>        
                 </th>
             </cti:checkRolesAndProperties>
@@ -137,21 +137,21 @@
             <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
-                    <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.lastAction"
+                    <tags:sortLink key="yukon.web.modules.dr.loadGroupList.heading.lastAction"
                         baseUrl="${baseUrl}" fieldName="LAST_ACTION"/>        
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="LOAD_GROUP_CONTROL_STATISTICS">
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
-                    <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics"
+                    <tags:sortLink key="yukon.web.modules.dr.loadGroupList.heading.controlStatistics"
                         baseUrl="${baseUrl}" fieldName="CONTROL_STATISTICS"/>        
                 </th>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="LOAD_GROUP_REDUCTION">
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
-                    <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.reduction"
+                    <tags:sortLink key="yukon.web.modules.dr.loadGroupList.heading.reduction"
                         baseUrl="${baseUrl}" fieldName="REDUCTION"/>        
                 </th>
             </cti:checkRolesAndProperties>
@@ -159,7 +159,7 @@
             <cti:checkRolesAndProperties value="LOAD_GROUP_LOAD_CAPACITY">
                 <c:set var="numColumns" value="${numColumns + 1}"/>
                 <th>
-                    <dr:sortByLink key="yukon.web.modules.dr.loadGroupList.heading.loadCapacity"
+                    <tags:sortLink key="yukon.web.modules.dr.loadGroupList.heading.loadCapacity"
                         baseUrl="${baseUrl}" fieldName="LOAD_CAPACITY"/>
                 </th>
             </cti:checkRolesAndProperties>

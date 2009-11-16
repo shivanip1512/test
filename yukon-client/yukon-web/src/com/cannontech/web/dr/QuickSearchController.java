@@ -26,8 +26,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.dr.quicksearch.QuickSearchFilter;
 import com.cannontech.dr.quicksearch.QuickSearchRowMapper;
+import com.cannontech.dr.service.DemandResponseService;
+import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.PaoDetailUrlHelper;
+import com.google.common.collect.Ordering;
 
 @Controller
 /**
@@ -38,6 +41,7 @@ public class QuickSearchController {
     private RolePropertyDao rolePropertyDao;
     private FavoritesDao favoritesDao;
     private PaoDetailUrlHelper paoDetailUrlHelper;
+    private DemandResponseService demandResponseService;
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String search(ModelMap modelMap, YukonUserContext userContext, 
@@ -59,7 +63,22 @@ public class QuickSearchController {
         String searchText = quickSearchBean.getName();
         filters.add(new QuickSearchFilter(searchText));
 
-        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
+        String sort = quickSearchBean.getSort();
+        Boolean descending = quickSearchBean.getDescending();
+        Comparator<DisplayablePao> sorter = null;
+        if (sort != null) {
+            CombinedSortableField sortField =
+                CombinedSortableField.valueOf(sort);
+            if (sortField != null) {
+                sorter = demandResponseService.getSorter(sortField, userContext);
+                if (descending != null && descending && sorter != null) {
+                    sorter = Ordering.from(sorter).reverse();
+                }
+            }
+        }
+        if (sorter == null) {
+            sorter = new DisplayablePaoComparator();
+        }
 
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (quickSearchBean.getPage() - 1) * quickSearchBean.getItemsPerPage();
@@ -105,5 +124,10 @@ public class QuickSearchController {
     @Autowired
     public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
         this.paoDetailUrlHelper = paoDetailUrlHelper;
+    }
+
+    @Autowired
+    public void setDemandResponseService(DemandResponseService demandResponseService) {
+        this.demandResponseService = demandResponseService;
     }
 }

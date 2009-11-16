@@ -9,9 +9,9 @@ import com.google.common.collect.ImmutableMap.Builder;
 public enum ControlAreaState {
     ACTIVE(LMControlArea.STATE_FULLY_ACTIVE),
     PARTIALLY_ACTIVE(LMControlArea.STATE_ACTIVE),
-    INACTIVE(LMControlArea.STATE_INACTIVE),
     MANUAL_ACTIVE(LMControlArea.STATE_MANUAL_ACTIVE),
     CONTROL_ATTEMPT(LMControlArea.STATE_CNTRL_ATTEMPT),
+    INACTIVE(LMControlArea.STATE_INACTIVE),
     ;
 
     private int controlAreaStateId;

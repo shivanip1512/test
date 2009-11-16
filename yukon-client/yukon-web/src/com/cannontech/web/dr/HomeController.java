@@ -1,5 +1,7 @@
 package com.cannontech.web.dr;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,15 +16,19 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.AuthorizedFilter;
+import com.cannontech.dr.service.DemandResponseService;
+import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
 @Controller
 public class HomeController {
@@ -30,9 +36,12 @@ public class HomeController {
     private FavoritesService favoritesService;
     private RolePropertyDao rolePropertyDao;
     private PaoAuthorizationService paoAuthorizationService;
+    private DemandResponseService demandResponseService;
 
     @RequestMapping("/home")
-    public String home(ModelMap model, YukonUserContext userContext) {
+    public String home(ModelMap model, YukonUserContext userContext,
+            String favSort, Boolean favDescending, String rvSort,
+            Boolean rvDescending) {
         LiteYukonUser user = userContext.getYukonUser();
 
         List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
@@ -42,9 +51,38 @@ public class HomeController {
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
 
         List<DisplayablePao> favorites = favoritesService.getFavorites(user, filter);
+        Comparator<DisplayablePao> sorter = null;
+        if (favSort != null) {
+            CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
+            if (sortField != null) {
+                sorter = demandResponseService.getSorter(sortField, userContext);
+                if (favDescending != null && favDescending && sorter != null) {
+                    sorter = Ordering.from(sorter).reverse();
+                }
+            }
+        }
+        if (sorter == null) {
+            sorter = new DisplayablePaoComparator();
+        }
+        Collections.sort(favorites, sorter);
         model.addAttribute("favorites", favorites);
 
         List<DisplayablePao> recentlyViewed = favoritesService.getRecentlyViewed(user, 20, filter);
+        sorter = null;
+        if (rvSort != null) {
+            CombinedSortableField sortField = CombinedSortableField.valueOf(rvSort);
+            sorter = null;
+            if (sortField != null) {
+                sorter = demandResponseService.getSorter(sortField, userContext);
+                if (rvDescending != null && rvDescending && sorter != null) {
+                    sorter = Ordering.from(sorter).reverse();
+                }
+            }
+        }
+        if (sorter == null) {
+            sorter = new DisplayablePaoComparator();
+        }
+        Collections.sort(recentlyViewed, sorter);
         model.addAttribute("recents", recentlyViewed);
 
         Map<Integer, Boolean> favoritesByPaoId =
@@ -117,5 +155,10 @@ public class HomeController {
     @Autowired
     public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
         this.paoAuthorizationService = paoAuthorizationService;
+    }
+
+    @Autowired
+    public void setDemandResponseService(DemandResponseService demandResponseService) {
+        this.demandResponseService = demandResponseService;
     }
 }
