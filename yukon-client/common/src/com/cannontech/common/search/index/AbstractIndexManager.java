@@ -56,6 +56,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
     private static final String VERSION_PROPERTY = "version";
     private static final String DATABASE_PROPERTY = "database";
+    private static final String DATABASE_USER_PROPERTY = "dbuser";
     private static final String DATE_CREATED_PROPERTY = "created";
 
     private ConfigurationSource configurationSource = null;
@@ -73,6 +74,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     private File versionFile = null;
     private String version = null;
     private String database = null;
+    private String databaseUsername = null;
     private Date dateCreated = null;
     private int recordCount = 0;
     private AtomicInteger count = new AtomicInteger(0);
@@ -108,7 +110,11 @@ public abstract class AbstractIndexManager implements IndexManager {
     public String getDatabase() {
         return this.database;
     }
-
+    
+    public String getDatabaseUsername() {
+        return this.databaseUsername;
+    }
+    
     public int getRecordCount() {
         return this.recordCount;
     }
@@ -256,6 +262,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
             this.version = properties.getProperty(VERSION_PROPERTY);
             this.database = properties.getProperty(DATABASE_PROPERTY);
+            this.databaseUsername = properties.getProperty(DATABASE_USER_PROPERTY);
             String dateString = properties.getProperty(DATE_CREATED_PROPERTY);
             if (dateString != null) {
                 try {
@@ -414,7 +421,7 @@ public abstract class AbstractIndexManager implements IndexManager {
                 indexExists = false;
             }
 
-            if (indexExists && this.isCurrentVersion() && this.isCurrentDatabase()) {
+            if (indexExists && this.isCurrentVersion() && this.isCurrentDatabase() && this.isCurrentDatabaseUser()) {
                 return;
             }
         }
@@ -423,6 +430,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
         this.version = null;
         this.database = null;
+        this.databaseUsername = null;
         // Set the dateCreated to the time the index building started
         this.dateCreated = new Date();
 
@@ -480,15 +488,12 @@ public abstract class AbstractIndexManager implements IndexManager {
 
             String newVersion = String.valueOf(getIndexVersion());
             Date date = new Date();
-            database = (String) jdbcTemplate.execute(new ConnectionCallback() {
-                public Object doInConnection(Connection con) throws SQLException,
-                        DataAccessException {
-                    return con.getMetaData().getURL();
-                }
-            });
+            databaseUsername = getCurrentDbUser();
+            database = getCurrentDb();
 
             properties.setProperty(VERSION_PROPERTY, newVersion);
             properties.setProperty(DATABASE_PROPERTY, database);
+            properties.setProperty(DATABASE_USER_PROPERTY, databaseUsername);
             properties.setProperty(DATE_CREATED_PROPERTY, DATE_FORMAT.format(date));
             properties.store(oStream, null);
 
@@ -535,16 +540,44 @@ public abstract class AbstractIndexManager implements IndexManager {
      * @return True if the databases match
      */
     private boolean isCurrentDatabase() {
-
+        return getCurrentDb().equals(this.database);
+    }
+    
+    /**
+     * Helper method to determine if the index database user is the same as
+     * the current database user
+     * @return True if the database users match
+     */
+    private boolean isCurrentDatabaseUser() {
+        return getCurrentDbUser().equals(this.databaseUsername);
+    }
+    
+    /**
+     * Helper method to get the URL of the current database
+     */
+    private String getCurrentDb() {
         String currentDb = (String) jdbcTemplate.execute(new ConnectionCallback() {
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 return con.getMetaData().getURL();
             }
         });
-
-        return currentDb.equals(this.database);
+        
+        return currentDb;
     }
-
+    
+    /**
+     * Helper method to get the user connecting to the current database.
+     */
+    private String getCurrentDbUser() {
+        String currentDbUser = (String) jdbcTemplate.execute(new ConnectionCallback() {
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                return con.getMetaData().getUserName();
+            }
+        });
+        
+        return currentDbUser;
+    }
+    
     /**
      * Helper class which is used to process a result set into documents and
      * write each document into the index.
