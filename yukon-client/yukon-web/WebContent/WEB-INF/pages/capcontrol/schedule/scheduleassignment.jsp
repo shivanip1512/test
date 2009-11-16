@@ -144,10 +144,11 @@ function selectionChange() {
 
 Event.observe(window, 'load', function() {
 	selectionChange();
+	document.getElementById('paoTable').style.display = 'block';
 });
 </script>
     
-    <div id="paoTable">
+    <div id="paoTable" style="display:none;">
 		<form id="myForm" method="post" action="addPao">
 			
 			<span id="pickerDisabled">Select a Schedule and Command to continue.</span>
