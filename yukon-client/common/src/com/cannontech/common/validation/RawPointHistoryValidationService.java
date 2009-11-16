@@ -30,6 +30,7 @@ import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.service.PointReadService;
 import com.cannontech.common.events.loggers.ValidationEventLogService;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlBuilder;
@@ -43,6 +44,7 @@ import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
@@ -72,6 +74,7 @@ public class RawPointHistoryValidationService {
     private PersistedSystemValueDao persistedSystemValueDao;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private ValidationEventLogService validationEventLogService;
+    private PaoLoadingService paoLoadingService;
     
     private AtomicLong changeIdsEvaluated = new AtomicLong(0);
     private AtomicLong rowsPulled = new AtomicLong(0);
@@ -462,14 +465,23 @@ public class RawPointHistoryValidationService {
                 // re read meter
                 pointReadService.backgroundReadPoint(workUnit.paoPointIdentifier, CommandRequestExecutionType.VEE_RE_READ,  UserUtils.getYukonUser());
                 LogHelper.debug(log, "Sumbitting reread for a %s old reading for %s", timeSinceReading.toPeriod(), workUnit.paoPointIdentifier);
-                validationEventLogService.unreasonableValueCausedReRead(workUnit.paoPointIdentifier.getPaoIdentifier(), workUnit.paoPointIdentifier.getPointIdentifier());
+                
+                PaoIdentifier paoIdentifier = workUnit.paoPointIdentifier.getPaoIdentifier();
+                PointIdentifier pointIdentifier = workUnit.paoPointIdentifier.getPointIdentifier();
+                DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
+                
+                validationEventLogService.unreasonableValueCausedReRead(paoIdentifier.getPaoId(), displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
             }
         }
         
         if (validationMonitor.isSetQuestionableOnPeak() && peakInTheMiddle) {
             int changeId = values.get(1).changeId; // peak in the "middle" means the 1 value
             rawPointHistoryDao.changeQuality(changeId, PointQuality.Questionable);
-            validationEventLogService.changedQualityOnPeakedValue(workUnit.paoPointIdentifier.getPaoIdentifier(), changeId);
+            
+            PaoIdentifier paoIdentifier = workUnit.paoPointIdentifier.getPaoIdentifier();
+            PointIdentifier pointIdentifier = workUnit.paoPointIdentifier.getPointIdentifier();
+            DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
+            validationEventLogService.changedQualityOnPeakedValue(changeId, paoIdentifier.getPaoId(), displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
         }
     }
 
@@ -618,4 +630,9 @@ public class RawPointHistoryValidationService {
     public void setValidationEventLogService(ValidationEventLogService validationEventLogService) {
         this.validationEventLogService = validationEventLogService;
     }
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+		this.paoLoadingService = paoLoadingService;
+	}
 }

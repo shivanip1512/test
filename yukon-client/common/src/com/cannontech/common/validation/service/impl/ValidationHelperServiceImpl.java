@@ -6,7 +6,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.events.loggers.VeeReviewEventLogService;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validation.dao.RphTagDao;
@@ -15,8 +17,10 @@ import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.common.validation.service.ValidationHelperService;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableSet;
@@ -29,6 +33,9 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     private VeeReviewEventLogService veeReviewEventLogService;
     private PersistedSystemValueDao persistedSystemValueDao;
     private YukonJdbcOperations yukonJdbcOperations;
+    private PointDao pointDao;
+    private PaoLoadingService paoLoadingService;
+    
     private Set<RphTag> validationPlusOkTags;
     {
         Builder<RphTag> builder = ImmutableSet.builder();
@@ -70,24 +77,57 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     @Override
     public void deleteRawPointHistoryRow(int changeId, LiteYukonUser user) {
         
-        PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
+    	PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
+		int pointId = pointValueQualityHolder.getId();
+		PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointId);
+		DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoPointIdentifier.getPaoIdentifier());
         
         rawPointHistoryDao.deleteValue(changeId);
-        veeReviewEventLogService.deletePointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType(), user);
+        
+        veeReviewEventLogService.deletePointValue(changeId, 
+												  pointValueQualityHolder.getValue(), 
+												  pointValueQualityHolder.getPointDataTimeStamp(), 
+												  displayablePao.getName(), 
+												  paoPointIdentifier.getPaoIdentifier().getPaoType(),
+												  pointId,
+												  paoPointIdentifier.getPointIdentifier().getPointType(),
+												  paoPointIdentifier.getPointIdentifier().getOffset(),
+												  user);
     }
     
     @Override
     public void acceptRawPointHistoryRow(int changeId, LiteYukonUser user) {
         
-        PointValueQualityHolder p = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
+    	PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
+		int pointId = pointValueQualityHolder.getId();
+		PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointId);
+		DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoPointIdentifier.getPaoIdentifier());
         
         rphTagDao.insertTag(changeId, RphTag.OK);
-        veeReviewEventLogService.acceptPointValue(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType(), user);
         
-        PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
+        veeReviewEventLogService.acceptPointValue(changeId, 
+        										  pointValueQualityHolder.getValue(), 
+        									      pointValueQualityHolder.getPointDataTimeStamp(), 
+												  displayablePao.getName(), 
+												  paoPointIdentifier.getPaoIdentifier().getPaoType(),
+												  pointId,
+												  paoPointIdentifier.getPointIdentifier().getPointType(),
+												  paoPointIdentifier.getPointIdentifier().getOffset(),
+												  user);
+        
         if (pointValueQualityHolder.getPointQuality().equals(PointQuality.Questionable)) {
-            rawPointHistoryDao.changeQuality(changeId, PointQuality.Normal);
-            veeReviewEventLogService.updateQuestionableQuality(changeId, p.getValue(), p.getPointDataTimeStamp(), p.getType(), user);
+            
+        	rawPointHistoryDao.changeQuality(changeId, PointQuality.Normal);
+            
+        	veeReviewEventLogService.updateQuestionableQuality(changeId, 
+															   pointValueQualityHolder.getValue(), 
+															   pointValueQualityHolder.getPointDataTimeStamp(), 
+															   displayablePao.getName(), 
+															   paoPointIdentifier.getPaoIdentifier().getPaoType(),
+															   pointId,
+															   paoPointIdentifier.getPointIdentifier().getPointType(),
+															   paoPointIdentifier.getPointIdentifier().getOffset(),
+															   user);
         }
     }
     
@@ -121,4 +161,13 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         this.yukonJdbcOperations = yukonJdbcOperations;
     }
 
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+		this.pointDao = pointDao;
+	}
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+		this.paoLoadingService = paoLoadingService;
+	}
 }

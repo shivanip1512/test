@@ -152,11 +152,11 @@
 	    		<th>${previous}</th>
 	    		<th>${flagged}</th>
 	    		<th>${next}</th>
-	    		<th align="center">
+	    		<th align="center" class="nonwrapping">
 	    			${delete}
 	    			<img src="${deleteImg}" title="Check/Uncheck All" onclick="checkUncheckAll('DELETE');" class="pointer">
 	    		</th>
-	    		<th align="center">
+	    		<th align="center"  class="nonwrapping">
 	    			${accept}
 	    			<img src="${acceptImg}" title="Check/Uncheck All" onclick="checkUncheckAll('ACCEPT');" class="pointer">
 	    		</th>
@@ -182,11 +182,11 @@
 			    			</td>
 			    		</c:if>
 			    	
-			    		<td>
+			    		<td class="nonwrapping">
 			    			<cti:pointValueFormatter value="${p.prevPointValue}" format="FULL"/>
 			    		</td>
 			    		
-			    		<td title="${p.reviewPoint.changeId}">
+			    		<td title="${p.reviewPoint.changeId}" class="nonwrapping">
 			    		
 			    			<div style="float:left;">
 			    				<cti:pointValueFormatter value="${p.reviewPoint.pointValue}" format="FULL"/> 
@@ -194,19 +194,19 @@
 			    			
 			    			<div style="float:right;padding-right:10px;">
 			    				<c:forEach var="otherTag" items="${p.otherTags}">
-			    					<tags:rphTagIcon tag="${otherTag}"/>
+			    					<cti:logo key="${otherTag.logoKey}"/>
 			    				</c:forEach> 
-			    				<tags:rphTagIcon tag="${p.reviewPoint.rphTag}"/>
+			    				<cti:logo key="${p.reviewPoint.rphTag.logoKey}"/>
 			    			</div>
 			    		</td>
 			    		
-			    		<td><cti:pointValueFormatter value="${p.nextPointValue}" format="FULL"/></td>
+			    		<td class="nonwrapping"><cti:pointValueFormatter value="${p.nextPointValue}" format="FULL"/></td>
 			    		
-			    		<td align="center" class="ACTION_TD pointer">
+			    		<td align="center" class="ACTION_TD pointer nonwrapping">
 			    			<img id="ACTION_DELETE_IMG_${changeId}" src="${deleteDisabledImg}">
 			    		</td>
 			    		
-			    		<td align="center" class="ACTION_TD pointer">
+			    		<td align="center" class="ACTION_TD pointer nonwrapping">
 			    			<img id="ACTION_ACCEPT_IMG_${changeId}" src="${acceptDisabledImg}">
 			    			<input id="ACTION_${changeId}" name="ACTION_${changeId}" type="hidden" value="">
 			    		</td>

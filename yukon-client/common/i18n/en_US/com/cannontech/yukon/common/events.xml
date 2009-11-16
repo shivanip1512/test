@@ -55,17 +55,16 @@
     <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {1} was disabled</entry>
     
     <!-- Command Request Executor -->
-    <entry key="yukon.common.events.porterRequests.connectionException">Processing failed: {1}</entry>
-    <entry key="yukon.common.events.porterRequests.exception">Processing failed: {1}</entry>
+    <entry key="yukon.common.events.porterRequests.commandFailedToTransmit">Command failed to transmit: command={2} type={1} error={3} user={4} id={7} contextId={8} </entry>
     
     <!-- VEE -->
-    <entry key="yukon.common.events.system.rphValidation.review.deletePointValue">Deleted point value: changeId={7} value={8} type={9} timestamp={11}</entry>
-    <entry key="yukon.common.events.system.rphValidation.review.acceptPointValue">Accepted point value: changeId={7} value={8} type={9} timestamp={11}</entry>
-    <entry key="yukon.common.events.system.rphValidation.review.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={7} value={8} type={9} timestamp={11}</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.deletePointValue">Deleted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.acceptPointValue">Accepted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}</entry>
     
-    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoIdentifier={7} pointIdentifier={8}</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoId={7} paoName={1} paoType={2} pointId={8} pointType={3} pointOffset={9}</entry>
     <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup">Validation engine startup: lastChangeIdProcessed={7} tagsCleared={8}</entry>
-    <entry key="yukon.common.events.system.rphValidation.validator.changedQualityOnPeakedValue">Changed quality on peak value: paoIdentifier={7} changeId={8}</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.changedQualityOnPeakedValue">Changed quality on peak value: changeId={7} paoId={8} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10}</entry>
     <entry key="yukon.common.events.system.rphValidation.helper.acceptedAllTaggedRows">All rows tagged with {1} have been accepted by {2}</entry>
     <entry key="yukon.common.events.system.rphValidation.helper.deletedAllTaggedRows">All rows tagged with {1} have been deleted by {2}</entry>
     <entry key="yukon.common.events.system.rphValidation.helper.validationEngineReset">The Validation Engine has been reset to reprocess all rows</entry>

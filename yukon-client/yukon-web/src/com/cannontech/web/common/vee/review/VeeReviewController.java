@@ -15,7 +15,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.validation.dao.RphTagDao;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
 import com.cannontech.common.validation.model.RphTag;
@@ -37,7 +36,6 @@ import com.google.common.collect.Ordering;
 @RequestMapping("/veeReview/*")
 public class VeeReviewController {
 	
-	private RphTagDao rphTagDao;
 	private RphTagUiDao rphTagUiDao;
 	private RawPointHistoryDao rawPointHistoryDao;
 	private ValidationHelperService validationHelperService;
@@ -271,11 +269,6 @@ public class VeeReviewController {
 		public List<RphTag> getOtherTags() {
 			return otherTags;
 		}
-	}
-	
-	@Autowired
-	public void setRphTagDao(RphTagDao rphTagDao) {
-		this.rphTagDao = rphTagDao;
 	}
 	
 	@Autowired

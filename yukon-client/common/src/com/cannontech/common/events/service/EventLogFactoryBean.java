@@ -24,7 +24,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
-import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.dao.EventLogDao.ArgumentColumn;
@@ -32,11 +32,12 @@ import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
 import com.cannontech.common.exception.BadConfigurationException;
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
@@ -119,15 +120,24 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         builder.add(ArgumentMapper.create(Boolean.class, Types.VARCHAR));
         builder.add(ArgumentMapper.create(Date.class, Types.TIMESTAMP));
         builder.add(ArgumentMapper.create(LiteYukonUser.class, Types.VARCHAR, new LiteYukonUserToNameMapper()));
-        builder.add(ArgumentMapper.create(PaoIdentifier.class, Types.NUMERIC, new ObjectMapper<PaoIdentifier, Integer>() {
-            public Integer map(PaoIdentifier from) throws ObjectMappingException {
-                return from.getPaoId();
+        builder.add(ArgumentMapper.create(PaoType.class, Types.VARCHAR, new ObjectMapper<PaoType, String>() {
+            public String map(PaoType from) throws ObjectMappingException {
+                return from.name();
             }
         }));
-        builder.add(ArgumentMapper.create(PointIdentifier.class, Types.VARCHAR));
+        builder.add(ArgumentMapper.create(PointType.class, Types.VARCHAR, new ObjectMapper<PointType, String>() {
+            public String map(PointType from) throws ObjectMappingException {
+                return from.name();
+            }
+        }));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             public Date map(ReadableInstant from) throws ObjectMappingException {
                 return new Instant(from).toDate();
+            }
+        }));
+        builder.add(ArgumentMapper.create(CommandRequestExecutionType.class, Types.VARCHAR, new ObjectMapper<CommandRequestExecutionType, String>() {
+            public String map(CommandRequestExecutionType from) throws ObjectMappingException {
+                return from.name();
             }
         }));
         argumentMappers = builder.build();

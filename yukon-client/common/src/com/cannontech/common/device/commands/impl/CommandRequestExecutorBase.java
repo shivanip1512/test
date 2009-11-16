@@ -353,7 +353,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         
         // create CommandRequestExection record
         final CommandRequestExecutionContextId contextId = parameterDto.getContextId();
-        CommandRequestExecutionType type = parameterDto.getType();
+        final CommandRequestExecutionType type = parameterDto.getType();
         
         final CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
         commandRequestExecution.setContextId(contextId.getId());
@@ -410,10 +410,13 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		
 		        boolean nothingWritten = true;
 		        boolean completeAndRemoveListener = false;
+		        RequestHolder currentRequestHolder = null;
 		        try {
 		            // write requests
 		        	log.debug("Starting commandRequests loop. groupMessageId = " + groupMessageId);
 		            for (RequestHolder requestHolder : commandRequests) {
+		            	
+		            	currentRequestHolder = requestHolder;
 		            	
 		            	if (!messageListener.isCanceled()) {
 		            	
@@ -439,7 +442,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
 		        	
-		        	commandRequestExecutorEventLogService.connectionException(error);
+		        	commandRequestExecutorEventLogService.commandFailedToTransmit(commandRequestExecution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), error, user);
 		        	
 		        } catch (Exception e) {
 		        	
@@ -447,7 +450,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
 		        	
-		        	commandRequestExecutorEventLogService.exception(e.getMessage());
+		        	commandRequestExecutorEventLogService.commandFailedToTransmit(commandRequestExecution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
 		        	
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {

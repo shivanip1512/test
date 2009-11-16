@@ -312,10 +312,6 @@ table.compactResultsTable td.label {
     font-weight: 600;
 }
 
-table.compactResultsTable .nonwrapping {
-	white-space: nowrap;
-}
-
 .compactResultTableDescription{
 	font-size: 11px;
 	font-weight: bold;
@@ -677,6 +673,10 @@ div.pagedBox table.boxTable {
 
 .pointer {
 	cursor: pointer;
+}
+
+.nonwrapping {
+	white-space: nowrap;
 }
 
 .simpleReportHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; color: #000000}
