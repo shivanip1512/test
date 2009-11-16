@@ -263,6 +263,7 @@ public class InventoryBean {
 		
 		int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
 		
+		// this minInvNo, maxInvNo displays as page navigation		
 		int minInvNo = (page - 1) * pageSize + 1;
 		int maxInvNo = Math.min(page * pageSize, numberOfHardware);
         
@@ -331,7 +332,7 @@ public class InventoryBean {
 		Map<Integer, LiteStarsEnergyCompany> ecMap = 
 			StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
 		
-		int fromIndex = minInvNo;
+		int fromIndex = (page == 1) ? 0 : minInvNo;
 		int toIndex = maxInvNo;
 		
 		List<LiteInventoryBase> hardwareList = simpleCollection.getList(fromIndex, toIndex);
