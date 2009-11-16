@@ -174,8 +174,6 @@ public class ProgramServiceImpl implements ProgramService {
 
         DateTime referenceDate = firstStartDate;
 
-        // TODO:  is this logic correct?  Can it be done better???
-        // What happens if we push a LocalTime past the 24th hour?
         while (lastStopDate.compareTo(gearAdjustmentBegin.toDateTime(referenceDate)) > 0
                 && retVal.size() < 24) {
             GearAdjustment gearAdjustment = new GearAdjustment();
