@@ -332,7 +332,9 @@ public class InventoryBean {
 		Map<Integer, LiteStarsEnergyCompany> ecMap = 
 			StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
 		
-		int fromIndex = (page == 1) ? 0 : minInvNo;
+		// these need to be zero-based indexes to correctly work with both types of Filters, i.e.,
+		// SearchBasedSimpleCollection and FilterBasedSimpleCollection
+		int fromIndex = minInvNo - 1;
 		int toIndex = maxInvNo;
 		
 		List<LiteInventoryBase> hardwareList = simpleCollection.getList(fromIndex, toIndex);

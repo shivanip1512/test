@@ -138,12 +138,13 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
 
                     List<Integer> list = new ArrayList<Integer>(batchSize);
 
-                    int rowNum = 0;
+                    // Adjusted to zero-based counting to work similar to SearchBasedSimpleCollection
+                    int rowNum = -1;
                     while (rs.next()) {
                         rowNum++;
 
                         if (rowNum < fromIndex) continue;
-                        if (rowNum > toIndex) break;
+                        if (rowNum >= toIndex) break;
 
                         Integer id = idRowMapper.mapRow(rs, rowNum);
                         list.add(id);
