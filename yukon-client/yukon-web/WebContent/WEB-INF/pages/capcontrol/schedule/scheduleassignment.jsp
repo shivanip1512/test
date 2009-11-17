@@ -144,7 +144,7 @@ function selectionChange() {
 
 Event.observe(window, 'load', function() {
 	selectionChange();
-	document.getElementById('paoTable').style.display = 'block';
+	$('paoTable').show();
 });
 </script>
     
