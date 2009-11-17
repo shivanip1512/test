@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
@@ -76,4 +77,9 @@ public class MultispeakBean
    public int getPaoNameAlias() {
        return multispeakFuncs.getPaoNameAlias();
    }
+   
+   public MeterDisplayFieldEnum getMeterLookupField() {
+       return multispeakFuncs.getMeterLookupField();
+   }
+
 }

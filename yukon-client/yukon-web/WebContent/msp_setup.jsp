@@ -114,10 +114,9 @@
 					</tags:nameValue>
 				</tags:nameValueContainer>
 				
-				<br><br><br>
-				<u>Response Message Login</u>
 				<br><br>
-				<tags:nameValueContainer style="width: 300px;float: left;">
+				<u>Response Message Login</u>
+				<tags:nameValueContainer style="width: 350px;float: left;">
 					<tags:nameValue name="UserName">
 				      <input title="Enter the Username for Outgoing Yukon messages" type="text" name="outUserName" value='<spring:escapeBody htmlEscape="true"><c:out value="${multispeakBean.selectedMspVendor.outUserName}"/></spring:escapeBody>'>
 					</tags:nameValue>
@@ -139,6 +138,13 @@
 					        <select title="Select the DeviceName Alias field" name="mspPaoNameAlias">
 					        	<c:forEach var="mspPaoNameAliasEntry" items="${multispeakBean.selectedMspVendor.paoNameAliasStrings}" varStatus="status">
 					            	<option <c:if test="${status.index == multispeakBean.paoNameAlias}">selected</c:if> value='<c:out value="${status.index}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
+					        	</c:forEach>
+					        </select>
+						</tags:nameValue>
+						<tags:nameValue name="Meter Lookup Field">
+					        <select title="Select the Meter Lookup field" name="mspMeterLookupField">
+					        	<c:forEach var="mspMeterLookupFieldEntry" items="${multispeakBean.selectedMspVendor.meterLookupFields}">
+					            	<option <c:if test="${mspMeterLookupFieldEntry == multispeakBean.meterLookupField}">selected</c:if> value='<c:out value="${mspMeterLookupFieldEntry}"/>'> <c:out value="${mspMeterLookupFieldEntry}"/></option>
 					        	</c:forEach>
 					        </select>
 						</tags:nameValue>

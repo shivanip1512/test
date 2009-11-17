@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.axis.message.SOAPHeaderElement;
 
+import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.spring.YukonSpringHook;
@@ -67,6 +68,13 @@ public class MultispeakVendor
            SERVICE_LOCATION_WITH_POSITION_STRING,
            POLE_NUMBER_PAONAME_STRING
        };
+    
+    private static MeterDisplayFieldEnum[] meterLookupFields = new MeterDisplayFieldEnum[] {
+            MeterDisplayFieldEnum.METER_NUMBER,
+            MeterDisplayFieldEnum.DEVICE_NAME,
+            MeterDisplayFieldEnum.ADDRESS
+    };
+    
     private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
     
 	private List<MultispeakInterface> mspInterfaces = null;
@@ -249,6 +257,10 @@ public class MultispeakVendor
     
     public String[] getPaoNameAliasStrings() {
         return paoNameAliasStrings;
+    }
+    
+    public MeterDisplayFieldEnum[] getMeterLookupFields() {
+        return meterLookupFields;
     }
     
     public String getEndpointURL(String service) {

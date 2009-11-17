@@ -18,6 +18,7 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DuplicateException;
@@ -197,12 +198,16 @@ public class MultispeakServlet extends HttpServlet
         if (req.getParameter("mspPaoNameAlias") != null)
             mspPaoNameAlias = Integer.valueOf(req.getParameter("mspPaoNameAlias")).intValue();
         
+        MeterDisplayFieldEnum oldMspMeterLookupField = multispeakFuncs.getMeterLookupField();
+        MeterDisplayFieldEnum mspMeterLookupField = oldMspMeterLookupField;
+        if (req.getParameter("mspMeterLookupField") != null)
+            mspMeterLookupField = MeterDisplayFieldEnum.valueOf(req.getParameter("mspMeterLookupField"));
+        
         //Update the role property values if they have changed.
         if ( mspPrimaryCIS != oldMspPrimaryCIS || 
-             mspPaoNameAlias != oldMspPaoNameAlias ){
-            try
-            {
-                boolean breakTime = false;
+             mspPaoNameAlias != oldMspPaoNameAlias || 
+             mspMeterLookupField != oldMspMeterLookupField){
+            try {
                 LiteYukonGroup yukGrp = DaoFactory.getRoleDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
                 YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
                 //fill out the DB Persistent with data
@@ -212,17 +217,11 @@ public class MultispeakServlet extends HttpServlet
                     YukonGroupRole grpRole = (YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
                     if( MultispeakRole.MSP_PRIMARY_CB_VENDORID == grpRole.getRolePropertyID().intValue() ) {
                         grpRole.setValue(String.valueOf(mspPrimaryCIS));
-                        if( !breakTime )
-                            breakTime = true;
-                        else
-                            break;                          
                     } else if( MultispeakRole.MSP_PAONAME_ALIAS == grpRole.getRolePropertyID().intValue() ) {
                         grpRole.setValue(String.valueOf(mspPaoNameAlias));
-                        if( !breakTime )
-                            breakTime = true;
-                        else
-                            break;
-                    }
+                    } else if( MultispeakRole.MSP_METER_LOOKUP_FIELD == grpRole.getRolePropertyID().intValue() ) {
+                        grpRole.setValue(String.valueOf(mspMeterLookupField));
+                    } 
                 }
                 //update any changed values in the DB
                 DaoFactory.getDbPersistentDao().performDBChange(yukGrpPersist, Transaction.UPDATE);
