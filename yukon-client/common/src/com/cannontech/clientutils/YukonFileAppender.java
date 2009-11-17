@@ -37,7 +37,7 @@ public class YukonFileAppender extends AppenderSkeleton {
      * maximum file size set at 1 gigabyte
      */ 
     private static long maxFileSize = 1073741824; 
-    private static ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
+    private static ConfigurationSource configSource = null;
     
     /**
      * maximum file size as a string, defaults to 1 gigabyte
@@ -76,6 +76,8 @@ public class YukonFileAppender extends AppenderSkeleton {
     @Override
     public void activateOptions() {
         super.activateOptions();
+        
+        configSource = MasterConfigHelper.getConfiguration();
         
         //initialize dailyRollingFileAppender 
         //get the name of the application running this appender
