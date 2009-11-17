@@ -131,7 +131,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		
 		if (success) {
 			//Send DB add message
-			sendDBChangeMessage(area.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.AREA);
+			sendCapcontrolDBChangeMessage(area.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.AREA);
 		}
 
 		return success;
@@ -143,7 +143,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         
         if (success) {
             //Send DB add message
-            sendDBChangeMessage(specialArea.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SPECIAL_AREA);
+            sendCapcontrolDBChangeMessage(specialArea.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SPECIAL_AREA);
         }
 
         return success;
@@ -155,7 +155,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 
 		if (success) {
 			//Send DB add message
-			sendDBChangeMessage(substation.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBSTATION);
+			sendCapcontrolDBChangeMessage(substation.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBSTATION);
 		}
 
 		return success;
@@ -176,8 +176,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean ret = substationDao.assignSubstation(areaId, substationId);
 		
 		if (ret) {
-			sendDBChangeMessage(substationId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBSTATION);
-			sendDBChangeMessage(areaId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.AREA);
+			sendCapcontrolDBChangeMessage(substationId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBSTATION);
+			sendCapcontrolDBChangeMessage(areaId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.AREA);
 		}
 		return ret;
 	}
@@ -200,7 +200,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = capbankDao.add(bank);
 		
 		if (success) {
-			sendDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.CAPBANK);
+			sendCapcontrolDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.CAPBANK);
 		}
 		
 		return success;
@@ -211,8 +211,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean ret = capbankDao.assignCapbank(feederId, bankId);
 		
 		if (ret) {
-			sendDBChangeMessage(bankId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK);
-			sendDBChangeMessage(feederId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.FEEDER);
+			sendCapcontrolDBChangeMessage(bankId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK);
+			sendCapcontrolDBChangeMessage(feederId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.FEEDER);
 		}
 		
 		return ret;
@@ -237,7 +237,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = feederDao.add(feeder);
 		
 		if (success) {
-			sendDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
+			sendCapcontrolDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
 		}
 		
 		return success;
@@ -247,8 +247,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public boolean assignFeeder(int feederId, int subBusId) {
 		boolean ret = feederDao.assignFeeder(subBusId, feederId);
 		if (ret) {
-			sendDBChangeMessage(feederId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.FEEDER);
-			sendDBChangeMessage(subBusId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBBUS);
+			sendCapcontrolDBChangeMessage(feederId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.FEEDER);
+			sendCapcontrolDBChangeMessage(subBusId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBBUS);
 		}
 		
 		return ret;
@@ -274,7 +274,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = substationBusDao.add(subBus);
 		
 		if (success) {
-			sendDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBBUS);
+			sendCapcontrolDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBBUS);
 		}
 
 		return success;
@@ -285,8 +285,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean ret = substationBusDao.assignSubstationBus(substationId, subBusId);
 		
 		if (ret) {
-			sendDBChangeMessage(subBusId,DBChangeMsg.CHANGE_TYPE_UPDATE, CapControlType.SUBBUS);
-			sendDBChangeMessage(substationId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBSTATION);
+			sendCapcontrolDBChangeMessage(subBusId,DBChangeMsg.CHANGE_TYPE_UPDATE, CapControlType.SUBBUS);
+			sendCapcontrolDBChangeMessage(substationId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBSTATION);
 		}
 		
 		return ret; 
@@ -312,8 +312,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = capbankControllerDao.add(controller);
 
 		if (success) {
-			String type = PaoType.getForId(controller.getType()).name();
-			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
+			String type = PaoType.getForId(controller.getType()).getDbString();
+			sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
 		}
 		
 		return success;
@@ -325,8 +325,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = capbankControllerDao.createControllerFromTemplate(template, controller);
 
 		if (success) {
-			String devType = PaoType.getForId(controller.getType()).name();
-			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,devType);
+			String devType = PaoType.getForId(controller.getType()).getDbString();
+			sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,devType);
 		}
 		
 		return success;
@@ -338,8 +338,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		PaoType deviceType = PaoType.getForId(controller.getType());
 		
 		if (ret) {
-			sendDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE, deviceType.getPaoTypeName());
-			sendDBChangeMessage(capbankId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK);
+		    sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE, deviceType.getDbString());
+		    sendCapcontrolDBChangeMessage(capbankId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK.getDisplayValue());
 		}
 		
 		return ret; 
@@ -381,14 +381,21 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		return litePao.getYukonID();
 	}
 	
-	private void sendDBChangeMessage(int paoId, int changeType, String type) {
+    private void sendDeviceDBChangeMessage(int paoId, int changeType, String type) {
+        DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB,
+                PAOGroups.STRING_CAT_DEVICE, type, changeType); 
+        dbPersistantDao.processDBChange(msg);
+    }
+
+	
+	private void sendCapcontrolDBChangeMessage(int paoId, int changeType, String type) {
 		DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB,
 				PAOGroups.STRING_CAT_CAPCONTROL, type, changeType);	
 		dbPersistantDao.processDBChange(msg);
 	}
 	
-	private void sendDBChangeMessage(int paoId, int changeType, CapControlType type) {
-		sendDBChangeMessage(paoId,changeType,type.getDisplayValue());
+	private void sendCapcontrolDBChangeMessage(int paoId, int changeType, CapControlType type) {
+		sendCapcontrolDBChangeMessage(paoId,changeType,type.getDisplayValue());
 	}
 	
 	@Autowired
