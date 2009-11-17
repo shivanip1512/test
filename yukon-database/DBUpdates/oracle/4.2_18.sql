@@ -55,3 +55,4 @@ MODIFY PhaseCValueBeforeControl FLOAT NOT NULL;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '29-OCT-2009', 'Latest Update', 18);
