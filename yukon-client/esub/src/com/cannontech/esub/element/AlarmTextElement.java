@@ -180,6 +180,7 @@ public class AlarmTextElement
         setPointIds(newPointIds);
         if(getDeviceIds().length == 0 && getPointIds().length == 0 && getAlarmCategoryIds().length == 0) {
             setText("BROKEN ALARM TEXT");
+            setDefaultTextColor(Color.YELLOW);
             return true;
         }
         return false;
