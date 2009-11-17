@@ -1,9 +1,10 @@
 package com.cannontech.web.common.events;
 
 import java.text.ParseException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -36,7 +38,7 @@ public class EventLogViewerController {
     private DateFormattingService dateFormattingService;
 
     @RequestMapping
-    public void view(String[] categories, String fromDate, String toDate, YukonUserContext userContext, ModelMap model) throws ServletException, ParseException {
+    public void view(String[] categories, String fromDate, String toDate, Integer itemsPerPage, Integer page, YukonUserContext userContext, ModelMap model) throws ServletException, ParseException {
         
         Date startDate = dateFormattingService.flexibleDateParser(fromDate, DateOnlyMode.START_OF_DAY, userContext);
         if (startDate == null) {
@@ -51,6 +53,13 @@ public class EventLogViewerController {
             throw new RuntimeException("start must be before stop");
         }
         
+        if(page == null){
+            page = 1;
+        }
+        if(itemsPerPage == null){
+            itemsPerPage = 10;
+        }
+        
         List<EventLog> allEvents;
         if (categories != null) {
             Set<EventCategory> eventCategories = Sets.newHashSet();
@@ -59,14 +68,31 @@ public class EventLogViewerController {
                 eventCategories.add(category);
             }
             allEvents = eventLogDao.findAllByCategories(eventCategories, startDate, stopDate);
-            model.addAttribute("selectedCategories", ServletUtil.convertSetToMap(eventCategories));
+            Map<EventCategory, Boolean> selectedMap = ServletUtil.convertSetToMap(eventCategories); 
+            model.addAttribute("selectedCategories", selectedMap);
         } else {
-            allEvents = Collections.emptyList();
+            allEvents = eventLogDao.findAllByCategories(getAllEventCategories(), startDate, stopDate);
+            model.addAttribute("selectedCategories", ServletUtil.convertListToMap(getAllEventCategories()));
         }
-
-        model.addAttribute("events", allEvents);
+        
         model.addAttribute("fromDate", startDate);
         model.addAttribute("toDate", stopDate);
+        
+        SearchResult<EventLog> searchResult = new SearchResult<EventLog>();
+        
+        List<EventLog> resultList = new ArrayList<EventLog>();
+        
+        int startIndex = (page - 1) * itemsPerPage;
+        for (int index = startIndex; index < allEvents.size() && index - startIndex < itemsPerPage; index++) {
+            resultList.add(allEvents.get(index));
+        }
+
+        searchResult.setResultList(resultList);
+        searchResult.setBounds(startIndex, itemsPerPage, allEvents.size());
+        
+        model.addAttribute("itemsPerPage", itemsPerPage);
+        model.addAttribute("searchResult", searchResult);
+        model.addAttribute("events", searchResult.getResultList());
     }
 
     @ModelAttribute

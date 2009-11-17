@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-
+    <!-- Genera Event Messages -->
+    <entry key="yukon.common.events.title">Events</entry>
+    <entry key="yukon.common.events.columnHeader.event">Event</entry>
+    <entry key="yukon.common.events.columnHeader.dateAndTime"><![CDATA[Date & Time]]></entry>
+    <entry key="yukon.common.events.columnHeader.message">Message</entry>
+    <entry key="yukon.common.events.noResults">No Results Found</entry>
+    
     <!-- AMR -->
-    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={3} by {1}</entry>
+    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}</entry>
 
     <!-- Demand Response -->
 

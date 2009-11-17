@@ -2,17 +2,16 @@ package com.cannontech.web.taglib;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.PageContext;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 
 import com.cannontech.util.ServletUtil;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
 /*
  * Rewrite the JSTL UrlTag (eg. from Apache standard.jar) so it doesn't append
@@ -24,7 +23,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
     private String value;
     private int scope;
 
-    private Map<String, String> encodedParameters;
+    private ListMultimap<String, String> encodedParameters;
 
     private static final String REQUEST = "request";
     private static final String SESSION = "session";
@@ -39,7 +38,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         var = null;
         value = null;
         scope = PageContext.PAGE_SCOPE;
-        encodedParameters = new HashMap<String, String>();
+        encodedParameters = ArrayListMultimap.create();
     }
 
     @Override
@@ -55,7 +54,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         }
         
         // add parameters to the baseUrl
-        String result = appendParams(baseUrl, encodedParameters);
+        String result = appendParams(baseUrl);
 
         // store or print the output
         if (var != null) {
@@ -75,7 +74,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
     }
 
     // appends params to the baseUrl provided
-    private String appendParams(String baseUrl, Map<String, String> params) {
+    private String appendParams(String baseUrl) {
         String result = baseUrl;
 
         // build query string

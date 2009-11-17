@@ -1,6 +1,7 @@
 package com.cannontech.common.events.model;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -74,5 +75,32 @@ public class EventLog {
             .append("dateTime", dateTime)
             .append("arguments", arguments)
             .toString();
+    }
+
+    public static Comparator<EventLog> getEventComparator(String sort) {
+        if(sort.equalsIgnoreCase("EVENT")){
+            return new Comparator<EventLog>() {
+                public int compare(EventLog event1, EventLog event2){
+                    EventCategory category1 = event1.getEventCategory();
+                    EventCategory category2 = event2.getEventCategory();
+                    return category1.compareTo(category2);
+                }
+            };
+        } else if(sort.equalsIgnoreCase("MESSAGE")){
+            return new Comparator<EventLog>() {
+                public int compare(EventLog event1, EventLog event2){
+                    String message1 = event1.getMessageSourceResolvable().toString();
+                    String message2 = event2.getMessageSourceResolvable().toString();
+                    return message1.compareTo(message2);
+                }
+            };
+        } else {
+            return new Comparator<EventLog>() {
+                public int compare(EventLog event1, EventLog event2) {
+                    int retVal = event1.getDateTime().compareTo(event2.getDateTime());
+                    return retVal;
+                }
+            };
+        }
     }
 }

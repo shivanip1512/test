@@ -8,9 +8,11 @@
 
 <cti:url var="pageUrl" value="${baseUrl}">
     <%-- keep all parameters except page number --%>
-    <c:forEach var="aParam" items="${param}">
+    <c:forEach var="aParam" items="${paramValues}">
         <c:if test="${aParam.key != 'page'}">
-            <cti:param name="${aParam.key}" value="${aParam.value}"/>
+            <c:forEach var="theValue" items="${aParam.value}">
+                <cti:param name="${aParam.key}" value="${theValue}"/>
+            </c:forEach>
         </c:if>
     </c:forEach>
     <cti:param name="page" value="${pageNumber}"/>

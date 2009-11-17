@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
@@ -24,6 +25,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,7 @@ import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Multimap;
 
 /**
  * The junk drawer for servlets.
@@ -1195,8 +1198,35 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      */
     public static String buildQueryStringFromMap(Map<String,String> encodedParameters, boolean escapeHtml) {
         
-        List<String> parameterPairs = new ArrayList<String>(encodedParameters.size()); 
-        for (Map.Entry<String, String> entry : encodedParameters.entrySet()) {
+        Set<Entry<String, String>> entrySet = encodedParameters.entrySet();
+        String queryString = buildQueryStringFromEntries(entrySet, escapeHtml);
+        
+        return queryString;
+    }
+
+    /**
+     * Using a <String, String> MultiMap, build a name1=value1&name2=value2 style URL query string.
+     * Does NOT encode parameters, assumes parameters will be appropriately encoded already by caller.
+     * The difference between this method and buildQueryStringFromMap(Map<String,String> encodedParameters)
+     * is that the Multimap allows for multiple values per parameter name.
+     * 
+     * @param propertiesMap
+     * @param escapeHtml
+     * @return queryString
+     */
+    public static String buildQueryStringFromMap(Multimap<String, String> encodedParameters, boolean escapeHtml) {
+        
+        Collection<Entry<String, String>> entries = encodedParameters.entries();
+        String queryString = buildQueryStringFromEntries(entries, escapeHtml);
+        
+        return queryString;
+    }
+    
+    private static String buildQueryStringFromEntries(
+                                                      Iterable<Entry<String, String>> entrySet,
+                                                      boolean escapeHtml) {
+        List<String> parameterPairs = new ArrayList<String>(); 
+        for (Map.Entry<String, String> entry : entrySet) {
             String thisPair = entry.getKey() + "=" + entry.getValue();
             parameterPairs.add(thisPair);
         }
@@ -1205,7 +1235,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         if (escapeHtml) {
             queryString = StringEscapeUtils.escapeHtml(queryString);
         }
-        
         return queryString;
     }
     
@@ -1369,7 +1398,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @param newValue the value of the new parameter
      * @return a full path with query string
      */
-    @SuppressWarnings("unchecked")
     public static String tweakRequestURL(String requestUrl, String newParameter, String newValue) {
         StringBuffer result = new StringBuffer();
         result.append(getBaseUrl(requestUrl));
@@ -1564,6 +1592,17 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
     }
     
     public static <T> Map<T, Boolean> convertSetToMap(Set<T> allExistingAttributes) {
+        Map<T, Boolean> existingMap = new HashMap<T, Boolean>();
+        
+        // convert to a map of true's because JSP EL can use this to check "contains"
+        for (T attribute : allExistingAttributes) {
+            existingMap.put(attribute, Boolean.TRUE);
+        }
+        
+        return existingMap;
+    }
+    
+    public static <T> Map<T, Boolean> convertListToMap(List<T> allExistingAttributes) {
         Map<T, Boolean> existingMap = new HashMap<T, Boolean>();
         
         // convert to a map of true's because JSP EL can use this to check "contains"

@@ -161,7 +161,7 @@ public class EventLogDaoImpl implements EventLogDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select * from EventLog");
-        sql.append("where");
+        sql.append("where (");
         SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
         for (EventCategory eventCategory : slimEventCategories) {
             SqlStatementBuilder whereFragment = new SqlStatementBuilder();
@@ -170,7 +170,7 @@ public class EventLogDaoImpl implements EventLogDao {
             
         }
         sql.appendFragment(sqlFragmentCollection);
-        sql.append(  "and EventTime").lt(stopDate);
+        sql.append(  ") and EventTime").lt(stopDate);
         sql.append(  "and EventTime").gte(startDate);
         sql.append("order by EventTime, EventLogId");
         
