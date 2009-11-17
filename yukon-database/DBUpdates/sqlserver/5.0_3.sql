@@ -110,7 +110,8 @@ FROM CapControlFeeder;
 
 UPDATE DynamicCCOriginalParent 
 SET OriginalParentId = (SELECT DCCCB.OriginalFeederId FROM DynamicCCCapBank DCCCB WHERE DCCCB.CAPBANKID = PAObjectId), 
-    OriginalSwitchingOrder = (SELECT DCCCB.OriginalSwitchingOrder FROM DynamicCCCapBank DCCCB WHERE DCCCB.CAPBANKID = PAObjectId);
+    OriginalSwitchingOrder = (SELECT DCCCB.OriginalSwitchingOrder FROM DynamicCCCapBank DCCCB WHERE DCCCB.CAPBANKID = PAObjectId)
+WHERE PAObjectId IN (SELECT CapBankId FROM DynamicCCCapBank);
 
 DROP VIEW TempMovedCapBanks_View;
 GO
