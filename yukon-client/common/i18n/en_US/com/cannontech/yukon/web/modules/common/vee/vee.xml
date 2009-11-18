@@ -140,6 +140,7 @@
     <entry key="yukon.web.modules.common.vee.monitor.editor.label.delete.deleteConfirmText">Are you sure you want to delete this Validation Monitor?</entry>
     <entry key="yukon.web.modules.common.vee.monitor.editor.label.create.createBusyText">Saving</entry>
     <entry key="yukon.web.modules.common.vee.monitor.editor.label.create.createText">Save</entry>
+    <entry key="yukon.web.modules.common.vee.monitor.editor.label.cancel.cancelText">Cancel</entry>
     <entry key="yukon.web.modules.common.vee.monitor.editor.saveOk">Validation Monitor Has Been Saved</entry>
     <entry key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoring">Validation Monitoring</entry>
     <entry key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringEnable">Enable</entry>

@@ -14,6 +14,10 @@ function updateButton(actionButton, waitingLabel, myForm, imgId){
     var input = $(actionButton).getElementsBySelector('input').first();
     var initialLabel = input.value;
     input.value = waitingLabel;
-    input.disable();
+    
+    $$('input[type=button]').each(function(el) {
+		el.disable();
+	});
+    
     formSubmit(myForm, imgId, '/WebConfig/yukon/Icons/indicator_arrows.gif');
 }

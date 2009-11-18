@@ -34,6 +34,7 @@
 <cti:msg var="updateBusyText" key="yukon.web.modules.amr.outageMonitorConfig.label.update.busy"/>
 <cti:msg var="deleteText" key="yukon.web.modules.amr.outageMonitorConfig.label.delete"/>
 <cti:msg var="deleteBusyText" key="yukon.web.modules.amr.outageMonitorConfig.label.delete.busy"/>
+<cti:msg var="cancelText" key="yukon.web.modules.amr.outageMonitorConfig.label.cancel"/>
 <cti:msg var="deleteConfirmText" key="yukon.web.modules.amr.outageMonitorConfig.deleteConfirm"/>
 <cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.deviceGroup"/>
 <cti:msg var="numberOfOutagesPopupInfoText" key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.numberOfOutages"/>
@@ -86,6 +87,10 @@
 			if (deleteOk) {
 				$('deleteOutageMonitorId').value = id;
 				$('configDeleteForm').submit();
+
+				$$('input[type=button]').each(function(el) {
+					el.disable();
+				});
 			}
 		}
 
@@ -113,6 +118,9 @@
 		
 		<form id="toggleEnabledForm" action="/spring/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
 			<input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
+		</form>
+		
+		<form id="cancelForm" action="/spring/meter/start" method="get">
 		</form>
 		
 		<%-- UPDATE FORM --%>
@@ -253,6 +261,7 @@
 					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px"/>
 				</c:otherwise>
 			</c:choose>
+			<tags:slowInput myFormId="cancelForm" label="${cancelText}" width="80px"/>
 			
 		</form>
 		

@@ -145,6 +145,7 @@ public class ValidationMonitorEditorController {
             model.addAttribute("readingError", readingError);
             model.addAttribute("peakHeightMinimum", peakHeightMinimum);
             model.addAttribute("setQuestionable", setQuestionable == null ? false : true);
+            return "redirect:edit";
             
         /* Input validation passed, save or update. */
         } else {
@@ -161,11 +162,8 @@ public class ValidationMonitorEditorController {
             validationMonitorDao.saveOrUpdate(validationMonitor);
             validationMonitorId = validationMonitor.getValidationMonitorId();
             
-            model.addAttribute("validationMonitorId", validationMonitorId);
-            model.addAttribute("saveOk", true);
+            return "redirect:/spring/meter/start";
         }
-        
-        return "redirect:edit";
     }
     
     @RequestMapping(method=RequestMethod.POST)

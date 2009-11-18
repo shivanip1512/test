@@ -192,6 +192,7 @@ public class OutageMonitorEditorController extends MultiActionController {
             mav.addObject("scheduleGroupCommand", scheduleGroupCommand);
             mav.addObject("scheduleName", scheduleName);
             mav.addObject("expression", expression);
+            return mav;
         	
         // ok. save or update
         } else {
@@ -250,28 +251,23 @@ public class OutageMonitorEditorController extends MultiActionController {
     		outageMonitorId = outageMonitor.getOutageMonitorId();
         	
     		// redirect to edit page with processor
-    		mav.addObject("outageMonitorId", outageMonitorId);
-    		mav.addObject("saveOk", true);
-        	mav.setViewName("redirect:edit");
+    		return new ModelAndView("redirect:/spring/meter/start");
         }
-        
-        return mav;
 	}
 	
 	// DELETE
 	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
-        ModelAndView mav = new ModelAndView("redirect:edit");
-        
         int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "deleteOutageMonitorId");
         
         try {
         	outageMonitorService.deleteOutageMonitor(outageMonitorId);
+        	return new ModelAndView("redirect:/spring/meter/start");
         } catch (OutageMonitorNotFoundException e) {
+        	ModelAndView mav = new ModelAndView("redirect:edit");
         	mav.addObject("editError", e.getMessage());
+        	return mav;
         }
-        
-        return mav;
 	}
 	
 	// TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED
@@ -286,7 +282,6 @@ public class OutageMonitorEditorController extends MultiActionController {
         	mav.addObject("outageMonitorId", outageMonitorId);
         } catch (OutageMonitorNotFoundException e) {
         	mav.addObject("editError", e.getMessage());
-        	return mav;
         }
         
         return mav;

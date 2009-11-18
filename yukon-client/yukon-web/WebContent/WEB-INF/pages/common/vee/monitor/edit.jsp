@@ -43,6 +43,8 @@
 <cti:msg var="createBusyText" key="yukon.web.modules.common.vee.monitor.editor.label.create.createBusyText"/>
 <cti:msg var="createText" key="yukon.web.modules.common.vee.monitor.editor.label.create.createText"/>
 
+<cti:msg var="cancelText" key="yukon.web.modules.common.vee.monitor.editor.label.cancel.cancelText"/>
+
 <cti:msg var="validationMonitoringText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoring"/>
 <cti:msg var="validationMonitoringEnableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringEnable"/>
 <cti:msg var="validationMonitoringDisableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringDisable"/>
@@ -79,6 +81,10 @@
             if (deleteOk) {
                 $('deleteValidationMonitorId').value = id;
                 $('configDeleteForm').submit();
+
+                $$('input[type=button]').each(function(el) {
+					el.disable();
+				});
             }
         }
     </script>
@@ -102,6 +108,9 @@
     <form id="toggleEnabledForm" action="/spring/common/vee/monitor/toggleEnabled" method="post">
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
     </form>
+    
+    <form id="cancelForm" action="/spring/meter/start" method="get">
+	</form>
     
     <%-- UPDATE FORM --%>
     <form id="updateForm" action="/spring/common/vee/monitor/update" method="post">
@@ -232,6 +241,7 @@
                 <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px"/>
             </c:otherwise>
         </c:choose>
+        <tags:slowInput myFormId="cancelForm" label="${cancelText}" width="80px"/>
         
     </form>
         

@@ -124,6 +124,7 @@ public class TamperFlagEditorController {
         	model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
         	model.addAttribute("name", name);
         	model.addAttribute("deviceGroupName", deviceGroupName);
+        	return "redirect:edit";
         	
         // ok. save or update
         } else {
@@ -173,10 +174,8 @@ public class TamperFlagEditorController {
     		tamperFlagMonitorId = tamperFlagMonitor.getTamperFlagMonitorId();
         	
     		// redirect to edit page with processor
-    		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
+    		return "redirect:/spring/meter/start";
         }
-        
-        return "redirect:edit";
 	}
 	
 	// DELETE
@@ -189,9 +188,10 @@ public class TamperFlagEditorController {
         	tamperFlagMonitorService.deleteTamperFlagMonitor(deleteTamperFlagMonitorId);
         } catch (TamperFlagMonitorNotFoundException e) {
         	model.addAttribute("editError", e.getMessage());
+        	return "redirect:edit"; 
         }
         
-        return "redirect:edit";
+        return "redirect:/spring/meter/start";
 	}
 	
 	// TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED

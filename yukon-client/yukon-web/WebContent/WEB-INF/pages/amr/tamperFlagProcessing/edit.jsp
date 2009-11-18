@@ -25,6 +25,7 @@
 <cti:msg var="updateBusyText" key="yukon.web.modules.amr.tamperFlagEditor.label.update.busy"/>
 <cti:msg var="deleteText" key="yukon.web.modules.amr.tamperFlagEditor.label.delete"/>
 <cti:msg var="deleteBusyText" key="yukon.web.modules.amr.tamperFlagEditor.label.delete.busy"/>
+<cti:msg var="cancelText" key="yukon.web.modules.amr.tamperFlagEditor.label.cancel"/>
 <cti:msg var="deleteConfirmText" key="yukon.web.modules.amr.tamperFlagEditor.deleteConfirm"/>
 <cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup"/>
 
@@ -50,6 +51,10 @@
 			if (deleteOk) {
 				$('deleteTamperFlagMonitorId').value = id;
 				$('monitorDeleteForm').submit();
+
+				$$('input[type=button]').each(function(el) {
+					el.disable();
+				});
 			}
 		}
 
@@ -73,6 +78,9 @@
 		
 		<form id="toggleEnabledForm" action="/spring/amr/tamperFlagProcessing/toggleEnabled" method="post">
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
+		</form>
+		
+		<form id="cancelForm" action="/spring/meter/start" method="get">
 		</form>
 		
 		<%-- UPDATE FORM --%>
@@ -144,6 +152,7 @@
 					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px"/>
 				</c:otherwise>
 			</c:choose>
+			<tags:slowInput myFormId="cancelForm" label="${cancelText}" width="80px"/>
 			
 		</form>
 		
