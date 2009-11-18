@@ -5,6 +5,7 @@
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
 <%@ attribute name="isFiltered" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showAllUrl" required="false" %>
+<%@ attribute name="pageByHundereds" required="false" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -48,7 +49,11 @@
                     <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25"
                         baseUrl="${baseUrl}"/>&nbsp;
                     <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50"
-                        baseUrl="${baseUrl}"/>
+                        baseUrl="${baseUrl}"/>&nbsp;
+                    <c:if test="${pageByHundereds}">
+                        <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="100"
+                            baseUrl="${baseUrl}"/>
+                    </c:if>
                 </td>
                 <tags:nextPrevLinks searchResult="${pageScope.searchResults}" baseUrl="${baseUrl}"/>
             </tr>

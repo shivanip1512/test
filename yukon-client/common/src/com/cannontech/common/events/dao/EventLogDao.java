@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.search.SearchResult;
 
 public interface EventLogDao {
 
@@ -27,5 +28,8 @@ public interface EventLogDao {
             return columnName;
         }
     }
+
+    public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
+                                                            Date startDate, Date stopDate, Integer start, Integer pageCount);
 
 }

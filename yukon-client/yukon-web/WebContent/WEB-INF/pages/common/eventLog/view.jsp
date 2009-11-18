@@ -37,7 +37,7 @@
     <br>
 
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
-    <tags:pagedBox title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}">
+    <tags:pagedBox title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
         <table class="compactResultsTable rowHighlighting" style="width: 100%;">
             <tr>
                 <th>

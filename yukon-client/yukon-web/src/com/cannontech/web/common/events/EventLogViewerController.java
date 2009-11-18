@@ -1,7 +1,6 @@
 package com.cannontech.web.common.events;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,35 +59,25 @@ public class EventLogViewerController {
             itemsPerPage = 10;
         }
         
-        List<EventLog> allEvents;
+        int startIndex = (page - 1) * itemsPerPage;
+        
+        SearchResult<EventLog> searchResult = new SearchResult<EventLog>();
         if (categories != null) {
             Set<EventCategory> eventCategories = Sets.newHashSet();
             for (String categoryStr : categories) {
                 EventCategory category = EventCategory.createCategory(categoryStr);
                 eventCategories.add(category);
             }
-            allEvents = eventLogDao.findAllByCategories(eventCategories, startDate, stopDate);
+            searchResult = eventLogDao.getPagedSearchResultByCategories(eventCategories, startDate, stopDate, startIndex, itemsPerPage);
             Map<EventCategory, Boolean> selectedMap = ServletUtil.convertSetToMap(eventCategories); 
             model.addAttribute("selectedCategories", selectedMap);
         } else {
-            allEvents = eventLogDao.findAllByCategories(getAllEventCategories(), startDate, stopDate);
+            searchResult = eventLogDao.getPagedSearchResultByCategories(getAllEventCategories(), startDate, stopDate, startIndex, itemsPerPage);
             model.addAttribute("selectedCategories", ServletUtil.convertListToMap(getAllEventCategories()));
         }
         
         model.addAttribute("fromDate", startDate);
         model.addAttribute("toDate", stopDate);
-        
-        SearchResult<EventLog> searchResult = new SearchResult<EventLog>();
-        
-        List<EventLog> resultList = new ArrayList<EventLog>();
-        
-        int startIndex = (page - 1) * itemsPerPage;
-        for (int index = startIndex; index < allEvents.size() && index - startIndex < itemsPerPage; index++) {
-            resultList.add(allEvents.get(index));
-        }
-
-        searchResult.setResultList(resultList);
-        searchResult.setBounds(startIndex, itemsPerPage, allEvents.size());
         
         model.addAttribute("itemsPerPage", itemsPerPage);
         model.addAttribute("searchResult", searchResult);

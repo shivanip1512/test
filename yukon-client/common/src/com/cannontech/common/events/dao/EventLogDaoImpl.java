@@ -2,6 +2,7 @@ package com.cannontech.common.events.dao;
 
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -16,8 +17,10 @@ import org.springframework.jdbc.support.JdbcUtils;
 
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -159,6 +162,52 @@ public class EventLogDaoImpl implements EventLogDao {
         
         if (slimEventCategories.isEmpty()) return Collections.emptyList();
         
+        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
+        
+        List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
+        return result;
+    }
+
+    
+    @Override
+    public SearchResult<EventLog> getPagedSearchResultByCategories( Iterable<EventCategory> eventCategories, 
+                                                                    Date startDate, Date stopDate, Integer start, Integer pageCount) {
+        SearchResult<EventLog> result = new SearchResult<EventLog>();
+        Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
+        if (slimEventCategories.isEmpty()){
+            result.setBounds(0, pageCount, 0);
+            result.setResultList(new ArrayList<EventLog> ());
+            return result;
+        }
+        
+        /* Get row count. */
+        SqlStatementBuilder countSql = new SqlStatementBuilder();
+        countSql.append("select count(*) from EventLog");
+        countSql.append("where (");
+        SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
+        for (EventCategory eventCategory : slimEventCategories) {
+            SqlStatementBuilder whereFragment = new SqlStatementBuilder();
+            whereFragment.append("EventType like ").appendArgument(eventCategory.getFullName() + "%");
+            sqlFragmentCollection.add(whereFragment);
+            
+        }
+        countSql.appendFragment(sqlFragmentCollection);
+        countSql.append(  ") and EventTime").lt(stopDate);
+        countSql.append(  "and EventTime").gte(startDate);
+        
+        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
+        
+        /* Get paged data. */
+        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
+        PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
+        yukonJdbcTemplate.query(sql, rse);
+        result.setResultList(rse.getResultList());
+        result.setBounds(start, pageCount, hitCount);
+        
+        return result;
+    }
+    
+    private SqlStatementBuilder findAllSqlStatementBuilder(Date startDate, Date stopDate, Set<EventCategory> slimEventCategories) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select * from EventLog");
         sql.append("where (");
@@ -173,9 +222,7 @@ public class EventLogDaoImpl implements EventLogDao {
         sql.append(  ") and EventTime").lt(stopDate);
         sql.append(  "and EventTime").gte(startDate);
         sql.append("order by EventTime, EventLogId");
-        
-        List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
-        return result;
+        return sql;
     }
     
     private Set<EventCategory> removeDuplicates(Iterable<EventCategory> eventCategories) {
