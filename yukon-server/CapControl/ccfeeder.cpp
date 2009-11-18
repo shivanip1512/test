@@ -5382,7 +5382,10 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control open");
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
+                        {    
                             setLastOperationTime(currentDateTime);
+                            currentCapBank->setLastStatusChangeTime(currentDateTime);
+                        }
                         returnBoolean = TRUE;
                     }
                     else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -5421,7 +5424,10 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control close");
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
+                        {    
                             setLastOperationTime(currentDateTime);
+                            currentCapBank->setLastStatusChangeTime(currentDateTime);
+                        }
                         returnBoolean = TRUE;
                     }
                     else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
