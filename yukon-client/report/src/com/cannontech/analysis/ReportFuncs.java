@@ -308,7 +308,13 @@ public class ReportFuncs
         } else if( filter.equals(ReportFilter.LMCONTROLAREA)){
             return cache.getAllLMControlAreas();
         } else if( filter.equals(ReportFilter.LMGROUP)) {
-            return cache.getAllLMGroups();
+            List <LiteYukonPAObject> allLMGroups = cache.getAllLMGroups();
+            if(allLMGroups != null && user != null) {
+                List<YukonPao> restrictedLMGroups = getRestrictedLMGroups(user);
+                return restrictedLMGroups;
+            } else { 
+                return new ArrayList<LiteYukonPAObject>();
+            }
         } else if( filter.equals(ReportFilter.TRANSMITTER)) {
             List <LiteYukonPAObject> allPaos = cache.getAllYukonPAObjects();
             List <LiteYukonPAObject> trans = new ArrayList<LiteYukonPAObject>();
