@@ -3,8 +3,6 @@ package com.cannontech.dbeditor.editor.route;
 import java.util.Vector;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
@@ -25,7 +23,7 @@ public class RepeaterSetupEditorPanel extends com.cannontech.common.gui.util.Dat
    private int rightListItemIndex = getRepeatersAddRemovePanel().rightListGetSelectedIndex();
    private java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
    private boolean rightListDragging = false;
-   private com.cannontech.common.gui.util.AddRemovePanel ivjRepeatersAddRemovePanel = null;
+   private com.cannontech.common.gui.util.RepeaterAddRemovePanel ivjRepeatersAddRemovePanel = null;
    private boolean addOrRemoveHasBeenDone = false;
    private boolean changeUpdated = true;
    private boolean dbRegenerate = false;
@@ -314,15 +312,15 @@ private JLabel getCcuOrderLabel() {
 }
 
 /**
- * Return the AddRemovePanel property value.
+ * Return the RepeaterAddRemovePanel property value.
  * @return com.cannontech.common.gui.util.AddRemovePanel
  */
-private com.cannontech.common.gui.util.AddRemovePanel getRepeatersAddRemovePanel() {
+private com.cannontech.common.gui.util.RepeaterAddRemovePanel getRepeatersAddRemovePanel() {
    if (ivjRepeatersAddRemovePanel == null) {
       try {
-         ivjRepeatersAddRemovePanel = new com.cannontech.common.gui.util.AddRemovePanel();
+         ivjRepeatersAddRemovePanel = new com.cannontech.common.gui.util.RepeaterAddRemovePanel();
          ivjRepeatersAddRemovePanel.setName("RepeatersAddRemovePanel");
-         ivjRepeatersAddRemovePanel.setMode(com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE);
+         ivjRepeatersAddRemovePanel.setMode(com.cannontech.common.gui.util.RepeaterAddRemovePanel.TRANSFER_MODE);
          ivjRepeatersAddRemovePanel.setRightListMax( new Integer(7) );
       } catch (java.lang.Throwable ivjExc) {
          handleException(ivjExc);
