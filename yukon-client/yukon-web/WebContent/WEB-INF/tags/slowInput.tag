@@ -1,6 +1,6 @@
 <%@ attribute name="myFormId" required="true" type="java.lang.String" %>
 <%@ attribute name="label" required="true" type="java.lang.String"%>
-<%@ attribute name="labelBusy" required="true" type="java.lang.String"%>
+<%@ attribute name="labelBusy" required="false" type="java.lang.String"%>
 <%@ attribute name="description" required="false" type="java.lang.String"%>
 <%@ attribute name="width" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
@@ -12,6 +12,10 @@
 <cti:uniqueIdentifier var="uniqueId" prefix="slowinput_"/>
 <c:if test="${not empty pageScope.id}">
 	<c:set var="uniqueId" value="${pageScope.id}"/>
+</c:if>
+
+<c:if test="${empty pageScope.labelBusy}">
+	<c:set var="labelBusy" value="${label}"/>
 </c:if>
 
 <span id="slowInputSpan${uniqueId}"> 
