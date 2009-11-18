@@ -9896,7 +9896,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::verifyControlledStatusFlags()
     return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(CtiCommandMsg *pointAddMsg)
+CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(CtiPointRegistrationMsg *pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )
@@ -9930,6 +9930,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(CtiCommandMsg *poin
     if (getSwitchOverPointId() > 0)
     {
         pointAddMsg->insert(getSwitchOverPointId());
+    }
+    if (getVoltReductionControlId() > 0)
+    {
+        pointAddMsg->insert(getVoltReductionControlId());
     }
 
     return *this;

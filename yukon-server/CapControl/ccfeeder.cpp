@@ -6629,7 +6629,7 @@ BOOL CtiCCFeeder::scanAllMonitorPoints()
     return retVal;
 }
 
-CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(CtiCommandMsg *pointAddMsg)
+CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(CtiPointRegistrationMsg *pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )

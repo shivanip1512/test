@@ -2035,7 +2035,7 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
 }
 
 
-CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg)
+CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(CtiPointRegistrationMsg *pointAddMsg)
 {
 
     if( getStatusPointId() > 0 )

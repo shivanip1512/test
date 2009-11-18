@@ -1082,7 +1082,19 @@ void CtiCCSubstationBusStore::reset()
                 }
 
             }
+
             currentSubstationBus->figureAndSetTargetVarValue();
+            CtiCCSubstation* currentStation = findSubstationByPAObjectID(currentSubstationBus->getParentId());
+
+            if (currentStation != NULL)
+            {
+                currentStation->checkAndUpdateChildVoltReductionFlags();
+                CtiCCArea* currentArea = findAreaByPAObjectID(currentStation->getParentId());
+                if (currentArea != NULL)
+                {
+                    currentArea->checkAndUpdateChildVoltReductionFlags();
+                }
+            }
         }
         executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
         executor->Execute();
@@ -9892,7 +9904,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 try
                 {
 
-                     CtiCommandMsg *pointAddMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointDataRequest, 15);
+                     CtiPointRegistrationMsg *pointAddMsg = CTIDBG_new CtiPointRegistrationMsg();
                      for(LONG i=0;i<modifiedSubsList.size();i++)
                      {
                          CtiCCSubstationBus* sub = (CtiCCSubstationBusPtr)modifiedSubsList[i];
@@ -9910,7 +9922,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                  if (stringContainsIgnoreCase(cap->getControlDeviceType(), "CBC 702") )
                                  {
                                      CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)cap->getTwoWayPoints();
-                                     twoWayPts->addAllCBCPointsToCmdMsg(pointAddMsg);
+                                     twoWayPts->addAllCBCPointsToRegMsg(pointAddMsg);
                                  }
                              }
                          }
@@ -9963,6 +9975,16 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 currentFeeder->getMultipleMonitorPoints().push_back(monPoints[l]);
                                 currentSubstationBus->getMultipleMonitorPoints().push_back(monPoints[l]);
                             }
+                        }
+                    }
+                    CtiCCSubstation* currentStation = findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                    if (currentStation != NULL)
+                    {
+                        currentStation->checkAndUpdateChildVoltReductionFlags();
+                        CtiCCArea* currentArea = findAreaByPAObjectID(currentStation->getParentId());
+                        if (currentArea != NULL)
+                        {
+                            currentArea->checkAndUpdateChildVoltReductionFlags();
                         }
                     }
                 }

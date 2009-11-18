@@ -234,8 +234,6 @@ public:
     BOOL isLastControlReasonUpdated(LONG pointID, LONG reason );
 
 
-
-    CtiCCTwoWayPoints& addAllCBCPointsToCmdMsg(CtiCommandMsg *pointAddMsg);
     CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(CtiPointRegistrationMsg *pointAddMsg);
     BOOL isDirty();
     void dumpDynamicData();
