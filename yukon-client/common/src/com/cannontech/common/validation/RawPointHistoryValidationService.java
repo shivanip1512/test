@@ -142,13 +142,13 @@ public class RawPointHistoryValidationService {
 
     }
 
-    private static class RawPointHistoryWorkUnit {
+    public static class RawPointHistoryWorkUnit {
         public PaoPointIdentifier paoPointIdentifier;
         public int pointId;
         public RawPointHistoryWrapper thisValue;
     }
 
-    private static class RawPointHistoryWrapper {
+    public static class RawPointHistoryWrapper {
         public DateTime timestamp;
         public double value;
         public int changeId;
@@ -164,6 +164,16 @@ public class RawPointHistoryValidationService {
         @Override
         public String toString() {
             return String.format("%d:%.1f:%s", changeId, value, timestamp);
+        }
+    }
+    
+    public static class AnalysisResult {
+        public boolean peakInTheMiddle;
+        public boolean considerReRead;
+
+        public AnalysisResult(boolean peakInTheMiddle, boolean considerReRead) {
+            this.peakInTheMiddle = peakInTheMiddle;
+            this.considerReRead = considerReRead;
         }
     }
 
@@ -366,12 +376,18 @@ public class RawPointHistoryValidationService {
      * <li>!values.get(2).getTime().isAfter(values.get(1).getTime())
      * <li>!values.get(1).getTime().isAfter(values.get(0).getTime()) 
      * </ul>
+     * 
+     * This method is separate from the processThreeHistoryRows method for testability.
+     * 
      * @param workUnit
      * @param validationMonitor
      * @param values
      * @param tags
+     * @return 
      */
-    private void processThreeHistoryRows(RawPointHistoryWorkUnit workUnit, ValidationMonitor validationMonitor, List<RawPointHistoryWrapper> values,
+    public static AnalysisResult analyzeThreeHistoryRows(RawPointHistoryWorkUnit workUnit, 
+            ValidationMonitor validationMonitor, 
+            List<RawPointHistoryWrapper> values,
             Multimap<RawPointHistoryWrapper, RphTag> tags) {
         
         boolean peakInTheMiddle = false;
@@ -456,7 +472,15 @@ public class RawPointHistoryValidationService {
 
         }
 
-        if (considerReRead && validationMonitor.isReReadOnUnreasonable() ) {
+        return new AnalysisResult(peakInTheMiddle, considerReRead);
+    }
+
+    private void processThreeHistoryRows(RawPointHistoryWorkUnit workUnit, ValidationMonitor validationMonitor,
+            List<RawPointHistoryWrapper> values, Multimap<RawPointHistoryWrapper, RphTag> tags) {
+        
+        AnalysisResult analysisResult = analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
+        
+        if (analysisResult.considerReRead && validationMonitor.isReReadOnUnreasonable() ) {
             // there is no point rereading if the data is over a day old
             DateTime readingTime = values.get(0).getTime();
             Duration timeSinceReading = new Duration(readingTime, null); // null means now
@@ -474,7 +498,7 @@ public class RawPointHistoryValidationService {
             }
         }
         
-        if (validationMonitor.isSetQuestionableOnPeak() && peakInTheMiddle) {
+        if (validationMonitor.isSetQuestionableOnPeak() && analysisResult.peakInTheMiddle) {
             int changeId = values.get(1).changeId; // peak in the "middle" means the 1 value
             rawPointHistoryDao.changeQuality(changeId, PointQuality.Questionable);
             
@@ -493,7 +517,7 @@ public class RawPointHistoryValidationService {
      * @param base2 a normal value
      * @return
      */
-    private static double calculateHeight(RawPointHistoryWrapper base1, RawPointHistoryWrapper peak, RawPointHistoryWrapper base2) {
+    public static double calculateHeight(RawPointHistoryWrapper base1, RawPointHistoryWrapper peak, RawPointHistoryWrapper base2) {
         double kwhDelta = base2.getValue() - base1.getValue();
         Duration deltaDuration = new Duration(base1.getTime(), base2.getTime()); 
         double baseKwh = 0;
@@ -511,8 +535,12 @@ public class RawPointHistoryValidationService {
         return height;
     }
 
-    private static double calculateLowerAvgKwhPerDay(RawPointHistoryWrapper previousValue, RawPointHistoryWrapper currentValue, double readingError) {
-        double kwhDelta = currentValue.getValue() - previousValue.getValue() - readingError;
+    public static double calculateLowerAvgKwhPerDay(RawPointHistoryWrapper previousValue, RawPointHistoryWrapper currentValue, double readingError) {
+        double kwhDelta = currentValue.getValue() - previousValue.getValue();
+        double signum = Math.signum(kwhDelta);
+        kwhDelta = Math.abs(kwhDelta);
+        kwhDelta = Math.max(0.0, kwhDelta - readingError);
+        
         Duration deltaDuration = new Duration(previousValue.getTime(), currentValue.getTime());
         double daysDelta = (double)deltaDuration.getStandardSeconds() / TimeUnit.DAYS.toSeconds(1);
 
@@ -520,10 +548,10 @@ public class RawPointHistoryValidationService {
         if (daysDelta != 0.0) {
             avgKwhPerDay = kwhDelta / daysDelta;
         }
-        return avgKwhPerDay;
+        return avgKwhPerDay * signum;
     }
 
-    private static double calculateLowerAvgKwhPerDayFromZero(RawPointHistoryWrapper previousValue, RawPointHistoryWrapper currentValue) {
+    public static double calculateLowerAvgKwhPerDayFromZero(RawPointHistoryWrapper previousValue, RawPointHistoryWrapper currentValue) {
         double kwhDelta = currentValue.getValue() - 0; // pretend previousValue was zero
         Duration deltaDuration = new Duration(previousValue.getTime(), currentValue.getTime());
         double daysDelta = (double)deltaDuration.getStandardSeconds() / TimeUnit.DAYS.toSeconds(1);
