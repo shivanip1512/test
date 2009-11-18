@@ -94,6 +94,15 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
             return new ArgumentMapper<TT>(javaType, sqlType, objectMapper);
         }
         
+        public static <TT extends Enum<TT>> ArgumentMapper<TT> createForEnum(Class<TT> javaType) {
+        	return new ArgumentMapper<TT>(javaType, Types.VARCHAR, new ObjectMapper<TT, String>() {
+        		
+        		public String map(TT from) throws ObjectMappingException {
+                    return from.name();
+                }
+        	});
+        }
+        
         private ArgumentMapper(Class<T> javaType, int sqlType, ObjectMapper<? super T, ? extends Object> objectMapper) {
             this.javaType = javaType;
             this.sqlType = sqlType;
@@ -120,24 +129,12 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         builder.add(ArgumentMapper.create(Boolean.class, Types.VARCHAR));
         builder.add(ArgumentMapper.create(Date.class, Types.TIMESTAMP));
         builder.add(ArgumentMapper.create(LiteYukonUser.class, Types.VARCHAR, new LiteYukonUserToNameMapper()));
-        builder.add(ArgumentMapper.create(PaoType.class, Types.VARCHAR, new ObjectMapper<PaoType, String>() {
-            public String map(PaoType from) throws ObjectMappingException {
-                return from.name();
-            }
-        }));
-        builder.add(ArgumentMapper.create(PointType.class, Types.VARCHAR, new ObjectMapper<PointType, String>() {
-            public String map(PointType from) throws ObjectMappingException {
-                return from.name();
-            }
-        }));
+        builder.add(ArgumentMapper.createForEnum(PaoType.class));
+        builder.add(ArgumentMapper.createForEnum(PointType.class));
+        builder.add(ArgumentMapper.createForEnum(CommandRequestExecutionType.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             public Date map(ReadableInstant from) throws ObjectMappingException {
                 return new Instant(from).toDate();
-            }
-        }));
-        builder.add(ArgumentMapper.create(CommandRequestExecutionType.class, Types.VARCHAR, new ObjectMapper<CommandRequestExecutionType, String>() {
-            public String map(CommandRequestExecutionType from) throws ObjectMappingException {
-                return from.name();
             }
         }));
         argumentMappers = builder.build();

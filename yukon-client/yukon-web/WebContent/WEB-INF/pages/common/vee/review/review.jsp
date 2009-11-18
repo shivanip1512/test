@@ -46,7 +46,7 @@
         	$('reloadButton').disable();
         	$('reloadSpinner').show();
 
-    		$$('input.TYPE_CHECKBOX').each(function(el) {
+        	$('saveForm').getElementsBySelector('input[type=checkbox]').each(function(el) {
         		
            		var h = document.createElement('input');
            		h.setAttribute('type', 'hidden');
@@ -104,7 +104,7 @@
 	
 								<cti:dataGridCell>
 									<label>
-					    				<input type="checkbox" name="${displayType.rphTag}" class="TYPE_CHECKBOX" <c:if test="${displayType.checked}">checked</c:if>>
+					    				<input type="checkbox" name="${displayType.rphTag}" <c:if test="${displayType.checked}">checked</c:if>>
 					    				<cti:logo key="${displayType.rphTag.logoKey}"/>
 					    				<cti:msg key="${displayType.rphTag.formatKey}"/>
 					    				(${displayType.count})
