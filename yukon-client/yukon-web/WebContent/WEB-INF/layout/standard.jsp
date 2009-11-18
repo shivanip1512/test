@@ -2,9 +2,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
-
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <head>
         <title><c:out value="${title}"/></title>           
 <!-- Page key: ${pageKey} -->
