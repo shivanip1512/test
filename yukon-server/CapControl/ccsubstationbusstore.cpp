@@ -1084,17 +1084,7 @@ void CtiCCSubstationBusStore::reset()
             }
 
             currentSubstationBus->figureAndSetTargetVarValue();
-            CtiCCSubstation* currentStation = findSubstationByPAObjectID(currentSubstationBus->getParentId());
-
-            if (currentStation != NULL)
-            {
-                currentStation->checkAndUpdateChildVoltReductionFlags();
-                CtiCCArea* currentArea = findAreaByPAObjectID(currentStation->getParentId());
-                if (currentArea != NULL)
-                {
-                    currentArea->checkAndUpdateChildVoltReductionFlags();
-                }
-            }
+            checkAndUpdateVoltReductionFlagsByBus(currentSubstationBus);
         }
         executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
         executor->Execute();
@@ -9977,16 +9967,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             }
                         }
                     }
-                    CtiCCSubstation* currentStation = findSubstationByPAObjectID(currentSubstationBus->getParentId());
-                    if (currentStation != NULL)
-                    {
-                        currentStation->checkAndUpdateChildVoltReductionFlags();
-                        CtiCCArea* currentArea = findAreaByPAObjectID(currentStation->getParentId());
-                        if (currentArea != NULL)
-                        {
-                            currentArea->checkAndUpdateChildVoltReductionFlags();
-                        }
-                    }
+                    checkAndUpdateVoltReductionFlagsByBus(currentSubstationBus);
                 }
 
                 CtiCCExecutorFactory f;
@@ -10065,6 +10046,21 @@ void CtiCCSubstationBusStore::checkDBReloadList()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
+}
+
+void CtiCCSubstationBusStore::checkAndUpdateVoltReductionFlagsByBus(CtiCCSubstationBusPtr bus)
+{
+
+    CtiCCSubstation* currentStation = findSubstationByPAObjectID(bus->getParentId());
+    if (currentStation != NULL)
+    {
+        currentStation->checkAndUpdateChildVoltReductionFlags();
+        CtiCCArea* currentArea = findAreaByPAObjectID(currentStation->getParentId());
+        if (currentArea != NULL)
+        {
+            currentArea->checkAndUpdateChildVoltReductionFlags();
+        }
+    }
 }
 
 void CtiCCSubstationBusStore::updateSubstationObjectList(LONG substationId, CtiMultiMsg_vec &modifiedStationsList)

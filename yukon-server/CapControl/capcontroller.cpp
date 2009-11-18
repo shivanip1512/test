@@ -3164,16 +3164,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         if (value == 0)
                         {
                             currentSubstationBus->setVoltReductionFlag(FALSE);
-                            currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
-                            if (currentStation != NULL)
-                            {
-                                currentStation->checkAndUpdateChildVoltReductionFlags();
-                                currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
-                                if (currentArea != NULL)
-                                {
-                                    currentArea->checkAndUpdateChildVoltReductionFlags();
-                                }
-                            }
+                            store->checkAndUpdateVoltReductionFlagsByBus(currentSubstationBus);
+
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;

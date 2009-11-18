@@ -402,6 +402,7 @@ public:
     void setVoltReductionSystemDisabled(BOOL disableFlag);
     LONG getVoltDisabledCount();
     void setVoltDisabledCount(LONG value);
+    void checkAndUpdateVoltReductionFlagsByBus(CtiCCSubstationBusPtr bus);
 
     const CtiTime& getLinkDropOutTime() const;
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
