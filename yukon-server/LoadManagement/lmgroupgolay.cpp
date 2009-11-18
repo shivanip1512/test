@@ -25,7 +25,8 @@ RWDEFINE_COLLECTABLE( CtiLMGroupGolay, CTILMGROUPGOLAY_ID )
 /*---------------------------------------------------------------------------
   Constructors
   ---------------------------------------------------------------------------*/
-    CtiLMGroupGolay::CtiLMGroupGolay()
+CtiLMGroupGolay::CtiLMGroupGolay() :
+_nominal_timeout(0)
 {   
 }
 

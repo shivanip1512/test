@@ -47,7 +47,22 @@ RWDEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMControlArea::CtiLMControlArea()
+CtiLMControlArea::CtiLMControlArea() :
+_paoid(0),
+_paotype(0),
+_disableflag(false),
+_controlinterval(0),
+_minresponsetime(0),
+_defdailystarttime(0),
+_defdailystoptime(0),
+_requirealltriggersactiveflag(false),
+_newpointdatareceivedflag(false),
+_updatedflag(false),
+_controlareastatuspointid(0),
+_controlareastate(0),
+_currentpriority(0),
+_currentdailystarttime(0),
+_currentdailystoptime(0)
 {
 }
 

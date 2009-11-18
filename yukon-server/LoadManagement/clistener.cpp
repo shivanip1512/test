@@ -41,7 +41,7 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
         strcpy(var, "LOAD_MANAGEMENT_PORT");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            LONG loadmanagementclientsport = atoi(str.c_str());
+            loadmanagementclientsport = atoi(str.c_str());
             if( _LM_DEBUG & LM_DEBUG_CLIENT )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);

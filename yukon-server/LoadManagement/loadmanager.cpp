@@ -959,9 +959,9 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
                 if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
                     CtiLMGroupVec groups  = boost::static_pointer_cast<CtiLMProgramDirect>(currentProgram)->getLMProgramDirectGroups();
-                    for( CtiLMGroupIter i = groups.begin(); i != groups.end(); i++ )
+                    for( CtiLMGroupIter iter = groups.begin(); iter != groups.end(); iter++ )
                     {
-                        CtiLMGroupPtr currentGroup  = *i;
+                        CtiLMGroupPtr currentGroup  = *iter;
                         if( currentGroup->getHoursDailyPointId() > 0 )
                         {
                             regMsg->insert(currentGroup->getHoursDailyPointId());

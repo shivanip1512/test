@@ -32,7 +32,10 @@ RWDEFINE_COLLECTABLE( CtiLMProgramCurtailment, CTILMPROGRAMCURTAILMENT_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment::CtiLMProgramCurtailment()
+CtiLMProgramCurtailment::CtiLMProgramCurtailment() :
+_minnotifytime(0),
+_acktimelimit(0),
+_curtailreferenceid(0)
 {
 }
 
@@ -1132,7 +1135,7 @@ void CtiLMProgramCurtailment::dumpDynamicData(RWDBConnection& conn, CtiTime& cur
 
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::restoreDynamicData(RWDBReader& rdr)
+void CtiLMProgramCurtailment::restoreDynamicData()
 {
 
 

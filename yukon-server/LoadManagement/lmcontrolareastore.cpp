@@ -1270,7 +1270,7 @@ void CtiLMControlAreaStore::reset()
                                 currentLMProgramCurtailment.reset(CTIDBG_new CtiLMProgramCurtailment(rdr));
                                 if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
                                 {
-                                    currentLMProgramCurtailment->restoreDynamicData(rdr);
+                                    currentLMProgramCurtailment->restoreDynamicData();
                                 }
                                 //Inserting this curtailment program into hash map
                                 curtailmentProgramHashMap.insert( currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment );
@@ -1345,7 +1345,7 @@ void CtiLMControlAreaStore::reset()
                             {
                                 for( LONG temp=0;temp<lmProgramCurtailmentCustomers.size();temp++ )
                                 {
-                                    ((CtiLMCurtailCustomer*)lmProgramCurtailmentCustomers[temp])->restoreDynamicData(rdr);
+                                    ((CtiLMCurtailCustomer*)lmProgramCurtailmentCustomers[temp])->restoreDynamicData();
                                 }
                             }
                         }

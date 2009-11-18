@@ -31,7 +31,9 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision, CTILMENERGYEXCHANGEOFFER
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision()
+CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision() : 
+_offerid(0),
+_revisionnumber(0)
 {
 }
 

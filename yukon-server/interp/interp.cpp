@@ -32,7 +32,7 @@ CtiCriticalSection CtiInterpreter::_mutex;
     and sets the temporary file name used to obtain results
 ---------------------------------------------------------------------------*/
 CtiInterpreter::CtiInterpreter()
-: _isevaluating(false), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL)
+: _isevaluating(false), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL), _scheduleId(0)
 {
     set( CtiInterpreter::EVALUATE, false);
     set( CtiInterpreter::EVALUATE_FILE, false );
@@ -278,11 +278,11 @@ void CtiInterpreter::event_check_proc( ClientData clientData, int flags )
 
     //find the interpreter who is associated with this thread and
     //post an event the interpreters event queue if _dostop is set
-    CtiInterpreter* _interp = (CtiInterpreter*) clientData;
+    CtiInterpreter* interpreter = (CtiInterpreter*) clientData;
 
-    if ( _interp->_dostop )
+    if ( interpreter->_dostop )
     {
-        int id = _interp->getID();
+        int id = interpreter->getID();
 
         Tcl_Event* event = (Tcl_Event*) Tcl_Alloc( sizeof( Tcl_Event) );
 
@@ -292,7 +292,7 @@ void CtiInterpreter::event_check_proc( ClientData clientData, int flags )
         Tcl_ThreadQueueEvent( (Tcl_ThreadId) id, event, TCL_QUEUE_HEAD );
         Tcl_ThreadAlert( (Tcl_ThreadId) id );
 
-        _interp->_dostop = false;
+        interpreter->_dostop = false;
     }
 
 }

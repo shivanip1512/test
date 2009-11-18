@@ -76,7 +76,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     void addLMCurtailProgramActivityTable();
     void updateLMCurtailProgramActivityTable(RWDBConnection& conn, CtiTime& currentDateTime);
     void deleteLMCurtailProgramActivityTable();
-    void restoreDynamicData(RWDBReader& rdr);
+    void restoreDynamicData();
 
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);

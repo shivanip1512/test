@@ -31,9 +31,6 @@ protected:
 private:
     bool _quit;
     string _config_file;
-
-    CtiLoadManager* manager;
-    CtiLMClientListener* clientListener;
 };
 #endif
 

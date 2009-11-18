@@ -25,7 +25,8 @@ RWDEFINE_COLLECTABLE( CtiLMGroupSADigital, CTILMGROUPSADIGITAL_ID )
 /*---------------------------------------------------------------------------
   Constructors
   ---------------------------------------------------------------------------*/
-    CtiLMGroupSADigital::CtiLMGroupSADigital()
+CtiLMGroupSADigital::CtiLMGroupSADigital() :
+_nominal_timeout(0)
 {   
 }
 

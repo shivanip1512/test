@@ -25,7 +25,11 @@ extern ULONG _LM_DEBUG;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMCICustomerBase::CtiLMCICustomerBase()
+CtiLMCICustomerBase::CtiLMCICustomerBase() :
+_customerid(0),
+_customerdemandlevel(0),
+_curtailamount(0),
+_customerorder(0)
 {
 }
 

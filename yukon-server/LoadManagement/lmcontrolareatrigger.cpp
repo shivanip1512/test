@@ -31,7 +31,22 @@ RWDEFINE_COLLECTABLE( CtiLMControlAreaTrigger, CTILMCONTROLAREATRIGGER_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger::CtiLMControlAreaTrigger()
+CtiLMControlAreaTrigger::CtiLMControlAreaTrigger() :
+_trigger_id(0),
+_paoid(0),
+_triggernumber(0),
+_pointid(0),
+_pointvalue(0),
+_normalstate(0),
+_threshold(0),
+_projectionpoints(0),
+_projectaheadduration(0),
+_thresholdkickpercent(0),
+_minrestoreoffset(0),
+_peakpointid(0),
+_peakpointvalue(0),
+_projectedpointvalue(0),
+_insertDynamicDataFlag(false)
 {
 }
 

@@ -60,7 +60,7 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     CtiLMCurtailCustomer* replicate() const;
 
     void addLMCurtailCustomerActivityTable();
-    void restoreDynamicData(RWDBReader& rdr);
+    void restoreDynamicData();
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     

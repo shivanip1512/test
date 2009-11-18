@@ -44,7 +44,7 @@ _daily_ops(0),
 _groupcontrolstate(InactiveState),
 _insertDynamicDataFlag(TRUE)
 {
-    resetInternalState();
+    CtiLMGroupBase::resetInternalState();
 }
 
 CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
@@ -55,7 +55,7 @@ _daily_ops(0),
 _groupcontrolstate(InactiveState),
 _insertDynamicDataFlag(TRUE)
 {
-    resetInternalState();
+    CtiLMGroupBase::resetInternalState();
     restore(rdr);
 }
 

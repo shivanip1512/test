@@ -28,10 +28,6 @@ extern ULONG _LM_DEBUG;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear()
-{   
-}
-
 CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(RWDBReader& rdr)
 {
     restore(rdr);   

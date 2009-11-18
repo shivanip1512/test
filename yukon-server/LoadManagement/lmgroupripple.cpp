@@ -26,7 +26,9 @@ RWDEFINE_COLLECTABLE( CtiLMGroupRipple, CTILMGROUPRIPPLE_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMGroupRipple::CtiLMGroupRipple()
+CtiLMGroupRipple::CtiLMGroupRipple() :
+_shedtime(0),
+_refreshsent(false)
 {   
 }
 

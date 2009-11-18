@@ -57,8 +57,16 @@ _notify_active_time(gInvalidCtiTime),
 _notify_inactive_time(gInvalidCtiTime),
 _startedrampingout(gInvalidCtiTime),
 _constraint_override(false),
-_announced_program_constraint_violation(false)
-
+_announced_program_constraint_violation(false),
+_notify_active_offset(0),
+_notify_inactive_offset(0),
+_trigger_offset(0),
+_trigger_restore_offset(0),
+_currentgearnumber(0),
+_lastgroupcontrolled(0),
+_controlActivatedByStatusTrigger(false),
+_curLogID(0),
+_insertDynamicDataFlag(false)
 {
 }
 
@@ -649,7 +657,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     int groups_taken = 0;
                     do
                     {
-                        CtiLMGroupPtr& currentLMGroup = findGroupToTake(currentGearObject);
+                        CtiLMGroupPtr currentLMGroup = findGroupToTake(currentGearObject);
 
                         if( currentLMGroup.get() == NULL )   // No more groups to take, get outta here
                         {
@@ -941,7 +949,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     int groups_taken = 0;
                     do
                     {
-                        CtiLMGroupPtr& currentLMGroup = findGroupToTake(currentGearObject);
+                        CtiLMGroupPtr currentLMGroup = findGroupToTake(currentGearObject);
 
                         if( currentLMGroup.get() == NULL )
                         {
@@ -1184,7 +1192,6 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
             if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
             {
                 bool do_ramp = (currentGearObject->getRampInPercent() > 0);
-                unsigned long secondsFrom1901 = CtiTime().seconds();
 //                ResetGroups(); this also clears out next control times!
                 ResetGroupsControlState();
                 ResetGroupsInternalState();
@@ -1996,7 +2003,6 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curren
                     if( getLastGroupControlled() == currentLMGroup->getPAOId() )
                     {
                         i++;
-                        CtiLMGroupPtr currentLMGroup;
                         if( i == _lmprogramdirectgroups.end() )
                         {
                             currentLMGroup = *(_lmprogramdirectgroups.begin());
@@ -2151,7 +2157,7 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToRampOut(CtiLMProgramDirectGear* lm_
         CtiTime first_control_time;
         for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
         {
-            CtiLMGroupPtr temp_lm_group = *i;
+            temp_lm_group = *i;
             if( temp_lm_group->getIsRampingOut() )
             {
                 // Yikes.  Here is the deal.  Sometimes when a program needs to ramp out some of the

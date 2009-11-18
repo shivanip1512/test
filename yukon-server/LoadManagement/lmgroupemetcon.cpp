@@ -26,7 +26,8 @@ RWDEFINE_COLLECTABLE( CtiLMGroupEmetcon, CTILMGROUPEMETCON_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMGroupEmetcon::CtiLMGroupEmetcon()
+CtiLMGroupEmetcon::CtiLMGroupEmetcon() :
+_refreshsent(false)
 {   
 }
 

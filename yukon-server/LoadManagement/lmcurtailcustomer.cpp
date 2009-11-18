@@ -28,7 +28,15 @@ RWDEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMCurtailCustomer::CtiLMCurtailCustomer()
+CtiLMCurtailCustomer::CtiLMCurtailCustomer() :
+_requireack(false),
+_curtailreferenceid(0),
+_acknowledgestatus(0),
+_ipaddressofackuser(0),
+_useridname(0),
+_nameofackperson(0),
+_curtailmentnotes(0),
+_acklateflag(false)
 {
 }
 
@@ -378,7 +386,7 @@ void CtiLMCurtailCustomer::dumpDynamicData(RWDBConnection& conn, CtiTime& curren
 
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
+void CtiLMCurtailCustomer::restoreDynamicData()
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();

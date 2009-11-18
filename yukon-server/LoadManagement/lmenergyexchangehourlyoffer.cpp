@@ -27,7 +27,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyOffer, CTILMENERGYEXCHANGEHOURLYO
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyOffer::CtiLMEnergyExchangeHourlyOffer()
+CtiLMEnergyExchangeHourlyOffer::CtiLMEnergyExchangeHourlyOffer() :
+_offerid(0),
+_revisionnumber(0),
+_hour(0),
+_price(0),
+_amountrequested(0)
 {
 }
 

@@ -29,7 +29,10 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply, CTILMENERGYEXCHANGECUSTO
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply()
+CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply() :
+_customerid(0),
+_offerid(0),
+_revisionnumber(0)
 {
 }
 

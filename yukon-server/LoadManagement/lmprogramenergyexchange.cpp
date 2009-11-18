@@ -34,7 +34,8 @@ RWDEFINE_COLLECTABLE( CtiLMProgramEnergyExchange, CTILMPROGRAMENERGYEXCHANGE_ID 
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange()
+CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange() :
+_minnotifytime(0)
 {
 }
 

@@ -34,7 +34,25 @@ CtiLMProgramDirectGear::CtiLMProgramDirectGear()
 : _front_ramp_option(NoneRandomOptionType),
 _front_ramp_time(0),
 _back_ramp_option(NoneRandomOptionType),
-_back_ramp_time(0)
+_back_ramp_time(0),
+_program_paoid(0),
+_gearnumber(0),
+_gearID(0),
+_methodrate(0),
+_methodperiod(0),
+_methodratecount(0),
+_cyclerefreshrate(0),
+_changeduration(0),
+_changepriority(0),
+_changetriggernumber(0),
+_changetriggeroffset(0),
+_percentreduction(0),
+_methodoptionmax(0),
+_rampininterval(0),
+_rampinpercent(0),
+_rampoutinterval(0),
+_rampoutpercent(0),
+_kw_reduction(0)
 {   
 }
 

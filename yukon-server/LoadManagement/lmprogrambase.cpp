@@ -36,7 +36,29 @@ using std::transform;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::CtiLMProgramBase() :
-_lastsentstate(-1), _controlArea(NULL)
+_paoid(0),
+_paotype(0),
+_disableflag(false),
+_start_priority(0),
+_stop_priority(0),
+_constraintid(0),
+_maxhoursdaily(0),
+_maxhoursmonthly(0),
+_maxhoursseasonal(0),
+_maxhoursannually(0),
+_minactivatetime(0),
+_minrestarttime(0),
+_maxdailyops(0),
+_maxactivatetime(0),
+_holidayscheduleid(0),
+_seasonscheduleid(0),
+_programstatuspointid(0),
+_programstate(0),
+_reductionanalogpointid(0),
+_reductiontotal(0),
+_manualcontrolreceivedflag(false),
+_lastsentstate(-1),
+_controlArea(NULL)
 {
 }
 

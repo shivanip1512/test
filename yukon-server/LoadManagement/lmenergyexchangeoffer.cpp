@@ -29,7 +29,9 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOffer, CTILMENERGYEXCHANGEOFFER_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer()
+CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer() :
+_paoid(0),
+_offerid(0)
 {
 }
 

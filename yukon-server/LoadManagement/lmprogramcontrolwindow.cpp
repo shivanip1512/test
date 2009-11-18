@@ -29,7 +29,11 @@ RWDEFINE_COLLECTABLE( CtiLMProgramControlWindow, CTILMPROGRAMCONTROLWINDOW_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramControlWindow::CtiLMProgramControlWindow()
+CtiLMProgramControlWindow::CtiLMProgramControlWindow() :
+_paoid(0),
+_windownumber(0),
+_availablestarttime(0),
+_availablestoptime(0)
 {   
 }
 

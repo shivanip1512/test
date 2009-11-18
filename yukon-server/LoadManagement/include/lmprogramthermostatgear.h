@@ -29,7 +29,6 @@ class CtiLMProgramThermoStatGear : public CtiLMProgramDirectGear
 
 public:
 
-    CtiLMProgramThermoStatGear();
     CtiLMProgramThermoStatGear(RWDBReader& rdr);
     CtiLMProgramThermoStatGear(const CtiLMProgramThermoStatGear& thermogear);
 

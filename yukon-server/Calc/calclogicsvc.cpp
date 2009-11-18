@@ -872,11 +872,11 @@ void CtiCalcLogicService::_inputThread( void )
 }
 
 // return is not used at this time
-BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThread *calcThread )
+BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThread *thread )
 {
     BOOL retval = TRUE;
 
-    if(!calcThread)
+    if(!thread)
     { // This prevents changes from messing us up while we are still loading
         retval = FALSE;
     }
@@ -899,7 +899,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     if( ((CtiDBChangeMsg*)message)->getTypeOfChange() != ChangeTypeAdd)
                     {
                         // Must have been a delete or update
-                        if(calcThread->isACalcPointID(((CtiDBChangeMsg*)message)->getId()) == TRUE)
+                        if(thread->isACalcPointID(((CtiDBChangeMsg*)message)->getId()) == TRUE)
                         {
                             _update = true;
                             _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
@@ -1010,7 +1010,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     _lastDispatchMessageTime = CtiTime::now();
 
                     pData = (CtiPointDataMsg *)message;
-                    calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
+                    thread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
                     _dispatchConnectionBad = false;
                 }
                 break;
@@ -1027,7 +1027,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                 for( x = 0; x < msgMulti->getData( ).size( ); x++ )
                 {
                     // recursive call to parse this message
-                    parseMessage( msgMulti->getData( )[x], calcThread );
+                    parseMessage( msgMulti->getData( )[x], thread );
                 }
                 break;
 
@@ -1038,7 +1038,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     pSignal = (CtiSignalMsg *)message;
                     if( pSignal->getId() )
                     {
-                        calcThread->pointSignal( pSignal->getId(), pSignal->getTags() );
+                        thread->pointSignal( pSignal->getId(), pSignal->getTags() );
                     }
                     _dispatchConnectionBad = false;
 
@@ -1107,7 +1107,7 @@ BOOL CtiCalcLogicService::isANewCalcPointID(const long aPointID)
     return retVal;
 }
 
-bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
+bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
 {
     bool returnBool = true;
 
@@ -1154,10 +1154,10 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             rdr["UPDATETYPE"] >> updatetype;
             rdr["PERIODICRATE"] >> updateinterval;
             rdr["QUALITYFLAG"] >> qualityflag;
-            calcThread->appendCalcPoint( pointid );
+            thread->appendCalcPoint( pointid );
 
             // put the collection in the correct collection based on type
-            if( calcThread->appendPoint( pointid, updatetype, updateinterval, qualityflag ) )
+            if( thread->appendPoint( pointid, updatetype, updateinterval, qualityflag ) )
             {
                 ++CalcCount;
 
@@ -1206,7 +1206,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 
 
             //    order is defined externally - by the order that they're selected and appended
-            calcThread->appendPointComponent( pointid, componenttype, componentpointid,
+            thread->appendPointComponent( pointid, componenttype, componentpointid,
                                               operationtype, constantvalue, functionname );
             if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
             {
@@ -1322,7 +1322,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
-    if( calcThread->numberOfLoadedCalcPoints() <= 0 )
+    if( thread->numberOfLoadedCalcPoints() <= 0 )
     {
         returnBool = false;
     }

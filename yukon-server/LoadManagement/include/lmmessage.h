@@ -121,7 +121,7 @@ public:
         START_NOW,
         STOP_NOW,
         CHANGE_GEAR
-    } Command;      
+    };      
     
      enum   
      {   // How to deal with constraint checking   
@@ -129,7 +129,7 @@ public:
          OVERRIDE_CONSTRAINTS,  // accept the request and set the override constraints flag on the groups   
          CHECK_CONSTRAINTS    // don't accept the request if constraints look like they will be violated   
     
-     } ConstraintFlag; 
+     }; 
 
     CtiLMManualControlRequest() { }; //provided for polymorphic persitence only
     CtiLMManualControlRequest(LONG cmd,

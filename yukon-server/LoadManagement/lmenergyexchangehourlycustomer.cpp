@@ -27,7 +27,12 @@ RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer, CTILMENERGYEXCHANGEHOUR
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyCustomer::CtiLMEnergyExchangeHourlyCustomer()
+CtiLMEnergyExchangeHourlyCustomer::CtiLMEnergyExchangeHourlyCustomer() :
+_customerid(0),
+_offerid(0),
+_revisionnumber(0),
+_hour(0),
+_amountcommitted(0)
 {
 }
 

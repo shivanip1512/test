@@ -26,7 +26,10 @@ RWDEFINE_COLLECTABLE( CtiLMGroupPoint, CTILMGROUPPOINT_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMGroupPoint::CtiLMGroupPoint()
+CtiLMGroupPoint::CtiLMGroupPoint() :
+_deviceidusage(0),
+_pointidusage(0),
+_startcontrolrawstate(0)
 {   
 }
 
