@@ -15,6 +15,7 @@ import com.cannontech.common.events.dao.EventLogDao.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableList;
@@ -67,6 +68,11 @@ public class EventLogFactoryBeanTest {
             }
             @Override
             public Set<EventCategory> getAllCategories() {
+                return null;
+            }
+            @Override
+            public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
+                                                                           Date startDate, Date stopDate, Integer start, Integer pageCount) {
                 return null;
             }
         });
@@ -125,6 +131,11 @@ public class EventLogFactoryBeanTest {
             }
             @Override
             public Set<EventCategory> getAllCategories() {
+                return null;
+            }
+            @Override
+            public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
+                                                                           Date startDate, Date stopDate, Integer start, Integer pageCount) {
                 return null;
             }
         });
