@@ -1,10 +1,10 @@
 package com.cannontech.web.dr;
 
 public class ListBackingBean {
-    private String name;
+    private String name = null;
 
-    private String sort;
-    private boolean descending;
+    private String sort = null;
+    private boolean descending = false;
 
     private int page = 1;
     private int itemsPerPage = 25;
@@ -25,12 +25,12 @@ public class ListBackingBean {
         this.sort = sort;
     }
 
-    public Boolean getDescending() {
+    public boolean getDescending() {
         return descending;
     }
 
-    public void setDescending(Boolean descending) {
-        this.descending = descending != null ? descending : false;
+    public void setDescending(boolean descending) {
+        this.descending = descending;
     }
 
     public Integer getPage() {

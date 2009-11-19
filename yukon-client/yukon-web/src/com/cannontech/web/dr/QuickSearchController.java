@@ -64,14 +64,14 @@ public class QuickSearchController {
         filters.add(new QuickSearchFilter(searchText));
 
         String sort = quickSearchBean.getSort();
-        Boolean descending = quickSearchBean.getDescending();
+        boolean descending = quickSearchBean.getDescending();
         Comparator<DisplayablePao> sorter = null;
         if (sort != null) {
             CombinedSortableField sortField =
                 CombinedSortableField.valueOf(sort);
             if (sortField != null) {
                 sorter = demandResponseService.getSorter(sortField, userContext);
-                if (descending != null && descending && sorter != null) {
+                if (descending && sorter != null) {
                     sorter = Ordering.from(sorter).reverse();
                 }
             }

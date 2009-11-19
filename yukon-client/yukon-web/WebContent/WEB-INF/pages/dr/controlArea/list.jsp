@@ -136,7 +136,7 @@
                 <c:set var="numColumns" value="1"/>
                 <th>
                     <tags:sortLink key="yukon.web.modules.dr.controlAreaList.heading.name"
-                        baseUrl="${baseUrl}" fieldName="CA_NAME"/>
+                        baseUrl="${baseUrl}" fieldName="CA_NAME" isDefault="true"/>
                 </th>
                 <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                     <c:set var="numColumns" value="${numColumns + 1}"/>

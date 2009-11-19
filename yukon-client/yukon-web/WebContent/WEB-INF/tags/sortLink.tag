@@ -3,7 +3,13 @@
 <%@ attribute name="key" required="true" %>
 <%@ attribute name="sortParam" %>
 <%@ attribute name="descendingParam" %>
+<%@ attribute name="isDefault" type="java.lang.Boolean" %>
 <%@ tag body-content="empty" %>
+
+<%--
+If the default sort field is anything other than "NAME", set the isDefault
+attribute to true on the field which is the default sort field.
+--%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -17,8 +23,14 @@
 
 <c:set var="currentSort" value="${param[sortParam]}"/>
 <c:if test="${empty currentSort}">
-    <c:set var="currentSort" value="NAME"/>
+    <c:if test="${isDefault}">
+        <c:set var="currentSort" value="${fieldName}"/>
+    </c:if>
+    <c:if test="${!isDefault}">
+        <c:set var="currentSort" value="NAME"/>
+    </c:if>
 </c:if>
+
 <cti:url var="sortUrl" value="${baseUrl}">
     <%-- keep all parameters except sort and page number --%>
     <c:forEach var="aParam" items="${param}">

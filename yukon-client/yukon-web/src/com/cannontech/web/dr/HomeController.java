@@ -54,11 +54,9 @@ public class HomeController {
         Comparator<DisplayablePao> sorter = null;
         if (favSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
-            if (sortField != null) {
-                sorter = demandResponseService.getSorter(sortField, userContext);
-                if (favDescending != null && favDescending && sorter != null) {
-                    sorter = Ordering.from(sorter).reverse();
-                }
+            sorter = demandResponseService.getSorter(sortField, userContext);
+            if (favDescending != null && favDescending && sorter != null) {
+                sorter = Ordering.from(sorter).reverse();
             }
         }
         if (sorter == null) {
@@ -71,12 +69,9 @@ public class HomeController {
         sorter = null;
         if (rvSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(rvSort);
-            sorter = null;
-            if (sortField != null) {
-                sorter = demandResponseService.getSorter(sortField, userContext);
-                if (rvDescending != null && rvDescending && sorter != null) {
-                    sorter = Ordering.from(sorter).reverse();
-                }
+            sorter = demandResponseService.getSorter(sortField, userContext);
+            if (rvDescending != null && rvDescending && sorter != null) {
+                sorter = Ordering.from(sorter).reverse();
             }
         }
         if (sorter == null) {

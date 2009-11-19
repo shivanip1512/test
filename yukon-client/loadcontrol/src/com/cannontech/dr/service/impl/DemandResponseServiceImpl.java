@@ -29,6 +29,7 @@ import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class DemandResponseServiceImpl implements DemandResponseService {
@@ -155,27 +156,17 @@ public class DemandResponseServiceImpl implements DemandResponseService {
                                              pao.getPaoIdentifier().getPaoType());
         MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(userContext);
-        return messageSourceAccessor.getMessage((MessageSourceResolvable) msr);
+        return messageSourceAccessor.getMessage(msr);
     }
 
     @Override
     public Comparator<DisplayablePao> getSorter(CombinedSortableField field,
             final YukonUserContext userContext) {
         if (field == CombinedSortableField.TYPE) {
-            return new Comparator<DisplayablePao>(){
+            Ordering<DisplayablePao> typeComparator = new Ordering<DisplayablePao>(){
 
                 @Override
                 public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                    if (pao1 == pao2) {
-                        return 0;
-                    }
-                    if (pao1 == null) {
-                        return 1;
-                    }
-                    if (pao2 == null) {
-                        return -1;
-                    }
-
                     return new CompareToBuilder().append(getLocalizedTypeName(pao1,
                                                                               userContext),
                                                          getLocalizedTypeName(pao2,
@@ -183,6 +174,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
                                                  .toComparison();
                 }
             };
+            return typeComparator.nullsFirst();
         }
         return sorters.get(field);
     }
