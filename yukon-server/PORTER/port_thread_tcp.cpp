@@ -379,8 +379,6 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
 {
     SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
 
-    reportSocketError("select", 0, __FUNCTION__, __FILE__, __LINE__);
-
     if( s == INVALID_SOCKET)
     {
         reportSocketError("socket", device_id, __FUNCTION__, __FILE__, __LINE__);
