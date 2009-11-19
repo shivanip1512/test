@@ -19,6 +19,11 @@ private:
     //virtual ~GpuffProtocol();
     GpuffProtocol &operator=(const GpuffProtocol &aRef);
 
+    enum
+    {
+        HeaderLength = 13
+    };
+
 protected:
 
     static void add_to_csv_summary( std::string &keys, std::string &values, std::string key, bool     value );
@@ -32,11 +37,6 @@ protected:
     static int convertSignedBytes( const unsigned char *buf, int &position, int bytes_to_combine );
 
 public:
-
-    enum
-    {
-        HeaderLength = 13
-    };
 
     enum FCIPoints
     {

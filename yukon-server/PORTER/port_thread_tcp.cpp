@@ -160,7 +160,7 @@ void TcpPortHandler::checkPendingConnectionBlock(const int socket_count, fd_set 
 
     if( ready_count == SOCKET_ERROR )
     {
-        reportSocketError("checkPendingConnectionBlock", "select", 0, __FILE__, __LINE__);
+        reportSocketError("select", 0, __FUNCTION__, __FILE__, __LINE__);
 
         ready_count = 0;
     }
@@ -196,21 +196,21 @@ void TcpPortHandler::setConnectionOptions(const long device_id, connection &c)
     int socket_write_timeout = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
     if( setsockopt(c.socket, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char *>(&socket_write_timeout), sizeof(socket_write_timeout)) )
     {
-        reportSocketError("setConnectionOptions", "setsockopt", device_id, __FILE__, __LINE__);
+        reportSocketError("setsockopt", device_id, __FUNCTION__, __FILE__, __LINE__);
     }
 
     //  Turn on the keepalive timer
     int keepalive_timer = 1;
     if( setsockopt(c.socket, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char *>(&keepalive_timer), sizeof(keepalive_timer)) )
     {
-        reportSocketError("setConnectionOptions", "setsockopt", device_id, __FILE__, __LINE__);
+        reportSocketError("setsockopt", device_id, __FUNCTION__, __FILE__, __LINE__);
     }
 
     //  enable a hard close - erases all pending outbound data, sends a reset to the other side
     linger l = {1, 0};
     if( setsockopt(c.socket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&l), sizeof(l)) )
     {
-        reportSocketError("setConnectionOptions", "setsockopt", device_id, __FILE__, __LINE__);
+        reportSocketError("setsockopt", device_id, __FUNCTION__, __FILE__, __LINE__);
     }
 }
 
@@ -368,10 +368,10 @@ void TcpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 }
 
 
-void TcpPortHandler::reportSocketError(const string method_name, const string winsock_function_name, const long device_id, const char *file, const int line)
+void TcpPortHandler::reportSocketError(const string winsock_function_name, const long device_id, const char *method_name, const char *file, const int line)
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** Checkpoint - " << winsock_function_name << "() returned (" << WSAGetLastError() << ") for device_id (" << device_id << ") in TcpPortHandler::" << method_name << "() **** " << file << " (" << line << ")" << endl;
+    dout << CtiTime() << " **** Checkpoint - " << winsock_function_name << "() returned (" << WSAGetLastError() << ") for device_id (" << device_id << ") in " << method_name << "() **** " << file << " (" << line << ")" << endl;
 }
 
 
@@ -379,9 +379,11 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
 {
     SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
 
+    reportSocketError("select", 0, __FUNCTION__, __FILE__, __LINE__);
+
     if( s == INVALID_SOCKET)
     {
-        reportSocketError("connectToDevice", "socket", device_id, __FILE__, __LINE__);
+        reportSocketError("socket", device_id, __FUNCTION__, __FILE__, __LINE__);
 
         return false;
     }
@@ -389,7 +391,7 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
     unsigned long nonblocking = 1;
     if( ioctlsocket(s, FIONBIO, &nonblocking) )
     {
-        reportSocketError("connectToDevice", "ioctlsocket", device_id, __FILE__, __LINE__);
+        reportSocketError("ioctlsocket", device_id, __FUNCTION__, __FILE__, __LINE__);
 
         closesocket(s);
 
@@ -405,7 +407,7 @@ bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
     {
         if( WSAGetLastError() != WSAEWOULDBLOCK )
         {
-            reportSocketError("connectToDevice", "connect", device_id, __FILE__, __LINE__);
+            reportSocketError("connect", device_id, __FUNCTION__, __FILE__, __LINE__);
 
             closesocket(s);
 
@@ -432,13 +434,13 @@ void TcpPortHandler::disconnectFromDevice(const long device_id, connection &c)
     {
         if( shutdown(c.socket, SD_BOTH) )
         {
-            reportSocketError("disconnectFromDevice", "shutdown", device_id, __FILE__, __LINE__);
+            reportSocketError("shutdown", device_id, __FUNCTION__, __FILE__, __LINE__);
         }
     }
 
     if( closesocket(c.socket) )
     {
-        reportSocketError("disconnectFromDevice", "close", device_id, __FILE__, __LINE__);
+        reportSocketError("close", device_id, __FUNCTION__, __FILE__, __LINE__);
     }
 
     c.socket = INVALID_SOCKET;
@@ -508,7 +510,7 @@ void TcpPortHandler::sendOutbound( device_record &dr )
 
     if( bytes_sent == SOCKET_ERROR )
     {
-        reportSocketError("sendOutbound", "send", dr.id, __FILE__, __LINE__);
+        reportSocketError("send", dr.id, __FUNCTION__, __FILE__, __LINE__);
 
         disconnectFromDevice(dr.id, c);
 
@@ -574,7 +576,7 @@ bool TcpPortHandler::collectInbounds( void )
 
             if( ready_count == SOCKET_ERROR )
             {
-                reportSocketError("collectInbounds", "select", 0, __FILE__, __LINE__);
+                reportSocketError("select", 0, __FUNCTION__, __FILE__, __LINE__);
             }
             else if( ready_count > 0 )
             {
@@ -617,7 +619,7 @@ void TcpPortHandler::readInput(const long device_id)
 
     if( ioctlsocket(c.socket, FIONREAD, &bytes_available) )
     {
-        reportSocketError("readInput", "ioctlsocket", device_id, __FILE__, __LINE__);
+        reportSocketError("ioctlsocket", device_id, __FUNCTION__, __FILE__, __LINE__);
         bytes_available = 0;
     }
 

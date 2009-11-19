@@ -120,13 +120,22 @@ void UdpPortHandler::loadDeviceProperties(const set<long> &device_ids)
 
 void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 {
+    const long device_id = device.getID();
+
+    if( isGpuffDevice(device) )
+    {
+        _typeAndSerial_to_id.insert(type_serial_id_bimap::value_type(makeGpuffTypeSerialPair(device), device_id));
+    }
+    else if( isDnpDevice(device) )
+    {
+        _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
+    }
+
     if( !device.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP) ||
         !device.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port) )
     {
         return;
     }
-
-    const long device_id = device.getID();
 
     string ip_string;
     device.getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP, ip_string);
@@ -141,15 +150,6 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
              << device.getName() << " "
              << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
              << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    if( isGpuffDevice(device) )
-    {
-        _typeAndSerial_to_id.insert(type_serial_id_bimap::value_type(makeGpuffTypeSerialPair(device), device_id));
-    }
-    else if( isDnpDevice(device) )
-    {
-        _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
     }
 }
 

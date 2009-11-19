@@ -70,7 +70,7 @@ private:
 
     void readInput(const long device_id);
 
-    static void reportSocketError(const string method_name, const string winsock_function_name, const long device_id, const char *file, const int line);
+    static void reportSocketError(const string winsock_function_name, const long device_id, const char *method_name, const char *file, const int line);
 
 protected:
 
