@@ -135,14 +135,14 @@ public void addButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 /**
  * @return boolean
  */
-public boolean validateAddAction() {
+protected boolean validateAddAction() {
     return true;
 }
 
 /**
  * @return boolean
  */
-public boolean validateRemoveAction() {
+protected boolean validateRemoveAction() {
     return true;
 }
 
@@ -893,29 +893,7 @@ public void leftListSetSize(int w, int x, int y, int z) {
 	
 	
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		java.awt.Frame frame;
-		try {
-			Class<?> aFrameClass = Class.forName("com.ibm.uvm.abt.edit.TestFrame");
-			frame = (java.awt.Frame)aFrameClass.newInstance();
-		} catch (java.lang.Throwable ivjExc) {
-			frame = new java.awt.Frame();
-		}
-		AddRemovePanel aAddRemovePanel;
-		aAddRemovePanel = new AddRemovePanel();
-		frame.add("Center", aAddRemovePanel);
-		frame.setSize(aAddRemovePanel.getSize());
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
