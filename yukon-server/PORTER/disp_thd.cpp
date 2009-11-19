@@ -68,7 +68,7 @@ CtiConnection VanGoghConnection;
 using namespace Cti;
 using namespace Porter;
 
-extern INT RefreshPorterRTDB(void *ptr = NULL);
+extern INT RefreshPorterRTDB(const CtiDBChangeMsg *ptr);
 extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid);
 extern bool processInputFunction(CHAR Char);
@@ -243,10 +243,10 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     }
                 }
 
-                RefreshPorterRTDB((void*)dbchg->replicateMessage());
+                RefreshPorterRTDB(dbchg.get());
 
                 //  RTDB has been updated, tell the unsolicited ports
-                UnsolicitedPortsQueue.sendMessageToClients(dbchg->replicateMessage());
+                UnsolicitedPortsQueue.sendMessageToClients(dbchg.get());
 
                 RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 

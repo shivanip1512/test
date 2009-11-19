@@ -1055,8 +1055,13 @@ void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)
 }
 
 
-void UnsolicitedMessenger::sendMessageToClients(CtiMessage *msg)
+void UnsolicitedMessenger::sendMessageToClients(const CtiDBChangeMsg *msg)
 {
+    if( !msg )
+    {
+        return;
+    }
+
     CtiLockGuard< CtiCriticalSection > lock(_client_mux);
 
     for each( UnsolicitedHandler *client in _clients )
@@ -1066,8 +1071,6 @@ void UnsolicitedMessenger::sendMessageToClients(CtiMessage *msg)
             client->receiveMessage(msg->replicateMessage());
         }
     }
-
-    delete msg;
 }
 
 

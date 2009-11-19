@@ -8,6 +8,7 @@
 #include "port_base.h"
 #include "mgr_device.h"
 #include "dev_single.h"
+#include "msg_dbchg.h"
 
 namespace Cti    {
 namespace Porter {
@@ -184,7 +185,7 @@ public:
 
     void addClient(UnsolicitedHandler *client);
 
-    void sendMessageToClients(CtiMessage *msg);
+    void sendMessageToClients(const CtiDBChangeMsg *msg);
 };
 
 //  define the instance for disp_thd to write to and all UnsolicitedHandler child classes to register with

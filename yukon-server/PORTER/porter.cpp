@@ -111,7 +111,7 @@ static int MyAllocHook(int nAllocType, void *pvData,
 CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int);
 void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume);
 void LoadPorterGlobals(void);
-INT  RefreshPorterRTDB(void *ptr = NULL);
+INT  RefreshPorterRTDB(const CtiDBChangeMsg *ptr = 0);
 void DebugKeyEvent(KEY_EVENT_RECORD *ke);
 string GetDeviceName( ULONG id );
 void KickPIL();
@@ -1374,7 +1374,7 @@ static void applyRepeaterAutoRole(const long unusedid, CtiDeviceSPtr autoRoleDev
     }
 }
 
-INT RefreshPorterRTDB(void *ptr)
+INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 {
     extern CtiPILServer  PIL;
     bool autoRole     = false;              // Set to true if routes might have changed and or we need to download based on time!
@@ -1386,8 +1386,6 @@ INT RefreshPorterRTDB(void *ptr)
     INT   status = NORMAL;
     DWORD dwWait;
     LONG  id = 0;
-
-    CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)ptr;
 
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
@@ -1595,11 +1593,6 @@ INT RefreshPorterRTDB(void *ptr)
                 _kickerCCU711Thread.start();
             }
         }
-    }
-
-    if(pChg != NULL)
-    {
-        delete pChg;
     }
 
     return status;
