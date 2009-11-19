@@ -204,17 +204,17 @@ private:
     {
         struct
         {
-            unsigned short response_buffer_has_data         : 1;
-            unsigned short response_buffer_has_marked_data  : 1;
-            unsigned short response_buffer_full             : 1;
-            unsigned short transmit_buffer_has_data         : 1;
-            unsigned short transmit_buffer_full             : 1;
-            unsigned short transmit_buffer_frozen           : 1;
-            unsigned short plc_transmitting_dtran_message   : 1;
-            unsigned short plc_transmitting_buffer_message  : 1;
-            unsigned short time_sync_required               : 1;
-            unsigned short broadcast_in_progress            : 1;
-            unsigned short reserved                         : 6;
+            unsigned short response_buffer_has_unmarked_data : 1;
+            unsigned short response_buffer_has_marked_data   : 1;
+            unsigned short response_buffer_full              : 1;
+            unsigned short transmit_buffer_has_data          : 1;
+            unsigned short transmit_buffer_full              : 1;
+            unsigned short transmit_buffer_frozen            : 1;
+            unsigned short plc_transmitting_dtran_message    : 1;
+            unsigned short plc_transmitting_buffer_message   : 1;
+            unsigned short time_sync_required                : 1;
+            unsigned short broadcast_in_progress             : 1;
+            unsigned short reserved                          : 6;
         };
         unsigned char  as_bytes[2];
         unsigned short as_ushort;
@@ -287,6 +287,9 @@ private:
 
     enum MiscNumeric
     {
+        BlockReadFlag_ReadToggleId  = 0x01,
+        BlockReadFlag_AckOnlyNoData = 0x02,
+
         WrapErrorsMaximum      =   1,
         WrapLengthMaximum      = 255,
         QueueWriteBasePriority =  11,

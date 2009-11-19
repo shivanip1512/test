@@ -76,6 +76,7 @@ Klondike::command_state_map_t::command_state_map_t()
 
     (*this)[Command_ReadQueue].push_back(CommandCode_CheckStatus);
     (*this)[Command_ReadQueue].push_back(CommandCode_ReplyQueueRead);
+    (*this)[Command_ReadQueue].push_back(CommandCode_ReplyQueueRead);
 
     (*this)[Command_TimeSync ].push_back(CommandCode_TimeSyncCCU);
 
@@ -102,6 +103,11 @@ bool Klondike::nextCommandState()
     }
     else
     {
+        if( _current_command.command == Command_ReadQueue )
+        {
+            _reading_device_queue = false;
+        }
+
         _current_command.command_code = CommandCode_Null;
 
         return false;  //  we don't have a command to send
@@ -142,28 +148,35 @@ bool Klondike::commandStateValid()
     if( _current_command.command      == Command_ReadQueue &&
         _current_command.command_code == CommandCode_ReplyQueueRead )
     {
-        if( !_device_status.response_buffer_has_data && !_device_status.transmit_buffer_has_data && !_device_status.plc_transmitting_buffer_message )
+        if( !_device_status.response_buffer_has_marked_data &&
+            !_device_status.response_buffer_has_unmarked_data  )
         {
+            if( !_device_status.transmit_buffer_has_data &&
+                !_device_status.plc_transmitting_buffer_message &&
+                !_remote_requests.empty() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_ReadQueue/CommandCode_ReplyQueueRead : !_device_status.response_buffer_has_data && !_device_status.transmit_buffer_has_data && !_device_status.plc_transmitting_buffer_message - purging _remote_requests **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
 
-            remote_work_t::iterator remote_itr = _remote_requests.begin(),
-                                    remote_end = _remote_requests.end();
-
-            while( remote_itr != remote_end )
-            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadRoutes/CommandCode_RoutingTableWrite : lost queue entry " << remote_itr->first << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_ReadQueue/CommandCode_ReplyQueueRead : device reports empty - purging _remote_requests **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                queue_entry_t &failed_entry = remote_itr->second;
+                remote_work_t::iterator remote_itr = _remote_requests.begin(),
+                                        remote_end = _remote_requests.end();
 
-                _plc_results.push(queue_result_t(failed_entry.om, Error_QueueEntryLost, ::time(0), byte_buffer_t()));
+                while( remote_itr != remote_end )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadRoutes/CommandCode_RoutingTableWrite : lost queue entry " << remote_itr->first << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
 
-                remote_itr = _remote_requests.erase(remote_itr);
+                    queue_entry_t &failed_entry = remote_itr->second;
+
+                    _plc_results.push(queue_result_t(failed_entry.om, Error_QueueEntryLost, ::time(0), byte_buffer_t()));
+
+                    remote_itr = _remote_requests.erase(remote_itr);
+                }
             }
 
             command_valid = false;
@@ -305,17 +318,17 @@ string Klondike::describeCurrentStatus( void ) const
 
     stream << "_device_status.as_ushort        = " << hex << setw(4) << _device_status.as_ushort        << endl;
 
-    if( _device_status.response_buffer_has_data        ) stream << "_device_status.response_buffer_has_data        " << endl;
-    if( _device_status.response_buffer_has_marked_data ) stream << "_device_status.response_buffer_has_marked_data " << endl;
-    if( _device_status.response_buffer_full            ) stream << "_device_status.response_buffer_full            " << endl;
-    if( _device_status.transmit_buffer_has_data        ) stream << "_device_status.transmit_buffer_has_data        " << endl;
-    if( _device_status.transmit_buffer_full            ) stream << "_device_status.transmit_buffer_full            " << endl;
-    if( _device_status.transmit_buffer_frozen          ) stream << "_device_status.transmit_buffer_frozen          " << endl;
-    if( _device_status.plc_transmitting_dtran_message  ) stream << "_device_status.plc_transmitting_dtran_message  " << endl;
-    if( _device_status.plc_transmitting_buffer_message ) stream << "_device_status.plc_transmitting_buffer_message " << endl;
-    if( _device_status.time_sync_required              ) stream << "_device_status.time_sync_required              " << endl;
-    if( _device_status.broadcast_in_progress           ) stream << "_device_status.broadcast_in_progress           " << endl;
-    if( _device_status.reserved                        ) stream << "_device_status.reserved                        " << endl;
+    if( _device_status.response_buffer_has_unmarked_data) stream << "_device_status.response_buffer_has_data        " << endl;
+    if( _device_status.response_buffer_has_marked_data  ) stream << "_device_status.response_buffer_has_marked_data " << endl;
+    if( _device_status.response_buffer_full             ) stream << "_device_status.response_buffer_full            " << endl;
+    if( _device_status.transmit_buffer_has_data         ) stream << "_device_status.transmit_buffer_has_data        " << endl;
+    if( _device_status.transmit_buffer_full             ) stream << "_device_status.transmit_buffer_full            " << endl;
+    if( _device_status.transmit_buffer_frozen           ) stream << "_device_status.transmit_buffer_frozen          " << endl;
+    if( _device_status.plc_transmitting_dtran_message   ) stream << "_device_status.plc_transmitting_dtran_message  " << endl;
+    if( _device_status.plc_transmitting_buffer_message  ) stream << "_device_status.plc_transmitting_buffer_message " << endl;
+    if( _device_status.time_sync_required               ) stream << "_device_status.time_sync_required              " << endl;
+    if( _device_status.broadcast_in_progress            ) stream << "_device_status.broadcast_in_progress           " << endl;
+    if( _device_status.reserved                         ) stream << "_device_status.reserved                        " << endl;
 
     return stream.str();
 }
@@ -422,7 +435,14 @@ void Klondike::doOutput(CommandCode command_code)
 
         case CommandCode_ReplyQueueRead:
         {
-            outbound.push_back(_read_toggle);
+            if( !_device_status.response_buffer_has_unmarked_data )
+            {
+                outbound.push_back(_read_toggle | BlockReadFlag_AckOnlyNoData);
+            }
+            else
+            {
+                outbound.push_back(_read_toggle);
+            }
 
             break;
         }
@@ -880,8 +900,12 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_ReplyQueueRead : CommandCode_ACK_NoData **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                _read_toggle = *inbound_itr++ ^ 0x01;  //  we'll echo this bit back to the CCU when we read or ack next
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_ReplyQueueRead : CommandCode_ACK_NoData **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
             else if( response_command == CommandCode_ACK_Data )
             {
@@ -936,8 +960,6 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                     }
                 }
             }
-
-            _reading_device_queue = false;
 
             break;
         }
@@ -1235,7 +1257,7 @@ bool Klondike::hasRemoteWork() const
 {
     sync_guard_t guard(_sync);
 
-    return !_remote_requests.empty() || _device_status.response_buffer_has_data;
+    return !_remote_requests.empty() || _device_status.response_buffer_has_unmarked_data;
 }
 
 
