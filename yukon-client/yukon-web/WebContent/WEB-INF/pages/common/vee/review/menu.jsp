@@ -36,8 +36,8 @@ Please restart the Yukon Service Manager to resume processing.
         <td class="widgetColumnCell" valign="top">
             <tags:abstractContainer type="box" title="Accept All" styleClass="widgetContainer">
                 <p class="warningMessage">
-                This will insert the OK tag for the any RawPointHistory value that contains
-                one of the selected tags. This has the same effect as the Accept selection
+                This will insert the OK tag for the any RawPointHistory value that has the identical
+                set of tags as are checked. This has the same effect as the Accept selection
                 on the Review page.
                 </p>
                 <form method="post" action="acceptAllTaggedRows">
@@ -54,8 +54,8 @@ Please restart the Yukon Service Manager to resume processing.
             </tags:abstractContainer>	
             <tags:abstractContainer type="box" title="Delete All" styleClass="widgetContainer">
                 <p class="warningMessage">
-                This will delete any RawPointHistory value that contains
-                one of the selected tags (but has not already been marked as Accepted). This has the same effect as the Delete selection
+                This will delete any RawPointHistory value that has the identical set of tags
+                as are selected tags (but has not already been marked as Accepted). This has the same effect as the Delete selection
                 on the Review page. <b>Archived usage readings will be removed
                 completely from the database. This cannot be undone! </b>
                 </p>
