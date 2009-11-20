@@ -2438,7 +2438,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
                 resultString += ", retrying";
 
-                // new comand string must remove "read" or else it is not considered a retry.
+                // new command string must remove "read" or else it is not considered a retry.
                 CtiString newCommandStr = InMessage->Return.CommandStr;
                 newCommandStr.replace(" read","");
 
