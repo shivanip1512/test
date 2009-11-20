@@ -143,7 +143,7 @@ public class ContactController extends AbstractConsumerController {
             } else {
 
                 List<LiteContactNotification> notificationList = this.getNotifications(request,
-                                                                                       contactId);
+                                                                                       contact);
                 this.addNewNotification(request, contactId, notificationList);
                 contact.setNotifications(notificationList);
 
@@ -192,7 +192,7 @@ public class ContactController extends AbstractConsumerController {
      * @throws InvalidNotificationException 
      */
     private List<LiteContactNotification> getNotifications(
-            HttpServletRequest request, int contactId) throws InvalidNotificationException {
+            HttpServletRequest request, LiteContact contact) throws InvalidNotificationException {
 
         // Create a map for each of the values in the notifications
         Map<String, Integer> idMap = ServletUtil.getIntegerParameters(request,
@@ -225,31 +225,42 @@ public class ContactController extends AbstractConsumerController {
                     } else if(yukonListDao.isPIN(notifCatId)) {
                         notificationText = ServletUtils.formatPin( notificationText );
                     } else if(yukonListDao.isEmail(notifCatId)) {
-                        if (contactDao.isPrimaryContact(contactId)) {
-                            LiteContact primContact = contactDao.getContact(contactId);
-                            LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(primContact, notifCatId);
+                        if (contactDao.isPrimaryContact(contact.getContactID())) {
+                            LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(contact, notifCatId);
                             if (email != null) {
                                 disabledFlag = email.getDisableFlag();
                             }
                         }
                     }
+                    LiteContactNotification notification = getContactNotification(contact, notificationId);
+                    if (notification != null) {
+                        notification.setNotificationCategoryID(notifCatId);
+                        notification.setNotification(notificationText);                        
+                        notification.setDisableFlag(disabledFlag);
+                        notificationList.add(notification);                        
+                    }
                 } catch (WebClientException e) {
                     String notifCategory = yukonListDao.getYukonListEntry(notifCatId).getEntryText();
                     throw new InvalidNotificationException(notifCategory, notificationText);
                 }
-
-                LiteContactNotification notification = new LiteContactNotification(notificationId,
-                                                                                   contactId,
-                                                                                   notifCatId,
-                                                                                   disabledFlag,
-                                                                                   notificationText);
-                notificationList.add(notification);
             }
         }
 
         return notificationList;
     }
 
+    private LiteContactNotification getContactNotification(LiteContact contact, int notificationId) {
+        LiteContactNotification result = null;
+        // notifications are already populated on Contact retrieval above
+        for (LiteContactNotification notification : contact.getLiteContactNotifications()) {
+            if (notification.getContactNotifID() == notificationId) {
+                result = notification;
+                break;
+            }
+        }
+        return result;
+    }
+    
     /**
      * Helper method to add a new notification to the notification list if the
      * 'Add Notification' button was clicked
