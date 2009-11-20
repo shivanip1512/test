@@ -1093,7 +1093,6 @@ INT CtiConnection::establishConnection(INT freq)
     INT status = NORMAL;
 
     INT sleepCount = 0;
-    INT SpinCount = 0;
 
     while( !_dontReconnect && !_valid )
     {
@@ -1101,7 +1100,7 @@ INT CtiConnection::establishConnection(INT freq)
          *  OK, this guy lets us call ConnectPortal every % XX sexonds.
          *  Each loop iteration (and ServiceCancellation) should happen every second then
          */
-        if( !(SpinCount++ % freq) )
+        if( !(sleepCount % freq) )
         {
             /*************************
             * added because of turnaround time observed on Progress Energy's system
@@ -1117,7 +1116,7 @@ INT CtiConnection::establishConnection(INT freq)
 
         //Print on the first try, then every hour or so. Note that this loop really lasts
         // 1.13333 seconds due to the 2 second sleep every 15 seconds above, so 3176 is close to an hour.
-        if( !(sleepCount++ % 3176) )
+        if( !(sleepCount % 3176) )
         {
             string whoStr = who();
             {
@@ -1126,6 +1125,7 @@ INT CtiConnection::establishConnection(INT freq)
             }
         }
 
+        sleepCount++;
         checkCancellation();
 
         Sleep(1000);         // Don't pound the system....
