@@ -2,7 +2,6 @@ package com.cannontech.web.login;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.constants.LoginController;
@@ -100,6 +100,9 @@ public class IntegrationLoginController {
         logger.debug("User found for premise");
 
         loginService.createSession(request, user);
+        ActivityLogger.logEvent(user.getUserID(),
+                                LoginService.LOGIN_WEB_ACTIVITY_ACTION,
+                                "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());        
         return user;
     }
 

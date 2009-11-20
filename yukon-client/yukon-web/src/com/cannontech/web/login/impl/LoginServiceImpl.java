@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotLoggedInException;
@@ -57,6 +59,7 @@ public class LoginServiceImpl implements LoginService {
     private YukonUserDao yukonUserDao;
     private List<SessionInitializer> sessionInitializers;
     private RolePropertyDao rolePropertyDao;
+    private SystemEventLogService systemEventLogService;
 
     @Override
     public boolean login(HttpServletRequest request, String username, String password) 
@@ -83,7 +86,7 @@ public class LoginServiceImpl implements LoginService {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
         session = request.getSession(true);
-        initSession(user, session);
+        initSession(user, session, request, LOGIN_WEB_ACTIVITY_ACTION);
     }
     
     @Override
@@ -94,7 +97,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             LiteYukonUser user = authenticationService.login(username, password);
             HttpSession session = request.getSession(true);
-            initSession(user, session);
+            initSession(user, session, request, LOGIN_CLIENT_ACTIVITY_ACTION);
             ActivityLogger.logEvent(user.getUserID(), LOGIN_CLIENT_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
         } catch (BadAuthenticationException e) {
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
@@ -165,7 +168,7 @@ public class LoginServiceImpl implements LoginService {
                 session = request.getSession(true);
             }                   
 
-            initSession(user, session);
+            initSession(user, session, request, INBOUND_LOGIN_VOICE_ACTIVITY_ACTION);
             ActivityLogger.logEvent(
                                     INBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
                                     "INBOUND VOICE User " + user.getUsername() + " (userid=" + 
@@ -215,7 +218,7 @@ public class LoginServiceImpl implements LoginService {
                 session = request.getSession(true);
             }                   
 
-            initSession(user, session);
+            initSession(user, session, request, OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION);
             session.setAttribute( TOKEN, request.getParameter(TOKEN) );
             ActivityLogger.logEvent(user.getUserID(), OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION, "VOICE User " + user.getUsername() + " (userid=" + user.getUserID() + ") (Contact=" + lContact.toString() + ") has logged in from " + request.getRemoteAddr());
 
@@ -268,7 +271,7 @@ public class LoginServiceImpl implements LoginService {
         if (oldContext != null)
             session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
 
-        initSession(user, session);
+        initSession(user, session, request, LOGIN_WEB_ACTIVITY_ACTION);
         ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
 
         CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
@@ -289,14 +292,28 @@ public class LoginServiceImpl implements LoginService {
         return  redirect;
     }
 
-    private void initSession(final LiteYukonUser user, final HttpSession session) {
+    private void initSession(final LiteYukonUser user, final HttpSession session, HttpServletRequest request, String loginMethod) {
         session.setAttribute(YUKON_USER, user);
         for (final SessionInitializer initializer : sessionInitializers) {
             initializer.initSession(user, session);
         }
         CTILogger.info("Created session " + session.getId() + " for " + user);
+        writeEventLog( user, request, loginMethod);
     }
 
+    private void writeEventLog(final LiteYukonUser user, HttpServletRequest request, String loginMethod) {
+
+        if (loginMethod.equalsIgnoreCase(LOGIN_WEB_ACTIVITY_ACTION)) {
+            systemEventLogService.loginWeb(user, request.getRemoteAddr());
+        } else if (loginMethod.equalsIgnoreCase(LOGIN_CLIENT_ACTIVITY_ACTION)) {
+            systemEventLogService.loginClient(user, request.getRemoteAddr());
+        } else if (loginMethod.equalsIgnoreCase(INBOUND_LOGIN_VOICE_ACTIVITY_ACTION)) {
+            systemEventLogService.loginInboundVoice(user, request.getRemoteAddr());
+        } else if (loginMethod.equalsIgnoreCase(OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION)) {
+            systemEventLogService.loginOutboundVoice(user, request.getRemoteAddr());
+        }
+    }
+    
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
@@ -320,5 +337,10 @@ public class LoginServiceImpl implements LoginService {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+
+    @Autowired
+    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
+        this.systemEventLogService = systemEventLogService;
+    }
 
 }

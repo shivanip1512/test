@@ -75,4 +75,11 @@
     <entry key="yukon.common.events.system.rphValidation.helper.deletedAllTaggedRows">All rows tagged with {1} have been deleted by {2}</entry>
     <entry key="yukon.common.events.system.rphValidation.helper.validationEngineReset">The Validation Engine has been reset to reprocess all rows</entry>
     <entry key="yukon.common.events.system.rphValidation.helper.validationEnginePartialReset">The Validation Engine has been reset to reprocess all rows since {11}</entry>
+    
+    <!-- System -->
+    <entry key="yukon.common.events.system.login.loginWeb">User {1} logged in via Web from remote address {2}</entry>
+    <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}</entry>
+    <entry key="yukon.common.events.system.login.loginInboundVoice">User {1} logged in via Inbound voice from remote address {2}</entry>
+    <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}</entry>    
+    
 </properties>
