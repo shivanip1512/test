@@ -47,9 +47,9 @@ CtiMCUpdateSchedule::operator=(const CtiMCUpdateSchedule& ref)
 
 CtiMessage* CtiMCUpdateSchedule::replicateMessage() const
 {
-    CtiMCUpdateSchedule* copy = new CtiMCUpdateSchedule();
-    *copy = *this;
-    return copy;
+    CtiMCUpdateSchedule* aCopy = new CtiMCUpdateSchedule();
+    *aCopy = *this;
+    return aCopy;
 }
 
 const CtiMCSchedule& CtiMCUpdateSchedule::getSchedule() const
@@ -120,9 +120,9 @@ CtiMCAddSchedule& CtiMCAddSchedule::operator=(const CtiMCAddSchedule& ref)
 
 CtiMessage* CtiMCAddSchedule::replicateMessage() const
 {
-    CtiMCAddSchedule* copy = new CtiMCAddSchedule();
-    *copy = *this;
-    return copy;
+    CtiMCAddSchedule* aCopy = new CtiMCAddSchedule();
+    *aCopy = *this;
+    return aCopy;
 }
 
 const CtiMCSchedule& CtiMCAddSchedule::getSchedule() const
@@ -170,6 +170,7 @@ void CtiMCAddSchedule::restoreGuts(RWvistream& aStream)
 RWDEFINE_COLLECTABLE( CtiMCDeleteSchedule, MSG_MC_DELETE_SCHEDULE );
 
 CtiMCDeleteSchedule::CtiMCDeleteSchedule()
+    : _id(0)
 {
 }
 
@@ -191,9 +192,9 @@ CtiMCDeleteSchedule& CtiMCDeleteSchedule::operator=(const CtiMCDeleteSchedule& r
 
 CtiMessage* CtiMCDeleteSchedule::replicateMessage() const
 {
-    CtiMCDeleteSchedule* copy = new CtiMCDeleteSchedule();
-    *copy = *this;
-    return copy;
+    CtiMCDeleteSchedule* aCopy = new CtiMCDeleteSchedule();
+    *aCopy = *this;
+    return aCopy;
 }
 
 long CtiMCDeleteSchedule::getScheduleID() const
@@ -224,6 +225,7 @@ void CtiMCDeleteSchedule::restoreGuts(RWvistream& aStream)
 RWDEFINE_COLLECTABLE( CtiMCRetrieveSchedule, MSG_MC_RETRIEVE_SCHEDULE );
 
 CtiMCRetrieveSchedule::CtiMCRetrieveSchedule()
+    : _id(0)
 {
 }
 
@@ -246,9 +248,9 @@ CtiMCRetrieveSchedule::operator=(const CtiMCRetrieveSchedule& ref)
 
 CtiMessage* CtiMCRetrieveSchedule::replicateMessage() const
 {
-    CtiMCRetrieveSchedule* copy = new CtiMCRetrieveSchedule();
-    *copy = *this;
-    return copy;
+    CtiMCRetrieveSchedule* aCopy = new CtiMCRetrieveSchedule();
+    *aCopy = *this;
+    return aCopy;
 }
 
 long CtiMCRetrieveSchedule::getScheduleID() const
@@ -301,9 +303,9 @@ CtiMCRetrieveScript::operator=(const CtiMCRetrieveScript& ref)
 
 CtiMessage* CtiMCRetrieveScript::replicateMessage() const
 {
-    CtiMCRetrieveScript* copy = new CtiMCRetrieveScript();
-    *copy = *this;
-    return copy;
+    CtiMCRetrieveScript* aCopy = new CtiMCRetrieveScript();
+    *aCopy = *this;
+    return aCopy;
 }
 
 const string& CtiMCRetrieveScript::getScriptName() const
@@ -362,9 +364,9 @@ CtiMCVerifyScript::operator=(const CtiMCVerifyScript& ref)
 
 CtiMessage* CtiMCVerifyScript::replicateMessage() const
 {
-    CtiMCVerifyScript* copy = new CtiMCVerifyScript();
-    *copy = *this;
-    return copy;
+    CtiMCVerifyScript* aCopy = new CtiMCVerifyScript();
+    *aCopy = *this;
+    return aCopy;
 }
 
 const string& CtiMCVerifyScript::getScriptName() const
@@ -401,6 +403,7 @@ void CtiMCVerifyScript::restoreGuts(RWvistream& aStream)
 RWDEFINE_COLLECTABLE( CtiMCOverrideRequest, MSG_MC_OVERRIDE_REQUEST );
 
 CtiMCOverrideRequest::CtiMCOverrideRequest()
+    : _action(Start), _id(0)        // debug build initialized these to zero - in the enum: Start == 0
 {
 }
 
@@ -424,9 +427,9 @@ CtiMCOverrideRequest::operator=(const CtiMCOverrideRequest& ref)
 
 CtiMessage* CtiMCOverrideRequest::replicateMessage() const
 {
-    CtiMCOverrideRequest* copy = new CtiMCOverrideRequest();
-    *copy = *this;
-    return copy;
+    CtiMCOverrideRequest* aCopy = new CtiMCOverrideRequest();
+    *aCopy = *this;
+    return aCopy;
 }
 
 CtiMCOverrideRequest::Action CtiMCOverrideRequest::getAction() const
@@ -461,15 +464,15 @@ CtiMCOverrideRequest& CtiMCOverrideRequest::setID(long id)
     return *this;
 }
 
-CtiMCOverrideRequest& CtiMCOverrideRequest::setStartTime(const CtiTime& time)
+CtiMCOverrideRequest& CtiMCOverrideRequest::setStartTime(const CtiTime& aTime)
 {
-    _start_time = time;
+    _start_time = aTime;
     return *this;
 }
 
-CtiMCOverrideRequest& CtiMCOverrideRequest::setStopTime(const CtiTime& time)
+CtiMCOverrideRequest& CtiMCOverrideRequest::setStopTime(const CtiTime& aTime)
 {
-    _stop_time = time;
+    _stop_time = aTime;
     return *this;
 }
 
@@ -501,6 +504,7 @@ void CtiMCOverrideRequest::restoreGuts(RWvistream& aStream)
 RWDEFINE_COLLECTABLE( CtiMCInfo, MSG_MC_INFO )
 
 CtiMCInfo::CtiMCInfo()
+    : _id(0)
 { }
 
 CtiMCInfo::CtiMCInfo(const CtiMCInfo& ref)
@@ -521,9 +525,9 @@ CtiMCInfo& CtiMCInfo::operator=(const CtiMCInfo& ref)
 
 CtiMessage* CtiMCInfo::replicateMessage() const
 {
-    CtiMCInfo* copy = new CtiMCInfo();
-    *copy = *this;
-    return copy;
+    CtiMCInfo* aCopy = new CtiMCInfo();
+    *aCopy = *this;
+    return aCopy;
 }
 
 long CtiMCInfo::getID() const

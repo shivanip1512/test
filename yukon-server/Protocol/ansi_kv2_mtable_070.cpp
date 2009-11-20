@@ -61,7 +61,7 @@ CtiAnsiKV2ManufacturerTable070::~CtiAnsiKV2ManufacturerTable070()
 CtiAnsiKV2ManufacturerTable070::DisplayUnits_e CtiAnsiKV2ManufacturerTable070::getDemandDisplayUnits()
 {
     BYTEUSHORT tmp;
-    DisplayUnits_e ret;
+    DisplayUnits_e ret = kW_kVA;
 
     tmp.ch[0] = _displayConfigTable._demandDisplayUnits;
     switch (tmp.sh)

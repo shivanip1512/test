@@ -52,7 +52,10 @@ CtiAnsiTable14::CtiAnsiTable14( int dataCtrlLen, int numDataCtrlEntries )
 {
     _controlLength = dataCtrlLen;
     _controlEntries = numDataCtrlEntries;
+
+    _data_control_record.data_rcd = NULL;
 }
+
 CtiAnsiTable14::CtiAnsiTable14( BYTE *dataBlob, int dataCtrlLen, int numDataCtrlEntries )
 {
    int   index;

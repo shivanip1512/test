@@ -154,7 +154,7 @@ void CtiMCScheduler::getEvents(const CtiTime& now, set< ScheduledEvent >& events
             }
             else
             {
-                CtiLockGuard< CtiLogger > guard(dout);
+                CtiLockGuard< CtiLogger > logGuard(dout);
                 dout << CtiTime() << __FILE__ << " (" << __LINE__
                     << ") WARNING - could not find a schedule matching event schedule id: "
                     << iter->sched_id << endl;
@@ -347,7 +347,7 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
 
        if( schedule == NULL )
        {
-           CtiLockGuard< CtiLogger > guard(dout);
+           CtiLockGuard< CtiLogger > logGuard(dout);
            dout << CtiTime() << __FILE__ << " (" << __LINE__
                     << ") WARNING - could not find a schedule matching event schedule id: "
                     << event.sched_id << endl;

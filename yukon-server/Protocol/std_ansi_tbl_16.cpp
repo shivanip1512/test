@@ -48,6 +48,8 @@
 CtiAnsiTable16::CtiAnsiTable16( int nbr_constants )
 {
    _numberOfConstants = nbr_constants;
+
+   _source_link = NULL;
 }
 
 CtiAnsiTable16::CtiAnsiTable16( BYTE *dataBlob, int nbr_constants )

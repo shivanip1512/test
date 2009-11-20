@@ -41,7 +41,7 @@ CtiProtocolANSI_sentinel::CtiProtocolANSI_sentinel( void )
 
 CtiProtocolANSI_sentinel::~CtiProtocolANSI_sentinel( void )
 {
-    destroyManufacturerTables();
+    CtiProtocolANSI_sentinel::destroyManufacturerTables();  // virtual function call: specify which one we are calling
 }
 
 

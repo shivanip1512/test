@@ -88,16 +88,16 @@ void CtiQueueDataMsg::restoreGuts(RWvistream& aStream)
     long           requestId;         // RequestID, if any.
     unsigned       requestIdCount;    // Count of items with requestID _requestID
     long           userMessageId;
-    CtiTime        time;
+    CtiTime        aTime;
 
-    aStream >> id >> queueCount >> rate >> requestId >> requestIdCount >> time >> userMessageId;
+    aStream >> id >> queueCount >> rate >> requestId >> requestIdCount >> aTime >> userMessageId;
 
     setId(id);
     setQueueCount(queueCount);
     setRate(rate);
     setRequestId(requestId);
     setRequestIdCount(requestIdCount);
-    setTime(time);
+    setTime(aTime);
     setUserMessageId(userMessageId);
 }
 

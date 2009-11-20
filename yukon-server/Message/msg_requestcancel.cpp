@@ -76,13 +76,13 @@ void CtiRequestCancelMsg::restoreGuts(RWvistream& aStream)
     long           requestId;         // RequestID, if any.
     unsigned       requestIdCount;    // Count of items with requestID _requestID
     long           userMessageId;
-    CtiTime        time;
+    CtiTime        aTime;
 
-    aStream >> requestId >> requestIdCount >> time >> userMessageId;
+    aStream >> requestId >> requestIdCount >> aTime >> userMessageId;
 
     setRequestId(requestId);
     setRequestIdCount(requestIdCount);
-    setTime(time);
+    setTime(aTime);
     setUserMessageId(userMessageId);
 }
 

@@ -235,7 +235,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
-    double val;
+    double val = 0.0;
     int quality = NormalQuality;
 
 
@@ -627,7 +627,7 @@ int AnalogInputChange::serialize(unsigned char *buf) const
 
 int AnalogInputChange::getSerializedLen(void) const
 {
-    int retVal;
+    int retVal = 0;
 
     switch(getVariation())
     {
@@ -728,7 +728,7 @@ int AnalogInputFrozenEvent::serialize(unsigned char *buf) const
 
 int AnalogInputFrozenEvent::getSerializedLen(void) const
 {
-    int retVal;
+    int retVal = 0;
 
     switch(getVariation())
     {

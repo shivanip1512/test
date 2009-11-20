@@ -215,13 +215,13 @@ int CtiConnection::ThreadInitiate()
         inthread_   = rwMakeThreadFunction(*this, &CtiConnection::InThread);
         inthread_.start();
 
-        INT stat = 0;
+        INT ConnStatus = 0;
 
-        if( (stat = verifyConnection()) != NORMAL )
+        if( (ConnStatus = verifyConnection()) != NORMAL )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Connection has error status " << stat << endl;
+                dout << CtiTime() << " Connection has error status " << ConnStatus << endl;
             }
         }
     }
@@ -932,12 +932,10 @@ void CtiConnection::ShutdownConnection()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     if( _port >= 0 )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " ShutdownConnection() " << whoStr << endl;
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " ShutdownConnection() " << whoStr << endl;
                     }
                 }
@@ -1325,7 +1323,7 @@ _exchange(NULL),
 inQueue(inQ),
 _flag(0)
 {
-    doConnect(Port, Host, inQ);
+    CtiConnection::doConnect(Port, Host, inQ);      // doConnect() is virtual - be specific which one we are calling
 }
 
 CtiConnection::CtiConnection(CtiExchange *xchg, Que_t *inQ, INT tt) :

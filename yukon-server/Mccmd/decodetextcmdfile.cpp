@@ -708,7 +708,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                             bool haveSplinter=false;
                             bool invalidSPID=false, invalidGEO=false, invalidSub=false,invalidFeeder=false,invalidZip=false;
                             bool invalidUser=false, invalidProgram=false, invalidSplinter=false;
-                            string load,program,splinter,serialNum;
+                            string load,program,splinter;
                             CHAR buffer[20];
                             int lastLoad=0;
                             ULONG tmpAddress;
@@ -826,8 +826,8 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             string workString;
 
                                             //RWCTokenizer subCmd(tempString1);
-                                            boost::char_separator<char> sep(" ");
-                                            Boost_char_tokenizer subCmd(tempString1, sep);
+                                            boost::char_separator<char> space_sep(" ");
+                                            Boost_char_tokenizer subCmd(tempString1, space_sep);
                                             Boost_char_tokenizer::iterator sub_tok_iter = subCmd.begin();
 
                                             while(sub_tok_iter != subCmd.end())

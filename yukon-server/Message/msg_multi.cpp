@@ -126,8 +126,6 @@ CtiMultiMsg::CtiMultiMsg(const CtiMultiMsg &aRef)
 
 CtiMultiMsg& CtiMultiMsg::operator=(const CtiMultiMsg& aRef)
 {
-   int i;
-
    if(this != &aRef)
    {
       Inherited::operator=(aRef);

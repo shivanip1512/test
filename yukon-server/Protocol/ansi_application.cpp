@@ -105,17 +105,52 @@ const CHAR * CtiANSIApplication::ANSI_DEBUGLEVEL = "ANSI_DEBUGLEVEL";
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiANSIApplication::CtiANSIApplication()
+CtiANSIApplication::CtiANSIApplication() :
+    _currentState(identified),
+    _requestedState(identified),
+    _prot_version(0),
+    _currentTable(NULL),
+    _totalBytesInTable(0),
+    _initialOffset(0),
+    _lpMode(false),
+    _lpTempBigTable(NULL),
+    _sizeOfLpTable(0),
+    _tableComplete(false),
+    _currentTableID(0),
+    _currentTableOffset(0),
+    _currentBytesExpected(0),
+    _currentType(0),
+    _currentOperation(0),
+    _parmPtr(NULL),
+    _wrSeqNbr(0),
+    _wrDataSize(0),
+    _authenticate(false),
+    _authenticationType(0),
+    _algorithmID(0),
+    _algorithmValue(0),
+    _authTicketLength(0),
+    _authTicket(NULL),
+    _iniAuthVector(NULL),
+    _readComplete(false),
+    _readFailed(false),
+    _retries(0),
+    _LPBlockSize(0),
+    _partialProcessLPDataFlag(false),
+    _lpByteCount(0),
+    _negotiateRetry(0),
+    _ansiDeviceType(kv),
+    _fwVersionNumber(0),
+    _maxNbrPkts(0),
+    _negBaudRate(0)
 {
-    _currentTable = NULL;
-    _lpTempBigTable = NULL;
-    _parmPtr = NULL;
+    _currentProcBfld.selector = 0;
+    _currentProcBfld.std_vs_mfg_flag = 0;
+    _currentProcBfld.tbl_proc_nbr = 0;
+
+    _maxPktSize.sh = 0;
+
     for (int x = 0; x < 20; x++)
        _securityPassword[x] = 0xFF;
-
-    _authTicket = NULL;
-    _iniAuthVector = NULL;
-
 }
 
 //=========================================================================================================================================
@@ -1025,7 +1060,7 @@ BYTE* CtiANSIApplication::getCurrentTable( )
 
 CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES current )
 {
-  ANSI_STATES   next;
+  ANSI_STATES   next = identified;
 
    switch( current )
    {

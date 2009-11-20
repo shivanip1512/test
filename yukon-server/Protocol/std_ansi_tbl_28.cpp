@@ -44,9 +44,18 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable28::CtiAnsiTable28()
+CtiAnsiTable28::CtiAnsiTable28() :
+    _presentDemand(NULL),
+    _presentValue(NULL),
+     _nbrPresentDemands(0),
+    _nbrPresentValues(0),
+    _timeRemainingFlag(false),
+    _format1(0),
+    _format2(0),
+    _timefmt(0)
 {
 }
+
 CtiAnsiTable28::CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues,
                                             bool timeRemainingFlag, int format1, int format2, int timefmt )
 {

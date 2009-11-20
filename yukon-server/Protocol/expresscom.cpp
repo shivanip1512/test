@@ -37,6 +37,7 @@ _useProtocolCRC(true),
 _CRC(0),
 _useASCII(false),
 _addressLevel(0),
+_addressLength(0),
 _spidAddress(0),                   // 1-65534
 _geoAddress(0),                    // 1-65534
 _substationAddress(0),             // 1-65534
@@ -76,10 +77,10 @@ CtiProtocolExpresscom& CtiProtocolExpresscom::operator=(const CtiProtocolExpress
 }
 
 bool CtiProtocolExpresscom::validateAddress(const unsigned int address,
-                                            const AddressRanges min,
-                                            const AddressRanges max)
+                                            const AddressRanges minimum,
+                                            const AddressRanges maximum)
 {
-    return (min <= address && address <= max);
+    return (minimum <= address && address <= maximum);
 }
 
 INT CtiProtocolExpresscom::addAddressing( UINT    serial,
@@ -227,9 +228,9 @@ INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
     INT status = NoError;
 
     CtiTime gmt = local.asGMT();
-    CtiDate date( gmt );
+    CtiDate theDate( gmt );
 
-    BYTE dayOfWeek = date.weekDay() % 7;    // CtiDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
+    BYTE dayOfWeek = theDate.weekDay() % 7;    // CtiDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
 
     gmt = gmt + ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
 
@@ -241,10 +242,10 @@ INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
 
     if(fullsync)
     {
-        _message.push_back( date.month() );
-        _message.push_back( date.dayOfMonth() );
-        _message.push_back( HIBYTE(LOWORD(date.year())) );
-        _message.push_back( LOBYTE(LOWORD(date.year())) );
+        _message.push_back( theDate.month() );
+        _message.push_back( theDate.dayOfMonth() );
+        _message.push_back( HIBYTE(LOWORD(theDate.year())) );
+        _message.push_back( LOBYTE(LOWORD(theDate.year())) );
     }
 
     incrementMessageCount();
@@ -343,7 +344,7 @@ INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds
 }
 
 
-INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE rand, USHORT delay )
+INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE random, USHORT delay )
 {
     INT status = NoError;
     BYTE flag;
@@ -358,10 +359,10 @@ INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE rand, USHORT d
             size_t flagpos = _message.size();
             _message.push_back( flag );
 
-            if(rand != 0)
+            if(random != 0)
             {
                 flag |= 0x80;
-                _message.push_back( rand );
+                _message.push_back( random );
             }
             if(delay != 0)
             {
@@ -786,7 +787,7 @@ INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE d
 INT CtiProtocolExpresscom::rawconfiguration(string str)
 {
     int i = 0;
-    BYTE configNumber;
+    BYTE configNumber = 0;
     BYTE raw[256];
 
     CHAR *p;
@@ -812,7 +813,7 @@ INT CtiProtocolExpresscom::rawconfiguration(string str)
 INT CtiProtocolExpresscom::rawmaintenance(string str)
 {
     int i = 0;
-    BYTE function;
+    BYTE function = 0;
     BYTE raw[5] = { 0, 0, 0, 0, 0};
 
     CHAR *p;

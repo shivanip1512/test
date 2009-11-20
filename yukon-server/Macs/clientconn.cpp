@@ -113,10 +113,10 @@ void CtiMCConnection::write(RWCollectable* msg)
         if( _out.isOpen() )
             _out.write(msg);
     }
-    catch( RWTHRClosedException& msg )
+    catch( RWTHRClosedException& anError )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
+        dout << __FILE__ << " (" << __LINE__ << ") " << anError.why() << endl;
     }
 }
 
@@ -147,10 +147,10 @@ RWCollectable* CtiMCConnection::read(unsigned long millis)
 
         _in.read(msg, millis); //There is a wait status but we don't care
     }
-    catch( RWTHRClosedException& msg )
+    catch( RWTHRClosedException& anError )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
+        dout << __FILE__ << " (" << __LINE__ << ") " << anError.why() << endl;
     }
 
     return msg;

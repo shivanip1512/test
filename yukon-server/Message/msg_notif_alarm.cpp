@@ -9,6 +9,12 @@ using namespace std;
 RWDEFINE_COLLECTABLE( CtiNotifAlarmMsg, NOTIF_ALARM_MSG_ID );
 
 CtiNotifAlarmMsg::CtiNotifAlarmMsg()
+    : _category_id(0),
+      _point_id(0),
+      _condition(0),
+      _value(0.0),
+      _acknowledged(false),
+      _abnormal(false)
 { }
 
 CtiNotifAlarmMsg::CtiNotifAlarmMsg(const vector<int>& group_ids,

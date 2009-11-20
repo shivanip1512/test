@@ -29,11 +29,23 @@ namespace Cti       {
 namespace Protocol  {
 
 IDLC::IDLC() :
+    _address(0),
     _io_operation(IO_Operation_Invalid),
     _control_state(Control_State_OK),
     _slave_sequence (numeric_limits<unsigned char>::max()),  //  these are what trigger the IDLC reset
-    _master_sequence(numeric_limits<unsigned char>::max())
+    _master_sequence(numeric_limits<unsigned char>::max()),
+    _out_sent(0),
+    _in_data_length(0),
+    _in_expected(0),
+    _in_actual(0),
+    _in_recv(0),
+    _framing_seek_length(0),
+    _comm_errors(0),
+    _protocol_errors(0),
+    _input_loops(0)
 {
+    memset( &_out_frame, 0, sizeof(frame) );
+    memset( &_in_frame,  0, sizeof(frame) );
 }
 
 IDLC::IDLC(const IDLC &aRef)

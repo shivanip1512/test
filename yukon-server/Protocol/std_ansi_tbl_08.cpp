@@ -46,6 +46,7 @@ using std::endl;
 //=========================================================================================================================================
 CtiAnsiTable08::CtiAnsiTable08( )
 {
+    memset( &_proc_resp_tbl, 0, sizeof(PROC_RESP_RCD) );
 }
 
 CtiAnsiTable08::CtiAnsiTable08( BYTE *dataBlob )

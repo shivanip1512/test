@@ -193,7 +193,13 @@ _priority(0),
 _strategy(0),
 _functions(0),
 _rtcResponse(0x00),
-_repetitions(0)
+_repetitions(0),
+_flags(0),
+_dataType(0),
+_data(0),
+_period(0),
+_percentageOff(0),
+_messageCount(0)
 {
 }
 
@@ -216,7 +222,13 @@ _priority(0),
 _strategy(0),
 _functions(0),
 _rtcResponse(0x00),
-_repetitions(0)
+_repetitions(0),
+_flags(0),
+_dataType(0),
+_data(0),
+_period(0),
+_percentageOff(0),
+_messageCount(0)
 {
     *this = aRef;
 }
@@ -240,7 +252,13 @@ _priority(0),
 _strategy(0),
 _functions(0),
 _rtcResponse(0x00),
-_repetitions(0)
+_repetitions(0),
+_flags(0),
+_dataType(0),
+_data(0),
+_period(0),
+_percentageOff(0),
+_messageCount(0)
 {
     for(int i = 0; i < bytelen; i++)
     {

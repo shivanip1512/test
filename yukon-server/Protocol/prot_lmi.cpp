@@ -36,8 +36,38 @@ CtiProtocolLMI::CtiProtocolLMI() :
     _address(0),
     _transmitter_id(0),
     _first_code_block(true),
-    _verification_pending(false)
+    _verification_pending(false),
+    _seriesv_inbuffer(NULL),
+    _command(Command_ScanAccumulator),
+    _control_offset(0),
+    _control_parameter(0),
+    _deadbands_sent(false),
+    _transaction_complete(false),
+    _retries(0),
+    _tick_time(0),
+    _transmit_window(0),
+    _time_offset(0),
+    _transmitter_power_low_limit(0),
+    _transmitter_power_high_limit(0),
+    _num_codes_retrieved(0),
+    _outbound_code_count(0),
+    _last_code_download(0),
+    _comm_end_time(0),
+    _transmission_end(0),
+    _untransmitted_codes(false),
+    _preload_sequence(false),
+    _status_read(false),
+    _codes_ready(false),
+    _status_read_count(0),
+    _echoed_error_count(0),
+    _in_count(0),
+    _in_total(0),
+    _final_code_block(false)
 {
+    memset( &_outbound, 0, sizeof(lmi_message) );
+    memset( &_inbound,  0, sizeof(lmi_message) );
+
+    memset( &_status, 0, sizeof(lmi_status_union) );
 }
 
 

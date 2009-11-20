@@ -83,7 +83,7 @@ CtiProtocolANSI_kv2::CtiProtocolANSI_kv2( void )
 
 CtiProtocolANSI_kv2::~CtiProtocolANSI_kv2( void )
 {
-    destroyManufacturerTables();
+    CtiProtocolANSI_kv2::destroyManufacturerTables();   // virtual function call: specify which one we are calling
 }
 
 

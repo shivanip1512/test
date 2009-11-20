@@ -247,7 +247,7 @@ void CtiMCClientListener::run()
         RWMutexLock::LockGuard guard( _connmutex );
 
         {
-            CtiLockGuard< CtiLogger > guard(dout);
+            CtiLockGuard< CtiLogger > logGuard(dout);
             dout << CtiTime()  << " Closing all client connections."  << endl;
         }
 

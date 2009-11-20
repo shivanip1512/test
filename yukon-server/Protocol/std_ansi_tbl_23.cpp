@@ -57,23 +57,26 @@
 //=========================================================================================================================================
 //=========================================================================================================================================
 CtiAnsiTable23::CtiAnsiTable23( int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
-                                            bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr )
+                                bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2,
+                                int timefmat, int tableNbr ) :
+    _nbr_demand_resets(0),
+    _tier_data_block(NULL),
+    _totSize(0),
+    _ocNums(occur),
+    _sumNums(summations),
+    _demandNums(demands),
+    _coinNums(coinValues),
+    _tierNums(tier),
+    _format1(format1),
+    _format2(format2),
+    _reset(reset_flag),
+    _time(time_flag),
+    _cumd(cum_demand_flag),
+    _cumcont(cum_cont_flag),
+    _timefmt(timefmat),
+    _tablePrintNumber(0)
 {
-   _ocNums = occur;
-   _sumNums = summations;
-   _demandNums = demands;
-   _coinNums = coinValues;
-   _tierNums = tier;
-   _reset = reset_flag;
-   _time = time_flag;
-   _cumd = cum_demand_flag;
-   _cumcont = cum_cont_flag;
-   _format1 = format1;
-   _format2 = format2;
-   _timefmt = timefmat;
-
-
-    //timefmat;
+    memset( &_tot_data_block, 0, sizeof(DATA_BLK_RCD) );
 }
 
 CtiAnsiTable23::CtiAnsiTable23( BYTE *dataBlob, int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,

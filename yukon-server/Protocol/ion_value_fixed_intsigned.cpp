@@ -19,7 +19,8 @@
 
 
 CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONValueFixed(Fixed_SignedInt)
+    CtiIONValueFixed(Fixed_SignedInt),
+    _signedInt(0)
 {
     //  all i know about is 4-byte signed ints
     if( streamLength <= 4 )
@@ -50,6 +51,7 @@ CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long strea
         }
         setValid(false);
     }
+    memset( &_string, 0, 20 );
 }
 
 
@@ -57,7 +59,7 @@ CtiIONSignedInt::CtiIONSignedInt( long initialValue ) :
     CtiIONValueFixed(Fixed_SignedInt),
     _signedInt(initialValue)
 {
-
+    memset( &_string, 0, 20 );
 }
 
 

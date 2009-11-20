@@ -119,7 +119,10 @@ CtiMessage::CtiMessage(const CtiMessage& aRef) :
    _src("")
 {}
 
-CtiMessage::~CtiMessage() {};                                 // Destructor
+CtiMessage::~CtiMessage()
+{
+    ConnectionHandle = 0;       // deleted elsewhere...  zeroing to make lint happy
+}
 
 CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
 {

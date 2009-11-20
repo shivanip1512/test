@@ -65,7 +65,7 @@ void CtiTransdataData::init( void )
 void CtiTransdataData::fillData( BYTE *data )
 {
    bool     isTime = false;
-   ULONG    temp;
+   ULONG    temp = 0;
 
    isTime = false;
 

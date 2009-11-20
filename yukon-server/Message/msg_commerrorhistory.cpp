@@ -65,9 +65,9 @@ const CtiTime& CtiCommErrorHistoryMsg::getDateTime() const
     return _dateTime;
 }
 
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setDateTime(const CtiTime& time)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setDateTime(const CtiTime& aTime)
 {
-    _dateTime = time;
+    _dateTime = aTime;
     return *this;
 }
 
@@ -97,9 +97,9 @@ const string& CtiCommErrorHistoryMsg::getCommand() const
 {
    return _command;
 }
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setCommand(const string& string)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setCommand(const string& aString)
 {
-   _command = string;
+   _command = aString;
    return *this;
 }
 
@@ -107,9 +107,9 @@ const string& CtiCommErrorHistoryMsg::getOutMessage() const
 {
    return _outMessage;
 }
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setOutMessage(const string& string)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setOutMessage(const string& aString)
 {
-   _outMessage = string;
+   _outMessage = aString;
    return *this;
 }
 
@@ -117,9 +117,9 @@ const string& CtiCommErrorHistoryMsg::getInMessage() const
 {
    return _inMessage;
 }
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setInMessage(const string& string)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setInMessage(const string& aString)
 {
-   _inMessage = string;
+   _inMessage = aString;
    return *this;
 }
 
@@ -157,10 +157,10 @@ CtiCommErrorHistoryMsg::CtiCommErrorHistoryMsg(long paoid,
                                                string outmess,
                                                string inmess,
                                                int pri,
-                                               CtiTime time,
+                                               CtiTime aTime,
                                                long ceid
                                                ) :
-   Inherited(pri), _commErrorId(ceid), _paoId(paoid), _dateTime(time), _errorType(type),
+   Inherited(pri), _commErrorId(ceid), _paoId(paoid), _dateTime(aTime), _errorType(type),
    _errorNumber(errnumb), _command(comm), _outMessage(outmess), _inMessage(inmess)
 {
    //Inherited::setPriority(pri);

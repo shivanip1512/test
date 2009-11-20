@@ -20,28 +20,26 @@ CtiAnsiTable64::CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
                                 bool closureStatusFlag, bool simpleIntervalStatusFlag,
                                 int numberBlockIntervalsSet, bool blockEndReadFlag,
                                 bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                                int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour )
+                                int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt,
+                                int meterHour ) :
+    _nbrBlksSet1(numberBlocksSet),
+    _nbrChnsSet1(numberChansSet),
+    _closureStatusFlag(closureStatusFlag),
+    _simpleIntStatusFlag(simpleIntervalStatusFlag),
+    _nbrBlkIntsSet1(numberBlockIntervalsSet),
+    _blkEndReadFlag(blockEndReadFlag),
+    _blkEndPulseFlag(blockEndPulseFlag),
+    _extendedIntStatusFlag(extendedIntervalStatusFlag),
+    _maxIntvlTime(maxIntvlTime),
+    _intFmtCde1(intervalFmtCde),
+    _nbrValidInts(nbrValidInts),
+    _niFmt1(niFmt1),
+    _niFmt2(niFmt2),
+    _timeFmt(timeFmt),
+    _meterHour(meterHour)
 {
-    _nbrBlksSet1 = numberBlocksSet;
-    _nbrChnsSet1 = numberChansSet;
-    _closureStatusFlag = closureStatusFlag;
-    _simpleIntStatusFlag = simpleIntervalStatusFlag;
-    _nbrBlkIntsSet1 = numberBlockIntervalsSet;
-    _blkEndReadFlag = blockEndReadFlag;
-    _blkEndPulseFlag = blockEndPulseFlag;
-    _extendedIntStatusFlag = extendedIntervalStatusFlag;
-    _maxIntvlTime = maxIntvlTime;
-    _intFmtCde1 = intervalFmtCde;
-    _nbrValidInts = nbrValidInts;
-    _timeFmt = timeFmt;
-    _niFmt1 = niFmt1;
-    _niFmt2 = niFmt2;
-    _meterHour = meterHour;
-
+    memset( &_lp_data_set1_tbl, 0, sizeof(LP_DATA_SET1_RCD) );
 }
-
-
-
 
 CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                                           bool closureStatusFlag, bool simpleIntervalStatusFlag,

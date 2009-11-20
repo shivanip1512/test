@@ -23,7 +23,9 @@
 //=========================================================================================================================================
 CtiAnsiTable31::CtiAnsiTable31()
 {
+    memset( &_displayTable, 0, sizeof(DISP_RCD) );
 }
+
 CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob )
 {
 

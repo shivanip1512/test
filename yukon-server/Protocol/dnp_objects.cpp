@@ -35,12 +35,11 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-Object::Object( int group, int variation )
-//  Shouldn't we be setting _valid = false here?
-//    Seems like it, but the change falls outside the testing scope of YUK-7563
+Object::Object( int group, int variation ) :
+    _group(group),
+    _variation(variation),
+    _valid(false)
 {
-    _group     = group;
-    _variation = variation;
 }
 
 Object::~Object()
@@ -110,10 +109,14 @@ CtiPointDataMsg *Object::getPoint( const TimeCTO *cto ) const
 
 
 
-ObjectBlock::ObjectBlock()
+ObjectBlock::ObjectBlock() :
+    _restoring(true),
+    _valid(false),
+    _group(0),
+    _variation(0),
+    _qualifier(0),
+    _start(0)
 {
-    _restoring = true;
-    _valid = false;
 }
 
 
@@ -535,7 +538,7 @@ unsigned ObjectBlock::serialize( unsigned char *buf ) const
 
 int ObjectBlock::restore( const unsigned char *buf, int len )
 {
-    int pos, bitpos, objlen, objbitlen, qty;
+    int pos, bitpos, objlen, objbitlen, qty = 0;
     Object *tmpObj;
     unsigned short tmp;
 
@@ -719,7 +722,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 
 int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj )
 {
-    int lenUsed;
+    int lenUsed = 0;
 
     switch( _group )
     {

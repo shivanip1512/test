@@ -66,9 +66,19 @@ using namespace std;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiANSIDatalink::CtiANSIDatalink()
+CtiANSIDatalink::CtiANSIDatalink() :
+    _packetBytesReceived(0),
+    _currentPacket(NULL),
+    _packetComplete(false),
+    _currentPos(Ack),
+    _previousPos(Ack),
+    _bytesWeExpect(0),
+    _sequence(0),
+    _multiPacketPart(false),
+    _multiPacketFirst(false),
+    _toggle(false),
+    _identityByte(0)
 {
-    _currentPacket = NULL;
 }
 
 //=========================================================================================================================================
@@ -81,8 +91,8 @@ void CtiANSIDatalink::init( void )
    setPacketPart( false );
    setPacketFirst( false );
    setSequence( 0 );
-   _currentPos = ack;
-   _previousPos = ack;
+   _currentPos = Ack;
+   _previousPos = Ack;
    if (_currentPacket != NULL)
    {
        delete _currentPacket;
@@ -105,8 +115,8 @@ void CtiANSIDatalink::reinitialize( void )
    setPacketPart( false );
    setPacketFirst( false );
    setSequence( 0 );
-   _currentPos = ack;
-   _previousPos = ack;
+   _currentPos = Ack;
+   _previousPos = Ack;
    _toggle = false;
    _packetBytesReceived = 0;
    _identityByte = ANsI_RESERVED;  //0x00 default
@@ -136,8 +146,8 @@ CtiANSIDatalink::~CtiANSIDatalink()
 
 void CtiANSIDatalink::initializeForNewPacket( void )
 {
-    _currentPos = ack;
-    _previousPos = ack;
+    _currentPos = Ack;
+    _previousPos = Ack;
     _packetComplete = false;
 }
 //=========================================================================================================================================
@@ -145,7 +155,7 @@ void CtiANSIDatalink::initializeForNewPacket( void )
 //NOTE: someday, we may have to pass in large requests, so that's what the cntl int is for...
 //=========================================================================================================================================
 
-void CtiANSIDatalink::assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT count, /*int cntl,*/ int seq )
+void CtiANSIDatalink::assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT byteCount, /*int cntl,*/ int seq )
 {
    BYTEUSHORT  flip;
 
@@ -171,12 +181,12 @@ void CtiANSIDatalink::assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT cou
    packetPtr[3] = seq;
 
    //length
-   flip.sh = count;
+   flip.sh = byteCount;
    packetPtr[4] = flip.ch[1];
    packetPtr[5] = flip.ch[0];
 
    //add the data
-   memcpy( &packetPtr[6], dataPtr, count );
+   memcpy( &packetPtr[6], dataPtr, byteCount );
 }
 
 //=========================================================================================================================================
@@ -220,7 +230,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
    {
        switch( _currentPos )
        {
-       case ack:
+       case Ack:
           {
              if( ( xfer.getInBuffer()[0] == ANSI_ACK ) && ( getExpectedBytes() == 1 ) )         //if we're only looking for the <ack>
              {
@@ -231,7 +241,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
                 setPacketComplete (false);
 
                 _previousPos = _currentPos;
-                _currentPos = header;
+                _currentPos = Header;
                 retFlag = true;
              }
              else
@@ -253,7 +263,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
           }
           break;
 
-       case header:
+       case Header:
           {
              if( ( xfer.getInBuffer()[0] == ANSI_STP ) && ( getExpectedBytes() > 1 ) )       //if we're looking for the header
              {
@@ -273,19 +283,19 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
 
 
                 _previousPos = _currentPos;
-                _currentPos = data;
+                _currentPos = Data;
                 retFlag = true;
 
              }
              else
              {
                  retFlag = false;
-                 _currentPos = ack;
+                 _currentPos = Ack;
              }
           }
           break;
 
-       case data:
+       case Data:
           {
               // new number of bytes received for this packet
               _packetBytesReceived += xfer.getInCountActual();
@@ -301,7 +311,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
                           xfer.getInBuffer(),
                          xfer.getInCountActual() );
                  _previousPos = _currentPos;
-                 _currentPos = sendAck;
+                 _currentPos = SendAck;
                  buildAck (xfer);
                  retFlag = true;
               }
@@ -309,11 +319,11 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
               {
                   //we failed so let's try again if we're not out of retries
                   retFlag = false;
-                  _currentPos = ack;
+                  _currentPos = Ack;
               }
           }
           break;
-        case sendAck:
+        case SendAck:
         {
             if (getPacketPart() && getSequence() != 0)
             {
@@ -322,8 +332,8 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
                 setExpectedBytes( 6 );
                 setPacketComplete (true);
 
-                _previousPos = ack;
-                _currentPos = header;
+                _previousPos = Ack;
+                _currentPos = Header;
                 retFlag = true;
             }
             else
@@ -335,8 +345,8 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
                 setPacketComplete (true);
                 retFlag = true;
 
-                _currentPos = ack;
-                _previousPos = ack;
+                _currentPos = Ack;
+                _previousPos = Ack;
             }
             break;
         }
@@ -1028,33 +1038,33 @@ bool CtiANSIDatalink::isCRCvalid( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-unsigned short CtiANSIDatalink::crc16( unsigned char octet, unsigned short crc )
+unsigned short CtiANSIDatalink::crc16( unsigned char octet, unsigned short crcIn )
 {
    int i;
 
    for( i = 8; i; i-- )
    {
-      if( crc & 0x0001 )
+      if( crcIn & 0x0001 )
       {
-         crc >>= 1;
+         crcIn >>= 1;
 
          if( octet & 0x01 )
-            crc |= 0x8000;
+            crcIn |= 0x8000;
 
-         crc = crc^0x8408;
+         crcIn = crcIn^0x8408;
          octet >>= 1;
       }
       else
       {
-         crc >>= 1;
+         crcIn >>= 1;
 
          if( octet & 0x01 )
-            crc |= 0x8000;
+            crcIn |= 0x8000;
 
          octet >>= 1;
       }
    }
-   return crc;
+   return crcIn;
 }
 
 //=========================================================================================================================================
@@ -1063,20 +1073,20 @@ unsigned short CtiANSIDatalink::crc16( unsigned char octet, unsigned short crc )
 unsigned short CtiANSIDatalink::crc( int size, unsigned char *packet )
 {
    int i;
-   unsigned short crc;
+   unsigned short theCrc;
 
-   crc = ( ~packet[1] << 8 ) | ( ~packet[0] & 0xff );
+   theCrc = ( ~packet[1] << 8 ) | ( ~packet[0] & 0xff );
 
    for( i = 2; i < size; i++ )
-      crc = crc16( packet[i], crc );
+      theCrc = crc16( packet[i], theCrc );
 
-   crc = crc16( 0x00, crc );
-   crc = crc16( 0x00, crc );
+   theCrc = crc16( 0x00, theCrc );
+   theCrc = crc16( 0x00, theCrc );
 
-   crc = ~crc;
-   crc = crc >> 8 | crc << 8;
+   theCrc = ~theCrc;
+   theCrc = theCrc >> 8 | theCrc << 8;
 
-   return crc;
+   return theCrc;
 }
 
 

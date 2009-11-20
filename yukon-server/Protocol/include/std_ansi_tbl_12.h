@@ -76,7 +76,7 @@ public:
    virtual ~CtiAnsiTable12();
    CtiAnsiTable12& operator=(const CtiAnsiTable12& aRef);
 
-   enum
+   typedef enum
    {
        uom_watts = 0,
        uom_vars,
@@ -101,7 +101,7 @@ public:
     static const CHAR * ANSI_UOM_INSTANTANEOUS_CURRENT;
     static const CHAR * ANSI_UOM_NOT_SUPPORTED;
 
-    enum
+    typedef enum
     {
         timebase_dial_reading = 0,
         timebase_instantaneous,
@@ -124,7 +124,7 @@ public:
     static const CHAR * ANSI_TIMEBASE_EVENT;
     static const CHAR * ANSI_TIMEBASE_UNKNOWN;
 
-    enum
+    typedef enum
     {
         multiplier_10_to_0=0,
         multiplier_10_to_2,

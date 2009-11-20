@@ -106,9 +106,9 @@ const CtiTime& CtiLMControlHistoryMsg::getStartDateTime() const
 {
     return _startDateTime;
 }
-CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setStartDateTime(const CtiTime& time)
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setStartDateTime(const CtiTime& aTime)
 {
-    _startDateTime = time;
+    _startDateTime = aTime;
     return *this;
 }
 
@@ -139,9 +139,9 @@ const string& CtiLMControlHistoryMsg::getControlType() const
     return _controlType;
 }
 
-CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setControlType(const string& string)
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setControlType(const string& aString)
 {
-    _controlType = string;
+    _controlType = aString;
     return *this;
 }
 
@@ -149,9 +149,9 @@ const string& CtiLMControlHistoryMsg::getActiveRestore() const
 {
     return _activeRestore;
 }
-CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setActiveRestore(const string& string)
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setActiveRestore(const string& aString)
 {
-    _activeRestore = string;
+    _activeRestore = aString;
     return *this;
 }
 

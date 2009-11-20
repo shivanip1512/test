@@ -21,9 +21,13 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable33::CtiAnsiTable33()
+CtiAnsiTable33::CtiAnsiTable33() :
+    _nbrPriDispListItems(0),
+    _nbrPriDispLists(0)
 {
+    memset( &_priDispListTable, 0, sizeof(PRI_DISP_LIST_RCD) );
 }
+
 CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems  )
 {
     _nbrPriDispLists = nbrPriDispLists;

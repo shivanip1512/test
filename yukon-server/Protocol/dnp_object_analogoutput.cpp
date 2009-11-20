@@ -207,7 +207,7 @@ CtiPointDataMsg *AnalogOutput::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
-    double val;
+    double val = 0.0;
     int quality;
 
     switch(getVariation())

@@ -20,10 +20,26 @@
 
 #include "numstr.h"
 
-CtiIONDatalinkLayer::CtiIONDatalinkLayer( )
+CtiIONDatalinkLayer::CtiIONDatalinkLayer( ) :
+    _currentInputFrame(0),
+    _currentOutputFrame(0),
+    _masterAddress(0),
+    _slaveAddress(0),
+    _data(NULL),
+    _dataLength(0),
+    _dataSent(0),
+    _bytesInLastFrame(0),
+    _inActual(0),
+    _inTotal(0),
+    _commErrorCount(0),
+    _packetErrorCount(0),
+    _framingErrorCount(0),
+    _ioState(Uninitialized)
 {
-    _ioState    = Uninitialized;
-    _data       = NULL;
+    memset( &_inFrame,  0, sizeof(ion_input_frame) );
+    memset( &_outFrame, 0, sizeof(ion_output_frame) );
+
+    memset( _inBuffer, 0, 250 );
 }
 
 CtiIONDatalinkLayer::~CtiIONDatalinkLayer( )

@@ -92,40 +92,40 @@ private:
     unsigned char _in_data[Packet_MaxPayloadLen];
     int           _in_data_len;
 
-    typedef DatalinkPacket::dl_packet packet;
+    typedef DatalinkPacket::dl_packet packet_t;
 
-    packet _packet, _control_packet;
+    packet_t _packet, _control_packet;
 
     enum PrimaryControlFunction;
     enum SecondaryControlFunction;
 
-    void constructDataPacket( packet &p, unsigned char *buf, unsigned long len );
+    void constructDataPacket( packet_t &p, unsigned char *buf, unsigned long len );
 
     bool isControlPending( void ) const;
-    bool processControl( const packet &p );
+    bool processControl( const packet_t &p );
     int  generateControl( CtiXfer &xfer );
     int  decodeControl  ( CtiXfer &xfer, int status );
-    int  decodePacket   ( CtiXfer &xfer, packet &p, unsigned long received );
+    int  decodePacket   ( CtiXfer &xfer, packet_t &p, unsigned long received );
 
-    void constructPrimaryControlPacket  ( packet &p, PrimaryControlFunction   function, bool fcv, bool fcb );
-    void constructSecondaryControlPacket( packet &p, SecondaryControlFunction function, bool dfc );
+    void constructPrimaryControlPacket  ( packet_t &p, PrimaryControlFunction   function, bool fcv, bool fcb );
+    void constructSecondaryControlPacket( packet_t &p, SecondaryControlFunction function, bool dfc );
 
-    void sendPacket( packet &packet, CtiXfer &xfer );
-    void recvPacket( packet &packet, CtiXfer &xfer );
+    void sendPacket( packet_t &packet, CtiXfer &xfer );
+    void recvPacket( packet_t &packet, CtiXfer &xfer );
 
-    bool isValidDataPacket( const packet &p ) const;
-    bool isValidAckPacket ( const packet &p ) const;
+    bool isValidDataPacket( const packet_t &p ) const;
+    bool isValidAckPacket ( const packet_t &p ) const;
 
     static unsigned calcPacketLength( unsigned headerLen );
-    static bool     isEntirePacket( const packet &p, unsigned long received );
+    static bool     isEntirePacket( const packet_t &p, unsigned long received );
 
-    static bool areFramingBytesValid( const packet &p );
+    static bool areFramingBytesValid( const packet_t &p );
 
     static bool isHeaderCRCValid( const DatalinkPacket::dlp_header &header );
     static bool isDataBlockCRCValid( const unsigned char *block, unsigned length );
-    static bool arePacketCRCsValid( const packet &packet );
+    static bool arePacketCRCsValid( const packet_t &packet );
 
-    void putPacketPayload( const packet &p, unsigned char *buf, int *len );
+    void putPacketPayload( const packet_t &p, unsigned char *buf, int *len );
 
     enum PrimaryControlFunction
     {

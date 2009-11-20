@@ -1053,7 +1053,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
 
     if( sched == NULL )
     {
-        CtiLockGuard<CtiLogger> guard(dout);
+        CtiLockGuard<CtiLogger> logGuard(dout);
         dout << CtiTime() << " Attempting to process an event with schedule id:  " << event.sched_id << endl;
         dout << CtiTime() << " No schedule was found with that id." << endl;
         return false;
@@ -1089,7 +1089,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
                 stopScript(sched->getScheduleID()); // stop script
 
         {
-            CtiLockGuard< CtiLogger > guard(dout);
+            CtiLockGuard< CtiLogger > logGuard(dout);
             dout << CtiTime() << " Stopping Schedule: " << sched->getScheduleName() << endl;
         }
 
@@ -1099,7 +1099,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
     default:
         {
             // Unknown event type.... did another one get added or?
-            CtiLockGuard< CtiLogger > guard(dout);
+            CtiLockGuard< CtiLogger > logGuard(dout);
             dout << "WARNING:  " << __FILE__ << " (" << __LINE__
                  << ") Unknown event type."
                  << endl;

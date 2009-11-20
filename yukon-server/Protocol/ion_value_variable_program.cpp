@@ -118,11 +118,15 @@ void CtiIONProgram::putSerializedValue( unsigned char *buf ) const
 }
 
 
-CtiIONStatement::CtiIONStatement( )
+CtiIONStatement::CtiIONStatement( ) :
+    _valid(false),
+    _handle(0),
+    _method(NULL)
 {
 }
 
 CtiIONStatement::CtiIONStatement( unsigned int handle, CtiIONMethod *method ) :
+    _valid(false),
     _handle(handle),
     _method(method)
 {
@@ -200,7 +204,11 @@ void CtiIONStatement::write( unsigned char *buf ) const
 
 
 
-CtiIONMethod::CtiIONMethod( )
+CtiIONMethod::CtiIONMethod( ) :
+    _valid(false),
+    _methodNum(0),
+    _extendedMethodNum(NoExtendedMethod),
+    _parameter(NULL)
 {
 }
 

@@ -50,11 +50,12 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable52::CtiAnsiTable52( int timefmat )
+CtiAnsiTable52::CtiAnsiTable52( int timefmat ) :
+    _timefmt(timefmat),
+    _meterServerTimeDifference(0)
 {
-    _timefmt = timefmat;
+    memset( &clock_table, 0, sizeof(CLOCK_STATE_RCD) );
 }
-
 
 CtiAnsiTable52::CtiAnsiTable52( BYTE *dataBlob, int timefmat )
 {

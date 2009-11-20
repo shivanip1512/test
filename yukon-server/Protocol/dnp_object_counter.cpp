@@ -22,14 +22,18 @@ namespace Protocol  {
 namespace DNP       {
 
 Counter::Counter(int variation) :
-    Object(Group, variation)
+    Object(Group, variation),
+    _counter(0),
+    _flag(0)
 {
 
 }
 
 
 Counter::Counter(int group, int variation) :
-    Object(group, variation)
+    Object(group, variation),
+    _counter(0),
+    _flag(0)
 {
 
 }

@@ -48,17 +48,41 @@ using namespace std;
 //
 //This will feel.... a little weird....
 //=========================================================================================================================================
-CtiAnsiTable00::CtiAnsiTable00( )
+CtiAnsiTable00::CtiAnsiTable00( ) :
+    _nameplate_type(0),
+    _default_set_used(0),
+    _max_proc_parm_len(0),
+    _max_resp_data_len(0),
+    _std_version_no(0),
+    _std_revision_no(0),
+    _dim_std_tbls_used(0),
+    _dim_mfg_tbls_used(0),
+    _dim_std_proc_used(0),
+    _dim_mfg_proc_used(0),
+    _dim_mfg_status_used(0),
+    _nbr_pending(0),
+    _std_tbls_used(NULL),
+    _mfg_tbls_used(NULL),
+    _std_proc_used(NULL),
+    _mfg_proc_used(NULL),
+    _std_tbls_write(NULL),
+    _mfg_tbls_write(NULL)
 {
-    _std_tbls_used = NULL;
-    _mfg_tbls_used = NULL;
-    _std_proc_used = NULL;
-    _mfg_proc_used = NULL;
-    _std_tbls_write = NULL;
-    _mfg_tbls_write = NULL;
+    memset( &_control_1, 0, sizeof(FORMAT_CONTROL_1) );
+    memset( &_control_2, 0, sizeof(FORMAT_CONTROL_2) );
+    memset( &_control_3, 0, sizeof(FORMAT_CONTROL_3) );
+
+    memset( _device_class, 0, 4 * sizeof(unsigned char) );
 }
 
-CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob )
+CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob ) :
+    _nameplate_type(0),
+    _default_set_used(0),
+    _max_proc_parm_len(0),
+    _max_resp_data_len(0),
+    _std_version_no(0),
+    _std_revision_no(0),
+    _nbr_pending(0)
 {
    int   byteCount;
 
@@ -90,6 +114,11 @@ CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob )
    _mfg_tbls_write = new unsigned char[_dim_mfg_status_used];
    memcpy( _mfg_tbls_write, dataBlob, _dim_mfg_status_used );
    dataBlob += _dim_mfg_status_used;
+
+   memset( &_control_2, 0, sizeof(FORMAT_CONTROL_2) );
+   memset( &_control_3, 0, sizeof(FORMAT_CONTROL_3) );
+
+   memset( _device_class, 0, 4 * sizeof(unsigned char) );
 }
 
 //=========================================================================================================================================
@@ -217,7 +246,7 @@ void CtiAnsiTable00::decodeResultPiece( BYTE **dataBlob )
 void CtiAnsiTable00::printResult(const string& deviceName)
 {
     int integer;
-    string string;
+    string aString;
     bool flag;
 
     /**************************************************************
@@ -228,61 +257,61 @@ void CtiAnsiTable00::printResult(const string& deviceName)
     ***************************************************************
     */
     integer = getRawDataOrder();
-    string = getResolvedDataOrder();
+    aString = getResolvedDataOrder();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << endl << "=================== "<<deviceName<<"  Std Table 0 =========================" << endl;
-        dout << "   Data Order: " << string << " (" << integer <<")" << endl;
+        dout << "   Data Order: " << aString << " (" << integer <<")" << endl;
     }
 
     integer = getRawCharFormat();
-    string = getResolvedCharFormat();
+    aString = getResolvedCharFormat();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Character Format: " << string << " (" << integer <<")" << endl;
+        dout << "   Character Format: " << aString << " (" << integer <<")" << endl;
     }
 
     flag = getRawMfgSerialNumberFlag();
-    string = getResolvedMfgSerialNumberFlag();
+    aString = getResolvedMfgSerialNumberFlag();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Mfg Serial Number Flag: " << string << " (" << flag <<")" << endl;
+        dout << "   Mfg Serial Number Flag: " << aString << " (" << flag <<")" << endl;
     }
 
     integer = getRawTimeFormat();
-    string = getResolvedTimeFormat();
+    aString = getResolvedTimeFormat();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Time Format: " << string << " (" << integer <<")" << endl;
+        dout << "   Time Format: " << aString << " (" << integer <<")" << endl;
     }
 
     integer = getRawDataAccess();
-    string = getResolvedDataAccess() ;
+    aString = getResolvedDataAccess() ;
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Data Access: " << string << " (" << integer <<")" << endl;
+        dout << "   Data Access: " << aString << " (" << integer <<")" << endl;
     }
 
     integer = getRawIdFormat();
-    string = getResolvedIdFormat();
+    aString = getResolvedIdFormat();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Id Format: " << string << " (" << integer <<")" << endl;
+        dout << "   Id Format: " << aString << " (" << integer <<")" << endl;
     }
 
     integer = getRawNIFormat1() ;
-    string = getResolvedNIFormat1();
+    aString = getResolvedNIFormat1();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Non integer format 1: " << string << " (" << integer <<")" << endl;
+        dout << "   Non integer format 1: " << aString << " (" << integer <<")" << endl;
     }
 
 
     integer = getRawNIFormat2() ;
-    string = getResolvedNIFormat2();
+    aString = getResolvedNIFormat2();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Non integer format 2: " << string << " (" << integer <<")" << endl;
+        dout << "   Non integer format 2: " << aString << " (" << integer <<")" << endl;
     }
 
     {
@@ -291,17 +320,17 @@ void CtiAnsiTable00::printResult(const string& deviceName)
     }
 
     integer = getRawNameplateType() ;
-    string = getResolvedNameplateType();
+    aString = getResolvedNameplateType();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Nameplate Type: " << string << " (" << integer <<")" << endl;
+        dout << "   Nameplate Type: " << aString << " (" << integer <<")" << endl;
     }
 
     integer = getRawDefaultSetUsed() ;
-    string = getResolvedDefaultSetUsed();
+    aString = getResolvedDefaultSetUsed();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Default Set Used: " << string << " (" << integer <<")" << endl;
+        dout << "   Default Set Used: " << aString << " (" << integer <<")" << endl;
     }
 
     {

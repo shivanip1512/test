@@ -47,7 +47,10 @@ CtiServerRequestMsg::CtiServerRequestMsg()
 CtiServerRequestMsg::CtiServerRequestMsg(int id, RWCollectable* payload)
 : _id(id), _payload(payload) { }
 
-CtiServerRequestMsg::~CtiServerRequestMsg() {}
+CtiServerRequestMsg::~CtiServerRequestMsg()
+{
+    _payload = 0;       // deleted elsewhere...  zeroing to make lint happy
+}
 
 /* Boring, canonical "getter" and "setter" member functions below */
 int CtiServerRequestMsg::getID() const

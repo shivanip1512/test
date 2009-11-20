@@ -25,6 +25,10 @@ CtiMCDBThread::CtiMCDBThread(CtiMCScheduleManager& mgr,
 
 CtiMCDBThread::~CtiMCDBThread()
 {
+    if( _startUpdateNow )
+    {
+        CloseHandle( _startUpdateNow );
+    }
 }
 
 void CtiMCDBThread::run()

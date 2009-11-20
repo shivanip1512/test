@@ -725,7 +725,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
     BYTE     vvv;
     BYTE     fffff;
     BYTE     RRR;
-    BYTE     nfunc;
+    BYTE     nfunc = 0;
 
     memcpy(qenid, &data[1], 4);
 
@@ -785,7 +785,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
             BYTE bwordcmd;
 
             INT nfunc_offset = 13;
-            INT dlcaddr;
+            INT dlcaddr_;
 
             for(i = 0; i < nfunc; i++)
             {

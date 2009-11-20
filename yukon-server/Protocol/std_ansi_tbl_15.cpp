@@ -54,7 +54,9 @@ CtiAnsiTable15::CtiAnsiTable15( int selector, int constants_entries, bool noOffs
     _NIFormat1 = format1;
     _NIFormat2 = format2;
 
+    _constants_table = NULL;
 }
+
 CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,
                                           int format1, int format2 )
 {

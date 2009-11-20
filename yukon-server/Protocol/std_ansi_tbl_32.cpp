@@ -21,9 +21,13 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable32::CtiAnsiTable32()
+CtiAnsiTable32::CtiAnsiTable32() :
+    _displaySources(NULL),
+    _nbrDispSources(0),
+    _widthDispSources(0)
 {
 }
+
 CtiAnsiTable32::CtiAnsiTable32( BYTE *dataBlob, UINT16 nbrDispSources, UINT8 widthDispSources  )
 {
     _nbrDispSources = nbrDispSources;

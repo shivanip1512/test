@@ -122,9 +122,9 @@ bool CtiMCScript::writeContents()
 
 CtiMessage* CtiMCScript::replicateMessage() const
 {
-    CtiMCScript* copy = new CtiMCScript();
-    *copy = *this;
-    return copy;
+    CtiMCScript* aCopy = new CtiMCScript();
+    *aCopy = *this;
+    return aCopy;
 }
 
 void CtiMCScript::restoreGuts(RWvistream &strm)

@@ -18,11 +18,8 @@
 //=========================================================================================================================================
 CtiAnsiTable91::CtiAnsiTable91(  )
 {
-
+    memset( &_telephoneTbl, 0, sizeof(TELEPHONE_RCD) );
 }
-
-
-
 
 CtiAnsiTable91::CtiAnsiTable91( BYTE *dataBlob )
 {

@@ -194,7 +194,7 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             unsigned char flags = p_data[pos++];
 
                             unsigned long time = 0;
-                            int   rate,
+                            int   rate = 0,
                             count;
                             float reading;
 
@@ -600,8 +600,8 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             bool hasTime, over = false, reset = false, calibrated, reed_triggered;
                             unsigned char flags = p_data[pos++];
 
-                            unsigned long emaxtime, emintime, time = CtiTime::now().seconds();
-                            int interval_cnt, sample_rate, rate, ts_max, ts_min;
+                            unsigned long emaxtime = 0, emintime = 0, time = CtiTime::now().seconds();
+                            int interval_cnt = 0, sample_rate = 0, rate, ts_max, ts_min;
                             float battery_voltage = 0.0, temperature = 0.0, min_reading, max_reading;
 
                             hasTime = flags & 0x10 ? true : false;
@@ -1295,7 +1295,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         unsigned char flags = p_data[pos++];
 
                         unsigned long time = 0;
-                        int   rate, count;
+                        int   rate = 0, count;
                         float reading;
 
                         time = convertBytes( p_data, pos, 4);
@@ -2051,8 +2051,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         bool hasTime, over = false, reset = false, calibrated, reed_triggered;
                         unsigned char flags = p_data[pos++];
 
-                        unsigned long emaxtime, emintime, time = CtiTime::now().seconds();
-                        int interval_cnt, sample_rate, rate, ts_max, ts_min;
+                        unsigned long emaxtime = 0, emintime = 0, time = CtiTime::now().seconds();
+                        int interval_cnt = 0, sample_rate = 0, rate, ts_max, ts_min;
                         float battery_voltage = 0.0, temperature = 0.0, min_reading, max_reading;
 
                         {

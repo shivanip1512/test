@@ -112,9 +112,9 @@ const string& CtiSignalMsg::getText() const
 {
     return _text;
 }
-CtiSignalMsg& CtiSignalMsg::setText(const string& string)
+CtiSignalMsg& CtiSignalMsg::setText(const string& aString)
 {
-    _text = string;
+    _text = aString;
     return *this;
 }
 
@@ -227,9 +227,9 @@ const string& CtiSignalMsg::getAdditionalInfo() const
     return _additional;
 }
 
-CtiSignalMsg& CtiSignalMsg::setAdditionalInfo(const string& string)
+CtiSignalMsg& CtiSignalMsg::setAdditionalInfo(const string& aString)
 {
-    _additional = string;
+    _additional = aString;
     return *this;
 }
 

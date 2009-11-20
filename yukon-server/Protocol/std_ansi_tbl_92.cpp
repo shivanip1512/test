@@ -18,11 +18,8 @@
 //=========================================================================================================================================
 CtiAnsiTable92::CtiAnsiTable92( int bitRate, int nbrSetupStrings, int setupStringLength )
 {
-
+    memset( &_globalParmsTbl, 0, sizeof(GLOBAL_PARMS_RCD) );
 }
-
-
-
 
 CtiAnsiTable92::CtiAnsiTable92( BYTE *dataBlob, int bitRate, int nbrSetupStrings, int setupStringLength )
 {
@@ -31,25 +28,25 @@ CtiAnsiTable92::CtiAnsiTable92( BYTE *dataBlob, int bitRate, int nbrSetupStrings
     _nbrSetupStrings = nbrSetupStrings;
     _setupStringLength = setupStringLength;
 
-    memcpy( (void *)&_global_parms_tbl.psem_identity, dataBlob, sizeof(UINT8));
+    memcpy( (void *)&_globalParmsTbl.psem_identity, dataBlob, sizeof(UINT8));
     dataBlob += sizeof(UINT8);
 
     if (_bitRate == 1)
     {
-        memcpy( (void *)&_global_parms_tbl.bit_rate, dataBlob, sizeof(UINT32));
+        memcpy( (void *)&_globalParmsTbl.bit_rate, dataBlob, sizeof(UINT32));
         dataBlob += sizeof(UINT32);
     }
     else
-       _global_parms_tbl.bit_rate = 0;
+       _globalParmsTbl.bit_rate = 0;
 
 
-    _global_parms_tbl.modem_setup_strings = new SETUP_STRING_RCD[_nbrSetupStrings];
+    _globalParmsTbl.modem_setup_strings = new SETUP_STRING_RCD[_nbrSetupStrings];
     for (int x = 0; x < _nbrSetupStrings; x++ )
     {
-        _global_parms_tbl.modem_setup_strings[x].setup_string = new unsigned char[_setupStringLength];
+        _globalParmsTbl.modem_setup_strings[x].setup_string = new unsigned char[_setupStringLength];
         for (int xx = 0; xx < _setupStringLength; xx++)
         {
-            memcpy( (void *)&_global_parms_tbl.modem_setup_strings[x].setup_string[xx], dataBlob, sizeof(unsigned char));
+            memcpy( (void *)&_globalParmsTbl.modem_setup_strings[x].setup_string[xx], dataBlob, sizeof(unsigned char));
             dataBlob += sizeof(unsigned char);
         }
     }
@@ -62,18 +59,18 @@ CtiAnsiTable92::~CtiAnsiTable92()
 {
     int i;
 
-    if (_global_parms_tbl.modem_setup_strings != NULL)
+    if (_globalParmsTbl.modem_setup_strings != NULL)
     {
         for (i = 0; i < _nbrSetupStrings; i++)
         {
-             if (_global_parms_tbl.modem_setup_strings[i].setup_string != NULL)
+             if (_globalParmsTbl.modem_setup_strings[i].setup_string != NULL)
              {
-                 delete  []_global_parms_tbl.modem_setup_strings[i].setup_string;
-                 _global_parms_tbl.modem_setup_strings[i].setup_string = NULL;
+                 delete  []_globalParmsTbl.modem_setup_strings[i].setup_string;
+                 _globalParmsTbl.modem_setup_strings[i].setup_string = NULL;
              }
         }
-        delete []_global_parms_tbl.modem_setup_strings;
-        _global_parms_tbl.modem_setup_strings = NULL;
+        delete []_globalParmsTbl.modem_setup_strings;
+        _globalParmsTbl.modem_setup_strings = NULL;
     }
 }
 //=========================================================================================================================================
@@ -118,13 +115,13 @@ void CtiAnsiTable92::printResult( const string& deviceName )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << endl << "=================== "<<deviceName<<"  Std Table 92  ========================" << endl;
         dout << "  ** Global Parameters Table **" << endl;
-        dout << "     PSEM Identity : " <<_global_parms_tbl.psem_identity<< endl;
+        dout << "     PSEM Identity : " <<_globalParmsTbl.psem_identity<< endl;
     }
 
     if (_bitRate == 1)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "     Bit Rate : " <<_global_parms_tbl.bit_rate<< endl;
+        dout << "     Bit Rate : " <<_globalParmsTbl.bit_rate<< endl;
     }
 
     for (int x = 0; x < _nbrSetupStrings; x++ )
@@ -137,7 +134,7 @@ void CtiAnsiTable92::printResult( const string& deviceName )
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << " "<<_global_parms_tbl.modem_setup_strings[x].setup_string[xx];
+                dout << " "<<_globalParmsTbl.modem_setup_strings[x].setup_string[xx];
             }
         }
         {

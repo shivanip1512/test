@@ -47,10 +47,23 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable21::CtiAnsiTable21()
+CtiAnsiTable21::CtiAnsiTable21() :
+    _nbr_self_reads(0),
+    _nbr_summations(0),
+    _nbr_demands(0),
+    _nbr_coin_values(0),
+    _occur(0),
+    _tiers(0),
+    _nbr_present_demands(0),
+    _nbr_present_values(0),
+    _tier(0)
 {
+    memset( &_reg_func1_flags, 0, sizeof(REG_FUNC1_BFLD) );
+    memset( &_reg_func2_flags, 0, sizeof(REG_FUNC2_BFLD) );
 }
-CtiAnsiTable21::CtiAnsiTable21( BYTE *dataBlob )
+
+CtiAnsiTable21::CtiAnsiTable21( BYTE *dataBlob ) :
+    _tier(0)
 {
    memcpy(( void *)&_reg_func1_flags, dataBlob, sizeof( unsigned char ));
    dataBlob += sizeof( unsigned char);

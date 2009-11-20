@@ -50,8 +50,6 @@ const CHAR * CtiAnsiTable11::SELECTOR_CONSTANTS_RESERVED = "CONSTANT_RESERVED_FO
 
 CtiAnsiTable11::CtiAnsiTable11( BYTE *dataBlob )
 {
-   int temp = sizeof( SOURCE_RCD );
-
    _source_record = new SOURCE_RCD;
 
    if( _source_record != NULL )
@@ -62,6 +60,9 @@ CtiAnsiTable11::CtiAnsiTable11( BYTE *dataBlob )
 CtiAnsiTable11::CtiAnsiTable11( )
 {
     _source_record = new SOURCE_RCD;
+
+    if( _source_record != NULL )
+       memset( _source_record, 0, sizeof( SOURCE_RCD ));
 }
 
 //=========================================================================================================================================

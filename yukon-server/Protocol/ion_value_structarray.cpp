@@ -22,7 +22,8 @@
 
 
 CtiIONStructArray::CtiIONStructArray( ) :
-    CtiIONValue(ValueType_StructArray)
+    CtiIONValue(ValueType_StructArray),
+    _structArrayType(StructArrayType_LogArray)
 {
 
 }

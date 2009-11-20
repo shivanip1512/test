@@ -25,12 +25,31 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-Datalink::Datalink()
+Datalink::Datalink() :
+    _io_state(State_IO_Uninitialized),
+    _control_state(State_Control_Ready),
+    _src(0),
+    _dst(0),
+    _dl_confirm(false),
+    _slave_response(false),
+    _send_confirm(false),
+    _reset_sent(false),
+    _fcb_out(false),
+    _fcb_in(false),
+    _comm_errors(0),
+    _protocol_errors(0),
+    _out_sent(0),
+    _out_data_len(0),
+    _in_recv(0),
+    _in_expected(0),
+    _in_actual(0),
+    _in_data_len(0)
 {
-    _io_state      = State_IO_Uninitialized;
-    _control_state = State_Control_Ready;
-    _dl_confirm    = false;
-    _slave_response = false;
+    memset( _out_data, 0, Packet_MaxPayloadLen );
+    memset( _in_data,  0, Packet_MaxPayloadLen );
+
+    memset( &_packet,         0, sizeof(packet_t) );
+    memset( &_control_packet, 0, sizeof(packet_t) );
 }
 
 Datalink::Datalink(const Datalink &aRef)
@@ -381,7 +400,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
 }
 
 
-void Datalink::constructDataPacket( Datalink::packet &packet, unsigned char *buf, unsigned long len )
+void Datalink::constructDataPacket( Datalink::packet_t &packet, unsigned char *buf, unsigned long len )
 {
     int pos, block_len, num_blocks;
     unsigned short block_crc;
@@ -443,7 +462,7 @@ void Datalink::constructDataPacket( Datalink::packet &packet, unsigned char *buf
 }
 
 
-void Datalink::constructPrimaryControlPacket( Datalink::packet &packet, PrimaryControlFunction function, bool fcv, bool fcb )
+void Datalink::constructPrimaryControlPacket( Datalink::packet_t &packet, PrimaryControlFunction function, bool fcv, bool fcb )
 {
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
@@ -465,7 +484,7 @@ void Datalink::constructPrimaryControlPacket( Datalink::packet &packet, PrimaryC
 }
 
 
-void Datalink::constructSecondaryControlPacket( Datalink::packet &packet, SecondaryControlFunction function, bool dfc )
+void Datalink::constructSecondaryControlPacket( Datalink::packet_t &packet, SecondaryControlFunction function, bool dfc )
 {
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
@@ -487,7 +506,7 @@ void Datalink::constructSecondaryControlPacket( Datalink::packet &packet, Second
 }
 
 
-void Datalink::sendPacket( Datalink::packet &packet, CtiXfer &xfer )
+void Datalink::sendPacket( Datalink::packet_t &packet, CtiXfer &xfer )
 {
     xfer.setOutBuffer((unsigned char *)&packet);
     xfer.setOutCount(calcPacketLength(packet.header.fmt.len));
@@ -499,7 +518,7 @@ void Datalink::sendPacket( Datalink::packet &packet, CtiXfer &xfer )
 }
 
 
-void Datalink::recvPacket( Datalink::packet &packet, CtiXfer &xfer )
+void Datalink::recvPacket( Datalink::packet_t &packet, CtiXfer &xfer )
 {
     if( _in_recv < DatalinkPacket::HeaderLength )
     {
@@ -528,7 +547,7 @@ bool Datalink::isControlPending( void ) const
 }
 
 
-bool Datalink::processControl( const Datalink::packet &packet )
+bool Datalink::processControl( const Datalink::packet_t &packet )
 {
     bool retVal = false;
 
@@ -905,7 +924,7 @@ int Datalink::decodeControl( CtiXfer &xfer, int status )
 }
 
 
-int Datalink::decodePacket( CtiXfer &xfer, packet &p, unsigned long received )
+int Datalink::decodePacket( CtiXfer &xfer, packet_t &p, unsigned long received )
 {
     unsigned long in_actual = xfer.getInCountActual();
 
@@ -947,7 +966,7 @@ int Datalink::decodePacket( CtiXfer &xfer, packet &p, unsigned long received )
 }
 
 
-bool Datalink::isValidDataPacket( const Datalink::packet &packet ) const
+bool Datalink::isValidDataPacket( const Datalink::packet_t &packet ) const
 {
     bool retVal = false;
 
@@ -972,7 +991,7 @@ bool Datalink::isValidDataPacket( const Datalink::packet &packet ) const
 }
 
 
-bool Datalink::isValidAckPacket( const Datalink::packet &packet ) const
+bool Datalink::isValidAckPacket( const Datalink::packet_t &packet ) const
 {
     bool retVal = false;
 
@@ -1050,7 +1069,7 @@ unsigned Datalink::calcPacketLength( unsigned headerLen )
 }
 
 
-bool Datalink::isEntirePacket( const Datalink::packet &packet, unsigned long in_recv )
+bool Datalink::isEntirePacket( const Datalink::packet_t &packet, unsigned long in_recv )
 {
     bool retVal = false;
 
@@ -1102,7 +1121,7 @@ bool Datalink::isDataBlockCRCValid( const unsigned char *block, unsigned length 
 }
 
 
-bool Datalink::arePacketCRCsValid( const Datalink::packet &packet )
+bool Datalink::arePacketCRCsValid( const Datalink::packet_t &packet )
 {
     bool crcs_valid = isHeaderCRCValid(packet.header);
 
@@ -1132,7 +1151,7 @@ bool Datalink::arePacketCRCsValid( const Datalink::packet &packet )
 }
 
 
-void Datalink::putPacketPayload( const Datalink::packet &packet, unsigned char *buf, int *len )
+void Datalink::putPacketPayload( const Datalink::packet_t &packet, unsigned char *buf, int *len )
 {
     unsigned const char *current_block;
     int payload_len, block_len, pos;
@@ -1188,7 +1207,7 @@ IM_EX_PROT bool Datalink::isPacketValid( const unsigned char *buf, const int len
         return false;
     }
 
-    const packet *p = reinterpret_cast<const packet *>(buf);
+    const packet_t *p = reinterpret_cast<const packet_t *>(buf);
 
     if( len < calcPacketLength(p->header.fmt.len) )
     {
@@ -1211,7 +1230,7 @@ bool Datalink::findPacket(unsigned char *&itr, unsigned char *&end)
     {
         if( isPacketValid(itr, std::distance(itr, end)) )
         {
-            const packet *p = reinterpret_cast<const packet *>(&*itr);
+            const packet_t *p = reinterpret_cast<const packet_t *>(&*itr);
 
             end = itr + calcPacketLength(p->header.fmt.len);
 

@@ -244,8 +244,6 @@ CtiReturnMsg::CtiReturnMsg(const CtiReturnMsg &aRef)
 
 CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
  {
-    int i;
-
     if(this != &aRef)
     {
        Inherited::operator=(aRef);

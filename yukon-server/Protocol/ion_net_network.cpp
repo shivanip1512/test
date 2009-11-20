@@ -18,12 +18,15 @@
 
 #include "ion_net_network.h"
 
-CtiIONNetworkLayer::CtiIONNetworkLayer( )
+CtiIONNetworkLayer::CtiIONNetworkLayer( ) :
+    _ioState(Uninitialized),
+    _valid(0),
+    _masterAddress(0),
+    _slaveAddress(0),
+    _msgCount(0)
 {
-    _netOut.data = NULL;
-    _netIn.data  = NULL;
-
-    _msgCount = 0;
+    memset( &_netOut, 0, sizeof(_net_layer_struct) );
+    memset( &_netIn,  0, sizeof(_net_layer_struct) );
 }
 
 

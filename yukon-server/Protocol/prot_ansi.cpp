@@ -113,6 +113,8 @@ const CHAR * CtiProtocolANSI::METER_TIME_TOLERANCE = "PORTER_SENTINEL_TIME_TOLER
 
 CtiProtocolANSI::CtiProtocolANSI()
 {
+   _index = 0;
+   _bytesInGot = 0;
    _tables = NULL;
    _header = NULL;
    _billingTable = NULL;
@@ -144,7 +146,9 @@ CtiProtocolANSI::CtiProtocolANSI()
    _frozenRegTable = NULL;
 
    _validFlag = false;
+   _previewTable64 = false;
    _entireTableFlag = false;
+   _clearMfgTables = false;
    _nbrLPDataBlksWanted = 0;
    _nbrLPDataBlkIntvlsWanted = 0;
    _nbrFirstLPDataBlkIntvlsWanted = 0;
@@ -165,6 +169,8 @@ CtiProtocolANSI::CtiProtocolANSI()
    _lpOffset = 0;
    _lpNbrFullBlocks = 0;
    _lpLastBlockSize = 0;
+   _ansiAbortOperation = FALSE;
+
    _stdTblsAvailable.push_back(0);
 
    _lpValues = NULL;
@@ -176,6 +182,8 @@ CtiProtocolANSI::CtiProtocolANSI()
    _invalidLastLoadProfileTime = false;
    _forceProcessDispatchMsg = false;
 
+   _scanOperation = generalScan;
+   _parseFlags = 0;
 
 }
 

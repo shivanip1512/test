@@ -4,7 +4,7 @@
 
 RWDEFINE_COLLECTABLE( CtiNotifLMControlMsg, NOTIF_LMCONTROL_MSG_ID );
 
-CtiNotifLMControlMsg::CtiNotifLMControlMsg() : _program_id(-1)
+CtiNotifLMControlMsg::CtiNotifLMControlMsg() : _notif_type(0), _program_id(-1)
 { }
 
 CtiNotifLMControlMsg::CtiNotifLMControlMsg(const vector<int>& group_ids, int notif_type, int program_id, const CtiTime& start_time, const CtiTime& stop_time)

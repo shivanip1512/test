@@ -31,7 +31,7 @@ RWDEFINE_COLLECTABLE( CtiNotifEmailMsg, NOTIF_EMAIL_MSG_ID );
 //=====================================================================================================================
 
 CtiNotifEmailMsg::CtiNotifEmailMsg() :
-_notifGroupID(0)
+_notifGroupID(0), _notifAttachment(0)
 {
 
 }
@@ -66,8 +66,6 @@ void CtiNotifEmailMsg::saveGuts( RWvostream &aStream ) const
 
 void CtiNotifEmailMsg::restoreGuts( RWvistream& aStream )
 {
-   int count;
-
    CtiMessage::restoreGuts( aStream );
 
    aStream >> _to
@@ -228,7 +226,7 @@ RWDEFINE_COLLECTABLE( CtiCustomerNotifEmailMsg, NOTIF_CUST_EMAIL_MSG_ID );
 //=====================================================================================================================
 
 CtiCustomerNotifEmailMsg::CtiCustomerNotifEmailMsg() :
-_customerID(0)
+_customerID(0), _notifAttachment(0)
 {
 
 }
@@ -262,8 +260,6 @@ void CtiCustomerNotifEmailMsg::saveGuts( RWvostream &aStream ) const
 
 void CtiCustomerNotifEmailMsg::restoreGuts( RWvistream& aStream )
 {
-   int count;
-
    CtiMessage::restoreGuts( aStream );
 
    aStream >> _to

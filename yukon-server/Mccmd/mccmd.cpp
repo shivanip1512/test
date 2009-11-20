@@ -125,7 +125,7 @@ void _MessageThrFunc()
                     else
                     {
                         {
-                            CtiLockGuard< CtiLogger > guard(dout);
+                            CtiLockGuard< CtiLogger > logGuard(dout);
                             dout << CtiTime() << " [" << rwThreadId() <<
                             "] Received message for interpreter [" <<
                             GetThreadIDFromMsgID(msgid) << "]" << endl;
@@ -962,7 +962,6 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    bool rename=true;
     int commandLimit=0;
     int commandsPerTime=0;
     int interval=1,decodeResult=NORMAL;
@@ -2228,9 +2227,9 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
     {
         // cmd_line doesn't specify a select string so lets append
         // this interpreters current select string
-        string select = Tcl_GetVar(interp, SelectedVariable, 0);
+        string selection = Tcl_GetVar(interp, SelectedVariable, 0);
         cmd_line += " ";
-        cmd_line += select;
+        cmd_line += selection;
 
 
     }

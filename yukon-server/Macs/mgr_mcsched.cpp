@@ -223,9 +223,9 @@ CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
     sched_to_add->setScheduleID( id );
 
 
-    std::pair< std::map<long,CtiMCSchedule*>::iterator,bool> pair = 
+    std::pair< std::map<long,CtiMCSchedule*>::iterator,bool> aPair = 
         Map.insert( std::pair<long,CtiMCSchedule*>(id, sched_to_add) );
-    if( !pair.second )
+    if( !aPair.second )
     {
         // Failed!
         delete sched_to_add;
@@ -283,11 +283,11 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
     if( to_delete != NULL && to_delete->Delete() )
     {
         long key_p = NULL;
-        MapIterator itr = Map.find( sched_id );
+        MapIterator itr2 = Map.find( sched_id );
 
-        if (itr != Map.end() ){ 
+        if (itr2 != Map.end() ){ 
             Map.erase( sched_id );
-            key_p =  (*itr).first;
+            key_p =  (*itr2).first;
         }
         else
             key_p = 0;

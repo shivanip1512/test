@@ -49,6 +49,7 @@ Klondike::Klondike(const Klondike &aRef)
 
 Klondike::~Klondike()
 {
+    _wrap = 0;      // we don't delete this: zeroing out to make lint happy...
 }
 
 Klondike &Klondike::operator=(const Klondike &aRef)

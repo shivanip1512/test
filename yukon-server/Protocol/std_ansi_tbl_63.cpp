@@ -18,14 +18,13 @@
 //=========================================================================================================================================
 CtiAnsiTable63::CtiAnsiTable63( bool *dataSetUsedFlag )
 {
+    memset( &_lp_status_tbl, 0, sizeof(LP_STATUS_RCD) );
+
     for (int x = 0; x < 4; x++)
     {
         _lpCtrlDataSetUsed[x] = dataSetUsedFlag[x];
     }
 }
-
-
-
 
 CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag)
 {

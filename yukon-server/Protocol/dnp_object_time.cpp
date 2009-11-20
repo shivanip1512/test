@@ -22,17 +22,21 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-Time::Time(int variation) : Object(Group, variation)
+Time::Time(int variation) :
+    Object(Group, variation),
+    _seconds(0.0),
+    _milliseconds(0.0),
+    _interval(0.0)
 {
-    _seconds      = 0.0;
-    _milliseconds = 0.0;
 }
 
 
-Time::Time(int group, int variation) : Object(group, variation)
+Time::Time(int group, int variation) :
+    Object(group, variation),
+    _seconds(0.0),
+    _milliseconds(0.0),
+    _interval(0.0)
 {
-    _seconds      = 0.0;
-    _milliseconds = 0.0;
 }
 
 
@@ -335,7 +339,9 @@ int TimeCTO::getSerializedLen(void) const
 }
 
 
-TimeDelay::TimeDelay(int variation) : Object(Group, variation)
+TimeDelay::TimeDelay(int variation) :
+    Object(Group, variation),
+    _delay(0.0)
 {
 
 }

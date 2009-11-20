@@ -569,8 +569,8 @@ void CtiAnsiTable62::printResult( const string& deviceName )
 
 void CtiAnsiTable62::printLPSelSet(int set, int numChans)
 {
-    LP_SOURCE_SEL_RCD *tempSourceSelRcd;
-    UINT8 tempIntSel;
+    LP_SOURCE_SEL_RCD *tempSourceSelRcd = NULL;
+    UINT8 tempIntSel = 0;
     int x;
 
     switch (set+1)
@@ -655,8 +655,8 @@ void CtiAnsiTable62::printLPSelSet(int set, int numChans)
 }
 void CtiAnsiTable62::printScalarsDivisorSet(int set, int numChans)
 {
-    UINT16 *tempScalarsSet;
-    UINT16 *tempDivisorSet;
+    UINT16 *tempScalarsSet = NULL;
+    UINT16 *tempDivisorSet = NULL;
     int x;
 
     switch (set+1)
@@ -782,7 +782,7 @@ UINT8 CtiAnsiTable62::getIntervalFmtCde(int setNbr)
 UINT8* CtiAnsiTable62::getLPDemandSelect(int setNbr)
 {
     UINT8 *lpSrcSel = NULL;
-    LP_SOURCE_SEL_RCD *tempSourceSelRcd;
+    LP_SOURCE_SEL_RCD *tempSourceSelRcd = NULL;
     int x;
 
     switch (setNbr)

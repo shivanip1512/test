@@ -28,29 +28,44 @@ using namespace std;
 int CtiProtocolSixnet::nNextSeq = 0;  // message sequence common for all messages
 CtiMutex CtiProtocolSixnet::seqMux;
 
-CtiProtocolSixnet::CtiProtocolSixnet(UCHAR* txBuff, UCHAR* rxBuff)
+CtiProtocolSixnet::CtiProtocolSixnet(UCHAR* txBuff, UCHAR* rxBuff) :
+    _state(GETLEAD),
+    _alias(0),
+    _numRecs(0),
+    _first(0),
+    _last(0),
+    _error(0),
+    _txCRC(0),
+    m_crc(0),
+    _station(ANY_STATION),
+    _pData(NULL),
+    _rxCRC(0),
+    pNextRx(rxBuff),
+    pNextTx(txBuff),
+    pNextRcv(rxBuff),
+    pTx(txBuff),
+    pRx(rxBuff),
+    _rxFormat(0),
+    _rxAddrLen(2),
+    _rxLength(0),
+    _rxDest(0),
+    _rxSrc(0),
+    _rxSession(0),
+    _rxSequence(-1),
+    _rxCmd(0),
+    _txFormat(0),
+    _txAddrLen(2),
+    _txLength(0),
+    _txDest(ANY_STATION),
+    _txSrc(0),
+    _txSession(0),
+    _txSequence(-1),
+    _txCmd(0),
+    _txSubCommand(0),
+    _txFSLoc(0),
+    _txFSLen(0),
+    _txAcked(false)
 {
-    _alias = 0;        // Remote File alias.  Zero is invalid
-
-    _station = ANY_STATION;     // accept all for now
-    _txDest = ANY_STATION;
-
-    pTx = txBuff;               // Forever the same!  Keep a copy of these guys...
-    pRx = rxBuff;               // Forever the same!
-
-    pNextTx = txBuff;           // start with empty receive buffer
-    pNextRx = rxBuff;           // start with empty receive buffer
-    pNextRcv = rxBuff;          // start with empty receive buffer
-
-    _rxAddrLen = 2;             // assume 2 byte length format
-    _rxSequence = -1;           // no sequence number yet
-
-    _txAcked = false;           // not ACKed yet
-    _txAddrLen = 2;             // assume 2 byte length format
-    _txSequence = -1;           // no sequence number yet
-    _txSequence = -1;           // no sequence number yet
-
-    _state = GETLEAD;
 }
 
 void CtiProtocolSixnet::setBuffers(UCHAR* txBuff, UCHAR* rxBuff)
@@ -250,7 +265,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
         }
         else if(nRcv > 0)
         {
-            int n;
+            int n = 0;
 
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {

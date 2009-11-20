@@ -182,22 +182,36 @@
 #define SA_PROTOCOL_COMPLETE TRUE
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty() :
-_onePeriodTime(YUKONEOT),
-_messageReady(false)
+    _onePeriodTime(YUKONEOT),
+    _messageReady(false),
+    _errorLen(0),
+    _period(0),
+    _timeout(0)
 {
     ::memset(&_sa, 0, sizeof(_sa));
     _sa._maxTxTime = (0x3c);
+
+    memset( _errorBuf,    0, sizeof(CHAR) * MAX_SAERR_MSG_SIZE );
+    memset( &_sa_code,    0, sizeof(SA_CODE) );
+    memset( &_sa_x205cfg, 0, sizeof(X205CMD) );
 }
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa) :
-_onePeriodTime(YUKONEOT)
+    _onePeriodTime(YUKONEOT),
+    _messageReady(true),
+    _errorLen(0),
+    _period(0),
+    _timeout(0)
 {
     _sa = sa;
-    _messageReady = true;
 
     pair< int, int > scTimePair = computeSnCTime(_sa._swTimeout, _sa._cycleTime);
     _sa._sTime = scTimePair.first;
     _sa._cTime = scTimePair.second;
+
+    memset( _errorBuf,    0, sizeof(CHAR) * MAX_SAERR_MSG_SIZE );
+    memset( &_sa_code,    0, sizeof(SA_CODE) );
+    memset( &_sa_x205cfg, 0, sizeof(X205CMD) );
 }
 
 CtiProtocolSA3rdParty::~CtiProtocolSA3rdParty()
@@ -639,7 +653,7 @@ INT CtiProtocolSA3rdParty::loadControl()
     INT status = NORMAL;
 
     SA_CODE scode;
-    INT retCode;
+    INT retCode = 0;
 
     _errorBuf[0] = '\0';
     _errorLen = MAX_SAERR_MSG_SIZE;
@@ -719,7 +733,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
 {
     INT status = NORMAL;
 
-    INT retCode;
+    INT retCode = 0;
 
     switch(_sa._groupType)
     {
@@ -2102,9 +2116,9 @@ INT CtiProtocolSA3rdParty::TMSlen (UCHAR *abuf, INT *len)
  * Note:  This function is a proxy for the third-party library, so we can limit
  *          its linkage to the protocol DLL alone.
  *----------------------------------------------------------------------------*/
-INT CtiProtocolSA3rdParty::procTMSmsg(UCHAR *abuf, INT len, SA_CODE *_sa_code, X205CMD *x205cmd)
+INT CtiProtocolSA3rdParty::procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd)
 {
-    return ::procTMSmsg(abuf, len, _sa_code, x205cmd);
+    return ::procTMSmsg(abuf, len, scode, x205cmd);
 }
 
 

@@ -195,7 +195,7 @@ void CtiMCFileInterface::execute(const string& function, const string& name )
 
         if( id == -1 )
         {
-            CtiLockGuard< CtiLogger > guard(dout);
+            CtiLockGuard< CtiLogger > logGuard(dout);
             dout
             << CtiTime()
             << " File Interface: unable to locate a schedule id for schedule named:"

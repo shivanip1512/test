@@ -61,7 +61,7 @@ public:
         AO_16Bit = 2
     };
 
-    enum group
+    enum //group
     {
         Group = 40
     };

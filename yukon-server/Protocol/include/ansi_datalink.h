@@ -69,10 +69,10 @@ class IM_EX_PROT CtiANSIDatalink
 
       enum DecodePos
       {
-         ack = 0,
-         header,
-         data,
-         sendAck
+         Ack = 0,
+         Header,
+         Data,
+         SendAck
       };
 
 
@@ -119,7 +119,7 @@ class IM_EX_PROT CtiANSIDatalink
       void init( void );
       void destroyMe( void );
       void reinitialize( void );
-      void assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT count,/* int cntl, */int seq );
+      void assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT byteCount,/* int cntl, */int seq );
       void decodePacketHeader( void );
 
       void doAck( CtiXfer &xfer );
@@ -138,7 +138,7 @@ class IM_EX_PROT CtiANSIDatalink
       ULONG getExpectedBytes( void );
       void setExpectedBytes( int ULONG );
 
-      unsigned short crc16( unsigned char octet, unsigned short crc );
+      unsigned short crc16( unsigned char octet, unsigned short crcIn );
       unsigned short crc( int size, unsigned char *packet );
 
       void setIdentityByte(BYTE identityByte);

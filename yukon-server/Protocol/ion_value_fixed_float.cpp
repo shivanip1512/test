@@ -17,14 +17,16 @@
 
 
 CtiIONFloat::CtiIONFloat( float initialValue=0.0 ) :
-    CtiIONValueFixed(Fixed_Float)
+    CtiIONValueFixed(Fixed_Float),
+    _float(initialValue)
 {
-    _float  = initialValue;
+    memset( &_string, 0, 20);
 }
 
 
 CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONValueFixed(Fixed_Float)
+    CtiIONValueFixed(Fixed_Float),
+    _float(0.0f)
 {
     //  all i know about is 4-byte floats
     if( streamLength == 4 )
@@ -45,6 +47,7 @@ CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength 
         }
         setValid(false);
     }
+    memset( &_string, 0, 20);
 }
 
 

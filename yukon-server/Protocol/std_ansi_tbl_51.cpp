@@ -17,8 +17,8 @@
 //=========================================================================================================================================
 CtiAnsiTable51::CtiAnsiTable51( )
 {
+    memset( &_time_tou, 0, sizeof(TIME_TOU_RCD) );
 }
-
 
 CtiAnsiTable51::CtiAnsiTable51( BYTE *dataBlob )
 {

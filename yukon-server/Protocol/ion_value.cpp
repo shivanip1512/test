@@ -29,6 +29,7 @@
 
 
 CtiIONValue::CtiIONValue( ValueTypes valueType ) :
+    _valid(false),
     _valueType(valueType)
 {
 }

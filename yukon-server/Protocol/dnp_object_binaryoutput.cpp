@@ -23,7 +23,7 @@ namespace DNP       {
 
 BinaryOutput::BinaryOutput(int variation) : Object(Group, variation)
 {
-
+    _bo.raw = 0;
 }
 
 int BinaryOutput::restore(const unsigned char *buf, int len)
@@ -151,7 +151,7 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
-    double val;
+    double val = 0.0;
     int quality;
 
     switch(getVariation())
@@ -213,9 +213,11 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 
 
 
-BinaryOutputControl::BinaryOutputControl(int variation) : Object(Group, variation)
+BinaryOutputControl::BinaryOutputControl(int variation) :
+    Object(Group, variation),
+    _patternMask(false)
 {
-
+    memset( _crob_or_pcb.raw, 0, 11 );
 }
 
 

@@ -47,9 +47,14 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable27::CtiAnsiTable27()
+CtiAnsiTable27::CtiAnsiTable27() :
+    _presentDemandSelect(NULL),
+    _presentValueSelect(NULL),
+    _nbrPresentDemands(0),
+    _nbrPresentValues(0)
 {
 }
+
 CtiAnsiTable27::CtiAnsiTable27( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues )
 {
     _nbrPresentDemands = nbrPresentDemands;

@@ -23,11 +23,20 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-Transport::Transport()
+Transport::Transport() :
+    _current_packet_length(0),
+    _sequence_in(0),
+    _sequence_out(0),
+    _source_address(0),
+    _destination_address(0),
+    _ioState(Uninitialized),
+    _complete(false)
 {
-    _ioState     = Uninitialized;
-    _payload_out.data = 0;
-    _payload_in.data  = 0;
+    memset( &_payload_in,  0, sizeof(payload_t) );
+    memset( &_payload_out, 0, sizeof(payload_t) );
+
+    memset( &_in_packet,  0, sizeof(packet_t) );
+    memset( &_out_packet, 0, sizeof(packet_t) );
 }
 
 Transport::Transport(const Transport &aRef)

@@ -48,13 +48,20 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable22::CtiAnsiTable22( int num_sums, int num_demands, int num_coins )
+CtiAnsiTable22::CtiAnsiTable22( int num_sums, int num_demands, int num_coins ) :
+    _summation_select(NULL),
+    _demand_select(NULL),
+    _set(NULL),
+    _coincident_select(NULL),
+    _coin_demand_assoc(NULL),
+    _demandSelectSize(0),
+    _totalTableSize(0),
+    _numSums(num_sums),
+    _numDemands(num_demands),
+    _numCoins(num_coins)
 {
-    _numSums = num_sums;
-    _numDemands = num_demands;
-    _numCoins = num_coins;
-
 }
+
 CtiAnsiTable22::CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, int num_coins )
 {
     int index;

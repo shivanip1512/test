@@ -150,7 +150,7 @@ CtiMCSchedule::CtiMCSchedule()
 
     setValid(true);
     setUpdatedFlag(false);
-    setDirty(true);
+    CtiMemDBObject::setDirty(true);     // setDirty() is virtual (why?): make explicit who we are calling
 }
 
 CtiMCSchedule::CtiMCSchedule(const CtiMCSchedule& sched)
@@ -396,8 +396,8 @@ CtiMessage* CtiMCSchedule::replicateMessage() const
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    CtiMCSchedule* copy = new CtiMCSchedule();
-    *copy = *this;
+    CtiMCSchedule* aCopy = new CtiMCSchedule();
+    *aCopy = *this;
 
     if( !checkSchedule() )
     {
@@ -405,13 +405,13 @@ CtiMessage* CtiMCSchedule::replicateMessage() const
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( !copy->checkSchedule() )
+    if( !aCopy->checkSchedule() )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return copy;
+    return aCopy;
 }
 
 /*========Setters and Getters Below========*/

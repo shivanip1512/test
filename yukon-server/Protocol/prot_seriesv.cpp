@@ -27,7 +27,15 @@ CtiProtocolSeriesV::CtiProtocolSeriesV() :
     _analog_min(-1), _analog_max(-1),
     _status_min(-1), _status_max(-1),
     _accum_min(-1),  _accum_max(-1),
-    _setpt_min(-1),  _setpt_max(-1)
+    _setpt_min(-1),  _setpt_max(-1),
+    _command(Command_ScanAccumulator),
+    _scan_startpoint(0),
+    _scan_numpoints(0),
+    _control_offset(0),
+    _control_parameter(0),
+    _address(0),
+    _retry_count(0),
+    _state(State_Invalid)
 {
     _rtu_info.accum_count  = 0;
     _rtu_info.analog_count = 0;
@@ -36,8 +44,9 @@ CtiProtocolSeriesV::CtiProtocolSeriesV() :
     _rtu_info.cosr = 0;
 
     _inbound = CTIDBG_new unsigned char[MaxInbound];
-}
 
+    memset( &_outbound, 0, sizeof(seriesv_master_packet) );
+}
 
 CtiProtocolSeriesV::CtiProtocolSeriesV(const CtiProtocolSeriesV &aRef)
 {

@@ -74,7 +74,7 @@ class IM_EX_PROT CtiAnsiTable11 : public CtiAnsiTableBase
 
 public:
 
-    enum
+    typedef enum
     {
         gasConstantsAGA3 = 0,
         gasConstantsAGA7,

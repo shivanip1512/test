@@ -28,9 +28,21 @@ namespace Protocol  {
 namespace DNP       {
 
 Application::Application() :
+    _dstAddr(0),
+    _srcAddr(0),
+    _request_function(RequestConfirm),
+    _seqno(0),
+    _request_buf_len(0),
+    _response_buf_len(0),
     _ioState(Uninitialized),
-    _seqno(0)
+    _retryState(Uninitialized),
+    _comm_errors(0),
+    _final_frame_received(false)
 {
+    memset( &_request,     0, sizeof(request_t) );
+    memset( &_response,    0, sizeof(response_t) );
+    memset( &_acknowledge, 0, sizeof(acknowledge_t) );
+
     _iin.raw = 0;
 }
 

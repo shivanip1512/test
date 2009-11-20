@@ -35,6 +35,9 @@
 const char* CtiTableMCSchedule::_table_name = "MACSchedule";
 
 CtiTableMCSchedule::CtiTableMCSchedule()
+    : _schedule_id(0), _holiday_schedule_id(0),
+      _start_day(0), _start_month(0), _start_year(0),
+      _duration(0), _template_type(0)
 {
 }
 

@@ -276,7 +276,7 @@ private:
     INT configureTargetLoadAmps(CtiCommandParser &parse);
     INT priority(BYTE priority);
 
-    bool validateAddress(const unsigned int address, const AddressRanges min, const AddressRanges max);
+    bool validateAddress(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum);
     bool validateParseAddressing(const CtiCommandParser &parse);
 
     unsigned short addCRC(unsigned short crc, unsigned char data);
@@ -314,7 +314,7 @@ public:
     INT addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0);
     INT parseAddressing(CtiCommandParser &parse);
 
-    enum
+    typedef enum
     {
         stCancelProp                    = 0x00,
         stIncrementProp                 = 0x01,

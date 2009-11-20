@@ -43,17 +43,24 @@ using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable01::CtiAnsiTable01( bool sn_flag, bool id_form )
+CtiAnsiTable01::CtiAnsiTable01( bool sn_flag, bool id_form ) :
+    _hw_version_number(0),
+    _hw_revision_number(0),
+    _fw_version_number(0),
+    _fw_revision_number(0),
+    _serialNumberFlag(sn_flag),
+    _idForm(id_form)
 {
-    _serialNumberFlag = sn_flag;
-    _idForm = id_form;
+    memset( _manufacturer, 0, 4 * sizeof(unsigned char) );
+    memset( _ed_model,     0, 8 * sizeof(unsigned char) );
+
+    memset( &_mfg_serial_number, 0, sizeof(_mfg_serial_number) );
 }
 
-CtiAnsiTable01::CtiAnsiTable01( BYTE *dataBlob, bool sn_flag, bool id_form )
+CtiAnsiTable01::CtiAnsiTable01( BYTE *dataBlob, bool sn_flag, bool id_form ) :
+    _serialNumberFlag(sn_flag),
+    _idForm(id_form)
 {
-    _serialNumberFlag = sn_flag;
-    _idForm = id_form;
-
    memcpy( (void *)&_manufacturer, dataBlob, 4 * sizeof( unsigned char ));
    dataBlob += 4 * sizeof( unsigned char );
 

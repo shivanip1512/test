@@ -19,7 +19,8 @@
 
 
 CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLength ) :
-    CtiIONValueVariable(Variable_Boolean)
+    CtiIONValueVariable(Variable_Boolean),
+    _bool(false)
 {
     //  all i know about is 1-byte booleans
     if( streamLength == 1 )
@@ -38,6 +39,7 @@ CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLen
 
         setValid(false);
     }
+    memset( &_string, 0, 10 );
 }
 
 
@@ -45,6 +47,7 @@ CtiIONBoolean::CtiIONBoolean( bool initialValue=false ) :
     CtiIONValueVariable(Variable_Boolean),
     _bool(initialValue)
 {
+    memset( &_string, 0, 10 );
 }
 
 

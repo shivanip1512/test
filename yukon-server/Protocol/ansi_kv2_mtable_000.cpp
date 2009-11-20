@@ -122,7 +122,7 @@ CtiAnsiKV2ManufacturerTable000::~CtiAnsiKV2ManufacturerTable000()
 CtiAnsiKV2ManufacturerTable000::MeterMode_e CtiAnsiKV2ManufacturerTable000::getMeterMode()
 {
     BYTEUSHORT mode;
-    MeterMode_e retMode;
+    MeterMode_e retMode = demandOnlyMode;
 
     mode.ch[0] = _meterMode;
     switch (mode.sh)
@@ -144,7 +144,7 @@ CtiAnsiKV2ManufacturerTable000::MeterMode_e CtiAnsiKV2ManufacturerTable000::getM
 CtiAnsiKV2ManufacturerTable000::MeterType_e CtiAnsiKV2ManufacturerTable000::getMeterType()
 {
     BYTEUSHORT type;
-    MeterType_e retType;
+    MeterType_e retType = CM21P;
 
     type.ch[0] = _meterType;
     switch (type.sh)

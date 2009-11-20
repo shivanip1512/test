@@ -20,7 +20,8 @@
 
 
 CtiIONFixedArray::CtiIONFixedArray( ) :
-    CtiIONValueVariable(Variable_FixedArray)
+    CtiIONValueVariable(Variable_FixedArray),
+    _arrayType(FixedArray_Char)
 {
 
 }
