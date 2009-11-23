@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,6 +15,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -28,6 +30,8 @@ import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
+import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.web.security.annotation.CheckRole;
 
 /**
@@ -43,11 +47,12 @@ public class OptOutAdminController {
 	private StarsDatabaseCache starsDatabaseCache;
 	private OptOutService optOutService;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
+	private ProgramService programService;
 
 	private RolePropertyDao rolePropertyDao;
 	
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
-    public String view(LiteYukonUser user, ModelMap map) throws Exception {
+    public String view(LiteYukonUser user, ModelMap map, String cancelCurrentOptOutsErrorMsg) throws Exception {
         
     	rolePropertyDao.verifyAnyProperties(user, 
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
@@ -83,6 +88,8 @@ public class OptOutAdminController {
 		}
 		map.addAttribute("customerSearchList", customerSearchList);
 		
+		map.addAttribute("cancelCurrentOptOutsErrorMsg", cancelCurrentOptOutsErrorMsg);
+		
 		return "operator/optout/optOutAdmin.jsp";
     }
     
@@ -107,11 +114,30 @@ public class OptOutAdminController {
     }
     
     @RequestMapping(value = "/operator/optOut/admin/cancelAllOptOuts", method = RequestMethod.POST)
-    public String cancelActiveOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
+    public String cancelActiveOptOuts(LiteYukonUser user, ModelMap map, Boolean onlySingleProgram, String programName) throws Exception {
     	
     	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, user);
     	
-    	optOutService.cancelAllOptOuts(user);
+		if (onlySingleProgram != null && onlySingleProgram) {
+
+			if (StringUtils.isBlank(programName)) {
+				map.addAttribute("cancelCurrentOptOutsErrorMsg", "Empty Program Name");
+			} else {
+				
+				try {
+					LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+	            	Program program = programService.getByProgramName(programName, energyCompany);
+	            	int programId = program.getProgramId();
+	            	
+					optOutService.cancelAllOptOutsByProgramId(programId, user);
+				} catch (NotFoundException e) {
+					map.addAttribute("cancelCurrentOptOutsErrorMsg", "Program Not Found: " + programName);
+				}
+			}
+
+		} else {
+			optOutService.cancelAllOptOuts(user);
+		}
 
     	return "redirect:/spring/stars/operator/optOut/admin";
     }
@@ -250,4 +276,9 @@ public class OptOutAdminController {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
     	this.rolePropertyDao = rolePropertyDao;
     }
+    
+    @Autowired
+    public void setProgramService(ProgramService programService) {
+		this.programService = programService;
+	}
 }

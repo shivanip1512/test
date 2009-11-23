@@ -15,6 +15,19 @@
         </cti:crumbLink>
         <cti:crumbLink><cti:msg key="yukon.web.modules.dr.optOut.breadcrumb"/></cti:crumbLink>
     </cti:breadCrumbs>
+    
+    <script type="text/javascript">
+
+    	function toggleCancelAllOptOutsProgramName(toggleEl) {
+    		if (toggleEl.checked) {
+				$('cancelAllOptOutsProgramName').enable();
+    		} else {
+    			$('cancelAllOptOutsProgramName').value = '';
+    			$('cancelAllOptOutsProgramName').disable();
+    		}
+    	}
+
+    </script>
 
     <table style="width: 100%">
         <tr>
@@ -98,8 +111,34 @@
 		    <cti:msg var="cancleOptOuts" key="yukon.web.modules.dr.optOut.cancleOptOuts" />
 		    <ct:boxContainer title="${cancleOptOuts}" hideEnabled="false">
 		        <div align="center">
-			        <form action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
-			            <input type="submit" name="cancel" value="<cti:msg key="yukon.web.modules.dr.optOut.cancelAllOptOuts" />">
+		        
+		        	<c:if test="${not empty cancelCurrentOptOutsErrorMsg}">
+		        		<div class="errorRed">${cancelCurrentOptOutsErrorMsg}</div>
+		        		<br>
+		        	</c:if>
+		        
+			        <form id="cancelAllOptOutsForm" action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
+			        
+			        	<table style="padding:10px;background-color:#EEE;">
+			        		<tr><td>
+			        			<b>Optional:</b>
+			        		</td></tr>
+			        		<tr><td style="padding-top:10px;">
+			        			<label>
+					        		<input type="checkbox" name="onlySingleProgram" onclick="toggleCancelAllOptOutsProgramName(this);"> 
+					        		Only Cancel Opt Outs For A Single Program
+					        	</label>
+			        		</td></tr>
+			        		<tr><td style="padding-top:10px;">
+			        			Program Name: 
+			        			<input type="text" id="cancelAllOptOutsProgramName" name="programName" value="" style="width:300px;" disabled>
+			        		</td></tr>
+			        	</table>
+			        	<br><br>
+			        
+			        	<cti:msg var="cancelAllOptOutsButton" key="yukon.web.modules.dr.optOut.cancelAllOptOuts" />
+			        	<ct:slowInput myFormId="cancelAllOptOutsForm" label="${cancelAllOptOutsButton}"/>
+			        
 			        </form>
 			        <br>
 			        <cti:msg key="yukon.web.modules.dr.optOut.cancelOptOutsWarning" />
