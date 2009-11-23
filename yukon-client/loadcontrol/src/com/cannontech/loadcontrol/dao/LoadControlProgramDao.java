@@ -65,6 +65,15 @@ public interface LoadControlProgramDao {
     public List<ProgramStartingGear> getProgramStartingGearsForScenarioId(int scenarioId);
     
     /**
+     * Get a list of ProgramControlHistory.
+     * Each ProgramControlHistory contains information about the program start/stop.
+     * @param startDateTime
+     * @param stopDateTime
+     * @return
+     */
+    public List<ProgramControlHistory> getAllProgramControlHistory(Date startDateTime, Date stopDateTime);
+    
+    /**
      * Get a list of ProgramControlHistory for a given program id.
      * Each ProgramControlHistory contains information about the program start/stop.
      * @param programId
@@ -72,7 +81,7 @@ public interface LoadControlProgramDao {
      * @param stopDateTime
      * @return
      */
-    public List<ProgramControlHistory> getProgramControlHistory(int programId, Date startDateTime, Date stopDateTime);
+    public List<ProgramControlHistory> getProgramControlHistoryByProgramId(int programId, Date startDateTime, Date stopDateTime);
     
     /**
      * Get the gear number for a given program and gear name.

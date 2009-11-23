@@ -4,11 +4,19 @@ import java.util.Date;
 
 public class ProgramControlHistory {
 
+	private int programId;
 	private String programName;
 	private Date startDateTime;
 	private Date stopDateTime;
 	private String gearName;
 	
+	public ProgramControlHistory(int programId) {
+		this.programId = programId;
+	}
+	
+	public int getProgramId() {
+		return programId;
+	}
 	public String getProgramName() {
 		return programName;
 	}

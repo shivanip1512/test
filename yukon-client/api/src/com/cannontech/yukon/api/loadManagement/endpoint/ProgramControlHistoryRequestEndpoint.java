@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -52,7 +53,13 @@ public class ProgramControlHistoryRequestEndpoint {
         // run service
         List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
         try {
-        	programControlHistory = loadControlService.getControlHistoryByProgramName(programName, startTime, stopTime, user);
+        	
+        	if (StringUtils.isBlank(programName)) {
+        		programControlHistory = loadControlService.getAllControlHistory(startTime, stopTime, user);
+        	} else {
+        		programControlHistory = loadControlService.getControlHistoryByProgramName(programName, startTime, stopTime, user);
+        	}
+        	
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programControlHistoryRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);

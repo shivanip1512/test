@@ -11,6 +11,7 @@ public class LMProgramGearHistoryMapper implements ParameterizedRowMapper<LMProg
     public LMProgramGearHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
     	
     	LMProgramGearHistory hist = new LMProgramGearHistory();
+    	hist.setProgramId(rs.getInt("ProgramId"));
     	hist.setProgramGearhistoryId(rs.getInt("LMProgramGearHistoryId"));
     	hist.setProgramHistoryId(rs.getInt("LMProgramHistoryId"));
     	hist.setProgramName(rs.getString("ProgramName"));

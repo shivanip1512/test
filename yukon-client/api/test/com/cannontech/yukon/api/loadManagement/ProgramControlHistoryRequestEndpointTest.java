@@ -58,14 +58,14 @@ public class ProgramControlHistoryRequestEndpointTest {
             
             List<ProgramControlHistory> histList = new ArrayList<ProgramControlHistory>();
             if (!programName.equals(EMTPY_RETURN)){            
-                ProgramControlHistory h1 = new ProgramControlHistory();
+                ProgramControlHistory h1 = new ProgramControlHistory(1);
                 h1.setProgramName("Program1");
                 h1.setStartDateTime(Iso8601DateUtil.parseIso8601Date("2008-10-13T12:30:00Z"));
                 h1.setStopDateTime(null);
                 h1.setGearName("Gear1");
                 histList.add(h1);
 
-                ProgramControlHistory h2 = new ProgramControlHistory();
+                ProgramControlHistory h2 = new ProgramControlHistory(2);
                 h2.setProgramName("Program2");
                 h2.setStartDateTime(Iso8601DateUtil.parseIso8601Date("2008-10-13T12:30:00Z"));
                 h2.setStopDateTime(Iso8601DateUtil.parseIso8601Date("2008-10-13T21:49:01Z"));

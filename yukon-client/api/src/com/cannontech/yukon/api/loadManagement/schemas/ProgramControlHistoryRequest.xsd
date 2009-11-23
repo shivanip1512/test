@@ -2,14 +2,14 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:yukon="http://yukon.cannontech.com/api"
     targetNamespace="http://yukon.cannontech.com/api"
-    elementFormDefault="qualified" version="1.0">
+    elementFormDefault="qualified" version="1.1">
     
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-            Integration II schema (integration with Retail Office) at
-            BG&amp;E: Item #2
+      		Schema originally for Retail Office integration at BG&amp;E.  
+          	Most recent modification:  Item #3 from Phase 3 SoW - Appendix C.
         </xsd:documentation>
     </xsd:annotation>
 
@@ -17,7 +17,11 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
-                    <xsd:element name="programName" type="xsd:string" />
+                    <xsd:element name="programName" type="xsd:string" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>programName is optional. If omitted all control history through the request time will be included in the response, regardless of what program is involved.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                     <xsd:element name="startDateTime" type="xsd:dateTime" />
                     <xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0">
                         <xsd:annotation>

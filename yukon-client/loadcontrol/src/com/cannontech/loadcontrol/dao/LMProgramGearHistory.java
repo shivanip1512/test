@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class LMProgramGearHistory {
 
+	private int programId;
 	private int programGearhistoryId;
     private int programHistoryId;
     private String programName;
@@ -15,6 +16,12 @@ public class LMProgramGearHistory {
     private int gearId;
     private String reason;
     
+    public int getProgramId() {
+		return programId;
+	}
+    public void setProgramId(int programId) {
+		this.programId = programId;
+	}
     public int getProgramGearhistoryId() {
 		return programGearhistoryId;
 	}
