@@ -11,12 +11,13 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -27,7 +28,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class OverrideHistoryRequestEndpoint {
 
 	private OptOutService optOutService;
-	private AuthDao authDao;
+	private RolePropertyDao rolePropertyDao;
 	
     private Namespace ns = YukonXml.getYukonNamespace();
 
@@ -58,14 +59,14 @@ public class OverrideHistoryRequestEndpoint {
         List<OverrideHistory> overrideHistoryList;
         try {
             // Check authorization
-            authDao.verifyTrueProperty(user,
-                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+        	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+        	
             overrideHistoryList = optOutService.getOptOutHistoryForAccount(accountNumber,
                                                                            startTime,
                                                                            stopTime,
                                                                            user,
                                                                            programName);
-            resultElement = buildHistoryEntriesElement(overrideHistoryList);
+            resultElement = buildHistoryEntriesElement_byAccount(overrideHistoryList);
         } catch (NotAuthorizedException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
                                                                 e,
@@ -110,13 +111,13 @@ public class OverrideHistoryRequestEndpoint {
         List<OverrideHistory> overrideHistoryList;
         try {
             // Check authorization
-            authDao.verifyTrueProperty(user,
-                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+        	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+        	
             overrideHistoryList = optOutService.getOptOutHistoryByProgram(programName,
                                                                           startTime,
                                                                           stopTime,
                                                                           user);
-            resultElement = buildHistoryEntriesElement(overrideHistoryList);
+            resultElement = buildHistoryEntriesElement_byProgramName(overrideHistoryList);
         } catch (NotAuthorizedException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByProgramNameRequest,
                                                                 e,
@@ -136,14 +137,49 @@ public class OverrideHistoryRequestEndpoint {
     }    
     
     // builds overrideHistoryEntries element
-    private Element buildHistoryEntriesElement(List<OverrideHistory> overrideHistoryList) {
+    private Element buildHistoryEntriesElement_byProgramName(List<OverrideHistory> overrideHistoryList) {
         
         // build overrideHistoryEntries element content
         Element overrideHistoryEntries = new Element("overrideHistoryEntries", ns);
         for (OverrideHistory overrideHistory : overrideHistoryList) {
             Element overrideHistoryElement = new Element("overrideHistory", ns);
             overrideHistoryElement.addContent(XmlUtils.createStringElement("serialNumber", ns, overrideHistory.getSerialNumber()));
-            overrideHistoryElement.addContent(XmlUtils.createStringElement("programName", ns, overrideHistory.getProgramName()));
+            
+            Element enrolledProgramList = new Element("enrolledProgramList", ns);
+            for (Program program : overrideHistory.getPrograms()) {
+                enrolledProgramList.addContent(XmlUtils.createStringElement("programName", ns, program.getProgramName()));
+            }
+            overrideHistoryElement.addContent(enrolledProgramList);
+            
+            overrideHistoryElement.addContent(XmlUtils.createStringElement("accountNumber", ns, overrideHistory.getAccountNumber()));
+            overrideHistoryElement.addContent(XmlUtils.createStringElement("status", ns, overrideHistory.getStatus().name()));
+            overrideHistoryElement.addContent(XmlUtils.createDateElement("scheduledDateTime", ns, overrideHistory.getScheduledDate()));
+            overrideHistoryElement.addContent(XmlUtils.createDateElement("startDateTime", ns, overrideHistory.getStartDate()));
+            overrideHistoryElement.addContent(XmlUtils.createDateElement("stopDateTime", ns, overrideHistory.getStopDate()));
+            overrideHistoryElement.addContent(XmlUtils.createStringElement("userName", ns, overrideHistory.getUserName()));
+            overrideHistoryElement.addContent(XmlUtils.createLongElement("overrideNumber", ns, overrideHistory.getOverrideNumber()));
+            overrideHistoryElement.addContent(XmlUtils.createBooleanElement("countedAgainstLimit", ns, overrideHistory.isCountedAgainstLimit()));
+            overrideHistoryEntries.addContent(overrideHistoryElement);
+        }
+        return overrideHistoryEntries;
+    }
+    
+    // builds overrideHistoryEntries element
+    private Element buildHistoryEntriesElement_byAccount(List<OverrideHistory> overrideHistoryList) {
+        
+        // build overrideHistoryEntries element content
+        Element overrideHistoryEntries = new Element("overrideHistoryEntries", ns);
+        for (OverrideHistory overrideHistory : overrideHistoryList) {
+            Element overrideHistoryElement = new Element("overrideHistory", ns);
+            overrideHistoryElement.addContent(XmlUtils.createStringElement("serialNumber", ns, overrideHistory.getSerialNumber()));
+            
+            Program program = null;
+            List<Program> programs = overrideHistory.getPrograms();
+            if (programs.size() > 0) {
+            	program = programs.get(0);
+            }
+            
+            overrideHistoryElement.addContent(XmlUtils.createStringElement("programName", ns, program == null ? "" : program.getProgramName()));
             overrideHistoryElement.addContent(XmlUtils.createStringElement("accountNumber", ns, overrideHistory.getAccountNumber()));
             overrideHistoryElement.addContent(XmlUtils.createStringElement("status", ns, overrideHistory.getStatus().name()));
             overrideHistoryElement.addContent(XmlUtils.createDateElement("scheduledDateTime", ns, overrideHistory.getScheduledDate()));
@@ -163,8 +199,8 @@ public class OverrideHistoryRequestEndpoint {
 	}
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-		this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 
 }

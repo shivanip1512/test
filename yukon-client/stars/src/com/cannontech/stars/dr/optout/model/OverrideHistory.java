@@ -1,12 +1,16 @@
 package com.cannontech.stars.dr.optout.model;
 
 import java.util.Date;
+import java.util.List;
+
+import com.cannontech.stars.dr.program.model.Program;
+import com.google.common.collect.Lists;
 
 public class OverrideHistory {
 
 	private Integer inventoryId;
 	private String serialNumber;
-	private String programName;
+	private List<Program> programs = Lists.newArrayList();
 	private String accountNumber;
 	private OverrideStatus status;
 	private Date scheduledDate;
@@ -32,12 +36,12 @@ public class OverrideHistory {
 		this.serialNumber = serialNumber;
 	}
 
-	public String getProgramName() {
-		return programName;
+	public List<Program> getPrograms() {
+		return programs;
 	}
-
-	public void setProgramName(String programName) {
-		this.programName = programName;
+	
+	public void setPrograms(List<Program> programs) {
+		this.programs = programs;
 	}
 
 	public String getAccountNumber() {
@@ -111,7 +115,7 @@ public class OverrideHistory {
 		history.setCountedAgainstLimit(this.isCountedAgainstLimit());
 		history.setInventoryId(this.getInventoryId());
 		history.setOverrideNumber(this.getOverrideNumber());
-		history.setProgramName(this.getProgramName());
+		history.setPrograms(this.getPrograms());
 		history.setScheduledDate(this.getScheduledDate());
 		history.setStartDate(this.getStartDate());
 		history.setStopDate(this.getStopDate());
@@ -134,8 +138,10 @@ public class OverrideHistory {
 				+ ((inventoryId == null) ? 0 : inventoryId.hashCode());
 		result = prime * result
 				+ (int) (overrideNumber ^ (overrideNumber >>> 32));
-		result = prime * result
-				+ ((programName == null) ? 0 : programName.hashCode());
+		for (Program p : programs) {
+			result = prime * result
+				+ ((p == null) ? 0 : p.hashCode());
+		}
 		result = prime * result
 				+ ((scheduledDate == null) ? 0 : scheduledDate.hashCode());
 		result = prime * result
@@ -173,11 +179,15 @@ public class OverrideHistory {
 			return false;
 		if (overrideNumber != other.overrideNumber)
 			return false;
-		if (programName == null) {
-			if (other.programName != null)
-				return false;
-		} else if (!programName.equals(other.programName))
+		if (programs.size() != other.programs.size()) {
 			return false;
+		} else {
+			for (Program p : programs) {
+				if (!other.programs.contains(p)) {
+					return false;
+				}
+			}
+		}
 		if (scheduledDate == null) {
 			if (other.scheduledDate != null)
 				return false;

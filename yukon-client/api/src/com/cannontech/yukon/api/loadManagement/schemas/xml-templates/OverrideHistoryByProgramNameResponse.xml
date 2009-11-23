@@ -10,9 +10,14 @@
         
         <overrideHistory>
             <serialNumber>410503539</serialNumber>
-            <programName>
-                Residential LCR Cooling 50% Contract
-            </programName>
+            <enrolledProgramList>
+            	<programName>
+	                Residential LCR Cooling 50% Contract
+	            </programName>
+	            <programName>
+	                XYZ
+	            </programName>
+            </enrolledProgramList>
             <accountNumber>03499834</accountNumber>
             <status>Active</status>
             <scheduledDateTime>2008-09-01T06:30:00Z</scheduledDateTime>
@@ -25,9 +30,11 @@
         
         <overrideHistory>
             <serialNumber>410503644</serialNumber>
-            <programName>
-                Residential LCR Cooling 50% Contract
-            </programName>
+            <enrolledProgramList>
+            	<programName>
+	                Residential LCR Cooling 50% Contract
+	            </programName>
+            </enrolledProgramList>
             <accountNumber>03499834</accountNumber>
             <status>Active</status>
             <scheduledDateTime>2008-09-01T10:00:00Z</scheduledDateTime>
@@ -40,9 +47,11 @@
         
         <overrideHistory>
             <serialNumber>410503539</serialNumber>
-            <programName>
-                Residential LCR Cooling 50% Contract
-            </programName>
+            <enrolledProgramList>
+            	<programName>
+	                Residential LCR Cooling 50% Contract
+	            </programName>
+            </enrolledProgramList>
             <accountNumber>03499834</accountNumber>
             <status>Cancelled</status>
             <scheduledDateTime>2008-09-30T15:00:00Z</scheduledDateTime>
@@ -55,9 +64,11 @@
         
         <overrideHistory>
             <serialNumber>410503644</serialNumber>
-            <programName>
-                Residential LCR Cooling 50% Contract
-            </programName>
+            <enrolledProgramList>
+            	<programName>
+	                Residential LCR Cooling 50% Contract
+	            </programName>
+            </enrolledProgramList>
             <accountNumber>03499834</accountNumber>
             <status>Cancelled</status>
             <scheduledDateTime>2008-09-30T15:00:00Z</scheduledDateTime>
@@ -70,9 +81,11 @@
         
         <overrideHistory>
             <serialNumber>410503539</serialNumber>
-            <programName>
-                Residential LCR Cooling 50% Contract
-            </programName>
+            <enrolledProgramList>
+            	<programName>
+	                Residential LCR Cooling 50% Contract
+	            </programName>
+            </enrolledProgramList>
             <accountNumber>03499834</accountNumber>
             <status>Active</status>
             <scheduledDateTime>2008-09-30T15:30:00Z</scheduledDateTime>

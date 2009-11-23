@@ -1,6 +1,7 @@
 package com.cannontech.yukon.api.loadManagement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -16,11 +17,11 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.yukon.api.loadManagement.endpoint.OverrideHistoryRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -60,7 +61,8 @@ public class OverrideHistoryRequestEndpointTest {
     static final String byProgramResponseStr = "/y:overrideHistoryByProgramNameResponse";   
     static final String byProgramHistoryElementStr = byProgramResponseStr + "/y:overrideHistoryEntries/y:overrideHistory";    
     
-    private static OverrideHistoryNodeMapper overrideHistNodeMapper = new OverrideHistoryNodeMapper();
+    private static ByAccountNumber_OverrideHistoryNodeMapper byAccountNumber_overrideHistNodeMapper = new ByAccountNumber_OverrideHistoryNodeMapper();
+    private static ByProgramName_OverrideHistoryNodeMapper byProgramName_overrideHistNodeMapper = new ByProgramName_OverrideHistoryNodeMapper();
     
 
     @Before
@@ -70,12 +72,14 @@ public class OverrideHistoryRequestEndpointTest {
         
         impl = new OverrideHistoryRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
-        impl.setAuthDao(new MockAuthDao());
+        impl.setRolePropertyDao(new MockRolePropertyDao());
         
         // Setup test histories
         history1 = new OverrideHistory();
         history1.setSerialNumber("serial1");
-        history1.setProgramName(PROGRAM1);
+        Program p1 = new Program();
+        p1.setProgramName(PROGRAM1);
+        history1.setPrograms(Collections.singletonList(p1));
         history1.setAccountNumber(ACCOUNT1);
         history1.setStatus(OverrideStatus.Active);
         history1.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
@@ -87,7 +91,9 @@ public class OverrideHistoryRequestEndpointTest {
 
         history2 = new OverrideHistory();
         history2.setSerialNumber("serial2");
-        history2.setProgramName(PROGRAM2);
+        Program p2 = new Program();
+        p2.setProgramName(PROGRAM2);
+        history2.setPrograms(Collections.singletonList(p2));
         history2.setAccountNumber(ACCOUNT1);
         history2.setStatus(OverrideStatus.Active);
         history2.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
@@ -99,7 +105,9 @@ public class OverrideHistoryRequestEndpointTest {
         
         history3 = new OverrideHistory();
         history3.setSerialNumber("serial3");
-        history3.setProgramName(PROGRAM1);
+        Program p3 = new Program();
+        p3.setProgramName(PROGRAM1);
+        history3.setPrograms(Collections.singletonList(p3));
         history3.setAccountNumber(ACCOUNT2);
         history3.setStatus(OverrideStatus.Active);
         history3.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
@@ -126,7 +134,7 @@ public class OverrideHistoryRequestEndpointTest {
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
     	
-    	LiteYukonUser unAuthorizedUser = MockAuthDao.getUnAuthorizedUser();
+    	LiteYukonUser unAuthorizedUser = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invokeHistoryByAccount(requestElement, unAuthorizedUser);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -159,7 +167,7 @@ public class OverrideHistoryRequestEndpointTest {
         List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
         
         List<OverrideHistory> actual = 
-            outputTemplate.evaluate(byAccountHistoryElementStr, overrideHistNodeMapper);
+            outputTemplate.evaluate(byAccountHistoryElementStr, byAccountNumber_overrideHistNodeMapper);
 
         Assert.assertEquals("Result list not as expected", expected, actual);        
         
@@ -187,7 +195,7 @@ public class OverrideHistoryRequestEndpointTest {
         expected.add(history1);
         expected.add(history2);
         
-        actual = outputTemplate.evaluate(byAccountHistoryElementStr, overrideHistNodeMapper);
+        actual = outputTemplate.evaluate(byAccountHistoryElementStr, byAccountNumber_overrideHistNodeMapper);
 
         Assert.assertEquals("Result list not as expected", expected, actual);
         
@@ -215,7 +223,7 @@ public class OverrideHistoryRequestEndpointTest {
         expected = new ArrayList<OverrideHistory>();
         expected.add(history1);
         
-        actual = outputTemplate.evaluate(byAccountHistoryElementStr, overrideHistNodeMapper);
+        actual = outputTemplate.evaluate(byAccountHistoryElementStr, byAccountNumber_overrideHistNodeMapper);
 
         Assert.assertEquals("Result list not as expected", expected, actual);
 
@@ -276,7 +284,7 @@ public class OverrideHistoryRequestEndpointTest {
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
     			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
     	
-        LiteYukonUser unAuthorizedUser = MockAuthDao.getUnAuthorizedUser();
+        LiteYukonUser unAuthorizedUser = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invokeHistoryByProgram(requestElement, unAuthorizedUser);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -300,8 +308,7 @@ public class OverrideHistoryRequestEndpointTest {
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
        
-        List<OverrideHistory> actual = template.evaluate(byProgramHistoryElementStr,
-                                                                      overrideHistNodeMapper);
+        List<OverrideHistory> actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper);
         // Check result xml values
         List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
         
@@ -316,13 +323,14 @@ public class OverrideHistoryRequestEndpointTest {
         respElement = impl.invokeHistoryByProgram(requestElement, user);
 
         // verify the respElement is valid according to schema
+        XmlUtils.printElement(respElement, "respElement");
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
         template = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
        
-        actual = template.evaluate(byProgramHistoryElementStr, overrideHistNodeMapper);
+        actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper);
         // Check result xml values
         expected = new ArrayList<OverrideHistory>();
         expected.add(history1);
@@ -422,7 +430,7 @@ public class OverrideHistoryRequestEndpointTest {
         	this.stopTime = stopTime;
 
         	if(INVALID_PROGRAM.equals(programName)) {
-        		throw new NotFoundException("Program invalid");
+        		throw new ProgramNotFoundException("Program invalid");
         	}
 
             List<OverrideHistory> overrideHistoryList = new ArrayList<OverrideHistory>();
@@ -459,7 +467,7 @@ public class OverrideHistoryRequestEndpointTest {
     /**
      * Mapper class to map an xml node into an OverrideHistory object
      */
-    private static class OverrideHistoryNodeMapper implements
+    private static class ByAccountNumber_OverrideHistoryNodeMapper implements
             ObjectMapper<Node, OverrideHistory> {
 
         @Override
@@ -469,7 +477,9 @@ public class OverrideHistoryRequestEndpointTest {
 
             OverrideHistory overrideHist = new OverrideHistory();
             overrideHist.setSerialNumber(template.evaluateAsString("y:serialNumber"));
-            overrideHist.setProgramName(template.evaluateAsString("y:programName"));
+            Program p = new Program();
+            p.setProgramName(template.evaluateAsString("y:programName"));
+            overrideHist.setPrograms(Collections.singletonList(p));
             overrideHist.setAccountNumber(template.evaluateAsString("y:accountNumber"));
 			overrideHist.setStatus(OverrideStatus.valueOf(template.evaluateAsString("y:status")));
             overrideHist.setScheduledDate(template.evaluateAsDate("y:scheduledDateTime"));
@@ -482,4 +492,42 @@ public class OverrideHistoryRequestEndpointTest {
             return overrideHist;
         }
     }
+    
+    private static class ByProgramName_OverrideHistoryNodeMapper implements
+	    ObjectMapper<Node, OverrideHistory> {
+	
+		@Override
+		public OverrideHistory map(Node from) throws ObjectMappingException {
+		    // create template and parse data
+		    SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
+		
+		    OverrideHistory overrideHist = new OverrideHistory();
+		    overrideHist.setSerialNumber(template.evaluateAsString("y:serialNumber"));
+		    
+		    List<Program> programList = new ArrayList<Program>();
+		    List<Node> programNameNodeList = template.evaluateAsNodeList("y:enrolledProgramList");
+		    for (Node n : programNameNodeList) {
+		    	SimpleXPathTemplate nt = XmlUtils.getXPathTemplateForNode(n);
+		    	String programName = nt.evaluateAsString("y:programName");
+		    	Program p = new Program();
+			    p.setProgramName(programName);
+			    programList.add(p);
+		    }
+		    
+//		    Program p = new Program();
+//		    p.setProgramName(template.evaluateAsString("y:enrolledProgramList/y:programName"));
+		    overrideHist.setPrograms(programList);
+		    
+		    overrideHist.setAccountNumber(template.evaluateAsString("y:accountNumber"));
+			overrideHist.setStatus(OverrideStatus.valueOf(template.evaluateAsString("y:status")));
+		    overrideHist.setScheduledDate(template.evaluateAsDate("y:scheduledDateTime"));
+		    overrideHist.setStartDate(template.evaluateAsDate("y:startDateTime"));
+		    overrideHist.setStopDate(template.evaluateAsDate("y:stopDateTime"));
+		    overrideHist.setUserName(template.evaluateAsString("y:userName"));
+		    overrideHist.setOverrideNumber(template.evaluateAsLong("y:overrideNumber"));
+		    overrideHist.setCountedAgainstLimit(template.evaluateAsBoolean("y:countedAgainstLimit"));
+		
+		    return overrideHist;
+		}
+	}
 }
