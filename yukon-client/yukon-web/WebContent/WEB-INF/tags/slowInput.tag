@@ -4,6 +4,7 @@
 <%@ attribute name="description" required="false" type="java.lang.String"%>
 <%@ attribute name="width" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
+<%@ attribute name="disableOtherButtons" required="false" type="java.lang.Boolean"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
@@ -18,13 +19,17 @@
 	<c:set var="labelBusy" value="${label}"/>
 </c:if>
 
+<c:if test="${empty pageScope.disableOtherButtons}">
+	<c:set var="disableOtherButtons" value="false"/>
+</c:if>
+
 <span id="slowInputSpan${uniqueId}"> 
 
     <input id="${uniqueId}" 
     	   type="button" 
     	   value="${label}" 
     	   <c:if test="${not empty pageScope.width}">style="width:${pageScope.width};"</c:if>
-    	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}');" >
+    	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}', ${disableOtherButtons});" >
     	   
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none;"> 
         <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting"> 
