@@ -154,10 +154,9 @@ public class ProgramController {
         // TODO:  when coming at this page from "back", don't reinitialize adjustments
         modelMap.addAttribute("gear", gear);
         List<GearAdjustment> gearAdjustments =
-            programService.getDefaultAdjustmentForProgram(backingBean.getStartDate(),
-                                                          backingBean.getActualStopDate(),
-                                                          backingBean.getProgramId(),
-                                                          userContext);
+            programService.getDefaultAdjustments(backingBean.getStartDate(),
+                                                 backingBean.getActualStopDate(),
+                                                 null, userContext);
         backingBean.setGearAdjustments(gearAdjustments);
 
         return "dr/program/startProgramGearAdjustments.jsp";
@@ -370,11 +369,10 @@ public class ProgramController {
 
         // TODO:  when coming at this page from "back", don't reinitialize adjustments
         List<GearAdjustment> gearAdjustments =
-            programService.getDefaultAdjustmentForPrograms(backingBean.getStartDate(),
-                                                           backingBean.getActualStopDate(),
-                                                           programsWithTargetCycleGears,
-                                                           scenarioPrograms,
-                                                           userContext);
+            programService.getDefaultAdjustments(backingBean.getStartDate(),
+                                                 backingBean.getActualStopDate(),
+                                                 scenarioPrograms.values(),
+                                                 userContext);
         backingBean.setGearAdjustments(gearAdjustments);
 
         return "dr/program/startProgramGearAdjustments.jsp";

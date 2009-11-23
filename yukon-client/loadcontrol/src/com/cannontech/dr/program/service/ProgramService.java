@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Duration;
 
@@ -34,13 +33,8 @@ public interface ProgramService {
                                                        int startIndex, int count, 
                                                        YukonUserContext userContext);
 
-    public List<GearAdjustment> getDefaultAdjustmentForProgram(
-            Date startDate, Date stopDate, int programId,
-            YukonUserContext userContext);
-
-    public List<GearAdjustment> getDefaultAdjustmentForPrograms(Date startDate,
-            Date stopDate, Collection<Integer> programIds,
-            Map<Integer, ScenarioProgram> scenarioPrograms,
+    public List<GearAdjustment> getDefaultAdjustments(Date startDate,
+            Date stopDate, Collection<ScenarioProgram> scenarioPrograms,
             YukonUserContext userContext);
 
     /**

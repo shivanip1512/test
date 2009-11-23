@@ -8,14 +8,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
-import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -124,38 +122,23 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<GearAdjustment> getDefaultAdjustmentForProgram(
-            Date startDate, Date stopDate, int programId,
-            YukonUserContext userContext) {
-        List<Integer> programIds = Lists.newArrayList();
-        programIds.add(programId);
-        return getDefaultAdjustmentForPrograms(startDate, stopDate, programIds,
-                                               null, userContext);
-    }
-
-    @Override
-    public List<GearAdjustment> getDefaultAdjustmentForPrograms(
-            Date startDate, Date stopDate,
-            Collection<Integer> programIds,
-            Map<Integer, ScenarioProgram> scenarioPrograms,
+    public List<GearAdjustment> getDefaultAdjustments(Date startDate,
+            Date stopDate, Collection<ScenarioProgram> scenarioPrograms,
             YukonUserContext userContext) {
 
         DateTime firstStartDate = new DateTime(startDate);
         DateTime lastStopDate = new DateTime(stopDate);
         if (scenarioPrograms != null) {
-            for (Integer programId : programIds) {
-                ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
-                if (scenarioProgram != null) {
-                    Date programStartDate = datePlusOffset(startDate,
-                                                           scenarioProgram.getStartOffset());
-                    if (firstStartDate.isAfter(programStartDate.getTime())) {
-                        firstStartDate = new DateTime(programStartDate);
-                    }
-                    Date programStopDate = datePlusOffset(stopDate,
-                                                          scenarioProgram.getStopOffset());
-                    if (lastStopDate.isBefore(programStopDate.getTime())) {
-                        lastStopDate = new DateTime(programStopDate);
-                    }
+            for (ScenarioProgram scenarioProgram : scenarioPrograms) {
+                Date programStartDate = datePlusOffset(startDate,
+                                                       scenarioProgram.getStartOffset());
+                if (firstStartDate.isAfter(programStartDate.getTime())) {
+                    firstStartDate = new DateTime(programStartDate);
+                }
+                Date programStopDate = datePlusOffset(stopDate,
+                                                      scenarioProgram.getStopOffset());
+                if (lastStopDate.isBefore(programStopDate.getTime())) {
+                    lastStopDate = new DateTime(programStopDate);
                 }
             }
         }
@@ -167,25 +150,12 @@ public class ProgramServiceImpl implements ProgramService {
         timeSlotStartCal.set(Calendar.MINUTE, 0);
         timeSlotStartCal.set(Calendar.SECOND, 0);
         timeSlotStartCal.set(Calendar.MILLISECOND, 0);
-        DateTimeZone timeZone = userContext.getJodaTimeZone();
-        LocalTime gearAdjustmentBegin = new LocalTime(timeSlotStartCal,
-                                                      timeZone);
-        LocalTime gearAdjustmentEnd = gearAdjustmentBegin.plusHours(1);
+        DateTime gearAdjustmentBegin = new DateTime(timeSlotStartCal);
 
-        DateTime referenceDate = firstStartDate;
-
-        while (lastStopDate.compareTo(gearAdjustmentBegin.toDateTime(referenceDate)) > 0
+        while (lastStopDate.compareTo(gearAdjustmentBegin) > 0
                 && retVal.size() < 24) {
-            GearAdjustment gearAdjustment = new GearAdjustment();
-            gearAdjustment.setBeginTime(gearAdjustmentBegin);
-            gearAdjustment.setEndTime(gearAdjustmentEnd);
-            gearAdjustment.setAdjustmentValue(100);
-            retVal.add(gearAdjustment);
+            retVal.add(new GearAdjustment(gearAdjustmentBegin.toDate()));
             gearAdjustmentBegin = gearAdjustmentBegin.plusHours(1);
-            gearAdjustmentEnd = gearAdjustmentEnd.plusHours(1);
-            if (gearAdjustmentBegin.getHourOfDay() == 0) {
-                referenceDate = firstStartDate.plusDays(1);
-            }
         }
 
         return retVal;
@@ -271,7 +241,7 @@ public class ProgramServiceImpl implements ProgramService {
                                                        programStopDate);
     }
 
-    private Date datePlusOffset(Date date, Duration offset) {
+    protected Date datePlusOffset(Date date, Duration offset) {
         TimeZone timeZone = systemDateFormattingService.getSystemTimeZone();
         DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
         DateTime dateTime = new DateTime(date, dateTimeZone);
@@ -284,20 +254,16 @@ public class ProgramServiceImpl implements ProgramService {
      * program's start and stop times. It assumes the gear adjustments are in
      * order by start/end time.
      */
-    private String additionalInfoFromGearAdjustments(
+    protected String additionalInfoFromGearAdjustments(
             List<GearAdjustment> gearAdjustments, Date startDate, Date stopDate) {
         if (gearAdjustments == null) {
             return null;
         }
 
         StringBuilder retVal = new StringBuilder("adjustments");
-        DateTime referenceDate = new DateTime(startDate);
         for (GearAdjustment gearAdjustment : gearAdjustments) {
-            if (gearAdjustment.getBeginTime().getHourOfDay() == 0) {
-                referenceDate = referenceDate.plusDays(1);
-            }
-            Date gearBegin = gearAdjustment.getBeginTime().toDateTime(referenceDate).toDate();
-            Date gearEnd = gearAdjustment.getEndTime().toDateTime(referenceDate).toDate();
+            Date gearBegin = gearAdjustment.getBeginTime();
+            Date gearEnd = gearAdjustment.getEndTime();
             if (startDate.before(gearBegin) && !stopDate.before(gearBegin)
                     || !startDate.before(gearBegin) && !startDate.after(gearEnd)) {
                 retVal.append(' ');

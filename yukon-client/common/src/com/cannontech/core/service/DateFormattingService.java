@@ -55,6 +55,10 @@ public interface DateFormattingService {
         }
     }
 
+    static public enum DurationFormatEnum {
+        HM_SHORT
+    }
+
     public static enum MidnightMode {
         NORMAL,
         INCLUDES_MIDNIGHT
@@ -91,9 +95,6 @@ public interface DateFormattingService {
      */
     public DateTimeFormatter getDateTimeFormatter(DateFormatEnum type, YukonUserContext userContext);
 
-    public PeriodFormatter getPeriodFormatter(DateFormatEnum type,
-            YukonUserContext userContext);
-
     public Date flexibleDateParser(String dateStr, DateOnlyMode mode,
                                    YukonUserContext userContext) throws ParseException;
 
@@ -119,4 +120,14 @@ public interface DateFormattingService {
             YukonUserContext userContext) throws ParseException;
 
     public Calendar getCalendar(YukonUserContext userContext);
+
+    /**
+     * Format a duration using the given the specific type. The duration must be
+     * an instance of ReadableDuration or ReadablePeriod.
+     */
+    public String formatDuration(Object duration, DurationFormatEnum type,
+            YukonUserContext userContext) throws IllegalArgumentException;
+
+    public PeriodFormatter getPeriodFormatter(DurationFormatEnum type,
+            YukonUserContext userContext);
 }

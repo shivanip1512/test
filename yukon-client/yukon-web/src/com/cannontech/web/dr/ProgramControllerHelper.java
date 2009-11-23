@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -100,6 +101,10 @@ public class ProgramControllerHelper {
         PropertyEditor fullDateTimeEditor =
             datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
         binder.registerCustomEditor(Date.class, fullDateTimeEditor);
+
+        PropertyEditor dateTimeEditor =
+            datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.DATEHM, userContext);
+        binder.registerCustomEditor(DateTime.class, dateTimeEditor);
 
         PropertyEditor localTimeEditor =
             datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.TIME24H, userContext);

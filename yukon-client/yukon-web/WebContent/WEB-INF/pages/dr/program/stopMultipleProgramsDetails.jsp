@@ -100,7 +100,7 @@ singleProgramChecked = function(boxChecked) {
                 <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
                 <c:if test="${!empty scenarioPrograms}">
                     <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
-                    <td><cti:formatDate type="TIME24H" value="${scenarioProgram.stopOffset}"/></td>
+                    <td><cti:duration type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
                 </c:if>
             </tr>
         </c:forEach>

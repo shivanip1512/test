@@ -73,16 +73,6 @@ public class DateFormattingServiceImpl implements DateFormattingService {
 
                 DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
                 return formatter.print(instant);
-            } else if (object instanceof ReadablePeriod) {
-                ReadablePeriod period = (ReadablePeriod) object;
-
-                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
-                return formatter.print(period);
-            } else if (object instanceof ReadableDuration) {
-                ReadablePeriod period = new Period(object, PeriodType.time());
-
-                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
-                return formatter.print(period);
         	} else {
         		throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.formatDate()");
         	}
@@ -112,22 +102,6 @@ public class DateFormattingServiceImpl implements DateFormattingService {
     	formatter.withZone(dateTimeZone);
         
         return formatter;
-    }
-
-    @Override
-    public PeriodFormatter getPeriodFormatter(DateFormatEnum type,
-            YukonUserContext userContext) {
-
-        // Currently Joda doesn't support formatting configurable with a string
-        // for periods so for now, we only support "h:mm" for periods and
-        // durations.
-        PeriodFormatterBuilder formatBuilder = new PeriodFormatterBuilder();
-        formatBuilder.printZeroAlways()
-                     .appendHours()
-                     .appendSuffix(":")
-                     .minimumPrintedDigits(2)
-                     .appendMinutes();
-        return formatBuilder.toFormatter();
     }
 
     public synchronized Date flexibleDateParser(String dateStr,
@@ -171,4 +145,41 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         this.dateParserLookup = dateParserLookup;
     }
 
+    @Override
+    public String formatDuration(Object duration, DurationFormatEnum type,
+            YukonUserContext userContext) throws IllegalArgumentException {
+        if (duration != null) {
+            if (duration instanceof ReadablePeriod) {
+                ReadablePeriod period = (ReadablePeriod) duration;
+
+                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
+                return formatter.print(period);
+            } else if (duration instanceof ReadableDuration) {
+                ReadablePeriod period = new Period(duration, PeriodType.time());
+
+                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
+                return formatter.print(period);
+            } else {
+                throw new IllegalArgumentException("duration object is not supported in DateFormattingServiceImpl.formatDuration()");
+            }
+        } else {
+            throw new IllegalArgumentException("duration object is null in DateFormattingServiceImpl.formatDate()");
+        }
+    }
+
+    @Override
+    public PeriodFormatter getPeriodFormatter(DurationFormatEnum type,
+            YukonUserContext userContext) {
+
+        // Currently Joda doesn't support formatting configurable with a string
+        // for periods so for now, we only support "h:mm" for periods and
+        // durations.
+        PeriodFormatterBuilder formatBuilder = new PeriodFormatterBuilder();
+        formatBuilder.printZeroAlways()
+                     .appendHours()
+                     .appendSuffix(":")
+                     .minimumPrintedDigits(2)
+                     .appendMinutes();
+        return formatBuilder.toFormatter();
+    }
 }

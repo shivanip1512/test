@@ -13,6 +13,11 @@ public interface ScenarioDao {
 
     public List<DisplayablePao> findScenariosForProgram(int programId);
 
+    /**
+     * Get a list of ScenarioPrograms for a given scenario keyed by program id.
+     * @param scenarioId
+     * @return a map of Integer programId to ScenarioProgram
+     */
     public Map<Integer, ScenarioProgram> findScenarioProgramsForScenario(
             int scenarioId);
 }
