@@ -10,12 +10,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
@@ -24,7 +24,7 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 
 public class EnrollmentDaoImpl implements EnrollmentDao {
     
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     /** These strings are to help with the row mapper.  If you use both of these
      *  strings you will have the right table connections and data returned.
@@ -51,7 +51,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         accountEnrollmentSQL.append("AND LMHCG.groupEnrollStop IS NULL");
 
         List<ProgramEnrollment> programEnrollments = 
-            simpleJdbcTemplate.query(accountEnrollmentSQL.toString(), 
+        	yukonJdbcTemplate.query(accountEnrollmentSQL.toString(), 
                                      enrollmentRowMapper(), accountId);
             
         for (ProgramEnrollment programEnrollment : programEnrollments) {
@@ -76,14 +76,32 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
 		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
 		
-		List<Program> programList = simpleJdbcTemplate.query(sql.toString(),
-                                                             new ProgramRowMapper(simpleJdbcTemplate),
+		List<Program> programList = yukonJdbcTemplate.query(sql.toString(),
+                                                             new ProgramRowMapper(yukonJdbcTemplate),
                                                              inventoryId,
                                                              LMHardwareControlGroup.ENROLLMENT_ENTRY);
 		
 		return programList;
 	}
 
+	@Override
+	@Transactional
+	public boolean isInventoryCurrentlyEnrolledProgram(int inventoryId, int programId) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT COUNT(*)");
+		sql.append("FROM LMHardwareControlGroup lmhcg");
+		sql.append("	JOIN LMProgramWebPublishing pwp ON (lmhcg.ProgramId = pwp.ProgramId)");
+		sql.append("WHERE lmhcg.InventoryId = ?").appendArgument(inventoryId);
+		sql.append("	AND pwp.DeviceId = ?").appendArgument(programId);
+		sql.append("	AND lmhcg.Type = ?").appendArgument(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+		sql.append("	AND lmhcg.ProgramId > 0");
+		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
+		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
+		
+		return yukonJdbcTemplate.queryForInt(sql) > 0;
+	}
+	
 	@Override
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId,
 			Date startTime, Date stopTime) {
@@ -101,7 +119,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	AND (lmhcg.GroupEnrollStop IS NULL OR lmhcg.GroupEnrollStop >= ?)");
 		
 		List<Program> programList = 
-			simpleJdbcTemplate.query(sql.toString(), new ProgramRowMapper(simpleJdbcTemplate), 
+			yukonJdbcTemplate.query(sql.toString(), new ProgramRowMapper(yukonJdbcTemplate), 
 					inventoryId,
 					LMHardwareControlGroup.ENROLLMENT_ENTRY,
 					stopTime,
@@ -122,7 +140,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	AND lmhcg.OptOutStart <= ?");
 		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
 		
-		List<Integer> inventoryIds = simpleJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
+		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
 													program.getProgramId(),
 													LMHardwareControlGroup.OPT_OUT_ENTRY,
 													stopDate,
@@ -142,7 +160,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	AND lmhcg.OptOutStart <= ?");
 		sql.append("	AND lmhcg.OptOutStop IS NULL");
 		
-		List<Integer> inventoryIds = simpleJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
+		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
 				LMHardwareControlGroup.OPT_OUT_ENTRY,
 				now);
 		return inventoryIds;
@@ -161,7 +179,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
 		
 		List<LMHardwareControlGroup> history = 
-			simpleJdbcTemplate.query(sql.toString(), new LMHardwareControlGroupRowMapper(), 
+			yukonJdbcTemplate.query(sql.toString(), new LMHardwareControlGroupRowMapper(), 
 				program.getProgramId(),
 				LMHardwareControlGroup.OPT_OUT_ENTRY,
 				stopDate,
@@ -190,7 +208,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append(" GROUP BY pdg.DeviceId");
 		
 		final Map<Integer, Integer> programIdCountMap = new HashMap<Integer, Integer>();
-		simpleJdbcTemplate.getJdbcOperations().query(sql.toString(), sql.getArguments(), new RowCallbackHandler() {
+		yukonJdbcTemplate.getJdbcOperations().query(sql.toString(), sql.getArguments(), new RowCallbackHandler() {
 		
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
@@ -242,8 +260,8 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
     };
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
 }
 

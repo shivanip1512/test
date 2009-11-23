@@ -29,8 +29,12 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 
 	@Override
-	public void cancelAllOptOuts(LiteYukonUser user)
-			throws CommandCompletionException {
+	public void cancelAllOptOuts(LiteYukonUser user) {
+		throw new UnsupportedOperationException("not implemented");
+	}
+	
+	@Override
+	public void cancelAllOptOutsByProgramId(int programId, LiteYukonUser user) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

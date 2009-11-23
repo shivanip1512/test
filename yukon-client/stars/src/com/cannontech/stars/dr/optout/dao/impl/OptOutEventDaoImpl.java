@@ -25,6 +25,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
@@ -556,6 +557,33 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 												now,
 												now,
 												energyCompany.getEnergyCompanyID());
+		
+		return optOutEvents;
+	}
+	
+	@Override
+	public List<OptOutEvent> getAllCurrentOptOutsByProgramId(int webpublishingProgramId, LiteStarsEnergyCompany energyCompany) {
+
+		Date now = new Date();
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ooe.*");
+		sql.append("FROM OptOutEvent ooe");
+		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
+		sql.append("	JOIN LMHardwareControlGroup lmhcg ON (ooe.InventoryId = lmhcg.InventoryId)");
+		sql.append("	JOIN LMProgramWebPublishing pwp ON (lmhcg.ProgramId = pwp.ProgramId)");
+		sql.append("WHERE ooe.EventState").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
+		sql.append("	AND ooe.StartDate").lte(now);
+		sql.append("	AND ooe.StopDate").gte(now);
+		sql.append("	AND ectam.EnergyCompanyId").eq(energyCompany.getEnergyCompanyID());
+		
+		sql.append("	AND pwp.ProgramId").eq(webpublishingProgramId);
+		sql.append("	AND lmhcg.Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+		sql.append("	AND lmhcg.ProgramId > 0");
+		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
+		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
+		
+		List<OptOutEvent> optOutEvents = yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		
 		return optOutEvents;
 	}

@@ -47,10 +47,16 @@ public interface OptOutService {
 	/**
 	 * Method to cancel all current opt outs for the given user's energy company
 	 * @param user - User requesting cancel
-	 * @throws CommandCompletionException - If the cancel command could not be sent to the devices
 	 */
-	public void cancelAllOptOuts(LiteYukonUser user) 
-		throws CommandCompletionException;
+	public void cancelAllOptOuts(LiteYukonUser user);
+	
+	/**
+	 * Method to cancel all current opt outs for the given user's energy company.
+	 * Limited to those opt outs that tie to inventory that is currently enrolled in a given program.
+	 * @param programId
+	 * @param user
+	 */
+	public void cancelAllOptOutsByProgramId(int programId, LiteYukonUser user);
 
 	/**
 	 * Method to resend any current opt out command

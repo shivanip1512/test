@@ -357,33 +357,51 @@ public class OptOutServiceImpl implements OptOutService {
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts(energyCompany);
 		
-		for(OptOutEvent event : currentOptOuts) {
+		cancelOptOutEvents(currentOptOuts, energyCompany, user);
+	}
+	
+	@Override
+	public void cancelAllOptOutsByProgramId(int programId, LiteYukonUser user) {
+
+		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOutsByProgramId(programId, energyCompany);
+		
+		cancelOptOutEvents(currentOptOuts, energyCompany, user);
+	}
+	
+	private void cancelOptOutEvents(List<OptOutEvent> optOuts, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+		
+		for(OptOutEvent event : optOuts) {
 			
 			Integer inventoryId = event.getInventoryId();
-			LiteStarsLMHardware inventory = 
-				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+			LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 			CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
 			
-			try {
-				this.sendCancelCommandAndNotification(
-						inventory, energyCompany, user, event, customerAccount);
-				
-				// Update event state
-				event.setState(OptOutEventState.CANCEL_SENT);
-				event.setStopDate(new Date());
-				
-				// Update the count state to don't count since we force-canceled this opt out
-				event.setEventCounts(OptOutCounts.DONT_COUNT);
-				
-				optOutEventDao.save(event, OptOutAction.CANCEL, user);
-				
-				this.cancelLMHardwareControlGroupOptOut(inventoryId, customerAccount, event, user);
-				
-			} catch (CommandCompletionException e) {
-				// Can't do much - tried to cancel opt out.  Log the error and 
-				// continue to cancel other opt outs
-				logger.error(e);
-			}
+			cancelSingleOptOut(event, customerAccount, inventory, energyCompany, user);
+		}
+	}
+	
+	private void cancelSingleOptOut(OptOutEvent event, CustomerAccount customerAccount, LiteStarsLMHardware inventory, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+		
+		try {
+			
+			this.sendCancelCommandAndNotification(inventory, energyCompany, user, event, customerAccount);
+			
+			// Update event state
+			event.setState(OptOutEventState.CANCEL_SENT);
+			event.setStopDate(new Date());
+			
+			// Update the count state to don't count since we force-canceled this opt out
+			event.setEventCounts(OptOutCounts.DONT_COUNT);
+			
+			optOutEventDao.save(event, OptOutAction.CANCEL, user);
+			
+			this.cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), customerAccount, event, user);
+			
+		} catch (CommandCompletionException e) {
+			// Can't do much - tried to cancel opt out.  Log the error and 
+			// continue to cancel other opt outs
+			logger.error(e);
 		}
 	}
 	
@@ -514,7 +532,7 @@ public class OptOutServiceImpl implements OptOutService {
 				// Only add the history for inventory that was opted out of the given program
 				Integer inventoryId = history.getInventoryId();
 				if(optedOutInventory.contains(inventoryId)) {
-					history.setProgramName(programName);
+					history.setPrograms(Collections.singletonList(program));
 					historyList.add(history);
 				}
 			}
@@ -532,7 +550,7 @@ public class OptOutServiceImpl implements OptOutService {
 				for(Program program : programList) {
 					
 					OverrideHistory copy = history.getACopy();
-					copy.setProgramName(program.getProgramName());
+					copy.setPrograms(Collections.singletonList(program));
 						
 					historyList.add(copy);
 				}
@@ -545,8 +563,7 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
-	public List<OverrideHistory> getOptOutHistoryByProgram(String programName,
-			Date startTime, Date stopTime, LiteYukonUser user) throws ProgramNotFoundException {
+	public List<OverrideHistory> getOptOutHistoryByProgram(String programName, Date startTime, Date stopTime, LiteYukonUser user) throws ProgramNotFoundException {
 
 		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
 		
@@ -556,21 +573,20 @@ public class OptOutServiceImpl implements OptOutService {
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
 		
 		// Get the opted out inventory by program and time period
-		List<Integer> optedOutInventory = 
-			enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+		List<Integer> optedOutInventory = enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
 		
 		// For each inventory, get the opt out event and create the override history object
 		for(Integer inventoryId : optedOutInventory) {
 			
-			List<OverrideHistory> inventoryHistoryList = 
-				optOutEventDao.getOptOutHistoryForInventory(inventoryId, startTime, stopTime);
+			List<Program> programList = enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime);
+			
+			List<OverrideHistory> inventoryHistoryList = optOutEventDao.getOptOutHistoryForInventory(inventoryId, startTime, stopTime);
 
 			for(OverrideHistory history : inventoryHistoryList) {
-				history.setProgramName(programName);
+				history.setPrograms(programList);
 			}
 			
 			historyList.addAll(inventoryHistoryList);
-			
 		}
 		
 		return historyList;

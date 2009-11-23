@@ -122,6 +122,15 @@ public interface OptOutEventDao {
 	public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany);
 	
 	/**
+	 * Method to get all current opt out events for a given energy company.
+	 * Limited to those opt outs that tie to inventory that is currently enrolled in a given program.
+	 * @param programId
+	 * @param energyCompany
+	 * @return
+	 */
+	public List<OptOutEvent> getAllCurrentOptOutsByProgramId(int programId, LiteStarsEnergyCompany energyCompany);
+	
+	/**
 	 * Method to get the total number of opt outs that have been used for a given inventory and 
 	 * account for a given time period
 	 * 

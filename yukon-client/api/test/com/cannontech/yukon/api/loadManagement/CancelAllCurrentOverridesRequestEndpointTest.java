@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.endpoint.CancelAllCurrentOverridesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -30,7 +29,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	
     	impl = new CancelAllCurrentOverridesRequestEndpoint();
     	impl.setOptOutService(mockOptOutService);
-    	impl.setAuthDao(new MockAuthDao());
+    	impl.setRolePropertyDao(new MockRolePropertyDao());
     }
     
     @Test
@@ -46,7 +45,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createCancleCurrentOverridesRequestElement(
     			XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
+        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invoke(requestElement, user);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -85,8 +84,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	}
     	
     	@Override
-    	public void cancelAllOptOuts(LiteYukonUser user)
-    	throws CommandCompletionException {
+    	public void cancelAllOptOuts(LiteYukonUser user) {
     		this.callCount++;
     	}
     	
