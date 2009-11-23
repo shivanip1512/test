@@ -209,6 +209,17 @@ public interface LoadControlService {
 
     
     /**
+     * Returns a list of ScenarioProgramStartingGears.
+     * The ScenarioProgramStartingGears object contains the name of the scenario, and a list of 
+     * ProgramStartingGear. Each ProgramStartingGear contains the name of the program, and the name
+     * and id of it's starting gear.
+     * Only those scenarios that the user has visibility to are included.
+     * @param user
+     * @return
+     */
+    public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user);
+    
+    /**
      * Returns ScenarioProgramStartingGears for the given scenarioName.
      * The ScenarioProgramStartingGears object contains the name of the scenario, and a list of 
      * ProgramStartingGear. Each ProgramStartingGear contains the name of the program, and the name
@@ -237,4 +248,14 @@ public interface LoadControlService {
     public List<ProgramControlHistory> getControlHistoryByProgramName(
 			String programName, Date fromTime, Date throughTime,
 			LiteYukonUser user) throws NotFoundException, NotAuthorizedException;
+    
+    /**
+     * Returns a list of ProgramControlHistory objects  within the given time period.
+     * Only programs visible to the user are included.
+     * @param fromTime
+     * @param throughTime
+     * @param user
+     * @return
+     */
+    public List<ProgramControlHistory> getAllControlHistory(Date fromTime, Date throughTime, LiteYukonUser user);
 }

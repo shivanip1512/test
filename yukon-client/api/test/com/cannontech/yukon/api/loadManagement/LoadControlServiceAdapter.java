@@ -33,6 +33,11 @@ public class LoadControlServiceAdapter implements LoadControlService {
             throws NotFoundException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
+    
+    @Override
+    public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user) {
+    	throw new UnsupportedOperationException("Not Implemented");
+    }
 
     @Override
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(
@@ -94,4 +99,8 @@ public class LoadControlServiceAdapter implements LoadControlService {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
+    @Override
+    public List<ProgramControlHistory> getAllControlHistory(Date fromTime, Date throughTime, LiteYukonUser user) {
+    	throw new UnsupportedOperationException("Not Implemented");
+    }
 }

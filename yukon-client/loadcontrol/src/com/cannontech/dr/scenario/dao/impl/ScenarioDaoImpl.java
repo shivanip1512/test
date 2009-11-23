@@ -7,18 +7,20 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.google.common.collect.Maps;
 
 public class ScenarioDaoImpl implements ScenarioDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+	
+    private YukonJdbcOperations yukonJdbcOperations;
 
     private final static String singleScenarioByIdQuery =
         "SELECT paObjectId, paoName FROM yukonPAObject"
@@ -57,14 +59,25 @@ public class ScenarioDaoImpl implements ScenarioDao {
 
     @Override
     public DisplayablePao getScenario(int scenarioId) {
-        return simpleJdbcTemplate.queryForObject(singleScenarioByIdQuery,
+        return yukonJdbcOperations.queryForObject(singleScenarioByIdQuery,
                                                  scenarioRowMapper,
                                                  scenarioId);
+    }
+    
+    @Override
+    public List<DisplayablePao> getAllScenarios() {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ypo.PAObjectID, ypo.paoName");
+    	sql.append("FROM YukonPaObject ypo");
+    	sql.append("WHERE ypo.Type = ").appendArgument("LMSCENARIO");
+    	
+        return yukonJdbcOperations.query(sql, scenarioRowMapper);
     }
 
     @Override
     public List<DisplayablePao> findScenariosForProgram(int programId) {
-        List<DisplayablePao> retVal = simpleJdbcTemplate.query(scenariosByProgramIdQuery,
+        List<DisplayablePao> retVal = yukonJdbcOperations.query(scenariosByProgramIdQuery,
                                                                scenarioRowMapper,
                                                                programId);
         return retVal;
@@ -76,7 +89,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
         Map<Integer, ScenarioProgram> retVal = Maps.newHashMap();
 
         List<ScenarioProgram> scenarioPrograms =
-            simpleJdbcTemplate.query("SELECT scenarioId, programId, " +
+        	yukonJdbcOperations.query("SELECT scenarioId, programId, " +
             		"startOffset, stopOffset, startGear" +
             		" FROM lmControlScenarioProgram WHERE scenarioid = ?",
             		scenarioProgramRowMapper, scenarioId);
@@ -88,7 +101,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
+		this.yukonJdbcOperations = yukonJdbcOperations;
+	}
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -18,6 +19,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
@@ -34,6 +36,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
+import com.google.common.collect.Lists;
 
 public class LoadControlServiceImpl implements LoadControlService {
     
@@ -45,10 +48,12 @@ public class LoadControlServiceImpl implements LoadControlService {
     private PaoDao paoDao;
     private PaoAuthorizationService paoAuthorizationService;
     private Executor executor;
+    private ScenarioDao scenarioDao;
     
     private LoadControlClientConnection loadControlClientConnection;
     
     // GET PROGRAM SATUS BY PROGRAM NAME
+    @Override
     public ProgramStatus getProgramStatusByProgramName(String programName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
@@ -65,6 +70,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // GET ALL CURRENTLY ACTIVE PROGRAMS
+    @Override
     public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
         
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
@@ -90,6 +96,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // START CONTROL BY PROGRAM NAME
+    @Override
 	public ProgramStatus startControlByProgramName(String programName,
 			Date startTime, Date stopTime, String gearName, boolean forceStart,
 			boolean observeConstraintsAndExecute, LiteYukonUser user)
@@ -120,6 +127,8 @@ public class LoadControlServiceImpl implements LoadControlService {
         return doExecuteStartRequest(program, startTime, stopTime, gearNumber, forceStart, observeConstraintsAndExecute, user);
     }
     
+    // START CONTROL BY PROGRAM NAME
+    @Override
     public ProgramStatus startControlByProgramName(String programName,
 			Date startTime, Date stopTime, boolean forceStart,
 			boolean observeConstraintsAndExecute, LiteYukonUser user)
@@ -140,6 +149,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
 
     // STOP CONTROL BY PROGRAM NAME
+    @Override
 	public ProgramStatus stopControlByProgramName(String programName,
 			Date stopTime, boolean forceStop,
 			boolean observeConstraintsAndExecute, LiteYukonUser user)
@@ -158,6 +168,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // START CONTROL BY SCENAIO NAME
+    @Override
 	public ScenarioStatus startControlByScenarioName(String scenarioName,
 													Date startTime, 
 													Date stopTime, 
@@ -173,6 +184,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 		return doStartProgramsInScenario(programIds, scenarioId, scenarioName, startTime, stopTime, forceStart, observeConstraintsAndExecute, user);
 	}
 	
+    // ASYNC START CONTROL BY SCENARIO NAME@Override
+    @Override
 	public void asynchStartControlByScenarioName(final String scenarioName,
 												final Date startTime, 
 												final Date stopTime,
@@ -214,6 +227,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 	}
     
     // STOP CONTROL BY SCENAIO NAME
+	@Override
 	public ScenarioStatus stopControlByScenarioName(String scenarioName,
 													Date stopTime, 
 													boolean forceStop,
@@ -228,6 +242,8 @@ public class LoadControlServiceImpl implements LoadControlService {
         return doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
     }
 	
+	// ASYNC STOP CONTROL BY SCENARIO NAME
+	@Override
 	public void asynchStopControlByScenarioName(final String scenarioName,
 												final Date stopTime, 
 												final boolean forceStop,
@@ -265,10 +281,32 @@ public class LoadControlServiceImpl implements LoadControlService {
         return new ScenarioStatus(scenarioName, programStatuses);
 	}
     
+    // ALL PROGRAM STARTING GEARS BY SCENARIO NAME
+	@Override
+    public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user) {
+        
+		List<DisplayablePao> allScenarios = scenarioDao.getAllScenarios();
+		List<ScenarioProgramStartingGears> allScenarioProgramStartingGears = Lists.newArrayListWithExpectedSize(allScenarios.size());
+		
+		for (DisplayablePao scenario : allScenarios) {
+			
+			int scenarioId = scenario.getPaoIdentifier().getPaoId();
+			if (scenarioIsVisibleToUser(user, scenarioId)) {
+				
+				List<ProgramStartingGear> programStartingGears = loadControlProgramDao.getProgramStartingGearsForScenarioId(scenarioId);
+	            ScenarioProgramStartingGears scenarioProgramStartingGears = new ScenarioProgramStartingGears(scenario.getName(), programStartingGears);
+	            allScenarioProgramStartingGears.add(scenarioProgramStartingGears);
+			}
+		}
+		
+		return allScenarioProgramStartingGears;
+    }
+    
     // PROGRAM STARTING GEARS BY SCENARIO NAME
+	@Override
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         
-        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+		int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
         
         List<ProgramStartingGear> programStartingGears = loadControlProgramDao.getProgramStartingGearsForScenarioId(scenarioId);
@@ -276,14 +314,32 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // CONTROL HISTORY BY PROGRAM NAME
+	@Override
     public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         
     	int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
     	validateProgramIsVisibleToUser(programName, programId, user);
         
-        List<ProgramControlHistory> programControlHistory = loadControlProgramDao.getProgramControlHistory(programId, fromTime, throughTime);
+        List<ProgramControlHistory> programControlHistory = loadControlProgramDao.getProgramControlHistoryByProgramId(programId, fromTime, throughTime);
      
         return programControlHistory;
+    }
+    
+	// ALL CONTROL HISTORY
+	@Override
+    public List<ProgramControlHistory> getAllControlHistory(Date fromTime, Date throughTime, LiteYukonUser user) {
+        
+    	List<ProgramControlHistory> allProgramControlHistory = loadControlProgramDao.getAllProgramControlHistory(fromTime, throughTime);
+    	
+    	List<ProgramControlHistory> visibleProgramControlHistory = Lists.newArrayListWithExpectedSize(allProgramControlHistory.size());
+    	for (ProgramControlHistory programControlHistory : allProgramControlHistory) {
+    		
+    		if (programIsVisibleToUser(user, programControlHistory.getProgramId())) {
+    			visibleProgramControlHistory.add(programControlHistory);
+    		}
+    	}
+     
+        return visibleProgramControlHistory;
     }
     
     //==============================================================================================
@@ -474,5 +530,10 @@ public class LoadControlServiceImpl implements LoadControlService {
     @Autowired
     public void setExecutor(ScheduledExecutor executor) {
 		this.executor = executor;
+	}
+    
+    @Autowired
+    public void setScenarioDao(ScenarioDao scenarioDao) {
+		this.scenarioDao = scenarioDao;
 	}
 }

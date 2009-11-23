@@ -7,7 +7,9 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 
 public interface ScenarioDao {
+	
     public DisplayablePao getScenario(int scenarioId);
+    public List<DisplayablePao> getAllScenarios();
 
     public List<DisplayablePao> findScenariosForProgram(int programId);
 
