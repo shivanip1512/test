@@ -1,0 +1,1 @@
+<img src="/WebConfig/yukon/Icons/FAKE_PICKER.gif">

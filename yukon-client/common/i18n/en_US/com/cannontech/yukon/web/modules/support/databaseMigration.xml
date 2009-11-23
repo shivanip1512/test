@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- Home home.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+	<entry key="yukon.web.modules.support.databaseMigration.pageTitle">Database Migration</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.currentEnvironment">Current Environment</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.currentSchemaUser">Current Schema User</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.exportConfig">Export Config</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importConfig">Import Config</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.cancel">Cancel</entry>
+	
+	<!-- Export export.jspf -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.support.databaseMigration.export.book.img">/WebConfig/yukon/Icons/book_open.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.export.book.img.hover">/WebConfig/yukon/Icons/book_open_over.gif</entry>
+    
+	<entry key="yukon.web.modules.support.databaseMigration.export.componentToBeExport">Component To Be Exported</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.export.componentsToBeExport">Components To Be Exported</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.export.selectObjects">Select Objects</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.export.exportFile">Export</entry>
+	
+	<!-- Export Progress exportProgress.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.support.databaseMigration.exportProgress.boxTitle">Exporting Selected Component</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.exportProgress.noteLabel">Note:</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.exportProgress.noteText">After data is exported, the Download Export File button will be enabled.</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.exportProgress.pageTitle">Export Progress</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.exportProgress.downloadButton">Download</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.exportProgress.progressLabel">Progress</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.exportProgress.doneButton">Done</entry>
+    
+    <!-- Import import.jspf -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+	<entry key="yukon.web.modules.support.databaseMigration.loadImport.noteLabel">Note:</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.loadImport.noteText"><![CDATA[
+		Choose a file from the local file system, or from existing files on the Yukon server.
+		<br>After file is loaded, you will have a chance to validate its contents before it is committed.
+	]]></entry>
+	<entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile">Load</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noFile">No file provided.</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.emptyFile">Empty file.</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.doesNotExist">File does not exist.</entry>
+	
+	<!-- Import Validation importValidate.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.support.databaseMigration.importValidate.mag.img">/WebConfig/yukon/Icons/magnifier.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.importValidate.mag.img.hover">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.importValidate.warning.img">/WebConfig/yukon/Icons/warning.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.importValidate.warning.img.hover">/WebConfig/yukon/Icons/warning_over.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.importValidate.error.img">/WebConfig/yukon/Icons/error.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.importValidate.error.img.hover">/WebConfig/yukon/Icons/error_over.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.importValidate.placeholder.img">/WebConfig/yukon/Icons/placeholder.gif</entry>
+    
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.pageTitle">Import Validation</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.boxTitle">Validate File</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.noteLabel">Note:</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.noteText">Objects with warnings can be ignored or overwritten. Objects with errors are always ignored.</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.fileInfoSection">File Information</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.filePath">File Path</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.fileSize">File Size</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.orgEnvironment">Origin Environment</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.orgSchemaUser">Origin Schema User</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.fileViewContents">View File Contents</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection">Component Information</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.component">Component</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.count">Count</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.objects">Objects</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.warnings">Warnings</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.errors">Errors</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.commitFile">Commit</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importValidate.cancel">Cancel</entry>
+	
+	<!-- Import Progress importProgress.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.support.databaseMigration.importProgress.boxTitle">Importing Component</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importProgress.pageTitle">Import Progress</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.importProgress.progressLabel">Progress</entry>
+	
+</properties>

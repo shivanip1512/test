@@ -602,6 +602,9 @@
                 </entry>
                 <entry key="PHASE_DETECT">
                     <ref local="phaseDetectBackingService"/>
+                </entry>    
+                <entry key="DATABASE_MIGRATION">
+                    <ref local="databaseMigrationBackingService"/>
                 </entry>                
             </map>
         </property>
@@ -746,6 +749,9 @@
     <bean id="phaseDetectBackingService" class="com.cannontech.web.updater.phaseDetect.PhaseDetectBackingService"/>
     <bean id="isCompletePhaseDetectUpdaterHandler" class="com.cannontech.web.updater.phaseDetect.handler.IsCompletePhaseDetectUpdaterHandler"/>
     <bean id="resultsCountPhaseDetectUpdaterHandler" class="com.cannontech.web.updater.phaseDetect.handler.ResultsCountPhaseDetectUpdaterHandler"/>
+    
+    <!-- database migration -->
+    <bean id="databaseMigrationBackingService" class="com.cannontech.web.updater.databaseMigration.DatabaseMigrationBackingService"/>
     
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
           abstract="true">

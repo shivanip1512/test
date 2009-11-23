@@ -1,0 +1,181 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:msg var="currentEnvironment" key="yukon.web.modules.support.databaseMigration.currentEnvironment"/>
+<cti:msg var="currentSchemaUsername" key="yukon.web.modules.support.databaseMigration.currentSchemaUser"/>
+<cti:msg var="componentToBeExport" key="yukon.web.modules.support.databaseMigration.export.componentToBeExport"/>
+<cti:msg var="componentsToBeExport" key="yukon.web.modules.support.databaseMigration.export.componentsToBeExport"/>
+<cti:msg var="exportFile" key="yukon.web.modules.support.databaseMigration.export.exportFile"/>
+<cti:msg var="selectObjects" key="yukon.web.modules.support.databaseMigration.export.selectObjects"/>
+
+<c:set var="dbPickerIcon" value="/WebConfig/yukon/Icons/database_add.gif"/>
+<c:set var="bookOpenIcon" value="/WebConfig/yukon/Icons/book_open.gif"/>
+<c:set var="dbPickerIconDisabled" value="/WebConfig/yukon/Icons/database_disabled_gray.gif"/>
+<c:set var="mag" value="/WebConfig/yukon/Icons/magnifier.gif"/>
+
+<%-- CURRENT DB --%>
+<tags:nameValueContainer>
+	<tags:nameValue name="${currentEnvironment}" nameColumnWidth="190px">${dbUrl}</tags:nameValue>
+	<tags:nameValue name="${currentSchemaUsername}">${dbUsername}</tags:nameValue>
+</tags:nameValueContainer>
+<br><br>
+
+<%-- ALLOW MULTIPLE? --%>
+<c:set var="allowMultipleComponentSelection" value="false"/>
+
+<form id="exportForm" action="/spring/support/database/migration/export" method="post">
+
+	<c:set var="sectionTitle" value="${componentToBeExport}"/>
+	<c:if test="${allowMultipleComponentSelection}">
+		<c:set var="sectionTitle" value="${componentsToBeExport}"/>
+	</c:if>
+	
+	<tags:sectionContainer title="${sectionTitle}" styleClass="migrationSection">
+
+		<table cellspacing="4">
+		
+			<%-- load groups --%>
+			<tr>
+				<td>
+					<c:choose>
+						<c:when test="${allowMultipleComponentSelection}">
+							<input type="checkbox" name="component1" value="C1">
+						</c:when>
+						<c:otherwise>
+							<input type="radio" name="selectedComponent" value="C1">
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>
+					<cti:url var="component_1_selectObjects_url" value="/spring/support/database/migration/selectObjects">
+						<cti:param name="someObjectKey" value="XYZ"/>
+					</cti:url>
+					
+					<b>Load Groups</b> <img src="${bookOpenIcon}" class="pointer" onclick="openSimpleDialog('sharedPopupDialog', '${component_1_selectObjects_url}', 'Choose Load Groups')">
+									<img src="${mag}">
+					
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><img src="${dbPickerIconDisabled}"> LMGroup</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><img src="${dbPickerIconDisabled}"> LMGroupExpressCom</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><img src="${dbPickerIconDisabled}"> LMGroupExpressComAddress</td>
+			</tr>
+		
+			<%-- program --%>
+			<tr>
+				<td>
+					<c:choose>
+						<c:when test="${allowMultipleComponentSelection}">
+							<input type="checkbox" name="component2" value="C2">
+						</c:when>
+						<c:otherwise>
+							<input type="radio" name="selectedComponent" value="C2">
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>
+					<cti:url var="component_2_selectObjects_url" value="/spring/support/database/migration/selectObjects">
+						<cti:param name="someObjectKey" value="XYZ"/>
+					</cti:url>
+					
+					<b>Programs</b> <img src="${bookOpenIcon}" class="pointer" onclick="openSimpleDialog('sharedPopupDialog', '${component_2_selectObjects_url}', 'Choose Programs')">
+					
+                </td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><img src="${dbPickerIconDisabled}"> LMProgram</td>
+			</tr>
+			
+			<%-- login groups --%>
+			<tr>
+				<td>
+					<c:choose>
+						<c:when test="${allowMultipleComponentSelection}">
+							<input type="checkbox" name="component3" value="C3">
+						</c:when>
+						<c:otherwise>
+							<input type="radio" name="selectedComponent" value="C3">
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>
+					<cti:url var="component_3_selectObjects_url" value="/spring/support/database/migration/selectObjects">
+						<cti:param name="someObjectKey" value="XYZ"/>
+					</cti:url>
+					
+					<b>Login Groups</b> <img src="${bookOpenIcon}" class="pointer" onclick="openSimpleDialog('sharedPopupDialog', '${component_3_selectObjects_url}', 'Choose Login Groups')">
+					<img src="${mag}">
+                </td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><img src="${dbPickerIconDisabled}"> YukonGroup</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><img src="${dbPickerIconDisabled}"> YukonGroupRole</td>
+			</tr>
+			
+			<%-- energy company --%>
+			<tr>
+				<td>
+					<c:choose>
+						<c:when test="${allowMultipleComponentSelection}">
+							<input type="checkbox" name="component4" value="C4">
+						</c:when>
+						<c:otherwise>
+							<input type="radio" name="selectedComponent" value="C4">
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>	
+					<cti:url var="component_4_selectObjects_url" value="/spring/support/database/migration/selectObjects">
+						<cti:param name="someObjectKey" value="XYZ"/>
+					</cti:url>
+					
+					<b>Config Energy Company</b> <img src="${bookOpenIcon}" class="pointer" onclick="openSimpleDialog('sharedPopupDialog', '${component_4_selectObjects_url}', 'Choose Config Energy Company')">
+
+                </td>
+			</tr>
+			
+			<%-- user group editor --%>
+			<tr>
+				<td>
+					<c:choose>
+						<c:when test="${allowMultipleComponentSelection}">
+							<input type="checkbox" name="component5" value="C5">
+						</c:when>
+						<c:otherwise>
+							<input type="radio" name="selectedComponent" value="C5">
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>
+					<cti:url var="component_5_selectObjects_url" value="/spring/support/database/migration/selectObjects">
+						<cti:param name="someObjectKey" value="XYZ"/>
+					</cti:url>
+					
+					<b>User Group Editor</b> <img src="${bookOpenIcon}" class="pointer" onclick="openSimpleDialog('sharedPopupDialog', '${component_5_selectObjects_url}', 'Choose User Groups')">
+					
+                </td>
+			</tr>
+			
+		</table>
+	
+	</tags:sectionContainer>
+	<br>
+	
+	<tags:slowInput myFormId="exportForm" label="${exportFile}" width="80px"/>
+
+</form>

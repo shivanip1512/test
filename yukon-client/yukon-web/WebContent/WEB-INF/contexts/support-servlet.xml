@@ -34,6 +34,8 @@
     
     <bean name="/threadDump" class="com.cannontech.web.support.ThreadDumpController"/>
     
+    <bean id="databaseMigrationController" class="com.cannontech.web.support.database.migration.DatabaseMigrationController"/>
+    
     <!-- use jsp page for view -->
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">

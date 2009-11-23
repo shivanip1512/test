@@ -193,6 +193,7 @@
 <entry key="yukon.web.menu.config.support.database">Database</entry>
 <entry key="yukon.web.menu.config.support.database.info">Information</entry>
 <entry key="yukon.web.menu.config.support.database.compare">Validate</entry>
+<entry key="yukon.web.menu.config.support.database.migration">Migration</entry>
 
 <entry key="yukon.web.menu.config.support.scheduler">Jobs</entry>
 <entry key="yukon.web.menu.config.support.scheduler.active">Active</entry>

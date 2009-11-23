@@ -740,6 +740,9 @@
                     <option id="compare">
                         <link>/spring/support/database/validate/home</link>
                     </option>
+                    <option id="migration">
+                        <link>/spring/support/database/migration/home</link>
+                    </option>
                 </links>
             </option>
             <option id="scheduler">

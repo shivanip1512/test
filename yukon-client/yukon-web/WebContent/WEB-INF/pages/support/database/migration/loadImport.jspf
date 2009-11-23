@@ -1,0 +1,51 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:msg var="currentEnvironment" key="yukon.web.modules.support.databaseMigration.currentEnvironment"/>
+<cti:msg var="currentSchemaUsername" key="yukon.web.modules.support.databaseMigration.currentSchemaUser"/>
+<cti:msg var="noteLabel" key="yukon.web.modules.support.databaseMigration.loadImport.noteLabel"/>
+<cti:msg var="noteText" key="yukon.web.modules.support.databaseMigration.loadImport.noteText"/>
+<cti:msg var="loadFile" key="yukon.web.modules.support.databaseMigration.loadImport.loadFile"/>
+
+
+
+<%-- CURRENT DB --%>
+<tags:nameValueContainer>
+	<tags:nameValue name="${currentEnvironment}" nameColumnWidth="190px">${dbUrl}</tags:nameValue>
+	<tags:nameValue name="${currentSchemaUsername}">${dbUsername}</tags:nameValue>
+</tags:nameValueContainer>
+<br>
+	
+<%-- NOTE --%>
+<span class="smallBoldLabel">${noteLabel}</span>
+<span style="font-size:11px;">${noteText}</span>
+<br><br>
+
+
+<tags:nameValueContainer>
+	
+	<tags:nameValue name="Local File" nameColumnWidth="100px">
+		<form id="loadLocalFileForm" action="/spring/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
+			<input type="file" name="dataFile" size="30px">
+			<tags:slowInput myFormId="loadLocalFileForm" label="${loadFile}" width="80px"/>
+		</form>
+	</tags:nameValue>
+	
+	<tags:nameValueGap gapHeight="15px"/>
+	
+	<tags:nameValue name="Server File">
+		<form id="loadServerFileForm" action="/spring/support/database/migration/loadServerFile" method="post">
+			<select name="dataFilePath">
+				<option value="C:\\Yukon\\Server\\Log\\PSPL0019_dbUser_LoadGroups_123109.xml">C:\Yukon\Server\Log\PSPL0019_dbUser_LoadGroups_123109.xml</option>
+				<option value="pathToFile2">C:\Yukon\Server\Log\PSPL0019_dbUser_LoginGroup_111509.xml</option>
+				<option value="pathToFile3">C:\Yukon\Server\Log\PSPL0019_dbUser_LoadGroups_101309.xml</option>
+				<option value="pathToFile4">C:\Yukon\Server\Log\PSPL0019_dbUser_UserGroupEditor_101209.xml</option>
+			</select> 
+			<tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" width="80px"/>
+		</form>
+	</tags:nameValue>
+
+</tags:nameValueContainer>
+<br>

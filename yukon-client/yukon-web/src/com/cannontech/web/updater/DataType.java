@@ -24,5 +24,6 @@ public enum DataType {
     DR_LOADGROUP,
     PHASE_DETECT,
     VALIDATION_PROCESSING,
+    DATABASE_MIGRATION,
     ;
 }
