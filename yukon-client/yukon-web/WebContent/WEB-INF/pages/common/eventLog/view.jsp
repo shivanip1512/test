@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:standardPage title="Event Log" module="support">
 <cti:standardMenu menuSelection="other|events" />
@@ -18,7 +19,7 @@
                     <select name="categories" multiple size="4">
                         <c:forEach items="${eventCategoryList}" var="eventCategory">
                             <c:set var="selected" value="${selectedCategories[eventCategory] ? 'selected' : ''}"/>
-                            <option ${selected}>${eventCategory.fullName}</option>
+                            <option ${selected}><spring:escapeBody htmlEscape="true">${eventCategory.fullName}</spring:escapeBody></option>
                         </c:forEach>
                     </select>
                 </tags:nameValue>
@@ -52,7 +53,7 @@
             </tr>
             <c:forEach items="${events}" var="event">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td>${event.eventType}</td>
+                    <td><spring:escapeBody htmlEscape="true">${event.eventType}</spring:escapeBody></td>
                     <td><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
                     <td><cti:msg key="${event.messageSourceResolvable}" /></td>
                 </tr>
