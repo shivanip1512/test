@@ -7,6 +7,8 @@ import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteTypes;
 
 public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel implements LiteBaseTreeModel
 {
@@ -138,9 +140,17 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
     	               " seconds to find node in DBtreeModel, node = " + node);
     
     	if( node != null ) {
-            node.setUserObject(liteBase);
-    		nodeChanged( node );
-    		return true;			
+    	    if (liteBase.getLiteType() == LiteTypes.POINT && 
+    	            ((LitePoint)node.getUserObject()).getPointType() != ((LitePoint)liteBase).getPointType()) {
+    	        // If the type changed for a point, then remove the point from the tree and add it back again...in other words move from one "type" node to another
+                removeTreeObject(lb);
+    	        insertTreeObject(lb);
+   	        
+    	    } else {
+                node.setUserObject(liteBase);
+        		nodeChanged( node );
+        		return true;
+    	    }
     	}
     
     	return false;
