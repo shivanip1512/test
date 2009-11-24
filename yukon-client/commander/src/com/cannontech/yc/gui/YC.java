@@ -1055,18 +1055,16 @@ public class YC extends Observable implements MessageListener
 
 					if( getLoopType() != YC.NOLOOP)
 					{
-						if( returnMsg.getStatus() != 0)
-						{
-							if( returnMsg.getExpectMore() == 0)
+						if( returnMsg.getStatus() != 0) {
+							if( returnMsg.getExpectMore() == 0) {
 								displayOutput += "Error  " + returnMsg.getStatus() + "\t( " + returnMsg.getResultString()+ " )";
-							writeOutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, MessageType.ERROR);
-						}
-						else	//status == 0 == successfull
-						{
-							if( returnMsg.getExpectMore() == 0)
+							}
+						} else{	//status == 0 == successfull
+							if( returnMsg.getExpectMore() == 0) {
 								displayOutput += "Valid";
-							writeOutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, MessageType.SUCCESS);
+							}
 						}
+                        writeOutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, MessageType.getMessageType(returnMsg.getStatus()));
 					}
 				}
 				
@@ -1078,11 +1076,10 @@ public class YC extends Observable implements MessageListener
 					if (returnMsg.getExpectMore() == 0) {
 						DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
 						DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
-						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, "<B>"+deviceErrorDesc.getCategory()+"</B> -- " + deviceErrorDesc.getDescription(), MessageType.FRIEND);
+						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, "<B>"+deviceErrorDesc.getCategory()+"</B> -- " + deviceErrorDesc.getDescription(), MessageType.getMessageType(returnMsg.getStatus()));
 					}
-					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.ERROR);
-				} else //0=succes, 1="Not Normal" return, but not necessarily an error
-					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.SUCCESS);
+				} //0=succes, 1="Not Normal" return, but not necessarily an error
+				writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.getMessageType(returnMsg.getStatus()));
 
 				synchronized ( YukonCommander.class )
 				{

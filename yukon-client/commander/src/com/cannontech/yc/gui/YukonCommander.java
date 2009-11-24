@@ -3,7 +3,6 @@ package com.cannontech.yc.gui;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -149,28 +148,19 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	{
 		private YC.OutputMessage message = null; 
 		private javax.swing.JTextPane textPane = null;
-		public WriteOutput(javax.swing.JTextPane textPane_, YC.OutputMessage message_)
-		{
+		private String style;
+		
+		public WriteOutput(javax.swing.JTextPane textPane_, YC.OutputMessage message_) {
 			super();
 			this.textPane = textPane_;
 			this.message = message_;
+			this.style = message.getMessageType().getStyleString();
 		}
-		private String getStyle()
-		{
-			if( message.getMessageType() == MessageType.ERROR )
-				return "Red";
-			else if (message.getMessageType() == MessageType.SUCCESS)
-				return "Blue";
-			else if( message.getMessageType() == MessageType.FRIEND)
-				return "Red";
-			else
-				return "Black";
-		}		
-		public void run()
-		{
-			try
-			{
-                HTMLDocument doc = (HTMLDocument)textPane.getStyledDocument();
+
+		public void run() {
+			try {
+                
+			    HTMLDocument doc = (HTMLDocument)textPane.getStyledDocument();
                 int beginOffset = doc.getLength();
                 HTMLEditorKit kit = (HTMLEditorKit)textPane.getEditorKit();
                 StringReader reader = new StringReader(message.getText());
@@ -179,21 +169,14 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                 reader.close();
                 // Set text in the range [5, 7) red
                 doc.setCharacterAttributes(beginOffset, endOffset - beginOffset, textPane.getStyle("Font"), true);
-                String style = getStyle();
-                if( style != null)
-                {
+                if( style != null) {
                     doc.setCharacterAttributes(beginOffset, endOffset - beginOffset, textPane.getStyle(style), false);
                 }
-
                 
 				textPane.setCaretPosition(doc.getLength());
-			}
-			catch (javax.swing.text.BadLocationException ble)
-			{
+			} catch (javax.swing.text.BadLocationException ble) {
 				ble.printStackTrace();
-			} catch (IOException e)
-            {
-                // TODO Auto-generated catch block
+			} catch (IOException e) {
                 e.printStackTrace();
 			}
 		}
@@ -783,19 +766,13 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				ivjDebugOutputTextPane.setName("DebugOutputTextPane");
 				ivjDebugOutputTextPane.setBounds(0, 0, 11, 6);
                 ivjDebugOutputTextPane.setContentType("text/html");
-                Style style = ivjDebugOutputTextPane.addStyle("Red", null);
-                StyleConstants.setForeground(style, Color.RED);
                 
-                style = ivjDebugOutputTextPane.addStyle("Blue", null);
-                StyleConstants.setForeground(style, Color.BLUE);
+                for (MessageType messageType : MessageType.values()) {
+                    Style style = ivjDebugOutputTextPane.addStyle(messageType.getStyleString(), null);
+                    StyleConstants.setForeground(style, messageType.getColor());
+                }
                 
-                style = ivjDebugOutputTextPane.addStyle("Black", null);
-                StyleConstants.setForeground(style, Color.BLACK);
-                
-                style = ivjDebugOutputTextPane.addStyle("Green", null);
-                StyleConstants.setForeground(style, Color.GREEN);
-                
-                style = ivjDebugOutputTextPane.addStyle("Font", null);
+                Style style = ivjDebugOutputTextPane.addStyle("Font", null);
                 StyleConstants.setFontSize(style, 12);
                 StyleConstants.setFontFamily(style, "sans-serif");
 
@@ -847,13 +824,13 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				ivjDisplayOutputTextPane.setName("DisplayOutputTextPane");
 				ivjDisplayOutputTextPane.setBounds(0, 0, 11, 6);
                 ivjDisplayOutputTextPane.setContentType("text/html");
-                Style style = ivjDisplayOutputTextPane.addStyle("Red", null);
-                StyleConstants.setForeground(style, Color.red);
                 
-                style = ivjDisplayOutputTextPane.addStyle("Blue", null);
-                StyleConstants.setForeground(style, Color.blue);
-                
-                style = ivjDisplayOutputTextPane.addStyle("Font", null);
+                for (MessageType messageType : MessageType.values()) {
+                    Style style = ivjDisplayOutputTextPane.addStyle(messageType.getStyleString(), null);
+                    StyleConstants.setForeground(style, messageType.getColor());
+                }
+
+                Style style = ivjDisplayOutputTextPane.addStyle("Font", null);
                 StyleConstants.setFontSize(style, 12);
                 StyleConstants.setFontFamily(style, "sans-serif");
 				// user code begin {1}
