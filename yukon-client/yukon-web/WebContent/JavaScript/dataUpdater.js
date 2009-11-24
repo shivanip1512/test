@@ -4,10 +4,11 @@ var disableHighlight = false;
 var cannonDataUpdateRegistrations = $A();
 
 function initiateCannonDataUpdate(url, delayMs) {
+	
     var lastUpdate = 0;
     var failureCount = 0;
     var processResponseCallback = function(transport) {
-        var someValueHasUpdated = false;
+    	var someValueHasUpdated = false;
         
         // looks like stuff is working, hide error div
         $('cannonUpdaterErrorDiv').hide();
@@ -123,9 +124,6 @@ function initiateCannonDataUpdate(url, delayMs) {
         	var idMap = it['identifierMap'];
         	requestData.data = requestData.data.concat(idMap.values());
         });
-        
-        // trim down to removed duplicates (there probably won't be any)
-        requestData.data = requestData.data.uniq();
         
         if (requestData.data.length == 0) {
             // schedule next update
