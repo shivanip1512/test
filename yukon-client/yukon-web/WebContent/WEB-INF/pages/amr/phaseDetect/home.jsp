@@ -4,6 +4,8 @@
 
 <cti:msg key="yukon.web.modules.amr.phaseDetect.pageTitle" var="pageTitle"/>
 <cti:msg key="yukon.web.modules.amr.phaseDetect.step1.sectionTitle" var="sectionTitle"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step1.noteLabel" var="noteLabel"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.step1.noteText" var="noteText"/>
 
 <cti:standardPage title="Phase Detection" module="amr">
     <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
@@ -41,6 +43,12 @@
 	<br>
     <form action="/spring/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
         <tags:sectionContainer title="${sectionTitle}">
+            <table style="padding-bottom: 5px;">
+                <tr>
+                    <td valign="top" class="smallBoldLabel" style="padding-right: 5px;"><span class="errorRed">${noteLabel}</span></td>
+                    <td style="font-size:11px;"><span>${noteText}</span></td>
+                </tr>
+            </table>
             <input type="hidden" name="selectedSub" id="selectedSub" value="-1">
 		    <table style="padding-right: 20px;padding-bottom: 10px;">
 		        <tr valign="top">
