@@ -35,29 +35,20 @@ public class AddRemovePanel extends JPanel implements DragAndDropListener, Mouse
 	protected transient com.cannontech.common.gui.util.AddRemovePanelListener fieldAddRemovePanelListenerEventMulticaster = null;
 	private static OkCancelDialog dialog = null;
 	private static final TreeFindPanel FND_PANEL = new TreeFindPanel();
-	private boolean actionWorked = true;
 
 	class IvjEventHandler implements ActionListener, MouseListener, MouseMotionListener, ListSelectionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == AddRemovePanel.this.getAddButton()) {
                 if(getLeftList().getSelectedValues().length > 0) {
-                    addSelectedListItems(e);
-                    if(actionWorked){
+                    if( addSelectedListItems(e) ){
                         connEtoC10(e);
-                    } else {
-                        //if the action didn't work set back to default of true
-                        actionWorked = true;
                     }
                 }
             }
 			if (e.getSource() == AddRemovePanel.this.getRemoveButton()) {
                 if(getRightList().getSelectedValues().length > 0) {
-    				removeSelectedListItems(e);
-    				if(actionWorked){
+    				if( removeSelectedListItems(e) ){
     				    connEtoC12(e);
-    				} else {
-    				    //if the action didn't work set back to default of true
-    				    actionWorked = true;
     				}
                 };
             }
@@ -108,29 +99,6 @@ public void addAddRemovePanelListener(com.cannontech.common.gui.util.AddRemovePa
 	fieldAddRemovePanelListenerEventMulticaster = com.cannontech.common.gui.util.AddRemovePanelListenerEventMulticaster.add(fieldAddRemovePanelListenerEventMulticaster, newListener);
 	return;
 }
-/**
- * Comment
- */
-public void addButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-    actionWorked = validateAddAction();
-    if( actionWorked ) {
-    	if( rightListGetModel().getSize() < rightListMax.intValue() )
-    	{
-    		if( mode == TRANSFER_MODE )
-    		{
-    			transferSelection( getLeftList(), getRightList() );
-    		}
-    		else
-    		if( mode == COPY_MODE )
-    		{
-    			copySelection( getLeftList(), getRightList() );
-    		}
-    
-    		revalidate();
-    		repaint();
-    	}
-    }
-}
 
 /**
  * @return boolean
@@ -150,12 +118,33 @@ protected boolean validateRemoveAction() {
  * connEtoC1:  (AddButton.action.actionPerformed(java.awt.event.ActionEvent) --> AddRemovePanel.addButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void addSelectedListItems(java.awt.event.ActionEvent arg1) {
-	try {
-		this.addButton_ActionPerformed(arg1);
+private boolean addSelectedListItems(java.awt.event.ActionEvent arg1) {
+	boolean actionWorked = true;
+    
+    try {
+	    actionWorked = validateAddAction();
+	    if( actionWorked ) {
+	        if( rightListGetModel().getSize() < rightListMax.intValue() )
+	        {
+	            if( mode == TRANSFER_MODE )
+	            {
+	                transferSelection( getLeftList(), getRightList() );
+	            }
+	            else
+	            if( mode == COPY_MODE )
+	            {
+	                copySelection( getLeftList(), getRightList() );
+	            }
+	    
+	            revalidate();
+	            repaint();
+	        }
+	    }
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
+	
+	return actionWorked;
 }
 /**
  * connEtoC10:  (AddButton.action.actionPerformed(java.awt.event.ActionEvent) --> AddRemovePanel.fireAddButtonAction_actionPerformed(Ljava.util.EventObject;)V)
@@ -216,12 +205,30 @@ private void connEtoC14(java.awt.event.MouseEvent arg1) {
  * connEtoC2:  (RemoveButton.action.actionPerformed(java.awt.event.ActionEvent) --> AddRemovePanel.removeButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-private void removeSelectedListItems(java.awt.event.ActionEvent arg1) {
-	try {
-		this.removeButton_ActionPerformed(arg1);
+private boolean removeSelectedListItems(java.awt.event.ActionEvent arg1) {
+    boolean actionWorked = true;
+    
+    try {
+	    actionWorked = validateRemoveAction();
+	    if( actionWorked ) {
+	        if( mode == TRANSFER_MODE )
+	        {
+	            transferSelection( getRightList(), getLeftList() );
+	        }
+	        else
+	        if( mode == COPY_MODE )
+	        {
+	            removeSelection( getRightList() );
+	        }
+	    
+	        revalidate();
+	        repaint();
+	    }
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
+	
+	return actionWorked;
 }
 /**
  * connEtoC3:  (RightList.mouseMotion.mouseDragged(java.awt.event.MouseEvent) --> AddRemovePanel.fireRightListMouseMotion_mouseDragged(Ljava.util.EventObject;)V)
@@ -955,26 +962,6 @@ public void mouseReleased(java.awt.event.MouseEvent e) {
 public void removeAddRemovePanelListener(com.cannontech.common.gui.util.AddRemovePanelListener newListener) {
 	fieldAddRemovePanelListenerEventMulticaster = com.cannontech.common.gui.util.AddRemovePanelListenerEventMulticaster.remove(fieldAddRemovePanelListenerEventMulticaster, newListener);
 	return;
-}
-/**
- * Comment
- */
-public void removeButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-    actionWorked = validateRemoveAction();
-    if( actionWorked ) {
-    	if( mode == TRANSFER_MODE )
-    	{
-    		transferSelection( getRightList(), getLeftList() );
-    	}
-    	else
-    	if( mode == COPY_MODE )
-    	{
-    		removeSelection( getRightList() );
-    	}
-    
-    	revalidate();
-    	repaint();
-    }
 }
 /**
  * This method was created in VisualAge.
