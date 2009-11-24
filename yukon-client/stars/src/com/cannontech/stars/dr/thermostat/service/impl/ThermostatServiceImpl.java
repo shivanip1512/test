@@ -146,8 +146,10 @@ public class ThermostatServiceImpl implements ThermostatService {
             return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
         }
 
-        // Save event
-        customerEventDao.save(event);
+        // Save manual event settings
+        if (!event.isRunProgram()){
+            customerEventDao.save(event);    
+        }
 
         // Log manual event into activity log
         this.logManualEventActivity(thermostat,

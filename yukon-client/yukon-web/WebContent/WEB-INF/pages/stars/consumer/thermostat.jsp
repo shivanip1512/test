@@ -182,7 +182,7 @@
                                                 <c:choose>
                                                     <c:when test="${thermostat.type == 'UTILITY_PRO'}">
                                                         <tr>
-                                                            <td class="arrow"><img id="circulateArrow" src="${arrow}" <c:if test="${eventFanState != 'CIRCULATE'}">style="display: none;" </c:if>>&nbsp;</td>
+                                                            <td class="arrow"><img id="circulateArrow" src="${arrow}" <c:if test="${eventFanState != 'CIRCULATE'}">style="display: none;" </c:if>></td>
                                                             <td class="clickable subItem" onClick="setFan('circulateArrow', 'CIRCULATE')">
                                                                 <cti:msg key="yukon.dr.consumer.thermostat.fan.CIRCULATE" />
                                                             </td>
