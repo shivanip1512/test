@@ -5,10 +5,10 @@
 
 Things to note about telegyr learned the hard way...
 
--The ems will get angry if you ask it to reload it's groups/points too often.  
+-The ems will get angry if you ask it to reload it's groups/points too often.
    No faster than every 5 minutes seems to work ok
 
--The ems will tell you when he has reloaded, then you can switch your lists.  
+-The ems will tell you when he has reloaded, then you can switch your lists.
    If you don't wait, your points/data will get wonky looking because the point ids and data won't match up.
 
 -It appears that you may build up to 128 groups with up to 128 points in each
@@ -712,13 +712,15 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 //telegyr
 //====================================================================================================
 
+
+//** PCLINT note: Left Warning 578 here. Deemed unsafe for this late in 5.0
 void CtiFDRTelegyr::buildAndRegisterGroups( void )
 {
    int   index;
    int   cnt;
    int   returnCode;
    int   channel_id;
-   int   group_type;
+   int   group_type = 0;
    int   group_number;
    int   persistence;
    int   object_count;
@@ -1007,8 +1009,8 @@ bool CtiFDRTelegyr::loadGroupLists( void )
          }
 
          //===================================================================================
-         //seeing occasional problems where we get empty data sets back and there should be 
-         //info in them,  we're checking this to see if is reasonable if the list may now be 
+         //seeing occasional problems where we get empty data sets back and there should be
+         //info in them,  we're checking this to see if is reasonable if the list may now be
          //empty the 2 entry thing is completly arbitrary
          //===================================================================================
 
@@ -1083,7 +1085,8 @@ bool CtiFDRTelegyr::loadGroupLists( void )
    return successful;
 }
 
-bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+//** PCLINT note: Left Warning 578 here. Deemed unsafe for this late in 5.0
+bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
    bool successful = false;
    bool foundGroup = false;
@@ -1102,11 +1105,11 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
       pointStr = translationPoint->getDestinationList()[x].getTranslationValue( "Point" );
       interval = translationPoint->getDestinationList()[x].getTranslationValue( "Interval (sec)" );
       pointType = translationPoint->getDestinationList()[x].getTranslationValue( "POINTTYPE" );
-      
+
       if( pointStr.empty() || pointType.empty() )
       {
          successful = false;
-   
+
          if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
          {
              CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1125,11 +1128,10 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
    for(i=0,done=false; ( i < _groupList.size() ) && ( !done ); i++ )
    {
       string type = _groupList[i].getGroupType();
-      int interval = _groupList[i].getInterval();
       int size = _groupList[i].getPointList().size();
       std::transform(type.begin(), type.end(), type.begin(), tolower);
       std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
-   
+
       if(( type == pointType ) && ( size < 127 ))
       {
          _groupList[i].getPointList().push_back( *translationPoint );
@@ -1137,15 +1139,15 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
          done = true;
       }
    }
-   
+
    //we didn't stick the point anywhere, make a new group and put it there
    if( !foundGroup )
    {
       CtiTelegyrGroup tempGroup;
       char valStr[15];
-   
+
       std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
-   
+
       if( "status" == pointType )
       {
          itoa( statusNum, valStr, 10 );
@@ -1158,11 +1160,11 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
          groupNum = analogNum;
          analogNum++;
       }
-   
+
       string name( pointType + valStr );
-      tempGroup.setGroupID( groupNum );         
-      tempGroup.setGroupName( name );    
-   
+      tempGroup.setGroupID( groupNum );
+      tempGroup.setGroupName( name );
+
       if( interval.empty() )
       {
          tempGroup.setInterval( 120 );//just temp until we fix MEC's database
@@ -1171,7 +1173,7 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
       {
          tempGroup.setInterval( 120 );
       }
-   
+
       tempGroup.setGroupType( pointType );
       tempGroup.getPointList().push_back( *translationPoint );
       _groupList.push_back( tempGroup );
@@ -1431,7 +1433,7 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
          quality = NormalQuality;
       }
       else
-      {  
+      {
          quality = getQuality( aPoint.sys_dependent_info );
       }
 
@@ -1454,7 +1456,7 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
 
 //=================================================================================================================================
 //=================================================================================================================================
-
+//** PCLINT note: Left Warning 578 here. Deemed unsafe for this late in 5.0
 bool CtiFDRTelegyr::processBadPoint( int groupid, int index )
 {
    int x;
@@ -1652,7 +1654,7 @@ int CtiFDRTelegyr::readConfig( void )
    _controlCenter.setSysName( "MEC" );
    _controlCenter.setChannelID( 1 );
    _controlCenter.setAccess( 1 );
-   _dbReloadInterval = 60;                
+   _dbReloadInterval = 60;
    _panicNumber = 600;
    //
    //defaults
@@ -2014,7 +2016,7 @@ extern "C"
 
 //=================================================================================================================================
 //=================================================================================================================================
-
+//** PCLINT note: Left Warning 578 here. Deemed unsafe for this late in 5.0
 void CtiFDRTelegyr::receivedAnalog( int arraySize, int group_num, int group_type, int first, int last, int result[] )
 {
    int status;
@@ -2168,7 +2170,7 @@ int CtiFDRTelegyr::noDataAction( int no_msg_count )
 
       int end = api_end();
 
-      _inited = -1;  
+      _inited = -1;
 
       if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
       {
@@ -2204,7 +2206,7 @@ void CtiFDRTelegyr::halt( void )
          dout << CtiTime::now() << " ---- Going to delete due to shutdown" << endl;
       }
 
-      CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );         
+      CtiLockGuard<CtiMutex> sendGuard( _controlCenter.getMutex() );
       deleteGroups();
 
       int i;

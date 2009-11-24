@@ -14,10 +14,10 @@
 *
 *    PURPOSE: Generic Interface used to download a file using ftp
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrftpinterface.cpp,v $
       Revision 1.20.2.1  2008/11/13 17:23:47  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -125,43 +125,43 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 2.6   01 Mar 2002 13:15:40   dsutton
    added a link state getters,setters and a send current state function, updated run function to invalidate link status on startup adn update to valid everytime we decode a file correcty
-   
+
       Rev 2.5   18 Feb 2002 16:19:20   dsutton
    added getters/setters and entry for new cparm that holds the local location of the downloaded file and changed the download code to put the file in the defined location
-   
+
       Rev 2.4   15 Feb 2002 14:26:08   dsutton
    removed a bunch of debug code
-   
+
       Rev 2.3   11 Feb 2002 15:02:18   dsutton
    Found a couple of bugs that were probably the stability problem.  Ran STEC and TRISATE simultaneously for 4 days with no problems and very little memory creep (still some though)
-   
+
       Rev 2.2   14 Dec 2001 17:19:16   dsutton
    functions for routing data walk destination list to decide where to send data
-   
+
       Rev 2.1   15 Nov 2001 16:16:38   dsutton
    code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
+
       Rev 2.0   06 Sep 2001 13:21:34   cplender
    Promote revision
-   
+
       Rev 1.2   14 Aug 2001 17:27:18   dsutton
    the function to retrieve an ftp file had a 60 minute timeout assigned
-   when there was a problem, it kept trying for 60 minutes with no feedback.  
+   when there was a problem, it kept trying for 60 minutes with no feedback.
    workaround from microsoft said to start a new thread to do the retrieval
    and kill it after the configured amount of time.  that is what we now do
-   
+
       Rev 1.1   20 Jul 2001 10:00:26   dsutton
    trying to find a bug that the download failes and timeouts after an hour
-   
+
       Rev 1.0   04 Jun 2001 09:33:00   dsutton
    Initial revision.
-   
+
       Rev 1.1   10 May 2001 11:12:12   dsutton
    updated with new socket classes
-   
+
       Rev 1.0   23 Apr 2001 11:17:58   dsutton
    Initial revision.
 *
@@ -191,20 +191,23 @@
 
 
 // Constructors, Destructor, and Operators
-CtiFDRFtpInterface::CtiFDRFtpInterface(string &aInterface)
-: CtiFDRInterface(aInterface),
-iPort (INTERNET_DEFAULT_FTP_PORT),
-iTries (3),
-iDownloadInterval (3600),
-iLogin (string()),
-iPassword (string()),
-iServerFileName (string()),
-iLocalFileName (string()),
-iFTPDirectory (string()),
-iIPAddress (string())
-{ 
+CtiFDRFtpInterface::CtiFDRFtpInterface(string &aInterface) :
+    CtiFDRInterface(aInterface),
+    iPort (INTERNET_DEFAULT_FTP_PORT),
+    iTries (3),
+    iDownloadInterval (3600),
+    iLogin (string()),
+    iPassword (string()),
+    iServerFileName (string()),
+    iLocalFileName (string()),
+    iFTPDirectory (string()),
+    iIPAddress (string()),
+    iSessionHandle(0),
+    iInitialHandle(0),
+    iLinkStatusID(0)
+{
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 }
@@ -221,12 +224,12 @@ int CtiFDRFtpInterface::getPort() const
 }
 
 long CtiFDRFtpInterface::getLinkStatusID( void ) const
-{   
+{
     return iLinkStatusID;
 }
-        
+
 CtiFDRFtpInterface & CtiFDRFtpInterface::setLinkStatusID(const long aPointID)
-{   
+{
     iLinkStatusID = aPointID;
     return *this;
 }
@@ -366,13 +369,13 @@ CtiFDRFtpInterface &CtiFDRFtpInterface::setLocalFileName (string aLocalFileName)
 BOOL CtiFDRFtpInterface::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
 
-    iThreadRetrieveFrom = rwMakeThreadFunction(*this, 
+    iThreadRetrieveFrom = rwMakeThreadFunction(*this,
                                                &CtiFDRFtpInterface::threadFunctionRetrieveFrom);
-    iThreadFTPGetFile = rwMakeThreadFunction(*this, 
+    iThreadFTPGetFile = rwMakeThreadFunction(*this,
                                              &CtiFDRFtpInterface::threadFunctionWorkerFTPGetFile);
-    iThreadInternetConnect = rwMakeThreadFunction(*this, 
+    iThreadInternetConnect = rwMakeThreadFunction(*this,
                                                   &CtiFDRFtpInterface::threadFunctionWorkerInternetConnection);
 
     return TRUE;
@@ -382,7 +385,7 @@ BOOL CtiFDRFtpInterface::init( void )
 * Function Name: CtiFDRFtpInterface::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDRFtpInterface::run( void )
@@ -403,8 +406,8 @@ BOOL CtiFDRFtpInterface::run( void )
 /*************************************************
 * Function Name: CtiFDRFtpInterface::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDRFtpInterface::stop( void )
@@ -425,9 +428,9 @@ void CtiFDRFtpInterface::sendLinkState (int aState)
     if (getLinkStatusID() != 0)
     {
         CtiPointDataMsg     *pData;
-        pData = new CtiPointDataMsg(getLinkStatusID(), 
-                                    aState, 
-                                    NormalQuality, 
+        pData = new CtiPointDataMsg(getLinkStatusID(),
+                                    aState,
+                                    NormalQuality,
                                     StatusPointType);
         sendMessageToDispatch (pData);
     }
@@ -436,9 +439,9 @@ void CtiFDRFtpInterface::sendLinkState (int aState)
 /************************************************************************
 * Function Name: CtiFDRFtpInterface::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*                               specified direction
+*
 *************************************************************************
 */
 bool CtiFDRFtpInterface::loadTranslationLists()
@@ -467,7 +470,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                 (pointList->entries() > 0))
             {
                 // lock the receive list and remove the old one
-                CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
                 if (getReceiveFromList().getPointList() != NULL)
                 {
                     getReceiveFromList().deletePointList();
@@ -535,7 +538,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     string           tempString1;
     string           tempString2;
@@ -558,14 +561,14 @@ bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr & translationPoint
         const string translation = translationPoint->getDestinationList()[x].getTranslation();
         boost::char_separator<char> sep(";");
         Boost_char_tokenizer nextTranslate(translation, sep);
-        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
 
         if ( tok_iter != nextTranslate.end() )
         {
             tempString1 = *tok_iter;
             boost::char_separator<char> sep1(":");
             Boost_char_tokenizer nextTempToken(tempString1, sep1);
-            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
 
             if( tok_iter1 != nextTempToken.end() )
             {
@@ -596,7 +599,7 @@ bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr & translationPoint
 * Function Name: CtiFDRFtpInterface::threadFunctionRetrieveFrom (void )
 *
 * Description: thread that waits and then grabs the file for processing
-* 
+*
 ***************************************************************************
 */
 /********************************************************
@@ -606,8 +609,8 @@ Unfortunately, certain timeout values are defaulted to times that are unreasonab
 get file and connect to server timeouts default to 1 hour.  The functions used to
 change these timeouts to something more reasonable do not work (verified by Microsoft
 knowledge base Q224318)  The workaround suggested
-uses separate threads to do the connections and retrievals.  This allows us to set a 
-semaphore and kill the thread if it hasn't returned in a realistic amount of 
+uses separate threads to do the connections and retrievals.  This allows us to set a
+semaphore and kill the thread if it hasn't returned in a realistic amount of
 time (2 minutes in our case).  We then can return control to our program instead
 of waiting the entire timeout
 *********************************************************
@@ -625,7 +628,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
     ULONG timeout=120000;  // 2 minutes in milli seconds
     ULONG length = sizeof (ULONG);
 
-    HANDLE   workerThread; 
+    HANDLE   workerThread;
     DWORD    threadID;
     ULONG    exitCode = 0;
     string action,desc;
@@ -701,7 +704,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
 //                    workerThreadReturnStatus = iThreadInternetConnect.join( 5000);
                     workerThreadReturnStatus = iThreadInternetConnect.join( 120000);
 
-                    // wait at most 2 minutes 
+                    // wait at most 2 minutes
                     if ( workerThreadReturnStatus == RW_THR_TIMEOUT )
                     {
                         {
@@ -760,7 +763,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
 //                            workerThreadReturnStatus = iThreadFTPGetFile.join( 5000);
                                 workerThreadReturnStatus = iThreadFTPGetFile.join( 120000);
 
-                            // wait at most 2 minutes 
+                            // wait at most 2 minutes
                             if ( workerThreadReturnStatus == RW_THR_TIMEOUT )
                             {
                                 {
@@ -825,10 +828,10 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                             }
                             InternetCloseHandle (iInitialHandle);
                             iInitialHandle = NULL;
-                        }            
+                        }
                     }
                 }
-            }                          
+            }
         }
     }
 
@@ -850,7 +853,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
 
 RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerInternetConnection( void )
 {
-    RWCompletionState retCode;
+    RWCompletionState retCode = RW_THR_NORMAL;
     try
     {
         if (iInitialHandle != NULL)
@@ -917,12 +920,12 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerInternetConnection( vo
 
 RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerFTPGetFile()
 {
-    RWCompletionState retCode;
+    RWCompletionState retCode = RW_THR_NORMAL;
 
     try
     {
         /*************************
-        * use flag INTERNET_FLAG_RELOAD to force the 
+        * use flag INTERNET_FLAG_RELOAD to force the
         * application to get the file from the server
         * always instead of looking in the cache
         **************************

@@ -20,7 +20,7 @@
 #include "rwutil.h"
 
 const int CtiTablePointBase::MASK_POINT_BASE_TAGS = TAG_DISABLE_ALARM_BY_POINT
-                                                  | TAG_DISABLE_POINT_BY_POINT 
+                                                  | TAG_DISABLE_POINT_BY_POINT
                                                   | TAG_ATTRIB_PSEUDO;
 
 CtiTablePointBase& CtiTablePointBase::operator=(const CtiTablePointBase& aRef)
@@ -70,7 +70,7 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
    static const RWCString pointid = "pointid";
    string   rwsTemp;
 
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -89,7 +89,7 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
 
    rdr                  >> rwsTemp;
    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-   
+
    //ServiceFlag = ((rwsTemp == "y") ? TRUE : FALSE);
    setDisableTag(((rwsTemp == "y") ? TRUE : FALSE));
 
@@ -372,11 +372,13 @@ UINT CtiTablePointBase::getStaticTags() const
 }
 
 CtiTablePointBase::CtiTablePointBase(LONG pid) :
-   _pointID( pid ),
-   _paObjectID(-1),
-   _pointOffset(-1),
-   _stateGroupID(-1),
-   _flag(0)
+    _pointID( pid ),
+    _paObjectID(-1),
+    _pointOffset(-1),
+    _stateGroupID(-1),
+    _flag(0),
+    _archiveType(0),
+    _archiveInterval(0)
 {}
 
 CtiTablePointBase::CtiTablePointBase(const CtiTablePointBase& aRef)

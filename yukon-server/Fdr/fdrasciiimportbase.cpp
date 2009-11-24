@@ -14,10 +14,10 @@
 *
 *    PURPOSE: Generic Interface used to import an ascii file
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrasciiimportbase.cpp,v $
       Revision 1.17.2.1  2008/11/13 17:23:46  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -110,10 +110,10 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 1.0   12 Mar 2002 10:35:50   dsutton
    Initial revision.
-   
+
 *
 *
 *
@@ -144,9 +144,9 @@ CtiFDRAsciiImportBase::CtiFDRAsciiImportBase(string &aInterface)
     iImportInterval(900),
     iLinkStatusID(0),
     iDeleteFileAfterImportFlag(true)
-{ 
+{
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
@@ -159,12 +159,12 @@ CtiFDRAsciiImportBase::~CtiFDRAsciiImportBase()
 
 
 long CtiFDRAsciiImportBase::getLinkStatusID( void ) const
-{   
+{
     return iLinkStatusID;
 }
-        
+
 CtiFDRAsciiImportBase & CtiFDRAsciiImportBase::setLinkStatusID(const long aPointID)
-{   
+{
     iLinkStatusID = aPointID;
     return *this;
 }
@@ -234,8 +234,8 @@ CtiFDRAsciiImportBase &CtiFDRAsciiImportBase::setDriveAndPath (string aPath)
 BOOL CtiFDRAsciiImportBase::init( void )
 {
     // init the base class
-    Inherited::init();    
-    iThreadReadFromFile = rwMakeThreadFunction(*this, 
+    Inherited::init();
+    iThreadReadFromFile = rwMakeThreadFunction(*this,
                                                &CtiFDRAsciiImportBase::threadFunctionReadFromFile);
 
     return TRUE;
@@ -245,7 +245,7 @@ BOOL CtiFDRAsciiImportBase::init( void )
 * Function Name: CtiFDRAsciiImportBase::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDRAsciiImportBase::run( void )
@@ -266,8 +266,8 @@ BOOL CtiFDRAsciiImportBase::run( void )
 /*************************************************
 * Function Name: CtiFDRAsciiImportBase::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDRAsciiImportBase::stop( void )
@@ -288,9 +288,9 @@ void CtiFDRAsciiImportBase::sendLinkState (int aState)
     if (getLinkStatusID() != 0)
     {
         CtiPointDataMsg     *pData;
-        pData = new CtiPointDataMsg(getLinkStatusID(), 
-                                    aState, 
-                                    NormalQuality, 
+        pData = new CtiPointDataMsg(getLinkStatusID(),
+                                    aState,
+                                    NormalQuality,
                                     StatusPointType);
         sendMessageToDispatch (pData);
     }
@@ -299,9 +299,9 @@ void CtiFDRAsciiImportBase::sendLinkState (int aState)
 /************************************************************************
 * Function Name: CtiFDRAsciiImportBase::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*                               specified direction
+*
 *************************************************************************
 */
 bool CtiFDRAsciiImportBase::loadTranslationLists()
@@ -313,7 +313,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        string (FDR_INTERFACE_RECEIVE));
 
         // keep the status
@@ -333,7 +333,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                 (pointList->entries() > 0))
             {
                 // lock the receive list and remove the old one
-                CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
                 if (getReceiveFromList().getPointList() != NULL)
                 {
                     getReceiveFromList().deletePointList();
@@ -402,7 +402,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = false;
     string           tempString1;
@@ -425,14 +425,14 @@ bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPo
         const string translation = translationPoint->getDestinationList()[x].getTranslation();
         boost::char_separator<char> sep1(";");
         Boost_char_tokenizer nextTranslate(translation, sep1);
-        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
 
         if ( tok_iter != nextTranslate.end())
         {
             tempString1 = *tok_iter;
             boost::char_separator<char> sep2(":");
             Boost_char_tokenizer nextTempToken(tempString1, sep2);
-            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
 
             if( tok_iter1 != nextTempToken.end() )
             {
@@ -462,7 +462,7 @@ bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPo
 * Function Name: CtiFDRAsciiImportBase::threadFunctionReadFromFile (void )
 *
 * Description: thread that waits and then grabs the file for processing
-* 
+*
 ***************************************************************************
 */
 void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )

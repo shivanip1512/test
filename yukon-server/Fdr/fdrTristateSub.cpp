@@ -56,7 +56,7 @@ BOOL FDRTriStateSub::init()
 }
 
 int FDRTriStateSub::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -129,7 +129,7 @@ int FDRTriStateSub::readConfig( void )
     else
     {
         setIPAddress(string());
-		  successful = false;
+                  successful = false;
     }
 
     tempStr = getCparmValueAsString(KEY_TRIES);
@@ -219,7 +219,7 @@ int FDRTriStateSub::decodeFile()
     CtiFDRPoint         point;
 
     if( file.is_open() ){
-    
+
         //if ok call readInFile
         std::list<string> strs = readInFile(file);
         file.close();
@@ -229,7 +229,7 @@ int FDRTriStateSub::decodeFile()
             return 1;
 
         std::list<StringMessageContainer> msgs = processData( strs );
-        //Check Size of both  Lists, they should be the same, if messages is smaller, 
+        //Check Size of both  Lists, they should be the same, if messages is smaller,
         //there were errors with some input.
 
         /* eof is getting in as a string. fix before this test will work
@@ -247,7 +247,7 @@ int FDRTriStateSub::decodeFile()
         }
         */
 
-        //Find Point(s) to send to *see tristate* 
+        //Find Point(s) to send to *see tristate*
         //send messages returned from process data.
         std::list<StringMessageContainer>::iterator itr = msgs.begin();
         for( ;itr != msgs.end(); itr++ ){
@@ -257,13 +257,13 @@ int FDRTriStateSub::decodeFile()
                  (point.getPointType() == PulseAccumulatorPointType) ||
                  (point.getPointType() == DemandAccumulatorPointType) ||
                  (point.getPointType() == CalculatedPointType)))
-            {    
+            {
                 CtiMessage* m = itr->getMessage().get();
                 CtiPointDataMsg *pData = (CtiPointDataMsg*)((CtiPointDataMsg*)m)->replicateMessage();
                 pData->setId( point.getPointID());
                 // consumes a delete memory
                 queueMessageToDispatch(pData);
-    
+
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -282,15 +282,15 @@ int FDRTriStateSub::decodeFile()
                     }
                 }
                 else
-                {         
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Analog point " << itr->getName();
                     dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
                 }
             }
         }
-        
-       
+
+
         return NORMAL;
     }else
         return 1; //fail() is called if we return bad
@@ -343,18 +343,18 @@ std::list<StringMessageContainer> FDRTriStateSub::processData( std::list<string>
         int pos = 0;
 
         //remove '"'
-        string::iterator itr = str.begin();
-        for( ; itr != str.end() ; ){
-            if( *itr == '"' )
-                itr = str.erase(itr);
+        string::iterator itr2 = str.begin();
+        for( ; itr2 != str.end() ; ){
+            if( *itr2 == '"' )
+                itr2 = str.erase(itr2);
             else
-                itr++;
+                itr2++;
         }
 
         //tokenize based off ',' and split to individual strings.
         boost::char_separator<char> delim(",");
         Boost_char_tokenizer tokens(str, delim);
-    
+
         msg = generateMessage( tokens );
         if( msg.getMessage().get() != NULL )
             msgs.push_back(msg);
@@ -409,7 +409,7 @@ StringMessageContainer FDRTriStateSub::generateMessage( Boost_char_tokenizer& to
         error = true;
 
     if( error == false ){
-    
+
         CtiTime t( CtiDate( atoi(string(time,6,2).c_str()),atoi(string(time,4,2).c_str()),atoi(string(time,0,4).c_str()) ),
                    atoi(string(time,8,2).c_str()), atoi(string(time,10,2).c_str()), atoi(string(time,12,2).c_str())  );
         if( !t.isValid() )
@@ -420,7 +420,7 @@ StringMessageContainer FDRTriStateSub::generateMessage( Boost_char_tokenizer& to
         if( d == 0.0)
             error = true;
 
-        if( error == false){       
+        if( error == false){
             //generate new message to send to dispatch
             //We will set the ID later when we find points.
             CtiPointDataMsg *pData = new CtiPointDataMsg(1,d,NormalQuality, AnalogPointType);
@@ -433,8 +433,8 @@ StringMessageContainer FDRTriStateSub::generateMessage( Boost_char_tokenizer& to
 }
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 #ifdef __cplusplus
@@ -445,11 +445,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -467,11 +467,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

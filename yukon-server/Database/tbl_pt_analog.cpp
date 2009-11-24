@@ -108,7 +108,11 @@ CtiTablePointAnalog& CtiTablePointAnalog::setDeadband(DOUBLE d)
    return *this;
 }*/
 
-CtiTablePointAnalog::CtiTablePointAnalog() {}
+CtiTablePointAnalog::CtiTablePointAnalog() :
+    _multiplier(0.0),
+    _dataOffset(0.0),
+    _deadband(0.0)
+{}
 
 CtiTablePointAnalog::CtiTablePointAnalog(const CtiTablePointAnalog& aRef)
 {

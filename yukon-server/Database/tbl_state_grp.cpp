@@ -72,7 +72,7 @@ RWDBStatus CtiTableStateGroup::Insert()
     RWDBConnection conn = getConnection();
 
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
 
 
@@ -81,7 +81,7 @@ RWDBStatus CtiTableStateGroup::Insert()
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return inserter.status();
+    return dbInserter.status();
 }
 
 RWDBStatus CtiTableStateGroup::Update()

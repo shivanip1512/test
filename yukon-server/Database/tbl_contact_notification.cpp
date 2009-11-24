@@ -34,7 +34,8 @@ CtiTableContactNotification::CtiTableContactNotification(LONG id) :
   _contactID(0),
   _notificationCategoryID(0),
   _disabled(TRUE),
-  _notification("") {
+  _notification(""),
+  _dirty(false) {
 }
 
 CtiTableContactNotification::CtiTableContactNotification(const CtiTableContactNotification& aRef) {

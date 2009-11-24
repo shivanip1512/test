@@ -28,10 +28,16 @@
 
 
 CtiTableDynamicPointAlarming::CtiTableDynamicPointAlarming() :
-_tags(0),
-_user("(none)"),
-_action("(none)"),
-_description("(none)")
+    _tags(0),
+    _user("(none)"),
+    _action("(none)"),
+    _description("(none)"),
+    _pointID(0),
+    _alarmCondition(0),
+    _categoryID(0),
+    _logID(0),
+    _soe(0),
+    _logType(0)
 {
 }
 
@@ -202,7 +208,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
     table["username"].assign(getUser().c_str());
 
     long rowsAffected;
-    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+    RWDBStatus rwStat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
     if(isDebugLudicrous())
     {
@@ -214,26 +220,26 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
         }
     }
 
-    if( stat.errorCode() != RWDBStatus::ok )
+    if( rwStat.errorCode() != RWDBStatus::ok )
     {
         string loggedSQLstring = updater.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Error Code = " << stat.errorCode() << endl;
+            dout << "Error Code = " << rwStat.errorCode() << endl;
             dout << loggedSQLstring << endl;
         }
     }
 
-    if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+    if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        stat = Insert(conn);        // Try a vanilla insert if the update failed!
+        rwStat = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 
-    return stat;
+    return rwStat;
 }
 
 RWDBStatus CtiTableDynamicPointAlarming::Restore()

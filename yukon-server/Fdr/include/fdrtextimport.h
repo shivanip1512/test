@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  
+#pragma warning( disable : 4786 )
 /*****************************************************************************
 *
 *    FILE NAME: fdrtextimport.cpp
@@ -15,10 +15,10 @@
 *
 *    PURPOSE: Generic text import ascii import
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrtextimport.h,v $
       Revision 1.9.2.2  2008/11/18 20:11:29  jmarks
       [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -117,7 +117,7 @@
 #define NOMINMAX
 #endif
 
-//#include <windows.h>    
+//#include <windows.h>
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
@@ -135,17 +135,17 @@ class IM_EX_FDRTEXTIMPORT CtiFDR_TextImport : public CtiFDRTextFileBase
 
 public:
     // constructors and destructors
-    CtiFDR_TextImport(); 
+    CtiFDR_TextImport();
 
     virtual ~CtiFDR_TextImport();
-    virtual BOOL    init( void );   
+    virtual BOOL    init( void );
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
     int readConfig( void );
-    bool buildAndAddPoint (CtiFDRPoint &aPoint, 
-                           DOUBLE aValue, 
-                           CtiTime aTimestamp, 
+    bool buildAndAddPoint (CtiFDRPoint &aPoint,
+                           DOUBLE aValue,
+                           CtiTime aTimestamp,
                            int aQuality,
                            string aTranslationName,
                            CtiMessage **aRetMsg);
@@ -157,14 +157,14 @@ public:
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_TextImport &setDeleteFileAfterImport (bool aFlag);
 
-    bool shouldRenameSaveFileAfterImport() const; 
-    CtiFDR_TextImport &setRenameSaveFileAfterImport (bool aFlag); 
-    
+    bool shouldRenameSaveFileAfterImport() const;
+    CtiFDR_TextImport &setRenameSaveFileAfterImport (bool aFlag);
+
     bool validateAndDecodeLine( string& input, CtiMessage **aRetMsg);
-    vector <CtiFDRTextFileInterfaceParts>* getFileInfoList() {return &_fileInfoList;}; 
-    
-    CtiString& getFileImportBaseDrivePath(); 
-    CtiString& setFileImportBaseDrivePath(CtiString importBase); 
+    vector <CtiFDRTextFileInterfaceParts>* getFileInfoList() {return &_fileInfoList;};
+
+    CtiString& getFileImportBaseDrivePath();
+    CtiString& setFileImportBaseDrivePath(CtiString importBase);
 
     list<string> parseFiles();
     list<string> getFileNames();
@@ -179,7 +179,7 @@ public:
 
     //Load all points
     virtual bool loadTranslationLists(void);
-    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
     //remove single point maintaining current lists
     virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
@@ -191,7 +191,7 @@ public:
     static const CHAR * KEY_DB_RELOAD_RATE;
     static const CHAR * KEY_QUEUE_FLUSH_RATE;
     static const CHAR * KEY_DELETE_FILE;
-    static const CHAR * KEY_POINTIMPORT_DEFAULT_PATH; 
+    static const CHAR * KEY_POINTIMPORT_DEFAULT_PATH;
     static const CHAR * KEY_RENAME_SAVE_FILE;
 
     bool getLegacy();
@@ -201,11 +201,11 @@ private:
 
     RWThreadFunction    _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
-    bool _renameSaveFileAfterImportFlag; 
+    bool _renameSaveFileAfterImportFlag;
     bool _legacyDrivePath;
-    CtiString _fileImportBaseDrivePath; 
+    CtiString _fileImportBaseDrivePath;
 
-    vector <CtiFDRTextFileInterfaceParts> _fileInfoList; 
+    vector <CtiFDRTextFileInterfaceParts> _fileInfoList;
     std::map<string,int> nameToPointId;
 };
 

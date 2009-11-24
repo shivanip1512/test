@@ -14,8 +14,9 @@ FDRWabash * wabashInterface;
 const char * FDRWabash::KEY_DB_RELOAD = "FDR_WABASH_DB_RELOAD_RATE";
 const char * FDRWabash::KEY_INITIAL_LOAD = "FDR_WABASH_WRITE_INITIAL_LOAD";
 
-FDRWabash::FDRWabash()
-: CtiFDRInterface(string("WABASH"))
+FDRWabash::FDRWabash() :
+    CtiFDRInterface(string("WABASH")),
+    _writeInitialLoad(false)
 {}
 
 BOOL FDRWabash::init()
@@ -46,8 +47,8 @@ BOOL FDRWabash::init()
 
 bool FDRWabash::readConfig()
 {
-    //FDR_WABASH_DB_RELOAD_RATE	    :  360
-    //FDR_WABASH_INITAL_LOAD 	    :  false
+    //FDR_WABASH_DB_RELOAD_RATE     :  360
+    //FDR_WABASH_INITAL_LOAD        :  false
 
     int ok = true;
     string tempString;
@@ -71,7 +72,7 @@ bool FDRWabash::readConfig()
     return true;
 }
 
-FDRWabash::~FDRWabash(){    
+FDRWabash::~FDRWabash(){
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -80,7 +81,7 @@ FDRWabash::~FDRWabash(){
 }
 
 bool FDRWabash::loadTranslationLists()
-{   
+{
     RWDBStatus       listStatus;
 
     try
@@ -93,7 +94,7 @@ bool FDRWabash::loadTranslationLists()
         // if status is ok, we were able to read the database at least
         if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
-            if(pointList->entries() > 0) 
+            if(pointList->entries() > 0)
             {
                 CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
@@ -102,7 +103,7 @@ bool FDRWabash::loadTranslationLists()
                 }
                 // lock the receive list and remove the old one
                 {
-                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex()); 
+                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
                     if (getSendToList().getPointList() != NULL)
                     {
                         getSendToList().deletePointList();
@@ -125,7 +126,7 @@ bool FDRWabash::loadTranslationLists()
      return true;
 }
 
-bool FDRWabash::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool FDRWabash::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     string pointID;
     string filename;
@@ -178,8 +179,8 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     bool               initialmsg = false;
     bool               equivalentValue = false;
     CtiFDRPointSPtr point;
-    CtiTime time;
-    string date,schedName,action;
+    CtiTime aTime;
+    string dateStr,schedName,action;
 
     CtiPointDataMsg* aMessage = (CtiPointDataMsg*)msg;
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -191,7 +192,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     // Do the formating we can before locking the mux to get the schedName;
 
     //get the status/command to string START || STOP from pointdata
-    if ( aMessage->getValue() == 0 ) 
+    if ( aMessage->getValue() == 0 )
     {
         action = string("STOP");
     }
@@ -205,13 +206,13 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     }
 
     //get the time from pdata and format to match "11/08/06 14:00:19,AEP-AC-COOL-75%,STOP"
-    time = aMessage->getTime();
-    date = time.asString();
+    aTime = aMessage->getTime();
+    dateStr = aTime.asString();
     //drop the first two digits of the year
-    date.erase(6,2);
+    dateStr.erase(6,2);
 
     //get the schedName from the pointData
-    {    
+    {
         CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
         CtiFDRManager* mgrPtr = getSendToList().getPointList();
         CtiFDRManager::readerLock guard(mgrPtr->getLock());
@@ -222,7 +223,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
         {
             point = (*itr).second;
         }
-    
+
         if ( mgrPtr->getMap().size() == 0 ||  point)
         {
             ok = false;
@@ -252,10 +253,10 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
         //write out if initialmsg && _writeInitialLoad regardless of value's being equal
         //write out if the value has changed always
         //do not write initial load at all if _writeInitialLoad == false
-        //do not write if same values 
+        //do not write if same values
         if( initialmsg ){
             if (_writeInitialLoad){
-                writeDataToFile( date + "," + schedName + "," + action );
+                writeDataToFile( dateStr + "," + schedName + "," + action );
             }
             else
             {
@@ -269,7 +270,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
         else{
             if ( !equivalentValue )
             {
-                writeDataToFile( date + "," + schedName + "," + action );
+                writeDataToFile( dateStr + "," + schedName + "," + action );
             }
             else
             {
@@ -326,7 +327,7 @@ bool FDRWabash::writeDataToFile( string cmd )
         else
             Sleep(200);
     }while( true );//retry limit?
-    
+
     //print strings ( and new line )
     file << cmd << std::endl;
 
@@ -345,8 +346,8 @@ int FDRWabash::processMessageFromForeignSystem( char* )
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -358,11 +359,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -379,11 +380,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

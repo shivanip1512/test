@@ -27,7 +27,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 
 #include "dlldefs.h"
 #include "fdrinterface.h"
@@ -93,7 +93,7 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         bool    retreiveStatusPoints(void);
 
         bool    loadTranslationLists(void);
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
         bool    loadLists(CtiFDRPointList &aList);
 
         ULONG   calculateNextSendTime();

@@ -23,7 +23,9 @@
 
 #include "rwutil.h"
 
-CtiTableGatewayEndDevice::CtiTableGatewayEndDevice()
+CtiTableGatewayEndDevice::CtiTableGatewayEndDevice() :
+    _hardwareType(0),
+    _dataType(0)
 {
 
 }
@@ -152,34 +154,34 @@ RWDBStatus CtiTableGatewayEndDevice::Insert()
 RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
 {
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
-    inserter <<
+    dbInserter <<
         getSerialNumber() <<
         getHardwareType() <<
         getDataType() <<
         getDataValue();
 
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,dbInserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
     else
     {
-        RWDBStatus stat =  ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+        RWDBStatus rwStat =  ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
 
-        if( stat.errorCode() != RWDBStatus::ok )
+        if( rwStat.errorCode() != RWDBStatus::ok )
         {
-            string loggedSQLstring = inserter.asString();
+            string loggedSQLstring = dbInserter.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << stat.errorCode() << endl;
+                dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << rwStat.errorCode() << endl;
                 dout << "   " << loggedSQLstring << endl;
             }
         }
         else
         {
-            string loggedSQLstring = inserter.asString();
+            string loggedSQLstring = dbInserter.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " InsertedGatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -188,7 +190,7 @@ RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
             setDirty(false);
         }
     }
-    return inserter.status();
+    return dbInserter.status();
 }
 
 
@@ -207,18 +209,18 @@ RWDBStatus CtiTableGatewayEndDevice::Update()
     updater << table["datavalue"].assign( getDataValue().c_str() );
 
     long rowsAffected;
-    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+    RWDBStatus rwStat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
-    if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+    if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        stat = Insert();        // Try a vanilla insert if the update failed!
+        rwStat = Insert();        // Try a vanilla insert if the update failed!
     }
 
-    return stat;
+    return rwStat;
 }
 
 RWDBStatus CtiTableGatewayEndDevice::Delete()

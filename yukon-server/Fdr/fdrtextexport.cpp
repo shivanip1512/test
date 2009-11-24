@@ -222,7 +222,7 @@ BOOL CtiFDR_TextExport::stop( void )
 string CtiFDR_TextExport::YukonToForeignTime (CtiTime aTime)
 {
     CHAR workBuffer[50];
-    CtiDate date(aTime);
+    CtiDate aDate(aTime);
     string retVal;
 
     if (aTime.isValid())
@@ -230,9 +230,9 @@ string CtiFDR_TextExport::YukonToForeignTime (CtiTime aTime)
         _snprintf (workBuffer,
                        50,
                     "%02ld/%02ld/%04ld %02ld:%02ld:%02ld",
-                       date.month(),
-                       date.dayOfMonth(),
-                       date.year(),
+                       aDate.month(),
+                       aDate.dayOfMonth(),
+                       aDate.year(),
                        aTime.hour(),
                        aTime.minute(),
                        aTime.second());
@@ -500,7 +500,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_TextExport::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDR_TextExport::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = false;
     string tempString2;

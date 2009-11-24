@@ -43,7 +43,7 @@ public:
         WaitForNextSlot = 1,
         WaitForFreqClear = 2,
         OverrideAfterSlot = 3
-    } CtiRTCLBTMode_t;
+    };
 
 protected:
 
@@ -55,7 +55,7 @@ protected:
 private:
 
 public:
-    
+
     CtiTableDeviceRTC();
     virtual ~CtiTableDeviceRTC();
 

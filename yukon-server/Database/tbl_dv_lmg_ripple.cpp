@@ -24,7 +24,9 @@
 CtiTableRippleLoadGroup::CtiTableRippleLoadGroup() :
 _controlBits((size_t)7, (char)0),      // 7 zeros
 _restoreBits((size_t)7, (char)0),      // 7 zeros
-_routeID(-1)
+_routeID(-1),
+_deviceID(0),
+_shedTime(0)
 {}
 
 CtiTableRippleLoadGroup::CtiTableRippleLoadGroup(const CtiTableRippleLoadGroup& aRef)

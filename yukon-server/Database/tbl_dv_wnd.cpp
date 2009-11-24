@@ -356,9 +356,9 @@ RWDBStatus CtiTableDeviceWindow::Insert()
     RWDBConnection conn = getConnection();
 
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
-    inserter <<
+    dbInserter <<
     getID() <<
     desolveDeviceWindowType(getType() ) <<
     getOpen () <<
@@ -366,12 +366,12 @@ RWDBStatus CtiTableDeviceWindow::Insert()
     getAlternateOpen () <<
     calculateClose (getAlternateOpen(),getAlternateDuration());
 
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,dbInserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return dbInserter.status();
 }
 
 RWDBStatus CtiTableDeviceWindow::Update()

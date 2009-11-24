@@ -98,10 +98,10 @@ CtiFDRService::CtiFDRService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
     m_pThis = this;
 
 
-    for(int count=0; count < MAX_FDR_INTERFACES; count++)
+    for (int x = 0; x < MAX_FDR_INTERFACES; x++)
     {
-        interfacesList[count].StartFunction = 0;
-        interfacesList[count].StopFunction = 0;
+        interfacesList[x].StartFunction = 0;
+        interfacesList[x].StopFunction = 0;
     }
 
 }
@@ -146,8 +146,6 @@ void CtiFDRService::Init( )
 {
     // add FDR stuff here
     string   interfaces;
-    int         count;
-
 
     try
     {

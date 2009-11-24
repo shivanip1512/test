@@ -33,7 +33,8 @@ _uda(0),                 // 1 - 65534            // User Defined Address
 _program(0),             // 1 - 65534
 _splinter(0),
 _addressUsage(0),        // bit indicators.  LSB is SPID.  No bits set indicates serial.
-_loads(0)           // 0 indicates all loads.  Otherwise, one load per message!
+_loads(0),           // 0 indicates all loads.  Otherwise, one load per message!
+_priority(0)
 {
 }
 

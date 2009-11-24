@@ -19,7 +19,11 @@
 
 #include "rwutil.h"
 
-CtiTableUnitMeasure::CtiTableUnitMeasure() {}
+CtiTableUnitMeasure::CtiTableUnitMeasure() :
+   _calcType(0)
+{
+
+}
 
 CtiTableUnitMeasure::CtiTableUnitMeasure(const CtiTableUnitMeasure& aRef)
 {

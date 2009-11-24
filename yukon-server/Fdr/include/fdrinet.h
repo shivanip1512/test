@@ -24,7 +24,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 #include <vector>
 
 #include "dlldefs.h"
@@ -191,7 +191,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
     private:
         //translateSingle Point
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
         string                   iSourceName;
 

@@ -24,7 +24,7 @@ _capcode1(0), _capcode2(0),
 _capcode3(0), _capcode4(0), _capcode5(0),
 _capcode6(0), _capcode7(0), _capcode8(0), _capcode9(0),
 _capcode10(0), _capcode11(0), _capcode12(0), _capcode13(0),
-_capcode14(0), _capcode15(0), _capcode16(0)
+_capcode14(0), _capcode15(0), _capcode16(0), _deviceID(0)
 {}
 
 CtiTableDevicePagingReceiver::CtiTableDevicePagingReceiver(const CtiTableDevicePagingReceiver& aRef)

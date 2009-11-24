@@ -21,7 +21,10 @@
 
 #include "rwutil.h"
 
-CtiTablePointHistory::CtiTablePointHistory()
+CtiTablePointHistory::CtiTablePointHistory() :
+    PointID(0),
+    Quality(0),
+    Value(0.0)
 {
 }
 

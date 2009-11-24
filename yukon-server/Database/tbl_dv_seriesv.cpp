@@ -22,7 +22,16 @@
 
 #include "rwutil.h"
 
-CtiTableDeviceSeriesV::CtiTableDeviceSeriesV()
+CtiTableDeviceSeriesV::CtiTableDeviceSeriesV() :
+    _device_id(0),
+    _save_history(false),
+    _tick_time(0),
+    _transmit_offset(0),
+    _power_value_high(0),
+    _power_value_low(0),
+    _power_value_multiplier(0),
+    _power_value_offset(0),
+    _retries(0)
 {
 }
 

@@ -87,7 +87,8 @@ CtiTablePointAccumulator& CtiTablePointAccumulator::setPointID( const LONG point
 
 CtiTablePointAccumulator::CtiTablePointAccumulator() :
    _multiplier(1.0),
-   _dataOffset(0.0)
+   _dataOffset(0.0),
+   _pointID(0)
 {}
 
 CtiTablePointAccumulator::CtiTablePointAccumulator(const CtiTablePointAccumulator& aRef)

@@ -41,9 +41,9 @@ void CtiTableMeterReadLog::Insert(RWDBConnection &conn)
     getStatusCode() <<
     getRequestLogID();
 
-    RWDBStatus stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    RWDBStatus rwStat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
-    if( stat.errorCode() != RWDBStatus::ok )
+    if( rwStat.errorCode() != RWDBStatus::ok )
     {
         LONG newcid = SynchronizedIdGen("DeviceReadLog", 1);
 
@@ -58,9 +58,9 @@ void CtiTableMeterReadLog::Insert(RWDBConnection &conn)
             }
 
             setLogID( newcid );
-            stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+            rwStat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
-            if( stat.errorCode() != RWDBStatus::ok )
+            if( rwStat.errorCode() != RWDBStatus::ok )
             {
                 string loggedSQLstring = inserter.asString();
                 {
@@ -82,7 +82,7 @@ CtiTableMeterReadLog& CtiTableMeterReadLog::operator=(const CtiTableMeterReadLog
         setDeviceID(aRef.getDeviceID());
         setRequestLogID(aRef.getRequestLogID());
         setStatusCode(aRef.getStatusCode());
-        setTime(aRef.getTime()); 
+        setTime(aRef.getTime());
     }
     return *this;
 }

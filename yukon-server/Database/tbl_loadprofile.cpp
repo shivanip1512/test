@@ -23,7 +23,9 @@
 CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile() :
     _deviceID(-1),
     _lastIntervalDemandRate(INT_MAX),
-    _loadProfileDemandRate(INT_MAX)
+    _loadProfileDemandRate(INT_MAX),
+    _voltageDemandInterval(0),
+    _voltageProfileRate(0)
 {
 }
 

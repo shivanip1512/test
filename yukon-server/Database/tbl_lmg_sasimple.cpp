@@ -25,7 +25,14 @@
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiTableSASimpleGroup::CtiTableSASimpleGroup()
+CtiTableSASimpleGroup::CtiTableSASimpleGroup() :
+    _lmGroupId(0),
+    _routeId(0),
+    _nominalTimeout(0),
+    _virtualTimeout(0),
+    _function(0),
+    _markIndex(0),
+    _spaceIndex(0)
 {
 }
 

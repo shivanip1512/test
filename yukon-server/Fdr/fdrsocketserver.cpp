@@ -6,7 +6,7 @@
 
 #include "yukon.h"
 
-#include <WinSock2.h> 
+#include <WinSock2.h>
 
 #include <iostream>
 
@@ -44,11 +44,17 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "ctidate.h"
 
 // Constructors, Destructor, and Operators
-CtiFDRSocketServer::CtiFDRSocketServer(string &name)
-: CtiFDRInterface(name)
+CtiFDRSocketServer::CtiFDRSocketServer(string &name) :
+    CtiFDRInterface(name),
+    _listenerSocket(NULL),
+    _portNumber(0),
+    _pointTimeVariation(0),
+    _timestampReasonabilityWindow(0),
+    _linkTimeout(0),
+    _shutdownEvent(0)
 {
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
@@ -94,7 +100,7 @@ bool CtiFDRSocketServer::isClientConnectionValid()
 BOOL CtiFDRSocketServer::init( void )
 {
     // init the base class
-    CtiFDRInterface::init();    
+    CtiFDRInterface::init();
 
     if ( !readConfig( ) )
     {
@@ -103,12 +109,12 @@ BOOL CtiFDRSocketServer::init( void )
 
     // start up the socket layer
 
-    _threadConnection = rwMakeThreadFunction(*this, 
+    _threadConnection = rwMakeThreadFunction(*this,
                                             &CtiFDRSocketServer::threadFunctionConnection);
 
-    _threadHeartbeat = rwMakeThreadFunction(*this, 
+    _threadHeartbeat = rwMakeThreadFunction(*this,
                                             &CtiFDRSocketServer::threadFunctionSendHeartbeat);
-                                            
+
     _shutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 
@@ -116,12 +122,12 @@ BOOL CtiFDRSocketServer::init( void )
 }
 
 BOOL CtiFDRSocketServer::run( void )
-{                      
+{
 
     // crank up the base class
     CtiFDRInterface::run();
 
-    // load translation lists (This used to 
+    // load translation lists (This used to
     // be done in init() but it caused problems
     // because the class wasn't fully constructed.)
     loadTranslationLists();
@@ -130,10 +136,10 @@ BOOL CtiFDRSocketServer::run( void )
     _threadConnection.start();
     _threadHeartbeat.start();
 
-    // log this now so we dont' have to everytime one comes in 
+    // log this now so we dont' have to everytime one comes in
     if (!shouldUpdatePCTime())
     {
-        string desc = getInterfaceName() 
+        string desc = getInterfaceName()
             + string (" has been configured to NOT process time sync updates to PC clock");
         logEvent (desc,string());
     }
@@ -151,7 +157,7 @@ BOOL CtiFDRSocketServer::stop( void )
     _threadConnection.join();
     _threadHeartbeat.join();
 
-    
+
     // iterate through connections, shutting each one down.
     CtiLockGuard<CtiMutex> guard(_connectionListMutex);
     for (ConnectionList::const_iterator myIter = _connectionList.begin();
@@ -214,10 +220,10 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
             (pointList->entries() > 0))
         {
-            CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+            CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
             // get iterator on list
             CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
-    
+
             while (myIterator != pointList->getMap().end())
             {
                 foundPoint = translateSinglePoint(myIterator->second,isSend);
@@ -247,7 +253,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << " Error loading (" << aDirection << ") points, empty data set returned" 
+            logNow() << " Error loading (" << aDirection << ") points, empty data set returned"
                 << endl;
             successful = false;
         }
@@ -301,12 +307,12 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
             }
             // just in case
             pSelf.serviceCancellation();
-            
+
             clearFailedLayers();
-            
+
             CtiLockGuard<CtiMutex> guard(_connectionListMutex);
             ConnectionList::const_iterator myIter;
-            for (myIter = _connectionList.begin(); myIter != _connectionList.end(); ++myIter) 
+            for (myIter = _connectionList.begin(); myIter != _connectionList.end(); ++myIter)
             {
                 char* heartbeatMsg = NULL;
                 unsigned int size = 0;
@@ -318,7 +324,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         logNow() << "Queueing heartbeat message to " << **myIter << endl;
                     }
-                    
+
                     bool thisResult = (*myIter)->queueMessage(heartbeatMsg, size, (MAXPRIORITY-1));
                     if (!thisResult)
                     {
@@ -364,7 +370,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
             if (_listenerSocket == NULL) {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Failed to open listener socket" 
+                    logNow() << "Failed to open listener socket"
                        << endl;
                 }
             } else {
@@ -379,17 +385,17 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                     SOCKADDR_IN returnAddr;
                     int returnLength = sizeof (returnAddr);
                     SOCKET tmpConnection = NULL;
-                    tmpConnection = accept(_listenerSocket, 
-                                           (struct sockaddr *) &returnAddr, 
+                    tmpConnection = accept(_listenerSocket,
+                                           (struct sockaddr *) &returnAddr,
                                            &returnLength);
                     // when this thread is to be shutdown, requestCancellation()
-                    // will be called, then the listener socket will be shutdown 
+                    // will be called, then the listener socket will be shutdown
                     // which will cause accept() to return.
                     pSelf.serviceCancellation( );
-    
+
                     if (tmpConnection == INVALID_SOCKET) {
                         shutdown(tmpConnection, SD_BOTH);
-                        closesocket(tmpConnection);     
+                        closesocket(tmpConnection);
                         {
                             int errorCode = WSAGetLastError();
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -407,7 +413,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Connection accepted from " 
+                            logNow() << "Connection accepted from "
                                << inet_ntoa(returnAddr.sin_addr)
                                << endl;
                         }
@@ -424,7 +430,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
                         catch (CtiFDRClientServerConnection::StartupException& e)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Unable to create CtiFDRClientServerConnection object: " 
+                            logNow() << "Unable to create CtiFDRClientServerConnection object: "
                                << e.what() << endl;
                         }
                     }
@@ -454,7 +460,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "Fatal Error: CtiFDRSocketServer::threadFunctionConnection is dead!" << endl;
     }
-    
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "threadFunctionConnection shutdown" << endl;
@@ -462,22 +468,22 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
 }
 
 SOCKET CtiFDRSocketServer::createBoundListener() {
-        
+
     SOCKET listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (listener == INVALID_SOCKET) {
         {
             int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Failed to create listener socket" 
+            logNow() << "Failed to create listener socket"
                 <<" (Error: " << errorCode << ")" << endl;
         }
         return NULL;
     }
-    
+
     BOOL ka = TRUE;
 //    //This seams like a really bad idea!!!
-//    int sockoptresult = setsockopt(listener, 
-//                                   SOL_SOCKET, SO_REUSEADDR, 
+//    int sockoptresult = setsockopt(listener,
+//                                   SOL_SOCKET, SO_REUSEADDR,
 //                                   (char*)&ka, sizeof(BOOL));
 //    if (sockoptresult == SOCKET_ERROR) {
 //        // setsockopt failed
@@ -486,12 +492,12 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
 //            CtiLockGuard<CtiLogger> doubt_guard(dout);
 //            logNow() << "Failed to set reuse option for listener socket "
 //                <<" (Error: " << errorCode << ")" << endl;
-//                
+//
 //        }
 //
 //        shutdown(listener, SD_BOTH);
-//        closesocket(listener);   
-//        return NULL;  
+//        closesocket(listener);
+//        return NULL;
 //    }
     // Fill in the address structure
     sockaddr_in socketAddr;
@@ -504,7 +510,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
         {
             int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Failed to bind listener socket " 
+            logNow() << "Failed to bind listener socket "
                 <<" (Error: " << errorCode << ")" << endl;
         }
 
@@ -512,7 +518,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
         closesocket(listener);
         return NULL;
     }
-    
+
     int listenresult = listen(listener, SOMAXCONN);
     if (listenresult == SOCKET_ERROR) {
         {
@@ -520,13 +526,13 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Failed to listen on listener socket "
                 << " (Error: " << errorCode << ")" << endl;
-                
+
         }
         shutdown(listener, SD_BOTH);
-        closesocket(listener);     
+        closesocket(listener);
     }
-    
-    return listener; 
+
+    return listener;
 
 }
 
@@ -555,8 +561,8 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << *point 
-                    << " was not sent to any interfaces because it hasn't been initialized" 
+                logNow() << *point
+                    << " was not sent to any interfaces because it hasn't been initialized"
                     << endl;
             }
             continue;
@@ -570,7 +576,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
              ++destIter)
         {
             CtiFDRClientServerConnection::Destination dest = (*destIter).getDestination();
-            
+
             if (dest == connection->getName())
             {
                 if (!connection->isRegistered()) {
@@ -591,7 +597,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
 }
 
 bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
-{   
+{
     CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
     CtiFDRPoint point;
 
@@ -611,7 +617,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Point registration response tag set, point " 
+            logNow() << "Point registration response tag set, point "
                 << localMsg->getId() << " will not be sent" << endl;
         }
         return false;
@@ -623,15 +629,15 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Translation for point " << localMsg->getId() 
+            logNow() << "Translation for point " << localMsg->getId()
                 << " cannot be found" << endl;;
         }
         return false;
     }
-   
+
    /* If the timestamp is less than 01-01-2000 (completely arbitrary number),
-    * then don't route the point because it is uninitialized (uninitialized points 
-    * come across as 11-10-1990). 
+    * then don't route the point because it is uninitialized (uninitialized points
+    * come across as 11-10-1990).
     */
     if (point.getLastTimeStamp() < CtiTime(CtiDate(1,1,2000)))
     {
@@ -643,10 +649,10 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         }
         return false;
     }
-    
+
 
     bool retVal = true;
-    try 
+    try
     {
         CtiLockGuard<CtiMutex> guard(_connectionListMutex);
         CtiFDRPoint::DestinationList& destList = point.getDestinationList();
@@ -656,7 +662,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
              ++destIter)
         {
             CtiFDRClientServerConnection::Destination dest = (*destIter).getDestination();
-            
+
             CtiFDRClientServerConnection* connection;
             connection = findConnectionForDestination(dest);
             if (connection)
@@ -675,12 +681,12 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
                 }
             }
         }
-        
+
     }
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Unknown exception caught in CtiFDRSocketServer::sendMessageToForeignSys()" 
+        logNow() << "Unknown exception caught in CtiFDRSocketServer::sendMessageToForeignSys()"
             << endl;
         retVal = false;
     }
@@ -699,8 +705,8 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
  */
 bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
 {
-    bool forwardPointData = true;
-    
+    bool result = true;
+
     // if requested, check the timestamp and value to see if we should forward this message
     if (getPointTimeVariation() > 0)
     {
@@ -713,18 +719,18 @@ bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
             // check timestamp
             if (point.getLastTimeStamp() + getPointTimeVariation() >= localMsg.getTime())
             {
-                forwardPointData = false;
+                result = false;
             }
         }
     }
-    return forwardPointData;
+    return result;
 }
 
 CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(
   const CtiFDRClientServerConnection::Destination& destination) const
 {
     // Because new connections are put on the end of the list,
-    // we want to search the list backwards so that we find 
+    // we want to search the list backwards so that we find
     // the newest connection that matches the destination
     // (eventually the older connections will timeout, but
     // that could take a while).
@@ -754,9 +760,9 @@ int CtiFDRSocketServer::getPointTimeVariation() const
     return _pointTimeVariation;
 }
 
-void CtiFDRSocketServer::setPointTimeVariation(int time)
+void CtiFDRSocketServer::setPointTimeVariation(int timeVariation)
 {
-    _pointTimeVariation = time;
+    _pointTimeVariation = timeVariation;
 }
 
 int CtiFDRSocketServer::getTimestampReasonabilityWindow() const

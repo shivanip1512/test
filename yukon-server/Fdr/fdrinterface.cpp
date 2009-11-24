@@ -155,16 +155,18 @@ bool isTranslationNameEqual(CtiFDRManager::ptr_type &aPoint, void *arg)
 
 // constructors, destructor, operators
 
-CtiFDRInterface::CtiFDRInterface(string & interfaceType)
-:   iInterfaceName(interfaceType),
-iDebugLevel(0),
-iDbReloadReason(NotReloaded),
-iQueueFlushRate(1),
-iOutboundSendRate(1),
-iOutboundSendInterval(0),
-iTimeSyncVariation (30),
-iUpdatePCTimeFlag(true),
-iDebugMode(false)
+CtiFDRInterface::CtiFDRInterface(string & interfaceType) :
+    iInterfaceName(interfaceType),
+    iDebugLevel(0),
+    iDbReloadReason(NotReloaded),
+    iQueueFlushRate(1),
+    iOutboundSendRate(1),
+    iOutboundSendInterval(0),
+    iTimeSyncVariation (30),
+    iUpdatePCTimeFlag(true),
+    iDebugMode(false),
+    iReloadRate(0),
+    iDispatchOK(0)
 {
     iDispatchConn = NULL;
     iOutBoundPoints = 0;
@@ -215,8 +217,6 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
     bool                successful(false);
     CtiFDRPointSPtr  translationPoint;
     CtiFDRPointSPtr  point;
-    string           tempString1;
-    string           tempString2;
     string           translationName;
     bool                foundPoint = false, translatedPoint(false);
     string           controlDirection;

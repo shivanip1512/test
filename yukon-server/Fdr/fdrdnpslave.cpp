@@ -97,8 +97,10 @@ const string CtiFDRDnpSlave::CtiFdrDNPOutMessageString="DNP OutMessage";
 
 
 // Constructors, Destructor, and Operators
-CtiFDRDnpSlave::CtiFDRDnpSlave()
-: CtiFDRSocketServer(string("DNPSLAVE"))
+CtiFDRDnpSlave::CtiFDRDnpSlave() :
+    CtiFDRSocketServer(string("DNPSLAVE")),
+    _helper(NULL),
+    _staleDataTimeOut(0)
 {}
 
 void CtiFDRDnpSlave::startup()
@@ -226,7 +228,7 @@ CtiFDRClientServerConnection* CtiFDRDnpSlave::createNewConnection(SOCKET newSock
 
 
 
-bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool isSend)
+bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool foundPoint = false;
 
@@ -242,7 +244,7 @@ bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
             return foundPoint;
         }
 
-        if (isSend)
+        if (sendList)
         {
             _helper->removeSendMapping(dnpId, pointDestination);
             _helper->addSendMapping(dnpId, pointDestination);
@@ -453,7 +455,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
         {
             CtiFDRDestination fdrdest = iter->first;
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
-            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
                 continue;
 
@@ -549,7 +551,7 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
         dnpId.valid = false;
         return dnpId;
     }
-    
+
     dnpId.MasterId = atoi(masterId.c_str());
     dnpId.SlaveId = atoi(slaveId.c_str());
 
@@ -573,11 +575,11 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     dnpId.Offset = atoi(dnpOffset.c_str());
     dnpId.MasterServerName = pointDestination.getDestination();
     if (dnpMultiplier.empty())
-    {    
+    {
         dnpId.Multiplier = 1;
     }
     else
-    {    
+    {
         dnpId.Multiplier = atof(dnpMultiplier.c_str());
     }
     dnpId.valid = true;
@@ -682,10 +684,10 @@ bool CtiFDRDnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
     return retVal;
 }
 
-void CtiFDRDnpSlave::dumpDNPMessage(const string direction, const char* data, unsigned int size)
+void CtiFDRDnpSlave::dumpDNPMessage(const string dnpDirection, const char* data, unsigned int size)
 {
     CtiLockGuard<CtiLogger> dout_guard(dout);
-    logNow() << " "<< getInterfaceName() <<" "<<direction<<" message:"<< endl;
+    logNow() << " "<< getInterfaceName() <<" "<< dnpDirection <<" message:"<< endl;
     for (int x=0; x < size; x++ )
     {
         dout <<" " + CtiNumStr(data[x]).hex().zpad(2).toString();

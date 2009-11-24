@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  
+#pragma warning( disable : 4786 )
 /*****************************************************************************
 *
 *    FILE NAME: fdrtextexport.cpp
@@ -15,10 +15,10 @@
 *
 *    PURPOSE: Generic text export Export
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrtextexport.h,v $
       Revision 1.7.2.2  2008/11/18 20:11:29  jmarks
       [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -86,7 +86,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
@@ -97,14 +97,14 @@ class IM_EX_FDRTEXTEXPORT CtiFDR_TextExport : public CtiFDRTextFileBase
 
 public:
     // constructors and destructors
-    CtiFDR_TextExport(); 
+    CtiFDR_TextExport();
 
     enum {formatOne=1,
         survalent=100
     };
 
     virtual ~CtiFDR_TextExport();
-    virtual BOOL    init( void );   
+    virtual BOOL    init( void );
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
@@ -120,7 +120,7 @@ public:
 
     void threadFunctionWriteToFile( void );
     virtual bool loadTranslationLists(void);
-    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
     void processPointToSurvalent (FILE* aFilePtr, CtiFDRPointSPtr aPoint, CtiTime aTime);
     // ddefine these for each interface type

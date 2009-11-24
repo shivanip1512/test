@@ -57,13 +57,17 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 /**
  * Constructor
  */
-CtiFDRSimple::CtiFDRSimple(string interfaceName) : CtiFDRInterface( string(interfaceName.c_str()) )
+CtiFDRSimple::CtiFDRSimple(string interfaceName) :
+    CtiFDRInterface(string(interfaceName.c_str())),
+    _connected(false),
+    _inited(false),
+    _linkStatusId(0)
+
 {
    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
    getReceiveFromList().setPointList( recList );
 
    recList = NULL;
-
 }
 
 
@@ -283,7 +287,7 @@ bool CtiFDRSimple::loadTranslationLists()
 }
 
 
-bool CtiFDRSimple::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDRSimple::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
   processNewPoint(translationPoint);
   handleNewPoint(translationPoint);
@@ -300,10 +304,10 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
                     const PointQuality_t quality)
 {
 
-  CtiTime time(timestamp);
+  CtiTime currentTime(timestamp);
   double valueConverted = 0;
 
-  if (ctiPoint->getLastTimeStamp() < time)
+  if (ctiPoint->getLastTimeStamp() < currentTime)
   {
     valueConverted = value;
     if ( ctiPoint->getPointType() == AnalogPointType)
@@ -330,7 +334,7 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
     //ctiPoint->setValue(valueConverted);
     //ctiPoint->setLastTimeStamp(time);
 
-    pData->setTime(time);
+    pData->setTime(currentTime);
 
     queueMessageToDispatch(pData);
 

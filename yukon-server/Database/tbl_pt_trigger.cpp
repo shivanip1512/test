@@ -18,7 +18,14 @@
 #include "rwutil.h"
 
 
-CtiTablePointTrigger::CtiTablePointTrigger() {}
+CtiTablePointTrigger::CtiTablePointTrigger() :
+    _pointID(0),
+    _triggerID(0),
+    _triggerDeadband(0),
+    _verificationID(0),
+    _verificationDeadband(0),
+    _commandTimeOut(0)
+{}
 
 CtiTablePointTrigger::CtiTablePointTrigger(const CtiTablePointTrigger& aRef)
 {

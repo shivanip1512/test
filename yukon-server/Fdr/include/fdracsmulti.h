@@ -88,7 +88,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 
 #include <map>
 
@@ -271,7 +271,7 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
 
         virtual void begineNewPoints();
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
         virtual bool buildForeignSystemHeartbeatMsg(char** buffer,

@@ -25,7 +25,10 @@
 using std::transform;
 
 CtiTblPAOLite::CtiTblPAOLite() :
-_paObjectID(-1)
+    _paObjectID(-1),
+    _class(0),
+    _type(0),
+    _disableFlag(false)
 {}
 
 CtiTblPAOLite::CtiTblPAOLite(const CtiTblPAOLite& aRef)

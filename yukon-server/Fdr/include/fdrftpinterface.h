@@ -10,7 +10,7 @@
 *    PURPOSE: Generic class for any interface retrieving a file using ftp
 *
 *    DESCRIPTION: This class implements an interface that retrieves data using
-*						ftp
+*                                               ftp
 *
 *    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
 ****************************************************************************
@@ -24,7 +24,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 #include "dlldefs.h"
 #include <wininet.h>
 #include "fdrinterface.h"
@@ -35,22 +35,22 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRFtpInterface(string &interfaceType); 
-    
+        CtiFDRFtpInterface(string &interfaceType);
+
         virtual ~CtiFDRFtpInterface();
-    
+
         virtual bool sendMessageToForeignSys ( CtiMessage *aMessage )=0;
         virtual int processMessageFromForeignSystem (CHAR *data)=0;
-    
-        virtual BOOL    init( void );   
+
+        virtual BOOL    init( void );
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
-    
+
     protected:
-    
+
         RWThreadFunction    iThreadRetrieveFrom;
         void threadFunctionRetrieveFrom( void );
-    
+
         RWThreadFunction    iThreadFTPGetFile;
         RWCompletionState threadFunctionWorkerFTPGetFile( void );
 
@@ -63,19 +63,19 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         string & getIPAddress();
         string  getIPAddress() const;
         CtiFDRFtpInterface &setIPAddress (string aIP);
-    
+
         string & getPassword();
         string  getPassword() const;
         CtiFDRFtpInterface &setPassword (string aPassword);
-    
+
         string & getLogin();
         string  getLogin() const;
         CtiFDRFtpInterface &setLogin (string aLogin);
-    
+
         string & getServerFileName();
         string  getServerFileName() const;
         CtiFDRFtpInterface &setServerFileName (string aFile);
-    
+
         string & getFTPDirectory();
         string  getFTPDirectory() const;
         CtiFDRFtpInterface &setFTPDirectory (string aDir);
@@ -83,33 +83,33 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         string & getLocalFileName();
         string  getLocalFileName() const;
         CtiFDRFtpInterface &setLocalFileName (string aFile);
-    
+
         int getPort() const;
         CtiFDRFtpInterface &setPort (int aPort);
-    
+
         int getDownloadInterval() const;
         CtiFDRFtpInterface &setDownloadInterval (int aInterval);
-    
+
         int getTries() const;
         CtiFDRFtpInterface &setTries (int aTry);
 
         virtual int fail() = 0;
         virtual int decodeFile() = 0;
         virtual bool loadTranslationLists(void);
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
         long                getLinkStatusID( void ) const;
         CtiFDRFtpInterface  &  setLinkStatusID(const long aPointID);
         void sendLinkState (int aState);
 
 
-    
+
     private:
         int                iPort;
         int                iTries;
         int                iDownloadInterval;
         long               iLinkStatusID;
-    
+
         string      iIPAddress;
         string      iPassword;
         string      iLogin;

@@ -378,7 +378,7 @@ void CtiFDRSingleSocket::signalPointRemoved(string &pointName)
     //do Nothing by default
 }
 
-bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool success = false;
 

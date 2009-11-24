@@ -9,10 +9,10 @@
 *
 *    PURPOSE: Replace MACS scripts for client wabash
 *
-*    DESCRIPTION: Whenever a Load Program status is changed, this program will 
-*                 write out a line of text in a file specified by the status point 
-*                 indicating the action needed to the froeign system.  
-*    
+*    DESCRIPTION: Whenever a Load Program status is changed, this program will
+*                 write out a line of text in a file specified by the status point
+*                 indicating the action needed to the froeign system.
+*
 *****************************************************************************/
 #ifndef __FDRWABASH_H__
 #define __FDRWABASH_H__
@@ -22,7 +22,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 #include "dlldefs.h"
 #include "fdrinterface.h"
 #include "string.h"
@@ -34,14 +34,14 @@ class __declspec(dllexport) FDRWabash : public CtiFDRInterface
         typedef CtiFDRInterface Inherited;
     public:
         // constructors and destructors
-        FDRWabash(); 
+        FDRWabash();
         virtual ~FDRWabash();
 
         //Initializers
         BOOL init();
         bool readConfig();
         bool loadTranslationLists();
-        bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+        bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
         void resetForInitialLoad();
 
         //overloads

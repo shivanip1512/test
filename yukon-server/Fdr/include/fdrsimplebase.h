@@ -25,7 +25,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 #include <rw/db/status.h>
 #include <vector>
 #include <map>
@@ -77,7 +77,7 @@ protected:
   virtual void removeAllPoints() {};
   virtual void processNewPoint(CtiFDRPointSPtr ctiPoint)=0;
   virtual void handleNewPoint(CtiFDRPointSPtr ctiPoint)=0;
-  virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send);
+  virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
   virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)=0;
   virtual void handleNewPoints(){};
 

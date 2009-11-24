@@ -267,7 +267,7 @@ USHORT CtiFDR_LodeStarImportBase::ForeignToYukonQuality (string aQuality)
     return(Quality);
 }
 
-bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, 
+bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList,
                                                         const CtiTime& savedStartTime,const CtiTime& savedStopTime,
                                                         long stdLsSecondsPerInterval, string savedCustomerIdentifier, string FileName)
 {
@@ -572,7 +572,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_LodeStarImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDR_LodeStarImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = true;
 
@@ -829,9 +829,9 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                              list< CtiMultiMsg* > dispatchList;
                                              delete_container(dispatchList);
                                              dispatchList.clear();
-                                             if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, 
+                                             if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList,
                                                                          savedStartTime,savedStopTime,
-                                                                         secondsPerInterval, savedCustomerIdentifier, 
+                                                                         secondsPerInterval, savedCustomerIdentifier,
                                                                          fileNameAndPath) )
                                              {
                                                  CtiMultiMsg *dispatchMsg = NULL;
@@ -897,7 +897,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                      list< CtiMultiMsg* > dispatchList;
                                      delete_container(dispatchList);
                                      dispatchList.clear();
-                                     if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, 
+                                     if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList,
                                                                  savedStartTime,savedStopTime,
                                                                  secondsPerInterval, savedCustomerIdentifier,
                                                                  fileNameAndPath) )

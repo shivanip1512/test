@@ -20,9 +20,10 @@
 #include "rwutil.h"
 
 CtiTableRepeaterRoute::CtiTableRepeaterRoute(LONG dID, INT vb, INT ro) :
-DeviceID(dID),
-VarBit(vb),
-RepeaterOrder(ro)
+    DeviceID(dID),
+    VarBit(vb),
+    RepeaterOrder(ro),
+    _routeID(0)
 {}
 
 CtiTableRepeaterRoute::CtiTableRepeaterRoute(const CtiTableRepeaterRoute& aRef)

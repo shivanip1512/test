@@ -34,7 +34,7 @@ _lmControlHistID(lmchid), _paoID(paoid), _startDateTime(start), _soeTag(soe),
 _controlDuration(dur), _controlType(type), _currentDailyTime(daily), _currentMonthlyTime(month),
 _currentSeasonalTime(season), _currentAnnualTime(annual), _defaultActiveRestore(restore),
 _reductionValue(reduce), _reductionRatio(100), _prevLogTime(start), _prevStopReportTime(start),
-_isNewControl(true), _loadedActiveRestore(LMAR_NEWCONTROL), _activeRestore(LMAR_MANUAL_RESTORE)
+_isNewControl(true), _loadedActiveRestore(LMAR_NEWCONTROL), _activeRestore(LMAR_MANUAL_RESTORE), _controlPriority(0)
 {
 }
 
@@ -588,9 +588,9 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     if(!getLMControlHistoryID()) setLMControlHistoryID( LMControlHistoryIdGen() );
 
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
-    inserter <<
+    dbInserter <<
     getLMControlHistoryID() <<
     getPAOID() <<
     CtiTime(getStartTime()) <<
@@ -608,13 +608,13 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {
-        if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+        if( ExecuteInserter(conn,dbInserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
         {
             setDirty(false);
         }
         else
         {
-            string loggedSQLstring = inserter.asString();
+            string loggedSQLstring = dbInserter.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -622,11 +622,11 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
             }
         }
 
-        dbstat = inserter.status();
+        dbstat = dbInserter.status();
     }
     else
     {
-        string loggedSQLstring = inserter.asString();
+        string loggedSQLstring = dbInserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** LMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -965,12 +965,12 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["protocolpriority"].assign( getControlPriority() );
 
     long rowsAffected;
-    RWDBStatus stat(RWDBStatus::ok);
+    RWDBStatus rwStat(RWDBStatus::ok);
     RWDBStatus::ErrorCode ec = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
     if( ec != RWDBStatus::ok || rowsAffected <= 0)
     {
-        stat = InsertDynamic(conn);        // Try a vanilla insert if the update failed!
+        rwStat = InsertDynamic(conn);        // Try a vanilla insert if the update failed!
     }
 
     return updater.status();
@@ -982,9 +982,9 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
     RWDBStatus dbstat( RWDBStatus::ok );
 
     RWDBTable table = getDatabase().table( getDynamicTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
-    inserter <<
+    dbInserter <<
     getPAOID() <<
     getLMControlHistoryID() <<
     CtiTime(getStartTime()) <<
@@ -1002,9 +1002,9 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {
-        if( (dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__)).errorCode() != RWDBStatus::ok)
+        if( (dbstat = ExecuteInserter(conn,dbInserter,__FILE__,__LINE__)).errorCode() != RWDBStatus::ok)
         {
-            string loggedSQLstring = inserter.asString();
+            string loggedSQLstring = dbInserter.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1014,7 +1014,7 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
     }
     else
     {
-        string loggedSQLstring = inserter.asString();
+        string loggedSQLstring = dbInserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** DynamicLMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

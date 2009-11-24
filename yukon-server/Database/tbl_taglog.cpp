@@ -219,18 +219,18 @@ RWDBStatus CtiTableTagLog::Update(RWDBConnection &conn)
     table["forstr"].assign(getTaggedForStr().c_str());
 
     long rowsAffected;
-    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+    RWDBStatus rwStat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
-    if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+    if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        stat = Insert(conn);        // Try a vanilla insert if the update failed!
+        rwStat = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 
-    return stat;
+    return rwStat;
 }
 
 RWDBStatus CtiTableTagLog::Restore()

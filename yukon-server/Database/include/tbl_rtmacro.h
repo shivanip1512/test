@@ -67,7 +67,7 @@ private:
 
 public:
 
-   CtiTableMacroRoute(LONG RouteID = -1L, INT RouteOrder = INT_MAX);
+   CtiTableMacroRoute(LONG routeId = -1L, INT routeOrder = INT_MAX);
 
    CtiTableMacroRoute(const CtiTableMacroRoute& aRef);
 

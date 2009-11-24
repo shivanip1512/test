@@ -17,7 +17,10 @@
 
 #include "tbl_rtmacro.h"
 
-CtiTableMacroRoute::CtiTableMacroRoute(LONG RouteID, INT RouteOrder)
+CtiTableMacroRoute::CtiTableMacroRoute(LONG routeId, INT routeOrder) :
+    RouteID(0),
+    _singleRouteID(0),
+    RouteOrder(0)
 {
 }
 

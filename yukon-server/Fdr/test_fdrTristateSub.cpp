@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( test_readInFile_goodData )
     BOOST_CHECK_EQUAL( *listItr, caseTwo   ); listItr++;
     BOOST_CHECK_EQUAL( *listItr, caseThree ); listItr++;
 
-    BOOST_CHECK_EQUAL( listItr == stringList.end(),true ); 
+    BOOST_CHECK_EQUAL( listItr == stringList.end(),true );
 }
 
 BOOST_AUTO_TEST_CASE( test_readInFile_emptyFile )
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_readInFile_emptyFile )
 
     list<string>::iterator listItr = stringList.begin();
 
-    BOOST_CHECK_EQUAL( listItr == stringList.end(),true ); 
+    BOOST_CHECK_EQUAL( listItr == stringList.end(),true );
 
 }
 
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( test_readInFile_emptyLine )
 
     list<string>::iterator listItr = stringList.begin();
 
-    BOOST_CHECK_EQUAL( listItr == stringList.end(),true ); 
+    BOOST_CHECK_EQUAL( listItr == stringList.end(),true );
 
 }
 
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE( test_readInFile_badData )
     list<string>::iterator listItr = stringList.begin();
     BOOST_CHECK_EQUAL( *listItr, caseOne   ); listItr++;
     BOOST_CHECK_EQUAL( *listItr, caseOne   ); listItr++;
-    BOOST_CHECK_EQUAL( listItr == stringList.end(),true ); 
+    BOOST_CHECK_EQUAL( listItr == stringList.end(),true );
 
 }
 
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE( test_processData_goodInput  )
     string caseOne   = "\"20070516101500\",\"Nucla 115/69 Xfmr.\",\"MW\",4.326";
     string caseTwo   = "\"20070516101500\",\"Happy Canyon 661Idarado\",\"MW\",2.11";
     string caseThree = "\"20070516101500\",\"Cascade 115/69 (T2)\",\"MW\",5.978";
-    CtiTime time(CtiDate(16,5,2007),10,15,00);
+    CtiTime aTime(CtiDate(16,5,2007),10,15,00);
 
     vector<double> vec;
     vec.push_back(4.326);vec.push_back(2.11);vec.push_back(5.978);
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE( test_processData_goodInput  )
         if( m != NULL ){
             double d  = m->getValue();
             CtiTime t = m->getTime();
-            BOOST_CHECK_EQUAL( t == time, true);
+            BOOST_CHECK_EQUAL( t == aTime, true);
             BOOST_CHECK_EQUAL( d , vec.at(i));
         }
         i++;
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE( test_processData_badInput   )
     FDRTriStateSub sm;
     string caseOne   = "\"20070516101500\",\"Nucla 115/69 Xfmr.\",\"MW\",4.326";
     string caseTwo   = "\"20070516101500\",\"Happy Canyon 661Idarado\",\"MW\",2.11";
-    string caseThree = "\"20070516101500\",\"Cascade 115/69 (T2)\",\"MW\",5.978";    
+    string caseThree = "\"20070516101500\",\"Cascade 115/69 (T2)\",\"MW\",5.978";
 
     BOOST_CHECK_EQUAL(1,1);
 }
@@ -174,53 +174,53 @@ BOOST_AUTO_TEST_CASE( test_generateMessage_badInput )
     string caseFou   = "";
     string caseFiv   = "20070,Nucla 115/69 Xfmr.,MW,4.326";
     string caseSix   = "99999999999999,Nucla 115/69 Xfmr.,MW,4.326";
-    {   
+    {
         //tokenize based off ',' to pass to generateMessage
         boost::char_separator<char> delim(",");
         Boost_char_tokenizer tokens(caseOne, delim);
-    
+
         msg = sm.generateMessage(tokens);
         BOOST_CHECK_EQUAL(msg.getMessage().get() == NULL, true);
     }
-    {   
+    {
         //tokenize based off ',' to pass to generateMessage
         boost::char_separator<char> delim(",");
         Boost_char_tokenizer tokens(caseTwo, delim);
-    
+
         msg = sm.generateMessage(tokens);
         BOOST_CHECK_EQUAL(msg.getMessage().get() == NULL, true);
     }
-    {   
+    {
         //tokenize based off ',' to pass to generateMessage
         boost::char_separator<char> delim(",");
         Boost_char_tokenizer tokens(caseThr, delim);
-    
+
         msg = sm.generateMessage(tokens);
         BOOST_CHECK_EQUAL(msg.getMessage().get() == NULL, true);
     }
-    {   
+    {
         //tokenize based off ',' to pass to generateMessage
         boost::char_separator<char> delim(",");
         Boost_char_tokenizer tokens(caseFou, delim);
-    
+
         msg = sm.generateMessage(tokens);
         BOOST_CHECK_EQUAL(msg.getMessage().get() == NULL, true);
     }
     //Bad Date
-    {   
+    {
         //tokenize based off ',' to pass to generateMessage
         boost::char_separator<char> delim(",");
         Boost_char_tokenizer tokens(caseFiv, delim);
-    
+
         msg = sm.generateMessage(tokens);
         BOOST_CHECK_EQUAL(msg.getMessage().get() == NULL, true);
     }
     //Bad Date
-    {   
+    {
         //tokenize based off ',' to pass to generateMessage
         boost::char_separator<char> delim(",");
         Boost_char_tokenizer tokens(caseSix, delim);
-    
+
         msg = sm.generateMessage(tokens);
         BOOST_CHECK_EQUAL(msg.getMessage().get() == NULL, true);
     }
@@ -238,10 +238,10 @@ BOOST_AUTO_TEST_CASE( test_generateMessage_goodInput )
 
     msg = sm.generateMessage(tokens);
 
-    CtiTime time = ((CtiPointDataMsg*)msg.getMessage().get())->getTime();
+    CtiTime aTime = ((CtiPointDataMsg*)msg.getMessage().get())->getTime();
     CtiTime cTime(CtiDate(16,5,2007),10,15,0);
     //Check the time in the point
-    BOOST_CHECK_EQUAL(time,cTime);
+    BOOST_CHECK_EQUAL(aTime,cTime);
 
     double val = ((CtiPointDataMsg*)msg.getMessage().get())->getValue();
     double v = 4.326;

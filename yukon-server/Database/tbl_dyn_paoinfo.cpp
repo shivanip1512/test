@@ -371,7 +371,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Update()
 RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
 {
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
     RWDBStatus retval(RWDBStatus::ok);
 
     const string *tmp_owner = 0, *tmp_key = 0;
@@ -395,7 +395,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
 
     if( (getPaoID() >= 0) && tmp_owner && tmp_key )
     {
-        inserter <<  getEntryID()  //  MUST be set before we try to insert
+        dbInserter <<  getEntryID()  //  MUST be set before we try to insert
                  <<  getPaoID()
                  << *tmp_owner
                  << *tmp_key
@@ -404,7 +404,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
 
         if(isDebugLudicrous())
         {
-            string loggedSQLstring = inserter.asString();
+            string loggedSQLstring = dbInserter.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -412,11 +412,11 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
             }
         }
 
-        ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+        ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
 
-        if(inserter.status().errorCode() != RWDBStatus::ok)    // error occured!
+        if(dbInserter.status().errorCode() != RWDBStatus::ok)    // error occured!
         {
-            string loggedSQLstring = inserter.asString();
+            string loggedSQLstring = dbInserter.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -428,7 +428,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
             resetDirty(FALSE);
         }
 
-        retval = inserter.status();
+        retval = dbInserter.status();
     }
     else
     {
@@ -446,7 +446,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
 
 RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffected)
 {
-    RWDBStatus  stat(RWDBStatus::ok);
+    RWDBStatus  rwStat(RWDBStatus::ok);
     RWDBTable   table = getDatabase().table( getTableName().c_str() );
 
     const string *tmp_owner = 0, *tmp_key = 0;
@@ -480,9 +480,9 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffect
         updater << table["value"].assign(tmp_value.c_str())
                 << table["updatetime"].assign(toRWDBDT(CtiTime::now()));
 
-        stat = ExecuteUpdater(conn, updater, __FILE__, __LINE__, &rowsAffected);
+        rwStat = ExecuteUpdater(conn, updater, __FILE__, __LINE__, &rowsAffected);
 
-        if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+        if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
         {
             setDirty(false);
         }
@@ -493,7 +493,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffect
         }*/
     }
 
-    return stat;
+    return rwStat;
 }
 
 RWDBStatus CtiTableDynamicPaoInfo::Restore()

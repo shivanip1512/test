@@ -34,11 +34,19 @@
 
 #include "tbl_lmg_golay.h"
 
-CtiTableGolayGroup::CtiTableGolayGroup()
+CtiTableGolayGroup::CtiTableGolayGroup() :
+    _lmGroupId(0),
+    _routeId(0),
+    _nominalTimeout(0),
+    _virtualTimeout(0)
 {
 }
 
-CtiTableGolayGroup::CtiTableGolayGroup(const CtiTableGolayGroup &aRef)
+CtiTableGolayGroup::CtiTableGolayGroup(const CtiTableGolayGroup &aRef) :
+    _lmGroupId(0),
+    _routeId(0),
+    _nominalTimeout(0),
+    _virtualTimeout(0)
 {
 }
 

@@ -219,8 +219,11 @@ const CHAR * CtiFDR_TextImport::KEY_RENAME_SAVE_FILE = "FDR_TEXTIMPORT_RENAME_SA
 
 
 // Constructors, Destructor, and Operators
-CtiFDR_TextImport::CtiFDR_TextImport()
-: CtiFDRTextFileBase(string("TEXTIMPORT"))
+CtiFDR_TextImport::CtiFDR_TextImport() :
+    CtiFDRTextFileBase(string("TEXTIMPORT")),
+    _deleteFileAfterImportFlag(false),
+    _renameSaveFileAfterImportFlag(false),
+    _legacyDrivePath(false)
 {
 
 }
@@ -312,7 +315,7 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
 {
     struct tm ts;
     CtiTime retVal;
-    int month,day,year,hour,minute,seconds;
+    int month,day,year,hour,minute,sec;
 
     if (aTime.length() == 19)
     {
@@ -323,7 +326,7 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
                     &year,
                     &hour,
                     &minute,
-                    &seconds) != 6)
+                    &sec) != 6)
         {
             retVal = PASTDATE;
         }
@@ -342,7 +345,7 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
             ts.tm_year = year - 1900;
             ts.tm_hour = hour;
             ts.tm_min = minute;
-            ts.tm_sec = seconds;
+            ts.tm_sec = sec;
 
             if( aDstFlag == 'D' || aDstFlag == 'd' )
             {
@@ -958,7 +961,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = false;
 
@@ -1280,22 +1283,22 @@ bool CtiFDR_TextImport::moveFile( string fileName )
     string fileNameAndPath = fileName;
     int pos = fileNameAndPath.rfind(".");
     //get just the fileName, no path.
-    string oldFileName( fileNameAndPath,0,pos );
+    string oldFileName(fileNameAndPath,0,pos);
     string tempTime = CtiTime().asString();
 
     //remove slashes and : in the time
     bool slashesInString = true;
     while( slashesInString )
     {
-        int pos = tempTime.find("/");
-        if( pos == string::npos )
+        int pos2 = tempTime.find("/");
+        if( pos2 == string::npos )
         {
             slashesInString = false;
-            pos = tempTime.find(":");
-            while (pos != string::npos )
+            pos2 = tempTime.find(":");
+            while (pos2 != string::npos )
             {
                 tempTime = tempTime.erase(pos,1);
-                pos = tempTime.find(":");
+                pos2 = tempTime.find(":");
             }
         }
         else

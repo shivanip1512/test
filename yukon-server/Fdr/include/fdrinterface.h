@@ -98,7 +98,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         bool reloadTranslationLists(void);
         virtual bool loadTranslationLists(void)=0;
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false)=0;
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false)=0;
 
         //Load single point, maintaining current lists
         virtual bool loadTranslationPoint(long pointId);

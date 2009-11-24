@@ -16,11 +16,11 @@
 *
 *    DESCRIPTION: This class implements an interface that exchanges point data
 *                 with a generic system such as Inet on DSM2.  The data is both status and Analog data.
-*				  Information is exchanged using sockets opened on a predefined socket 
-*				  number and also pre-defined messages between the systems.  
+*                                 Information is exchanged using sockets opened on a predefined socket
+*                                 number and also pre-defined messages between the systems.
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrinet.cpp,v $
       Revision 1.26  2008/10/31 15:36:33  tspar
       YUK-6649 - Yukon is throwing away point updates from RCCS
@@ -134,62 +134,62 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 2.11   05 Apr 2002 11:43:08   dsutton
    fixed (again) a bug where if two connections went down and the second in the list came up, we never tried to attach to the first again.  I think the logic is right this time
-   
+
       Rev 2.10   27 Mar 2002 17:43:06   dsutton
    fixed a bug where if two connections went away and one was restored, we never tried to restore the other.  Had to do with the order in the list of connections
-   
+
       Rev 2.9   12 Mar 2002 10:28:52   dsutton
    the listener has been moved into the socketinterface base class so calls to iListener had to be changed to the getter
-   
+
       Rev 2.8   01 Mar 2002 13:20:14   dsutton
    changed the client list and connection list to vectors, updated the server thread to use a listener object so shutdown is more peacefule,function to walk connection list and update link status points, memory leak in client list loading
-   
+
       Rev 2.7   20 Feb 2002 08:40:54   dsutton
    moved some debug lines around and changed the level that they show under
-   
+
       Rev 2.6   15 Feb 2002 14:11:46   dsutton
    changed the default queue flush rate to 1 second
-   
+
       Rev 2.5   15 Feb 2002 11:22:08   dsutton
     changed the debug settings for a few of the transactions to make them more uniform throughout fdr
-   
+
       Rev 2.4   11 Feb 2002 15:03:24   dsutton
    added event logs when the connection is established or failed, unknown points, invalid states, etc
-   
+
       Rev 2.3   14 Dec 2001 17:17:56   dsutton
    the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow
-   
+
       Rev 2.2   15 Nov 2001 16:16:38   dsutton
    code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
+
       Rev 2.1   26 Oct 2001 15:20:20   dsutton
    moving revision 1 to 2.x
-   
+
       Rev 1.5.1.0   26 Oct 2001 14:21:50   dsutton
-   client connection bug, point sendable, 
-   
+   client connection bug, point sendable,
+
       Rev 1.5   23 Aug 2001 13:59:32   dsutton
    updated to intercept control points from the yukon side. also a few changes
    so it could be the base class of the rccs interface
-   
+
       Rev 1.4   20 Jul 2001 10:00:50   dsutton
    client connection problem
-   
+
       Rev 1.3   04 Jun 2001 14:22:24   dsutton
    updated logging and removed debug messages
-   
+
       Rev 1.2   04 Jun 2001 09:31:56   dsutton
    lists had moved to the interface layer
-   
+
       Rev 1.1   30 May 2001 16:47:28   dsutton
    moved the listener to the main class
-   
+
       Rev 1.0   10 May 2001 11:15:30   dsutton
    Initial revision.
-   
+
       Rev 1.0   23 Apr 2001 11:17:58   dsutton
    Initial revision.
 *
@@ -248,11 +248,12 @@ const CHAR * CtiFDR_Inet::KEY_DEBUG_MODE = "FDR_INET_DEBUG_MODE";
 const CHAR * CtiFDR_Inet::KEY_QUEUE_FLUSH_RATE = "FDR_INET_QUEUE_FLUSH_RATE";
 
 // Constructors, Destructor, and Operators
-CtiFDR_Inet::CtiFDR_Inet(string aName)
-: CtiFDRSocketInterface(aName)
-{ 
+CtiFDR_Inet::CtiFDR_Inet(string aName) :
+    CtiFDRSocketInterface(aName),
+    iClientConnectionSemaphore(NULL)
+{
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
@@ -266,7 +267,7 @@ CtiFDR_Inet::CtiFDR_Inet(string aName)
 CtiFDR_Inet::~CtiFDR_Inet()
 {
     {
-        CtiLockGuard<CtiMutex> guard(iConnectionListMux);  
+        CtiLockGuard<CtiMutex> guard(iConnectionListMux);
 
         // delete all the layers
         for (int x=0; x < iConnectionList.size(); x++)
@@ -279,7 +280,7 @@ CtiFDR_Inet::~CtiFDR_Inet()
     // kill the connection list and then send the statuses
     setCurrentClientLinkStates();
     {
-        CtiLockGuard<CtiMutex> guard(iClientListMux);  
+        CtiLockGuard<CtiMutex> guard(iClientListMux);
         iClientList.erase (iClientList.begin(),iClientList.end());
     }
 }
@@ -291,12 +292,12 @@ CtiFDR_Inet& CtiFDR_Inet::setSourceName(string &aName)
 }
 string & CtiFDR_Inet::getSourceName()
 {
-	return iSourceName;
+        return iSourceName;
 }
 
 string  CtiFDR_Inet::getSourceName() const
 {
-	return iSourceName;
+        return iSourceName;
 }
 
 vector< CtiFDRSocketLayer *> &CtiFDR_Inet::getConnectionList ()
@@ -338,7 +339,7 @@ CtiMutex & CtiFDR_Inet::getClientListMux ()
 BOOL CtiFDR_Inet::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
 
     if ( !readConfig( ) )
     {
@@ -348,19 +349,19 @@ BOOL CtiFDR_Inet::init( void )
     // start up the socket layer
     loadClientList ();
     loadTranslationLists();
-    
-    iThreadMonitor = rwMakeThreadFunction(*this, 
+
+    iThreadMonitor = rwMakeThreadFunction(*this,
                                             &CtiFDR_Inet::threadFunctionMonitor);
 
-    iThreadServer = rwMakeThreadFunction(*this, 
+    iThreadServer = rwMakeThreadFunction(*this,
                                             &CtiFDR_Inet::threadFunctionServerConnection);
 
-    iThreadClient = rwMakeThreadFunction(*this, 
+    iThreadClient = rwMakeThreadFunction(*this,
                                             &CtiFDR_Inet::threadFunctionClientConnection);
 
     if (isInterfaceInDebugMode())
     {
-        iThreadSendDebugData = rwMakeThreadFunction(*this, 
+        iThreadSendDebugData = rwMakeThreadFunction(*this,
                                                 &CtiFDR_Inet::threadFunctionSendDebugData);
     }
 
@@ -371,7 +372,7 @@ BOOL CtiFDR_Inet::init( void )
 * Function Name: CtiFDR_Inet::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_Inet::run( void )
@@ -425,9 +426,9 @@ void CtiFDR_Inet::setCurrentClientLinkStates()
         if ((!foundClient) && (linkID))
         {
             CtiPointDataMsg     *pData;
-            pData = new CtiPointDataMsg(linkID, 
-                                        FDR_NOT_CONNECTED, 
-                                        NormalQuality, 
+            pData = new CtiPointDataMsg(linkID,
+                                        FDR_NOT_CONNECTED,
+                                        NormalQuality,
                                         StatusPointType);
             sendMessageToDispatch (pData);
         }
@@ -437,8 +438,8 @@ void CtiFDR_Inet::setCurrentClientLinkStates()
 /*************************************************
 * Function Name: CtiFDR_Inet::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_Inet::stop( void )
@@ -467,7 +468,7 @@ BOOL CtiFDR_Inet::stop( void )
 *
 * Description: Creates a seperate collection of Status and Analog Point
 *              IDs and Inet id for translation.
-* 
+*
 *************************************************************************
 */
 bool CtiFDR_Inet::loadTranslationLists()
@@ -486,9 +487,9 @@ bool CtiFDR_Inet::loadTranslationLists()
 /************************************************************************
 * Function Name: CtiFDR_Inet::loadList()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*                               specified direction
+*
 *************************************************************************
 */
 bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
@@ -520,15 +521,15 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
             {
                 // get iterator on send list
                 CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
-    
+
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
                     successful = translateSinglePoint(myIterator->second);
                 }
 
-                // lock the list I'm swapping 
-                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+                // lock the list I'm swapping
+                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
                 if (aList.getPointList() != NULL)
                 {
                     aList.deletePointList();
@@ -537,7 +538,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 
                 // set this to null, the memory is now assigned to the other point
                 pointList=NULL;
-    
+
                 if (!successful)
                 {
                     if (!foundPoint)
@@ -585,7 +586,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 }
 
 
-bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = false;
     string tempString1;
@@ -597,14 +598,14 @@ bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
         const string translation = translationPoint->getDestinationList()[x].getTranslation();
         boost::char_separator<char> sep1(";");
         Boost_char_tokenizer nextTranslate(translation, sep1);
-        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
 
         if ( tok_iter != nextTranslate.end() )
         {
             tempString1 = *tok_iter;tok_iter++;
             boost::char_separator<char> sep2(":");
             Boost_char_tokenizer nextTempToken(tempString1, sep2);
-            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
 
             if( tok_iter1 != nextTempToken.end() )
             {
@@ -630,7 +631,7 @@ bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
                         tempString1 = *tok_iter;
                         boost::char_separator<char> sep2(":");
                         Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
 
                         tok_iter1++;
                         if( tok_iter1 != nextTempToken.end() )
@@ -653,7 +654,7 @@ bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
                                     dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
                                 }
                                 std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-                                translationPoint->getDestinationList()[x].setDestination(s); 
+                                translationPoint->getDestinationList()[x].setDestination(s);
                                 if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -686,7 +687,7 @@ bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
 * Function Name: CtiFDR_Inet::loadDestinationList()
 *
 * Description: Creates a collection of destinations
-* 
+*
 *************************************************************************
 */
 bool CtiFDR_Inet::loadClientList()
@@ -701,7 +702,7 @@ bool CtiFDR_Inet::loadClientList()
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        string (FDR_INTERFACE_SEND));
 
         listStatus = pointList->loadPointList();
@@ -709,7 +710,7 @@ bool CtiFDR_Inet::loadClientList()
         // if status is ok, we were able to read the database at least
         if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
-            CtiLockGuard<CtiMutex> destGuard(iClientListMux);  
+            CtiLockGuard<CtiMutex> destGuard(iClientListMux);
             iClientList.erase (iClientList.begin(),iClientList.end());
 
             // get iterator on send list
@@ -755,7 +756,7 @@ bool CtiFDR_Inet::loadClientList()
 
         /******************************
         * note:  for the RCCS interface we are always sending data
-        * to the machine we may receive data from 
+        * to the machine we may receive data from
         * because of this, the server list is always empty
         *******************************
         */
@@ -764,7 +765,7 @@ bool CtiFDR_Inet::loadClientList()
         {
             boost::char_separator<char> sep(",");
             Boost_char_tokenizer next(receiveConnections, sep);
-            Boost_char_tokenizer::iterator tok_iter = next.begin(); 
+            Boost_char_tokenizer::iterator tok_iter = next.begin();
 
             string       myInterfaceName;
             string       tempString;
@@ -811,11 +812,11 @@ bool CtiFDR_Inet::loadClientList()
 * Function Name: CtiFDR_Inet::config()
 *
 * Description: loads cparm config values
-* 
+*
 **************************************************
 */
 int CtiFDR_Inet::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -830,7 +831,7 @@ int CtiFDR_Inet::readConfig( void )
         setPortNumber (INET_PORTNUMBER);
     }
     // since inet and rccs are the only interfaces that intiate the connection, we must make sure we set the
-    // connect port number also  
+    // connect port number also
     setConnectPortNumber (getPortNumber());
 
 
@@ -864,7 +865,7 @@ int CtiFDR_Inet::readConfig( void )
         iSourceName = string("YUKON");
     }
 
-    
+
     tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
     if (tempStr.length() > 0)
         setInterfaceDebugMode (true);
@@ -910,14 +911,13 @@ int CtiFDR_Inet::readConfig( void )
 * Function Name: CtiFDR_Inet::sendMessageToForeignSys ()
 *
 * Description: We must find the appropriate destination first and then do our write
-* 
+*
 ***************************************************************************
 */
 
 bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
 {
     bool retVal = true;
-    CHAR *ptr=NULL;
     int  connectionIndex;;
     CHAR *foreignSys=NULL;
 
@@ -930,14 +930,14 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
     // now loop thru the many possible destinations for the point
     for (int x=0; x < aPoint.getDestinationList().size(); x++)
     {
-        CtiLockGuard<CtiMutex> guard(iConnectionListMux);  
+        CtiLockGuard<CtiMutex> guard(iConnectionListMux);
         connectionIndex = findConnectionByNameInList (aPoint.getDestinationList()[x].getDestination());
 
         if (connectionIndex != -1)
         {
             /**************************
             * we allocate an inet message here and it will be deleted
-            * inside of the write function on the connection 
+            * inside of the write function on the connection
             ***************************
             */
             foreignSys = new CHAR[sizeof (InetInterface_t)];
@@ -963,7 +963,7 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
 
                 /***********************
                 * for exchanging with DSM2 systems
-                * the daylight savings flag is the most significant bit 
+                * the daylight savings flag is the most significant bit
                 * in the quality, if we are in daylight savings, I need to set the quality
                 * so the receiving side knows the time
                 ************************
@@ -1088,7 +1088,7 @@ int CtiFDR_Inet::findClientInList(SOCKADDR_IN aAddr)
 * Function Name: CtiFDR_Inet::threadFunctionConnection
 *
 * Description: thread that watches connection status and re-establishes it as needed
-* 
+*
 ***************************************************************************
 */
 void CtiFDR_Inet::threadFunctionMonitor( void )
@@ -1115,7 +1115,7 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
             pSelf.serviceCancellation( );
             pSelf.sleep (250);
 
-            CtiLockGuard<CtiMutex> guard(iConnectionListMux);  
+            CtiLockGuard<CtiMutex> guard(iConnectionListMux);
             foundFlag = false;
 
             vector<CtiFDRSocketLayer*>::iterator connectionIt = iConnectionList.begin() ;
@@ -1168,7 +1168,7 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
     {
         // destroy the connection list here
         {
-            CtiLockGuard<CtiMutex> guard(iConnectionListMux);  
+            CtiLockGuard<CtiMutex> guard(iConnectionListMux);
 
             // delete all the layers
             for (int x=0; x < iConnectionList.size(); x++)
@@ -1190,7 +1190,7 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
     catch ( ... )
     {
         {
-            CtiLockGuard<CtiMutex> guard(iConnectionListMux);  
+            CtiLockGuard<CtiMutex> guard(iConnectionListMux);
 
             // delete all the layers
             for (int x=0; x < iConnectionList.size(); x++)
@@ -1235,14 +1235,14 @@ void CtiFDR_Inet::threadFunctionClientConnection( void )
             {
                 allFound = findAndInitializeClients();
 
-                pSelf.sleep (500);  
+                pSelf.sleep (500);
                 pSelf.serviceCancellation( );
             }
 
             for ( ; ; )
-            {    
+            {
                 pSelf.serviceCancellation( );
-                pSelf.sleep (500);  
+                pSelf.sleep (500);
 
                 // returns an error 1 for a timeout, error or otherwise
                 semRet = WaitForSingleObject(iClientConnectionSemaphore, 5000L);
@@ -1263,8 +1263,8 @@ void CtiFDR_Inet::threadFunctionClientConnection( void )
                     ResetEvent (iClientConnectionSemaphore);
 
                     /***********************
-                    * if we were tripped, we need to 
-                    * walk our destination list and re-initialize 
+                    * if we were tripped, we need to
+                    * walk our destination list and re-initialize
                     * the client that has gone away
                     ************************
                     */
@@ -1273,7 +1273,7 @@ void CtiFDR_Inet::threadFunctionClientConnection( void )
                     {
                         allFound = findAndInitializeClients();
 
-                        pSelf.sleep (1000);  
+                        pSelf.sleep (1000);
                         pSelf.serviceCancellation( );
                     }
                 }
@@ -1311,8 +1311,8 @@ bool  CtiFDR_Inet::findAndInitializeClients( void )
     string            desc;
     string           action;
 
-    CtiLockGuard<CtiMutex> destGuard(iClientListMux);  
-    CtiLockGuard<CtiMutex> guard(iConnectionListMux);  
+    CtiLockGuard<CtiMutex> destGuard(iClientListMux);
+    CtiLockGuard<CtiMutex> guard(iConnectionListMux);
 
     destEntries = iClientList.size();
     connEntries = iConnectionList.size();
@@ -1426,7 +1426,7 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
                 }
 
                 shutdown(tmpListener, 2);
-                closesocket(tmpListener);     
+                closesocket(tmpListener);
             }
             else
             {
@@ -1444,7 +1444,7 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
                     }
 
                     shutdown(tmpListener, 2);
-                    closesocket(tmpListener);     
+                    closesocket(tmpListener);
                 }
                 else
                 {
@@ -1453,11 +1453,11 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
                     {
                         pSelf.serviceCancellation( );
                         pSelf.sleep (500);
-    
+
                         if (listen(getListener()->getConnection(), SOMAXCONN))
                         {
                             shutdown(getListener()->getConnection(), 2);
-                            closesocket(getListener()->getConnection());     
+                            closesocket(getListener()->getConnection());
                         }
                         else
                         {
@@ -1469,18 +1469,18 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
                             // new socket
                             returnLength = sizeof (returnAddr);
                             tmpConnection = accept(getListener()->getConnection(), (struct sockaddr *) &returnAddr, &returnLength);
-        
+
                             if (tmpConnection == INVALID_SOCKET)
                             {
                                 shutdown(tmpConnection, 2);
-                                closesocket(tmpConnection);     
+                                closesocket(tmpConnection);
                                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " Accept call failed in FDRInet " <<endl;
                                 }
                             }
-                            else 
+                            else
                             {
                                 // set to non blocking mode
                                 ULONG param=1;
@@ -1498,7 +1498,7 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
                                     * check our list for a possible client
                                     ***********************
                                     */
-                                    CtiLockGuard<CtiMutex> guard(iConnectionListMux);  
+                                    CtiLockGuard<CtiMutex> guard(iConnectionListMux);
                                     connectionIndex = findClientInList (connection->getAddr());
 
                                     // if it returns -1, the client wasn't found
@@ -1612,17 +1612,17 @@ void CtiFDR_Inet::threadFunctionSendDebugData( void )
                 CtiFDRManager* mgrPtr = getSendToList().getPointList();
                 CtiFDRManager::readerLock guard(mgrPtr->getLock());
 
-                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
                 CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
 
                 for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
                 {
                     // find the point id
                     point = (*myIterator).second;
-    
+
                     localMsg = new CtiPointDataMsg (point->getPointID(), value, quality, point->getPointType());
                     sendMessageToForeignSys (localMsg);
-    
+
                     if (value > 10000.0)
                     {
                         value = 1.0;
@@ -1667,7 +1667,7 @@ CHAR *CtiFDR_Inet::buildForeignSystemHeartbeatMsg ()
 
     /**************************
     * we allocate an inet message here and it will be deleted
-    * inside of the write function on the connection 
+    * inside of the write function on the connection
     ***************************
     */
     foreignSys = new CHAR[sizeof (InetInterface_t)];
@@ -1728,7 +1728,7 @@ int CtiFDR_Inet::processMessageFromForeignSystem(CHAR *aBuffer)
     clientName.resize(INETDESTSIZE,' ');
     deviceName.resize(20,' ');
     pointName.resize(20,' ');
-    
+
     switch (data->Type)
     {
         case INETTYPESHUTDOWN:
@@ -1812,7 +1812,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
             case DemandAccumulatorPointType:
             case CalculatedPointType:
                 {
-                    // assign last stuff	
+                    // assign last stuff
                     quality = ForeignToYukonQuality (data->msgUnion.value.Quality);
                     value = data->msgUnion.value.Value;
                     value *= point.getMultiplier();
@@ -1822,7 +1822,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                     if (timestamp == PASTDATE)
                     {
                         desc = decodeClientName((CHAR*)data) + string (" analog point received with an invalid timestamp ");
-                        _snprintf(action,60,"%s for pointID %d", 
+                        _snprintf(action,60,"%s for pointID %d",
                                   translationName.c_str(),
                                   point.getPointID());
                         logEvent (desc,string (action));
@@ -1830,9 +1830,9 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                     }
                     else
                     {
-                        pData = new CtiPointDataMsg(point.getPointID(), 
-                                                    value, 
-                                                    quality, 
+                        pData = new CtiPointDataMsg(point.getPointID(),
+                                                    value,
+                                                    quality,
                                                     point.getPointType());
 
                         pData->setTime(timestamp);
@@ -1854,13 +1854,13 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                     // check for control functions
                     if (point.isControllable())
                     {
-                        int controlState=-1; 
+                        int controlState=-1;
 
                         // make sure the value is valid
                         if (data->msgUnion.value.Value == Inet_Open)
                         {
                             controlState = OPENED;
-                        } 
+                        }
                         else if (data->msgUnion.value.Value == Inet_Closed)
                         {
                             controlState = CLOSED;
@@ -1875,7 +1875,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                             CHAR state[20];
                             _snprintf (state,20,"%.0f",data->msgUnion.value.Value);
                             desc = decodeClientName((CHAR*)data) + string (" control point received with an invalid state ") + string (state);
-                            _snprintf(action,60,"%s for pointID %d", 
+                            _snprintf(action,60,"%s for pointID %d",
                                       translationName.c_str(),
                                       point.getPointID());
                             logEvent (desc,string (action));
@@ -1907,13 +1907,13 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                             cmdMsg->insert( -1 );                // This is the dispatch token and is unimplemented at this time
                             cmdMsg->insert(0);                   // device id, unknown at this point, dispatch will find it
                             cmdMsg->insert(point.getPointID());  // point for control
-                            cmdMsg->insert(controlState);       
+                            cmdMsg->insert(controlState);
                             sendMessageToDispatch(cmdMsg);
                         }
                     }
                     else
                     {
-                        // assign last stuff	
+                        // assign last stuff
                         quality = ForeignToYukonQuality (data->msgUnion.value.Quality);
                         switch ((int)data->msgUnion.value.Value)
                         {
@@ -1958,7 +1958,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                             CHAR state[20];
                             _snprintf (state,20,"%.0f",data->msgUnion.value.Value);
                             desc = decodeClientName((CHAR*)data) + string (" status point received with an invalid state ") + string (state);
-                            _snprintf(action,60,"%s for pointID %d", 
+                            _snprintf(action,60,"%s for pointID %d",
                                       translationName.c_str(),
                                       point.getPointID());
                             logEvent (desc,string (action));
@@ -1971,7 +1971,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                             if (timestamp == PASTDATE)
                             {
                                 desc = decodeClientName((CHAR*)data) + string (" status point received with an invalid timestamp ");
-                                _snprintf(action,60,"%s for pointID %d", 
+                                _snprintf(action,60,"%s for pointID %d",
                                           translationName.c_str(),
                                           point.getPointID());
                                 logEvent (desc,string (action));
@@ -1979,9 +1979,9 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                             }
                             else
                             {
-                                pData = new CtiPointDataMsg(point.getPointID(), 
-                                                            value, 
-                                                            quality, 
+                                pData = new CtiPointDataMsg(point.getPointID(),
+                                                            value,
+                                                            quality,
                                                             StatusPointType);
 
                                 pData->setTime(timestamp);
@@ -2044,32 +2044,32 @@ USHORT CtiFDR_Inet::ForeignToYukonQuality (USHORT aQuality)
 
 USHORT CtiFDR_Inet::YukonToForeignQuality (USHORT aQuality)
 {
-	USHORT Quality = INETDATAINVALID;
+        USHORT Quality = INETDATAINVALID;
 
-	// Test for the various CTI Qualities and translate to Inet 
-	if (aQuality == NonUpdatedQuality)
-		Quality = INETPLUGGED;
+        // Test for the various CTI Qualities and translate to Inet
+        if (aQuality == NonUpdatedQuality)
+                Quality = INETPLUGGED;
 
-	if (aQuality == ManualQuality)
-		Quality = INETMANUAL;
+        if (aQuality == ManualQuality)
+                Quality = INETMANUAL;
 
-	if (aQuality == InvalidQuality)
-		Quality = INETDATAINVALID;
+        if (aQuality == InvalidQuality)
+                Quality = INETDATAINVALID;
 
-	if (aQuality == AbnormalQuality)
-		Quality = INETUNREASONABLE;
+        if (aQuality == AbnormalQuality)
+                Quality = INETUNREASONABLE;
 
-	if (aQuality == NormalQuality)
-		Quality = NORMAL;
+        if (aQuality == NormalQuality)
+                Quality = NORMAL;
 
-	return(htons (Quality));
+        return(htons (Quality));
 }
 
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -2080,11 +2080,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -2101,11 +2101,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

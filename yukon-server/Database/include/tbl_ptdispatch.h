@@ -113,6 +113,6 @@ private:
                                             DOUBLE value,
                                             UINT tags,
                                             const CtiTime& archivetime,
-                                            UINT count );
+                                            UINT num );
 };
 #endif // #ifndef __TBL_PTPERSISTENCE_H__

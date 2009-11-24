@@ -16,11 +16,11 @@
 *
 *    DESCRIPTION: This class implements an interface that exchanges point data
 *                 with a cap control system called RCCS  The data is both status and Analog data.
-*				  Information is exchanged using sockets opened on a predefined socket 
-*				  number and also pre-defined messages between the systems.  
+*                                 Information is exchanged using sockets opened on a predefined socket
+*                                 number and also pre-defined messages between the systems.
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrrccs.cpp,v $
       Revision 1.16  2008/11/18 22:20:21  tspar
       YUK-6656 FDR cannot register for "ALL" points, it must use a point list
@@ -84,43 +84,43 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 2.10   05 Apr 2002 11:43:02   dsutton
    fixed (again) a bug where if two connections went down and the second in the list came up, we never tried to attach to the first again.  I think the logic is right this time
-   
+
       Rev 2.9   27 Mar 2002 17:47:14   dsutton
    fixed a bug where if two connections went away and one was restored, we never tried to restore the other.  Had to do with the order in the list of connections
-   
+
       Rev 2.8   01 Mar 2002 13:24:44   dsutton
    changed the client list and connection list functions to use new vectors and added a function to walk connection list and update link status points
-   
+
       Rev 2.7   20 Feb 2002 08:42:10   dsutton
    one of the print logs was trying to use data that was being queued.  As a result, sometimes the data was removed from the queue and deleted before we logged the event.  Bad bad bad
-   
+
       Rev 2.6   15 Feb 2002 14:15:20   dsutton
    removed unused cparms
-   
+
       Rev 2.5   15 Feb 2002 11:26:42   dsutton
     changed the debug settings for a few of the transactions to make them more uniform throughout fdr
-   
+
       Rev 2.4   11 Feb 2002 15:03:28   dsutton
    added event logs when the connection is established or failed, unknown points, invalid states, etc
-   
+
       Rev 2.3   14 Dec 2001 17:18:18   dsutton
-   the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow.  Also updated the control processing to send controls 
-   
+   the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow.  Also updated the control processing to send controls
+
       Rev 2.2   15 Nov 2001 16:16:38   dsutton
    code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
+
       Rev 2.1   26 Oct 2001 15:20:28   dsutton
    moving revision 1 to 2.x
-   
+
       Rev 1.1.1.0   26 Oct 2001 14:24:20   dsutton
    initial revision fixes
-   
+
       Rev 1.1   24 Aug 2001 13:30:02   dsutton
    added the sending the control message upon receipt of a point in yukon
-   
+
       Rev 1.0   23 Aug 2001 14:00:52   dsutton
    Initial revision.
 *
@@ -181,9 +181,10 @@ const CHAR * CtiFDR_Rccs::KEY_BATCH_MARKER_NAME = "FDR_RCCS_BATCH_MARKER_NAME";
 const CHAR * CtiFDR_Rccs::KEY_STANDALONE = "FDR_RCCS_STANDALONE";
 
 // Constructors, Destructor, and Operators
-CtiFDR_Rccs::CtiFDR_Rccs()
-: CtiFDR_Inet("RCCS")
-{   
+CtiFDR_Rccs::CtiFDR_Rccs() :
+    CtiFDR_Inet("RCCS"),
+    iAuthorizationFlags(0)
+{
     iStandalone = false;
 }
 
@@ -197,7 +198,7 @@ CtiFDR_Rccs::~CtiFDR_Rccs()
 bool CtiFDR_Rccs::isAMaster (int aID)
 {
     bool retVal = false;
-	bool standbyFailFlag = false;
+        bool standbyFailFlag = false;
 
     // this is ugly but who would have thought someone wouldn't buy failover
     if (iStandalone)
@@ -268,12 +269,12 @@ CtiFDR_Rccs& CtiFDR_Rccs::setAuthorizationFlag (int aID, bool aFlag)
     CHAR                id[10];
 
     itoa (aID,id,10);
-	// check for master mode
-	if (aFlag)
-	{
-		// check if we were standby before
-		if (!(iAuthorizationFlags & (1 << (aID - 1))))
-		{
+        // check for master mode
+        if (aFlag)
+        {
+                // check if we were standby before
+                if (!(iAuthorizationFlags & (1 << (aID - 1))))
+                {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " RCCS" << aID <<" changing from BACKUP to MASTER " <<endl;
@@ -282,16 +283,16 @@ CtiFDR_Rccs& CtiFDR_Rccs::setAuthorizationFlag (int aID, bool aFlag)
             action = string ("RCCS") + string(id) + string (" : is now MASTER");
             desc = string ("RCCS") + string (id) + string (" has changed from BACKUP to MASTER");
             logEvent (desc,action, true);
-		}
+                }
 
-		//set flag to true
-		iAuthorizationFlags |= (1 << (aID - 1));
-	}
-	else
-	{
-		// check if we were master/standby before
-		if (iAuthorizationFlags & (1 << (aID - 1)))
-		{
+                //set flag to true
+                iAuthorizationFlags |= (1 << (aID - 1));
+        }
+        else
+        {
+                // check if we were master/standby before
+                if (iAuthorizationFlags & (1 << (aID - 1)))
+                {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " RCCS" << aID <<" changing from MASTER to BACKUP" <<endl;
@@ -299,11 +300,11 @@ CtiFDR_Rccs& CtiFDR_Rccs::setAuthorizationFlag (int aID, bool aFlag)
             action = string ("RCCS") + string (id) + string (" : is now BACKUP");
             desc = string ("RCCS") + string (id) + string (" has changed from MASTER to BACKUP");
             logEvent (desc,action,true);
-		}
+                }
 
-		//set flag to false
-		iAuthorizationFlags &= (~(1 << (aID - 1)));
-	}
+                //set flag to false
+                iAuthorizationFlags &= (~(1 << (aID - 1)));
+        }
 
     return *this;
 }
@@ -331,7 +332,7 @@ int CtiFDR_Rccs::resolvePairNumber(string &aPair)
 * Function Name: CtiFDR_Inet::sendMessageToForeignSys ()
 *
 * Description: We must find the appropriate destination first and then do our write
-* 
+*
 ***************************************************************************
 */
 
@@ -339,7 +340,6 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
 {
     CtiFDRPoint         point;
     bool retVal = false;
-    CHAR *ptr=NULL;
     int  index =0,connectionIndex=-1;
     CHAR *foreignSys=NULL;
     CHAR tempStr[21];
@@ -352,7 +352,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
         * we must find the correct connection(s) before doing our write
         **************************
         */
-        int rccsPair=-1; 
+        int rccsPair=-1;
         string destinationName;
         bool foundFlag = true;
 
@@ -382,14 +382,14 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                 destinationName+= string (itoa(tmp,id,10));
 
                 // grab the connection list mutex
-                CtiLockGuard<CtiMutex> guard(getConnectionMux());  
+                CtiLockGuard<CtiMutex> guard(getConnectionMux());
                 connectionIndex = findConnectionByNameInList (destinationName);
 
                 if (connectionIndex != -1)
                 {
                     /**************************
                     * we allocate an inet message here and it will be deleted
-                    * inside of the write function on the connection 
+                    * inside of the write function on the connection
                     ***************************
                     */
                     foreignSys = new CHAR[sizeof (InetInterface_t)];
@@ -430,7 +430,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
 
                         /***********************
                         * for exchanging with DSM2 systems
-                        * the daylight savings flag is the most significant bit 
+                        * the daylight savings flag is the most significant bit
                         * in the quality, if we are in daylight savings, I need to set the quality
                         * so the receiving side knows the time
                         ************************
@@ -516,8 +516,8 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
     string            action;
     string            desc;
 
-    CtiLockGuard<CtiMutex> destGuard(getClientListMux());  
-    CtiLockGuard<CtiMutex> guard(getConnectionMux());  
+    CtiLockGuard<CtiMutex> destGuard(getClientListMux());
+    CtiLockGuard<CtiMutex> guard(getConnectionMux());
 
     destEntries = getClientList().size();
     connEntries = getConnectionList().size();
@@ -525,7 +525,7 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
     for (int x=0; x < destEntries; x++)
     {
         /********************************
-        * we now must support a standalone system so there will not 
+        * we now must support a standalone system so there will not
         * always be two entries for each pair
         * since this is a hack anyway, I'm just going to break out at
         * the bottom of the loop early
@@ -542,10 +542,10 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
             foundFlag = false;
 
             // look in our list for our name
-            for (int y = 0; y < connEntries; y++)
+            for (int z = 0; z < connEntries; z++)
             {
                 // if the names match
-                if(!(stringCompareIgnoreCase(getConnectionList()[y]->getName(),destinationName)))
+                if(!(stringCompareIgnoreCase(getConnectionList()[z]->getName(),destinationName)))
                 {
                     foundFlag = true;
                 }
@@ -556,7 +556,7 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
             {
                 CtiFDRSocketLayer *layer = new CtiFDRSocketLayer (destinationName, CtiFDRSocketLayer::Client_Multiple, this);
                 retVal = layer->init();
-                 
+
                 if (!retVal )
                 {
                     layer->setLinkStatusID(getClientLinkStatusID(destinationName));
@@ -599,7 +599,7 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
             // yuck don't ever do this in real code
             if (iStandalone)
             {
-                // one client 
+                // one client
                 break;
             }
         }
@@ -643,9 +643,9 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
             if ((!foundClient) && (linkID))
             {
                 CtiPointDataMsg     *pData;
-                pData = new CtiPointDataMsg(linkID, 
-                                            FDR_NOT_CONNECTED, 
-                                            NormalQuality, 
+                pData = new CtiPointDataMsg(linkID,
+                                            FDR_NOT_CONNECTED,
+                                            NormalQuality,
                                             StatusPointType);
                 sendMessageToDispatch (pData);
             }
@@ -653,7 +653,7 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
             // yuck don't ever do this in real code
             if (iStandalone)
             {
-                // one client 
+                // one client
                 break;
             }
         }
@@ -664,11 +664,11 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
 * Function Name: CtiFDR_Rccs::readConfig()
 *
 * Description: loads cparm config values
-* 
+*
 **************************************************
 */
 int CtiFDR_Rccs::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -807,7 +807,7 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
     clientName.resize(INETDESTSIZE,' ');
     deviceName.resize(20,' ');
     pointName.resize(20,' ');
-    
+
     switch (data->Type)
     {
         case INETTYPESHUTDOWN:
@@ -928,13 +928,13 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
 
             if ((flag == true) && (point.getPointType() == StatusPointType) && (point.isControllable()))
             {
-                int controlState=-1; 
+                int controlState=-1;
 
                 // make sure the value is valid
                 if (data->msgUnion.value.Value == Inet_Open)
                 {
                     controlState = OPENED;
-                } 
+                }
                 else if (data->msgUnion.value.Value == Inet_Closed)
                 {
                     controlState = CLOSED;
@@ -949,13 +949,13 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",data->msgUnion.value.Value);
                     desc = decodeClientName((CHAR*)data) + string (" control point received with an invalid state ") + string (state);
-                    _snprintf(action,60,"%s for pointID %d", 
+                    _snprintf(action,60,"%s for pointID %d",
                               translationName.c_str(),
                               point.getPointID());
                     logEvent (desc,string (action));
                     retVal = !NORMAL;
                 }
-                
+
                 if (controlState != -1)
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -981,7 +981,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     cmdMsg->insert( -1 );                // This is the dispatch token and is unimplemented at this time
                     cmdMsg->insert(0);                   // device id, unknown at this point, dispatch will find it
                     cmdMsg->insert(point.getPointID());  // point for control
-                    cmdMsg->insert(controlState);       
+                    cmdMsg->insert(controlState);
                     sendMessageToDispatch(cmdMsg);
                 }
             }
@@ -1012,7 +1012,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                             dout << " was not configured receive for control for point " << point.getPointID() << endl;
                         }
                         desc = decodeClientName((CHAR*)data) + string (" control point is not configured to receive controls");
-                        _snprintf(action,60,"%s for pointID %d", 
+                        _snprintf(action,60,"%s for pointID %d",
                                   translationName.c_str(),
                                   point.getPointID());
                         logEvent (desc,string (action));
@@ -1044,8 +1044,8 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -1056,11 +1056,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -1077,11 +1077,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

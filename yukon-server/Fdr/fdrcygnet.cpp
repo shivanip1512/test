@@ -1391,7 +1391,7 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
     return successful;
 }
 
-bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = false;
 
@@ -1410,7 +1410,7 @@ bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool
             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
         }
 
-      
+
         tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("PointID");
 
         // now we have a id with a :

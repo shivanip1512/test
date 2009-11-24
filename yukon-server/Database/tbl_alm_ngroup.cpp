@@ -90,16 +90,16 @@ RWDBStatus CtiTableNotificationGroup::Insert()
     RWDBConnection conn = getConnection();
 
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
-    inserter <<
+    dbInserter <<
         getGroupID() <<
         getGroupName() <<
         string( ( isDisabled() ? "Y": "N" ) );
 
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
 
-    return inserter.status();
+    return dbInserter.status();
 }
 
 RWDBStatus CtiTableNotificationGroup::Update()

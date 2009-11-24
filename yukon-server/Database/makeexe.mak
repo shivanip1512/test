@@ -30,7 +30,6 @@ INCLPATHS+= \
 
 
 BASEOBJS=\
-tabletest.obj \
 tbl_rtroute.obj \
 tbl_pthist.obj
 
@@ -39,17 +38,11 @@ $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib
 
 EXECS=\
-tabletest.exe \
 almtest.exe
 
 
 ALL:            $(EXECS)
 
-tabletest.exe:  $(BASEOBJS) Makefile
-                @echo:
-                @echo Compiling $@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(TABLETESTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -113,12 +106,6 @@ dllyukon.obj:	yukon.h precompiled.h ctidbgmem.h tbl_route.h dllbase.h \
 		collectable.h rwutil.h boost_time.h boostutil.h \
 		tbl_state_grp.h tbl_state.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
-tabletest.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pthist.h \
-		dlldefs.h dbmemobject.h ctibase.h ctinexus.h netports.h \
-		cticonnect.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h ctitime.h tbl_rtroute.h \
-		resolvers.h pointtypes.h db_entry_defines.h rtdb.h hashkey.h \
-		hash_functions.h utility.h queues.h sorted_vector.h
 tbl.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h

@@ -62,29 +62,29 @@ struct IM_EX_FDRBASE CtiDnpId
     USHORT Offset;
     FLOAT  Multiplier;
     BOOL valid;
-    
+
 
     CtiFDRClientServerConnection::Destination MasterServerName;
     bool operator<(const CtiDnpId& other) const
     {
         if( MasterServerName < other.MasterServerName )  return true;
         if( MasterServerName > other.MasterServerName )  return false;
-        
+
         if( MasterId < other.MasterId )  return true;
         if( MasterId > other.MasterId )  return false;
-        
+
         if( SlaveId < other.SlaveId )  return true;
         if( SlaveId > other.SlaveId )  return false;
-        
+
         if( PointType < other.PointType )  return true;
         if( PointType > other.PointType )  return false;
-        
-        return Offset < other.Offset; 
+
+        return Offset < other.Offset;
     }
 
 };
 inline std::ostream& operator<< (std::ostream& os, const CtiDnpId& id)
-{ 
+{
     return os << "[DNP: Master= "<< id.MasterServerName <<", M=" << id.MasterId << ", S="
         << id.SlaveId << ", P=" << id.PointType
         << ", O=" << id.Offset << "]";
@@ -112,7 +112,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
     protected:
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
 
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
         virtual bool buildForeignSystemMessage(const CtiFDRDestination& destination,
@@ -135,7 +135,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
         void dumpDNPMessage(const string direction, const char* data, unsigned int size);
-        
+
         DNPSlaveInterface  _dnpData;
 
         // maps ip address -> server name
@@ -150,14 +150,14 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         static const CHAR * KEY_LINK_TIMEOUT;
         static const CHAR * KEY_STALEDATA_TIMEOUT;
 
-        static const string dnpMasterId;    
-        static const string dnpSlaveId;     
-        static const string dnpPointType;   
-        static const string dnpPointOffset; 
+        static const string dnpMasterId;
+        static const string dnpSlaveId;
+        static const string dnpPointType;
+        static const string dnpPointOffset;
         static const string dnpPointStatusString;
         static const string dnpPointAnalogString;
         static const string dnpPointCounterString;
-        static const string dnpPointMultiplier; 
+        static const string dnpPointMultiplier;
 
         static const string CtiFdrDNPInMessageString;
         static const string CtiFdrDNPOutMessageString;

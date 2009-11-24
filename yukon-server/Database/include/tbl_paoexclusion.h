@@ -105,7 +105,7 @@ public:
         RequeueThisCommandNext,         // Maintain the Q's order.  This message must go next.
         RequeueQueuePriority            // Requeue this OM.  If there are any messages of equal or higher priorty, they will be selected first.
 
-    } CtiExclusionRequeue_t;
+    };
 
     enum
     {
@@ -116,7 +116,7 @@ public:
 
         ExFunctionInvalid
 
-    } CtiExclusionFunction_t;
+    };
 
     int getCycleTime() const;
     CtiTablePaoExclusion &setCycleTime(int cycletime);

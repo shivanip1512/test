@@ -35,7 +35,11 @@
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiTablePointGroup::CtiTablePointGroup()
+CtiTablePointGroup::CtiTablePointGroup() :
+    _lmGroupId(0),
+    _controlDevice(0),
+    _controlPoint(0),
+    _controlStartRawState(0)
 {
 }
 

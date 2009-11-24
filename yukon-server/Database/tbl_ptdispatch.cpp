@@ -170,9 +170,9 @@ RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
     RWDBUpdater updater = table.updater();
     try
     {
-    
+
         updater.where( table["pointid"] == getPointID() );
-    
+
         updater <<
         table["timestamp"].assign(toRWDBDT(getTimeStamp())) <<
         table["quality"].assign(getQuality()) <<
@@ -182,9 +182,9 @@ RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
         table["stalecount"].assign(getStaleCount())  <<
         //table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
         table["millis"].assign(getTimeStampMillis());
-    
+
         ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-    
+
         if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
         {
             resetDirty(FALSE);
@@ -218,9 +218,9 @@ RWDBStatus CtiTablePointDispatch::Insert()
 RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
 {
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
-    inserter <<
+    dbInserter <<
     getPointID() <<
     toRWDBDT(getTimeStamp()) <<
     getQuality() <<
@@ -231,11 +231,11 @@ RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
     getLastAlarmLogID() <<
     getTimeStampMillis();
 
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
 
-    if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
+    if(dbInserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
     {
-        string loggedSQLstring = inserter.asString();
+        string loggedSQLstring = dbInserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -247,7 +247,7 @@ RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
         resetDirty(FALSE);
     }
 
-    return inserter.status();
+    return dbInserter.status();
 }
 
 RWDBStatus CtiTablePointDispatch::Delete()
@@ -413,7 +413,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const CtiTime& tim
                                                               DOUBLE value,
                                                               UINT tags,
                                                               const CtiTime& archivetime,
-                                                              UINT count )
+                                                              UINT num )
 {
 
 

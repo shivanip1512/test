@@ -21,7 +21,8 @@
 #include "rwutil.h"
 
 CtiTablePortTCPIP::CtiTablePortTCPIP() :
-_ipPort(1000)
+    _ipPort(1000),
+    _portID(0)
 {
 }
 

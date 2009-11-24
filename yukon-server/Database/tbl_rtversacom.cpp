@@ -19,7 +19,14 @@
 #include "logger.h"
 #include "tbl_rtversacom.h"
 
-CtiTableVersacomRoute::CtiTableVersacomRoute()
+CtiTableVersacomRoute::CtiTableVersacomRoute() :
+    RouteID(0),
+    UtilityID(0),
+    Section(0),
+    Division(0),
+    Bus(0),
+    Amp(0),
+    Individual(0)
 {
 }
 

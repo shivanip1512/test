@@ -21,8 +21,10 @@
 #include "rwutil.h"
 
 CtiTableDeviceTnpp::CtiTableDeviceTnpp() :
-_inertia(2),
-_destinationAddress(0)
+    _inertia(2),
+    _destinationAddress(0),
+    _deviceID(0),
+    _originAddress(0)
 {}
 
 CtiTableDeviceTnpp::CtiTableDeviceTnpp(const CtiTableDeviceTnpp& aRef)

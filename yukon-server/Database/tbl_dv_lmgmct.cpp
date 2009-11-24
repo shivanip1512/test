@@ -22,7 +22,12 @@
 #include "logger.h"
 #include "rwutil.h"
 
-CtiTableLMGroupMCT::CtiTableLMGroupMCT()
+CtiTableLMGroupMCT::CtiTableLMGroupMCT() :
+_address(0),
+_relays(0),
+_routeID(0),
+_deviceID(0),
+_mctUniqueAddress(0)
 {
 }
 
@@ -125,7 +130,7 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["mctlevel"   ] >> tmpStr;
     std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
-    
+
 
     switch( (tmpStr.c_str())[0] )
     {

@@ -61,8 +61,8 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::setDeviceID(LONG id)
 
 CtiTime CtiTableDeviceScanData::getNextScan(INT a) const
 {
-    CtiTime tm = _nextScan[a];
-    return tm;
+    CtiTime atime = _nextScan[a];
+    return atime;
 }
 
 CtiTableDeviceScanData& CtiTableDeviceScanData::setNextScan(INT a, const CtiTime &b)
@@ -247,9 +247,9 @@ RWDBStatus CtiTableDeviceScanData::Insert()
     RWDBConnection conn = getConnection();
 
     RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbInserter = table.inserter();
 
-    inserter <<
+    dbInserter <<
     getDeviceID() <<
     (CtiTime)getLastFreezeTime() <<
     (CtiTime)getPrevFreezeTime() <<
@@ -259,15 +259,15 @@ RWDBStatus CtiTableDeviceScanData::Insert()
 
     for(int i = 0; i <= ScanRateIntegrity; i++)
     {
-        inserter << (CtiTime)getNextScan(i);
+        dbInserter << (CtiTime)getNextScan(i);
     }
 
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,dbInserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return dbInserter.status();
 }
 
 RWDBStatus CtiTableDeviceScanData::Delete()

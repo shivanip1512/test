@@ -14,10 +14,10 @@
 *
 *    PURPOSE: Stec file interface
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrstec.cpp,v $
       Revision 1.6.24.1  2008/11/13 17:23:47  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -60,37 +60,37 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 2.6   01 Mar 2002 13:30:48   dsutton
    added link status calls updated everytime the interface attempts to retrieve the file
-   
+
       Rev 2.5   18 Feb 2002 16:19:38   dsutton
    added a cparm for ftp download location so we can run as a service
-   
+
       Rev 2.4   15 Feb 2002 11:22:12   dsutton
     changed the debug settings for a few of the transactions to make them more uniform throughout fdr
-   
+
       Rev 2.3   11 Feb 2002 15:03:40   dsutton
    added event logs when the connection is established or failed, unknown points, invalid states, etc
-   
+
       Rev 2.2   14 Dec 2001 17:17:44   dsutton
    the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow
-   
+
       Rev 2.1   15 Nov 2001 16:16:40   dsutton
    code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
+
       Rev 2.0   06 Sep 2001 13:21:36   cplender
    Promote revision
-   
+
       Rev 1.1   20 Jul 2001 10:02:48   dsutton
    timeouts taking an hour
-   
+
       Rev 1.0   04 Jun 2001 09:33:14   dsutton
    Initial revision.
-   
+
       Rev 1.1   10 May 2001 11:12:12   dsutton
    updated with new socket classes
-   
+
       Rev 1.0   23 Apr 2001 11:17:58   dsutton
    Initial revision.
 *
@@ -149,7 +149,7 @@ const CHAR * CtiFDR_STEC::KEY_STEC_TOTAL_LABEL = "STEC LOAD" ;
 // Constructors, Destructor, and Operators
 CtiFDR_STEC::CtiFDR_STEC()
 : CtiFDRFtpInterface(string("STEC"))
-{   
+{
     init();
 }
 
@@ -169,7 +169,7 @@ CtiFDR_STEC::~CtiFDR_STEC()
 BOOL CtiFDR_STEC::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
 
     if (!readConfig( ))
     {
@@ -177,7 +177,7 @@ BOOL CtiFDR_STEC::init( void )
     }
 
     loadTranslationLists();
-    
+
     return TRUE;
 }
 
@@ -185,7 +185,7 @@ BOOL CtiFDR_STEC::init( void )
 * Function Name: CtiFDR_STEC::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_STEC::run( void )
@@ -200,8 +200,8 @@ BOOL CtiFDR_STEC::run( void )
 /*************************************************
 * Function Name: CtiFDR_STEC::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_STEC::stop( void )
@@ -233,7 +233,7 @@ int CtiFDR_STEC::decodeFile ()
     CHAR buffer[300];
     int lineNumber=0, cnt;
     CHAR *ptr, *token=NULL;
-    CtiDate date;
+    CtiDate aDate;
     CtiTime finalTime;
     string           desc;
     string           action;
@@ -254,7 +254,7 @@ int CtiFDR_STEC::decodeFile ()
         else
         {
 
-            // first of all, read file input 
+            // first of all, read file input
             if ((controlFile = fopen(getLocalFileName().c_str(), "r")) == NULL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -273,7 +273,7 @@ int CtiFDR_STEC::decodeFile ()
                                // date
                                if (strlen (buffer) > 13)
                                {
-                                   date = CtiDate (atoi(buffer+9), atoi (buffer+6), (atoi(buffer+12)+2000));
+                                   aDate = CtiDate (atoi(buffer+9), atoi (buffer+6), (atoi(buffer+12)+2000));
                                }
                                break;
                            }
@@ -282,9 +282,9 @@ int CtiFDR_STEC::decodeFile ()
                                // time
                                if (strlen (buffer) > 13)
                                {
-                                   finalTime = CtiTime (date,
-                                                     atoi(buffer+6), 
-                                                     atoi (buffer+9), 
+                                   finalTime = CtiTime (aDate,
+                                                     atoi(buffer+6),
+                                                     atoi (buffer+9),
                                                      atoi(buffer+12));
 
                                }
@@ -308,7 +308,7 @@ int CtiFDR_STEC::decodeFile ()
                                // now we need a decimal from a string
                                if (token != NULL)
                                {
-                                    totalSystem= atof (token);     
+                                    totalSystem= atof (token);
                                }
 
                                break;
@@ -330,7 +330,7 @@ int CtiFDR_STEC::decodeFile ()
                                // now we need a decimal from a string
                                if (token != NULL)
                                {
-                                   stecOnly = atof (token);     
+                                   stecOnly = atof (token);
                                }
 
                                break;
@@ -349,7 +349,7 @@ int CtiFDR_STEC::decodeFile ()
 
             }
         }
-        _close(fileHandle);				
+        _close(fileHandle);
     }
     else
     {
@@ -385,10 +385,10 @@ int CtiFDR_STEC::fail ()
 
         if (pMsg != NULL)
         {
-            pMsg->insert( -1 );			  // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_POINTID);	  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-            pMsg->insert(point.getPointID());			 // The id (device or point which failed)
-            pMsg->insert(ScanRateGeneral);		// One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+            pMsg->insert( -1 );                   // This is the dispatch token and is unimplemented at this time
+            pMsg->insert(OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(point.getPointID());                    // The id (device or point which failed)
+            pMsg->insert(ScanRateGeneral);              // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
             // consumes a delete memory
             queueMessageToDispatch(pMsg);
@@ -403,10 +403,10 @@ int CtiFDR_STEC::fail ()
 
         if (pMsg != NULL)
         {
-            pMsg->insert( -1 );			  // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_POINTID);	  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-            pMsg->insert(point.getPointID());			 // The id (device or point which failed)
-            pMsg->insert(ScanRateGeneral);		// One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+            pMsg->insert( -1 );                   // This is the dispatch token and is unimplemented at this time
+            pMsg->insert(OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(point.getPointID());                    // The id (device or point which failed)
+            pMsg->insert(ScanRateGeneral);              // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
             // consumes a delete memory
             queueMessageToDispatch(pMsg);
@@ -434,7 +434,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
          (point.getPointType() == CalculatedPointType)))
 
     {
-        // assign last stuff	
+        // assign last stuff
         if (aTime != PASTDATE)
         {
             // system load should not be zero !!!
@@ -443,9 +443,9 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
                 aSystemLoad *= point.getMultiplier();
                 aSystemLoad += point.getOffset();
 
-                CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(), 
-                                            aSystemLoad, 
-                                            NormalQuality, 
+                CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(),
+                                            aSystemLoad,
+                                            NormalQuality,
                                             AnalogPointType);
 
                 pData->setTime(aTime);
@@ -489,7 +489,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
             }
         }
         else
-        {         
+        {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
@@ -505,7 +505,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
          (point.getPointType() == DemandAccumulatorPointType) ||
          (point.getPointType() == CalculatedPointType)))
     {
-        // assign last stuff	
+        // assign last stuff
         if (aTime != PASTDATE)
         {
             if (aStecLoad != 0)
@@ -513,9 +513,9 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
                 aStecLoad *= point.getMultiplier();
                 aStecLoad += point.getOffset();
 
-                CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(), 
-                                            aStecLoad, 
-                                            NormalQuality, 
+                CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(),
+                                            aStecLoad,
+                                            NormalQuality,
                                             AnalogPointType);
 
                 pData->setTime(aTime);
@@ -560,7 +560,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
             }
         }
         else
-        {         
+        {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Analog point " << string (KEY_STEC_TOTAL_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
@@ -571,7 +571,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
 }
 
 int CtiFDR_STEC::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -643,7 +643,7 @@ int CtiFDR_STEC::readConfig( void )
     else
     {
         setIPAddress(string());
-		  successful = false;
+                  successful = false;
     }
 
 
@@ -700,8 +700,8 @@ int CtiFDR_STEC::readConfig( void )
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -712,11 +712,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -733,11 +733,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

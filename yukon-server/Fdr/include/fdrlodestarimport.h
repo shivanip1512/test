@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  
+#pragma warning( disable : 4786 )
 /*****************************************************************************
 *
 *    FILE NAME: fdrlodestarimport.cpp
@@ -15,10 +15,10 @@
 *
 *    PURPOSE: Import of ascii lodestar import
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrlodestarimport.h,v $
       Revision 1.16  2008/10/02 23:57:15  tspar
       YUK-5013 Full FDR reload should not happen with every point
@@ -96,7 +96,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
@@ -111,19 +111,19 @@ class IM_EX_FDRBASE CtiFDR_LodeStarImportBase : public CtiFDRTextFileBase, CtiRT
 
 public:
     // constructors and destructors
-    //CtiFDR_LodeStarImportBase(); 
+    //CtiFDR_LodeStarImportBase();
     CtiFDR_LodeStarImportBase(string &aInterface);
-    
+
     virtual ~CtiFDR_LodeStarImportBase();
-    virtual BOOL    init( void );   
+    virtual BOOL    init( void );
     virtual BOOL    run( void );
-    virtual BOOL    stop( void );  
-    
+    virtual BOOL    stop( void );
+
     typedef MapIterator CTIFdrLodeStarIterator;
-    
+
     virtual vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const = 0;
     virtual vector< CtiFDR_LodeStarInfoTable > & getFileInfoList () = 0;
-        
+
     virtual string getCustomerIdentifier(void)=0;
     virtual CtiTime    getlodeStarStartTime(void)=0;
     virtual CtiTime    getlodeStarStopTime(void)=0;
@@ -147,7 +147,7 @@ public:
     virtual const CHAR * getKeyRenameSave() = 0;
     virtual int getSubtractValue() = 0;
     virtual int getExpectedNumOfEntries() = 0;
-    
+
 
     int readConfig( void );
 
@@ -167,7 +167,7 @@ public:
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);
-    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
 private:
     RWThreadFunction    _threadReadFromFile;

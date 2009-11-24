@@ -49,7 +49,18 @@
 
 #include "rwutil.h"
 
-CtiTableSA305LoadGroup::CtiTableSA305LoadGroup()
+CtiTableSA305LoadGroup::CtiTableSA305LoadGroup() :
+    _lmGroupId(0),
+    _routeId(0),
+    _utility(0),
+    _group(0),
+    _division(0),
+    _substation(0),
+    _individual(0),
+    _rateFamily(0),
+    _rateMember(0),
+    _hierarchy(0),
+    _function(0)
 {
 }
 CtiTableSA305LoadGroup::CtiTableSA305LoadGroup(const CtiTableSA305LoadGroup& aRef)

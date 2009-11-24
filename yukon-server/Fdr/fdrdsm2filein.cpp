@@ -296,11 +296,11 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
 
     boost::char_separator<char> sep(",\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     CtiFDRPoint         point;
-    int fieldNumber=1,quality;
-    double value;
+    int fieldNumber = 1, quality = 0;
+    double value = 0.0;
     CHAR   action[60];
     string linetimestamp,translationName,desc;
     CtiTime pointtimestamp;
@@ -342,9 +342,9 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
                                 dout << CtiTime() << " Translation for point " << translationName;
                                 dout << " from " << getFileName() << " was not found" << endl;
                             }
-			    desc = getFileName() + string ("'s point ") + translationName + string( " is not listed in the translation table");
-			    _snprintf(action,60,"%s", translationName.c_str());
-			    logEvent (desc,string (action));                        
+                            desc = getFileName() + string ("'s point ") + translationName + string( " is not listed in the translation table");
+                            _snprintf(action,60,"%s", translationName.c_str());
+                            logEvent (desc,string (action));
                         }
                     }
 
@@ -400,13 +400,13 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
 
 bool CtiFDR_Dsm2Filein::processFunctionTwo (string &aLine, CtiMessage **aRetMsg)
 {
-	bool retCode = false;
+        bool retCode = false;
     bool pointValidFlag=true;
     string tempString1;                // Will receive each token
     CtiTokenizer cmdLine(aLine);           // Tokenize the string a
     CtiFDRPoint         point;
-    int fieldNumber=1,quality;
-    double value;
+    int fieldNumber = 1, quality = 0;
+    double value = 0.0;
     CHAR   action[60];
     string linetimestamp,translationName,desc,lookupName;
     CtiTime pointtimestamp;
@@ -440,7 +440,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (string &aLine, CtiMessage **aRetMsg)
 
                     // lock the list while we're returning the point
                     {
-                        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
                         pointValidFlag = findTranslationNameInList (lookupName.c_str(), getReceiveFromList(), point);
                     }
 
@@ -457,7 +457,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (string &aLine, CtiMessage **aRetMsg)
                             desc = getFileName().c_str() + string ("'s point ") + translationName + string( " is not listed in the translation table");
                             _snprintf(action,60,"%s", translationName.c_str());
                             logEvent ( string(desc.c_str()),
-				       string(action));
+                                       string(action));
                         }
                     }
 
@@ -483,7 +483,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (string &aLine, CtiMessage **aRetMsg)
                 {
                     linetimestamp=linetimestamp + " " + tempString1;
 
-                    if (useSystemTime()) 
+                    if (useSystemTime())
                     {
                         pointtimestamp=CtiTime();
                     }
@@ -667,7 +667,7 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
 
     boost::char_separator<char> sep(",\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     CtiFDRPoint         point;
     int function;
@@ -930,7 +930,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_Dsm2Filein::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDR_Dsm2Filein::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = false;
     string tempString2;
@@ -951,7 +951,7 @@ bool CtiFDR_Dsm2Filein::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
             translation_name = tempString2 + "-----";
             successful = true;
         }
-                                
+
         tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
         if (!tempString2.empty() && successful == true)
         {

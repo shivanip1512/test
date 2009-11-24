@@ -170,7 +170,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -222,8 +222,8 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint );
         virtual int readConfig( void )=0;
         virtual bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex)=0;
-        
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
         virtual void signalReloadList();

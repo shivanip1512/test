@@ -146,8 +146,9 @@ const CHAR * CtiFDRAcsMulti::KEY_FDR_ACS_SERVER_NAMES = "FDR_ACSMULTI_SERVER_NAM
 const CHAR * CtiFDRAcsMulti::KEY_LINK_TIMEOUT = "FDR_ACSMULTI_LINK_TIMEOUT_SECONDS";
 
 // Constructors, Destructor, and Operators
-CtiFDRAcsMulti::CtiFDRAcsMulti()
-: CtiFDRScadaServer(string("ACSMULTI"))
+CtiFDRAcsMulti::CtiFDRAcsMulti() :
+    CtiFDRScadaServer(string("ACSMULTI")),
+    _helper(NULL)
 {}
 
 void CtiFDRAcsMulti::startup()
@@ -328,7 +329,7 @@ void CtiFDRAcsMulti::begineNewPoints()
     _helper->clearMappings();
 }
 
-bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool isSend)
+bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool foundPoint = false;
 
@@ -357,7 +358,7 @@ bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
         acsId.CategoryCode = temp[0];
         acsId.ServerName = pointDestination.getDestination();
 
-        if (isSend)
+        if (sendList)
         {
             _helper->addSendMapping(acsId, pointDestination);
         }

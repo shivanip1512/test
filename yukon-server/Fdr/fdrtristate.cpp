@@ -14,10 +14,10 @@
 *
 *    PURPOSE: Tristate file interface
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrtristate.cpp,v $
       Revision 1.6.24.1  2008/11/13 17:23:48  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -60,34 +60,34 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 2.6   01 Mar 2002 13:30:52   dsutton
    added link status calls updated everytime the interface attempts to retrieve the file
-   
+
       Rev 2.5   18 Feb 2002 16:19:34   dsutton
    added a cparm for ftp download location so we can run as a service
-   
+
       Rev 2.4   15 Feb 2002 11:22:18   dsutton
     changed the debug settings for a few of the transactions to make them more uniform throughout fdr
-   
+
       Rev 2.3   11 Feb 2002 15:03:46   dsutton
    added event logs when the connection is established or failed, unknown points, invalid states, etc
-   
+
       Rev 2.2   14 Dec 2001 17:17:48   dsutton
    the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow
-   
+
       Rev 2.1   15 Nov 2001 16:16:40   dsutton
    code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
+
       Rev 2.0   06 Sep 2001 13:21:38   cplender
    Promote revision
-   
+
       Rev 1.0   04 Jun 2001 09:33:28   dsutton
    Initial revision.
-   
+
       Rev 1.1   10 May 2001 11:12:12   dsutton
    updated with new socket classes
-   
+
       Rev 1.0   23 Apr 2001 11:17:58   dsutton
    Initial revision.
 *
@@ -143,7 +143,7 @@ const CHAR * CtiFDR_Tristate::KEY_30_MINUTE_AVG_LABEL = "30 MINUTE AVG" ;
 // Constructors, Destructor, and Operators
 CtiFDR_Tristate::CtiFDR_Tristate()
 : CtiFDRFtpInterface(string("TRISTATE"))
-{   
+{
     init();
 }
 
@@ -163,7 +163,7 @@ CtiFDR_Tristate::~CtiFDR_Tristate()
 BOOL CtiFDR_Tristate::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
 
     if (!readConfig( ))
     {
@@ -171,7 +171,7 @@ BOOL CtiFDR_Tristate::init( void )
     }
 
     loadTranslationLists();
-    
+
     return TRUE;
 }
 
@@ -179,7 +179,7 @@ BOOL CtiFDR_Tristate::init( void )
 * Function Name: CtiFDR_Tristate::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_Tristate::run( void )
@@ -194,8 +194,8 @@ BOOL CtiFDR_Tristate::run( void )
 /*************************************************
 * Function Name: CtiFDR_Tristate::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_Tristate::stop( void )
@@ -221,12 +221,11 @@ int CtiFDR_Tristate::decodeFile ()
     int fileHandle;
     FILE *controlFile;
     int retVal = NORMAL;
-    FLOAT current, average;
+    FLOAT current = 0.0, average = 0.0;
 
     CHAR buffer[300];
     int lineNumber=0, cnt;
     CHAR *ptr, *token=NULL;
-    CtiDate date;
     CtiTime finalTime;
     string desc,action;
 
@@ -247,7 +246,7 @@ int CtiFDR_Tristate::decodeFile ()
         else
         {
 
-            // first of all, read file input 
+            // first of all, read file input
             if ((controlFile = fopen(getLocalFileName().c_str(), "r")) == NULL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -266,8 +265,8 @@ int CtiFDR_Tristate::decodeFile ()
                                 if (strlen (buffer) > 15)
                                 {
                                     finalTime = CtiTime (CtiDate(atoi(buffer+3), atoi (buffer), (atoi(buffer+6))),
-                                                        atoi(buffer+11), 
-                                                     atoi (buffer+14), 
+                                                        atoi(buffer+11),
+                                                     atoi (buffer+14),
                                                      atoi(buffer+17));
                                 }
                                 break;
@@ -289,7 +288,7 @@ int CtiFDR_Tristate::decodeFile ()
                                 // now we need a decimal from a string
                                 if (token != NULL)
                                 {
-                                     current = atof (token);     
+                                     current = atof (token);
                                 }
 
                                 break;
@@ -311,7 +310,7 @@ int CtiFDR_Tristate::decodeFile ()
                                 // now we need a decimal from a string
                                 if (token != NULL)
                                 {
-                                     average = atof (token);     
+                                     average = atof (token);
                                 }
 
                                 break;
@@ -328,7 +327,7 @@ int CtiFDR_Tristate::decodeFile ()
                 sendLinkState (FDR_CONNECTED);
             }
         }
-        _close(fileHandle);				
+        _close(fileHandle);
     }
     else
     {
@@ -365,10 +364,10 @@ int CtiFDR_Tristate::fail ()
 
         if (pMsg != NULL)
         {
-            pMsg->insert( -1 );			  // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_POINTID);	  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-            pMsg->insert(point.getPointID());			 // The id (device or point which failed)
-            pMsg->insert(ScanRateGeneral);		// One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+            pMsg->insert( -1 );                   // This is the dispatch token and is unimplemented at this time
+            pMsg->insert(OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(point.getPointID());                    // The id (device or point which failed)
+            pMsg->insert(ScanRateGeneral);              // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
             // consumes a delete memory
             queueMessageToDispatch(pMsg);
@@ -383,10 +382,10 @@ int CtiFDR_Tristate::fail ()
 
         if (pMsg != NULL)
         {
-            pMsg->insert( -1 );			  // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_POINTID);	  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-            pMsg->insert(point.getPointID());			 // The id (device or point which failed)
-            pMsg->insert(ScanRateGeneral);		// One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+            pMsg->insert( -1 );                   // This is the dispatch token and is unimplemented at this time
+            pMsg->insert(OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(point.getPointID());                    // The id (device or point which failed)
+            pMsg->insert(ScanRateGeneral);              // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
             // consumes a delete memory
             queueMessageToDispatch(pMsg);
@@ -411,15 +410,15 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
          (point.getPointType() == DemandAccumulatorPointType) ||
          (point.getPointType() == CalculatedPointType)))
     {
-        // assign last stuff	
+        // assign last stuff
         if (aTime != PASTDATE)
         {
             aSystemLoad *= point.getMultiplier();
             aSystemLoad += point.getOffset();
 
-            CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(), 
-                                        aSystemLoad, 
-                                        NormalQuality, 
+            CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(),
+                                        aSystemLoad,
+                                        NormalQuality,
                                         AnalogPointType);
 
             pData->setTime(aTime);
@@ -446,7 +445,7 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
             }
         }
         else
-        {         
+        {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
@@ -462,15 +461,15 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
          (point.getPointType() == DemandAccumulatorPointType) ||
          (point.getPointType() == CalculatedPointType)))
     {
-        // assign last stuff	
+        // assign last stuff
         if (aTime != PASTDATE)
         {
             a30MinuteAvg *= point.getMultiplier();
             a30MinuteAvg += point.getOffset();
 
-            CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(), 
-                                        a30MinuteAvg, 
-                                        NormalQuality, 
+            CtiPointDataMsg     *pData = new CtiPointDataMsg(point.getPointID(),
+                                        a30MinuteAvg,
+                                        NormalQuality,
                                         AnalogPointType);
 
             pData->setTime(aTime);
@@ -498,7 +497,7 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
             }
         }
         else
-        {         
+        {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Analog point " << string (KEY_30_MINUTE_AVG_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
@@ -510,7 +509,7 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
 }
 
 int CtiFDR_Tristate::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -583,7 +582,7 @@ int CtiFDR_Tristate::readConfig( void )
     else
     {
         setIPAddress(string());
-		  successful = false;
+                  successful = false;
     }
 
 
@@ -640,8 +639,8 @@ int CtiFDR_Tristate::readConfig( void )
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -652,11 +651,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -673,11 +672,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

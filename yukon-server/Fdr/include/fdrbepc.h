@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  
+#pragma warning( disable : 4786 )
 /*****************************************************************************
 *
 *    FILE NAME: fdrbepc.h
@@ -15,10 +15,10 @@
 *
 *    PURPOSE: Text file export for Basin Electric Public Coop members
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrbepc.h,v $
       Revision 1.6.2.2  2008/11/18 20:11:30  jmarks
       [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -86,7 +86,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>   
+#include <windows.h>
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
@@ -116,7 +116,7 @@ public:
 
     void threadFunctionWriteToFile( void );
     virtual bool loadTranslationLists(void);
-    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
     virtual void cleanupTranslationPoint(CtiFDRPointSPtr &translationPoint, bool recvList);
 
     // ddefine these for each interface type

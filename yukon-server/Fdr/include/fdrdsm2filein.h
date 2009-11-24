@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  
+#pragma warning( disable : 4786 )
 /*****************************************************************************
 *
 *    FILE NAME: fdrtextimport.cpp
@@ -15,10 +15,10 @@
 *
 *    PURPOSE: Generic text import ascii import
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrdsm2filein.h,v $
       Revision 1.7.2.2  2008/11/18 20:11:30  jmarks
       [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -97,7 +97,7 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>    
+#include <windows.h>
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
@@ -108,17 +108,17 @@ class IM_EX_FDRDSM2FILEIN CtiFDR_Dsm2Filein : public CtiFDRTextFileBase
 
 public:
     // constructors and destructors
-    CtiFDR_Dsm2Filein(); 
+    CtiFDR_Dsm2Filein();
 
     virtual ~CtiFDR_Dsm2Filein();
-    virtual BOOL    init( void );   
+    virtual BOOL    init( void );
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
     int readConfig( void );
-    bool buildAndAddPoint (CtiFDRPoint &aPoint, 
-                           DOUBLE aValue, 
-                           CtiTime aTimestamp, 
+    bool buildAndAddPoint (CtiFDRPoint &aPoint,
+                           DOUBLE aValue,
+                           CtiTime aTimestamp,
                            int aQuality,
                            string aTranslationName,
                            CtiMessage **aRetMsg);
@@ -138,7 +138,7 @@ public:
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);
-    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;

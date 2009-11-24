@@ -123,14 +123,13 @@ const CHAR * CtiFDR_BEPC::KEY_APPEND_FILE = "FDR_BEPC_APPEND_FILE";
 
 // Constructors, Destructor, and Operators
 CtiFDR_BEPC::CtiFDR_BEPC()
-: CtiFDRTextFileBase(string("BEPC"))
+: CtiFDRTextFileBase(string("BEPC")),
+  _appendFlag(false)
 {
     // init these lists so they have something
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND));
     getSendToList().setPointList (recList);
     recList = NULL;
-    init();
-
 }
 
 CtiFDR_BEPC::~CtiFDR_BEPC()
@@ -200,7 +199,6 @@ BOOL CtiFDR_BEPC::stop( void )
 string CtiFDR_BEPC::YukonToForeignTime (CtiTime aTime)
 {
     CHAR workBuffer[50];
-    CtiDate date;
     string retVal;
     struct tm *gmTime = NULL;
     CtiTime newTime;
@@ -429,7 +427,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_BEPC::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+bool CtiFDR_BEPC::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
     bool successful = false;
     string fileName;
@@ -658,6 +656,7 @@ extern "C" {
 
         // make a point to the interface
         textExportInterface = new CtiFDR_BEPC();
+        textExportInterface->init();
 
         // now start it up
         return textExportInterface->run();

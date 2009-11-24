@@ -14,10 +14,10 @@
 *
 *    PURPOSE:  LodeStar import
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrlodestarimport_enh.cpp,v $
       Revision 1.14.20.1  2008/11/13 17:23:47  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -82,7 +82,7 @@
       Revision 1.1  2004/04/06 21:10:17  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
-     
+
 
 *
 *
@@ -149,8 +149,8 @@ CtiFDR_EnhancedLodeStar::CtiFDR_EnhancedLodeStar()
   _lsTimeStamp(CtiTime(CtiDate(1,1,1990))),
   _lsOrigin(string()),
   _fileImportBaseDrivePath(string("c:\\yukon\\server\\import"))
-{ 
-    
+{
+
     init();
     _fileInfoList.empty();
 }
@@ -164,20 +164,20 @@ CtiFDR_EnhancedLodeStar::~CtiFDR_EnhancedLodeStar()
 BOOL CtiFDR_EnhancedLodeStar::init( void )
 {
     // init the base class
-    Inherited::init();  
+    Inherited::init();
     if (!readConfig( ))
     {
         return FALSE;
     }
 
-    loadTranslationLists(); 
+    loadTranslationLists();
     return TRUE;
 }
 /*************************************************
 * Function Name: CtiFDR_EnhancedLodeStar::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_EnhancedLodeStar::run( void )
@@ -192,8 +192,8 @@ BOOL CtiFDR_EnhancedLodeStar::run( void )
 /*************************************************
 * Function Name: CtiFDR_EnhancedLodeStar::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_EnhancedLodeStar::stop( void )
@@ -347,9 +347,9 @@ CtiTime CtiFDR_EnhancedLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag
             ts.tm_mon--;
 
             CtiTime tempTime =  CtiTime(&ts);
-            
+
             if (aDstFlag == 'Y' || aDstFlag == 'y')
-            {               
+            {
                if ( tempTime.seconds() < endDST.seconds() &&
                     tempTime.seconds() >= beginDST.seconds() )
                {
@@ -363,7 +363,7 @@ CtiTime CtiFDR_EnhancedLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag
                 ts.tm_isdst = FALSE;
             }
 
-            try 
+            try
             {
                 retVal = CtiTime(&ts);
 
@@ -401,17 +401,17 @@ bool getToken(char **InBuffer, string &outBuffer)
     if( *InBuffer == NULL )
     {
         retVal = false;
-    } 
-    else if((ptr = strchr(*InBuffer, ',')) != NULL) 
+    }
+    else if((ptr = strchr(*InBuffer, ',')) != NULL)
     {
 
             // found one
         *ptr = '\0';
-		outBuffer = *InBuffer;
+                outBuffer = *InBuffer;
         *InBuffer += outBuffer.length() + 1;
 
-    } 
-    else if((ptr = strchr(*InBuffer, '\0')) != NULL) 
+    }
+    else if((ptr = strchr(*InBuffer, '\0')) != NULL)
     {
         *ptr = '\0';
         outBuffer = *InBuffer;
@@ -427,14 +427,14 @@ bool getToken(char **InBuffer, string &outBuffer)
 ************TS */
 bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileIndex)
 {
-	bool                retCode = false;
+        bool                retCode = false;
     bool                isFirstHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
 
     boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     string tokedStr = "";
     if( tok_iter != cmdLine.end() )
@@ -490,7 +490,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " ENH: Looking for CUST_ID/CHANNEL keyString: " <<keyString << "..."<<endl;
-                        }  
+                        }
                         bool pointFound = findTranslationNameInList(string(keyString), getReceiveFromList(), point);
                         if( pointFound )
                         {
@@ -526,7 +526,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         tempStartTimeStr = tempString1;
                         break;
                     }
-    
+
                 case 5:
                     {
                         //Can't yet convert the timestamp string to a CtiTime because we don't have the DST flag yet
@@ -536,8 +536,8 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                 case 6:
                     {
                         _lsDSTFlag = tempString1;
-    
-                        //Now we can convert the 
+
+                        //Now we can convert the
                         _lsStartTime = ForeignToYukonTime(tempStartTimeStr, _lsDSTFlag[0]);
                         if( _lsStartTime == PASTDATE )
                         {
@@ -547,7 +547,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                                 dout << CtiTime() << " Could not parse Lodestar start timestamp: " << tempString1 << " for Customer Identifier: " << _lsCustomerIdentifier << endl;
                             }
                         }
-    
+
                         _lsStopTime = ForeignToYukonTime(tempStopTimeStr, _lsDSTFlag[0]);
                         if( _lsStopTime == PASTDATE )
                         {
@@ -592,14 +592,14 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
 
 bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
 {
-	bool                retCode = false;
+        bool                retCode = false;
     bool                isSecondHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
 
     boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     string tokedStr = "";
     if( tok_iter != cmdLine.end() )
@@ -666,7 +666,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         }
                         break;
                     }
-    
+
                 case 5:
                     {
                         _lsMeterOffset = atof(tempString1.c_str());
@@ -781,13 +781,13 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
 
 bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(string& aLine)
 {
-	bool                retCode = false;
+        bool                retCode = false;
     bool                isThirdHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
     boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     string tokedStr = "";
     if( tok_iter != cmdLine.end() )
@@ -855,13 +855,13 @@ bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(string& aLine)
 
 bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
 {
-	bool                retCode = false;
+        bool                retCode = false;
     bool                isFourthHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;// Will receive each token
     boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     string tokedStr = "";
     if( tok_iter != cmdLine.end() )
@@ -945,14 +945,14 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
 
 bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multiDispatchMsg)
 {
-	bool                retCode = false;
+        bool                retCode = false;
     bool                isDataRecordFlag = true;
     bool                dataRecordValidFlag = true;
     string           tempString1;// Will receive each token
 
     boost::char_separator<char> sep("\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     string tokedStr = "";
     if( tok_iter != cmdLine.end() )
@@ -960,8 +960,8 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
         tokedStr = *tok_iter;
     }
     int                 fieldNumber = 1;
-    double              intervalValue;
-    unsigned            importedQuality;
+    double              intervalValue = 0.0;
+    unsigned            importedQuality = 0;
 
     /****************************
     * the third header has of the following format
@@ -1056,8 +1056,8 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -1068,11 +1068,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -1089,11 +1089,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )
