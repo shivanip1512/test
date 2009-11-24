@@ -12,8 +12,8 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
     // Default temp to 72F
     private Integer previousTemperature = DEFAULT_TEMPERATURE;
     private boolean holdTemperature = false;
-    private ThermostatMode mode = ThermostatMode.DEFAULT;
-    private ThermostatFanState fanState = ThermostatFanState.DEFAULT;
+    private ThermostatMode mode = ThermostatMode.OFF;
+    private ThermostatFanState fanState = ThermostatFanState.AUTO;
     private boolean runProgram = false;
 
     // Fahrenheit by default
