@@ -15,14 +15,11 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.point.SystemLog;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.google.common.collect.Lists;
 
@@ -165,10 +162,6 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-	    List<Integer> paoIds = Lists.newArrayList();
-	    for(int i : getPaoIDs()){
-	        paoIds.add(i);
-	    }
 	    
 		StringBuffer sql = new StringBuffer("SELECT DATETIME, SL.POINTID, PRIORITY, ACTION, SL.DESCRIPTION, USERNAME "+ 
 			" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO ");
@@ -184,7 +177,10 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
              *  Restrict results based on PaoPermissions of LM Groups.
              */
 		    if(getPaoIDs() != null){ /* They picked some groups */
-                    
+    		        List<Integer> paoIds = Lists.newArrayList();
+    		        for(int i : getPaoIDs()){
+    		            paoIds.add(i);
+    		        }
                     List<String> finalPaoIdsList = Lists.newArrayList();
                     for(YukonPao group : restrictedGroups){
                         if(paoIds.contains(group.getPaoIdentifier().getPaoId())){
