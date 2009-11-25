@@ -335,6 +335,42 @@ public class RawPointHistoryValidationServiceTest {
         Assert.assertEquals(true, analysisResult.considerReRead);
     }
     
+    @Test
+    public void test_analyzeThreeHistoryRows_flat() {
+        ValidationMonitor validationMonitor = createStandardSettings();
+        
+        RawPointHistoryWrapper reading1 = createPoint(1, "2009-5-1T6:00:00Z", 1000);
+        RawPointHistoryWrapper reading2 = createPoint(1, "2009-5-2T6:00:00Z", 1000);
+        RawPointHistoryWrapper reading3 = createPoint(1, "2009-5-3T6:00:00Z", 1000);
+        
+        RawPointHistoryWorkUnit workUnit = createWorkUnit(1, reading3);
+        List<RawPointHistoryWrapper> values = ImmutableList.of(reading3, reading2, reading1);
+        Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
+        AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
+        
+        Assert.assertEquals(ImmutableListMultimap.of(), tags); 
+        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
+        Assert.assertEquals(false, analysisResult.considerReRead);
+    }
+    
+    @Test
+    public void test_analyzeThreeHistoryRows_normal() {
+        ValidationMonitor validationMonitor = createStandardSettings();
+        
+        RawPointHistoryWrapper reading1 = createPoint(1, "2009-5-1T6:00:00Z", 1100);
+        RawPointHistoryWrapper reading2 = createPoint(1, "2009-5-2T6:00:00Z", 1200); 
+        RawPointHistoryWrapper reading3 = createPoint(1, "2009-5-3T6:00:00Z", 1300);
+        
+        RawPointHistoryWorkUnit workUnit = createWorkUnit(1, reading3);
+        List<RawPointHistoryWrapper> values = ImmutableList.of(reading3, reading2, reading1);
+        Multimap<RawPointHistoryWrapper, RphTag> tags = ArrayListMultimap.create();
+        AnalysisResult analysisResult = RawPointHistoryValidationService.analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
+        
+        Assert.assertEquals(ImmutableListMultimap.of(), tags); 
+        Assert.assertEquals(false, analysisResult.peakInTheMiddle);
+        Assert.assertEquals(false, analysisResult.considerReRead);
+    }
+    
     private ValidationMonitor createStandardSettings() {
         ValidationMonitor validationMonitor = new ValidationMonitor();
         validationMonitor.setKwhReadingError(.1);
