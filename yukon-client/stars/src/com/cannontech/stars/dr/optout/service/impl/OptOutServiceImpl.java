@@ -548,6 +548,37 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
+	public void resetOptOutLimitForInventory(String accountNumber, String serialNumber, LiteYukonUser user) throws InventoryNotFoundException, AccountNotFoundException, IllegalArgumentException {
+		
+		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+		
+		// account
+		CustomerAccount account = null;
+		try {
+			account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		} catch (NotFoundException e) {
+			throw new AccountNotFoundException("Account not found: " + accountNumber, e);
+		}
+		
+		// inventory
+		LiteInventoryBase inventory;
+		try {
+			inventory = starsSearchDao.searchLMHardwareBySerialNumber(serialNumber, energyCompany);
+		} catch (ObjectInOtherEnergyCompanyException e) {
+			throw new InventoryNotFoundException("Inventory with serial number: " + serialNumber + " is in another energy company.", e);
+		}
+		if(inventory == null) {
+			throw new InventoryNotFoundException("Inventory with serial number: " + serialNumber + " could not be found.");
+		}
+		if(inventory.getAccountID() != account.getAccountId()) {
+			throw new IllegalArgumentException("The inventory with serial number: " + serialNumber + " is not associated with the account with account number: " + accountNumber);
+		}
+		
+		// resetOptOutLimitForInventory
+		this.resetOptOutLimitForInventory(inventory.getInventoryID(), account.getAccountId());
+	}
+	
+	@Override
 	public List<OverrideHistory> getOptOutHistoryForAccount(
 			String accountNumber, Date startTime, Date stopTime,
 			LiteYukonUser user, String programName) 

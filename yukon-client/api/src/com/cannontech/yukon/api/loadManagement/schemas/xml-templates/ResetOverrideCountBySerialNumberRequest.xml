@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resetOverrideCountBySerialNumberRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ResetOverrideCountBySerialNumberRequest.xsd"
+           version="1.0">
+           
+    <accountNumber>945998</accountNumber>
+   	
+   	<serialNumber>300000005</serialNumber>
+   	
+</resetOverrideCountBySerialNumberRequest>

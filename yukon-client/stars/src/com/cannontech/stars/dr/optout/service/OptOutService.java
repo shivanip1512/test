@@ -130,6 +130,18 @@ public interface OptOutService {
 	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId);
 	
 	/**
+	 * Method to reset the number of opt outs a user has remaining to the limit. (basically
+	 * don't count any existing opt outs against the limit)
+	 * @param accountNumber
+	 * @param serialNumber
+	 * @param user
+	 * @throws InventoryNotFoundException - no found or not found in users energy company
+	 * @throws AccountNotFoundException
+	 * @throws IllegalArgumentException - If the inventory with serial number is not associated with the account with account number
+	 */
+	public void resetOptOutLimitForInventory(String accountNumber, String serialNumber, LiteYukonUser user) throws InventoryNotFoundException, AccountNotFoundException, IllegalArgumentException;
+	
+	/**
 	 * Method to get the total number of devices that were opted out during the given time period
 	 * @param accountNumber - Account to get count for
 	 * @param startTime - Start of time period (inclusive)

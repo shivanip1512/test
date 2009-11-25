@@ -118,6 +118,14 @@ public class OptOutServiceAdapter implements OptOutService {
 	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId) {
 		throw new UnsupportedOperationException("not implemented");
 	}
+	
+	@Override
+	public void resetOptOutLimitForInventory(String accountNumber,
+			String serialNumber, LiteYukonUser user)
+			throws InventoryNotFoundException, AccountNotFoundException,
+			IllegalArgumentException {
+		throw new UnsupportedOperationException("not implemented");
+	}
 
 	@Override
 	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory,

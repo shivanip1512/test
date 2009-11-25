@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>    
+	
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+			Item #6 from BG&amp;E Phase 3 SoW - Appendix C.
+        	An override is an opt out.
+     	</xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="ResetOverrideCountBySerialNumberRequest">
+       	<xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+            		<xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+               		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+               	</xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="resetOverrideCountBySerialNumberRequest" type="yukon:ResetOverrideCountBySerialNumberRequest"/>
+
+</xsd:schema>

@@ -270,6 +270,33 @@ public class LoadManagementTestUtils {
     	return requestElement;
     }
     
+    // RESET OVERRIDE BY SERIAL NUMBER REQUEST
+    public static Element createResetOverrideBySerialNumberRequestElement(
+    		String accountNumber,
+    		String serialNumber,
+    		String version,
+    		Resource requestSchemaResource) {
+    	
+    	Element requestElement = null;
+    	Attribute versionAttribute = null;
+    	Element tmpElement = null;
+    	
+    	requestElement = new Element("resetOverrideCountBySerialNumberRequest", ns);
+    	versionAttribute = new Attribute("version", version);
+    	requestElement.setAttribute(versionAttribute);
+    	
+    	tmpElement = XmlUtils.createStringElement("accountNumber", ns, accountNumber);
+    	requestElement.addContent(tmpElement);
+    	
+    	tmpElement = XmlUtils.createStringElement("serialNumber", ns, serialNumber);
+    	requestElement.addContent(tmpElement);
+    	
+    	// validate request
+    	TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+    	
+    	return requestElement;
+    }
+    
     // CANCEL CURRENT OVERRIDES	 REQUEST
     public static Element createCancleCurrentOverridesRequestElement(
     		String version,
