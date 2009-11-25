@@ -40,6 +40,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
@@ -62,11 +63,13 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.PAOFactory;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.tou.TOUSchedule;
@@ -696,7 +699,15 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 		currentType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(type);
 		newType = ((PaoType) p.getValue(null)).getDeviceTypeId();
 
-	}
+	} else if (selectedObject instanceof DeviceMeterGroupBase) {
+	    DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+        int deviceId = ((DeviceMeterGroupBase) selectedObject).getDeviceMeterGroup().getDeviceID();
+        SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+
+        type = device.getDeviceType().getPaoTypeName();
+        currentType = device.getType();
+        newType = ((PaoType) p.getValue(null)).getDeviceTypeId();
+    }
 	else if (selectedObject instanceof com.cannontech.database.data.point.PointBase)
 	{
 		type = ((com.cannontech.database.data.point.PointBase) selectedObject).getPoint().getPointType();
@@ -846,6 +857,13 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
       if (userObject instanceof DeviceBase
               && deviceDefinitionService.isDeviceTypeChangeable(deviceDao.getYukonDeviceForDevice((DeviceBase) userObject))) {
           showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(userObject));
+      } else if (userObject instanceof DeviceMeterGroupBase) {
+          int deviceId = ((DeviceMeterGroupBase) userObject).getDeviceMeterGroup().getDeviceID();
+          SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+          if(deviceDefinitionService.isDeviceTypeChangeable(device)) {
+              YukonPAObject yukonPAObject = PAOFactory.createPAObject(deviceId);
+              showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(yukonPAObject));
+          }
       }
 	  else if (userObject instanceof com.cannontech.database.data.point.PointBase)
 	  {
@@ -925,18 +943,22 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 		if(toCopy instanceof com.cannontech.database.data.device.DeviceBase && !(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup))
         {
             showCopyWizardPanel (toCopy);
-        }
-		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
-			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy) );
-		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup)
-			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMGroupCopyWizardPanel((com.cannontech.database.data.device.lm.LMGroup)toCopy) );
-		else if(toCopy instanceof LMScenario)
-			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel((LMScenario)toCopy) );
-		else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
-		{
-			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy, currentDatabase ) );
+        } else if(toCopy instanceof DeviceMeterGroupBase) {
+		    int deviceId = ((DeviceMeterGroupBase) toCopy).getDeviceMeterGroup().getDeviceID();
+            YukonPAObject yukonPAObject = PAOFactory.createPAObject(deviceId);
+            showCopyWizardPanel (yukonPAObject);
 		}
-		else
+        else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy), toCopy );
+        else if(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup)
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMGroupCopyWizardPanel((com.cannontech.database.data.device.lm.LMGroup)toCopy), toCopy );
+        else if(toCopy instanceof LMScenario)
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel((LMScenario)toCopy), toCopy );
+        else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
+        {
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy, currentDatabase ), toCopy );
+        }
+        else
 			JOptionPane.showMessageDialog(
 				getParentFrame(),
 				"Cannot currently copy that type of Object", "Copy Error", 
@@ -961,7 +983,7 @@ public DefaultMutableTreeNode getDefaultTreeNode() {
 public void showCopyWizardPanel(com.cannontech.database.db.DBPersistent toCopy) {
 	DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy);
 	devicePanel.setDeviceType( toCopy );
-	showCopyWizardPanel( devicePanel );
+	showCopyWizardPanel( devicePanel, toCopy );
 }
 
 
@@ -2713,7 +2735,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
  * This method was created in VisualAge.
  * @param wizard com.cannontech.common.wizard.WizardPanel
  */
-private void showCopyWizardPanel(WizardPanel wizard) {
+private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
 
 	//Set the cursor to wait
 	java.awt.Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
@@ -2730,12 +2752,10 @@ private void showCopyWizardPanel(WizardPanel wizard) {
 
 	this.desktopPane.add( f );
 
-	//a DBPersistent must be created from the Lite object so you can copy it
-	com.cannontech.database.db.DBPersistent userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase)getTreeViewPanel().getSelectedNode().getUserObject());
 	try
 	{
-		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
-		userObject = t.execute();
+		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, toCopy);
+		toCopy = t.execute();
 	}
 	catch( Exception e )
 	{
@@ -2743,7 +2763,7 @@ private void showCopyWizardPanel(WizardPanel wizard) {
 	}
 
 	
-	wizard.setValue(userObject);
+	wizard.setValue(toCopy);
 	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DatabaseEditor.DBEDITOR_IMG_16));
 	f.setFrameIcon(wizardIcon);
 	f.show();
