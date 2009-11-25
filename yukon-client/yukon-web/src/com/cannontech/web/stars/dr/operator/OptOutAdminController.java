@@ -3,6 +3,7 @@ package com.cannontech.web.stars.dr.operator;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,16 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.google.common.collect.Maps;
 
 /**
  * Controller for Manual thermostat operations
@@ -48,11 +53,12 @@ public class OptOutAdminController {
 	private OptOutService optOutService;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private ProgramService programService;
+	private ProgramDao programDao;
 
 	private RolePropertyDao rolePropertyDao;
 	
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
-    public String view(LiteYukonUser user, ModelMap map, String cancelCurrentOptOutsErrorMsg) throws Exception {
+    public String view(LiteYukonUser user, ModelMap map, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
         
     	rolePropertyDao.verifyAnyProperties(user, 
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
@@ -71,9 +77,25 @@ public class OptOutAdminController {
     	Integer scheduledOptOuts = optOutEventDao.getTotalNumberOfScheduledOptOuts(energyCompany);
     	map.addAttribute("scheduledOptOuts", scheduledOptOuts);
     	
-    	boolean optOutCounts = optOutStatusService.getOptOutCounts(user);
-    	map.addAttribute("optOutCounts", optOutCounts);
+    	// programNameCountsMap
+    	OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user);
+		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
+		
+		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
+		for (OptOutCountsDto setting : programSpecificOptOutCounts) {
+			
+			int programId = setting.getProgramId();
+			Program program = programDao.getByProgramId(programId);
+			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
+		}
+		if (programSpecificOptOutCounts.size() == 0) {
+			programNameCountsMap.put("All Programs", defaultOptOutCountsSetting.getOptOutCounts());
+		} else {
+			programNameCountsMap.put("Other Programs", defaultOptOutCountsSetting.getOptOutCounts());
+		}
+    	map.addAttribute("programNameCountsMap", programNameCountsMap);
     	
+    	// optOutsEnabled
     	boolean optOutsEnabled = optOutStatusService.getOptOutEnabled(user);
     	map.addAttribute("optOutsEnabled", optOutsEnabled);
     	
@@ -88,7 +110,8 @@ public class OptOutAdminController {
 		}
 		map.addAttribute("customerSearchList", customerSearchList);
 		
-		map.addAttribute("cancelCurrentOptOutsErrorMsg", cancelCurrentOptOutsErrorMsg);
+		map.addAttribute("emptyProgramName", emptyProgramName);
+		map.addAttribute("programNotFound", programNotFound);
 		
 		return "operator/optout/optOutAdmin.jsp";
     }
@@ -121,17 +144,18 @@ public class OptOutAdminController {
 		if (onlySingleProgram != null && onlySingleProgram) {
 
 			if (StringUtils.isBlank(programName)) {
-				map.addAttribute("cancelCurrentOptOutsErrorMsg", "Empty Program Name");
+				map.addAttribute("emptyProgramName", true);
 			} else {
 				
 				try {
+					
 					LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 	            	Program program = programService.getByProgramName(programName, energyCompany);
 	            	int programId = program.getProgramId();
-	            	
 					optOutService.cancelAllOptOutsByProgramId(programId, user);
+					
 				} catch (NotFoundException e) {
-					map.addAttribute("cancelCurrentOptOutsErrorMsg", "Program Not Found: " + programName);
+					map.addAttribute("programNotFound", true);
 				}
 			}
 
@@ -142,22 +166,37 @@ public class OptOutAdminController {
     	return "redirect:/spring/stars/operator/optOut/admin";
     }
     
-    @RequestMapping(value = "/operator/optOut/admin/count", method = RequestMethod.POST)
-    public String countOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
+    @RequestMapping(value = "/operator/optOut/admin/setCounts", method = RequestMethod.POST)
+    public String setCounts(LiteYukonUser user, ModelMap map, String count, String dontCount, Boolean onlySingleProgram, String programName) throws Exception {
     	
     	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS, user);
     	
-    	optOutService.changeOptOutCountStateForToday(user, true);
+    	boolean countBool = true;
+    	if (dontCount != null) {
+    		countBool = false;
+    	}
     	
-    	return "redirect:/spring/stars/operator/optOut/admin";
-    }
-    
-    @RequestMapping(value = "/operator/optOut/admin/dontCount", method = RequestMethod.POST)
-    public String dontCountOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
-    	
-    	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS, user);
-    	
-    	optOutService.changeOptOutCountStateForToday(user, false);
+    	if (onlySingleProgram != null && onlySingleProgram) {
+
+			if (StringUtils.isBlank(programName)) {
+				map.addAttribute("emptyProgramName", true);
+			} else {
+				
+				try {
+					
+					LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+	            	Program program = programService.getByProgramName(programName, energyCompany);
+	            	int programId = program.getProgramId();
+	            	optOutService.changeOptOutCountStateForTodayByProgramId(user, countBool, programId);
+	            	
+				} catch (NotFoundException e) {
+					map.addAttribute("programNotFound", true);
+				}
+			}
+
+		} else {
+			optOutService.changeOptOutCountStateForToday(user, countBool);
+		}
     	
     	return "redirect:/spring/stars/operator/optOut/admin";
     }
@@ -280,5 +319,10 @@ public class OptOutAdminController {
     @Autowired
     public void setProgramService(ProgramService programService) {
 		this.programService = programService;
+	}
+    
+    @Autowired
+    public void setProgramDao(ProgramDao programDao) {
+		this.programDao = programDao;
 	}
 }

@@ -18,12 +18,12 @@
     
     <script type="text/javascript">
 
-    	function toggleCancelAllOptOutsProgramName(toggleEl) {
+    	function toggleProgramNameEnabled(toggleEl, txtEl) {
     		if (toggleEl.checked) {
-				$('cancelAllOptOutsProgramName').enable();
+    			txtEl.enable();
     		} else {
-    			$('cancelAllOptOutsProgramName').value = '';
-    			$('cancelAllOptOutsProgramName').disable();
+    			txtEl.value = '';
+    			txtEl.disable();
     		}
     	}
 
@@ -52,8 +52,16 @@
             </td>
         </tr>
     </table>
+    <br>
     
-    <br><br>
+    <c:if test="${not empty emptyProgramName}">
+		<div class="errorRed"><cti:msg key="yukon.web.modules.dr.byProgramName.emptyProgramName"/></div>
+   		<br>
+   	</c:if>
+   	<c:if test="${not empty programNotFound}">
+   		<div class="errorRed"><cti:msg key="yukon.web.modules.dr.byProgramName.programNotFound"/></div>
+   		<br>
+   	</c:if>
     
     <div style="width: 50%;">
     
@@ -85,22 +93,20 @@
 	    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE">
 		    <cti:msg var="disableOptOuts" key="yukon.web.modules.dr.optOut.disableOptOutsTitle" />
 		    <ct:boxContainer title="${disableOptOuts}" hideEnabled="false">
-		        <div align="center">
-			        <c:choose>
-			            <c:when test="${optOutsEnabled}">
-					        <cti:msg key="yukon.web.modules.dr.optOut.optOutEnabled" /><br><br>
-					        <form action="/spring/stars/operator/optOut/admin/disable" method="post">
-			                    <input type="submit" name="enable" value="<cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts" />">
-					        </form>
-			            </c:when>
-			            <c:otherwise>
-					        <cti:msg key="yukon.web.modules.dr.optOut.optOutDisabled" /><br><br>
-					        <form action="/spring/stars/operator/optOut/admin/enable" method="post">
-			                    <input type="submit" name="disable" value="<cti:msg key="yukon.web.modules.dr.optOut.enableOptOuts" />">
-					        </form>
-			            </c:otherwise>
-			        </c:choose>
-			    </div>
+		        <c:choose>
+		            <c:when test="${optOutsEnabled}">
+				        <cti:msg key="yukon.web.modules.dr.optOut.optOutEnabled" /><br><br>
+				        <form action="/spring/stars/operator/optOut/admin/disable" method="post">
+		                    <input type="submit" name="enable" value="<cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts" />">
+				        </form>
+		            </c:when>
+		            <c:otherwise>
+				        <cti:msg key="yukon.web.modules.dr.optOut.optOutDisabled" /><br><br>
+				        <form action="/spring/stars/operator/optOut/admin/enable" method="post">
+		                    <input type="submit" name="disable" value="<cti:msg key="yukon.web.modules.dr.optOut.enableOptOuts" />">
+				        </form>
+		            </c:otherwise>
+		        </c:choose>
 		    </ct:boxContainer>
 		
 		    <br><br>
@@ -108,41 +114,38 @@
 	
 	    <!-- Cancel Current Opt Outs -->
 	    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT">
-		    <cti:msg var="cancleOptOuts" key="yukon.web.modules.dr.optOut.cancleOptOuts" />
-		    <ct:boxContainer title="${cancleOptOuts}" hideEnabled="false">
-		        <div align="center">
+		    <cti:msg var="cancelOptOuts" key="yukon.web.modules.dr.optOut.cancelOptOuts.title" />
+		    <ct:boxContainer title="${cancelOptOuts}" hideEnabled="false">
 		        
-		        	<c:if test="${not empty cancelCurrentOptOutsErrorMsg}">
-		        		<div class="errorRed">${cancelCurrentOptOutsErrorMsg}</div>
-		        		<br>
-		        	</c:if>
+		        <cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelOptOutsWarning" />
+		        <br><br>
 		        
-			        <form id="cancelAllOptOutsForm" action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
-			        
-			        	<table style="padding:10px;background-color:#EEE;">
-			        		<tr><td>
-			        			<b>Optional:</b>
-			        		</td></tr>
-			        		<tr><td style="padding-top:10px;">
-			        			<label>
-					        		<input type="checkbox" name="onlySingleProgram" onclick="toggleCancelAllOptOutsProgramName(this);"> 
-					        		Only Cancel Opt Outs For A Single Program
-					        	</label>
-			        		</td></tr>
-			        		<tr><td style="padding-top:10px;">
-			        			Program Name: 
-			        			<input type="text" id="cancelAllOptOutsProgramName" name="programName" value="" style="width:300px;" disabled>
-			        		</td></tr>
-			        	</table>
-			        	<br><br>
-			        
-			        	<cti:msg var="cancelAllOptOutsButton" key="yukon.web.modules.dr.optOut.cancelAllOptOuts" />
-			        	<ct:slowInput myFormId="cancelAllOptOutsForm" label="${cancelAllOptOutsButton}"/>
-			        
-			        </form>
-			        <br>
-			        <cti:msg key="yukon.web.modules.dr.optOut.cancelOptOutsWarning" />
-			    </div>
+		        <form id="cancelAllOptOutsForm" action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
+		        
+		        	<table style="padding:10px;background-color:#EEE;">
+		        		<tr><td>
+		        			<b>Optional:</b>
+		        		</td></tr>
+		        		<tr><td style="padding-top:10px;">
+		        			<label>
+				        		<input type="checkbox" name="onlySingleProop	opgram" onclick="toggleProgramNameEnabled(this, $('cancelAllOptOutsProgramName'));"> 
+				        		<cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction"/>
+				        	</label>
+		        		</td></tr>
+		        		<tr><td style="padding-top:10px;">
+		        			<cti:msg key="yukon.web.modules.dr.byProgramName.label"/>:
+		        			<input type="text" id="cancelAllOptOutsProgramName" name="programName" value="" style="width:300px;" disabled>
+		        		</td></tr>
+		        	</table>
+		        	<br>
+		        
+		        	<cti:msg var="cancelAllOptOutsButton" key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelAllOptOutsButton" />
+		        	<ct:slowInput myFormId="cancelAllOptOutsForm" label="${cancelAllOptOutsButton}"/>
+		        
+		        </form>
+		        
+		        
+		        
 		    </ct:boxContainer>
 		
 		    <br><br>
@@ -150,24 +153,50 @@
 	    
 	    <!-- Opt Outs Count/Don't Count -->
 	    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
-		    <cti:msg var="optOutCountsAgainstLimit" key="yukon.web.modules.dr.optOut.optOutCountsAgainstLimit" />
+		    <cti:msg var="optOutCountsAgainstLimit" key="yukon.web.modules.dr.optOut.countOptOuts.title" />
 		    <ct:boxContainer title="${optOutCountsAgainstLimit}" hideEnabled="false">
-		        <div align="center">
-			        <c:choose>
-			            <c:when test="${optOutCounts}">
-			                <cti:msg key="yukon.web.modules.dr.optOut.optOutsCount" /><br><br>
-			                <form action="/spring/stars/operator/optOut/admin/dontCount" method="post">
-			                    <input type="submit" name="disable" value="<cti:msg key="yukon.web.modules.dr.optOut.dontCountOptOuts" />">
-			                </form>
-			            </c:when>
-			            <c:otherwise>
-			                <cti:msg key="yukon.web.modules.dr.optOut.optOutsDontCount" /><br><br>
-			                <form action="/spring/stars/operator/optOut/admin/count" method="post">
-			                    <input type="submit" name="enable" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts" />">
-			                </form>
-			            </c:otherwise>
-			        </c:choose>
-			    </div>
+		        
+		        <b>Current Limits</b>
+		        <br><br>
+	        	<table class="compactResultsTable">
+	        		<tr>
+	        			<th>Program Name</th>
+	        			<th>Counts Against Todays Opt Out Limits</th>
+	        		</tr>
+	        		
+	        		<c:forEach var="program" items="${programNameCountsMap}">
+	        			<tr>
+	        				<td>${program.key}</td>
+	        				<td><cti:msg key="${program.value.formatKey}"/></td>
+	        			</tr>
+	        		</c:forEach>
+	        	
+	        	</table>
+	        	<br>
+	        
+	        	<form action="/spring/stars/operator/optOut/admin/setCounts" method="post">
+		                
+                	<table style="padding:10px;background-color:#EEE;">
+		        		<tr><td>
+		        			<b>Optional:</b>
+		        		</td></tr>
+		        		<tr><td style="padding-top:10px;">
+		        			<label>
+				        		<input type="checkbox" name="onlySingleProgram" onclick="toggleProgramNameEnabled(this, $('disabledCountOptOutsProgramName'));"> 
+				        		<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.instruction"/>
+				        	</label>
+		        		</td></tr>
+		        		<tr><td style="padding-top:10px;">
+		        			<cti:msg key="yukon.web.modules.dr.byProgramName.label"/>:
+		        			<input type="text" id="disabledCountOptOutsProgramName" name="programName" value="" style="width:300px;" disabled>
+		        		</td></tr>
+		        	</table>
+		        	<br>
+		        	
+                    <input type="submit" name="count" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.countOptOutsButton" />">
+                    <input type="submit" name="dontCount" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.dontCountOptOutsButton" />">
+                </form>
+			        
 	        </ct:boxContainer>
         </cti:checkProperty>
 	</div>
