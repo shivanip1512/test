@@ -1,4 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	if (allAppliances.size() == 0) {
@@ -114,8 +115,10 @@ function deleteAppliance(form) {
                           <td width="100" class="TableCell"> 
                             <div align="right">Description: </div>
                           </td>
-                          <td width="200"> 
-                            <input type="text" name="Category" maxlength="40" size="24" value="<%= ServletUtils.getApplianceDescription(categories, appliance) %>">
+                          <td width="200" class="TableCell"> 
+	                          <spring:escapeBody htmlEscape="true">
+	                            <%= ServletUtils.getApplianceDescription(categories, appliance) %>
+	                          </spring:escapeBody>
                           </td>
                         </tr>
                         <tr> 
