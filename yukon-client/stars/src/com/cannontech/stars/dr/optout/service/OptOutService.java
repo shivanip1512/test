@@ -76,6 +76,17 @@ public interface OptOutService {
 	 * @param optOutCounts - True if all opt outs should count for the rest of the day.
 	 */
 	public void changeOptOutCountStateForToday(LiteYukonUser user, boolean optOutCounts);
+	
+	/**
+	 * Method to temporarily change the Opt Out Counts state for the user's energyCompany.  The
+	 * change will take effect now and last through the end of today.  Also changes any current
+	 * Opt Out's count state to the new state.
+	 * Only applies to those opt outs for inventory of the given program id.
+	 * @param user - User making change
+	 * @param optOutCounts - True if all opt outs should count for the rest of the day.
+	 * @param webpublishingProgramId
+	 */
+	public void changeOptOutCountStateForTodayByProgramId(LiteYukonUser user, boolean optOutCounts, int webpublishingProgramId);
 
 	/**
 	 * Method to temporarily change whether Opt Outs are allowed by end users for the given user's 

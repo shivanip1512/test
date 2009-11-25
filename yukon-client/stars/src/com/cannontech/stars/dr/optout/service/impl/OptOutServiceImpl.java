@@ -3,8 +3,10 @@ package com.cannontech.stars.dr.optout.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
@@ -61,6 +63,7 @@ import com.cannontech.stars.dr.optout.exception.NotOptedOutException;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
@@ -78,6 +81,8 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.UserUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
 public class OptOutServiceImpl implements OptOutService {
 
@@ -122,19 +127,42 @@ public class OptOutServiceImpl implements OptOutService {
 			startNow = true;
 		}
 		
-		boolean optOutCountsBoolean = optOutStatusService.getOptOutCounts(user);
-		OptOutCounts optOutCounts = OptOutCounts.valueOf(optOutCountsBoolean);
+		OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user);
+		
+		Map<Integer, OptOutCountsDto> optOutCountsSettingsByProgramIdMap = new HashMap<Integer, OptOutCountsDto>();
+		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
+		for (OptOutCountsDto setting : programSpecificOptOutCounts) {
+			optOutCountsSettingsByProgramIdMap.put(setting.getProgramId(), setting);
+		}
 		
 		// Send opt out command immediately for each inventory
     	for(Integer inventoryId : inventoryIdList) { 
 
-			LiteStarsLMHardware inventory = 
-    			(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-    		
+			LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+			List<Program> programs = enrollmentDao.getCurrentlyEnrolledProgramsByInventoryId(inventoryId);
+			
+			List<OptOutCountsDto> optOutCountSettingsForPrograms = Lists.newArrayList();
+			for (Program program : programs) {
+				int programId = program.getProgramId();
+				OptOutCountsDto oocs = optOutCountsSettingsByProgramIdMap.get(programId);
+				if (oocs != null) {
+					optOutCountSettingsForPrograms.add(oocs);
+				}
+			}
+				
+			OptOutCountsDto optOutCountsDtoKeeper;
+			if (optOutCountSettingsForPrograms.size() == 0) {
+				optOutCountsDtoKeeper = defaultOptOutCountsSetting;
+			} else {
+				Ordering<OptOutCountsDto> ordering = Ordering.from(OptOutCountsDto.getStartTimeComparator());
+				optOutCountsDtoKeeper = ordering.max(optOutCountSettingsForPrograms); // tie breaker, keep the one with most RECENT StartDate (max)
+			}
+			OptOutCounts optOutCountsKeeper = optOutCountsDtoKeeper.getOptOutCounts();
+			
 			// Create and save opt out event for this inventory
 			OptOutEvent event = new OptOutEvent();
 			event.setEventId(request.getEventId());
-			event.setEventCounts(optOutCounts);
+			event.setEventCounts(optOutCountsKeeper);
 			event.setCustomerAccountId(customerAccountId);
 			event.setInventoryId(inventoryId);
 			event.setScheduledDate(now);
@@ -407,19 +435,37 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	public void changeOptOutCountStateForToday(LiteYukonUser user, boolean optOutCounts) {
-
+		doChangeOptOutCountStateForToday(user, optOutCounts, null);
+	}
+	
+	@Override
+	public void changeOptOutCountStateForTodayByProgramId(LiteYukonUser user, boolean optOutCounts, int webpublishingProgramId) {
+		doChangeOptOutCountStateForToday(user, optOutCounts, webpublishingProgramId);
+	}
+	
+	private void doChangeOptOutCountStateForToday(LiteYukonUser user, boolean optOutCounts, Integer webpublishingProgramId) {
+		
 		TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
 		Date now = new Date();
     	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
-    	
-    	// Temporarily update count state
-    	optOutTemporaryOverrideDao.setTemporaryOptOutCounts(user, now, stopDate, optOutCounts);
-    	
-    	// Update any currently active opt outs
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-    	OptOutCounts counts = OptOutCounts.valueOf(optOutCounts);
-		optOutEventDao.changeCurrentOptOutCountState(energyCompany, counts);
 		
+    	if (webpublishingProgramId == null) {
+    	
+	    	// Temporarily update count state
+	    	optOutTemporaryOverrideDao.setTemporaryOptOutCounts(user, now, stopDate, optOutCounts);
+	    	
+	    	// Update any currently active opt outs
+			optOutEventDao.changeCurrentOptOutCountState(energyCompany, OptOutCounts.valueOf(optOutCounts));
+    	
+    	} else {
+    		
+    		// Temporarily update count state
+	    	optOutTemporaryOverrideDao.setTemporaryOptOutCountsForProgramId(user, now, stopDate, optOutCounts, webpublishingProgramId);
+	    	
+	    	// Update any currently active opt outs
+			optOutEventDao.changeCurrentOptOutCountStateForProgramId(energyCompany, OptOutCounts.valueOf(optOutCounts), webpublishingProgramId);
+    	}
 	}
 	
 	@Override

@@ -1,5 +1,8 @@
 package com.cannontech.stars.dr.optout.service.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -15,8 +18,11 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.util.StarsUtils;
+import com.google.common.collect.Lists;
 
 /**
  * Implementation class for OptOutStatusService
@@ -30,21 +36,52 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	private RolePropertyDao rolePropertyDao;
 	
 	@Override
-	public boolean getOptOutCounts(LiteYukonUser user) {
+	public OptOutCountsDto getDefaultOptOutCounts(LiteYukonUser user) {
 
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		
-		boolean optOutCounts = false;
+		boolean optOutCounts = rolePropertyDao.checkProperty(YukonRoleProperty.OPT_OUTS_COUNT, null);
+		OptOutCountsDto rolePropSetting = new OptOutCountsDto(OptOutCounts.valueOf(optOutCounts), null, new Date());
+		
+		OptOutCountsDto nullProgramIdSetting = null;
 		try {
-			optOutCounts = optOutTemporaryOverrideDao.getOptOutCounts(energyCompany);
+			
+			List<OptOutCountsDto> allSettings = optOutTemporaryOverrideDao.getAllOptOutCounts(energyCompany);
+			for (OptOutCountsDto setting : allSettings) {
+				if (setting.getProgramId() == null) {
+					nullProgramIdSetting = setting;
+					break;
+				}
+			}
 		} catch (NoTemporaryOverrideException e) {
-			// Opt out counts is not temporarily overridden today - get role property value
-			optOutCounts = rolePropertyDao.checkProperty(YukonRoleProperty.OPT_OUTS_COUNT, null);
+			// ok, rolePropSetting will end up being returned then
 		}
 		
-		return optOutCounts;
+		return nullProgramIdSetting == null ? rolePropSetting : nullProgramIdSetting;
 	}
+	
+	@Override
+	public List<OptOutCountsDto> getProgramSpecificOptOutCounts(LiteYukonUser user) {
 
+		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+		
+		List<OptOutCountsDto> settings = Lists.newArrayList();
+		try {
+			
+			List<OptOutCountsDto> allSettings = optOutTemporaryOverrideDao.getAllOptOutCounts(energyCompany);
+			for (OptOutCountsDto setting : allSettings) {
+				if (setting.getProgramId() != null) {
+					settings.add(setting);
+				}
+			}
+			
+		} catch (NoTemporaryOverrideException e) {
+			// ok, no program specific setting are in effect, return empty list
+		}
+		
+		return settings;
+	}
+	
 	@Override
 	public boolean getOptOutEnabled(LiteYukonUser user) {
 

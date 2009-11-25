@@ -590,32 +590,46 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 	@Override
 	@Transactional
-	public void changeCurrentOptOutCountState(
-			LiteStarsEnergyCompany energyCompany, OptOutCounts counts) {
-
+	public void changeCurrentOptOutCountState(LiteStarsEnergyCompany energyCompany, OptOutCounts counts) {
+		doChangeCurrentOptOutCountState(energyCompany, counts, null);
+	}
+	
+	@Override
+	@Transactional
+	public void changeCurrentOptOutCountStateForProgramId(LiteStarsEnergyCompany energyCompany, OptOutCounts counts, int webpublishingProgramId) {
+		doChangeCurrentOptOutCountState(energyCompany, counts, webpublishingProgramId);
+	}
+	
+	private void doChangeCurrentOptOutCountState(LiteStarsEnergyCompany energyCompany, OptOutCounts counts, Integer webpublishingProgramId) {
+		
 		Date now = new Date();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("UPDATE OptOutEvent");
-		sql.append("SET EventCounts = ?");
+		sql.append("SET EventCounts").eq(counts.toString());
 		sql.append("WHERE EXISTS (");
 		sql.append("  SELECT ooe.OptOutEventId");
 		sql.append("  FROM OptOutEvent ooe");
 		sql.append("  JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
-		sql.append("  WHERE ooe.EventState = ?");
-		sql.append("	AND ooe.StartDate <= ?");
-		sql.append("	AND ooe.StopDate >= ?");
-		sql.append("	AND ectam.EnergyCompanyId = ?");
+		
+		if (webpublishingProgramId != null) {
+			sql.append("  JOIN LMHardwareControlGroup lmhcg ON (lmhcg.InventoryId = ooe.InventoryId)");
+		}
+		
+		sql.append("  WHERE ooe.EventState").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
+		sql.append("	AND ooe.StartDate").lte(now);
+		sql.append("	AND ooe.StopDate").gte(now);
+		sql.append("	AND ectam.EnergyCompanyId").eq(energyCompany.getEnergyCompanyID());
 		//this is the ANSI-equivalent of JOIN
 		sql.append("    AND OptOutEvent.OptOutEventId = ooe.OptOutEventId");
+		
+		if (webpublishingProgramId != null) {
+			sql.append("    AND lmhcg.ProgramId").eq(webpublishingProgramId);
+		}
+		
 		sql.append(")");
 		
-		yukonJdbcTemplate.update(sql.toString(), 
-				counts.toString(),
-				OptOutEventState.START_OPT_OUT_SENT.toString(),
-				now,
-				now,
-				energyCompany.getEnergyCompanyID());
+		yukonJdbcTemplate.update(sql);
 	}
 	
 	@Override

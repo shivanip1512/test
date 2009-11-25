@@ -165,6 +165,15 @@ public interface OptOutEventDao {
 	public void changeCurrentOptOutCountState(LiteStarsEnergyCompany energyCompany, OptOutCounts counts);
 
 	/**
+	 * Method to change the current count state of all active opt outs to the given value
+	 * Only applies to opt outs for inventory for given program id
+	 * @param energyCompany - Energy company to change state for
+	 * @param counts - Count or Don't Count
+	 * @param webpublishingProgramId
+	 */
+	public void changeCurrentOptOutCountStateForProgramId(LiteStarsEnergyCompany energyCompany, OptOutCounts counts, int webpublishingProgramId);
+	
+	/**
 	 * Method to get the inventory ids of opt outed out inventory for an account in a given time period
 	 * @param accountId - Account to get count for
 	 * @param startTime - Start of time period

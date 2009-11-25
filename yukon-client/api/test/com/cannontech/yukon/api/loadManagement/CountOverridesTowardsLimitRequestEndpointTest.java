@@ -29,7 +29,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         
         impl = new CountOverridesTowardsLimitRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
-        impl.setAuthDao(new MockAuthDao());
+        impl.setRolePropertyDao(new MockRolePropertyDao());
     }
     
     @Test
@@ -45,7 +45,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createCountOverridesRequestElement(
     			XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
+        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invoke(requestElement, user);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);

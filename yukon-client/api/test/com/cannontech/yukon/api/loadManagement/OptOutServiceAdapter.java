@@ -49,6 +49,12 @@ public class OptOutServiceAdapter implements OptOutService {
 			boolean optOutCounts) {
 		throw new UnsupportedOperationException("not implemented");	
 	}
+	
+	@Override
+	public void changeOptOutCountStateForTodayByProgramId(LiteYukonUser user,
+			boolean optOutCounts, int webpublishingProgramId) {
+		throw new UnsupportedOperationException("not implemented");	
+	}
 
 	@Override
 	public void changeOptOutEnabledStateForToday(LiteYukonUser user,

@@ -1,81 +1,81 @@
 package com.cannontech.stars.dr.optout.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.BooleanRowMapper;
+import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
 
 /**
  * Implementation class for OptOutEventDao
  */
 public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDao {
 
-	private SimpleJdbcTemplate simpleJdbcTemplate;
+	private YukonJdbcTemplate yukonJdbcTemplate;
 	private NextValueHelper nextValueHelper;
 	
 	private EnergyCompanyDao energyCompanyDao;
 	
 	@Override
-	public boolean getOptOutCounts(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException {
-		return this.getTemporaryOverrideValue(energyCompany, OptOutTemporaryOverrideType.COUNTS);
+	public List<OptOutCountsDto> getAllOptOutCounts(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException {
+		
+		Date now = new Date();
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT OptOutValue, ProgramId, StartDate");
+		sql.append("FROM OptOutTemporaryOverride");
+		sql.append("WHERE OptOutType = ?");
+		sql.append("	AND StartDate <= ?");
+		sql.append("	AND StopDate > ?");
+		sql.append("	AND EnergyCompanyId = ?");
+		
+		List<OptOutCountsDto> settings = yukonJdbcTemplate.query(sql.toString(), new OptOutCountsDtoRowMapper(), 
+				OptOutTemporaryOverrideType.COUNTS.toString(),
+				now,
+				now,
+				energyCompany.getEnergyCompanyID());
+			
+		if (settings.size() == 0) {
+			// Opt out counts has not been temporarily overridden for this energy company
+			throw new NoTemporaryOverrideException();
+		} 
+		
+		return settings;
+	}
+	
+	private final class OptOutCountsDtoRowMapper implements ParameterizedRowMapper<OptOutCountsDto> {
+
+	    @Override
+	    public final OptOutCountsDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+	    	
+	    	OptOutCounts optOutCounts = OptOutCounts.valueOf(rs.getBoolean("OptOutValue"));
+	    	Integer programId = SqlUtils.getNullableInt(rs, "ProgramId");
+	    	Date startDate = rs.getTimestamp("StartDate");
+	    	OptOutCountsDto setting = new OptOutCountsDto(optOutCounts, programId, startDate);
+	        return setting;
+	    }
 	}
 	
 	@Override
 	public boolean getOptOutEnabled(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException {
-		return this.getTemporaryOverrideValue(energyCompany, OptOutTemporaryOverrideType.ENABLED);
-	}
-	
-
-	@Override
-	@Transactional
-	public void setTemporaryOptOutCounts(LiteYukonUser user, Date startDate,
-			Date stopDate, boolean counts) {
-
-		this.setTemporaryOverrideValue(
-				OptOutTemporaryOverrideType.COUNTS, 
-				user, 
-				startDate, 
-				stopDate, 
-				counts);
-		
-	}
-
-	@Override
-	@Transactional
-	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate,
-			Date stopDate, boolean enabled) {
-
-		this.setTemporaryOverrideValue(
-				OptOutTemporaryOverrideType.ENABLED, 
-				user, 
-				startDate, 
-				stopDate, 
-				enabled);
-		
-	}
-	
-	/**
-	 * Helper method to get a temporarily overridden value
-	 * @param energyCompany - Energy company to get value for
-	 * @param type - Type of value to get
-	 * @return Value if currently overridden
-	 * @throws NoTemporaryOverrideException - if there is no temporarily overridden value
-	 */
-	private boolean getTemporaryOverrideValue(
-			LiteEnergyCompany energyCompany, 
-			OptOutTemporaryOverrideType type) throws NoTemporaryOverrideException {
 		
 		Date now = new Date();
 		
@@ -89,8 +89,8 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		
 		Boolean value;
 		try {
-			value = simpleJdbcTemplate.queryForObject(sql.toString(), new BooleanRowMapper(), 
-					type.toString(),
+			value = yukonJdbcTemplate.queryForObject(sql.toString(), new BooleanRowMapper(), 
+					OptOutTemporaryOverrideType.ENABLED.toString(),
 					now,
 					now,
 					energyCompany.getEnergyCompanyID());
@@ -102,6 +102,45 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		return value;
 	}
 	
+
+	@Override
+	@Transactional
+	public void setTemporaryOptOutCounts(LiteYukonUser user, Date startDate, Date stopDate, boolean counts) {
+		doSetTemporaryOptOutCounts(user, startDate, stopDate, counts, null);
+	}
+	
+	@Override
+	@Transactional
+	public void setTemporaryOptOutCountsForProgramId(LiteYukonUser user, Date startDate, Date stopDate, boolean counts, int webpublishingProgramId) {
+
+		doSetTemporaryOptOutCounts(user, startDate, stopDate, counts, webpublishingProgramId);
+	}
+	
+	private void doSetTemporaryOptOutCounts(LiteYukonUser user, Date startDate, Date stopDate, boolean counts, Integer webpublishingProgramId) {
+		
+		this.setTemporaryOverrideValue(
+				OptOutTemporaryOverrideType.COUNTS, 
+				user, 
+				startDate, 
+				stopDate, 
+				counts,
+				webpublishingProgramId);
+	}
+
+	@Override
+	@Transactional
+	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, boolean enabled) {
+
+		this.setTemporaryOverrideValue(
+				OptOutTemporaryOverrideType.ENABLED, 
+				user, 
+				startDate, 
+				stopDate, 
+				enabled,
+				null);
+		
+	}
+	
 	/**
 	 * Helper method to temporarily override an opt out value
 	 * @param type - Type of value to override
@@ -111,7 +150,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	 * @param value - Value to set as override value
 	 */
 	private void setTemporaryOverrideValue(OptOutTemporaryOverrideType type,
-			LiteYukonUser user, Date startDate, Date stopDate, Object value) {
+			LiteYukonUser user, Date startDate, Date stopDate, Object value, Integer webpublishingProgramId) {
 
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		int energyCompanyID = energyCompany.getEnergyCompanyID();
@@ -121,43 +160,25 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql = new SqlStatementBuilder();
 		sql.append("UPDATE OptOutTemporaryOverride");
-		sql.append("SET	StopDate = ?");
-		sql.append("WHERE StartDate <= ?");
-		sql.append("		AND StopDate > ?");
-		sql.append("	AND OptOutType = ?");
-		sql.append("	AND EnergyCompanyId = ?");
+		sql.append("SET	StopDate").eq(startDate);
+		sql.append("WHERE StartDate").lte(startDate);
+		sql.append("AND StopDate").gt(startDate);
+		sql.append("AND OptOutType").eq(typeString);
+		sql.append("AND EnergyCompanyId").eq(energyCompanyID);
+		if (webpublishingProgramId != null) {
+			sql.append("AND ProgramId").eq(webpublishingProgramId);
+		}
+		yukonJdbcTemplate.update(sql);
 		
-		simpleJdbcTemplate.update(sql.toString(),
-				startDate,
-				startDate,
-				startDate,
-				typeString,
-				energyCompanyID);
-		
-		
+		// insert new override setting
 		sql = new SqlStatementBuilder();
-		sql.append("INSERT INTO OptOutTemporaryOverride");
-		sql.append("	(OptOutTemporaryOverrideId, UserId, EnergyCompanyId, OptOutType, StartDate");
-		sql.append("	, StopDate, OptOutValue)");
-		sql.append("VALUES (?,?,?,?,?,?,?)");
-
 		int id = nextValueHelper.getNextValue("OptOutTemporaryOverride");
-		simpleJdbcTemplate.update(sql.toString(),
-				id,
-				user.getUserID(),
-				energyCompanyID,
-				typeString,
-				startDate,
-				stopDate,
-				value);
-		
+		sql.append("INSERT INTO OptOutTemporaryOverride");
+		sql.append("(OptOutTemporaryOverrideId, UserId, EnergyCompanyId, OptOutType, StartDate, StopDate, OptOutValue, ProgramId)");
+		sql.append("VALUES (?,?,?,?,?,?,?,?)");
+		yukonJdbcTemplate.update(sql.toString(), id, user.getUserID(), energyCompanyID, typeString, startDate, stopDate, value, webpublishingProgramId);
 	}
 	
-	
-	@Autowired
-	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
-	}
 	
 	@Autowired
 	public void setNextValueHelper(NextValueHelper nextValueHelper) {
@@ -167,6 +188,11 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	@Autowired
 	public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
 		this.energyCompanyDao = energyCompanyDao;
+	}
+	
+	@Autowired
+	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
 	
 }

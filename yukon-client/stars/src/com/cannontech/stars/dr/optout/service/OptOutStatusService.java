@@ -1,6 +1,9 @@
 package com.cannontech.stars.dr.optout.service;
 
+import java.util.List;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
 
 /**
  * Service used to determine the current state of opt out availability
@@ -15,10 +18,19 @@ public interface OptOutStatusService {
 	public boolean getOptOutEnabled(LiteYukonUser user);
 	
 	/**
-	 * Method to determine if Opt Outs currently count against the limit
-	 * @param user - User to get value for
-	 * @return True if opt outs count, False if don't count
+	 * Gets opt out counts setting for the "null programId" case.
+	 * Either from the OptOutTemporaryOverride record that is currently in effect where programId == null (and OptOutType==COUNTS), otherwise
+	 * from the role property value if a OptOutTemporaryOverride does not exist.
+	 * @param user
+	 * @return
 	 */
-	public boolean getOptOutCounts(LiteYukonUser user);
+	public OptOutCountsDto getDefaultOptOutCounts(LiteYukonUser user);
+	
+	/**
+	 * Return all OptOutTemporaryOverride settings where programId != null (and OptOutType==COUNTS).
+	 * @param user
+	 * @return
+	 */
+	public List<OptOutCountsDto> getProgramSpecificOptOutCounts(LiteYukonUser user);
 	
 }
