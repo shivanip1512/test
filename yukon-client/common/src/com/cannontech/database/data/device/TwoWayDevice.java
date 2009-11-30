@@ -14,8 +14,7 @@ public class TwoWayDevice extends DeviceBase
 {
 	private DeviceWindow deviceWindow = null;
 
-	//contains <String:ScanType, DeviceScanRate>
-	private HashMap deviceScanRateMap = null;
+	private HashMap<String, DeviceScanRate> deviceScanRateMap = null;
 
 /**
  * TwoWayDevice constructor comment.
@@ -29,14 +28,9 @@ public TwoWayDevice() {
 public void add() throws java.sql.SQLException {
 	super.add();
 
-/*	if( getDeviceStatisticsVector() != null )
-		for( int i = 0; i < getDeviceStatisticsVector().size(); i++ )
-			((DBPersistent) getDeviceStatisticsVector().elementAt(i)).add();
-*/
-
-	Iterator it = getDeviceScanRateMap().values().iterator();
+	Iterator<DeviceScanRate> it = getDeviceScanRateMap().values().iterator();
 	while( it.hasNext() )
-		((DBPersistent)it.next()).add();
+		it.next().add();
 
 	getDeviceWindow().add();
 }
@@ -57,7 +51,6 @@ public void delete() throws java.sql.SQLException {
 
 	if (!isPartialDelete)
 	{
-		//DeviceStatistics.deleteDeviceStatistics(getDevice().getDeviceID());
 		DeviceScanRate.deleteDeviceScanRates( getDevice().getDeviceID(), getDbConnection() );
 
 		getDeviceWindow().delete();
@@ -79,9 +72,9 @@ public void deletePartial() throws java.sql.SQLException {
  * This method was created in VisualAge.
  * @return java.util.Vector
  */
-public HashMap getDeviceScanRateMap() {
+public HashMap<String, DeviceScanRate> getDeviceScanRateMap() {
 	if( deviceScanRateMap == null )
-		deviceScanRateMap = new HashMap();
+		deviceScanRateMap = new HashMap<String, DeviceScanRate>();
 	return deviceScanRateMap;
 }
 
@@ -114,7 +107,7 @@ public void retrieve() throws java.sql.SQLException{
 		for( int i = 0; i < rArray.length; i++ )
 			getDeviceScanRateMap().put( rArray[i].getScanType(), rArray[i] );
 
-		Iterator it = getDeviceScanRateMap().values().iterator();
+		Iterator<DeviceScanRate> it = getDeviceScanRateMap().values().iterator();
 		while( it.hasNext() ) {
 			DBPersistent o = (DBPersistent)it.next();
 			o.setDbConnection( getDbConnection() );
@@ -141,9 +134,9 @@ public void setDbConnection(java.sql.Connection conn)
 	getDeviceWindow().setDbConnection(conn);
 
 
-	Iterator it = getDeviceScanRateMap().values().iterator();
+	Iterator<DeviceScanRate> it = getDeviceScanRateMap().values().iterator();
 	while( it.hasNext() )
-		((DBPersistent)it.next()).setDbConnection(conn);
+		it.next().setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -155,17 +148,17 @@ public void setDeviceID(Integer deviceID)
 	
 	getDeviceWindow().setDeviceID(deviceID);
 
-	Iterator it = getDeviceScanRateMap().values().iterator();
+	Iterator<DeviceScanRate> it = getDeviceScanRateMap().values().iterator();
 	while( it.hasNext() )
-		((DeviceScanRate)it.next()).setDeviceID(deviceID);
+		it.next().setDeviceID(deviceID);
 }
 /**
  * Ensure this guy is never null
  */
-public void setDeviceScanRateMap(HashMap newValue) {
+public void setDeviceScanRateMap(HashMap<String, DeviceScanRate> newValue) {
 	
 	if( newValue == null )
-		newValue = new HashMap();
+		newValue = new HashMap<String, DeviceScanRate>();
 
 	this.deviceScanRateMap = newValue;
 }
@@ -188,8 +181,8 @@ public void update() throws java.sql.SQLException
 
 	DeviceScanRate.deleteDeviceScanRates( getDevice().getDeviceID(), getDbConnection() );
 
-	Iterator it = getDeviceScanRateMap().values().iterator();
+	Iterator<DeviceScanRate> it = getDeviceScanRateMap().values().iterator();
 	while( it.hasNext() )
-		((DBPersistent)it.next()).add();
+		it.next().add();
 }
 }

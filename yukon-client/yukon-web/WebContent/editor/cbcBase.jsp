@@ -18,6 +18,7 @@
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 <cti:includeScript link="/JavaScript/itemPicker.js"/>
 <cti:includeScript link="/JavaScript/pointPicker.js"/>
+<cti:includeScript link="/JavaScript/paoPicker.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
@@ -28,19 +29,18 @@
 <cti:includeCss link="/editor/css/greybox/greybox.css"/>
 <cti:includeCss link="/editor/css/base.css"/>
 <%
-    //****
-    // Entry point file for all operations that edit a PAObject
-    //****
+    /* Entry point file for all operations that edit a PAObject */
     int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
     String copySuccess = ParamUtil.getString(request, "copySuccess", null);
     CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
     if( id != PAOGroups.INVALID ) {
-		//This is needed because this was handled in the CBCSerlvet before entering faces pages.
-		//Since the servlet bypass, this static method will need to be called entering any faces page.
+		/* This is needed because this was handled in the CBCSerlvet before entering faces pages. */
+		/* Since the servlet bypass, this static method will need to be called entering any faces page. */
         CapControlForm.setupFacesNavigation();
 
         capControlForm.initItem( id, type );
+        
         if(!StringUtils.isBlank(copySuccess)){
             FacesMessage message = new FacesMessage();
             message.setDetail(CBCExceptionMessages.DB_UPDATE_SUCCESS);
@@ -57,14 +57,14 @@
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >
         <f:facet name="body">
             <h:form id="editorForm">
-            <f:verbatim><br/></f:verbatim>
+            <x:htmlTag value="br"/>
             <x:outputText styleClass="editorHeader" value="#{capControlForm.editorTitle} Editor:" /> 
             <x:outputText rendered="#{!capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.paoName}"/>
             <x:outputText rendered="#{capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].strategyName}"/>
             <f:verbatim><br/></f:verbatim>
             <x:messages id="messageList" showSummary="true" showDetail="true" styleClass="smallResults" errorClass="errorResults" layout="table"/>
             <x:panelGroup id="hdr_buttons" forceId="true">
-                <f:verbatim><br/></f:verbatim>
+                <x:htmlTag value="br"/>
                 <x:commandButton id="hdr_submit_button_1" value="Submit" action="#{capControlForm.update}" styleClass="stdButton" title="Writes this item to the database"  rendered = "#{!capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                 <x:commandButton id="hdr_submit_button_2" value="Submit" action="#{capBankEditor.update}" styleClass="stdButton" title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                 <x:commandButton id="hdr_reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" rendered = "#{capControlForm.editingAuthorized}"/>
@@ -78,7 +78,7 @@
                     </x:panelGroup>
                 </f:facet>
                 <x:panelTabbedPane id="tabPane" activeTabStyleClass="activeTab" style="width: 100%; vertical-align: top;" selectedIndex="#{capControlForm.selectedPanelIndex}" serverSideTabSwitch="#{false}">
-                
+                    
                     <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}">
                         <jsp:include page="/WEB-INF/pages/capcontrol/generalEditor.jsp"/>
                     </x:panelTab>
@@ -122,7 +122,7 @@
                     <x:panelTab id="tabController" label="Setup" rendered="#{capControlForm.visibleTabs['CBCController']}">
                         <jsp:include page="/WEB-INF/pages/capcontrol/capBankControllerSetup.jsp"/>
                     </x:panelTab>
-
+                    
                     <x:panelTab id="tabSchedule" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}">
                         <jsp:include page="/WEB-INF/pages/capcontrol/cbcSchedule.jsp"/>
                     </x:panelTab>
@@ -149,6 +149,10 @@
 	
 	                <x:panelTab id="tabStrategyEditor" label="Control Strategy Editor" rendered="#{capControlForm.visibleTabs['CBCStrategy']}">
 						<jsp:include page="/WEB-INF/pages/capcontrol/strategyEditor.jsp"/>
+                    </x:panelTab>
+                    
+                    <x:panelTab id="tabLTC" label="Setup" rendered="#{capControlForm.visibleTabs['LTC']}">
+                        <jsp:include page="/WEB-INF/pages/capcontrol/ltcSetup.jsp"/>
                     </x:panelTab>
                 </x:panelTabbedPane>
 

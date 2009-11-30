@@ -1,7 +1,5 @@
 package com.cannontech.database.data.pao;
 
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.message.macs.message.Schedule;
 
 //import com.cannontech.database.data.customer.*;
@@ -344,6 +342,8 @@ public final static int getDeviceType(String typeString)
         return NEUTRAL_MONITOR;
     else if ( isStringDevice(compareString, STRING_FAULT_CI[0] ))
         return FAULT_CI;  
+    else if ( isStringDevice(compareString, STRING_LTC[0]))
+        return LOAD_TAP_CHANGER;
    	else
 	  return INVALID;
 }
@@ -649,6 +649,8 @@ public final static String getPAOTypeString(int type)
             return STRING_FAULT_CI[0];
         case NEUTRAL_MONITOR:
             return STRING_NEUTRAL_MONITOR[0];
+        case LOAD_TAP_CHANGER:
+            return STRING_LTC[0];
  	  	default:
 		  	return STRING_INVALID;
 	}

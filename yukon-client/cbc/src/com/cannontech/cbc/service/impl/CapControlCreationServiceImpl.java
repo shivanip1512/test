@@ -18,9 +18,11 @@ import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.LtcDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.core.dao.StrategyDao;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
@@ -41,9 +43,10 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	private DBPersistentDao dbPersistantDao;
     private PaoScheduleDao paoScheduleDao;
     private StrategyDao strategyDao;
+    private LtcDao ltcDao;
 	
 	@Override
-	public int create(int type, String name, boolean disabled, int portId) {
+	public int create(int type, String name, boolean disabled, int portId) throws TransactionException {
         int id = -1;
         switch(type) {
 
@@ -98,11 +101,13 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     
             case CapControlTypes.CAP_CONTROL_SCHEDULE :
                 id = createPAOSchedule(name, disabled);
-                
                 break;
                 
             case CapControlTypes.CAP_CONTROL_STRATEGY :
                 id = createStrategy(name);
+                break;
+            case PAOGroups.LOAD_TAP_CHANGER :
+                id = createLTC(name, disabled, portId);
                 break;
                 
             default : // must be a cbc
@@ -125,7 +130,16 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         return id;
     }
 	
-	@Override
+	private int createLTC(String name, boolean disable, int portId) throws TransactionException {
+	    int newLtcId = ltcDao.add(name, disable, portId);
+
+        String type = PaoType.LOAD_TAP_CHANGER.getDbString();
+        sendDeviceDBChangeMessage(newLtcId, DBChangeMsg.CHANGE_TYPE_ADD, type);
+        
+        return newLtcId;
+    }
+
+    @Override
 	public boolean createArea(Area area) {
 		boolean success = areaDao.add(area);
 		
@@ -440,4 +454,9 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     public void setStrategyDao(StrategyDao strategyDao) {
         this.strategyDao = strategyDao;
     }
+	
+	@Autowired
+	public void setLtcDao(LtcDao ltcDao){
+	    this.ltcDao = ltcDao;
+	}
 }

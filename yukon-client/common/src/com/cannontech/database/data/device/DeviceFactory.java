@@ -389,7 +389,12 @@ public final static DeviceBase createDevice(int deviceType) {
         case PAOGroups.FAULT_CI:
             returnDevice = new FaultCI();
             returnDevice.setDeviceType(  PAOGroups.STRING_FAULT_CI[0] );
-            break;     
+            break;
+            
+        case PAOGroups.LOAD_TAP_CHANGER:
+            returnDevice = new LoadTapChanger();
+            returnDevice.setDeviceType(  PAOGroups.STRING_LTC[0] );
+            break;
             
 		// a system reserved device place holder (not to be available to users)	
 		case PAOGroups.SYSTEM:

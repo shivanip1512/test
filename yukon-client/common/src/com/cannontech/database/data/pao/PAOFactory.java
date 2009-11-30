@@ -67,13 +67,7 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 	}
 	else
 		returnObject = null;
-
 		
-	//our PAO fields are set inside each factory
-	//returnObject.setPAOCategory( litePAObject.getCategory() );
-	//returnObject.setPAOClass( litePAObject.getPaoClass() );
-	//returnObject.setPAOType( litePAObject.getType() );
-	
 	return returnObject;
 }
 

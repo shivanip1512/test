@@ -10,17 +10,15 @@
 	<cti:standardPage title="CapControl Wizard" module="capcontrol">
         <cti:includeCss link="/editor/css/base.css"/>
 		<%
-		    //****
-		    // Entry point file for all operations that create a CBC PAObject
-		    //****
+		    /* Entry point file for all operations that create a CBC PAObject */
 		
 		    int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
 		
 		    if( type != PAOGroups.INVALID ) {
 		        CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
 		        
-				//This is needed because this was handled in the CBCSerlvet before entering faces pages.
-				//Since the servlet bypass, this static method will need to be called entering any faces page.
+				/* This is needed because this was handled in the CBCSerlvet before entering faces pages. */
+				/* Since the servlet bypass, this static method will need to be called entering any faces page. */
 		        CapControlForm.setupFacesNavigation();
 		        
 		        capControlForm.initWizard( type );
@@ -126,6 +124,16 @@
 							</x:htmlTag>
 
 						</x:panelGroup>
+                        
+                        <x:panelGroup rendered="#{capControlForm.visibleTabs['LTC']}">
+                            <x:htmlTag value="br"/>
+                            <x:outputLabel for="LTC_Comm_Channel"
+                                        value="Comm. Channel: "
+                                        title="The communication channel this LTC will use." />
+                                    <x:selectOneMenu id="LTC_Comm_Channel" value="#{capControlForm.wizData.portID}">
+                                        <f:selectItems value="#{selLists.commChannels}" />
+                                    </x:selectOneMenu>
+                        </x:panelGroup>
 
 						<f:facet name="footer">
 							<x:panelGroup>

@@ -121,6 +121,7 @@
 <entry key="yukon.web.menu.config.capcontrol.create.cbc">CBC</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.schedule">Schedule</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.strategy">Strategy</entry>
+<entry key="yukon.web.menu.config.capcontrol.create.loadtapchanger">LTC</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis">Analysis</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis.todaykvarperwatt">Today kVAR/Watt</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis.todaypf">Today PF</entry>

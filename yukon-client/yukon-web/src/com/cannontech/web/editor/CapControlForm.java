@@ -19,6 +19,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,12 +41,13 @@ import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.HolidayScheduleDao;
+import com.cannontech.core.dao.LtcDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -64,6 +66,7 @@ import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.capcontrol.LoadTapChanger;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -163,6 +166,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
     private static RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao",RolePropertyDao.class);
+    
+    Logger log = YukonLogManager.getLogger(CapControlForm.class);
     
     /**
 	 * default constructor
@@ -443,6 +448,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
 	}
 	
+	public void ltcPaoClick(ActionEvent ae) {
+	    String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("paoId");
+        if (val == null) {
+            return;
+        }
+        CapControlSubstationBus bus = ((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus();
+	    bus.setLtcId(Integer.valueOf(val));
+	}
+	
 	public static void setupFacesNavigation() {
 		/* Start hack */
 		
@@ -511,28 +525,40 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         scheduleId = -1000;
 		// decide what editor type should be used
 		if (getDbPersistent() instanceof YukonPAObject) {
-			itemID = ((YukonPAObject) getDbPersistent()).getPAObjectID().intValue();
-           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x || getDbPersistent() instanceof CapBankControllerDNP) {
+			YukonPAObject pao = (YukonPAObject) getDbPersistent();
+		    itemID = pao.getPAObjectID().intValue();
+           
+			if (getDbPersistent() instanceof CapBankController 
+                   || getDbPersistent() instanceof CapBankController702x 
+                   || getDbPersistent() instanceof CapBankControllerDNP) {
                setEditingController( true );
-           }
-           else {
+           } else {
                setEditingController(false);
            }
+           
            if(getDbPersistent() instanceof CapBank) {
                CapBankEditorForm editor = (CapBankEditorForm) JSFParamUtil.getJSFVar("capBankEditor");
                editor.resetForm();
                editor.init(getPAOBase());
            }
-           initDataModel(getDbPersistent());
-           initPanels(PAOGroups.getPAOType(((YukonPAObject) getDbPersistent()).getPAOCategory(), ((YukonPAObject) getDbPersistent()).getPAOType()));
+           
+           initDataModel(pao);
+           initPanels(PAOGroups.getPAOType(pao.getPAOCategory(), pao.getPAOType()));
+           
         } else if (getDbPersistent() instanceof PointBase) {
-			itemID = ((PointBase) getDbPersistent()).getPoint().getPointID().intValue();
-			initPanels(PointTypes.getType(((PointBase) getDbPersistent()).getPoint().getPointType()));
+            
+            PointBase point = (PointBase) getDbPersistent();
+			itemID = point.getPoint().getPointID().intValue();
+			initPanels(PointTypes.getType(point.getPoint().getPointType()));
+			
 		} else if (getDbPersistent() instanceof PAOSchedule) {
-			itemID = ((PAOSchedule) getDbPersistent()).getScheduleID().intValue();
+		    
+		    PAOSchedule schedule = (PAOSchedule) getDbPersistent();
+			itemID = schedule.getScheduleID().intValue();
             initPanels(CapControlTypes.CAP_CONTROL_SCHEDULE);
-		}
-        else if (getDbPersistent() instanceof CapControlStrategy) {
+            
+		} else if (getDbPersistent() instanceof CapControlStrategy) {
+		    
             CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
             itemID = strat.getStrategyID().intValue();
             editingCBCStrategy = true;
@@ -543,19 +569,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 Connection connection = CBCDBUtil.getConnection();
                 try {
                     tod.retrieve(connection);
-                }
-                catch( SQLException sql ) {
-                    CTILogger.error("Unable to retrieve CCStrategyTimeofDay Object", sql );
+                } catch( SQLException sql ) {
+                    log.error("Unable to retrieve CCStrategyTimeofDay Object", sql );
                 }
                 finally {
                     getDbPersistent().setDbConnection( null );
                     try {
-                    if( connection != null ) connection.close();
-                    } catch( java.sql.SQLException e2 ) { }         
+                        if( connection != null ) connection.close();
+                    } catch( SQLException e2 ) { }         
                 }
             }
         }
-		//restore the value of the dual bus from DB
+		
+		/* Restore the value of the dual bus from DB */
 		resetDualBusEnabled();
         if (!(getDbPersistent() instanceof CapControlStrategy)) {
             editingCBCStrategy = false;
@@ -634,6 +660,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		getVisibleTabs().put("CBCSchedule", Boolean.FALSE);
         getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
         getVisibleTabs().put("CBCStrategy", Boolean.FALSE);
+        getVisibleTabs().put("LTC", Boolean.FALSE);
 
         switch (paoType) {
 
@@ -713,6 +740,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
                 getVisibleTabs().put("CBCStrategy", Boolean.TRUE);
                 break;
+            
+            case PAOGroups.LOAD_TAP_CHANGER:
+                setEditorTitle("Load Tap Changer");
+                setPaoDescLabel("Description");
+                getVisibleTabs().put("LTC", Boolean.TRUE);
+                break;
     
     		case PointTypes.ANALOG_POINT:
     			break;
@@ -728,6 +761,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public DBPersistent getPAOBase() {
         return getDbPersistent();
      }
+	
+	public LoadTapChanger getLtcBase(){
+	    return (LoadTapChanger) getDbPersistent();
+	}
 
     public void clearfaces() {
         FacesMessage facesMessage = new FacesMessage();
@@ -783,7 +820,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 }
                 catch (FormWarningException e) {
                     String errorString = e.getMessage();
-                    CTILogger.error(errorString, e);
+                    log.error(errorString, e);
                     facesMsg.setDetail(errorString);
                     facesMsg.setSeverity(FacesMessage.SEVERITY_WARN);
                 }
@@ -1002,25 +1039,26 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return "";
 	}
 
-	@SuppressWarnings("unchecked")
     public void showScanRate(ValueChangeEvent ev) {
 		if (ev == null || ev.getNewValue() == null) {
 			return;
         }
 		Boolean isChecked = (Boolean) ev.getNewValue();
-		// find out if this device is TwoWay (used for 2 way CBCs)
+		TwoWayDevice twoWayDev;
         if (isControllerCBC() && getCBControllerEditor().isTwoWay()) {
-			TwoWayDevice twoWayDev = (TwoWayDevice) getCBControllerEditor().getPaoCBC();
-			String type = ev.getComponent().getId().equalsIgnoreCase("scanIntegrityChk") ? DeviceScanRate.TYPE_INTEGRITY
-				: (ev.getComponent().getId().equalsIgnoreCase("scanExceptionChk") ? DeviceScanRate.TYPE_EXCEPTION : "");
-			if (isChecked.booleanValue()) {
-				twoWayDev.getDeviceScanRateMap().put(type, new DeviceScanRate(getCBControllerEditor().getPaoCBC().getPAObjectID(), type));
-			} else {
-				twoWayDev.getDeviceScanRateMap().remove(type);
-			}
+            twoWayDev = (TwoWayDevice) getCBControllerEditor().getPaoCBC();
+        } else {
+            twoWayDev = (LoadTapChanger) getLtcBase();
+        }
+		String type = ev.getComponent().getId().equalsIgnoreCase("scanIntegrityChk") ? DeviceScanRate.TYPE_INTEGRITY
+			: (ev.getComponent().getId().equalsIgnoreCase("scanExceptionChk") ? DeviceScanRate.TYPE_EXCEPTION : "");
+		if (isChecked.booleanValue()) {
+			twoWayDev.getDeviceScanRateMap().put(type, new DeviceScanRate(twoWayDev.getPAObjectID(), type));
+		} else {
+			twoWayDev.getDeviceScanRateMap().remove(type);
 		}
 	}
-	
+    
 	public PointTreeForm getPointTreeForm() {
         if (pointTreeForm == null) {
             int paoId = itemID;         
@@ -1957,7 +1995,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         try {
             context.getExternalContext().redirect(location);
         } catch (IOException e) {
-            CTILogger.error(e);
+            log.error(e);
         }
         FacesContext.getCurrentInstance().responseComplete();
     }
@@ -1977,6 +2015,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             return true;
         }
         return false;
+    }
+    
+    public String getLtcName(){
+        String name = "(none)";
+        if(getDbPersistent() instanceof CapControlSubBus) {
+            CapControlSubstationBus bus = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus();
+            LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
+            name =ltcDao.getLtcName(bus.getSubstationBusID());
+        }
+        return name;
     }
     
     public void resetTabIndex() {

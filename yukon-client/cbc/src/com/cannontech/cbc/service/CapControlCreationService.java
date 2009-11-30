@@ -7,6 +7,7 @@ import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
+import com.cannontech.database.TransactionException;
 
 public interface CapControlCreationService {
 
@@ -72,7 +73,7 @@ public interface CapControlCreationService {
 	public boolean assignController(CapbankController controller, String capBankName);
 	public boolean unassignController(int controllerId);
 	
-	public int create(int type, String name, boolean disabled, int portId);
+	public int create(int type, String name, boolean disabled, int portId) throws TransactionException;
     public boolean createSpecialArea(SpecialArea specialArea);
     public int createPAOSchedule(String name, boolean disabled);
     public int createStrategy(String name);

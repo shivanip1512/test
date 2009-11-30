@@ -472,6 +472,9 @@
           <option id="strategy">
             <link>/editor/cbcWizBase.jsf?type=4006</link>
           </option>
+          <option id="loadtapchanger">
+            <link>/editor/cbcWizBase.jsf?type=1110</link>
+          </option>
         </links>
       </option>
       <option id="analysis">

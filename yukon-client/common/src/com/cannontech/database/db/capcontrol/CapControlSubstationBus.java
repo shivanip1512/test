@@ -5,10 +5,12 @@ import org.springframework.jdbc.core.JdbcOperations;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.core.dao.LtcDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.point.Point;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -28,6 +30,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     private Integer phaseC = new Integer(CtiUtilities.NONE_ZERO_ID);
     private String controlFlag = "N";
     private Integer voltReductionPointId = 0;
+    private Integer ltcId = 0;
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID", 
 		"CurrentVoltLoadPointID", "AltSubId", "SwitchPointId",
@@ -63,6 +66,12 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             getUsePhaseData(), getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId()};
     
     	add( TABLE_NAME, addValues );
+    	LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
+    	if(getLtcId() > 0 ){
+    	    ltcDao.assign(getSubstationBusID(), getLtcId());
+    	} else {
+    	    ltcDao.unassignBus(getSubstationBusID());
+    	}
     }
     
     /**
@@ -71,6 +80,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     public void delete() throws java.sql.SQLException {
     	handleAltSubIdOnDelete (getSubstationBusID());
     	handleSubStationAssignmentDelete(getSubstationBusID());
+    	handleLtcOnDelete(getSubstationBusID());
     	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getSubstationBusID() );	
     }
     
@@ -131,6 +141,9 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             setPhaseC((Integer) results[10]);
             setControlFlag((String) results[11]);
             setVoltReductionPointId((Integer) results[12]);
+
+            LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
+            setLtcId(ltcDao.getLtcIdForSub(getSubstationBusID()));
     	}
     	else {
     		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -186,6 +199,12 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     	Object constraintValues[] = { getSubstationBusID()};
     
     	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+    	LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
+    	if(ltcId > 0) {
+    	    ltcDao.assign(substationBusID, ltcId);
+    	} else {
+    	    ltcDao.unassignBus(substationBusID);
+    	}
     }
     /**
      * @return
@@ -307,6 +326,11 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         yukonTemplate.update(query, new Integer[]{subBusDeletedId});
     }
+    
+    private void handleLtcOnDelete(Integer subBusDeletedId){
+        LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
+        ltcDao.unassignBus(subBusDeletedId);
+    }
 
     public Integer getPhaseB() {
         return phaseB;
@@ -406,4 +430,12 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 		}
 		return intVect.toArray();
 	}
+
+    public void setLtcId(Integer ltcId) {
+        this.ltcId = ltcId;
+    }
+
+    public Integer getLtcId() {
+        return ltcId;
+    }
 }

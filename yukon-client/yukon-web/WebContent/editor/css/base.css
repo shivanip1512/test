@@ -259,6 +259,15 @@ legend, .legendLikeLabel{
     padding-right: 5px;
 }
 
+.padCheckBoxLabel {
+    padding-left: 5px;
+}
+
+.nameValueLabel {
+	font-weight: bold;
+	padding-right: 5px;
+}
+
 .myFaces_panelTabbedPane_activeHeaderCell input {
     background-color: #ccc !important;
     padding: .3em .5em;

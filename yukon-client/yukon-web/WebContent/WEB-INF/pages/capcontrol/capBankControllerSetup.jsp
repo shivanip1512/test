@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
-<%
+<%/*TODO This probably isn't necessary!  */
     CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
     String itemid = JSFParamUtil.getJSFReqParam("itemid");
     String type = JSFParamUtil.getJSFReqParam("type");

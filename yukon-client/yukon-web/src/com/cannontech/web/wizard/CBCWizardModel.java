@@ -149,6 +149,10 @@ public class CBCWizardModel implements CapControlCreationModel{
 	public boolean isCreateNested() {
 		return createNested;
 	}
+	
+	public boolean isLTC(){
+	    return getWizPaoType() == PAOGroups.LOAD_TAP_CHANGER;
+	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.web.wizard.CreateModel#setCreateNested(boolean)

@@ -10,7 +10,8 @@
         var sub_Var_PhaseB_PointPicker = new PointPicker('var_phase_b_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device','sub_Var_PhaseB_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
         var sub_Var_PhaseC_PointPicker = new PointPicker('var_phase_c_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device','sub_Var_PhaseC_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
 		var subWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice','subWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-		var subVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice','subVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);        
+		var subVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice','subVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+		var subLtcPaoPicker = new PaoPicker('ltc_pao','com.cannontech.common.search.criteria.LtcTypeCriteria','paoName:subLtcDevice','subLtcPaoPicker','',Prototype.emptyFunction);
     </script>
 </f:verbatim>
 
@@ -296,6 +297,33 @@
                         value="No Volt Point" actionListener="#{capControlForm.voltPtTeeClick}">
                         <f:param name="ptId" value="0"/>
                     </x:commandLink>
+                </x:htmlTag>
+                
+                <x:htmlTag value="br"/>
+                <x:htmlTag value="fieldset" styleClass="fieldSet">
+                    <x:htmlTag value="legend"><x:outputText value="Load Tap Changer"/></x:htmlTag>
+                    <x:div id="subLtcDiv" forceId="true">
+                        <x:inputHidden id="ltc_pao" forceId="true" 
+                            value="#{capControlForm.PAOBase.capControlSubstationBus.ltcId }" />      
+                        <x:outputLabel for="subLtcDevice" value="Selected LTC: " styleClass="medStaticLabel"/>
+                        <x:outputText id="subLtcDevice" forceId="true" value="#{capControlForm.ltcName}"/> 
+
+                        <x:htmlTag value="br"/> 
+                    
+                        <h:outputLink  value="javascript:subLtcPaoPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                            <h:outputText value="Select LTC..."/>
+                        </h:outputLink>
+                        
+                        <x:htmlTag value="br"/>
+                        <x:htmlTag value="br"/>  
+    
+                        <x:commandLink id="ltcPao_setNone" title="Do not use an LTC on this sub." 
+                            rendered="#{capControlForm.editingAuthorized}"
+                            styleClass="medStaticLabel"
+                            value="No LTC" actionListener="#{capControlForm.ltcPaoClick}">
+                            <f:param name="paoId" value="0"/>
+                        </x:commandLink>
+                    </x:div>
                 </x:htmlTag>
             </h:column>
         </x:panelGrid>

@@ -8,7 +8,8 @@
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 <%@ page import="com.cannontech.web.editor.CapBankEditorForm" %>
 <cti:url var="orphanURL" value="/spring/capcontrol/tier/cceditorpopup"/>
-<%
+
+<% /*TODO This probably isn't necessary!  */
 	CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
     CapBankEditorForm capBankEditorForm = (CapBankEditorForm)JSFParamUtil.getJSFVar("capBankEditor");
 	String itemid = JSFParamUtil.getJSFReqParam("itemid");
@@ -19,6 +20,7 @@
     	capBankEditorForm.init(capControlForm.getDbPersistent());
 	}
 %>
+
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
 	<f:verbatim>
 		<div id="pointSelectHelp"><jsp:include flush="true" page="include/pointSelectInc.jsp" /></div>

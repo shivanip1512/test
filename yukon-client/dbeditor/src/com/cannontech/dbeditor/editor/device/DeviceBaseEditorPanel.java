@@ -1733,252 +1733,332 @@ private javax.swing.JLabel getTypeTextField() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue(Object val) 
-{	
-	deviceBase = (com.cannontech.database.data.device.DeviceBase)val;
+    public Object getValue(Object val) {
+        deviceBase = (com.cannontech.database.data.device.DeviceBase) val;
 
-	deviceBase.setPAOName( getNameTextField().getText() );
-    int devType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
+        deviceBase.setPAOName(getNameTextField().getText());
+        int devType = PAOGroups.getDeviceType(deviceBase.getPAOType());
 
-    //just in case, set our String type data to the exact String type expected
-    // used to ensure the type string in the DB is the same as the code
-    deviceBase.setDeviceType( PAOGroups.getPAOTypeString(devType) );
+        // just in case, set our String type data to the exact String type
+        // expected
+        // used to ensure the type string in the DB is the same as the code
+        deviceBase.setDeviceType(PAOGroups.getPAOTypeString(devType));
 
-	if( getDisableFlagCheckBox().isSelected() )
-		deviceBase.setDisableFlag( new Character('Y') );
-	else
-		deviceBase.setDisableFlag( new Character('N') );
+        if (getDisableFlagCheckBox().isSelected())
+            deviceBase.setDisableFlag(new Character('Y'));
+        else
+            deviceBase.setDisableFlag(new Character('N'));
 
-	/*if( getControlInhibitCheckBox().isSelected() )
-		d.getDevice().setControlInhibit( new Character( 'Y' ) );
-	else
-		d.getDevice().setControlInhibit( new Character( 'N' ) );*/
-    LiteYukonPAObject port2 = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
-    
-    PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
-    propertyDao.removeAll(deviceBase.getPAObjectID());
-    
-    if (port2 != null) {
-        int porttype = port2.getType();
-        if (PortTypes.TCPPORT == porttype && PAOGroups.isTcpPortEligible(deviceType))
-        {      
-            int id = deviceBase.getPAObjectID();
-            PaoIdentifier identifier = new PaoIdentifier(id,PaoType.getForId(deviceType));
-            
-            propertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpIpAddress,getTcpIpAddressTextField().getText()));
-            propertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpPort,getTcpPortTextField().getText()));
+        /*
+         * if( getControlInhibitCheckBox().isSelected() )
+         * d.getDevice().setControlInhibit( new Character( 'Y' ) );
+         * else
+         * d.getDevice().setControlInhibit( new Character( 'N' ) );
+         */
+        LiteYukonPAObject port2 = ((LiteYukonPAObject) getPortComboBox().getSelectedItem());
+
+        PaoPropertyDao propertyDao = YukonSpringHook.getBean(
+                                                             "paoPropertyDao",
+                                                             PaoPropertyDao.class);
+        propertyDao.removeAll(deviceBase.getPAObjectID());
+
+        if (port2 != null) {
+            int porttype = port2.getType();
+            if (PortTypes.TCPPORT == porttype
+                && PAOGroups.isTcpPortEligible(deviceType)) {
+                int id = deviceBase.getPAObjectID();
+                PaoIdentifier identifier = new PaoIdentifier(
+                                                             id,
+                                                             PaoType.getForId(deviceType));
+
+                propertyDao.add(new PaoProperty(
+                                                identifier,
+                                                PaoPropertyName.TcpIpAddress,
+                                                getTcpIpAddressTextField().getText()));
+                propertyDao.add(new PaoProperty(identifier,
+                                                PaoPropertyName.TcpPort,
+                                                getTcpPortTextField().getText()));
+            }
         }
-    }
-	//This is a little bit ugly
-	//The address could be coming from three distinct
-	//types of devices - yet all devices have an address
-	//eeck.
-	if( getPhysicalAddressTextField().isVisible() ) {
-		try {
-			Integer address = new Integer( getPhysicalAddressTextField().getText() );
+        // This is a little bit ugly
+        // The address could be coming from three distinct
+        // types of devices - yet all devices have an address
+        // eeck.
+        if (getPhysicalAddressTextField().isVisible()) {
+            try {
+                Integer address = new Integer(
+                                              getPhysicalAddressTextField().getText());
 
-			if( val instanceof CarrierBase ) {
-				CarrierBase carrierBase = (CarrierBase)val;
-				if( devType == DeviceTypes.REPEATER ) { //val instanceof Repeater900
-					carrierBase.getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
-				} else if( devType == DeviceTypes.REPEATER_921 ) {//val instanceof Repeater921
-					carrierBase.getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + Repeater921.ADDRESS_OFFSET) );
+                if (val instanceof CarrierBase) {
+                    CarrierBase carrierBase = (CarrierBase) val;
+                    if (devType == DeviceTypes.REPEATER) { // val instanceof
+                                                           // Repeater900
+                        carrierBase.getDeviceCarrierSettings()
+                            .setAddress(
+                                        new Integer(
+                                                    address.intValue()
+                                                            + Repeater900.ADDRESS_OFFSET));
+                    } else if (devType == DeviceTypes.REPEATER_921) {// val
+                                                                     // instanceof
+                                                                     // Repeater921
+                        carrierBase.getDeviceCarrierSettings()
+                            .setAddress(
+                                        new Integer(
+                                                    address.intValue()
+                                                            + Repeater921.ADDRESS_OFFSET));
+                    } else {
+                        carrierBase.getDeviceCarrierSettings()
+                            .setAddress(address);
+                    }
+                } else if (val instanceof IDLCBase) {
+                    IDLCBase idlcBase = (IDLCBase) val;
+                    idlcBase.getDeviceIDLCRemote().setAddress(address);
+                }
+            } catch (NumberFormatException n) {
+                CTILogger.error(n.getMessage(), n);
+            }
+        }
+
+        if (val instanceof GridAdvisorBase) {
+            GridAdvisorBase gridAdvisorBase = (GridAdvisorBase) val;
+            LiteYukonPAObject litePort = null;
+
+            litePort = (LiteYukonPAObject) getPortComboBox().getSelectedItem();
+            // get new port from combo box and set it.
+            gridAdvisorBase.getDeviceDirectCommSettings()
+                .setPortID(litePort.getLiteID());
+            try {
+                gridAdvisorBase.getDeviceAddress()
+                    .setMasterAddress(
+                                      new Integer(
+                                                  getPhysicalAddressTextField().getText()));
+            } catch (NumberFormatException e) {
+                gridAdvisorBase.getDeviceAddress()
+                    .setMasterAddress(new Integer(0));
+            }
+        }
+
+        if (val instanceof RemoteBase) {
+            RemoteBase remoteBase = (RemoteBase) val;
+            DeviceDirectCommSettings dDirect = remoteBase.getDeviceDirectCommSettings();
+
+            Integer portID = null;
+            Integer postCommWait = null;
+
+            LiteYukonPAObject port = ((LiteYukonPAObject) getPortComboBox().getSelectedItem());
+
+            portID = new Integer(port.getYukonID());
+            dDirect.setPortID(portID);
+
+            Object postCommWaitSpinVal = getPostCommWaitSpinner().getValue();
+            if (postCommWaitSpinVal instanceof Long) {
+                postCommWait = new Integer(
+                                           ((Long) postCommWaitSpinVal).intValue());
+            } else if (postCommWaitSpinVal instanceof Integer) {
+                postCommWait = new Integer(
+                                           ((Integer) postCommWaitSpinVal).intValue());
+            }
+
+            if (val instanceof IDLCBase) {
+                IDLCBase idlcBase = (IDLCBase) val;
+                idlcBase.getDeviceIDLCRemote().setPostCommWait(postCommWait);
+                idlcBase.getDeviceIDLCRemote()
+                    .setCcuAmpUseType(
+                                      getJComboBoxAmpUseType().getSelectedItem()
+                                          .toString());
+            }
+
+            if (PAOGroups.isDialupPort(port.getType())) {
+                DeviceDialupSettings dDialup = remoteBase.getDeviceDialupSettings();
+
+                getAdvancedPanel().getValue(dDialup);
+
+                dDialup.setPhoneNumber(getPhoneNumberTextField().getText()
+                    .trim());
+                if (val instanceof PagingTapTerminal) {
+                    dDialup.setLineSettings("7E1");
                 } else {
-                	carrierBase.getDeviceCarrierSettings().setAddress( address );
-				}
-			} else if( val instanceof IDLCBase ) {
-				IDLCBase idlcBase = (IDLCBase)val;
-				idlcBase.getDeviceIDLCRemote().setAddress(address);
-			}
-		} catch(NumberFormatException n ) {
-			CTILogger.error( n.getMessage(), n );
-		}
-	}
-    
-    if( val instanceof GridAdvisorBase ) {
-    	GridAdvisorBase gridAdvisorBase = (GridAdvisorBase)val;
-        LiteYukonPAObject litePort = null;
-        
-        litePort = (LiteYukonPAObject)getPortComboBox().getSelectedItem();
-        //get new port from combo box and set it.
-        gridAdvisorBase.getDeviceDirectCommSettings().setPortID(litePort.getLiteID());
-        try {
-        	gridAdvisorBase.getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
-        } catch( NumberFormatException e ) {
-        	gridAdvisorBase.getDeviceAddress().setMasterAddress( new Integer(0) );
-        }        
+                    dDialup.setLineSettings("8N1");
+                }
+            } else {
+                remoteBase.getDeviceDialupSettings().setPhoneNumber(null);
+            }
+
+            if (val instanceof DNPBase) { // DeviceTypesFuncs.hasMasterAddress(devType)
+                                          // )
+                DNPBase dnpBase = (DNPBase) val;
+                try {
+                    dnpBase.getDeviceAddress()
+                        .setMasterAddress(
+                                          new Integer(
+                                                      getPhysicalAddressTextField().getText()));
+                } catch (NumberFormatException e) {
+                    dnpBase.getDeviceAddress().setMasterAddress(new Integer(0));
+                }
+
+                try {
+                    dnpBase.getDeviceAddress()
+                        .setSlaveAddress(
+                                         new Integer(
+                                                     getSlaveAddressComboBox().getSelectedItem()
+                                                         .toString()));
+                } catch (NumberFormatException e) {
+                    dnpBase.getDeviceAddress().setSlaveAddress(new Integer(0));
+                }
+
+                try {
+                    dnpBase.getDeviceAddress()
+                        .setPostCommWait(
+                                         new Integer(
+                                                     getPostCommWaitSpinner().getValue()
+                                                         .toString()));
+                } catch (NumberFormatException e) {
+                    dnpBase.getDeviceAddress().setPostCommWait(new Integer(0));
+                }
+
+            } else if (val instanceof Series5Base) {
+                Series5Base series5Base = (Series5Base) val;
+
+                try {
+                    series5Base.getSeries5()
+                        .setSlaveAddress(
+                                         new Integer(
+                                                     getPhysicalAddressTextField().getText()));
+                } catch (NumberFormatException e) {
+                    series5Base.getSeries5().setSlaveAddress(new Integer(0));
+                }
+
+                try {
+                    series5Base.getSeries5()
+                        .setPostCommWait(
+                                         new Integer(
+                                                     getPostCommWaitSpinner().getValue()
+                                                         .toString()));
+                } catch (NumberFormatException e) {
+                    series5Base.getSeries5().setPostCommWait(new Integer(0));
+                }
+
+                if (getControlInhibitCheckBox().isSelected()) {
+                    series5Base.getVerification().setDisable("Y");
+                } else {
+                    series5Base.getVerification().setDisable("N");
+                }
+            } else if (val instanceof RTCBase) {
+                RTCBase rtcBase = (RTCBase) val;
+                try {
+                    rtcBase.getDeviceRTC()
+                        .setRTCAddress(
+                                       new Integer(
+                                                   getPhysicalAddressTextField().getText()));
+                } catch (NumberFormatException e) {
+                    rtcBase.getDeviceRTC().setRTCAddress(new Integer(0));
+                }
+
+                try {
+                    rtcBase.setLBTMode(getSlaveAddressComboBox().getSelectedItem()
+                        .toString());
+                } catch (NumberFormatException e) {
+                    rtcBase.getDeviceRTC().setLBTMode(new Integer(0));
+                }
+
+                if (getControlInhibitCheckBox().isSelected()) {
+                    rtcBase.getDeviceRTC().setDisableVerifies("Y");
+                } else {
+                    rtcBase.getDeviceRTC().setDisableVerifies("N");
+                }
+
+            } else if (val instanceof RTM) {
+                RTM rtm = (RTM) val;
+                rtm.getDeviceIED()
+                    .setSlaveAddress(getPhysicalAddressTextField().getText());
+            } else if (val instanceof IEDBase) {
+                IEDBase iedBase = (IEDBase) val;
+                String password = getPasswordTextField().getText();
+                if (password.length() > 0) {
+                    if (val instanceof WCTPTerminal) {
+                        ((WCTPTerminal) val).getDeviceTapPagingSettings()
+                            .setPOSTPath(password);
+                    } else {
+                        iedBase.getDeviceIED().setPassword(password);
+                    }
+                } else {
+                    if (val instanceof PagingTapTerminal) {
+                        ((PagingTapTerminal) val).getDeviceTapPagingSettings()
+                            .setPOSTPath(
+                                         com.cannontech.common.util.CtiUtilities.STRING_NONE);
+                    } else {
+                        iedBase.getDeviceIED()
+                            .setPassword(
+                                         com.cannontech.common.util.CtiUtilities.STRING_NONE);
+                    }
+                }
+
+                if (val instanceof PagingTapTerminal) {
+                    PagingTapTerminal pagingTapTerminal = (PagingTapTerminal) val;
+                    if (getSenderTextField().isVisible()
+                        && getSenderTextField().getText().length() > 0) {
+                        pagingTapTerminal.getDeviceTapPagingSettings()
+                            .setSender(getSenderTextField().getText());
+                    }
+                    if (getSecurityCodeTextField().isVisible()
+                        && getSecurityCodeTextField().getText().length() > 0) {
+                        pagingTapTerminal.getDeviceTapPagingSettings()
+                            .setSecurityCode(
+                                             getSecurityCodeTextField().getText());
+                    }
+                }
+
+                if (getSlaveAddressComboBox().isVisible()) {
+                    String slaveAddress = null;
+
+                    /**** START SUPER HACK ****/
+                    if (getSlaveAddressComboBox().isEditable()) {
+                        slaveAddress = getSlaveAddressComboBox().getEditor()
+                            .getItem()
+                            .toString();
+                    } else {
+                        /**** END SUPER HACK ****/
+                        slaveAddress = new String(
+                                                  getSlaveAddressComboBox().getSelectedItem() != null ? getSlaveAddressComboBox().getSelectedItem()
+                                                      .toString()
+                                                          : "");
+                    }
+
+                    iedBase.getDeviceIED().setSlaveAddress(slaveAddress);
+                }
+            } else if (val instanceof CCU721) {
+                CCU721 ccu721 = (CCU721) val;
+                try {
+                    ccu721.getDeviceAddress()
+                        .setMasterAddress(
+                                          new Integer(
+                                                      getPhysicalAddressTextField().getText()));
+                } catch (NumberFormatException e) {
+                    ccu721.getDeviceAddress().setMasterAddress(new Integer(0));
+                }
+
+                try {
+                    ccu721.getDeviceAddress()
+                        .setSlaveAddress(
+                                         new Integer(
+                                                     getSlaveAddressComboBox().getSelectedItem()
+                                                         .toString()));
+                } catch (NumberFormatException e) {
+                    ccu721.getDeviceAddress().setSlaveAddress(new Integer(0));
+                }
+            }
+
+        } else {
+            if (val instanceof CarrierBase) {
+                CarrierBase carrierBase = (CarrierBase) val;
+                int routeId = (((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID());
+                carrierBase.getDeviceRoutes().setRouteID(routeId);
+            }
+        }
+
+        return val;
     }
     
-	if( val instanceof RemoteBase ) {
-		RemoteBase remoteBase = (RemoteBase)val;
-		DeviceDirectCommSettings dDirect = remoteBase.getDeviceDirectCommSettings();
-
-		Integer portID = null;
-		Integer postCommWait = null;
-
-		LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
-		
-		portID = new Integer(port.getYukonID());
-		dDirect.setPortID( portID );
-		
-		Object postCommWaitSpinVal = getPostCommWaitSpinner().getValue();
-		if( postCommWaitSpinVal instanceof Long ) {
-			postCommWait = new Integer( ((Long)postCommWaitSpinVal).intValue() );
-		} else if( postCommWaitSpinVal instanceof Integer ) {
-			postCommWait = new Integer( ((Integer)postCommWaitSpinVal).intValue() );
-		}
-
-		if( val instanceof IDLCBase ) {
-			IDLCBase idlcBase = (IDLCBase)val;
-			idlcBase.getDeviceIDLCRemote().setPostCommWait( postCommWait );
-			idlcBase.getDeviceIDLCRemote().setCcuAmpUseType( getJComboBoxAmpUseType().getSelectedItem().toString() );
-		}
-		
-		if( PAOGroups.isDialupPort(port.getType()) ) {
-			DeviceDialupSettings dDialup = remoteBase.getDeviceDialupSettings();
-
-			getAdvancedPanel().getValue( dDialup );
-			
-			dDialup.setPhoneNumber( getPhoneNumberTextField().getText().trim() );
-			if( val instanceof PagingTapTerminal ) {
-				dDialup.setLineSettings( "7E1" );
-			} else {
-				dDialup.setLineSettings( "8N1" );
-			}
-		}
-		else {
-			remoteBase.getDeviceDialupSettings().setPhoneNumber(null);
-		}
-
-      if( val instanceof DNPBase ) { //DeviceTypesFuncs.hasMasterAddress(devType) ) 
-         DNPBase dnpBase = (DNPBase)val;
-         try {
-            dnpBase.getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
-         } catch( NumberFormatException e ) {
-            dnpBase.getDeviceAddress().setMasterAddress( new Integer(0) );
-         }
-            
-         try {         
-            dnpBase.getDeviceAddress().setSlaveAddress( new Integer(getSlaveAddressComboBox().getSelectedItem().toString() ) );
-         } catch( NumberFormatException e ) {
-            dnpBase.getDeviceAddress().setSlaveAddress( new Integer(0) );
-         }
-   
-         try {
-            dnpBase.getDeviceAddress().setPostCommWait( new Integer(getPostCommWaitSpinner().getValue().toString()) );
-         } catch( NumberFormatException e ) {
-            dnpBase.getDeviceAddress().setPostCommWait( new Integer(0) );
-         }
-   	
-      } else if( val instanceof Series5Base ) {
-		Series5Base series5Base= (Series5Base)val;
-		
-		try {
-			series5Base.getSeries5().setSlaveAddress( new Integer(getPhysicalAddressTextField().getText()) );
-		} catch( NumberFormatException e ) {
-			series5Base.getSeries5().setSlaveAddress( new Integer(0) );
-		}
-		
-		try {
-			series5Base.getSeries5().setPostCommWait( new Integer(getPostCommWaitSpinner().getValue().toString()) );
-		} catch( NumberFormatException e ) {
-			series5Base.getSeries5().setPostCommWait( new Integer(0) );
-		}
-		
-		if(getControlInhibitCheckBox().isSelected()) {
-			series5Base.getVerification().setDisable("Y");
-		}
-		else {
-			series5Base.getVerification().setDisable("N");
-		}
-      } else if( val instanceof RTCBase) {
-		RTCBase rtcBase = (RTCBase)val;
-		try {
-			rtcBase.getDeviceRTC().setRTCAddress( new Integer(getPhysicalAddressTextField().getText()) );
-		} catch( NumberFormatException e ) {
-			rtcBase.getDeviceRTC().setRTCAddress( new Integer(0) );
-		}
-            
-		try {         
-			rtcBase.setLBTMode( getSlaveAddressComboBox().getSelectedItem().toString() );
-		} catch( NumberFormatException e ) {
-			rtcBase.getDeviceRTC().setLBTMode( new Integer(0) );
-		}
-		
-		if(getControlInhibitCheckBox().isSelected()) {
-			rtcBase.getDeviceRTC().setDisableVerifies("Y");
-		} else {
-			rtcBase.getDeviceRTC().setDisableVerifies("N");
-		}
-			
-      } else if( val instanceof RTM ) {
-			RTM rtm = (RTM)val;
-			rtm.getDeviceIED().setSlaveAddress( getPhysicalAddressTextField().getText() );
-      } else if( val instanceof IEDBase ) {
-    	  IEDBase iedBase = (IEDBase)val;
-      		String password = getPasswordTextField().getText();
-			if( password.length() > 0 ) {
-				if(val instanceof WCTPTerminal) {
-					((WCTPTerminal)val).getDeviceTapPagingSettings().setPOSTPath(password);
-				} else {
-					iedBase.getDeviceIED().setPassword(password);
-				}
-			} else {
-				if(val instanceof PagingTapTerminal) {
-					((PagingTapTerminal)val).getDeviceTapPagingSettings().setPOSTPath(com.cannontech.common.util.CtiUtilities.STRING_NONE);
-				} else {
-					iedBase.getDeviceIED().setPassword(com.cannontech.common.util.CtiUtilities.STRING_NONE);
-				}
-			}
-
-			if(val instanceof PagingTapTerminal) {
-				PagingTapTerminal pagingTapTerminal = (PagingTapTerminal)val;
-				if(getSenderTextField().isVisible() && getSenderTextField().getText().length() > 0) {
-					pagingTapTerminal.getDeviceTapPagingSettings().setSender(getSenderTextField().getText());
-				}
-				if(getSecurityCodeTextField().isVisible() && getSecurityCodeTextField().getText().length() > 0) {
-					pagingTapTerminal.getDeviceTapPagingSettings().setSecurityCode(getSecurityCodeTextField().getText());
-				}
-			}			
-	
-			if( getSlaveAddressComboBox().isVisible() ) {
-				String slaveAddress = null;
-
-				/**** START SUPER HACK ****/
-				if( getSlaveAddressComboBox().isEditable() ) {
-					slaveAddress = getSlaveAddressComboBox().getEditor().getItem().toString();
-				} else {/**** END SUPER HACK ****/
-					slaveAddress = new String( getSlaveAddressComboBox().getSelectedItem() != null ?
-						  		getSlaveAddressComboBox().getSelectedItem().toString() : "" );
-				}
-
-				iedBase.getDeviceIED().setSlaveAddress(slaveAddress);
-			}
-	  	} else if (val instanceof CCU721) {
-	         CCU721 ccu721 = (CCU721)val;
-	         try {
-	        	 ccu721.getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
-	         } catch( NumberFormatException e ) {
-	        	 ccu721.getDeviceAddress().setMasterAddress( new Integer(0) );
-	         }
-	            
-	         try {         
-	        	 ccu721.getDeviceAddress().setSlaveAddress( new Integer(getSlaveAddressComboBox().getSelectedItem().toString() ) );
-	         } catch( NumberFormatException e ) {
-	        	 ccu721.getDeviceAddress().setSlaveAddress( new Integer(0) );
-	         }	      
-	  	}
-
-	} else {
-		if( val instanceof CarrierBase ) {
-			CarrierBase carrierBase = (CarrierBase)val;
-			int routeId = (((LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID());
-			carrierBase.getDeviceRoutes().setRouteID( routeId);
-		}
-	}
-    
-	return val;
-}
 /**
  * Return the WaitLabel property value.
  * @return javax.swing.JLabel

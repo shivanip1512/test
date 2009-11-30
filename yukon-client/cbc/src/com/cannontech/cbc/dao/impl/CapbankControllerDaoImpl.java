@@ -353,7 +353,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 				scanRate.setAlternateRate(controller.getAlternateRate());
 				
 				cbc.getDeviceScanRateMap().clear();
-				cbc.getDeviceScanRateMap().put(scanRate.getScanGroup(),scanRate);
+				cbc.getDeviceScanRateMap().put(scanRate.getScanType(),scanRate);
 				
 				break;	
 			}
@@ -379,7 +379,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 				scanRate.setAlternateRate(controller.getAlternateRate());
 				
 				cbc.getDeviceScanRateMap().clear();
-				cbc.getDeviceScanRateMap().put(scanRate.getScanGroup(),scanRate);
+				cbc.getDeviceScanRateMap().put(scanRate.getScanType(), scanRate);
 				
 				break;
 			}
