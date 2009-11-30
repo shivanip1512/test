@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -22,6 +21,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -40,7 +40,7 @@ import com.cannontech.stars.util.ServerUtils;
 public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, InitializingBean {
     private static final ParameterizedRowMapper<LiteInventoryBase> smartInventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
 
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<LiteInventoryBase> liteInventoryTemplate;
 
     private static final String selectInventorySql;
@@ -84,7 +84,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);
         LiteInventoryBase liteInv = null;
         try {
-            liteInv = simpleJdbcTemplate.queryForObject(sql.getSql(),
+            liteInv = yukonJdbcTemplate.queryForObject(sql.getSql(),
                                                         smartInventoryRowMapper,
                                                         sql.getArguments());
         } catch (EmptyResultDataAccessException e) {
@@ -102,7 +102,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     	sql.append(selectInventorySql);
     	sql.append("WHERE ib.DeviceId = ").appendArgument(deviceId);
     	
-        List<LiteInventoryBase> liteInventoryList = simpleJdbcTemplate.query(sql.getSql(),
+        List<LiteInventoryBase> liteInventoryList = yukonJdbcTemplate.query(sql.getSql(),
                 smartInventoryRowMapper,
                 sql.getArguments());
         
@@ -124,7 +124,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sqlBuilder.append(")");
         String sql = sqlBuilder.toString();
 
-        List<LiteInventoryBase> list = simpleJdbcTemplate.query(sql,
+        List<LiteInventoryBase> list = yukonJdbcTemplate.query(sql,
                                                                 smartInventoryRowMapper);
         return list;
     }
@@ -162,7 +162,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sqlBuilder.append(")");
 
         String sql = sqlBuilder.toString();
-        List<LiteInventoryBase> list = simpleJdbcTemplate.query(sql,
+        List<LiteInventoryBase> list = yukonJdbcTemplate.query(sql,
                                                                 smartInventoryRowMapper);
         return list;
     }
@@ -186,8 +186,24 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append(ecIdList);
         sql.append(")");
 
-        List<LiteStarsLMHardware> liteHardwareList = simpleJdbcTemplate.query(sql.toString(),
+        List<LiteStarsLMHardware> liteHardwareList = yukonJdbcTemplate.query(sql.toString(),
                                                                               new LiteStarsLMHardwareRowMapper());
+
+        return liteHardwareList;
+    }
+    
+    @Override
+    public List<LiteStarsLMHardware> getLMHardwareForIds(List<Integer> inventoryIds) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+        sql.append("FROM InventoryBase ib");
+        sql.append("JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+        sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+        sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+        sql.append("WHERE ib.InventoryId IN (").appendArgumentList(inventoryIds).append(")");
+
+        List<LiteStarsLMHardware> liteHardwareList = yukonJdbcTemplate.query(sql, new LiteStarsLMHardwareRowMapper());
 
         return liteHardwareList;
     }
@@ -213,7 +229,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append(")");
         sql.append("AND lhc.AddressingGroupId = 0");
 
-        List<LiteStarsLMHardware> liteHardwareList = simpleJdbcTemplate.query(sql.toString(),
+        List<LiteStarsLMHardware> liteHardwareList = yukonJdbcTemplate.query(sql.toString(),
                                                                               new LiteStarsLMHardwareRowMapper());
 
         return liteHardwareList;
@@ -239,7 +255,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append("AND ib.AccountId > 0");
         sql.append("AND yle.YukonDefinitionId = ?");
 
-        List<LiteInventoryBase> liteHardwareList = simpleJdbcTemplate.query(sql.toString(),
+        List<LiteInventoryBase> liteHardwareList = yukonJdbcTemplate.query(sql.toString(),
                                                                             smartInventoryRowMapper,
                                                                             YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 
@@ -267,7 +283,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append("AND ib.AccountId = 0");
         sql.append("AND yle.YukonDefinitionId = ?");
 
-        List<LiteInventoryBase> liteHardwareList = simpleJdbcTemplate.query(sql.toString(),
+        List<LiteInventoryBase> liteHardwareList = yukonJdbcTemplate.query(sql.toString(),
                                                                             smartInventoryRowMapper,
                                                                             YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 
@@ -293,7 +309,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         if (insert) {
             //Insert into InventoryBase            
             liteInventoryTemplate.insert(liteInv);
-            simpleJdbcTemplate.update(insertECToInventorySql, ecToInvParams);
+            yukonJdbcTemplate.update(insertECToInventorySql, ecToInvParams);
         } else {
             //Update InventoryBase            
             liteInventoryTemplate.update(liteInv);
@@ -325,12 +341,12 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         if (insert) {
             //Insert into InventoryBase
             liteInventoryTemplate.insert(lmHw);
-            simpleJdbcTemplate.update(insertECToInventorySql, ecToInvParams);
-            simpleJdbcTemplate.update(insertLmHardwareSql, lmHwParams);
+            yukonJdbcTemplate.update(insertECToInventorySql, ecToInvParams);
+            yukonJdbcTemplate.update(insertLmHardwareSql, lmHwParams);
         } else {
             //Update InventoryBase            
             liteInventoryTemplate.update(lmHw);
-            simpleJdbcTemplate.update(updateLmHardwareSql, lmHwParams);
+            yukonJdbcTemplate.update(updateLmHardwareSql, lmHwParams);
         }
 
         return lmHw;
@@ -345,7 +361,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
                 new Timestamp(liteInv.getRemoveDate()),
                 liteInv.getInventoryID() };
 
-        simpleJdbcTemplate.update(removeInventoryFromAccountSql,
+        yukonJdbcTemplate.update(removeInventoryFromAccountSql,
                                   removeInvParams);
 
     }
@@ -377,7 +393,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append("      (SELECT * FROM InventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId)");
 
         List<PaoIdentifier> paoList = 
-            simpleJdbcTemplate.query(sql.getSql(), new YukonPaoRowMapper(), sql.getArguments());
+        	yukonJdbcTemplate.query(sql.getSql(), new YukonPaoRowMapper(), sql.getArguments());
         
         return paoList;
     }
@@ -399,7 +415,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         sql.append("AND ib.AccountId = 0");
         sql.append("AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 
-        List<PaoIdentifier> paoList = simpleJdbcTemplate.query(sql.getSql(),
+        List<PaoIdentifier> paoList = yukonJdbcTemplate.query(sql.getSql(),
                                                                 new YukonPaoRowMapper(),
                                                                 sql.getArguments());
 
@@ -427,22 +443,22 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
     private void deleteHardwareToMeterMapping(int inventoryId) {
         String deleteSql = "DELETE FROM LMHardwareToMeterMapping WHERE LMHardwareInventoryId = ?";
-        simpleJdbcTemplate.update(deleteSql, inventoryId);
+        yukonJdbcTemplate.update(deleteSql, inventoryId);
     }
 
     private void deleteLmHardware(int inventoryId) {
         String deleteSql = "DELETE FROM LMHardwareBase WHERE InventoryID = ?";
-        simpleJdbcTemplate.update(deleteSql, inventoryId);
+        yukonJdbcTemplate.update(deleteSql, inventoryId);
     }
 
     private void deleteInventoryToWarehouseMapping(int inventoryId) {
         String deleteSql = "DELETE FROM InventoryToWarehouseMapping WHERE InventoryID = ?";
-        simpleJdbcTemplate.update(deleteSql, inventoryId);
+        yukonJdbcTemplate.update(deleteSql, inventoryId);
     }
 
     private void internalDeleteInventoryBase(int inventoryId) {
         String deleteSql = "DELETE FROM InventoryBase WHERE InventoryID = ?";
-        simpleJdbcTemplate.update(deleteSql, inventoryId);
+        yukonJdbcTemplate.update(deleteSql, inventoryId);
     }
 
     public final Integer getNextInventoryID() {
@@ -450,9 +466,9 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
 
     @Autowired    
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
@@ -493,7 +509,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        liteInventoryTemplate = new SimpleTableAccessTemplate<LiteInventoryBase>(simpleJdbcTemplate, nextValueHelper);
+        liteInventoryTemplate = new SimpleTableAccessTemplate<LiteInventoryBase>(yukonJdbcTemplate, nextValueHelper);
         liteInventoryTemplate.withTableName("InventoryBase");
         liteInventoryTemplate.withPrimaryKeyField("InventoryID");
         liteInventoryTemplate.withFieldMapper(inventoryFieldMapper);

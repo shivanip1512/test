@@ -1,12 +1,16 @@
 package com.cannontech.stars.dr.enrollment.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -14,9 +18,11 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -25,9 +31,11 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -35,6 +43,7 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.google.common.collect.Lists;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
@@ -48,6 +57,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private ProgramEnrollmentService programEnrollmentService;
     private StarsDatabaseCache starsDatabaseCache;
     private StarsSearchDao starsSearchDao;    
+	private InventoryDao inventoryDao;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
     
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
@@ -287,6 +298,45 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
         return loadGroup;
     }
+    
+    
+	
+	@Override
+	public List<EnrolledDevicePrograms> getEnrolledDeviceProgramsByAccountNumber(String accountNumber, Date startDate, Date stopDate, LiteYukonUser user) throws AccountNotFoundException {
+		
+		// account
+		CustomerAccount account = null;
+		try {
+			account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		} catch (NotFoundException e) {
+			throw new AccountNotFoundException("Account not found: " + accountNumber, e);
+		}
+		
+		// inventory
+		List<Integer> inventoryIdList = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
+		List<LiteStarsLMHardware> inventoryList = starsInventoryBaseDao.getLMHardwareForIds(inventoryIdList);
+		
+		// enrolledDeviceProgramsList
+		List<EnrolledDevicePrograms> enrolledDeviceProgramsList = Lists.newArrayListWithExpectedSize(inventoryIdList.size());
+		for (LiteStarsLMHardware lmHardware : inventoryList) {
+			
+			String serialNumber = lmHardware.getManufacturerSerialNumber();
+			
+			List<Program> programs = enrollmentDao.getAllEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
+			MappingList<Program, String> programNames = new MappingList<Program, String>(programs, new ObjectMapper<Program, String>() {
+	            public String map(Program from) {
+	                return from.getProgramName();
+	            }
+	        });
+			
+			if (programNames.size() > 0) {
+				EnrolledDevicePrograms enrolledDevicePrograms = new EnrolledDevicePrograms(serialNumber, programNames);
+				enrolledDeviceProgramsList.add(enrolledDevicePrograms);
+			}
+		}
+		
+		return enrolledDeviceProgramsList;
+	}
 
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
@@ -338,4 +388,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
         this.starsSearchDao = starsSearchDao;
     }
+    
+    @Autowired
+	public void setInventoryDao(InventoryDao inventoryDao) {
+		this.inventoryDao = inventoryDao;
+	}
+    
+    @Autowired
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
+		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
 }

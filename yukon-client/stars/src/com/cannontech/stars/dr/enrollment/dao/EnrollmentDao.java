@@ -55,12 +55,26 @@ public interface EnrollmentDao {
 
     /**
      * Method to get a list of programs an inventory was enrolled in during a given time period
+     * NOTE: startTime and stopTime are required. 
+     * Use {@link EnrollmentDao#getAllEnrolledProgramIdsByInventory(Integer, Date, Date) getAllEnrolledProgramIdsByInventory} for optinal date range.
      * @param inventoryId - Inventory to get programs for
      * @param startTime - Start of time period (inclusive)
      * @param stopTime - End of time period (inclusive)
      */
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId,
 			Date startTime, Date stopTime);
+	
+	/**
+	 * Method to get a list of programs an inventory was enrolled in during a given time period
+	 * If only the start date is provided, then only those devices enrolled after the provided date up through the current date will be returned. 
+	 * If only the stop date is provided, then only those devices enrolled from the system origin date up to the provided stop date will be enrolled. 
+	 * If no dates are provided, then all currently enrolled devices will be returned. 
+	 * @param inventoryId
+	 * @param startTime
+	 * @param stopTime
+	 * @return
+	 */
+	public List<Program> getAllEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime);
 
 	/**
 	 * Method to get a map of all programIds and their count of all inventory that is actively enrolled 

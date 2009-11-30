@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+    
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+	<xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
+	<xsd:include schemaLocation="../../common/schemas/Types.xsd" />
+    
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+    		Item #7 from BG&amp;E Phase 3 SoW - Appendix C.
+        	An override is an opt out.
+        	Should return a list of device serial numbers present on the provided account 
+        	and for each serial number a list of the programs in which it is enrolled 
+        	(currently or during date range of Start and Stop if provided)
+     	</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="EnrolledDevicesByAccountNumberResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice>
+                    <xsd:sequence>
+                        <xsd:element name="enrolledDevicesList" type="yukon:EnrolledDevicesList"/>
+                   	</xsd:sequence>
+                    <xsd:element name="failure" type="yukon:Failure" />
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="EnrolledDevicesList">
+       	<xsd:sequence>
+    		<xsd:element name="enrolledDevice" type="yukon:EnrolledDevice" maxOccurs="unbounded"/>
+	    </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="EnrolledDevice">
+        <xsd:sequence>
+	        <xsd:element name="serialNumber" type="yukon:SerialNumber" />
+	        <xsd:element name="programsList">
+	            <xsd:complexType>
+	                <xsd:sequence>
+	                    <xsd:element name="programName" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+	                </xsd:sequence>
+	            </xsd:complexType>
+	        </xsd:element>
+	    </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:element name="enrolledDevicesByAccountNumberResponse" type="yukon:EnrolledDevicesByAccountNumberResponse"/>
+    
+</xsd:schema>

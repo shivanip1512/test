@@ -129,6 +129,31 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 	}
 	
 	@Override
+	public List<Program> getAllEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime) {
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
+		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation ");
+		sql.append("FROM LMProgramWebPublishing pwp");
+		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
+		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");
+		sql.append("	JOIN YukonListEntry yle ON yle.EntryID = pwp.ChanceOfControlID");
+		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.ProgramID = pwp.ProgramID");
+		sql.append("WHERE lmhcg.InventoryId").eq(inventoryId);
+		sql.append("AND lmhcg.Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+		if (startTime != null) {
+			sql.append("AND lmhcg.GroupEnrollStart").gte(startTime);
+		}
+		if (stopTime != null) {
+			sql.append("AND (lmhcg.GroupEnrollStop").lte(stopTime).append("OR lmhcg.GroupEnrollStop IS NULL)");
+		}
+		
+		List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
+		
+		return programList;
+	}
+	
+	@Override
 	public List<Integer> getOptedOutInventory(Program program, Date startDate,
 			Date stopDate) {
 

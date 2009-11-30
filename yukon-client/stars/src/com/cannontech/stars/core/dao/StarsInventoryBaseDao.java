@@ -56,6 +56,13 @@ public interface StarsInventoryBaseDao {
     public List<LiteStarsLMHardware> getAllLMHardware(List<LiteStarsEnergyCompany> energyCompanyList);
 
     /**
+     * Method to get a list of all hardware with given inventory ids
+     * @param inventoryIds
+     * @return
+     */
+    public List<LiteStarsLMHardware> getLMHardwareForIds(List<Integer> inventoryIds);
+    
+    /**
      * Method to get a list of all hardware without a load group for a given list of energy companies
      * @param energyCompanyList - Companies to get hardware for
      * @return List of hardware
