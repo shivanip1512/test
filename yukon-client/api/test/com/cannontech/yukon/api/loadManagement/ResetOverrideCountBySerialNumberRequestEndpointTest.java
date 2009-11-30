@@ -10,7 +10,7 @@ import org.springframework.core.io.Resource;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.yukon.api.loadManagement.endpoint.ResetOverrideCountBySerialNumberEndpoint;
+import com.cannontech.yukon.api.loadManagement.endpoint.ResetOverrideCountBySerialNumberRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -19,7 +19,7 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ResetOverrideCountBySerialNumberRequestEndpointTest {
 
-    private ResetOverrideCountBySerialNumberEndpoint impl;
+    private ResetOverrideCountBySerialNumberRequestEndpoint impl;
     private MockOptOutService mockOptOutService;
     
     //test request xml data
@@ -37,7 +37,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         
         mockOptOutService = new MockOptOutService();
         
-        impl = new ResetOverrideCountBySerialNumberEndpoint();
+        impl = new ResetOverrideCountBySerialNumberRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
         impl.setRolePropertyDao(new MockRolePropertyDao());
     }

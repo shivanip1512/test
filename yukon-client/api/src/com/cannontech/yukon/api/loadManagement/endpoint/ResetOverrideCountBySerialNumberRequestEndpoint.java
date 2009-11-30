@@ -20,7 +20,7 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
-public class ResetOverrideCountBySerialNumberEndpoint {
+public class ResetOverrideCountBySerialNumberRequestEndpoint {
 
 	private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
