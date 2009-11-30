@@ -88,6 +88,7 @@ const string CtiFDRDnpSlave::dnpPointType="POINTTYPE";
 const string CtiFDRDnpSlave::dnpPointOffset="Offset";
 const string CtiFDRDnpSlave::dnpPointStatusString="Status";
 const string CtiFDRDnpSlave::dnpPointAnalogString="Analog";
+const string CtiFDRDnpSlave::dnpPointCalcAnalogString="CalcAnalog";
 const string CtiFDRDnpSlave::dnpPointCounterString="PulseAccumulator";
 const string CtiFDRDnpSlave::dnpPointMultiplier="Multiplier";
 
@@ -379,10 +380,13 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnect
     unsigned int bufferSize = getMessageSize(data);
     if (bufferSize == 10)
     {
+        bool linkStatusReq = ( ((data[3] & 0x09) == 0x09 ) ? true : false);
+        string linkMessage = ( linkStatusReq ? "data link status request" : "reset link" );
+
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            logNow() << " "<< getInterfaceName() <<" received DNP data link request message."<< endl;
+            logNow() << " "<< getInterfaceName() <<" received DNP " << linkMessage <<" request message."<< endl;
             dumpDNPMessage(CtiFdrDNPInMessageString, data, bufferSize);
         }
         buffer = new UCHAR[bufferSize];
@@ -390,7 +394,14 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnect
         std::memcpy(buffer, data, bufferSize);
 
         buffer[2] = 5;
-        buffer[3] = 0x0B;
+        if (linkStatusReq)
+        {
+            buffer[3] = 0x0B;
+        }
+        else
+        {
+            buffer[3] = 0x00;
+        }
 
         buffer[4] = data[6]; //swap source to destination
         buffer[5] = data[7];
@@ -404,10 +415,11 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnect
 
         connection.queueMessage((CHAR *)buffer, bufferSize, MAXPRIORITY - 1);
         //error processing data link confirmation Request
+        linkMessage = ( linkStatusReq ? "data link acknowledgement" : "ack" );
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            logNow() << " "<< getInterfaceName() <<" sending DNP data link acknowledgement message."<< endl;
+            logNow() << " "<< getInterfaceName() <<" sending DNP " << linkMessage << " message."<< endl;
             dumpDNPMessage(CtiFdrDNPOutMessageString, (CHAR *)buffer, bufferSize);
         }
     }
@@ -559,7 +571,8 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     {
         dnpId.PointType = StatusPointType;
     }
-    else if (!stringCompareIgnoreCase(pointType, dnpPointAnalogString))
+    else if (!stringCompareIgnoreCase(pointType, dnpPointAnalogString) ||
+             !stringCompareIgnoreCase(pointType, dnpPointCalcAnalogString))
     {
         dnpId.PointType = AnalogPointType;
     }

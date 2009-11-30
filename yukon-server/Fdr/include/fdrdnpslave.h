@@ -156,6 +156,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         static const string dnpPointOffset;
         static const string dnpPointStatusString;
         static const string dnpPointAnalogString;
+        static const string dnpPointCalcAnalogString;
         static const string dnpPointCounterString;
         static const string dnpPointMultiplier;
 
