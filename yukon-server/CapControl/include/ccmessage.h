@@ -32,6 +32,10 @@ typedef std::vector<CtiCCSpecialPtr> CtiCCSpArea_vec;
 typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
 typedef std::vector<CtiCCStatePtr> CtiCCState_vec;
 
+typedef std::set<CtiCCSubstationPtr> CtiCCSubstation_set;
+typedef std::set<CtiCCAreaPtr> CtiCCArea_set;
+typedef std::set<CtiCCSpecialPtr> CtiCCSpArea_set;
+typedef std::set<CtiCCSubstationBusPtr> CtiCCSubstationBus_set;
 enum CtiCCEventType_t
 {
     capBankStateUpdate = 0,  //operation confirmed
@@ -388,6 +392,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBusMsg )
 
 public:
     CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask = 0);
+    CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, ULONG bitMask = 0);
     CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusesMsg);
     CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus);
 
@@ -445,6 +450,7 @@ RWDECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
 
 public:
     CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, ULONG bitMask = 1);
+    CtiCCGeoAreasMsg(CtiCCArea_set& areaList, ULONG bitMask = 1);
     CtiCCGeoAreasMsg(CtiCCArea* ccArea);
     CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
@@ -476,6 +482,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecialAreasMsg )
 public:
 
     CtiCCSpecialAreasMsg(CtiCCSpArea_vec& areaList);
+    CtiCCSpecialAreasMsg(CtiCCSpArea_set& areaList);
     CtiCCSpecialAreasMsg(CtiCCSpecial* ccArea);
     CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& ccSpecialAreas);
 
@@ -502,6 +509,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationsMsg )
 public:
 
     CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList, ULONG bitMask = 0);
+    CtiCCSubstationsMsg(CtiCCSubstation_set& substationList, ULONG bitMask = 0);
     CtiCCSubstationsMsg(CtiCCSubstation* ccSubstations);
     CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstations);
 

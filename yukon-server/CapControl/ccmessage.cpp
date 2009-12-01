@@ -677,7 +677,20 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
     }
 }
 
-
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
+{
+    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCSubstationBusMsg has "<< buses.size()<<" entries." << endl;
+    }
+    CtiCCSubstationBus_set::iterator it;
+    for(it = buses.begin(); it != buses.end();it++)
+    {
+        _ccSubstationBuses->push_back(((CtiCCSubstationBus*)*it)->replicate());
+    }
+}
 
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0)
 {
@@ -916,6 +929,22 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : C
 }
 
 
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_set& ccGeoAreas, ULONG bitMask) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
+{
+    _ccGeoAreas = new CtiCCArea_vec;
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
+    }
+    CtiCCArea_set::iterator it;
+    for(it = ccGeoAreas.begin(); it != ccGeoAreas.end(); it++)
+    {
+        _ccGeoAreas->push_back(((CtiCCArea*)*it)->replicate());
+    }
+}
+
+
 
 
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(ccGeoAreasMsg._msgInfoBitMask)
@@ -1030,6 +1059,21 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : Ct
     for(int i=0;i<ccSpecialAreas.size();i++)
     {
         _ccSpecialAreas->push_back((CtiCCSpecial*)(ccSpecialAreas.at(i))->replicate());
+    }
+}
+
+CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_set& ccSpecialAreas) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
+{
+    _ccSpecialAreas = new CtiCCSpArea_vec;
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
+    }
+    CtiCCSpArea_set::iterator it;
+    for(it = ccSpecialAreas.begin(); it != ccSpecialAreas.end(); it++)
+    {
+        _ccSpecialAreas->push_back((CtiCCSpecial*)(*it)->replicate());
     }
 }
 
@@ -1173,6 +1217,22 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULO
     for(int i=0;i<ccSubstations.size();i++)
     {
         _ccSubstations->push_back((CtiCCSubstation*)(ccSubstations.at(i))->replicate());
+    }
+
+}
+
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, ULONG bitMask) : CtiCCMessage("CCSubstations"), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
+{
+    _ccSubstations = new CtiCCSubstation_vec;
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries." << endl;
+    }
+    CtiCCSubstation_set::iterator it;
+    for(it = ccSubstations.begin(); it != ccSubstations.end(); it++)
+    {
+        _ccSubstations->push_back((CtiCCSubstation*)(*it)->replicate());
     }
 
 }

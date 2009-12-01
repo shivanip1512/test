@@ -322,8 +322,8 @@ void CtiCapController::messageSender()
                 
                 readClientMsgQueue();
                 CtiCCSubstationBus_vec subStationBusChanges;
-                CtiCCSubstation_vec stationChanges;
-                CtiCCArea_vec areaChanges;
+                CtiCCSubstation_set stationChanges;
+                CtiCCArea_set areaChanges;
                 
                 std::map<long, CtiCCSubstationBusPtr>::iterator busIter = store->getPAOSubMap()->begin(); 
                 for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
@@ -341,12 +341,12 @@ void CtiCapController::messageSender()
                         {
                             if (currentStation->getStationUpdatedFlag())
                             {
-                                store->updateSubstationObjectList(currentStation->getPAOId(), (CtiMultiMsg_vec&)stationChanges);
+                                store->updateSubstationObjectSet(currentStation->getPAOId(), (CtiMultiMsg_set&)stationChanges);
                                 currentStation->setStationUpdatedFlag(FALSE);
                             }           
                             if (currentArea->getAreaUpdatedFlag())
                             {
-                                store->updateAreaObjectList(currentArea->getPAOId(),(CtiMultiMsg_vec&)areaChanges);
+                                store->updateAreaObjectSet(currentArea->getPAOId(),(CtiMultiMsg_set&)areaChanges);
                                 currentArea->setAreaUpdatedFlag(FALSE);
                             }
                             subStationBusChanges.push_back(currentSubstationBus);                          
@@ -359,9 +359,9 @@ void CtiCapController::messageSender()
                 if (subStationBusChanges.size() > 0)
                     getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified));
                 if (areaChanges.size() > 0)
-                    getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg((CtiCCArea_vec&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
+                    getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg((CtiCCArea_set&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
                 if (stationChanges.size() > 0)
-                    getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)stationChanges,CtiCCSubstationsMsg::SubModified));
+                    getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg((CtiCCSubstation_set&)stationChanges,CtiCCSubstationsMsg::SubModified));
                 if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -438,8 +438,8 @@ void CtiCapController::controlLoop()
 
         CtiTime currentDateTime;
         CtiTime registerTimeElapsed;
-        CtiCCSubstation_vec stationChanges;
-        CtiCCArea_vec areaChanges;
+        CtiCCSubstation_set stationChanges;
+        CtiCCArea_set areaChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
@@ -672,12 +672,12 @@ void CtiCapController::controlLoop()
                                         currentStation->checkAndUpdateRecentlyControlledFlag();
                                         if (currentStation->getStationUpdatedFlag())
                                         {
-                                            store->updateSubstationObjectList(currentStation->getPAOId(), (CtiMultiMsg_vec&)stationChanges);
+                                            store->updateSubstationObjectSet(currentStation->getPAOId(), (CtiMultiMsg_set&)stationChanges);
                                             currentStation->setStationUpdatedFlag(FALSE);
                                         }           
                                         if (currentArea->getAreaUpdatedFlag())
                                         {
-                                            store->updateAreaObjectList(currentArea->getPAOId(),(CtiMultiMsg_vec&)areaChanges);
+                                            store->updateAreaObjectSet(currentArea->getPAOId(),(CtiMultiMsg_set&)areaChanges);
                                             currentArea->setAreaUpdatedFlag(FALSE);
                                         }
                                                                   
@@ -732,12 +732,12 @@ void CtiCapController::controlLoop()
 
                     if (areaChanges.size() > 0 &&  !store->getStoreRecentlyReset())
                     {    
-                        getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg((CtiCCArea_vec&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
+                        getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg((CtiCCArea_set&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
                         areaChanges.clear();
                     }
                     if (stationChanges.size() > 0 &&  !store->getStoreRecentlyReset())
                     {    
-                        getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)stationChanges,CtiCCSubstationsMsg::SubModified));
+                        getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg((CtiCCSubstation_set&)stationChanges,CtiCCSubstationsMsg::SubModified));
                         stationChanges.clear();
                     }
                 }
