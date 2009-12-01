@@ -4755,6 +4755,13 @@
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="10001">
+                <init>true</init>
+                <name>Voltage Control</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>            
             <point type="Analog" offset="10002">
             	<init>true</init>
                 <name>Control UV Set Point</name>
@@ -4846,12 +4853,33 @@
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="10026">
+                <init>true</init>
+                <name>Season One Control</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="10042">
+                <init>true</init>
+                <name>Season Two Control</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
             <point type="Analog" offset="10057">
                 <init>true</init>
                 <name>Com Loss Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="10068">
+                <init>true</init>
+                <name>Var Control</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="10110">
                 <init>true</init>

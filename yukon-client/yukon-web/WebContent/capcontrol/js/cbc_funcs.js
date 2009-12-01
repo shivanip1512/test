@@ -54,6 +54,15 @@ function getCapBankMenu(id, event) {
     getMenuFromURLAbove(url, event); 
 }
 
+function getLocalControlMenu(id, capBankType, objectType, event) {
+	if(!capBankType) {
+		capBankType = false;
+	}
+	
+    var url = '/spring/capcontrol/tier/popupmenu?menu=localControlMenu&id=' + id + '&capBankType=' + capBankType + '&controlType=' + objectType;
+    getMenuFromURLAbove(url, event); 
+}
+
 function getCapBankChangeOpStateMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=capBankChangeOpStateMenu&id=' + id;
     getMenuFromURLAbove(url, event); 

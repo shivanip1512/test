@@ -179,6 +179,14 @@ public interface CapControlCache {
 	public abstract LiteState getCapBankState(int rawState);
 
 	/**
+	 * Gets the raw object by Id. This object will only have basic information like name and id.
+	 * 
+	 * @param objectId
+	 * @return
+	 */
+	public abstract StreamableCapObject getStreamableCapObjectById(int objectId);
+	
+	/**
 	 * Returns the Parent SubBus ID for the given child id
 	 */
 	public abstract int getParentSubBusID(int childID);

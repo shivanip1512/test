@@ -292,6 +292,10 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     	return null;
     }
     
+    public StreamableCapObject getStreamableCapObjectById(int objectId) throws NotFoundException {
+        throw new UnsupportedOperationException("This operation is not supported by filtered cache.");
+    }
+    
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
         CCSpecialArea area = cache.getCBCSpecialArea(areaId);
         if ( filter.valid(area) )

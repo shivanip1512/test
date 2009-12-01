@@ -62,24 +62,21 @@
 
 <ct:abstractContainer type="box" hideEnabled="false" title="${containerTitle}" id="last_titled_container">
           
-	<table id="subHeaderTable" width="100%" cellspacing="0" cellpadding="0" >
+	<table id="subTable" width="100%" cellspacing="0" cellpadding="0" >
 	  <tr class="columnHeader lAlign">              
-	    <td>
+	    <th style="font-weight:bold;">
 	    	<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>
 	    	Sub Name
-	    </td>
-	    <td width="2%"></td>
-	    <td>State</td>
-	    <td>Available<br/> kVARS</td>
-	    <td>Unavailable <br/>kVARS</td>
-	    <td>Closed <br/>kVARS</td>
-	    <td>Tripped <br/>kVARS</td>
-	    <td>PFactor / Est.</td>
+	    </th>
+	    <th width="2%" style="font-weight:bold;"></th>
+	    <th style="font-weight:bold;">State</th>
+	    <th style="font-weight:bold;">Available<br/> kVARS</th>
+	    <th style="font-weight:bold;">Unavailable <br/>kVARS</th>
+	    <th style="font-weight:bold;">Closed <br/>kVARS</th>
+	    <th style="font-weight:bold;">Tripped <br/>kVARS</th>
+	    <th style="font-weight:bold;">PFactor / Est.</th>
 	  </tr>
-	</table>
 
-	<div>
-		<table id="subTable" width="100%" cellspacing="0" cellpadding="0" >
 
 		<c:forEach var="subStation" items="${subStations}">
 
@@ -134,11 +131,9 @@
 		</c:forEach>
 		
 		</table>
-	</div>
 
 
 <script type="text/javascript">
-    Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
     Event.observe(window, 'load', checkPageExpire);
 </script>
 

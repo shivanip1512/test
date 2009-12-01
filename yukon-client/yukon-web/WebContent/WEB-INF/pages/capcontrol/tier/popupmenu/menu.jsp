@@ -45,21 +45,34 @@
                 </tr>
             </c:forEach>
         </c:if>
-        <tr>
-            <td>
-                <a href="javascript:void(0);"
-                   class="optDeselect"
-                   onmouseover="changeOptionStyle(this);"
-                   onclick="closeTierPopup(); GB_show('CapControl Comments (${paoName})','${commentsUrl}${paoId}', 500, 800);">View Comments</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href="javascript:void(0);"
-                   class="optDeselect"
-                   onmouseover="changeOptionStyle(this);"
-                   onclick="closeTierPopup(); showRecentCmdsForSingle('/spring/capcontrol/search/recentControls', ${paoId});">View Recent Cmds</a>
-            </td>
-        </tr>
+
+		<tr>
+			<td>
+		    	<a href="javascript:void(0);"
+		         class="optDeselect"
+		         onmouseover="changeOptionStyle(this);"
+		         onclick="closeTierPopup(); GB_show('CapControl Comments (${paoName})','${commentsUrl}${paoId}', 500, 800);">View Comments</a>
+		    </td>
+		</tr>
+		<tr>
+		    <td>
+				<a href="javascript:void(0);"
+		           class="optDeselect"
+		           onmouseover="changeOptionStyle(this);"
+		           onclick="closeTierPopup(); showRecentCmdsForSingle('/spring/capcontrol/search/recentControls', ${paoId});">View Recent Cmds</a>
+		    </td>
+		</tr>
+		
+		<c:if test="${allowLocalControl}">
+			<tr>
+	               <td>
+	                   <a href="javascript:void(0);" 
+	                      class="optDeselect"
+	                      onmouseover="changeOptionStyle(this);"
+	                      onclick="closeTierPopup(); getLocalControlMenu('${paoId}','${localControlTypeCBC}', '${controlType}', event);">more Local Controls</a>
+	               </td>
+			</tr> 
+		</c:if>
+		
      </table>
 </div>     

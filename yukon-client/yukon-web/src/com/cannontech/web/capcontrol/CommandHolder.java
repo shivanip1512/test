@@ -27,6 +27,13 @@ public enum CommandHolder {
     SEND_DISABLE_OVUV(CapControlCommand.SEND_ALL_DISABLE_OVUV, "Disable OV/UV", true),
     SEND_ALL_TIMESYNC(CapControlCommand.SEND_TIMESYNC, "Send All TimeSync", false),
     
+    SEND_ENABLE_TEMPCONTROL(CapControlCommand.SEND_ALL_ENABLE_TEMPCONTROL,"Enable Temp Control",false),
+    SEND_DISABLE_TEMPCONTROL(CapControlCommand.SEND_ALL_DISABLE_TEMPCONTROL,"Disable Temp Control",false),
+    SEND_ENABLE_VARCONTROL(CapControlCommand.SEND_ALL_ENABLE_VARCONTROL,"Enable Var Control",false),
+    SEND_DISABLE_VARCONTROL(CapControlCommand.SEND_ALL_DISABLE_VARCONTROL,"Disable Var Control",false),
+    SEND_ENABLE_TIMECONTROL(CapControlCommand.SEND_ALL_ENABLE_TIMECONTROL,"Enable Time Control",false),
+    SEND_DISABLE_TIMECONTROL(CapControlCommand.SEND_ALL_DISABLE_TIMECONTROL,"Disable Time Control",false),
+    
     SEND_ALL_SCAN_2WAY(CapControlCommand.SEND_ALL_SCAN_2WAY, "Scan All 2way CBCs", false),
     RESET_OP_COUNTS(CapControlCommand.RESET_OPCOUNT, "Reset Op Counts", false),
     
@@ -46,6 +53,13 @@ public enum CommandHolder {
     CBC_SCAN_2WAY(CapControlCommand.SCAN_2WAY_DEV, "Init Scan", false),
     CBC_TIMESYNC(CapControlCommand.SEND_TIMESYNC, "Send TimeSync", false),
     CBC_FLIP(CapControlCommand.FLIP_7010_CAPBANK, "Flip", false),
+    
+    CBC_ENABLE_TEMPCONTROL(CapControlCommand.BANK_ENABLE_TEMPCONTROL, "Enable Temp Control",false),
+    CBC_DISABLE_TEMPCONTROL(CapControlCommand.BANK_DISABLE_TEMPCONTROL, "Disable Temp Control",false),
+    CBC_ENABLE_VARCONTROL(CapControlCommand.BANK_ENABLE_VARCONTROL, "Enable Var Control",false),
+    CBC_DISABLE_VARCONTROL(CapControlCommand.BANK_DISABLE_VARCONTROL, "Disable Var Control",false),
+    CBC_ENABLE_TIMECONTROL(CapControlCommand.BANK_ENABLE_TIMECONTROL, "Enable Time Control",false),
+    CBC_DISABLE_TIMECONTROL(CapControlCommand.BANK_DISABLE_TIMECONTROL, "Disable Time Control",false),    
     
     OPERATIONAL_STATECHANGE(CapControlCommand.OPERATIONAL_STATECHANGE, "Change Operational State", false);
     

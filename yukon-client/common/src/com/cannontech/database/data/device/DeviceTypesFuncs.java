@@ -1540,4 +1540,17 @@ public static Object changeType (String newType,
                 return false;
         }
     }
+    
+    public static boolean is702xDevice(int deviceType) {
+        switch (deviceType) {
+            case CBC_7020:
+            case CBC_7022:
+            case CBC_7023:
+            case CBC_7024:
+                return true;
+        
+            default:
+                return false;
+        }
+    }
 }

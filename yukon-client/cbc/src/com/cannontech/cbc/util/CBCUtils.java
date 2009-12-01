@@ -272,8 +272,8 @@ public final class CBCUtils {
 
     public static boolean isTwoWay(int type) {
     	return DeviceTypesFuncs.isCBCTwoWay(type);
-    }
-
+    }   
+    
     public static boolean isTwoWay(LiteYukonPAObject obj) {
         DBPersistent dbPers = LiteFactory.convertLiteToDBPersAndRetrieve(obj);
         if (dbPers instanceof TwoWayDevice) return true;
@@ -288,6 +288,10 @@ public final class CBCUtils {
         return false;
     }
 
+    public static boolean is702xDevice(int type) {
+        return DeviceTypesFuncs.is702xDevice(type);
+    }
+    
     public static String getAreaNameForSubStationIdFromCache(int subID) {	
     	String ret = "(none)";
     	SubStation station  = ccCache.getSubstation(subID);

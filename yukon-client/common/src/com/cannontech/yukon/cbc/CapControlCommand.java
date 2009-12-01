@@ -22,8 +22,6 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 	public static final int RETURN_BANK_TO_FEEDER = 11;
 	public static final int RESET_OPCOUNT = 12;
 
-	public static final int WAIVE_SUB = 13;
-	public static final int UNWAIVE_SUB = 14;
 	public static final int CONFIRM_FEEDER = 15;
 	public static final int RESET_ALL_OPCOUNTS = 16;
 
@@ -48,7 +46,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int SEND_TIMESYNC = 34;
     public static final int OPERATIONAL_STATECHANGE = 35;
     
-	public static final int VERIFY_OFFSET = 40;
+	public static final int VERIFY_OFFSET = 60;
 	public static final int CMD_ALL_BANKS = VERIFY_OFFSET + 0;
 	public static final int CMD_FQ_BANKS = VERIFY_OFFSET + 1;
 	public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
@@ -59,7 +57,21 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     
     public static final int CMD_MANUAL_ENTRY = 30;
     public static final int CMD_BANK_TEMP_MOVE  = 31;
-
+    
+    public static final int SEND_ALL_ENABLE_TEMPCONTROL = 40;
+    public static final int SEND_ALL_DISABLE_TEMPCONTROL = 41;
+    public static final int SEND_ALL_ENABLE_VARCONTROL = 42;
+    public static final int SEND_ALL_DISABLE_VARCONTROL = 43;
+    public static final int SEND_ALL_ENABLE_TIMECONTROL = 44;
+    public static final int SEND_ALL_DISABLE_TIMECONTROL = 45;
+    
+    public static final int BANK_ENABLE_TEMPCONTROL = 46;
+    public static final int BANK_DISABLE_TEMPCONTROL = 47;
+    public static final int BANK_ENABLE_VARCONTROL = 48;
+    public static final int BANK_DISABLE_VARCONTROL = 49;
+    public static final int BANK_ENABLE_TIMECONTROL = 50;
+    public static final int BANK_DISABLE_TIMECONTROL = 51;
+    
 	public static final String[] COMMAND_STRINGS = {
 		"Enable Substation Bus",
 		"Disable Substation Bus",
@@ -75,8 +87,8 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 		"Request All Substation Buses",
 		"Return Bank to Feeder",   //11
 		"Update Op Count",
-		"Waive Sub",
-		"Unwaive Sub",
+		"",
+		"",
 		"Confirm Feeder",  //15
 		"Unwaive Feeder",
 		"Enable OV/UV",
@@ -109,7 +121,13 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 		"Verify Disabled Banks", //44
         "",
         "VerifyStandaloneBanks",
-        "Confirm Substation"
+        "Confirm Substation",
+        "",
+        "",
+        "",//50
+        "",
+        "",
+        ""
         };
 	
 

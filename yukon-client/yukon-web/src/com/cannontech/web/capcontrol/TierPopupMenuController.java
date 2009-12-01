@@ -61,9 +61,8 @@ public class TierPopupMenuController extends MultiActionController {
         final CCSpecialArea area = capControlCache.getCBCSpecialArea(id);
         
         boolean isDisabled = area.getCcDisableFlag();
-        boolean isDisabledOVUV = area.getOvUvDisabledFlag();
         
-        ModelAndView mav = createAreaMAV(user, area, CapControlType.SPECIAL_AREA, isDisabled, isDisabledOVUV);
+        ModelAndView mav = createAreaMAV(user, area, CapControlType.SPECIAL_AREA, isDisabled);
         return mav;    
     }
     
@@ -74,9 +73,8 @@ public class TierPopupMenuController extends MultiActionController {
         final CCArea area = capControlCache.getCBCArea(id);
         
         boolean isDisabled = area.getCcDisableFlag();
-        boolean isDisabledOVUV = area.getOvUvDisabledFlag();
 
-        ModelAndView mav = createAreaMAV(user, area, CapControlType.AREA, isDisabled, isDisabledOVUV );
+        ModelAndView mav = createAreaMAV(user, area, CapControlType.AREA, isDisabled );
         return mav;
     }
     
@@ -93,9 +91,10 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = subStation.getCcDisableFlag();
-        boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
         boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
         mav.addObject("allowAddComments", allowAddComments);
+        mav.addObject("allowLocalControl", allowLocalControl);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         list.add(CommandHolder.CONFIRM_SUBSTATION);
@@ -109,11 +108,6 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.RESET_OP_COUNTS);
         list.add(CommandHolder.SEND_ALL_OPEN);
         list.add(CommandHolder.SEND_ALL_CLOSED);
-        
-        if (allowOVUV) {
-            list.add(CommandHolder.SEND_ENABLE_OVUV);
-            list.add(CommandHolder.SEND_DISABLE_OVUV);
-        }
 
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
@@ -137,10 +131,11 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = subBus.getCcDisableFlag();
-        boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
         boolean isVerify = subBus.getVerificationFlag();
         boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
         mav.addObject("allowAddComments", allowAddComments);
+        mav.addObject("allowLocalControl", allowLocalControl);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         list.add(CommandHolder.CONFIRM_SUBBUS);
@@ -154,11 +149,6 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.RESET_OP_COUNTS);
         list.add(CommandHolder.SEND_ALL_OPEN);
         list.add(CommandHolder.SEND_ALL_CLOSED);
-
-        if (allowOVUV) {
-            list.add(CommandHolder.SEND_ENABLE_OVUV);
-            list.add(CommandHolder.SEND_DISABLE_OVUV);
-        }
 
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
@@ -192,9 +182,10 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = feeder.getCcDisableFlag();
-        boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
         boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
         mav.addObject("allowAddComments", allowAddComments);
+        mav.addObject("allowLocalControl", allowLocalControl);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         
@@ -209,11 +200,6 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.RESET_OP_COUNTS);
         list.add(CommandHolder.SEND_ALL_OPEN);
         list.add(CommandHolder.SEND_ALL_CLOSED);
-
-        if (allowOVUV) {
-            list.add(CommandHolder.SEND_ENABLE_OVUV);
-            list.add(CommandHolder.SEND_DISABLE_OVUV);
-        }
         
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
@@ -240,8 +226,9 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isClosed = CapBankDevice.isInAnyCloseState(capBank);
         boolean isTwoWay = CBCUtils.isTwoWay(cbcPaoObject);
+        boolean is702xDevice = CBCUtils.is702xDevice(cbcPaoObject.getType());
         boolean is701xDevice = CBCUtils.is701xDevice(cbcPaoObject);
-        boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
         boolean allowFlip = authDao.checkRoleProperty(user, CBCSettingsRole.SHOW_FLIP_COMMAND);
         boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
         mav.addObject("allowAddComments", allowAddComments);
@@ -261,8 +248,11 @@ public class TierPopupMenuController extends MultiActionController {
         }
         
         list.add(CommandHolder.CBC_TIMESYNC);
-        
-        if (allowOVUV) {
+
+        if (is702xDevice) {
+            mav.addObject("allowLocalControl", allowLocalControl);
+            mav.addObject("localControlTypeCBC", true);
+        } else {
             list.add(CommandHolder.CBC_ENABLE_OVUV);
             list.add(CommandHolder.CBC_DISABLE_OVUV);
         }
@@ -275,6 +265,45 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;
+    }
+    
+    public ModelAndView localControlMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final Integer id = ServletRequestUtils.getRequiredIntParameter(request,"id");
+        final Boolean capBankType = ServletRequestUtils.getBooleanParameter(request,"capBankType",false);
+        final String controlType = ServletRequestUtils.getRequiredStringParameter(request, "controlType");
+        
+        final StreamableCapObject capObject = capControlCache.getStreamableCapObjectById(id);
+        
+        mav.addObject("paoId", id);
+        
+        String paoName = capObject.getCcName();
+        mav.addObject("paoName", paoName);
+        
+        final List<CommandHolder> list = new ArrayList<CommandHolder>();
+        if (capBankType) {
+            list.add(CommandHolder.CBC_ENABLE_OVUV);
+            list.add(CommandHolder.CBC_DISABLE_OVUV);
+            list.add(CommandHolder.CBC_ENABLE_TEMPCONTROL);
+            list.add(CommandHolder.CBC_DISABLE_TEMPCONTROL);
+            list.add(CommandHolder.CBC_ENABLE_VARCONTROL);
+            list.add(CommandHolder.CBC_DISABLE_VARCONTROL);
+            list.add(CommandHolder.CBC_ENABLE_TIMECONTROL);
+            list.add(CommandHolder.CBC_DISABLE_TIMECONTROL);
+        } else {
+            list.add(CommandHolder.SEND_ENABLE_OVUV);
+            list.add(CommandHolder.SEND_DISABLE_OVUV);
+            list.add(CommandHolder.SEND_ENABLE_TEMPCONTROL);
+            list.add(CommandHolder.SEND_DISABLE_TEMPCONTROL);
+            list.add(CommandHolder.SEND_ENABLE_VARCONTROL);
+            list.add(CommandHolder.SEND_DISABLE_VARCONTROL);
+            list.add(CommandHolder.SEND_ENABLE_TIMECONTROL);
+            list.add(CommandHolder.SEND_DISABLE_TIMECONTROL);
+        }
+        mav.addObject("list", list);
+        mav.addObject("controlType", CapControlType.valueOf(controlType));
+        mav.setViewName("tier/popupmenu/menu.jsp");
+        return mav;    
     }
     
     public ModelAndView capBankSystemMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -401,8 +430,8 @@ public class TierPopupMenuController extends MultiActionController {
         return mav;
     }
     
-    private ModelAndView createAreaMAV(LiteYukonUser user, StreamableCapObject capObject, CapControlType controlType,
-            boolean isDisabled, boolean isDisabledOVUV) {
+    private ModelAndView createAreaMAV(LiteYukonUser user, StreamableCapObject capObject, 
+                                       CapControlType controlType, boolean isDisabled) {
         
         final ModelAndView mav = new ModelAndView();
         
@@ -412,9 +441,10 @@ public class TierPopupMenuController extends MultiActionController {
         String paoName = capObject.getCcName();
         mav.addObject("paoName", paoName);
         
-        boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
         boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
         mav.addObject("allowAddComments", allowAddComments);
+        mav.addObject("allowLocalControl", allowLocalControl);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         list.add(CommandHolder.CONFIRM_AREA);
@@ -427,11 +457,6 @@ public class TierPopupMenuController extends MultiActionController {
         
         list.add(CommandHolder.SEND_ALL_OPEN);
         list.add(CommandHolder.SEND_ALL_CLOSED);
-
-        if (allowOVUV) {
-            list.add(CommandHolder.SEND_ENABLE_OVUV);
-            list.add(CommandHolder.SEND_DISABLE_OVUV);
-        }
         
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);

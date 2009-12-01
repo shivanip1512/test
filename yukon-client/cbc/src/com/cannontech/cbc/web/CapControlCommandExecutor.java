@@ -192,30 +192,21 @@ public class CapControlCommandExecutor
 	
 	private void executeCapBankCommand(int cmdId, int paoId, float[] optionalParams, int operationalState) {
 	    switch (cmdId) {
-	        case CapControlCommand.CONFIRM_CLOSE : {
-	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
-	            break;
-	        }
+	        case CapControlCommand.CONFIRM_CLOSE :
 	        case CapControlCommand.CONFIRM_OPEN : {
 	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
                 break;
 	        }
-	        case CapControlCommand.CLOSE_CAPBANK : {
-	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
-	            break;
-	        }
-	        case CapControlCommand.OPEN_CAPBANK : {
-	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
-                break;
-	        }
-	        case CapControlCommand.BANK_DISABLE_OVUV : {
-	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
-                break;
-	        }
-	        case CapControlCommand.BANK_ENABLE_OVUV : {
-	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
-                break;
-	        }
+	        case CapControlCommand.BANK_ENABLE_TEMPCONTROL:
+	        case CapControlCommand.BANK_DISABLE_TEMPCONTROL:
+            case CapControlCommand.BANK_ENABLE_VARCONTROL:
+            case CapControlCommand.BANK_DISABLE_VARCONTROL:	            
+            case CapControlCommand.BANK_ENABLE_TIMECONTROL:
+            case CapControlCommand.BANK_DISABLE_TIMECONTROL:	        
+            case CapControlCommand.CLOSE_CAPBANK :
+	        case CapControlCommand.OPEN_CAPBANK :
+	        case CapControlCommand.BANK_DISABLE_OVUV :
+	        case CapControlCommand.BANK_ENABLE_OVUV :
 	        case CapControlCommand.SCAN_2WAY_DEV : {
 	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
                 break;
@@ -240,26 +231,11 @@ public class CapControlCommandExecutor
 	            executeCapBankCmdTempMove(paoId, optionalParams);
 	            break;
 	        }
-	        case CapControlCommand.DISABLE_CAPBANK : {
-	            executeCapBankDefault(paoId, cmdId, operationalState);
-                break;
-	        }
-	        case CapControlCommand.ENABLE_CAPBANK : {
-	            executeCapBankDefault(paoId, cmdId, operationalState);
-                break;
-	        }
-	        case CapControlCommand.OPERATIONAL_STATECHANGE : {
-	            executeCapBankDefault(paoId, cmdId, operationalState);
-	            break;
-	        }
-	        case CapControlCommand.RETURN_BANK_TO_FEEDER : {
-	        	executeCapBankDefault(paoId, cmdId, operationalState);
-	        	break;
-	        }
-	        case CapControlCommand.SEND_TIMESYNC : {
-	            executeCapBankDefault(paoId, cmdId, operationalState);
-	            break;
-	        }
+	        case CapControlCommand.DISABLE_CAPBANK :
+	        case CapControlCommand.ENABLE_CAPBANK :
+	        case CapControlCommand.OPERATIONAL_STATECHANGE :
+	        case CapControlCommand.RETURN_BANK_TO_FEEDER :
+	        case CapControlCommand.SEND_TIMESYNC :
 	        case CapControlCommand.FLIP_7010_CAPBANK : {
 	            executeCapBankDefault(paoId, cmdId, operationalState);
                 break;

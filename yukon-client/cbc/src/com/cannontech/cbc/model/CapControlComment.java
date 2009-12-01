@@ -110,6 +110,12 @@ public class CapControlComment {
                 cmdId == CapControlCommand.SEND_ALL_CLOSE || 
                 cmdId == CapControlCommand.SEND_ALL_ENABLE_OVUV || 
                 cmdId == CapControlCommand.SEND_ALL_DISABLE_OVUV || 
+                cmdId == CapControlCommand.SEND_ALL_ENABLE_TEMPCONTROL || 
+                cmdId == CapControlCommand.SEND_ALL_DISABLE_TEMPCONTROL ||
+                cmdId == CapControlCommand.SEND_ALL_ENABLE_VARCONTROL || 
+                cmdId == CapControlCommand.SEND_ALL_DISABLE_VARCONTROL ||
+                cmdId == CapControlCommand.SEND_ALL_ENABLE_TIMECONTROL || 
+                cmdId == CapControlCommand.SEND_ALL_DISABLE_TIMECONTROL ||                
                 cmdId == CapControlCommand.SEND_ALL_SCAN_2WAY || 
                 cmdId == CapControlCommand.SEND_TIMESYNC || 
                 cmdId == CapControlCommand.CONFIRM_SUBSTATION || 
