@@ -121,7 +121,9 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
             event.setAction(CustomerAction.MANUAL_OPTION);
 
             // Mode and fan can be blank
-            if (!StringUtils.isBlank(mode)) {
+            if (runProgram) {
+                event.setMode(ThermostatMode.DEFAULT);
+            } else if (!StringUtils.isBlank(mode)) {
                 ThermostatMode thermostatMode = ThermostatMode.valueOf(mode);
                 event.setMode(thermostatMode);
             }

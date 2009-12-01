@@ -13,7 +13,7 @@ public enum ThermostatMode implements ListEntryEnum {
     HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat"), 
     OFF(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF, "off"), 
     EMERGENCY_HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT,
-            "emergencyheat");
+            "emheat");
 
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.dr.consumer.xml
