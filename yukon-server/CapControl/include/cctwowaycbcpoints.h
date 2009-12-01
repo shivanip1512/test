@@ -1,15 +1,15 @@
 
 /*---------------------------------------------------------------------------
         Filename:  cctwowaycbcpoints.h
-        
+
         Programmer:  Julie Richter
-                
+
         Description:    Header file for CtiCCTwoWayPoints
                         CtiCCTwoWayPoints maintains the state and handles
                         the persistence of cap banks for Cap Control.
 
         Initial Date:  8/30/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 
@@ -20,7 +20,7 @@
 #include <rw/vstream.h>
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 #include <list>
 
 
@@ -31,8 +31,8 @@
 #include "types.h"
 
 
-                
-class CtiCCTwoWayPoints  
+
+class CtiCCTwoWayPoints
 {
 
 public:
@@ -40,7 +40,7 @@ public:
   //RWDECLARE_COLLECTABLE( CtiCCTwoWayPoints )
 
 
-    CtiCCTwoWayPoints(LONG paoid);
+    CtiCCTwoWayPoints(long paoid);
     CtiCCTwoWayPoints(RWDBReader& rdr);
     CtiCCTwoWayPoints(const CtiCCTwoWayPoints& cap);
 
@@ -95,21 +95,23 @@ public:
     LONG getRSSI() const;
     LONG getIgnoredIndicatorId() const;
     LONG getIgnoredIndicator() const;
-    LONG getVoltageId() const;       
-    LONG getVoltage() const;         
-    LONG getHighVoltageId() const;   
-    LONG getHighVoltage() const;     
-    LONG getLowVoltageId() const;    
-    LONG getLowVoltage() const;      
-    LONG getDeltaVoltageId() const;  
-    LONG getDeltaVoltage() const;    
-    LONG getAnalogInput1Id() const;  
-    LONG getAnalogInput1() const;    
-    LONG getTemperatureId() const;   
-    LONG getTemperature() const; 
+    LONG getVoltageId() const;
+    LONG getVoltage() const;
+    LONG getHighVoltageId() const;
+    LONG getHighVoltage() const;
+    LONG getLowVoltageId() const;
+    LONG getLowVoltage() const;
+    LONG getDeltaVoltageId() const;
+    LONG getDeltaVoltage() const;
+    LONG getAnalogInput1Id() const;
+    LONG getAnalogInput1() const;
+    LONG getTemperatureId() const;
+    LONG getTemperature() const;
 
     LONG getIgnoredReasonId() const;
     LONG getIgnoredReason() const;
+    long getVoltageControlId() const;
+    long getVoltageControl() const;
     LONG getUvSetPointId() const;
     LONG getUvSetPoint() const;
     LONG getOvSetPointId() const;
@@ -120,23 +122,29 @@ public:
     LONG getNeutralCurrentSensor() const;
     LONG getNeutralCurrentAlarmSetPointId() const;
     LONG getNeutralCurrentAlarmSetPoint() const;
+    long getTimeTempSeasonOneId() const;
+    long getTimeTempSeasonOne() const;
+    long getTimeTempSeasonTwoId() const;
+    long getTimeTempSeasonTwo() const;
+    long getVarControlId() const;
+    long getVarControl() const;
     LONG getUDPIpAddressId() const;
     ULONG getUDPIpAddress() const;
     LONG getUDPPortNumberId() const;
     LONG getUDPPortNumber() const;
-    LONG getTotalOpCountId() const;  
-    LONG getTotalOpCount() const;    
-    LONG getOvCountId() const;       
-    LONG getOvCount() const;         
-    LONG getUvCountId() const;       
-    LONG getUvCount() const; 
+    LONG getTotalOpCountId() const;
+    LONG getTotalOpCount() const;
+    LONG getOvCountId() const;
+    LONG getOvCount() const;
+    LONG getUvCountId() const;
+    LONG getUvCount() const;
     const CtiTime& getOvUvCountResetDate() const;
     const CtiTime& getLastOvUvDateTime() const;
     string getLastControlText() const;
     LONG getLastControl() const;
     INT getLastControlReason() const;
-    
-    
+
+
     CtiCCTwoWayPoints& setPAOId(LONG paoId);
     CtiCCTwoWayPoints& setCapacitorBankStateId(LONG pointId);
     CtiCCTwoWayPoints& setCapacitorBankState(LONG value);
@@ -187,45 +195,53 @@ public:
     CtiCCTwoWayPoints& setIgnoredIndicatorId(LONG pointId);
     CtiCCTwoWayPoints& setIgnoredIndicator(LONG value);
     CtiCCTwoWayPoints& setVoltageId(LONG pointId);
-    CtiCCTwoWayPoints& setVoltage(LONG value);    
+    CtiCCTwoWayPoints& setVoltage(LONG value);
     CtiCCTwoWayPoints& setHighVoltageId(LONG pointId);
-    CtiCCTwoWayPoints& setHighVoltage(LONG value);    
+    CtiCCTwoWayPoints& setHighVoltage(LONG value);
     CtiCCTwoWayPoints& setLowVoltageId(LONG pointId);
-    CtiCCTwoWayPoints& setLowVoltage(LONG value);    
+    CtiCCTwoWayPoints& setLowVoltage(LONG value);
     CtiCCTwoWayPoints& setDeltaVoltageId(LONG pointId);
-    CtiCCTwoWayPoints& setDeltaVoltage(LONG value);    
+    CtiCCTwoWayPoints& setDeltaVoltage(LONG value);
     CtiCCTwoWayPoints& setAnalogInput1Id(LONG pointId);
-    CtiCCTwoWayPoints& setAnalogInput1(LONG value);    
+    CtiCCTwoWayPoints& setAnalogInput1(LONG value);
     CtiCCTwoWayPoints& setTemperatureId(LONG pointId);
-    CtiCCTwoWayPoints& setTemperature(LONG value); 
+    CtiCCTwoWayPoints& setTemperature(LONG value);
     CtiCCTwoWayPoints& setIgnoredReasonId(LONG pointId);
-    CtiCCTwoWayPoints& setIgnoredReason(LONG value); 
+    CtiCCTwoWayPoints& setIgnoredReason(LONG value);
+    void setVoltageControlId(long value);
+    void setVoltageControl(long value);
     CtiCCTwoWayPoints& setUvSetPointId(LONG pointId);
-    CtiCCTwoWayPoints& setUvSetPoint(LONG value); 
+    CtiCCTwoWayPoints& setUvSetPoint(LONG value);
     CtiCCTwoWayPoints& setOvSetPointId(LONG pointId);
-    CtiCCTwoWayPoints& setOvSetPoint(LONG value); 
+    CtiCCTwoWayPoints& setOvSetPoint(LONG value);
     CtiCCTwoWayPoints& setOVUVTrackTimeId(LONG pointId);
     CtiCCTwoWayPoints& setOVUVTrackTime(LONG value);
     CtiCCTwoWayPoints& setNeutralCurrentSensorId(LONG pointId);
-    CtiCCTwoWayPoints& setNeutralCurrentSensor(LONG value); 
+    CtiCCTwoWayPoints& setNeutralCurrentSensor(LONG value);
     CtiCCTwoWayPoints& setNeutralCurrentAlarmSetPointId(LONG pointId);
-    CtiCCTwoWayPoints& setNeutralCurrentAlarmSetPoint(LONG value); 
+    CtiCCTwoWayPoints& setNeutralCurrentAlarmSetPoint(LONG value);
+    void setTimeTempSeasonOneId(long value);
+    void setTimeTempSeasonOne(long value);
+    void setTimeTempSeasonTwoId(long value);
+    void setTimeTempSeasonTwo(long value);
+    void setVarControlId(long value);
+    void setVarControl(long value);
     CtiCCTwoWayPoints& setUDPIpAddressId(LONG pointId);
     CtiCCTwoWayPoints& setUDPIpAddress(ULONG value);
     CtiCCTwoWayPoints& setUDPPortNumberId(LONG pointId);
     CtiCCTwoWayPoints& setUDPPortNumber(LONG value);
     CtiCCTwoWayPoints& setTotalOpCountId(LONG pointId);
-    CtiCCTwoWayPoints& setTotalOpCount(LONG value);    
+    CtiCCTwoWayPoints& setTotalOpCount(LONG value);
     CtiCCTwoWayPoints& setOvCountId(LONG pointId);
-    CtiCCTwoWayPoints& setOvCount(LONG value);    
+    CtiCCTwoWayPoints& setOvCount(LONG value);
     CtiCCTwoWayPoints& setUvCountId(LONG pointId);
-    CtiCCTwoWayPoints& setUvCount(LONG value);  
+    CtiCCTwoWayPoints& setUvCount(LONG value);
     CtiCCTwoWayPoints& setOvUvCountResetDate(const CtiTime eventTime);
     CtiCCTwoWayPoints& setLastOvUvDateTime(const CtiTime eventTime);
 
-    CtiCCTwoWayPoints& setLastControlReason(); 
+    CtiCCTwoWayPoints& setLastControlReason();
 
-   
+
     BOOL setTwoWayPointId(int pointtype, int offset, LONG pointId);
     BOOL setTwoWayStatusPointValue(LONG pointID, LONG value);
     BOOL setTwoWayAnalogPointValue(LONG pointID, LONG value);
@@ -252,31 +268,31 @@ public:
     int operator==(const CtiCCTwoWayPoints& right) const;
     int operator!=(const CtiCCTwoWayPoints& right) const;
 
-   
+
     //Possible states
     static int Open;
-    static int Closed;   
-        
+    static int Closed;
+
 private:
 
     LONG _paoid;
 
     LONG _capacitorBankStateId;
     LONG _capacitorBankState;
-    LONG _reCloseBlockedId; 
-    LONG _reCloseBlocked;   
-    LONG _controlModeId;    
-    LONG _controlMode;      
+    LONG _reCloseBlockedId;
+    LONG _reCloseBlocked;
+    LONG _controlModeId;
+    LONG _controlMode;
     LONG _autoVoltControlId;
-    LONG _autoVoltControl; 
+    LONG _autoVoltControl;
     LONG _lastControlLocalId;
-    LONG _lastControlLocal; 
+    LONG _lastControlLocal;
     LONG _lastControlRemoteId;
     LONG _lastControlRemote;
     LONG _lastControlOvUvId;
-    LONG _lastControlOvUv;  
+    LONG _lastControlOvUv;
     LONG _lastControlNeutralFaultId;
-    LONG _lastControlNeutralFault; 
+    LONG _lastControlNeutralFault;
     LONG _lastControlScheduledId;
     LONG _lastControlScheduled;
     LONG _lastControlDigitalId;
@@ -285,26 +301,26 @@ private:
     LONG _lastControlAnalog;
     LONG _lastControlTemperatureId;
     LONG _lastControlTemperature;
-    LONG _ovConditionId;    
-    LONG _ovCondition;      
-    LONG _uvConditionId;    
-    LONG _uvCondition;      
+    LONG _ovConditionId;
+    LONG _ovCondition;
+    LONG _uvConditionId;
+    LONG _uvCondition;
     LONG _opFailedNeutralCurrentId;
     LONG _opFailedNeutralCurrent;
     LONG _neutralCurrentFaultId;
     LONG _neutralCurrentFault;
-    LONG _badRelayId;       
-    LONG _badRelay;         
-    LONG _dailyMaxOpsId;    
-    LONG _dailyMaxOps;      
+    LONG _badRelayId;
+    LONG _badRelay;
+    LONG _dailyMaxOpsId;
+    LONG _dailyMaxOps;
     LONG _voltageDeltaAbnormalId;
     LONG _voltageDeltaAbnormal;
-    LONG _tempAlarmId;      
-    LONG _tempAlarm;        
-    LONG _DSTActiveId;      
-    LONG _DSTActive;        
-    LONG _neutralLockoutId; 
-    LONG _neutralLockout;   
+    LONG _tempAlarmId;
+    LONG _tempAlarm;
+    LONG _DSTActiveId;
+    LONG _DSTActive;
+    LONG _neutralLockoutId;
+    LONG _neutralLockout;
     LONG _ignoredIndicatorId;
     LONG _ignoredIndicator;
 
@@ -321,13 +337,15 @@ private:
     LONG _analogInput1;
     LONG _temperatureId;
     LONG _temperature;
-    LONG _rssiId; 
+    LONG _rssiId;
     LONG _rssi;
     LONG _ignoredReasonId;
     LONG _ignoredReason;
 
-   
+
     //analog outputs
+    long _voltageControlId;
+    long _voltageControl;
     LONG _ovSetPointId;
     LONG _ovSetPoint;
     LONG _uvSetPointId;
@@ -338,12 +356,18 @@ private:
     LONG _neutralCurrentSensor;
     LONG _neutralCurrentAlarmSetPointId;
     LONG _neutralCurrentAlarmSetPoint;
+    long _timeTempSeasonOneId;
+    long _timeTempSeasonOne;
+    long _timeTempSeasonTwoId;
+    long _timeTempSeasonTwo;
+    long _varControlId;
+    long _varControl;
     LONG _udpIpAddressId;
     ULONG _udpIpAddress;
     LONG _udpPortNumberId;
     LONG _udpPortNumber;
 
-     
+
     LONG _totalOpCountId;
     LONG _totalOpCount;
     LONG _ovCountId;

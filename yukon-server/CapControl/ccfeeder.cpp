@@ -858,16 +858,11 @@ LONG CtiCCFeeder::getLastCapBankControlledDeviceId() const
     return _lastcapbankcontrolleddeviceid;
 }
 
-CtiCCCapBank* CtiCCFeeder::getLastCapBankControlledDevice()
+CtiCCCapBankPtr CtiCCFeeder::getLastCapBankControlledDevice()
 {
-    for(int i = 0; i < _cccapbanks.size(); i++)
-    {
-        if( ((CtiCCCapBank*)_cccapbanks[i])->getPAOId() ==  _lastcapbankcontrolleddeviceid)
-        {
-            return _cccapbanks[i];
-        }
-    }
-    return NULL;
+    CtiCCCapBankPtr bank = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(_lastcapbankcontrolleddeviceid);
+
+    return bank;
 }
 
 /*---------------------------------------------------------------------------
@@ -2005,11 +2000,11 @@ CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(BOOL flag)
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMultiMsg_vec& pointChanges, double leadLevel, double lagLevel, double currentVarValue,
                                                    BOOL checkLimits)
 {
-    CtiCCCapBank* returnCapBank = NULL;
+    CtiCCCapBankPtr returnCapBank = NULL;
     CtiTime currentTime = CtiTime();
     BankOperation solution;
     bool endOnTrip = false;
-    std::vector<CtiCCCapBank*> banks;
+    std::vector<CtiCCCapBankPtr> banks;
 
     if (kvarSolution == 0.0)
     {
@@ -5201,7 +5196,7 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
     {
         if( minConfirmPercent > 0 )
         {
-            CtiCCCapBank* currentCapBank = getLastCapBankControlledDevice();
+            CtiCCCapBankPtr currentCapBank = getLastCapBankControlledDevice();
             if( currentCapBank != NULL &&
                 currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() &&
                 currentCapBank->getPerformingVerificationFlag() &&

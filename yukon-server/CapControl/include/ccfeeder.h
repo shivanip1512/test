@@ -40,23 +40,23 @@
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
 {
-    bool operator()( const CtiCCCapBank* _X , const CtiCCCapBank *_Y)
+    bool operator()( const CtiCCCapBankPtr _X , const CtiCCCapBankPtr _Y)
         { return ( _X->getControlOrder() < _Y->getControlOrder() ); }
 };
 struct CtiCCCapBank_lessClose
 {
-    bool operator()( const CtiCCCapBank* _X , const CtiCCCapBank *_Y)
+    bool operator()( const CtiCCCapBankPtr _X , const CtiCCCapBankPtr _Y)
         { return ( _X->getCloseOrder() < _Y->getCloseOrder() ); }
 };
 struct CtiCCCapBank_lessTrip
 {
-    bool operator()( const CtiCCCapBank* _X , const CtiCCCapBank *_Y)
+    bool operator()( const CtiCCCapBankPtr _X , const CtiCCCapBankPtr _Y)
         { return ( _X->getTripOrder() < _Y->getTripOrder() ); }
 };
 //Typedef for Sanity using sorted vectors
-typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_less> CtiCCCapBank_SVector;
-typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_lessClose> CtiCCCapBank_SCloseVector;
-typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_lessTrip> CtiCCCapBank_STripVector;
+typedef codeproject::sorted_vector<CtiCCCapBankPtr,false,CtiCCCapBank_less> CtiCCCapBank_SVector;
+typedef codeproject::sorted_vector<CtiCCCapBankPtr,false,CtiCCCapBank_lessClose> CtiCCCapBank_SCloseVector;
+typedef codeproject::sorted_vector<CtiCCCapBankPtr,false,CtiCCCapBank_lessTrip> CtiCCCapBank_STripVector;
 
 
 template<class T>
@@ -179,7 +179,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getOvUvDisabledFlag() const;
     BOOL getCorrectionNeededNoBankAvailFlag() const;
     bool getLikeDayControlFlag() const;
-    BOOL getLastVerificationMsgSentSuccessfulFlag() const;    
+    BOOL getLastVerificationMsgSentSuccessfulFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     DOUBLE getTargetVarValue() const;
@@ -331,8 +331,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setRetryIndex(LONG value);
 
     void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag);
-    CtiCCCapBank* getLastCapBankControlledDevice();
-    CtiCCCapBank* findCapBankToChangeVars(double kvarSolution, CtiMultiMsg_vec& pointChanges,
+    CtiCCCapBankPtr getLastCapBankControlledDevice();
+    CtiCCCapBankPtr findCapBankToChangeVars(double kvarSolution, CtiMultiMsg_vec& pointChanges,
                                           double leadLevel = 0, double lagLevel = 0, double currentVarValue = 0,
                                           BOOL checkLimits = true);
     bool checkForMaxKvar( long, long );
@@ -403,7 +403,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                                                         string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
     bool startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+    CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                           CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control);
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
@@ -614,7 +614,5 @@ private:
     CtiRegression regressionC;
 };
 
-
-//typedef shared_ptr<CtiCCFeeder> CtiCCFeederPtr;
 typedef CtiCCFeeder* CtiCCFeederPtr;
 #endif

@@ -1,15 +1,15 @@
 /*---------------------------------------------------------------------------
         Filename:  ccsubstationbusstore.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiCCSubstationBusStore.
                         CtiCCSubstationBusStore maintains a pool of
                         CtiCCSubstationBus handles.
-                       
+
 
         Initial Date:  8/27/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 
@@ -34,6 +34,7 @@
 #include "ccmessage.h"
 #include "ccstatsobject.h"
 
+#include "ccutil.h"
 
 using std::multimap;
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
@@ -101,19 +102,6 @@ public:
 
     CtiCCSubstationBusStore();
     virtual ~CtiCCSubstationBusStore();
-
-    typedef enum
-    {
-        Unknown = 0,
-        CapBank,
-        Feeder,
-        SubBus,
-        Substation,
-        Area,
-        Strategy,
-        Schedule,
-        SpecialArea
-    } CtiCapControlObjectType;
 
     typedef enum
     {
@@ -461,6 +449,16 @@ public:
     void addSubstationToPaoMap(CtiCCSubstationPtr station);
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
     void addFeederToPaoMap(CtiCCFeederPtr feeder);
+
+    std::vector<CtiCCSubstationBusPtr> getSubBusesByAreaId(int areaId);
+    std::vector<CtiCCSubstationBusPtr> getSubBusesBySpecialAreaId(int areaId);
+    std::vector<CtiCCSubstationBusPtr> getSubBusesByStationId(int stationId);
+    std::vector<CtiCCSubstationBusPtr> getSubBusesByFeederId(int feederId);
+    std::vector<CtiCCSubstationBusPtr> getSubBusesByCapControlByIdAndType(int paoId, CapControlType type);
+
+    std::vector<CtiCCCapBankPtr> getCapBanksByPaoId(int paoId);
+    std::vector<CtiCCCapBankPtr> getCapBanksByPaoIdAndType(int paoId, CapControlType type);
+    CapControlType determineTypeById(int paoId);
 
 private:
 

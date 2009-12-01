@@ -1,20 +1,20 @@
 /*-----------------------------------------------------------------------------
     Filename:  capcontroller.h
-    
+
     Programmer:  Josh Wolberg
-    
+
     Description:    Header file for CtiCapController
                     Once started CtiCapController is reponsible
                     for determining if and when to adjust the
                     substation buses provided by the CtiCCSubstationBusStore.
-                        
+
     Initial Date:  8/31/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
- 
+
 #ifndef CTICAPCONTROLLER_H
 #define CTICAPCONTROLLER_H
 
@@ -22,7 +22,7 @@
 #include <rw/thr/runfunc.h>
 #include <rw/thr/srvpool.h>
 #include <rw/thr/thrutil.h>
-#include <rw/thr/countptr.h> 
+#include <rw/thr/countptr.h>
 #include <rw/collect.h>
 
 #include "dbaccess.h"
@@ -42,18 +42,18 @@
 #include "yukon.h"
 #include "ctdpcptrq.h"
 //#include "CtiPCPtrQueue.h"
-                       
+
 class CtiCapController
 {
 public:
-    
+
     static CtiCapController* getInstance();
 
     void start();
     void stop();
 
     void sendMessageToDispatch(CtiMessage* message);
-    void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg);
+    void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
     void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
     CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
     CtiPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
@@ -61,22 +61,22 @@ public:
 
     void loadControlLoopCParms();
     void refreshCParmGlobals(bool force);
-    void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
+    void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
                                     CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
-    void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
+    void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
                                     CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
 
     void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
                             CtiMultiMsg_vec& capMessages,  CtiMultiMsg* multiCCEventMsg);
 
-    void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges, 
+    void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
                                    CtiCCArea_vec& areaChanges, long broadCastMask);
     void readClientMsgQueue();
     void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
 private:
-    
+
     CtiCapController();
     virtual ~CtiCapController();
 
@@ -103,8 +103,8 @@ private:
     void pointDataMsgBySubstation( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 );
     void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString, ULONG secondsFrom1901);
     void signalMsg(long pointID, unsigned tags, const string& text, const string& additional, ULONG secondsFrom1901);
-    
-    static CtiCapController* _instance;                    
+
+    static CtiCapController* _instance;
     RWThread _substationBusThread;
     RWThread _outClientMsgThread;
     RWThread _messageSenderThread;

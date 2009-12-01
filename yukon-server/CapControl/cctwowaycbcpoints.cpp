@@ -53,7 +53,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     _lastControlDigitalId = 0;
     _lastControlDigital = 0;
     _lastControlAnalogId = 0;
-    _lastControlAnalog = 0;   
+    _lastControlAnalog = 0;
     _lastControlTemperatureId = 0;
     _lastControlTemperature = 0;
     _ovConditionId = 0;
@@ -80,6 +80,8 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     _ignoredIndicator = 0;
 
     //analog inputs
+    _voltageControlId = 0;
+    _voltageControl = 0;
     _voltageId = 0;
     _voltage = 0;
     _highVoltageId = 0;
@@ -108,6 +110,12 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     _neutralCurrentSensor = 0;
     _neutralCurrentAlarmSetPointId = 0;
     _neutralCurrentAlarmSetPoint = 0;
+    _timeTempSeasonOneId = 0;
+    _timeTempSeasonOne = 0;
+    _timeTempSeasonTwoId = 0;
+    _timeTempSeasonTwo = 0;
+    _varControlId = 0;
+    _varControl = 0;
     _udpIpAddressId = 0;
     _udpIpAddress = 0;
     _udpPortNumberId = 0;
@@ -354,6 +362,14 @@ LONG CtiCCTwoWayPoints::getIgnoredReason() const
 {
     return _ignoredReason;
 }
+long CtiCCTwoWayPoints::getVoltageControlId() const
+{
+    return _voltageControlId;
+}
+long CtiCCTwoWayPoints::getVoltageControl() const
+{
+    return _voltageControl;
+}
 LONG CtiCCTwoWayPoints::getUvSetPointId() const
 {
     return _uvSetPointId;
@@ -393,6 +409,30 @@ LONG CtiCCTwoWayPoints::getNeutralCurrentAlarmSetPointId() const
 LONG CtiCCTwoWayPoints::getNeutralCurrentAlarmSetPoint() const
 {
     return _neutralCurrentAlarmSetPoint;
+}
+long CtiCCTwoWayPoints::getTimeTempSeasonOneId() const
+{
+    return _timeTempSeasonOneId;
+}
+long CtiCCTwoWayPoints::getTimeTempSeasonOne() const
+{
+    return _timeTempSeasonOne;
+}
+long CtiCCTwoWayPoints::getTimeTempSeasonTwoId() const
+{
+    return _timeTempSeasonTwoId;
+}
+long CtiCCTwoWayPoints::getTimeTempSeasonTwo() const
+{
+    return _timeTempSeasonTwo;
+}
+long CtiCCTwoWayPoints::getVarControlId() const
+{
+    return _varControlId;
+}
+long CtiCCTwoWayPoints::getVarControl() const
+{
+    return _varControl;
 }
 LONG CtiCCTwoWayPoints::getUDPIpAddressId() const
 {
@@ -994,6 +1034,25 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setIgnoredReason(LONG value)
 
 }
 
+void CtiCCTwoWayPoints::setVoltageControlId(long value)
+{
+    if (value != _voltageControlId)
+    {
+        _dirty = TRUE;
+    }
+    _voltageControlId = value;
+}
+
+void CtiCCTwoWayPoints::setVoltageControl(long value)
+{
+    if (value != _voltageControl)
+    {
+        _dirty = TRUE;
+    }
+    _voltageControl = value;
+}
+
+
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUvSetPointId(LONG pointId)
 {
     if (pointId != _uvSetPointId)
@@ -1094,6 +1153,60 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setNeutralCurrentAlarmSetPoint(LONG value)
     }
     _neutralCurrentAlarmSetPoint = value;
     return *this;
+}
+
+void CtiCCTwoWayPoints::setTimeTempSeasonOneId(long value)
+{
+    if (value != _timeTempSeasonOneId)
+    {
+        _dirty = TRUE;
+    }
+    _timeTempSeasonOneId = value;
+}
+
+void CtiCCTwoWayPoints::setTimeTempSeasonOne(long value)
+{
+    if (value != _timeTempSeasonOne)
+    {
+        _dirty = TRUE;
+    }
+    _timeTempSeasonOne = value;
+}
+
+void CtiCCTwoWayPoints::setTimeTempSeasonTwoId(long value)
+{
+    if (value != _timeTempSeasonTwoId)
+    {
+        _dirty = TRUE;
+    }
+    _timeTempSeasonTwoId = value;
+}
+
+void CtiCCTwoWayPoints::setTimeTempSeasonTwo(long value)
+{
+    if (value != _timeTempSeasonTwo)
+    {
+        _dirty = TRUE;
+    }
+    _timeTempSeasonTwo = value;
+}
+
+void CtiCCTwoWayPoints::setVarControlId(long value)
+{
+    if (value != _varControlId )
+    {
+        _dirty = TRUE;
+    }
+    _varControlId = value;
+}
+
+void CtiCCTwoWayPoints::setVarControl(long value)
+{
+    if (value != _varControl)
+    {
+        _dirty = TRUE;
+    }
+    _varControl = value;
 }
 
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::setUDPIpAddressId(LONG pointId)
@@ -1729,6 +1842,13 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
                  }
 
                  //dnp analog output points have offsets starting with 10000
+                 case 10001:
+                 {
+                     //Voltage Control Flags
+                     setVoltageControlId(pointId);
+                     retVal = true;
+                     break;
+                 }
                  case 10002:
                  {
                      setUvSetPointId(pointId);
@@ -1757,6 +1877,23 @@ BOOL CtiCCTwoWayPoints::setTwoWayPointId(int pointtype, int offset, LONG pointId
                  {
                      setNeutralCurrentAlarmSetPointId(pointId);
                      retVal = TRUE;
+                     break;
+                 }
+                 case 10026:
+                 {
+                     setTimeTempSeasonOneId(pointId);
+                     retVal = true;
+                     break;
+                 }
+                 case 10042:
+                 {
+                     setTimeTempSeasonTwoId(pointId);
+                     retVal = true;
+                     break;
+                 }
+                 case 10068:
+                 {
+                     setVarControlId(pointId);
                      break;
                  }
                  case 20001:
@@ -1980,6 +2117,10 @@ BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value)
         setIgnoredReason(value);
         retVal = TRUE;
     }
+    else if (getVoltageControlId() == pointID)
+    {
+        setVoltageControl(value);
+    }
     else if ( getUvSetPointId() == pointID )
     {
         setUvSetPoint(value);
@@ -2004,6 +2145,18 @@ BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value)
     {
         setNeutralCurrentAlarmSetPoint(value);
         retVal = TRUE;
+    }
+    else if (getTimeTempSeasonOneId() == pointID)
+    {
+        setTimeTempSeasonOne(value);
+    }
+    else if (getTimeTempSeasonTwoId() == pointID)
+    {
+        setTimeTempSeasonTwo(value);
+    }
+    else if (getVarControlId() == pointID)
+    {
+        setVoltageControl(value);
     }
     else if ( getUDPIpAddressId() == pointID )
     {
@@ -2361,7 +2514,9 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _neutralLockout = right._neutralLockout;
         _ignoredIndicatorId = right._ignoredIndicatorId;
         _ignoredIndicator = right._ignoredIndicator;
-        
+
+        _voltageControlId = right._voltageControlId;
+        _voltageControl = right._voltageControl;
         _voltageId = right._voltageId;
         _voltage = right._voltage;
         _highVoltageId = right._highVoltageId;
@@ -2390,6 +2545,12 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _neutralCurrentSensor = right._neutralCurrentSensor;
         _neutralCurrentAlarmSetPointId = right._neutralCurrentAlarmSetPointId;
         _neutralCurrentAlarmSetPoint = right. _neutralCurrentAlarmSetPoint;
+        _timeTempSeasonOneId = right._timeTempSeasonOneId;
+        _timeTempSeasonOne = right._timeTempSeasonOne;
+        _timeTempSeasonTwoId = right._timeTempSeasonTwoId;
+        _timeTempSeasonTwo = right._timeTempSeasonTwo;
+        _varControlId = right._varControlId;
+        _varControl = right._varControl;
         _udpIpAddressId = right._udpIpAddressId;
         _udpIpAddress = right._udpIpAddress;
         _udpPortNumberId = right._udpPortNumberId;
@@ -2475,7 +2636,7 @@ INT CtiCCTwoWayPoints::getLastControlReason() const
     return _lastControlReason;
 }
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlReason() 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlReason()
 {
 
     if (_lastControlRemote > 0 )

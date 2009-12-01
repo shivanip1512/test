@@ -1,12 +1,12 @@
 /*-----------------------------------------------------------------------------
     Filename:  ccexecutor.h
-    
+
     Programmer:  Josh Wolberg
-    
+
     Description:    Header file for the various Cap Control executor classes.
-                            
+
     Initial Date:  8/30/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 
@@ -15,12 +15,15 @@
 #ifndef CCEXECUTOR_H
 #define CCEXECUTOR_H
 
-#include <rw/thr/countptr.h> 
+#include <rw/thr/countptr.h>
 #include <rw/thr/thrfunc.h>
-#include <rw/thr/barrier.h>  
+#include <rw/thr/barrier.h>
 
 #include "ccmessage.h"
+#include "msg_signal.h"
 #include "ctdpcptrq.h"
+
+#include "ccutil.h"
 
 class CtiCCExecutor
 {
@@ -58,10 +61,9 @@ public:
     virtual void Execute();
 
 private:
+    //Command Functions
     void EnableSubstationBus();
     void DisableSubstationBus();
-    //void EnableSubstationBusVerification();
-    //void DisableSubstationBusVerification();
     void EnableFeeder();
     void DisableFeeder();
     void EnableCapBank();
@@ -77,8 +79,6 @@ private:
     void ResetDailyOperations();
     void ConfirmFeeder();
     void ResetAllSystemOpCounts();
-    void EnableOvUv();
-    void DisableOvUv();
     void DeleteItem();
     void ConfirmSub();
     void ConfirmArea();
@@ -102,6 +102,23 @@ private:
     void AutoControlOvUvBySubBus(BOOL disableFlag);
     bool checkForCommandRefusal(CtiCCFeeder* feeder);
     void ControlAllCapBanks(LONG paoId, int control);
+
+    // Local Control Command Funtions
+    void sendLocalControl();
+    void enableOvUv(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+    void disableOvUv(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+    void enableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+    void disableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+    void enableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+    void disableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+    void enableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+    void disableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+
+
+    //Helper Functions
+    void setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
+    void printOutEventLogsByIdAndType(int paoId, CapControlType type, const string& actionText, const string& userName,
+                                      CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
 
     CtiCCCommand* _command;
 };
@@ -143,8 +160,8 @@ public:
 
 private:
 
-    void EnableSubstationBusVerification();   
-    void DisableSubstationBusVerification();  
+    void EnableSubstationBusVerification();
+    void DisableSubstationBusVerification();
 
     CtiCCSubstationVerificationMsg* _subVerificationMsg;
 };

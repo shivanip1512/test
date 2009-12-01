@@ -1,16 +1,16 @@
 /*-----------------------------------------------------------------------------
     Filename:  ccmessage.h
-    
+
     Programmer:  Josh Wolberg
-    
+
     Description:    Header file for message classes.
 
     Initial Date:  8/30/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-   
+
 #ifndef CCMESSAGE_H
 #define CCMESSAGE_H
 
@@ -40,7 +40,7 @@ enum CtiCCEventType_t
 {
     capBankStateUpdate = 0,  //operation confirmed
     capControlCommandSent = 1, //operation sent
-    capControlManualCommand = 2, 
+    capControlManualCommand = 2,
     capControlPointOutsideOperatingLimits = 3,
     capControlSetOperationCount = 4,
     capControlEnable = 5,
@@ -84,7 +84,7 @@ RWDECLARE_COLLECTABLE( CtiCCCommand )
 
 public:
 
-    enum 
+    enum
     {
         UNDEFINED = -1,
         ENABLE_SUBSTATION_BUS = 0,
@@ -104,7 +104,7 @@ public:
         //UNWAIVE_SUBSTATION_BUS,//14   REMOVED
         CONFIRM_FEEDER = 15,//15
         RESET_SYSTEM_OP_COUNTS=16,//16
-        ENABLE_OVUV,//17 
+        ENABLE_OVUV,//17
         DISABLE_OVUV,//18
         DELETE_ITEM, //19
         CONFIRM_SUB, //20
@@ -120,19 +120,32 @@ public:
         SEND_ALL_CLOSE, //30
         SEND_ALL_ENABLE_OVUV, //31
         SEND_ALL_DISABLE_OVUV, //32
-        SEND_ALL_SCAN_2WAY_DEVICE, //33        
+        SEND_ALL_SCAN_2WAY_DEVICE, //33
         SEND_TIME_SYNC, //34
         CHANGE_OPERATIONALSTATE,  //35
         AUTO_ENABLE_OVUV, //36
         AUTO_DISABLE_OVUV, //37
 
-        RETURN_FEEDER_TO_ORIGINAL_SUBBUS,//38 
+        RETURN_FEEDER_TO_ORIGINAL_SUBBUS,//38
+        SEND_ALL_ENABLE_TEMPCONTROL = 40,
+        SEND_ALL_DISABLE_TEMPCONTROL,
+        SEND_ALL_ENABLE_VARCONTROL,
+        SEND_ALL_DISABLE_VARCONTROL,
+        SEND_ALL_ENABLE_TIMECONTROL,
+        SEND_ALL_DISABLE_TIMECONTROL,//45
+        BANK_ENABLE_TEMPCONTROL,
+        BANK_DISABLE_TEMPCONTROL,
+        BANK_ENABLE_VARCONTROL,
+        BANK_DISABLE_VARCONTROL,
+        BANK_ENABLE_TIMECONTROL,//50
+        BANK_DISABLE_TIMECONTROL,
+
     };
 
     CtiCCCommand(LONG command);
     CtiCCCommand(LONG command, LONG id);
     CtiCCCommand(const CtiCCCommand& commandMsg);
-    
+
     virtual ~CtiCCCommand();
 
     LONG getCommand() const;
@@ -145,7 +158,7 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 private:
-    
+
     CtiCCCommand() { }; //provided for polymorphic persitence only
     LONG _command;
     LONG _id;
@@ -156,7 +169,7 @@ class CtiCCCapBankMoveMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCCapBankMoveMsg )
 
 public:
-   
+
     virtual ~CtiCCCapBankMoveMsg();
 
     INT getPermanentFlag() const;
@@ -173,7 +186,7 @@ public:
     CtiCCCapBankMoveMsg& operator=(const CtiCCCapBankMoveMsg& right);
 private:
     CtiCCCapBankMoveMsg() { }; //provided for polymorphic persitence only
-    
+
     INT _permanentflag;
     LONG _oldfeederid;
     LONG _capbankid;
@@ -188,7 +201,7 @@ class CtiCCObjectMoveMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCObjectMoveMsg )
 
 public:
-    CtiCCObjectMoveMsg(BOOL permanentflag, LONG oldparentid, LONG objectid, LONG newparentid, 
+    CtiCCObjectMoveMsg(BOOL permanentflag, LONG oldparentid, LONG objectid, LONG newparentid,
                        float switchingorder, float closeOrder = 0, float tripOrder = 0);
     virtual ~CtiCCObjectMoveMsg();
 
@@ -267,13 +280,13 @@ public:
 
     virtual ~CtiCCEventLogMsg();
 
-    CtiCCEventLogMsg(LONG logId, LONG pointId, LONG spAreaId, LONG areaId, LONG stationId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, 
-                     string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0, 
+    CtiCCEventLogMsg(LONG logId, LONG pointId, LONG spAreaId, LONG areaId, LONG stationId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value,
+                     string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0,
                      string ipAddress = string("(N/A)"), LONG actionId = -1, string stateInfo = string("(N/A)"),
-                     DOUBLE aVar = 0, DOUBLE bVar = 0, DOUBLE cVar = 0) : 
+                     DOUBLE aVar = 0, DOUBLE bVar = 0, DOUBLE cVar = 0) :
         _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _spAreaId(spAreaId),_areaId(areaId),_stationId(stationId),_subId(subId),
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
-        _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress), 
+        _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress),
         _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar) { }; //provided for polymorphic persitence only
 
     LONG getLogId() const { return _logId; };
@@ -319,8 +332,8 @@ private:
 
     CtiCCEventLogMsg() { }; //provided for polymorphic persitence only
 
-    LONG _logId; 
-    CtiTime _timeStamp; 
+    LONG _logId;
+    CtiTime _timeStamp;
     LONG _pointId;
     LONG _spAreaId;
     LONG _areaId;
@@ -342,9 +355,9 @@ private:
     DOUBLE _aVar;
     DOUBLE _bVar;
     DOUBLE _cVar;
-    
+
 };
-    
+
 
 class CtiPAOScheduleMsg : public CtiCCMessage
 {
@@ -362,7 +375,7 @@ public:
     virtual ~CtiPAOScheduleMsg();
 
     CtiPAOScheduleMsg(LONG action, LONG id, const CtiTime& nextRunTime, LONG intervalRate) : _action(action), _scheduleId(id), _nextRunTime(nextRunTime), _intervalRate(intervalRate) { }; //provided for polymorphic persitence only
-    
+
 
     LONG getAction() const { return _action; };
     LONG getScheduleId() const { return _scheduleId; };
@@ -378,8 +391,8 @@ private:
 
     LONG          _action;
     LONG          _scheduleId; //scheduleId...
-    CtiTime  _nextRunTime; 
-    CtiTime  _lastRunTime; 
+    CtiTime  _nextRunTime;
+    CtiTime  _lastRunTime;
     LONG          _intervalRate;
 
 };
@@ -415,7 +428,7 @@ public:
 
 private:
     CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0) {};
-    
+
     ULONG _msgInfoBitMask;
     CtiCCSubstationBus_vec* _ccSubstationBuses;
 };
@@ -440,7 +453,7 @@ public:
     CtiCCCapBankStatesMsg& operator=(const CtiCCCapBankStatesMsg& right);
 private:
     CtiCCCapBankStatesMsg() : CtiCCMessage("CCCapBankStates"), _ccCapBankStates(NULL){};
-    
+
     CtiCCState_vec* _ccCapBankStates;
 };
 
@@ -470,7 +483,7 @@ public:
     static ULONG AreaModified;
 private:
     CtiCCGeoAreasMsg() : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(1) {};
-    
+
     CtiCCArea_vec* _ccGeoAreas;
     ULONG _msgInfoBitMask;
 };
@@ -498,7 +511,7 @@ public:
     CtiCCSpecialAreasMsg& operator=(const CtiCCSpecialAreasMsg& right);
 private:
     CtiCCSpecialAreasMsg() : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL){};
-    
+
     CtiCCSpArea_vec* _ccSpecialAreas;
 };
 
@@ -548,7 +561,7 @@ RWDECLARE_COLLECTABLE( CtiCCShutdown )
 
 public:
     CtiCCShutdown() : CtiCCMessage("Shutdown") { } ;
-    
+
     void restoreGuts( RWvistream& );
     void saveGuts( RWvostream&) const;
 };
@@ -559,7 +572,7 @@ RWDECLARE_COLLECTABLE( CtiCCServerResponse )
 
 public:
 
-    enum 
+    enum
     {
         UNDEFINED = -1,
         COMMAND_REFUSED = 1
@@ -567,7 +580,7 @@ public:
 
     CtiCCServerResponse(long responseType, string response);
     CtiCCServerResponse(const CtiCCServerResponse& commandMsg);
-    
+
     virtual ~CtiCCServerResponse();
 
     string getResponse() const;
@@ -580,7 +593,7 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 private:
-    
+
     CtiCCServerResponse() { }; //provided for polymorphic persitence only
     long responseType;
     string response;
