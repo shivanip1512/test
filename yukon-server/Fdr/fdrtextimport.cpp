@@ -1297,13 +1297,13 @@ bool CtiFDR_TextImport::moveFile( string fileName )
             pos2 = tempTime.find(":");
             while (pos2 != string::npos )
             {
-                tempTime = tempTime.erase(pos,1);
+                tempTime = tempTime.erase(pos2,1);
                 pos2 = tempTime.find(":");
             }
         }
         else
         {
-            tempTime = tempTime.replace(pos,1,"_");
+            tempTime = tempTime.replace(pos2,1,"_");
         }
     }
 
