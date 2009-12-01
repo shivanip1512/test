@@ -132,13 +132,18 @@
           <link>/operator/Consumer/Odds.jsp</link>
           <requireRoleProperty value="ODDS_FOR_CONTROL" />
         </option>
-        
+
         <option id="threeTierDirect">
           <link>/loadmgmt/controlareas.jsp</link>
           <requireRoleProperty value="LM_DIRECT_LOADCONTROL"/>
           <requireRoleProperty value="THREE_TIER_DIRECT"/>
         </option>
-        
+
+        <option id="demandResponse">
+          <link>/spring/dr/home</link>
+          <requireRoleProperty value="LM_DIRECT_LOADCONTROL"/>
+          <requireRoleProperty value="THREE_TIER_DIRECT"/>
+        </option>
       </links>
     </option>
 
