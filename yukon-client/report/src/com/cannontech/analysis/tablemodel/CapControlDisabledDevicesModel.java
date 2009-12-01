@@ -149,7 +149,8 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         areaQuery += ", yu.username ";
         areaQuery += "from ";
         areaQuery += "(select * from yukonpaobject where type = 'CCAREA' and disableflag = 'Y') yp ";
-        areaQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
+        areaQuery += "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid ";
+        areaQuery += "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' ";
         areaQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         if(areaIds != null && !areaIds.isEmpty()) {
             areaQuery +=  "where yp.paobjectid in ( ";
@@ -173,7 +174,8 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         substationQuery += "join (select ypa.paoname area , ypa.paobjectid areaId, yps.paobjectid from yukonpaobject ypa , yukonpaobject yps, ";
         substationQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss where yps.paobjectid = ss.substationid ";
         substationQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        substationQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
+        substationQuery += "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid ";
+        substationQuery += "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' ";
         substationQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         if(substationIds != null && !substationIds.isEmpty()) {
             substationQuery += "where yp.paobjectid in ( ";
@@ -203,7 +205,8 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         subBusQuery += "yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss where ypsb.paobjectid = ss.substationbusid ";
         subBusQuery += "and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid ";
         subBusQuery += "and ypsb.type like 'CCSUBBUS') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        subBusQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
+        subBusQuery += "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid ";
+        subBusQuery += "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' ";
         subBusQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         if(subbusIds != null && !subbusIds.isEmpty()) {
             subBusQuery += "where yp.paobjectid in ( ";
@@ -240,7 +243,8 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         feederQuery += "ccfeedersubassignment fs where ypf.paobjectid = fs.feederid and ypsb.paobjectid = fs.substationbusid ";
         feederQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
         feederQuery += "and sa.areaid = ypa.paobjectid and ypf.type like 'CCFEEDER') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        feederQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
+        feederQuery += "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid ";
+        feederQuery += "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' ";
         feederQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         if(feederIds != null && !feederIds.isEmpty()) {
             feederQuery += "where yp.paobjectid in ( ";
@@ -282,7 +286,8 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         capBankQuery += "where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid ";
         capBankQuery += "and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid ";
         capBankQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo on pInfo.paobjectid = yp.paobjectid ";
-        capBankQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
+        capBankQuery += "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid ";
+        capBankQuery += "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' ";
         capBankQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         if(capBankIds != null && !capBankIds.isEmpty()) {
             capBankQuery += "where yp.paobjectid in ( ";
@@ -331,7 +336,8 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         cbcQuery += "and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and ypsb.paobjectid = fs.substationbusid ";
         cbcQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
         cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        cbcQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
+        cbcQuery += "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid ";
+        cbcQuery += "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' ";
         cbcQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         if(capBankIds != null && !capBankIds.isEmpty()) {
             cbcQuery += "pInfo.capbankId in ( ";
