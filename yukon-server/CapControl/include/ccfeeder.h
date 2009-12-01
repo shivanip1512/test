@@ -40,17 +40,17 @@
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
 {
-    bool operator()( const CtiCCCapBankPtr _X , const CtiCCCapBankPtr _Y)
+    bool operator()( const CtiCCCapBankPtr & _X , const CtiCCCapBankPtr & _Y)
         { return ( _X->getControlOrder() < _Y->getControlOrder() ); }
 };
 struct CtiCCCapBank_lessClose
 {
-    bool operator()( const CtiCCCapBankPtr _X , const CtiCCCapBankPtr _Y)
+    bool operator()( const CtiCCCapBankPtr & _X , const CtiCCCapBankPtr & _Y)
         { return ( _X->getCloseOrder() < _Y->getCloseOrder() ); }
 };
 struct CtiCCCapBank_lessTrip
 {
-    bool operator()( const CtiCCCapBankPtr _X , const CtiCCCapBankPtr _Y)
+    bool operator()( const CtiCCCapBankPtr & _X , const CtiCCCapBankPtr & _Y)
         { return ( _X->getTripOrder() < _Y->getTripOrder() ); }
 };
 //Typedef for Sanity using sorted vectors

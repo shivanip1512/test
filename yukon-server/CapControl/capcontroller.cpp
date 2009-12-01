@@ -4146,14 +4146,18 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
-        getPILConnection()->WriteConnQue(pilRequest);
-        if( (multiMsg != NULL) && (multiMsg->getCount() > 0) )
+        if (pilRequest != NULL)
         {
-            getDispatchConnection()->WriteConnQue(multiMsg);
+            getPILConnection()->WriteConnQue(pilRequest);
         }
-        else
+
+        if (multiMsg != NULL)
         {
-            if (multiMsg != NULL)
+            if (multiMsg->getCount() > 0)
+            {
+                getDispatchConnection()->WriteConnQue(multiMsg);
+            }
+            else
             {
                 delete multiMsg;
             }
