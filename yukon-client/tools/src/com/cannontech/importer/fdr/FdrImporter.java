@@ -156,7 +156,7 @@ public class FdrImporter {
                 }
                 if( pnts == null || !pointNameinList(pnts, base.getPointParameter("PointName")) )
                 {
-                    if( curDevice.equalsIgnoreCase(base.getPointParameter("PaoName")) ){
+                    if( !curDevice.equalsIgnoreCase(base.getPointParameter("PaoName")) ){
                         curDevice = base.getPointParameter("PaoName");
                         i = highestOffset+1;
                     }
