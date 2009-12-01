@@ -173,8 +173,8 @@ gearChanged = function() {
                 <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
                 <c:if test="${!empty scenarioPrograms}">
                     <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
-                    <td><cti:duration type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>
-                    <td><cti:duration type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
+                    <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>
+                    <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
                 </c:if>
             </tr>
         </c:forEach>

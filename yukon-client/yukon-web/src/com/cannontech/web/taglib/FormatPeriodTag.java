@@ -7,10 +7,10 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DurationFormatEnum;
+import com.cannontech.core.service.DateFormattingService.PeriodFormatEnum;
 
 @Configurable("formatDateTagPrototype")
-public class FormatJodaDurationTag extends YukonTagSupport {
+public class FormatPeriodTag extends YukonTagSupport {
     private DateFormattingService dateFormattingService;
     private Object value;
     private String type;
@@ -19,25 +19,25 @@ public class FormatJodaDurationTag extends YukonTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException {
-        DurationFormatEnum enumType = DurationFormatEnum.valueOf(type);
+        PeriodFormatEnum enumType = PeriodFormatEnum.valueOf(type);
 
-        String formattedDate = "";
+        String formattedPeriod = "";
         if (value != null) {
-            formattedDate = dateFormattingService.formatDuration(value,
-                                                                 enumType,
-                                                                 getUserContext());
+            formattedPeriod = dateFormattingService.formatPeriod(value,
+                                                               enumType,
+                                                               getUserContext());
         } else {
             if (defaultText != null) {
-                formattedDate = defaultText;
+                formattedPeriod = defaultText;
             } else {
                 getJspContext().getOut().print("Duration doesn't exist");
             }
         }
 
         if (var == null) {
-            getJspContext().getOut().print(formattedDate);
+            getJspContext().getOut().print(formattedPeriod);
         } else {
-            this.getJspContext().setAttribute(var, formattedDate);
+            this.getJspContext().setAttribute(var, formattedPeriod);
         }
     }
 

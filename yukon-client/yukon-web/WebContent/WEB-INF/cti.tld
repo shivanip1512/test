@@ -832,8 +832,8 @@
   </tag>
 
   <tag>
-    <name>duration</name>
-    <tag-class>com.cannontech.web.taglib.FormatJodaDurationTag</tag-class>
+    <name>formatPeriod</name>
+    <tag-class>com.cannontech.web.taglib.FormatPeriodTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
         <name>value</name>

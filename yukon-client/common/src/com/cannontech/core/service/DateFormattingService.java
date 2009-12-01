@@ -55,7 +55,7 @@ public interface DateFormattingService {
         }
     }
 
-    static public enum DurationFormatEnum {
+    static public enum PeriodFormatEnum {
         HM_SHORT
     }
 
@@ -122,12 +122,12 @@ public interface DateFormattingService {
     public Calendar getCalendar(YukonUserContext userContext);
 
     /**
-     * Format a duration using the given the specific type. The duration must be
-     * an instance of ReadableDuration or ReadablePeriod.
+     * Format a period or duration using the given the specific type.
+     * @param period must be an instance of ReadableDuration or ReadablePeriod
      */
-    public String formatDuration(Object duration, DurationFormatEnum type,
+    public String formatPeriod(Object period, PeriodFormatEnum type,
             YukonUserContext userContext) throws IllegalArgumentException;
 
-    public PeriodFormatter getPeriodFormatter(DurationFormatEnum type,
+    public PeriodFormatter getPeriodFormatter(PeriodFormatEnum type,
             YukonUserContext userContext);
 }

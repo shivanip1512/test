@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
@@ -47,37 +48,36 @@ public class DateFormattingServiceImpl implements DateFormattingService {
 
     public String format(Object object, DateFormatEnum type, YukonUserContext userContext)
             throws IllegalArgumentException {
-        if (object != null) {
-            
-        	if(object instanceof Date) {
-        		
-        		Date date = (Date) object;
-        		DateFormat df = getDateFormatter(type, userContext);
-	        	
-	            // will result in dates that would normally format to midnight of a date, to format instead
-	            // to the previous date.
-	            // MidnightMode.INCLUDES_MIDNIGHT is only set on date-only type DateFormatEnum values
-	            if (type.getMidnightMode() == MidnightMode.INCLUDES_MIDNIGHT) {
-	                date = DateUtils.addMilliseconds(date, -1);
-	            }
-	            
-	            return df.format(date);
-        	} else if (object instanceof ReadablePartial) {
-        		ReadablePartial partial = (ReadablePartial) object;
-        		
-        		DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
-        		return formatter.print(partial);
-        		
-            } else if (object instanceof ReadableInstant) {
-                ReadableInstant instant = (ReadableInstant) object;
+        Validate.notNull(object, "Date object is null in DateFormattingServiceImpl.formatDate()");
+        if (object instanceof Date) {
 
-                DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
-                return formatter.print(instant);
-        	} else {
-        		throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.formatDate()");
-        	}
+            Date date = (Date) object;
+            DateFormat df = getDateFormatter(type, userContext);
+
+            // will result in dates that would normally format to midnight of a
+            // date, to format instead to the previous date.
+            // MidnightMode.INCLUDES_MIDNIGHT is only set on date-only type
+            // DateFormatEnum values
+            if (type.getMidnightMode() == MidnightMode.INCLUDES_MIDNIGHT) {
+                date = DateUtils.addMilliseconds(date, -1);
+            }
+
+            return df.format(date);
+        } else if (object instanceof ReadablePartial) {
+            ReadablePartial partial = (ReadablePartial) object;
+
+            DateTimeFormatter formatter = getDateTimeFormatter(type,
+                                                               userContext);
+            return formatter.print(partial);
+
+        } else if (object instanceof ReadableInstant) {
+            ReadableInstant instant = (ReadableInstant) object;
+
+            DateTimeFormatter formatter = getDateTimeFormatter(type,
+                                                               userContext);
+            return formatter.print(instant);
         } else {
-            throw new IllegalArgumentException("Date object is null in DateFormattingServiceImpl.formatDate()");
+            throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.formatDate()");
         }
     }
 
@@ -146,30 +146,29 @@ public class DateFormattingServiceImpl implements DateFormattingService {
     }
 
     @Override
-    public String formatDuration(Object duration, DurationFormatEnum type,
+    public String formatPeriod(Object periodObj, PeriodFormatEnum type,
             YukonUserContext userContext) throws IllegalArgumentException {
-        if (duration != null) {
-            if (duration instanceof ReadablePeriod) {
-                ReadablePeriod period = (ReadablePeriod) duration;
+        Validate.notNull(periodObj, "period object is null in DateFormattingServiceImpl.formatDate()");
+        if (periodObj instanceof ReadablePeriod) {
+            ReadablePeriod period = (ReadablePeriod) periodObj;
 
-                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
-                return formatter.print(period);
-            } else if (duration instanceof ReadableDuration) {
-                ReadablePeriod period = new Period(duration, PeriodType.time());
+            PeriodFormatter formatter = getPeriodFormatter(type, userContext);
+            return formatter.print(period);
+        } else if (periodObj instanceof ReadableDuration) {
+            ReadablePeriod period = new Period(periodObj, PeriodType.time());
 
-                PeriodFormatter formatter = getPeriodFormatter(type, userContext);
-                return formatter.print(period);
-            } else {
-                throw new IllegalArgumentException("duration object is not supported in DateFormattingServiceImpl.formatDuration()");
-            }
+            PeriodFormatter formatter = getPeriodFormatter(type, userContext);
+            return formatter.print(period);
         } else {
-            throw new IllegalArgumentException("duration object is null in DateFormattingServiceImpl.formatDate()");
+            throw new IllegalArgumentException("object is not supported in DateFormattingServiceImpl.formatPeriod()");
         }
     }
 
     @Override
-    public PeriodFormatter getPeriodFormatter(DurationFormatEnum type,
+    public PeriodFormatter getPeriodFormatter(PeriodFormatEnum type,
             YukonUserContext userContext) {
+
+        Validate.notNull(type, "a valid type must be specified");
 
         // Currently Joda doesn't support formatting configurable with a string
         // for periods so for now, we only support "h:mm" for periods and
