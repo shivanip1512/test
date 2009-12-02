@@ -3269,6 +3269,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 }
                                 currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                currentSubstationBus->figureAndSetPowerFactorValues();            
+                                store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
                                 {
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
@@ -3311,6 +3313,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             {
                                 currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                currentSubstationBus->figureAndSetPowerFactorValues();  
+                                store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
                                 {
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));

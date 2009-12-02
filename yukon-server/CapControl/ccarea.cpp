@@ -302,8 +302,8 @@ void CtiCCArea::restore(RWDBReader& rdr)
     setIntegrateFlag(FALSE);
     setIntegratePeriod(0);
 
-    setPFactor(0);
-    setEstPFactor(0);
+    setPFactor(-1);
+    setEstPFactor(-1);
 
     setVoltReductionControlValue(FALSE);
     setChildVoltReductionFlag(FALSE);

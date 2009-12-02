@@ -10083,6 +10083,7 @@ void CtiCCSubstationBusStore::initializeAllPeakTimeFlagsAndMonitorPoints(BOOL se
             //currentSubstationBus->figureAndSetTargetVarValue();
         }
         checkAndUpdateVoltReductionFlagsByBus(currentSubstationBus);
+        currentSubstationBus->figureAndSetPowerFactorValues();
     }
 }
 
@@ -10819,6 +10820,7 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
     DOUBLE pf = 0;
     DOUBLE epf = 0;
     LONG numStations = 0;
+    LONG numBuses = 0;
 
     LONG stationId = findSubstationIDbySubBusID(subBusId);
     if (stationId != NULL)
@@ -10826,24 +10828,25 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
         CtiCCSubstation* station = findSubstationByPAObjectID(stationId);
         if (station != NULL)
         {
-            varTotal = 0;
-            wattTotal = 0;
-            estVarTotal  = 0;
-            list <LONG>::const_iterator iter = station->getCCSubIds()->begin();
-            while (iter != station->getCCSubIds()->end())
+            pf = 0;
+            epf = 0;
+            numBuses = 0;
+            for (list <LONG>::const_iterator iter = station->getCCSubIds()->begin(); iter != station->getCCSubIds()->end(); iter++)
             {
-                LONG busId = *iter;
-                CtiCCSubstationBus *bus = findSubBusByPAObjectID(busId);
+                CtiCCSubstationBus *bus = findSubBusByPAObjectID(*iter);
                 if (bus != NULL)
                 {
-                     varTotal += bus->getCurrentVarLoadPointValue();
-                     wattTotal += bus->getCurrentWattLoadPointValue();
-                     estVarTotal += bus->getEstimatedVarLoadPointValue();
+                     pf += bus->getPowerFactorValue();
+                     epf += bus->getEstimatedPowerFactorValue();
                 }
-                iter++;
+                numBuses++;
             }
-            station->setPFactor( station->calculatePowerFactor( varTotal, wattTotal));
-            station->setEstPFactor( station->calculatePowerFactor( varTotal, wattTotal));
+            if (numBuses != 0)
+            {
+                station->setPFactor( pf/numBuses );
+                station->setEstPFactor( epf/numBuses );
+            }
+
         }
 
         LONG areaId = findAreaIDbySubstationID(stationId);
@@ -10855,17 +10858,14 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                 pf = 0;
                 epf = 0;
                 numStations = 0;
-                list <LONG>::const_iterator iter = area->getSubStationList()->begin();
-                while (iter != area->getSubStationList()->end())
+                for (list <LONG>::const_iterator iter = area->getSubStationList()->begin(); iter != area->getSubStationList()->end(); iter++)
                 {
-                    LONG stationId = *iter;
-                    CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
+                    CtiCCSubstation *station = findSubstationByPAObjectID(*iter);
                     if (station != NULL)
                     {
                          pf += station->getPFactor();
                          epf += station->getEstPFactor();
                     }
-                    iter++;
                     numStations++;
                 }
                 if (numStations != 0)

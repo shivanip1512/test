@@ -2635,6 +2635,27 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorValue(DOUBLE pfval)
     return *this;
 }
 
+
+void CtiCCSubstationBus::figureAndSetPowerFactorValues( )
+{
+    if (_currentvarloadpointid == 0 && _currentwattloadpointid == 0)
+    {
+        //sum the var/watt values from the feeders and set as the pf for the substation.
+        LONG varTotal = 0;
+        LONG wattTotal = 0;
+        LONG estVarTotal = 0;
+        for (LONG i = 0; i < _ccfeeders.size(); i++)
+        {
+            varTotal += ((CtiCCFeeder*)_ccfeeders[i])->getCurrentVarLoadPointValue();
+            wattTotal += ((CtiCCFeeder*)_ccfeeders[i])->getCurrentWattLoadPointValue();
+            estVarTotal += ((CtiCCFeeder*)_ccfeeders[i])->getEstimatedVarLoadPointValue();
+        }
+        setPowerFactorValue(calculatePowerFactor(varTotal, wattTotal));
+        setEstimatedPowerFactorValue(calculatePowerFactor(estVarTotal, wattTotal));
+        setBusUpdatedFlag(TRUE);
+    }
+    return;
+}
 /*---------------------------------------------------------------------------
     setKVARSolution
 
@@ -10448,9 +10469,9 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setVarValueBeforeControl(0.0);
     setLastFeederControlledPAOId(0);
     setLastFeederControlledPosition(-1);
-    setPowerFactorValue(-1000000.0);
+    setPowerFactorValue(-1);
     setKVARSolution(0.0);
-    setEstimatedPowerFactorValue(-1000000.0);
+    setEstimatedPowerFactorValue(-1);
     setCurrentVarPointQuality(NormalQuality);
     setCurrentVoltPointQuality(NormalQuality);
     setCurrentWattPointQuality(NormalQuality);
@@ -10698,7 +10719,6 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["phaseavaluebeforecontrol"] >> _phaseAvalueBeforeControl;
         rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
         rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
-
 
         _insertDynamicDataFlag = FALSE;
 

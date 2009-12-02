@@ -265,8 +265,8 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
 
     setOvUvDisabledFlag(FALSE);
     setVoltReductionFlag(FALSE);
-    setPFactor(0);
-    setEstPFactor(0);
+    setPFactor(-1);
+    setEstPFactor(-1);
     setSaEnabledFlag(FALSE);
     setSaEnabledId(0);
     setRecentlyControlledFlag(FALSE);
