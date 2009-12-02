@@ -2636,7 +2636,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorValue(DOUBLE pfval)
 }
 
 
-void CtiCCSubstationBus::figureAndSetPowerFactorValues( )
+void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 {
     if (_currentvarloadpointid == 0 && _currentwattloadpointid == 0)
     {

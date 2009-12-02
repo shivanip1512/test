@@ -327,7 +327,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     void reOrderFeederDisplayOrders();
     void figureAndSetTargetVarValue();
-    void figureAndSetPowerFactorValues();
+    void figureAndSetPowerFactorByFeederValues();
     DOUBLE getSetPoint();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
