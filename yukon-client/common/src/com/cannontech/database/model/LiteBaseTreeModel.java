@@ -30,4 +30,10 @@ public interface LiteBaseTreeModel extends TreeModel
     public void update();
 
     boolean updateTreeObject(LiteBase lb);
+    
+    /** 
+     * By default this method returns false.
+     * Should be overridden to return true if node must be removed and then re-added to update.
+     */
+    public abstract boolean removeAndAddNodeForUpdate(Object originalObject, LiteBase updatedObject);
 }

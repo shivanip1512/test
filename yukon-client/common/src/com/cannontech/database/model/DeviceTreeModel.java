@@ -452,4 +452,16 @@ public void setShowPoints(boolean revealPts)
 {
 	showPoints = revealPts;
 }
+
+@Override
+public boolean removeAndAddNodeForUpdate(Object originalObject, LiteBase updatedObject) {
+    
+    if ((originalObject instanceof LitePoint && updatedObject instanceof LitePoint)) {
+        if (((LitePoint)originalObject).getPointType() != ((LitePoint)updatedObject).getPointType()) {
+            // type changed for a point and the point types are different
+            return true;
+        }
+    }
+    return super.removeAndAddNodeForUpdate(originalObject, updatedObject);
+}
 }
