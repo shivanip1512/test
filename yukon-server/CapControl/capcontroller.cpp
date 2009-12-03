@@ -2052,11 +2052,11 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
                         }
 
-                        long objType = CtiCCSubstationBusStore::Unknown;
+                        CapControlType objType = Undefined;
                         long changeId = dbChange->getId();
                         if (dbChange->getDatabase() == ChangeCBCStrategyDb)
                         {
-                            objType = CtiCCSubstationBusStore::Strategy;
+                            objType = Strategy;
                         }
                         else if (dbChange->getDatabase() == ChangePAODb && !(stringCompareIgnoreCase(dbChange->getObjectType(),"cap bank")))
                         {
@@ -2065,7 +2065,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                  CtiLockGuard<CtiLogger> logger_guard(dout);
                                  dout << CtiTime() << " capBank DB change message received for Cap: "<<dbChange->getId() << endl;
                             }
-                            objType = CtiCCSubstationBusStore::CapBank;
+                            objType = CapBank;
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_VIRTUAL_SYSTEM)
                         {
@@ -2077,31 +2077,31 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SPECIALAREA)
                         {
-                            objType = CtiCCSubstationBusStore::SpecialArea;
+                            objType = SpecialArea;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
                         {
-                            objType = CtiCCSubstationBusStore::Area;
+                            objType = Area;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION)
                         {
-                            objType = CtiCCSubstationBusStore::Substation;
+                            objType = Substation;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
                         {
-                            objType = CtiCCSubstationBusStore::SubBus;
+                            objType = SubBus;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_FEEDER)
                         {
-                            objType =  CtiCCSubstationBusStore::Feeder;
+                            objType =  Feeder;
                         }
                         else if (dbChange->getDatabase() == ChangePAOScheduleDB)
                         {
@@ -2122,31 +2122,31 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subBusBegin, subBusEnd))
                             {
                                 CtiCCSubstationBusPtr sub = subBusBegin->second;
-                                objType = CtiCCSubstationBusStore::SubBus;
+                                objType = SubBus;
                                 changeId = sub->getPAOId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feederBegin, feederEnd))
                             {
                                 CtiCCFeederPtr feed = feederBegin->second;
-                                objType = CtiCCSubstationBusStore::Feeder;
+                                objType = Feeder;
                                 changeId = feed->getPAOId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capBankBegin, capBankEnd))
                             {
                                 CtiCCCapBankPtr cap = capBankBegin->second;
-                                objType = CtiCCSubstationBusStore::CapBank;
+                                objType = CapBank;
                                 changeId = cap->getPAOId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaBegin, areaEnd))
                             {
                                 CtiCCAreaPtr area = areaBegin->second;
-                                objType = CtiCCSubstationBusStore::Area;
+                                objType = Area;
                                 changeId = area->getPAOId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), sAreaBegin, sAreaEnd))
                             {
                                 CtiCCSpecialPtr specialArea = sAreaBegin->second;
-                                objType = CtiCCSubstationBusStore::SpecialArea;
+                                objType = SpecialArea;
                                 changeId = specialArea->getPAOId();
                             }
                         }
@@ -2174,7 +2174,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                 }
 
                                 CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
-                                objType = CtiCCSubstationBusStore::CapBank;
+                                objType = CapBank;
                                 changeId = cap->getPAOId();
                                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                                 {
@@ -2183,7 +2183,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                 }
                             }
                         }
-                        else if (objType == CtiCCSubstationBusStore::Unknown)
+                        else if (objType == Undefined)
                         {
                             CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);
@@ -4150,11 +4150,22 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
+        if (pilRequest != NULL)
+        {
         getPILConnection()->WriteConnQue(pilRequest);
-        if( multiMsg->getCount() > 0 )
+        }
+
+        if (multiMsg != NULL)
+        {
+            if (multiMsg->getCount() > 0)
+            {
             getDispatchConnection()->WriteConnQue(multiMsg);
+            }
         else
+            {
             delete multiMsg;
+    }
+        }
     }
     catch(...)
     {
@@ -4175,14 +4186,29 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
+        if (pilMultiMsg != NULL)
+        {
         if (pilMultiMsg->getCount() > 0)
+            {
             getPILConnection()->WriteConnQue(pilMultiMsg);
+            }
         else
+            {
             delete pilMultiMsg;
+            }
+        }
+
+        if (multiMsg != NULL)
+        {
         if( multiMsg->getCount() > 0 )
+            {
             getDispatchConnection()->WriteConnQue(multiMsg);
+            }
         else
+            {
             delete multiMsg;
+    }
+        }
     }
     catch(...)
     {
