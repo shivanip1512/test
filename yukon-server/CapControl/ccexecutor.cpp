@@ -1071,7 +1071,7 @@ void CtiCCCommandExecutor::enableOvUv(std::vector<CtiSignalMsg*>& signals,
         */
 
         //Changing the LSB to 1
-        voltageValue = voltageValue | 0x01;
+        voltageValue |= 0x01;
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)voltageValue).toString();
@@ -1179,8 +1179,7 @@ void CtiCCCommandExecutor::disableOvUv(std::vector<CtiSignalMsg*>& signals,
         */
 
         //Zeroing LSB
-        voltageValue = voltageValue >> 1;
-        voltageValue = voltageValue << 1;
+        voltageValue &= 0xfe;
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)voltageValue).toString();
@@ -1283,7 +1282,7 @@ void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals
     unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
 
     //Changing the MSB to 1
-    seasonOneValue = seasonOneValue | 0x8;
+    seasonOneValue |= 0x80;
 
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
@@ -1296,7 +1295,7 @@ void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals
     unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
 
     //Changing the MSB to 1
-    seasonTwoValue = seasonTwoValue | 0x8;
+    seasonTwoValue |= 0x80;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
     reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
@@ -1379,8 +1378,7 @@ void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signal
     unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
 
     //Zeroing the MSB
-    seasonOneValue = seasonOneValue << 1;
-    seasonOneValue = seasonOneValue >> 1;
+    seasonOneValue &= 0x7f;
 
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
@@ -1393,8 +1391,7 @@ void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signal
     unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
 
     //Zeroing the MSB
-    seasonTwoValue = seasonTwoValue << 1;
-    seasonTwoValue = seasonTwoValue >> 1;
+    seasonTwoValue &= 0x7f;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
     reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
@@ -1487,7 +1484,7 @@ void CtiCCCommandExecutor::enableVarControl(std::vector<CtiSignalMsg*>& signals,
     */
 
     //Changing the LSB to 1
-    varValue = varValue | 0x01;
+    varValue |= 0x01;
 
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
@@ -1582,8 +1579,7 @@ void CtiCCCommandExecutor::disableVarControl(std::vector<CtiSignalMsg*>& signals
     */
 
     //Zeroing LSB
-    varValue = varValue >> 1;
-    varValue = varValue << 1;
+    varValue &= 0xfe;
 
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
@@ -1682,7 +1678,7 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
 
     //Changing the LSB to 1
-    seasonOneValue = seasonOneValue | 0x01;
+    seasonOneValue |= 0x01;
 
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
@@ -1695,7 +1691,7 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
 
     //Changing the LSB to 1
-    seasonTwoValue = seasonTwoValue | 0x01;
+    seasonTwoValue |= 0x01;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
     reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
@@ -1779,8 +1775,7 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
 
     //Zeroing the LSB
-    seasonOneValue = seasonOneValue >> 1;
-    seasonOneValue = seasonOneValue << 1;
+    seasonOneValue &= 0xfe;
 
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
@@ -1793,8 +1788,7 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
 
     //Zeroing the LSB
-    seasonTwoValue = seasonTwoValue >> 1;
-    seasonTwoValue = seasonTwoValue << 1;
+    seasonTwoValue &= 0xfe;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
     reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
