@@ -176,6 +176,7 @@ public:
         PutConfig_PrecannedTable,
         PutConfig_PhaseDetect,
         PutConfig_PhaseDetectClear,
+        PutConfig_AlarmMask,
 
         PutConfig_ARMC,
         PutConfig_ARML,

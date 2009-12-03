@@ -4,7 +4,7 @@
 
 #include <string>
 
-#define TEST_SIZE 150
+#define TEST_SIZE 160
 
 std::string inputString[TEST_SIZE] = {
 "getvalue kwh",
@@ -157,6 +157,11 @@ std::string inputString[TEST_SIZE] = {
 "getconfig phasedetect read",
 "putconfig xcom target serial 1112345 assign geo 2",
 "putconfig xcom target spid 1 geo 2 sub 3 feeder 4 zip 5 uda 6 program 7 splinter 8 assign spid 10 geo 12 sub 13 feeder 14 zip 15 uda 16 program 17 splinter 18 relay 3",
+"putconfig emetcon alarm_mask tamper",
+"putconfig emetcon alarm_mask1=0x03 alarm_mask2=0x04 alarm_mask_meter1=0x33 alarm_mask_meter2=0x44",
+"putconfig emetcon alarm_mask power_fail under_voltage over_voltage pf_carryover rtc_adjusted holiday dst_change disconnect read_corrupted",
+"putconfig emetcon alarm_mask tamper alarm_mask_meter1=0x11",
+"putconfig emetcon alarm_mask configbyte=0x07 tamper alarm_mask_meter1=0x11",
 };
 
 

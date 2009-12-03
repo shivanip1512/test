@@ -2514,6 +2514,83 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
             }
 
         }
+        if(CmdStr.contains(" alarm_mask"))
+        {
+            CtiString val;
+            UINT flag   = 0;
+            //config byte, if specified in parse
+            if(!(temp2 = CmdStr.match((const boost::regex) (CtiString("configbyte[ =]") + str_hexnum) )).empty())
+            {
+                if(!(token = temp2.match(re_hexnum)).empty())
+                {
+                    _cmd["config_byte"] = CtiParseValue( strtol(token.c_str(), &p, 16) );
+                }
+            }
+            //event flag 1/2 alarm masks
+            if(CmdStr.contains(" all"))
+            {
+                flag = CMD_FLAG_PC_EA_MASK;
+            }
+            else if(CmdStr.contains(" alarm_mask1") || CmdStr.contains(" alarm_mask2"))
+            {
+                if(!(temp2 = CmdStr.match((const boost::regex) (CtiString("alarm_mask1[ =]") + str_hexnum) )).empty())
+                {
+                    //lower byte
+                    if(!(token = temp2.match(re_hexnum)).empty())
+                    {
+                        flag |= strtol(token.c_str(), &p, 16);
+                    }
+                }
+                if(!(temp2 = CmdStr.match((const boost::regex) (CtiString("alarm_mask2[ =]") + str_hexnum) )).empty())
+                {
+                    //upper byte
+                    if(!(token = temp2.match(re_hexnum)).empty())
+                    {
+                        flag |= (strtol(token.c_str(), &p, 16)  << 8);
+                    }
+                }
+            }
+            else 
+            {
+                if(CmdStr.contains(" tamper"))                  flag |= CMD_FLAG_PC_EA1_TAMPER | CMD_FLAG_PC_EA2_REVERSEPWR | CMD_FLAG_PC_EA2_ZEROUSAGE;
+                if(CmdStr.contains(" power_fail"))              flag |= CMD_FLAG_PC_EA1_PFEVENT;
+                if(CmdStr.contains(" under_voltage"))           flag |= CMD_FLAG_PC_EA1_UVEVENT;
+                if(CmdStr.contains(" over_voltage"))            flag |= CMD_FLAG_PC_EA1_OVEVENT;
+                if(CmdStr.contains(" pf_carryover"))            flag |= CMD_FLAG_PC_EA1_PFCARRYOVER;
+                if(CmdStr.contains(" rtc_adjusted"))            flag |= CMD_FLAG_PC_EA1_RTCADJUSTED;
+                if(CmdStr.contains(" holiday"))                 flag |= CMD_FLAG_PC_EA1_HOLIDAY;
+                if(CmdStr.contains(" dst_change"))              flag |= CMD_FLAG_PC_EA1_DSTCHANGE;
+                if(CmdStr.contains(" disconnect"))              flag |= CMD_FLAG_PC_EA2_DISCONNECT;
+                if(CmdStr.contains(" read_corrupted"))          flag |= CMD_FLAG_PC_EA2_READCORRUPTED;
+            }
+            //2 bytes - evant flag 1 alarm mask and event flag 2 alarm mask
+            _cmd["alarm_mask"] = CtiParseValue( flag );
+
+            //meter alarm mask (optional)
+            if(CmdStr.contains(" alarm_mask_meter"))
+            {
+                flag = 0;
+                if(!(temp2 = CmdStr.match((const boost::regex) (CtiString("alarm_mask_meter1[ =]") + str_hexnum) )).empty())
+                {
+                    //lower byte
+                    if(!(token = temp2.match(re_hexnum)).empty())
+                    {
+                        flag |= strtol(token.c_str(), &p, 16);
+                    }
+                }
+                if(!(temp2 = CmdStr.match((const boost::regex) (CtiString("alarm_mask_meter2[ =]") + str_hexnum) )).empty())
+                {
+                    //upper byte
+                    if(!(token = temp2.match(re_hexnum)).empty())
+                    {
+                        flag |= (strtol(token.c_str(), &p, 16)  << 8);
+                    }
+
+                }
+                _cmd["alarm_mask_meter"] =  CtiParseValue( flag ); 
+            }
+        }
+
         if(CmdStr.contains(" raw"))
         {
             if(!(token = CmdStr.match(re_rawcmd)).empty())

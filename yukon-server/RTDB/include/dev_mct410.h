@@ -266,7 +266,7 @@ protected:
         FuncRead_DisconnectStatusLen =    1,
 
         FuncWrite_ConfigAlarmMaskPos = 0x01,
-        FuncWrite_ConfigAlarmMaskLen = 0x06,
+        FuncWrite_ConfigAlarmMaskLen = 5,
 
         FuncWrite_IntervalsPos       = 0x03,
         FuncWrite_IntervalsLen       =    4,

@@ -469,8 +469,6 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
 
     cs.insert(CommandStore(Emetcon::PutConfig_PhaseDetectClear,   Emetcon::IO_Function_Write,    FuncWrite_PhaseDetectClear,             FuncWrite_PhaseDetectClearLen));
 
-
-
     //************************************ End Config related *****************************
 
     return cs;
@@ -869,7 +867,6 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         // Intentional fall through
         case Emetcon::GetConfig_PhaseDetectArchive:
         case Emetcon::GetConfig_PhaseDetect:        status = decodeGetConfigPhaseDetect(InMessage, TimeNow, vgList, retList, outList);      break;
-
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -1284,6 +1281,43 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     else if(parse.isKeyValid("phasedetect"))
     {
         found = buildPhaseDetectOutMessage(parse,OutMessage);
+    }
+    else if( parse.isKeyValid("alarm_mask") )
+    {
+        if( parse.isKeyValid("config_byte") ||
+            hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration))
+        {
+            char configuration = (parse.isKeyValid("config_byte") ? 
+                                  parse.getiValue("config_byte") : getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) );
+        
+            int alarmMask = parse.getiValue("alarm_mask", 0);
+
+            OutMessage->Buffer.BSt.Message[0] = (configuration);
+            OutMessage->Buffer.BSt.Message[1] = (alarmMask & 0xFF);
+            OutMessage->Buffer.BSt.Message[2] = ((alarmMask >> 8) & 0xFF);
+            
+            if( parse.isKeyValid("alarm_mask_meter") )
+            {
+                int meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
+                OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask & 0xFF);
+                OutMessage->Buffer.BSt.Message[4] = ((meterAlarmMask >> 8) & 0xFF);
+            }
+            
+            function = Emetcon::PutConfig_Options;
+            getOperation(function, OutMessage->Buffer.BSt);
+
+            OutMessage->Sequence = Emetcon::PutConfig_AlarmMask;
+            found = true;
+        }
+        else 
+        {
+            found = false;
+            nRet  = NoMethod;
+
+            returnErrorMessage(NoMethod, OutMessage, retList,
+                               "Invalid request: Config Byte needs to be specified");
+        }
+
     }
     else
     {
@@ -1881,6 +1915,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
     }
     else if(parse.isKeyValid("phasedetectread"))
     {
+        
         OutMessage->Buffer.BSt.Function = Emetcon::GetConfig_PhaseDetect;
         found = getOperation(OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt);
 
