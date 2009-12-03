@@ -490,6 +490,362 @@ void CtiCCSubstationBusStore::addFeederToPaoMap(CtiCCFeederPtr feeder)
 }
 
 
+std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByAreaId(int areaId)
+{
+    std::vector<CtiCCSubstationBusPtr> subBuses;
+    CtiCCAreaPtr area = findAreaByPAObjectID(areaId);
+
+    if (area == NULL)
+    {
+        return subBuses;
+    }
+
+    std::list<long>* stationIds = area->getSubStationList();
+    for each(long stationId in *stationIds)
+    {
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+        if (station == NULL)
+        {
+            continue;
+        }
+
+        std::list<long>* subIds = station->getCCSubIds();
+        for each(int subId in *subIds)
+        {
+            CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+            if (subBus == NULL)
+            {
+                continue;
+            }
+            subBuses.push_back(subBus);
+        }
+    }
+    return subBuses;
+}
+
+std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesBySpecialAreaId(int areaId)
+{
+    std::vector<CtiCCSubstationBusPtr> subBuses;
+    CtiCCSpecialPtr area = findSpecialAreaByPAObjectID(areaId);
+
+    if (area == NULL)
+    {
+        return subBuses;
+    }
+
+    std::list<long>* stationIds = area->getSubstationIds();
+    for each(long stationId in *stationIds)
+    {
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+        if (station == NULL)
+        {
+            continue;
+        }
+
+        std::list<long>* subIds = station->getCCSubIds();
+        for each(int subId in *subIds)
+        {
+            CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+            if (subBus == NULL)
+            {
+                continue;
+            }
+            subBuses.push_back(subBus);
+        }
+    }
+    return subBuses;
+}
+
+std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByStationId(int stationId)
+{
+    std::vector<CtiCCSubstationBusPtr> subBuses;
+
+    CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+    if (station == NULL)
+    {
+        return subBuses;
+    }
+
+    std::list<long>* subIds = station->getCCSubIds();
+    for each(int subId in *subIds)
+    {
+        CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+        if (subBus == NULL)
+        {
+            continue;
+        }
+        subBuses.push_back(subBus);
+    }
+    return subBuses;
+}
+
+std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByFeederId(int feederId)
+{
+    std::vector<CtiCCSubstationBusPtr> subBuses;
+
+    CtiCCFeederPtr feeder = findFeederByPAObjectID(feederId);
+    if (feeder == NULL)
+    {
+        return subBuses;
+    }
+
+    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(feeder->getParentId());
+    if (subBus != NULL)
+    {
+        subBuses.push_back(subBus);
+    }
+
+    return subBuses;
+}
+
+std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByCapControlByIdAndType(int paoId, CapControlType type)
+{
+    std::vector<CtiCCSubstationBusPtr> subBuses;
+
+    switch(type)
+    {
+        case SpecialArea:
+        {
+            subBuses = getSubBusesBySpecialAreaId(paoId);
+            break;
+        }
+        case Area:
+        {
+            subBuses = getSubBusesByAreaId(paoId);
+            break;
+        }
+        case Substation:
+        {
+            subBuses = getSubBusesByStationId(paoId);
+            break;
+        }
+        case SubBus:
+        {
+            CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(paoId);
+            if (subBus != NULL)
+            {
+                subBuses.push_back(subBus);
+            }
+            break;
+        }
+        case Feeder:
+        {
+            subBuses = getSubBusesByFeederId(paoId);
+            break;
+        }
+        case CapBank:
+        default:
+        {
+            break;
+        }
+    }
+
+    return subBuses;
+}
+
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBusStore::getCapBanksByPaoId(int paoId)
+{
+    CapControlType type = determineTypeById(paoId);
+    return getCapBanksByPaoIdAndType(paoId,type);
+}
+
+std::vector<CtiCCCapBankPtr> CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapControlType type)
+{
+    std::vector<CtiCCCapBankPtr> banks;
+
+    switch (type)
+    {
+        case CapBank:
+        {
+            CtiCCCapBankPtr bank = findCapBankByPAObjectID(paoId);
+            if (bank == NULL)
+            {
+                break;
+            }
+
+            banks.push_back(bank);
+            break;
+        }
+        case Feeder:
+        {
+            CtiCCFeederPtr feeder = findFeederByPAObjectID(paoId);
+            if (feeder == NULL)
+            {
+                break;
+            }
+
+            CtiCCCapBank_SVector sBanks = feeder->getCCCapBanks();
+            banks.insert(banks.end(),sBanks.get_container().begin(),sBanks.get_container().end());
+            break;
+        }
+        case SubBus:
+        {
+            CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(paoId);
+            if (subBus == NULL)
+            {
+                break;
+            }
+
+            CtiFeeder_vec feeders = subBus->getCCFeeders();
+            for each(CtiCCFeederPtr feeder in feeders)
+            {
+                CtiCCCapBank_SVector sBanks = feeder->getCCCapBanks();
+                banks.insert(banks.end(),sBanks.get_container().begin(),sBanks.get_container().end());
+            }
+            break;
+        }
+        case Substation:
+        {
+            CtiCCSubstationPtr station = findSubstationByPAObjectID(paoId);
+            if (station == NULL)
+            {
+                break;
+            }
+
+            std::list<long>* subIds = station->getCCSubIds();
+            for each(int subId in *subIds)
+            {
+                CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+                if (subBus == NULL)
+                {
+                    continue;
+                }
+                CtiFeeder_vec feeders = subBus->getCCFeeders();
+
+                for each(CtiCCFeederPtr feeder in feeders)
+                {
+                    CtiCCCapBank_SVector sBanks = feeder->getCCCapBanks();
+                    banks.insert(banks.end(),sBanks.get_container().begin(),sBanks.get_container().end());
+                }
+            }
+            break;
+        }
+        case Area:
+        {
+            CtiCCAreaPtr area = findAreaByPAObjectID(paoId);
+            if (area == NULL)
+            {
+                break;
+            }
+
+            std::list<long>* stationIds = area->getSubStationList();
+            for each(long stationId in *stationIds)
+            {
+                CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+                if (station == NULL)
+                {
+                    continue;
+                }
+
+                std::list<long>* subIds = station->getCCSubIds();
+                for each(int subId in *subIds)
+                {
+                    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+                    if (subBus == NULL)
+                    {
+                        continue;
+                    }
+
+                    CtiFeeder_vec feeders = subBus->getCCFeeders();
+                    for each(CtiCCFeederPtr feeder in feeders)
+                    {
+                        CtiCCCapBank_SVector sBanks = feeder->getCCCapBanks();
+                        banks.insert(banks.end(),sBanks.get_container().begin(),sBanks.get_container().end());
+                    }
+                }
+            }
+            break;
+        }
+        case SpecialArea:
+        {
+            CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(paoId);
+
+            if (spArea == NULL || spArea->getDisableFlag())
+            {
+                break;
+            }
+
+            std::list<long>* stationIds = spArea->getSubstationIds();
+            for each(long stationId in *stationIds)
+            {
+                CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+                if (station == NULL)
+                {
+                    break;
+                }
+
+                std::list<long>* subIds = station->getCCSubIds();
+                for each(int subId in *subIds)
+                {
+                    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+                    if (subBus == NULL)
+                    {
+                        continue;
+                    }
+
+                    CtiFeeder_vec feeders = subBus->getCCFeeders();
+                    for each(CtiCCFeederPtr feeder in feeders)
+                    {
+                        CtiCCCapBank_SVector sBanks = feeder->getCCCapBanks();
+                        banks.insert(banks.end(),sBanks.get_container().begin(),sBanks.get_container().end());
+                    }
+                }
+            }
+            break;
+        }
+        case Undefined:
+        default:
+        {
+            break;
+        }
+    }
+
+    return banks;
+}
+
+CapControlType CtiCCSubstationBusStore::determineTypeById(int paoId)
+{
+    RWCollectable* ptr = NULL;
+    ptr = findCapBankByPAObjectID(paoId);
+    if (ptr != NULL)
+    {
+        return CapBank;
+    }
+
+    ptr = findFeederByPAObjectID(paoId);
+    if (ptr != NULL)
+    {
+        return Feeder;
+    }
+
+    ptr = findSubBusByPAObjectID(paoId);
+    if (ptr != NULL)
+    {
+        return SubBus;
+    }
+
+    ptr = findSubstationByPAObjectID(paoId);
+    if (ptr != NULL)
+    {
+        return Substation;
+    }
+
+    ptr = findAreaByPAObjectID(paoId);
+    if (ptr != NULL)
+    {
+        return Area;
+    }
+
+    ptr = findSpecialAreaByPAObjectID(paoId);
+    if (ptr != NULL)
+    {
+        return SpecialArea;
+    }
+
+    //Unknown
+    return Undefined;
+}
+
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
 
@@ -3483,7 +3839,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                                     capControlObjectTable = capControlFeederTable;
                                 }
                                 break;
-                            case Unknown:
+                            case Undefined:
                             case CapBank:
                             case Substation:
                             case Strategy:
@@ -3778,7 +4134,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                                     capControlObjectTable = capControlFeederTable;
                                 }
                                 break;
-                            case Unknown:
+                            case Undefined:
                             case CapBank:
                             case Substation:
                             case Strategy:
@@ -4112,7 +4468,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                     capControlObjectTable = capControlFeederTable;
                                 }
                                 break;
-                            case Unknown:
+                            case Undefined:
                             case CapBank:
                             case Substation:
                             case Strategy:
