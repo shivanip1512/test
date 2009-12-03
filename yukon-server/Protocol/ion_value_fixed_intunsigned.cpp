@@ -53,7 +53,7 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long s
         }
         setValid(false);
     }
-    memset( &_string, 0, 20 );
+    memset( &_string, 0, sizeof(_string) );
 }
 
 
@@ -62,7 +62,7 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned long initialValue ) :
     CtiIONValueFixed(Fixed_UnsignedInt),
     _unsignedInt(initialValue)
 {
-    memset( &_string, 0, 20 );
+    memset( &_string, 0, sizeof(_string) );
 }
 
 

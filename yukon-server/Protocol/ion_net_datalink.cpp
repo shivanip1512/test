@@ -39,7 +39,7 @@ CtiIONDatalinkLayer::CtiIONDatalinkLayer( ) :
     memset( &_inFrame,  0, sizeof(ion_input_frame) );
     memset( &_outFrame, 0, sizeof(ion_output_frame) );
 
-    memset( _inBuffer, 0, 250 );
+    memset( _inBuffer, 0, sizeof(_inBuffer) );
 }
 
 CtiIONDatalinkLayer::~CtiIONDatalinkLayer( )

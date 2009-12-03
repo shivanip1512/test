@@ -39,7 +39,7 @@ CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLen
 
         setValid(false);
     }
-    memset( &_string, 0, 10 );
+    memset( &_string, 0, sizeof(_string) );
 }
 
 
@@ -47,7 +47,7 @@ CtiIONBoolean::CtiIONBoolean( bool initialValue=false ) :
     CtiIONValueVariable(Variable_Boolean),
     _bool(initialValue)
 {
-    memset( &_string, 0, 10 );
+    memset( &_string, 0, sizeof(_string) );
 }
 
 

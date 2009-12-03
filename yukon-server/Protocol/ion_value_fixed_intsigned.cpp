@@ -51,7 +51,7 @@ CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long strea
         }
         setValid(false);
     }
-    memset( &_string, 0, 20 );
+    memset( &_string, 0, sizeof(_string) );
 }
 
 
@@ -59,7 +59,7 @@ CtiIONSignedInt::CtiIONSignedInt( long initialValue ) :
     CtiIONValueFixed(Fixed_SignedInt),
     _signedInt(initialValue)
 {
-    memset( &_string, 0, 20 );
+    memset( &_string, 0, sizeof(_string) );
 }
 
 

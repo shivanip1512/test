@@ -20,7 +20,7 @@ CtiIONFloat::CtiIONFloat( float initialValue=0.0 ) :
     CtiIONValueFixed(Fixed_Float),
     _float(initialValue)
 {
-    memset( &_string, 0, 20);
+    memset( &_string, 0, sizeof(_string) );
 }
 
 
@@ -47,7 +47,7 @@ CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength 
         }
         setValid(false);
     }
-    memset( &_string, 0, 20);
+    memset( &_string, 0, sizeof(_string) );
 }
 
 

@@ -217,7 +217,7 @@ BinaryOutputControl::BinaryOutputControl(int variation) :
     Object(Group, variation),
     _patternMask(false)
 {
-    memset( _crob_or_pcb.raw, 0, 11 );
+    memset( _crob_or_pcb.raw, 0, ProtocolSize );
 }
 
 
@@ -248,7 +248,7 @@ int BinaryOutputControl::restore(const unsigned char *buf, int len)
         case BOC_ControlRelayOutputBlock:
         case BOC_PatternControlBlock:
         {
-            for( int i = 0; i < 11; i++ )
+            for( int i = 0; i < ProtocolSize; i++ )
             {
                 _crob_or_pcb.raw[i] = buf[pos++];
             }
@@ -317,7 +317,7 @@ int BinaryOutputControl::serialize(unsigned char *buf) const
         case BOC_ControlRelayOutputBlock:
         case BOC_PatternControlBlock:
         {
-            for( int i = 0; i < 11; i++ )
+            for( int i = 0; i < ProtocolSize; i++ )
             {
                 buf[pos++] = _crob_or_pcb.raw[i];
             }
@@ -349,7 +349,7 @@ int BinaryOutputControl::getSerializedLen(void) const
         case BOC_ControlRelayOutputBlock:
         case BOC_PatternControlBlock:
         {
-            retVal = 11;
+            retVal = ProtocolSize;
             break;
         }
 

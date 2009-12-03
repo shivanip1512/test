@@ -72,7 +72,7 @@ CtiAnsiTable00::CtiAnsiTable00( ) :
     memset( &_control_2, 0, sizeof(FORMAT_CONTROL_2) );
     memset( &_control_3, 0, sizeof(FORMAT_CONTROL_3) );
 
-    memset( _device_class, 0, 4 * sizeof(unsigned char) );
+    memset( _device_class, 0, sizeof(_device_class) );
 }
 
 CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob ) :
@@ -118,7 +118,7 @@ CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob ) :
    memset( &_control_2, 0, sizeof(FORMAT_CONTROL_2) );
    memset( &_control_3, 0, sizeof(FORMAT_CONTROL_3) );
 
-   memset( _device_class, 0, 4 * sizeof(unsigned char) );
+   memset( _device_class, 0, sizeof(_device_class) );
 }
 
 //=========================================================================================================================================

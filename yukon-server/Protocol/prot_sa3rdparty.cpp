@@ -191,7 +191,7 @@ CtiProtocolSA3rdParty::CtiProtocolSA3rdParty() :
     ::memset(&_sa, 0, sizeof(_sa));
     _sa._maxTxTime = (0x3c);
 
-    memset( _errorBuf,    0, sizeof(CHAR) * MAX_SAERR_MSG_SIZE );
+    memset( _errorBuf,    0, sizeof(_errorBuf) );
     memset( &_sa_code,    0, sizeof(SA_CODE) );
     memset( &_sa_x205cfg, 0, sizeof(X205CMD) );
 }
@@ -209,7 +209,7 @@ CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa) :
     _sa._sTime = scTimePair.first;
     _sa._cTime = scTimePair.second;
 
-    memset( _errorBuf,    0, sizeof(CHAR) * MAX_SAERR_MSG_SIZE );
+    memset( _errorBuf,    0, sizeof(_errorBuf) );
     memset( &_sa_code,    0, sizeof(SA_CODE) );
     memset( &_sa_x205cfg, 0, sizeof(X205CMD) );
 }

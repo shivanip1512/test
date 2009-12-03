@@ -98,8 +98,15 @@ private:
             unsigned char status;               //  byte  11
         } block;
 
-        unsigned char raw[11];
+        unsigned char raw[sizeof(struct crob)];
     } _crob_or_pcb;
+
+    enum
+    {
+        ProtocolSize = 11
+    };
+
+    BOOST_STATIC_ASSERT( ProtocolSize == sizeof(union crobu) );
 
     bool _patternMask;
 

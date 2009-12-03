@@ -785,7 +785,6 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
             BYTE bwordcmd;
 
             INT nfunc_offset = 13;
-            INT dlcaddr_;
 
             for(i = 0; i < nfunc; i++)
             {

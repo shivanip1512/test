@@ -22,7 +22,7 @@ CtiIONChar::CtiIONChar( unsigned char initialValue='\0' ) :
     CtiIONValueFixed(Fixed_Char),
     _char(initialValue & 0x7F)
 {
-    memset( &_string, 0, 2);
+    memset( &_string, 0, sizeof(_string) );
 }
 
 
@@ -52,7 +52,7 @@ CtiIONChar::CtiIONChar( unsigned char *byteStream, unsigned long streamLength ) 
 
         setValid(false);
     }
-    memset( &_string, 0, 2);
+    memset( &_string, 0, sizeof(_string) );
 }
 
 

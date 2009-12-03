@@ -51,8 +51,8 @@ CtiAnsiTable01::CtiAnsiTable01( bool sn_flag, bool id_form ) :
     _serialNumberFlag(sn_flag),
     _idForm(id_form)
 {
-    memset( _manufacturer, 0, 4 * sizeof(unsigned char) );
-    memset( _ed_model,     0, 8 * sizeof(unsigned char) );
+    memset( _manufacturer, 0, sizeof(_manufacturer) );
+    memset( _ed_model,     0, sizeof(_ed_model) );
 
     memset( &_mfg_serial_number, 0, sizeof(_mfg_serial_number) );
 }
