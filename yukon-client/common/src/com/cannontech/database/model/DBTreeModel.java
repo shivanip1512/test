@@ -179,9 +179,12 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
     public String toString() {
         return ModelFactory.getModelString(this.getClass());
     }
-    
-    @Override
-    public boolean removeAndAddNodeForUpdate(Object originalObject, LiteBase updatedObject) {
+
+    /** 
+     * By default this method returns false.
+     * Should be overridden to return true if node must be removed and then re-added to update.
+     */
+    protected boolean removeAndAddNodeForUpdate(Object originalObject, LiteBase updatedObject) {
         return false;
     }
 }

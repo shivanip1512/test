@@ -454,7 +454,7 @@ public void setShowPoints(boolean revealPts)
 }
 
 @Override
-public boolean removeAndAddNodeForUpdate(Object originalObject, LiteBase updatedObject) {
+protected boolean removeAndAddNodeForUpdate(Object originalObject, LiteBase updatedObject) {
     
     if ((originalObject instanceof LitePoint && updatedObject instanceof LitePoint)) {
         if (((LitePoint)originalObject).getPointType() != ((LitePoint)updatedObject).getPointType()) {
