@@ -14,6 +14,7 @@ import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.user.checker.AggregateAndUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
@@ -42,6 +43,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private final Resource moduleConfigFile;
     private final String menuKeyPrefix = "yukon.web.menu.portal";
     private final String menuKeyModPrefix = "yukon.web.menu.config.";
+    private ConfigurationSource configurationSource;
     
     public CommonModuleBuilder(Resource moduleConfigFile) throws CommonMenuException {
         this.moduleConfigFile = moduleConfigFile;
@@ -217,6 +219,13 @@ public class CommonModuleBuilder implements ModuleBuilder {
     }
     
     public ModuleBase getModuleBase(String moduleName) {
+        
+        boolean devMode = configurationSource.getBoolean("DEVELOPMENT_MODE", false);
+        if(devMode) {
+            // refresh the cached module configuration on each call if we're in development mode
+            this.processConfigFile();
+        }
+        
         ModuleBase moduleBase = moduleMap.get(moduleName);
         Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check module_config.xml).");
         return moduleBase;
@@ -231,6 +240,11 @@ public class CommonModuleBuilder implements ModuleBuilder {
     public void setRoleAndPropertyDescriptionService(
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         this.roleAndPropertyDescriptionService = roleAndPropertyDescriptionService;
+    }
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
     
 }
