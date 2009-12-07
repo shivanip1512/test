@@ -110,10 +110,10 @@ CtiPointManager::~CtiPointManager()
 }
 
 
-void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
+std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
     ptr_type pTempCtiPoint;
-    bool     rowFound = false;
+    std::set<long> pointIdsFound;
 
     CtiTime start, stop;
 
@@ -168,7 +168,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                         dout << loggedSQLstring << endl;
                     }
                 }
-                refreshPoints(rowFound, rdr);
+                refreshPoints(pointIdsFound, rdr);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for System Points" << endl;
@@ -208,7 +208,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                         dout << loggedSQLstring << endl;
                     }
                 }
-                refreshPoints(rowFound, rdr);
+                refreshPoints(pointIdsFound, rdr);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
@@ -244,7 +244,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                         dout << loggedSQLstring << endl;
                     }
                 }
-                refreshPoints(rowFound, rdr);
+                refreshPoints(pointIdsFound, rdr);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
@@ -285,7 +285,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
                 */
-                refreshPoints(rowFound, rdr);
+                refreshPoints(pointIdsFound, rdr);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
@@ -324,7 +324,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                         dout << loggedSQLstring << endl;
                     }
                 }
-                refreshPoints(rowFound, rdr);
+                refreshPoints(pointIdsFound, rdr);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for CALC" << endl;
@@ -339,7 +339,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
             // Now I need to check for any Point removals based upon the
             // Updated Flag being NOT set
 
-            if(pntID == 0 && paoID == 0 && rowFound)
+            if(pntID == 0 && paoID == 0 && !pointIdsFound.empty())
             {
                 coll_type::writer_lock_guard_t guard(getLock());
 
@@ -382,6 +382,8 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
         RWTHROW(e);
 
     }
+
+    return pointIdsFound;
 }
 
 void CtiPointManager::refreshListByPAOIDs(const set<long> &id_list)
@@ -511,13 +513,13 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
             }
         }
 
-        bool rowFound;  //  placeholder
+        std::set<long> pointIdsFound;  //  placeholder
 
-        refreshPoints(rowFound, selector_accum .reader(conn));
-        refreshPoints(rowFound, selector_analog.reader(conn));
-        refreshPoints(rowFound, selector_calc  .reader(conn));
-        refreshPoints(rowFound, selector_status.reader(conn));
-        refreshPoints(rowFound, selector_system.reader(conn));
+        refreshPoints(pointIdsFound, selector_accum .reader(conn));
+        refreshPoints(pointIdsFound, selector_analog.reader(conn));
+        refreshPoints(pointIdsFound, selector_calc  .reader(conn));
+        refreshPoints(pointIdsFound, selector_status.reader(conn));
+        refreshPoints(pointIdsFound, selector_system.reader(conn));
     }
 
     if( paoids )
@@ -610,7 +612,7 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     return Point;
 }
 
-void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr)
+void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, RWDBReader& rdr)
 {
     vector<CtiPoint *> newPoints;
 
@@ -623,6 +625,7 @@ void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr)
         newPoint->setUpdatedFlag();            // Mark it updated
 
         newPoints.push_back(newPoint);
+        pointIdsFound.insert(newPoint->getPointID());
     }
 
     {

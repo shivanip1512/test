@@ -97,6 +97,11 @@ LONG CtiTablePointAlarming::getRecipientID() const
     return _recipientID;
 }
 
+UINT CtiTablePointAlarming::getPointID() const
+{
+    return _pointID;
+}
+
 UINT CtiTablePointAlarming::getAlarmCategory(const INT offset) const
 {
     return _alarmCategory[offset];

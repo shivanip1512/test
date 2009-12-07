@@ -75,7 +75,7 @@ private:
    void refreshReasonabilityLimits(LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
    void refreshPointLimits        (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
    void RefreshDynamicData        (LONG pntID = 0,             const std::set<long> &ids = std::set<long>());
-   void processPointDynamicData   (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
+   void processPointDynamicData   (LONG pntID, const std::set<long> &ids = std::set<long>());
    void refreshArchivalList       (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
 
    void getDirtyRecordList(list<CtiTablePointDispatch> &updateList);
@@ -96,7 +96,7 @@ public:
    CtiPointClientManager();
 
    virtual ~CtiPointClientManager();
-   virtual void refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
+   virtual std::set<long> refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
    virtual void refreshListByPointIDs(const std::set<long> &ids);
 
    void updatePoints(LONG pntID, LONG paoID, CtiPointType_t pntType = InvalidPointType);

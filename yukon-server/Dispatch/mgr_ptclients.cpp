@@ -80,9 +80,11 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
     return;
 }
 
-//This gives the point its initial data. We should not need a mutex for this.
-//If loading by pao, it is assumed we are ADDING a point.
-void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, const set<long> &pointIds)
+// This gives the point its initial data. We should not need a mutex for this.
+// This gives initial data to points that are loaded and thus should not be called on an entire pao.
+// If a PAO load is desired, the point ID's need to be found before calling and the callee
+// is responsible for loading the points before calling.
+void CtiPointClientManager::processPointDynamicData(LONG pntID, const set<long> &pointIds)
 {
     CtiPointSPtr pTempPoint;
     if(pntID)
@@ -102,22 +104,6 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
                 //ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
             }
         }
-    }
-    else if(paoID)
-    {
-        vector<Inherited::ptr_type>           pointVec;
-        vector<Inherited::ptr_type>::iterator iter;
-        getEqualByPAO(paoID, pointVec);
-
-        for(iter = pointVec.begin(); iter != pointVec.end(); iter++)
-        {
-            if(*iter)
-            {
-                ApplyInitialDynamicConditions(0,*iter,this);
-            }
-        }
-
-        //A PAO has nothing in dynamic point dispatch, so it cant be loaded.
     }
     else if(!pointIds.empty())
     {
@@ -202,9 +188,9 @@ void CtiPointClientManager::loadAllStaticData()
  * @param paoID LONG
  * @param pntType CtiPointType_t
  */
-void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
+std::set<long> CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
-    Inherited::refreshList(pntID, paoID, pntType);
+    const std::set<long> pointsFound = Inherited::refreshList(pntID, paoID, pntType);
     refreshAlarming(pntID, paoID);
     refreshReasonabilityLimits(pntID, paoID);
     refreshPointLimits(pntID, paoID);
@@ -212,7 +198,7 @@ void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t p
 
     if(pntID != 0 || paoID != 0)
     {
-        processPointDynamicData(pntID, paoID);
+        processPointDynamicData(pntID, pointsFound);
     }
     else
     {
@@ -224,6 +210,8 @@ void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t p
             RefreshDynamicData();
         }
     }
+
+    return pointsFound;
 }
 
 /**
@@ -258,14 +246,13 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
         refreshAlarming(0, 0, ids);
         refreshReasonabilityLimits(0, 0, ids);
         refreshPointLimits(0, 0, ids);
-        processPointDynamicData(0, 0, ids);
+        processPointDynamicData(0, ids);
         //refreshProperties(0, 0, ids);
     }
 
 
 }
 
-//Load based on PAO assumes it is in add!
 void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -304,12 +291,23 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
+        // This is explicitly done here because if this does not load,
+        // alarming may have been removed for these points.
         if( pntID )
         {
             removeAlarming(pntID);
         }
+        for each( long tempPointID in pointIds )
+        {
+            removeAlarming(tempPointID);
+        }
         for( std::list<CtiTablePointAlarming>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
+            if( paoID != 0 )
+            {
+                // The new alarming will not overwrite the old so we have to remove the old first.
+                removeAlarming(iter->getPointID());
+            }
             addAlarming(*iter);
         }
     }
@@ -1103,12 +1101,23 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
+        // If this is a reload we must erase regardless of whether or not this loads.
         if( pntID != 0 )
         {
             _reasonabilityLimits.erase(pntID);
         }
+        for each( long tempPointID in pointIds )
+        {
+            _reasonabilityLimits.erase(tempPointID);
+        }
         for( std::list<pair<long, ReasonabilityLimitStruct> >::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
+            // This is here as a precaution of the future use of PAO's in this function call
+            // If this was used for reloads, this would be necessary
+            if( paoID != 0 )
+            {
+                _reasonabilityLimits.erase(iter->first);
+            }
             _reasonabilityLimits.insert(*iter);
         }
     }
@@ -1161,13 +1170,25 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
+        // If this is a reload we must erase regardless of whether or not this loads.
         if(pntID != 0)
         {
             _limits.erase(CtiTablePointLimit(pntID, 0));
             _limits.erase(CtiTablePointLimit(pntID, 1));
         }
+        for each( long tempPointID in pointIds )
+        {
+            _limits.erase(CtiTablePointLimit(tempPointID, 0));
+            _limits.erase(CtiTablePointLimit(tempPointID, 1));
+        }
         for( std::list<CtiTablePointLimit>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
+            // This is here as a precaution of the future use of PAO's in this function call
+            // If this was used for reloads, this would be necessary
+            if( paoID != 0 )
+            {
+                _limits.erase(CtiTablePointLimit(*iter));
+            }
             _limits.insert(CtiTablePointLimit(*iter));
         }
     }

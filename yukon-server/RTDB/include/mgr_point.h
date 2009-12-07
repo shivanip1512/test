@@ -58,7 +58,7 @@ private:
         bool operator<(const lru_data_t &rhs) const  {  return access_time < rhs.access_time;  };
     };
 
-    typedef std::map<time_t, set<long>, std::greater<long> > lru_timeslice_map;  //  the make sure the map is sorted as newest-first (largest timestamps)
+    typedef std::map<time_t, set<long>, std::greater<time_t> > lru_timeslice_map;  //  the make sure the map is sorted as newest-first (largest timestamps)
     typedef std::map<long, lru_timeslice_map::iterator>      lru_point_lookup_map;
     typedef CtiLockGuard<CtiCriticalSection>                 lru_guard_t;
 
@@ -66,7 +66,7 @@ private:
     lru_timeslice_map    _lru_timeslices;
     lru_point_lookup_map _lru_points;
 
-    void refreshPoints(bool &rowFound, RWDBReader& rdr);
+    void refreshPoints(std::set<long> &pointIdsFound, RWDBReader& rdr);
 
     void updateAccess(long pointid, time_t time_now=time(0));
 
@@ -108,7 +108,7 @@ public:
     CtiPointManager();
     virtual ~CtiPointManager();
 
-    virtual void refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
+    virtual std::set<long> refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
     virtual void refreshListByPAOIDs  (const std::set<long> &ids);
     virtual void refreshListByPointIDs(const std::set<long> &ids);
 
