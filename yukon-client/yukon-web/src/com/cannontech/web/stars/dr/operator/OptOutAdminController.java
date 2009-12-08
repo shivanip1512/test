@@ -16,6 +16,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -25,6 +26,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -37,6 +39,7 @@ import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Maps;
 
@@ -55,19 +58,21 @@ public class OptOutAdminController {
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private ProgramService programService;
 	private ProgramDao programDao;
-
+	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private RolePropertyDao rolePropertyDao;
 	
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
-    public String view(LiteYukonUser user, ModelMap map, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
+    public String view(YukonUserContext userContext, ModelMap map, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
         
-    	rolePropertyDao.verifyAnyProperties(user, 
+    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+    	
+    	rolePropertyDao.verifyAnyProperties(userContext.getYukonUser(), 
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
     	
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
 
     	int totalNumberOfAccounts = customerAccountDao.getTotalNumberOfAccounts(energyCompany);
     	map.addAttribute("totalNumberOfAccounts", totalNumberOfAccounts);
@@ -79,8 +84,8 @@ public class OptOutAdminController {
     	map.addAttribute("scheduledOptOuts", scheduledOptOuts);
     	
     	// programNameCountsMap
-    	OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user);
-		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
+    	OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
+		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(userContext.getYukonUser());
 		
 		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
 		for (OptOutCountsDto setting : programSpecificOptOutCounts) {
@@ -90,14 +95,14 @@ public class OptOutAdminController {
 			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
 		}
 		if (programSpecificOptOutCounts.size() == 0) {
-			programNameCountsMap.put("All Programs", defaultOptOutCountsSetting.getOptOutCounts());
+			programNameCountsMap.put(messageSourceAccessor.getMessage("yukon.web.modules.dr.optOut.allPrograms"), defaultOptOutCountsSetting.getOptOutCounts());
 		} else {
-			programNameCountsMap.put("Other Programs", defaultOptOutCountsSetting.getOptOutCounts());
+			programNameCountsMap.put(messageSourceAccessor.getMessage("yukon.web.modules.dr.optOut.otherPrograms"), defaultOptOutCountsSetting.getOptOutCounts());
 		}
     	map.addAttribute("programNameCountsMap", programNameCountsMap);
     	
     	// optOutsEnabled
-    	boolean optOutsEnabled = optOutStatusService.getOptOutEnabled(user);
+    	boolean optOutsEnabled = optOutStatusService.getOptOutEnabled(userContext.getYukonUser());
     	map.addAttribute("optOutsEnabled", optOutsEnabled);
     	
     	// Get the customer search by list for search drop down box
@@ -317,6 +322,11 @@ public class OptOutAdminController {
     @Autowired
     public void setProgramService(ProgramService programService) {
 		this.programService = programService;
+	}
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+		this.messageSourceResolver = messageSourceResolver;
 	}
     
     @Autowired

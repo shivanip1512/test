@@ -128,7 +128,7 @@
 		        		</td></tr>
 		        		<tr><td style="padding-top:10px;">
 		        			<label>
-				        		<input type="checkbox" name="onlySingleProop	opgram" onclick="toggleProgramNameEnabled(this, $('cancelAllOptOutsProgramName'));"> 
+				        		<input type="checkbox" name="onlySingleProgram" onclick="toggleProgramNameEnabled(this, $('cancelAllOptOutsProgramName'));"> 
 				        		<cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction"/>
 				        	</label>
 		        		</td></tr>
