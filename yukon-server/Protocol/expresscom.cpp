@@ -2735,10 +2735,31 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         valid &= validateAddress(address, ProgramMin, ProgramMax);
     }
 
-    if(parse.isKeyValid(xca_program_))
+    if(parse.isKeyValid("xcgenericaddress"))    // We have a single value in the parse numeric field
     {
-        address = parse.getiValue(xca_program_, 0);
-        valid &= validateAddress(address, ProgramMin, ProgramMax);
+        if(parse.isKeyValid(xca_program_))
+        {
+            address = parse.getiValue(xca_program_, 0);
+            valid &= validateAddress(address, ProgramMin, ProgramMax);
+        }
+    }
+    else if(parse.isKeyValid("xcaddress"))      // We have a (potentially comma seperated) string value.
+    {
+        string programStr  = parse.getsValue(xca_program_);
+
+        boost::char_separator<char> sep(",");
+
+        Boost_char_tokenizer programs( programStr, sep );
+        Boost_char_tokenizer::iterator current_program = programs.begin();
+
+        for( ; current_program != programs.end(); ++current_program )
+        {
+            if( !current_program->empty() )
+            {    
+                address = atoi(current_program->c_str());
+                valid &= validateAddress(address, ProgramMin, ProgramMax);
+            }
+        }
     }
 
     if(parse.isKeyValid(xca_program_target_))
@@ -2757,10 +2778,31 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         valid &= validateAddress(address, SplinterMin, SplinterMax);
     }
 
-    if(parse.isKeyValid(xca_splinter_))
+    if(parse.isKeyValid("xcgenericaddress"))    // We have a single value in the parse numeric field
     {
-        address = parse.getiValue(xca_splinter_, 0);
-        valid &= validateAddress(address, SplinterMin, SplinterMax);
+        if(parse.isKeyValid(xca_splinter_))
+        {
+            address = parse.getiValue(xca_splinter_, 0);
+            valid &= validateAddress(address, SplinterMin, SplinterMax);
+        }
+    }
+    else if(parse.isKeyValid("xcaddress"))      // We have a (potentially comma seperated) string value.
+    {
+        string splinterStr  = parse.getsValue(xca_splinter_);
+
+        boost::char_separator<char> sep(",");
+
+        Boost_char_tokenizer splinters( splinterStr, sep );
+        Boost_char_tokenizer::iterator current_splinter = splinters.begin();
+
+        for( ; current_splinter != splinters.end(); ++current_splinter )
+        {
+            if( !current_splinter->empty() )
+            {    
+                address = atoi(current_splinter->c_str());
+                valid &= validateAddress(address, SplinterMin, SplinterMax);
+            }
+        }
     }
 
     if(parse.isKeyValid(xca_splinter_target_))
