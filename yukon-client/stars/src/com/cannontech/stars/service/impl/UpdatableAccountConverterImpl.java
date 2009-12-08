@@ -1,5 +1,6 @@
 package com.cannontech.stars.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.field.impl.AccountDto;
@@ -58,43 +59,86 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 	
 	private void setCustFieldsOnDto(AccountDto acctDto, String[] custFields) {
 		
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_FIRST_NAME])) {
+            acctDto.setFirstName(custFields[ImportManagerUtil.IDX_FIRST_NAME]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_LAST_NAME])) {
+            acctDto.setLastName(custFields[ImportManagerUtil.IDX_LAST_NAME]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_EMAIL])) {
+            acctDto.setEmailAddress(custFields[ImportManagerUtil.IDX_EMAIL]);
+        }
 		
-		acctDto.setFirstName(custFields[ImportManagerUtil.IDX_FIRST_NAME]);
-		acctDto.setLastName(custFields[ImportManagerUtil.IDX_LAST_NAME]);
-		acctDto.setEmailAddress(custFields[ImportManagerUtil.IDX_EMAIL]);
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_HOME_PHONE])) {
+            acctDto.setHomePhone(custFields[ImportManagerUtil.IDX_HOME_PHONE]);
+        }		
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_WORK_PHONE])) {
+            acctDto.setWorkPhone(custFields[ImportManagerUtil.IDX_WORK_PHONE]);
+        }		
 		
-		acctDto.setHomePhone(custFields[ImportManagerUtil.IDX_HOME_PHONE]);
-		acctDto.setWorkPhone(custFields[ImportManagerUtil.IDX_WORK_PHONE]);
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_USERNAME])) {
+            acctDto.setUserName(custFields[ImportManagerUtil.IDX_USERNAME]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_PASSWORD])) {
+            acctDto.setPassword(custFields[ImportManagerUtil.IDX_PASSWORD]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_LOGIN_GROUP])) {
+            acctDto.setLoginGroup(custFields[ImportManagerUtil.IDX_LOGIN_GROUP]);
+        }		
 		
-		acctDto.setUserName(custFields[ImportManagerUtil.IDX_USERNAME]);
-		acctDto.setPassword(custFields[ImportManagerUtil.IDX_PASSWORD]);
-		acctDto.setLoginGroup(custFields[ImportManagerUtil.IDX_LOGIN_GROUP]);
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_COMPANY_NAME])) {
+            acctDto.setCompanyName(custFields[ImportManagerUtil.IDX_COMPANY_NAME]);
+        }
 		
-		acctDto.setCompanyName(custFields[ImportManagerUtil.IDX_COMPANY_NAME]);
 		if(custFields[ImportManagerUtil.IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") || custFields[ImportManagerUtil.IDX_COMPANY_NAME].length() > 0) {
 			acctDto.setIsCommercial(true);
 		} else {
 			acctDto.setIsCommercial(false);
 		}
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_MAP_NO])) {
+            acctDto.setMapNumber(custFields[ImportManagerUtil.IDX_MAP_NO]);
+        }
 		
-		acctDto.setMapNumber(custFields[ImportManagerUtil.IDX_MAP_NO]);
 		
 		// street address
 		Address streetAddress = acctDto.getStreetAddress();
-		streetAddress.setCityName(custFields[ImportManagerUtil.IDX_CITY]);
-		streetAddress.setCounty(custFields[ImportManagerUtil.IDX_COUNTY]);
-		streetAddress.setLocationAddress1(custFields[ImportManagerUtil.IDX_STREET_ADDR1]);
-		streetAddress.setLocationAddress2(custFields[ImportManagerUtil.IDX_STREET_ADDR2]);
-		streetAddress.setStateCode(custFields[ImportManagerUtil.IDX_STATE]);
-		streetAddress.setZipCode(custFields[ImportManagerUtil.IDX_ZIP_CODE]);
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_CITY])) {
+            streetAddress.setCityName(custFields[ImportManagerUtil.IDX_CITY]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_COUNTY])) {
+            streetAddress.setCounty(custFields[ImportManagerUtil.IDX_COUNTY]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_STREET_ADDR1])) {
+            streetAddress.setLocationAddress1(custFields[ImportManagerUtil.IDX_STREET_ADDR1]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_STREET_ADDR2])) {
+            streetAddress.setLocationAddress2(custFields[ImportManagerUtil.IDX_STREET_ADDR2]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_STATE])) {
+            streetAddress.setStateCode(custFields[ImportManagerUtil.IDX_STATE]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_ZIP_CODE])) {
+            streetAddress.setZipCode(custFields[ImportManagerUtil.IDX_ZIP_CODE]);
+        }        
 		
 		// site
 		SiteInformation siteInfo = acctDto.getSiteInfo();
-		siteInfo.setFeeder(custFields[ImportManagerUtil.IDX_FEEDER]);
-		siteInfo.setPole(custFields[ImportManagerUtil.IDX_POLE]);
-		siteInfo.setServiceVoltage(custFields[ImportManagerUtil.IDX_SERV_VOLT]);
-		siteInfo.setSubstationName(custFields[ImportManagerUtil.IDX_SUBSTATION]);
-		siteInfo.setTransformerSize(custFields[ImportManagerUtil.IDX_TRFM_SIZE]);
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_FEEDER])) {
+            siteInfo.setFeeder(custFields[ImportManagerUtil.IDX_FEEDER]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_POLE])) {
+            siteInfo.setPole(custFields[ImportManagerUtil.IDX_POLE]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_SERV_VOLT])) {
+            siteInfo.setServiceVoltage(custFields[ImportManagerUtil.IDX_SERV_VOLT]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_SUBSTATION])) {
+            siteInfo.setSubstationName(custFields[ImportManagerUtil.IDX_SUBSTATION]);
+        }
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_TRFM_SIZE])) {
+            siteInfo.setTransformerSize(custFields[ImportManagerUtil.IDX_TRFM_SIZE]);
+        }		
+		
 		if (custFields[ImportManagerUtil.IDX_SUBSTATION].length() > 0) {
 			try {
 				// might be id

@@ -90,7 +90,7 @@ public class StarsControllableDeviceDTOConverterImpl implements
 	@Override
 	public void updateDtoWithHwFields (StarsControllableDeviceDTO dto, String[] hwFields, LiteStarsEnergyCompany energyCompany) throws ParseException {
 		
-		if (!StringUtils.isBlank(hwFields[ImportManagerUtil.IDX_DEVICE_LABEL])) {
+		if (!StringUtils.isEmpty(hwFields[ImportManagerUtil.IDX_DEVICE_LABEL])) {
 			dto.setDeviceLabel(hwFields[ImportManagerUtil.IDX_DEVICE_LABEL]);
 		}
 		
@@ -118,7 +118,7 @@ public class StarsControllableDeviceDTOConverterImpl implements
 			dto.setSerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
 		}
 		
-		if (!StringUtils.isBlank(hwFields[ImportManagerUtil.IDX_SERVICE_COMPANY])) {
+		if (!StringUtils.isEmpty(hwFields[ImportManagerUtil.IDX_SERVICE_COMPANY])) {
 			dto.setServiceCompanyName(hwFields[ImportManagerUtil.IDX_SERVICE_COMPANY]);
 		}
 	}

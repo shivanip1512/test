@@ -276,13 +276,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	}
 	
 	public Collection<String[]> getErrorList() {
+	    Collection<String[]> errorList = new ArrayList<String[]>();
 		if (custLines != null) {
-			return cleanList(custLines.values());
+		    errorList.addAll(cleanList(custLines.values()));
 		}
 		if (hwLines != null) {
-			return cleanList(hwLines.values());
+		    errorList.addAll(cleanList(hwLines.values()));
 		}
-		return Collections.emptyList();
+		return errorList;
 	}
 	
 	private Collection<String[]> cleanList(final Collection<String[]> c) {
@@ -1412,8 +1413,13 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         } else {
             enrollmentHelper.setProgramName(hwFields[ImportManagerUtil.IDX_PROGRAM_NAME]);    
         }
-        enrollmentHelper.setLoadGroupName(hwFields[ImportManagerUtil.IDX_ADDR_GROUP].trim());
-        enrollmentHelper.setRelay(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim());
+        enrollmentHelper.setLoadGroupName(hwFields[ImportManagerUtil.IDX_ADDR_GROUP]);
+        enrollmentHelper.setRelay(appFields[ImportManagerUtil.IDX_RELAY_NUM]);        
+        enrollmentHelper.setApplianceCategoryName(appFields[ImportManagerUtil.IDX_APP_TYPE]);
+        if (appFields[ImportManagerUtil.IDX_APP_KW].length() > 0) {
+            Double appKw = Double.parseDouble(appFields[ImportManagerUtil.IDX_APP_KW]);
+            if (appKw >= 0) enrollmentHelper.setApplianceKW(appKw.floatValue());
+        }
 
         try {
             enrollmentHelperService.doEnrollment(enrollmentHelper, enrollType, this.currentUser);
@@ -1425,22 +1431,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             automationCheck(e.getMessage());
         }
         
-        // refresh account info, after update program enrollment
-        liteAcctInfo = starsCustAccountInformationDao.getById(liteAcctInfo.getAccountID(), energyCompany.getEnergyCompanyID());
-        if (!enrollType.equals(EnrollmentEnum.UNENROLL)) {
-            if (appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
-                int appID = -1;
-                Program program = programService.getByProgramName(hwFields[ImportManagerUtil.IDX_PROGRAM_NAME], energyCompany);                
-                for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-                    LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
-                    if (liteApp.getProgramID() == program.getProgramId() && liteApp.getInventoryID() == liteInv.getInventoryID()) {
-                        appID = liteApp.getApplianceID();
-                        break;
-                    }
-                }
-                ImportManagerUtil.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
-            }
-        }
 	}
 	
 	private void sendImportLog(File importLog, String email, LiteStarsEnergyCompany energyCompany) throws Exception {
