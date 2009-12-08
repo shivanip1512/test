@@ -29,7 +29,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="countOverridesTowardsLimitRequest")
     public Element invoke(Element countOverridesTowardsLimitRequest, LiteYukonUser user) throws Exception {
         
-    	XmlVersionUtils.verifyYukonMessageVersion(countOverridesTowardsLimitRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    	XmlVersionUtils.verifyYukonMessageVersion(countOverridesTowardsLimitRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
     	
     	SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(countOverridesTowardsLimitRequest);
     	String programName = template.evaluateAsString("/y:countOverridesTowardsLimitRequest/y:programName");
