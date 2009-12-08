@@ -27,6 +27,6 @@
 
 <cti:dataUpdaterCallback function="updateCapBankWarningImage('warning_${paoId}')" initialize="true" value="${type}/${paoId}/WARNING_FLAG"/>            
     
-<div class="ccVarLoadPopup" id="warningPopup_${paoId}" style="display: none;">
+<span class="ccVarLoadPopup" id="warningPopup_${paoId}" style="display: none;">
     <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
-</div>
+</span>

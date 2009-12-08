@@ -19,10 +19,10 @@
 
 <cti:dataUpdaterCallback function="updateDualBusImage('dualBus_${paoId}')" initialize="true" value="${type}/${paoId}/DUALBUS"/>            
     
-<div class="ccVarLoadPopup" id="dualBusPrimaryPopup_${paoId}" style="display: none;">
+<span class="ccVarLoadPopup" id="dualBusPrimaryPopup_${paoId}" style="display: none;">
     <cti:capControlValue paoId="${paoId}" type="${type}" format="DUALBUS_MESSAGE"/> 
-</div>
+</span>
 
-<div class="ccVarLoadPopup" id="dualBusAlternatePopup_${paoId}" style="display: none;">
+<span class="ccVarLoadPopup" id="dualBusAlternatePopup_${paoId}" style="display: none;">
     <cti:capControlValue paoId="${paoId}" type="${type}" format="DUALBUS_MESSAGE"/> 
-</div>
+</span>

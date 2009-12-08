@@ -575,10 +575,6 @@
                     <td>
                     	<c:choose>
     	                	<c:when test="${hasCapbankControl}">
-    	                        <!--2-way device designator-->
-    	                        <input id="2_way_${thisCapBankId}" type="hidden" value="${viewableCapBank.twoWayCbc}">
-    	                        <input id="showFlip_${thisCapBankId}" type="hidden" value="${showFlip}">
-    	                        <input id="is701x_${thisCapBankId}" type="hidden" value="${viewableCapBank.device701x}">
     	                        
     	                        <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisCapBankId}" class="tierIconLink">
     	                            <img alt="" class="tierImg" src="${editInfoImage}">
