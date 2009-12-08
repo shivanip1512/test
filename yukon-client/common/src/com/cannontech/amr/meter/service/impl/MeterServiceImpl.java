@@ -32,7 +32,6 @@ public class MeterServiceImpl implements MeterService {
         mct400 = (MCT400SeriesBase)Transaction.createTransaction(Transaction.RETRIEVE, mct400).execute();
 
         // set disconnect address and update
-        mct400.setHasNewDisconnect(true);
         mct400.getDeviceMCT400Series().setDisconnectAddress(disconnectAddress);
         dbPersistentDao.performDBChange(mct400, Transaction.UPDATE);
         
@@ -56,8 +55,7 @@ public class MeterServiceImpl implements MeterService {
         mct400 = (MCT400SeriesBase)Transaction.createTransaction(Transaction.RETRIEVE, mct400).execute();
     
         // set to remove disconnect and update
-        mct400.setHasNewDisconnect(false);
-        mct400.getDeviceMCT400Series().deleteAnAddress(mct400.getPAObjectID());
+        mct400.deleteAnAddress();
         dbPersistentDao.performDBChange(mct400, Transaction.UPDATE);
         
     

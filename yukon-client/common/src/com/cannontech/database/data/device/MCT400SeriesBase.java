@@ -1,5 +1,9 @@
 package com.cannontech.database.data.device;
 
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.device.DeviceMCT400Series;
 
 /**
@@ -8,8 +12,6 @@ import com.cannontech.database.db.device.DeviceMCT400Series;
 public class MCT400SeriesBase extends MCTBase 
 {
 	private DeviceMCT400Series deviceMCT400Series = null;
-	private boolean hasNewTOU = false;
-	private boolean hasNewDisconnect = false;
 
 /**
  * MCT constructor comment.
@@ -17,58 +19,37 @@ public class MCT400SeriesBase extends MCTBase
 public MCT400SeriesBase() {
 	super();
 }
-/**
- * This method was created in VisualAge.
- */
+
 public void add() throws java.sql.SQLException {
 	super.add();
-	if(hasNewMCT400SeriesSettings())
-		getDeviceMCT400Series().add();
+    if (hasDisconnectOrTOU()) {
+        getDeviceMCT400Series().add();
+    }
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:34:05 AM)
- * @param deviceID int
- * @exception java.sql.SQLException The exception description.
- */
 public void addPartial() throws java.sql.SQLException 
 {
 	super.addPartial();
-	
-	if(hasNewMCT400SeriesSettings())
-		getDeviceMCT400Series().add();
-		
+	if (hasDisconnectOrTOU()) {
+	    getDeviceMCT400Series().add();
+	}
 }
 
-/**
- * This method was created in VisualAge.
- */
 public void delete() throws java.sql.SQLException 
 {
-	if(hasExistingMCT400SeriesSettings())
-		getDeviceMCT400Series().delete();
-	
+	getDeviceMCT400Series().delete();
 	super.delete();
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:34:05 AM)
- * @exception java.sql.SQLException The exception description.
- */
 public void deletePartial() throws java.sql.SQLException 
 {
 	super.deletePartial();
 }
 
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.device.DeviceMeterGroup
- */
 public DeviceMCT400Series getDeviceMCT400Series() {
-	if( deviceMCT400Series == null )
+	if( deviceMCT400Series == null ) {
 		deviceMCT400Series = new DeviceMCT400Series();
+	}
 		
 	return deviceMCT400Series;
 }
@@ -78,21 +59,12 @@ public void setDeviceMCT400Series( DeviceMCT400Series mct400Series )
 	deviceMCT400Series = mct400Series;
 }
 
-/**
- * This method was created in VisualAge.
- */
 public void retrieve() throws java.sql.SQLException {
 	super.retrieve();
-	
-	//if(hasMCT400SeriesSettings())
+
 	getDeviceMCT400Series().retrieve();
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:34:05 AM)
- * @param conn java.sql.Connection
- */
 public void setDbConnection(java.sql.Connection conn) 
 {
 	super.setDbConnection(conn);
@@ -100,56 +72,43 @@ public void setDbConnection(java.sql.Connection conn)
 	getDeviceMCT400Series().setDbConnection(conn);
 }
 
-/**
- * This method was created in VisualAge.
- * @param deviceID java.lang.Integer
- */
 public void setDeviceID(Integer deviceID) {
 	super.setDeviceID(deviceID);
 	
 	getDeviceMCT400Series().setDeviceID(deviceID);
 }
 
-/**
- * This method was created in VisualAge.
- */
+
 public void update() throws java.sql.SQLException {
 	super.update();
-	
-	if(hasExistingMCT400SeriesSettings())
-		getDeviceMCT400Series().update();
-	else if(hasNewTOU || hasNewDisconnect)
-		getDeviceMCT400Series().add();
+	if (hasDisconnectOrTOU()) {
+    	getDeviceMCT400Series().delete();
+    	getDeviceMCT400Series().add();
+	}
 }
 
-//this should all be temporary
-//replace with a decent plan
-private boolean hasExistingMCT400SeriesSettings()
+/**
+ * This method deletes the DeviceMCT400Series data for getDeviceID().
+ * The disconnectAddress is also set to null to "clear out" the object.
+ */
+public void deleteAnAddress()
 {
-	return (hasExistingTOU() || hasExistingDisconnect());
+    JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+    SqlStatementBuilder sql = new SqlStatementBuilder();
+    sql.append("DELETE FROM DeviceMCT400Series ");
+    sql.append("WHERE DeviceID = ").appendArgument(getDeviceMCT400Series().getDeviceID());
+    template.update(sql.getSql(), sql.getArguments());
+    
+    getDeviceMCT400Series().setDisconnectAddress(null); //clear out any remembrance of an address
 }
 
-private boolean hasNewMCT400SeriesSettings()
-{
-	return ((!hasExistingMCT400SeriesSettings()) && (hasNewTOU || hasNewDisconnect));
+/**
+ * Returns true when object has disconnect or TOU to write(add or update) to the database
+ * @return
+ */
+private boolean hasDisconnectOrTOU() {
+    // TODO - todate (20091206) nothing seems to set/get TOUScheduleId per device.
+    //  At some point, changes may need to be made to set TOUScheduleId
+    return getDeviceMCT400Series().getDisconnectAddress() != null;
 }
-
-public void setHasNewTOU(boolean usesTOU)
-{
-	hasNewTOU = usesTOU;
-}
-
-public void setHasNewDisconnect(boolean usesDisconn)
-{
-	hasNewDisconnect = usesDisconn;
-}
-
-public boolean hasExistingDisconnect() {
-    return DeviceMCT400Series.hasExistingDisconnectAddress(getDevice().getDeviceID());
-}
-
-public boolean hasExistingTOU() {
-    return DeviceMCT400Series.hasExistingTOUSchedule(getDevice().getDeviceID());
-}
-
 }

@@ -6,9 +6,12 @@
  */
 package com.cannontech.database.db.device;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlStatement;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -20,7 +23,7 @@ import com.cannontech.database.db.DBPersistent;
 public class DeviceMCT400Series extends DBPersistent {
 	
 	private Integer deviceID;
-	private Integer disconnectAddress = new Integer(-1);
+	private Integer disconnectAddress = null;
 	private Integer touScheduleID = new Integer(0);
 	
 	public static final String SETTER_COLUMNS[] = 
@@ -56,265 +59,94 @@ public DeviceMCT400Series(Integer scheduleID, Integer disconn, Integer touID)
 	touScheduleID = touID;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:34:05 AM)
- */
-public void add() throws java.sql.SQLException
-{
-	Object addValues[] = 
-	{ 
-		getDeviceID(), getDisconnectAddress(),
-		getTOUScheduleID()
+public void add() throws java.sql.SQLException {
+	Object addValues[] = { 
+		getDeviceID(), getDisconnectAddress(), getTOUScheduleID()
 	};
 
 	add( TABLE_NAME, addValues );
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:34:22 AM)
- */
+
 public void delete() throws java.sql.SQLException
 {
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getDeviceID());
 }
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param deviceID java.lang.Integer
- */
-/*public static boolean deleteDisconnectAddress(Integer deviceID, java.sql.Connection conn)
-{
-	com.cannontech.database.SqlStatement stmt = null;
 
-	if( conn == null )
-		throw new IllegalArgumentException("Database connection should not be (null)");
-
-	try
-	{
-		java.sql.Statement stat = conn.createStatement();
-
-		stat.execute("DELETE FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID);
-
-		if (stat != null)
-			stat.close();
-	}
-	catch (Exception e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		return false;
-	}
-
-	return true;
-}*/
-
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:40:28 AM)
- * @return java.lang.Integer
- */
 public Integer getTOUScheduleID() {
 	return touScheduleID;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:40:28 AM)
- * @return java.lang.String
- */
 public Integer getDisconnectAddress() {
 	return disconnectAddress;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:40:28 AM)
- * @return java.lang.Integer
- */
 public Integer getDeviceID() {
 	return deviceID;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:40:28 AM)
- */
-public void retrieve() 
-{
+public void retrieve() {
 	Integer constraintValues[] = { getDeviceID() };	
 	
-	try
-	{
+	try {
 		Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	
-		if( results.length == SETTER_COLUMNS.length )
-		{
-			setDisconnectAddress( (Integer) results[1] );
-			setTOUScheduleID( (Integer) results[2] );
+		if( results.length == SETTER_COLUMNS.length ) {
+		    //Don't call the setter here.
+			disconnectAddress = (Integer) results[1];
+			touScheduleID = (Integer) results[2];
 		}
 		
 	}
-	catch (Exception e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	catch (Exception e)	{
+		CTILogger.error( e.getMessage(), e );
 	}
 }
 
-/**
- * Insert the method's description here.
- * @param newTOUScheduleID java.lang.Integer
- */
 public void setTOUScheduleID(Integer newTOUScheduleID) {
 	touScheduleID = newTOUScheduleID;
 }
 
-/**
- * Insert the method's description here.
- * @param newSwitchRate java.lang.String
- */
 public void setDisconnectAddress(Integer newDisconn) {
-	disconnectAddress = newDisconn;
+    this.disconnectAddress = newDisconn;
 }
 
-/**
- * Insert the method's description here.
- * @param newDeviceID java.lang.Integer
- */
+
 public void setDeviceID(Integer newDeviceID) {
 	deviceID = newDeviceID;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2004 10:40:28 AM)
- */
-public void update() 
-{
-	Object setValues[] =
-	{ 
-		getDeviceID(), getDisconnectAddress(),
-		getTOUScheduleID()
+public void update() {
+	Object setValues[] = { 
+		getDeviceID(), getDisconnectAddress(), getTOUScheduleID()
 	};
 	
 	Object constraintValues[] = { getDeviceID() };
 	
-	try
-	{
+	try {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-	}
-	catch (Exception e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-}
-
-public final static boolean hasExistingDisconnectAddress(Integer mctID) 
-{	
-	return hasExistingDisconnect(mctID, CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
-public final static boolean hasExistingDisconnect(Integer mctID, String databaseAlias) 
-{
-	SqlStatement stmt = 
-        new SqlStatement("SELECT DisconnectAddress FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,
-                         databaseAlias );
-
-	try {
-		stmt.execute();
-		return (stmt.getRowCount() > 0 );
-        
-	} catch( Exception e ) {
-        CTILogger.error( e );
-		return false;
-	}
-}
-
-public final static boolean hasExistingTOUSchedule(Integer mctID) 
-{	
-	return hasExistingTOUSchedule(mctID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
-public final static boolean hasExistingTOUSchedule(Integer mctID, String databaseAlias) 
-{
-	SqlStatement stmt =
-        new SqlStatement("SELECT TOUScheduleID FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID,
-                         databaseAlias );
-
-	try {
-		stmt.execute();
-		return (stmt.getRowCount() > 0 );
-        
-	} catch( Exception e ) {
-        CTILogger.error( e );
-		return false;
+	} catch (Exception e) {
+		CTILogger.error( e.getMessage(), e );
 	}
 }
 
 /**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param deviceID java.lang.Integer
+ * Returns true if the DeviceMCT400Series table has a row returned for mctID, else false.
+ * @param mctID
+ * @return
  */
-public static boolean deleteAnAddress(Integer mctID, java.sql.Connection conn)
-{
-	java.sql.PreparedStatement pstmt = null;		
-	String sql = "DELETE FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID;
-
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection should not be (null)");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.executeUpdate();
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) 
-				pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
-
-	return true;
+public final static boolean hasExistingDisconnectAddress(Integer mctID) {
+    
+    JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+    SqlStatementBuilder sql = new SqlStatementBuilder();
+    sql.append("SELECT DisconnectAddress FROM DeviceMCT400Series ");
+    sql.append("WHERE DeviceID = ").appendArgument(mctID);
+    try {
+        int address = template.queryForInt(sql.getSql(), sql.getArguments());
+        return true;
+    } catch (EmptyResultDataAccessException e) {
+        // if no results, then it doesn't exist
+        return false;
+    }
 }
 
-public void deleteAnAddress(Integer mctID)
-{
-	try
-	{
-		java.sql.Connection conn = null;
-	
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-	
-		deleteAnAddress(mctID, conn);
-		
-		conn.close();
-	}
-	catch( java.sql.SQLException e2 )
-	{
-		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-	}	
 }
-}
-
-	

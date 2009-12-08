@@ -49,6 +49,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
@@ -266,10 +267,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             ((MCTBase)newDevice).setDeviceLoadProfile(((MCTBase)oldDevice).getDeviceLoadProfile());
             ((MCTBase)newDevice).setConfigMapping(((MCTBase)oldDevice).getConfigMapping());
 
-            if ( newDevice instanceof MCT400SeriesBase && oldDevice instanceof MCT400SeriesBase) {
+            if ( newDevice instanceof MCT400SeriesBase && oldDevice instanceof MCT400SeriesBase &&
+                    (DeviceTypesFuncs.isMCT410(PAOGroups.getDeviceType(newDevice.getPAOType())) && 
+                     DeviceTypesFuncs.isMCT410(PAOGroups.getDeviceType(oldDevice.getPAOType())))) {
                 ((MCT400SeriesBase) newDevice).setDeviceMCT400Series(((MCT400SeriesBase)oldDevice).getDeviceMCT400Series());
-                ((MCT400SeriesBase) newDevice).setHasNewDisconnect(true);
-                ((MCT400SeriesBase) newDevice).setHasNewTOU(true);
             }
         }
 

@@ -243,16 +243,11 @@ public Object getValue(Object o)
 	MCT400SeriesBase mct400 = (MCT400SeriesBase)o;
 	
 	if(getJCheckBoxEnableDisconnect().isSelected() &&
-		getJTextFieldDisconnectAddress().getText().length() > 0)
-	{
-		mct400.setHasNewDisconnect(true);
-		mct400.getDeviceMCT400Series().setDeviceID(mct400.getPAObjectID());
+		getJTextFieldDisconnectAddress().getText().length() > 0) {
+		mct400.setDeviceID(mct400.getPAObjectID());
 		mct400.getDeviceMCT400Series().setDisconnectAddress(new Integer(getJTextFieldDisconnectAddress().getText()));
-	}
-	else
-	{
-		mct400.setHasNewDisconnect(false);
-		mct400.getDeviceMCT400Series().deleteAnAddress(mct400.getPAObjectID());
+	} else {
+		mct400.deleteAnAddress();
 	}
 		
 	return o;	
