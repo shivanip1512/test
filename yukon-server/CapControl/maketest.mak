@@ -43,7 +43,8 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib
 CAPCTRLTESTOBJS= \
 test_ccsubstationbus.obj \
 test_ccFeeder.obj \
-test_likeDayControl.obj
+test_likeDayControl.obj \
+test_pointHolder.obj
 
 CAPCTRLBASEOBJS= \
 $(OBJ)\ccservice.obj \
@@ -71,6 +72,10 @@ $(OBJ)\ccoperationstats.obj \
 $(OBJ)\ccconfirmationstats.obj \
 $(OBJ)\ccstatsobject.obj \
 $(OBJ)\ccoriginalparent.obj \
+$(OBJ)\PointOffsetValueHolder.obj \
+$(OBJ)\LtcPointHolder.obj \
+$(OBJ)\CapControlPao.obj \
+$(OBJ)\LoadTapChanger.obj
 
 TARGS = capcontrol.exe
 
@@ -124,11 +129,13 @@ test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h observe.h ccmonitorpoint.h msg_cmd.h ctidate.h \
-		cccapbank.h ccpointresponse.h cctwowaycbcpoints.h \
-		ccoperationstats.h ccConfirmationStats.h msg_pcrequest.h \
-		ccstrategy.h regression.h ccsubstationbus.h \
+		ccoriginalparent.h cccapbank.h ccpointresponse.h \
+		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
+		msg_pcrequest.h ccstrategy.h regression.h ccsubstationbus.h \
 		ccsubstationbusstore.h ccarea.h ccsparea.h ccid.h ccstate.h \
-		ccmessage.h ccsubstation.h ccstatsobject.h ccUnitTestUtil.h
+		ccmessage.h ccsubstation.h ccstatsobject.h LoadTapChanger.h \
+		ltcPointHolder.h PointOffsetValueHolder.h CapControlPao.h \
+		ccutil.h ccUnitTestUtil.h
 test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -138,11 +145,32 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h observe.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
-		ctidate.h cccapbank.h ccpointresponse.h cctwowaycbcpoints.h \
-		ccoperationstats.h ccConfirmationStats.h msg_pcrequest.h \
-		ccstrategy.h regression.h ccsubstation.h ccarea.h \
-		ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
-		ccmessage.h ccstatsobject.h ccexecutor.h ctdpcptrq.h \
+		ctidate.h ccoriginalparent.h cccapbank.h ccpointresponse.h \
+		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
+		msg_pcrequest.h ccstrategy.h regression.h ccsubstation.h \
+		ccarea.h ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h ccstatsobject.h LoadTapChanger.h ltcPointHolder.h \
+		PointOffsetValueHolder.h CapControlPao.h ccutil.h \
+		ccexecutor.h msg_signal.h ctdpcptrq.h mgr_paosched.h \
+		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
 		ccUnitTestUtil.h
+test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
+		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticonnect.h netports.h sema.h connection.h exchange.h \
+		logger.h thread.h CtiPCPtrQueue.h utility.h queues.h \
+		sorted_vector.h message.h collectable.h rwutil.h boost_time.h \
+		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h observe.h ccmonitorpoint.h msg_cmd.h ctidate.h \
+		ccoriginalparent.h cccapbank.h ccpointresponse.h \
+		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
+		msg_pcrequest.h ccstrategy.h regression.h ccsubstationbus.h \
+		ccsubstationbusstore.h ccarea.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h ccsubstation.h ccstatsobject.h LoadTapChanger.h \
+		ltcPointHolder.h PointOffsetValueHolder.h CapControlPao.h \
+		ccutil.h ccUnitTestUtil.h
+test_pointholder.obj:	yukon.h precompiled.h ctidbgmem.h \
+		pointOffsetValueHolder.h pointtypes.h ltcPointHolder.h
 #ENDUPDATE#
 

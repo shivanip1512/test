@@ -324,6 +324,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastWattPointTime(const CtiTime& lastpointupdate);
     CtiCCSubstationBus& setLastVoltPointTime(const CtiTime& lastpointupdate);
 
+    int getLtcId();
+    void setLtcId(int ltcId);
 
     void reOrderFeederDisplayOrders();
     void figureAndSetTargetVarValue();
@@ -634,6 +636,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiRegression regressionA;
     CtiRegression regressionB;
     CtiRegression regressionC;
+
+    int _ltcId;
 
 };
 

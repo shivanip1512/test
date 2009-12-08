@@ -54,7 +54,7 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus::CtiCCSubstationBus()
+CtiCCSubstationBus::CtiCCSubstationBus() : _ltcId(0)
 {
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -2067,6 +2067,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(LONG places)
 {
     _decimalplaces = places;
     return *this;
+}
+
+int CtiCCSubstationBus::getLtcId()
+{
+    return _ltcId;
+}
+
+void CtiCCSubstationBus::setLtcId(int ltcId)
+{
+    _ltcId = ltcId;
 }
 
 LONG CtiCCSubstationBus::getNextTODStartTime()
@@ -10035,6 +10045,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _primaryBusFlag
     >> _altDualSubId
     >> _dualBusEnable
+    >> _ltcId
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -10156,6 +10167,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _primaryBusFlag
     << tempAltSubId
     << tempDualBusEnabled
+    << _ltcId
     << _ccfeeders;
 }
 
@@ -10348,6 +10360,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         regressionA = right.regressionA;
         regressionB = right.regressionB;
         regressionC = right.regressionC;
+
+        _ltcId = right._ltcId;
     }
     return *this;
 }
@@ -10558,6 +10572,8 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setLastVoltPointTime(gInvalidCtiTime);
 
     setParentName("none");
+
+    setLtcId(0);
 }
 
 void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)

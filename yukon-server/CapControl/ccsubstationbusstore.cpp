@@ -391,6 +391,13 @@ CtiCCSubstationPtr CtiCCSubstationBusStore::findSubstationByPAObjectID(long paob
     map< long, CtiCCSubstationPtr >::iterator iter = _paobject_substation_map.find(paobject_id);
     return (iter == _paobject_substation_map.end() ? NULL : iter->second);
 }
+
+LoadTapChangerPtr CtiCCSubstationBusStore::findLtcById(long ltcId)
+{
+    map< long, LoadTapChangerPtr >::iterator iter = _paobject_ltc_map.find(ltcId);
+    return (iter == _paobject_ltc_map.end() ? NULL : iter->second);
+}
+
 CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByPAObjectID(long paobject_id)
 {
     map< long, CtiCCSubstationBusPtr >::iterator iter = _paobject_subbus_map.find(paobject_id);
@@ -1288,6 +1295,10 @@ void CtiCCSubstationBusStore::reset()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - No Substations in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
+
+            /** Loading LTCs **/
+            reloadLtcFromDatabase(0);
+
             /************************************************************
              ********    Loading Cap Banks States                ********
              ************************************************************/
@@ -5957,6 +5968,120 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
     }
 }
 
+void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
+{
+    LoadTapChangerPtr ltcPtr = NULL;
+    //Clear out existing
+    if (ltcId > 0)
+    {
+        ltcPtr = findLtcById(ltcId);
+        if (ltcPtr != NULL)
+        {
+            deleteLtcById(ltcId);
+        }
+    }
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    if ( conn.isValid() )
+    {
+        CtiTime currentDateTime;
+        RWDBDatabase db = getDatabase();
+
+        {
+            RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
+
+            RWDBSelector selector = db.selector();
+            selector << yukonPAObjectTable["paobjectid"]
+                     << yukonPAObjectTable["category"]
+                     << yukonPAObjectTable["paoclass"]
+                     << yukonPAObjectTable["paoname"]
+                     << yukonPAObjectTable["type"]
+                     << yukonPAObjectTable["description"]
+                     << yukonPAObjectTable["disableflag"];
+
+            selector.from(yukonPAObjectTable);
+
+            if (ltcId > 0)
+            {
+                selector.where(yukonPAObjectTable["type"] == "Load Tap Changer" &&
+                               yukonPAObjectTable["paobjectid"] == ltcId);
+            }
+            else
+            {
+                selector.where(yukonPAObjectTable["type"] == "Load Tap Changer");
+            }
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
+            }
+            RWDBReader rdr = selector.reader(conn);
+
+            while ( rdr() )
+            {
+                ltcPtr = new LoadTapChanger(rdr);
+                _paobject_ltc_map.insert(make_pair(ltcPtr->getPaoId(),ltcPtr));
+            }
+        }
+
+        {
+            RWDBTable busToLtc = db.table("CCSubstationBusToLTC");
+
+            RWDBSelector selector = db.selector();
+
+            selector << busToLtc["substationbusid"]
+                     << busToLtc["ltcId"] ;
+
+            selector.from(busToLtc);
+
+            if (ltcId > 0)
+            {
+                selector.where( ltcId == busToLtc["ltcId"] );
+            }
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
+            }
+            RWDBReader rdr = selector.reader(conn);
+
+            CtiCCSubstationBusPtr currentBus = NULL;
+
+            while(rdr())
+            {
+                int ltcId;
+                int subbusId;
+
+                rdr["substationbusid"] >> subbusId;
+                rdr["ltcId"] >> ltcId;
+
+                currentBus = _paobject_subbus_map.find(subbusId)->second;
+                if (currentBus != NULL)
+                {
+                    currentBus->setLtcId(ltcId);
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - ERROR: SubStation Bus with id: " << subbusId << " not found. Ltc with id: " << ltcId << " is assigned to it."  << endl;
+                    }
+                }
+            }
+        }
+    }
+}
+
 /*---------------------------------------------------------------------------
     reloadSubBusFromDB
 
@@ -6109,6 +6234,57 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 //cCSubstationBuses->push_back(currentCCSubstationBus);
 
                         }
+
+                        {
+                            RWDBTable busToLtc = db.table("CCSubstationBusToLTC");
+
+                            RWDBSelector selector = db.selector();
+
+                            selector << busToLtc["substationbusid"]
+                                     << busToLtc["ltcId"] ;
+
+                            selector.from(busToLtc);
+
+                            if (subBusId > 0)
+                            {
+                                selector.where( subBusId == busToLtc["substationbusid"] );
+                            }
+
+                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                            {
+                                string loggedSQLstring = selector.asString();
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                }
+                            }
+                            RWDBReader rdr = selector.reader(conn);
+
+                            CtiCCSubstationBusPtr currentBus = NULL;
+
+                            while(rdr())
+                            {
+                                int ltcId;
+                                int subbusId;
+
+                                rdr["substationbusid"] >> subbusId;
+                                rdr["ltcId"] >> ltcId;
+
+                                currentBus = paobject_subbus_map->find(subbusId)->second;
+                                if (currentBus != NULL)
+                                {
+                                    currentBus->setLtcId(ltcId);
+                                }
+                                else
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - ERROR: SubStation Bus with id: " << subbusId << " not found. Ltc with id: " << ltcId << " is assigned to it."  << endl;
+                                    }
+                                }
+                            }
+                        }
+
                         {
                             RWDBSelector selector = db.selector();
 
@@ -7952,26 +8128,13 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                     rdr["pointtype"] >> tempPointType;
 
                                     CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints();
-                                    if (resolvePointType(tempPointType) == StatusPointType)
-                                    {
 
-                                        if (twoWayPts->setTwoWayPointId(StatusPointType, tempPointOffset, tempPointId) )
-                                        {
-                                            currentCCCapBank->getPointIds()->push_back(tempPointId);
-                                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                                        }
-                                    }
-                                    else if (resolvePointType(tempPointType) == AnalogPointType)
+                                    CtiPointType_t pointType = resolvePointType(tempPointType);
+                                    if (pointType == StatusPointType ||
+                                        pointType == AnalogPointType ||
+                                        pointType == PulseAccumulatorPointType)
                                     {
-                                        if (twoWayPts->setTwoWayPointId(AnalogPointType, tempPointOffset, tempPointId) )
-                                        {
-                                            currentCCCapBank->getPointIds()->push_back(tempPointId);
-                                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                                        }
-                                    }
-                                    else if (resolvePointType(tempPointType) == PulseAccumulatorPointType)
-                                    {
-                                        if (twoWayPts->setTwoWayPointId(PulseAccumulatorPointType, tempPointOffset, tempPointId) )
+                                        if (twoWayPts->setTwoWayPointId(pointType, tempPointOffset, tempPointId) )
                                         {
                                             currentCCCapBank->getPointIds()->push_back(tempPointId);
                                             pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
@@ -7987,7 +8150,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         }
                     }
                 }
-                                //load dynamiccctwowaycbc (two way device points)
+                //load dynamiccctwowaycbc (two way device points)
                 {
                     RWDBSelector selector = db.selector();
                     selector << dynamicCCTwoWayTable["deviceid"]
@@ -9138,6 +9301,34 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
     }
 
 }
+
+void CtiCCSubstationBusStore::deleteLtcById(long ltcId)
+{
+    LoadTapChangerPtr ltcptr = findLtcById(ltcId);
+    if (ltcptr == NULL)
+    {
+        return;
+    }
+
+    //If this is assigned to a bus, remove it.
+    map< long, long >::iterator itr = _ltc_subbus_map.find(ltcId);
+    if (itr != NULL)
+    {
+        CtiCCSubstationBusPtr busPtr = findSubBusByPAObjectID(itr->second);
+        if (busPtr != NULL)
+        {
+            busPtr->setLtcId(0);
+        }
+        _ltc_subbus_map.erase(ltcId);
+    }
+
+    //Cleanup Point Registration maps/listeners
+
+
+    //Remove from ltc Map
+    _paobject_ltc_map.erase(ltcId);
+}
+
 void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 {
     CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId);
