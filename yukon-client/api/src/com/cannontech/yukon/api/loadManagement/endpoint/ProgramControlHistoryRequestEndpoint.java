@@ -36,7 +36,7 @@ public class ProgramControlHistoryRequestEndpoint {
 	@PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="programControlHistoryRequest")
     public Element invoke(Element programControlHistoryRequest, LiteYukonUser user) throws Exception {
         
-    	XmlVersionUtils.verifyYukonMessageVersion(programControlHistoryRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    	XmlVersionUtils.verifyYukonMessageVersion(programControlHistoryRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
     	
         // create template and parse data
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(programControlHistoryRequest);
