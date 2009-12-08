@@ -625,6 +625,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		
 		if (webpublishingProgramId != null) {
 			sql.append("    AND lmhcg.ProgramId").eq(webpublishingProgramId);
+			sql.append("    AND lmhcg.type").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
+			sql.append("    AND lmhcg.OptOutStart IS NOT NULL");
+			sql.append("    AND lmhcg.OptOutStop IS NULL");
 		}
 		
 		sql.append(")");
