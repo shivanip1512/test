@@ -91,9 +91,8 @@ public void retrieve() {
 		Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	
 		if( results.length == SETTER_COLUMNS.length ) {
-		    //Don't call the setter here.
-			disconnectAddress = (Integer) results[1];
-			touScheduleID = (Integer) results[2];
+		    setDisconnectAddress((Integer) results[1]);
+			setTOUScheduleID((Integer) results[2]);
 		}
 		
 	}
