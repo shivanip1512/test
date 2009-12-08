@@ -17,6 +17,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -184,12 +185,9 @@ public class OptOutAdminController {
 				
 				try {
 					
-					LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-	            	Program program = programService.getByProgramName(programName, energyCompany);
-	            	int programId = program.getProgramId();
-	            	optOutService.changeOptOutCountStateForTodayByProgramId(user, countBool, programId);
+	            	optOutService.changeOptOutCountStateForTodayByProgramName(user, countBool, programName);
 	            	
-				} catch (NotFoundException e) {
+				} catch (ProgramNotFoundException e) {
 					map.addAttribute("programNotFound", true);
 				}
 			}

@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -84,9 +85,10 @@ public interface OptOutService {
 	 * Only applies to those opt outs for inventory of the given program id.
 	 * @param user - User making change
 	 * @param optOutCounts - True if all opt outs should count for the rest of the day.
-	 * @param webpublishingProgramId
+	 * @param programName
+	 * @throws ProgramNotFoundException if program name isn't found
 	 */
-	public void changeOptOutCountStateForTodayByProgramId(LiteYukonUser user, boolean optOutCounts, int webpublishingProgramId);
+	public void changeOptOutCountStateForTodayByProgramName(LiteYukonUser user, boolean optOutCounts, String programName) throws ProgramNotFoundException;
 
 	/**
 	 * Method to temporarily change whether Opt Outs are allowed by end users for the given user's 

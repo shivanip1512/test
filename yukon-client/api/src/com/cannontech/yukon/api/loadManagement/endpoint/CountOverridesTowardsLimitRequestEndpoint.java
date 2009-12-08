@@ -8,14 +8,11 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -28,8 +25,6 @@ public class CountOverridesTowardsLimitRequestEndpoint {
 	private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private RolePropertyDao rolePropertyDao;
-	private ProgramService programService;
-	private StarsDatabaseCache starsDatabaseCache;
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="countOverridesTowardsLimitRequest")
     public Element invoke(Element countOverridesTowardsLimitRequest, LiteYukonUser user) throws Exception {
@@ -56,19 +51,15 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         	
         	} else {
         		
-        		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        		Program program = programService.getByProgramName(programName, energyCompany);
-        		int webpublishingProgramId = program.getProgramId();
-        		
-        		optOutService.changeOptOutCountStateForTodayByProgramId(user, true, webpublishingProgramId);
+        		optOutService.changeOptOutCountStateForTodayByProgramName(user, true, programName);
         	}
             
             resultElement = XmlUtils.createStringElement("success", ns, "");
+            
         } catch (NotAuthorizedException e) {
-            resultElement = XMLFailureGenerator.generateFailure(countOverridesTowardsLimitRequest,
-                                                                e,
-                                                                "UserNotAuthorized",
-                                                                "The user is not authorized to change count state of overrides.");
+            resultElement = XMLFailureGenerator.generateFailure(countOverridesTowardsLimitRequest, e, "UserNotAuthorized", "The user is not authorized to change count state of overrides.");
+        } catch (ProgramNotFoundException e) {
+        	resultElement = XMLFailureGenerator.generateFailure(countOverridesTowardsLimitRequest, e, "ProgramNotFound", "Unknown program name.");
         }
 
         // return response
@@ -85,15 +76,4 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
-    
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-		this.programService = programService;
-	}
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-		this.starsDatabaseCache = starsDatabaseCache;
-	}
-    
 }

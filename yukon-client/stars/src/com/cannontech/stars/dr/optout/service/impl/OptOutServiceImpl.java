@@ -439,16 +439,29 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
-	public void changeOptOutCountStateForTodayByProgramId(LiteYukonUser user, boolean optOutCounts, int webpublishingProgramId) {
-		doChangeOptOutCountStateForToday(user, optOutCounts, webpublishingProgramId);
+	public void changeOptOutCountStateForTodayByProgramName(LiteYukonUser user, boolean optOutCounts, String programName) throws ProgramNotFoundException {
+		
+		// enforce program name is not blank here so that private method doChangeOptOutCountStateForToday() does not treat it as a changeOptOutCountStateForToday() call.
+		if (StringUtils.isBlank(programName)) {
+			throw new ProgramNotFoundException("Blank program name.");
+		}
+		
+		doChangeOptOutCountStateForToday(user, optOutCounts, programName);
 	}
 	
-	private void doChangeOptOutCountStateForToday(LiteYukonUser user, boolean optOutCounts, Integer webpublishingProgramId) {
+	private void doChangeOptOutCountStateForToday(LiteYukonUser user, boolean optOutCounts, String programName) {
+		
+		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+		Integer webpublishingProgramId = null;
+		
+		if (!StringUtils.isBlank(programName)) {
+			Program program = programService.getByProgramName(programName, energyCompany);
+			webpublishingProgramId = program.getProgramId();
+		}
 		
 		TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
 		Date now = new Date();
     	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 		
     	if (webpublishingProgramId == null) {
     	

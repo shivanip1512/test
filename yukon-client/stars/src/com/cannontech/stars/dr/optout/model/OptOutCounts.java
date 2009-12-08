@@ -12,22 +12,11 @@ public enum OptOutCounts implements DisplayableEnum {
 		public boolean isCounts() {
 			return true;
 		}
-
-		@Override
-		public String getFormatKey() {
-			return "yukon.web.modules.dr.optOut.optOutCountsEnum." + this;
-		}
-		
 	}, 
 	DONT_COUNT {
 		@Override
 		public boolean isCounts() {
 			return false;
-		}
-		
-		@Override
-		public String getFormatKey() {
-			return "yukon.web.modules.dr.optOut.optOutCountsEnum." + this;
 		}
 	};
 
@@ -40,4 +29,11 @@ public enum OptOutCounts implements DisplayableEnum {
 	}
 	
 	public abstract boolean isCounts();
+	
+	private final static String keyPrefix = "yukon.web.modules.dr.optOut.optOutCountsEnum.";
+
+	@Override
+    public String getFormatKey() {
+        return keyPrefix + name();
+    }
 }
