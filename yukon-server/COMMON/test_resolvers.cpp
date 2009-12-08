@@ -466,4 +466,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "lcr-3102";
     devType = TYPELCR3102;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "load tap changer";
+    devType = TYPELTC;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 }

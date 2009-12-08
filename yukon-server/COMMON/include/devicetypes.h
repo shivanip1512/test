@@ -48,6 +48,8 @@
 
 #define TYPELCR3102                          120
 
+#define TYPELTC                              150
+
 #define TYPELMT100S                          200
 #define TYPELCR1000                          201
 #define TYPELCR2000                          202

@@ -203,6 +203,8 @@ string desolveDeviceType( INT aType )
 
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 
+        case TYPELTC:           Ret = "load tap changer";   break;
+
         case TYPE_SIXNET:       Ret = "sixnet";         break;
 
         case TYPE_RTC:          Ret = "rtc";            break;

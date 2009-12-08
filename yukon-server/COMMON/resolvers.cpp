@@ -331,6 +331,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPELCR3102;
     }
+    else if(rwsTemp == "load tap changer")
+    {
+        nRet = TYPELTC;
+    }
     else if(rwsTemp == "ccu-711")
     {
         nRet = TYPE_CCU711;
@@ -1228,6 +1232,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT430:
         case TYPEMCT470:
         case TYPELCR3102:
+        case TYPELTC:
         case TYPE_MODBUS:
         case TYPELMT2:
         case TYPECBC6510:
