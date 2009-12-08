@@ -2,10 +2,8 @@ package com.cannontech.database.data.capcontrol;
 
 import java.sql.SQLException;
 
-import com.cannontech.core.dao.LtcDao;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.db.device.DeviceScanRate;
-import com.cannontech.spring.YukonSpringHook;
 
 public class LoadTapChanger extends DNPBase {
 
@@ -15,8 +13,7 @@ public class LoadTapChanger extends DNPBase {
     
     public void delete() throws SQLException {
         /* Unnassign it from a substation bus first. */
-        LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
-        ltcDao.unassignLtc(getPAObjectID());
+        delete("CCSubstationBusToLTC", "ltcId", getPAObjectID());
         
         super.delete();
     }
@@ -25,7 +22,11 @@ public class LoadTapChanger extends DNPBase {
         return getDeviceScanRateMap().containsKey(DeviceScanRate.TYPE_INTEGRITY);
     }
     
+    public void setScanOne(boolean b){}
+    
     public boolean isScanTwo() {
         return getDeviceScanRateMap().containsKey(DeviceScanRate.TYPE_EXCEPTION);
     }
+    
+    public void setScanTwo(boolean b){}
 }

@@ -37,6 +37,53 @@
                     
                 </x:panelGrid>
             </x:htmlTag>
+            
+            <x:htmlTag value="br"/>
+            <x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend"><x:outputText value="LTC Points"/></x:htmlTag>
+            
+                <x:div forceId="true" id="ltcPointsDiv" styleClass="scrollSmall">
+                    <x:tree2 id="LtcPointTree" value="#{capControlForm.pointTreeForm.pointList}" var="node"
+                        showRootNode="false" 
+                        varNodeToggler="t" 
+                        preserveToggle="true"
+                        clientSideToggle="true" 
+                        showLines="false">
+
+                        <f:facet name="root">
+                            <x:panelGroup>
+                                <x:outputText id="rootLink" value="#{node.description}" />
+                            </x:panelGroup>
+                        </f:facet>
+            
+                        <f:facet name="pointtype">
+                            <x:panelGroup>
+                                <x:outputText id="paChCnt"
+                                    value="#{node.description} (#{node.childCount})"
+                                    rendered="#{!empty node.children}" />
+                            </x:panelGroup>
+                        </f:facet>
+
+                        <f:facet name="sublevels">
+                            <x:panelGroup>
+                                <x:outputText id="subLvlCnt"
+                                    value="#{node.description} (#{node.childCount})"
+                                    rendered="#{!empty node.children}" />
+                            </x:panelGroup>
+                        </f:facet>
+
+                        <f:facet name="points">
+                            <x:panelGroup>
+                                <x:commandLink id="ptLink" value="#{node.description}"
+                                    actionListener="#{capControlForm.pointTreeForm.pointClick}">
+                                    <f:param name="ptID" value="#{node.identifier}" />
+                                    <f:param name="tabId" value="1"/>
+                                </x:commandLink>
+                            </x:panelGroup>
+                        </f:facet>
+                    </x:tree2>
+                </x:div>
+            </x:htmlTag>
         </h:column>
         
         <h:column>
@@ -86,7 +133,7 @@
                     <h:column>
                         
                         <h:selectBooleanCheckbox id="scanExceptionChk" onclick="submit();" valueChangeListener="#{capControlForm.showScanRate}"
-                            value="#{capControlForm.ltcBase.scanOne}" immediate="true"/>
+                            value="#{capControlForm.ltcBase.scanTwo}" immediate="true"/>
                         
                         <x:outputLabel for="scanExceptionChk" value="Class 1,2,3 Scan" title="Exception scan type" styleClass="padCheckBoxLabel"/>
                             

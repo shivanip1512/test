@@ -64,6 +64,11 @@ public class CapControlWebUtils {
                 LitePoint point = pointDao.getLitePoint(subBus.getCurrentWattLoadPointID());
                 viewable.setWattPoint(point);
             }
+            if(subBus.getLtcId() > 0){
+                viewable.setLtcId(subBus.getLtcId());
+                PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+                viewable.setLtcName(paoDao.getYukonPAOName(subBus.getLtcId()));
+            }
 
             viewableList.add(viewable);
         }

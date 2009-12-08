@@ -1,20 +1,27 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.cbc.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.cbc.dao.LtcDao;
+import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.LtcDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.LoadTapChanger;
@@ -115,8 +122,56 @@ public class LtcDaoImpl implements LtcDao {
     }
     
     @Override
-    public List<DisplayablePao> findAllOrphanedLTC() {
-        return null;
+    public List<Integer> getUnassignedLtcIds() {
+        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT PAObjectID FROM YukonPAObject");
+        sql.append("where Category = ").appendArgument(PaoCategory.DEVICE);
+        sql.append("and PAOClass = ").appendArgument(PaoClass.RTU);
+        sql.append("and type = ").appendArgument(PaoType.LOAD_TAP_CHANGER);
+        sql.append("and PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC) ORDER BY PAOName");
+    
+        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int num) throws SQLException{
+                Integer i = new Integer ( rs.getInt("PAObjectID") );
+                return i;
+            }
+        };
+        
+        List<Integer> ltcIds = simpleJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+        
+        return ltcIds;
+    }
+    
+    @Override
+    public List<LiteCapControlObject> getOrphans() {
+        ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
+            public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
+                
+                LiteCapControlObject lco = new LiteCapControlObject();
+                lco.setId(rs.getInt("PAObjectID"));
+                lco.setType(rs.getString("TYPE"));
+                lco.setDescription(rs.getString("Description"));
+                lco.setName(rs.getString("PAOName"));
+                lco.setParentId(0);
+                return lco;
+            }
+        };
+        
+        List<Integer> ltcIds = getUnassignedLtcIds();
+        
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        final List<LiteCapControlObject> unassignedLtcs = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append("SELECT PAObjectID,PAOName,TYPE,Description FROM YukonPAObject WHERE PAObjectID IN (");
+                sqlBuilder.append(subList);
+                sqlBuilder.append(")");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+        }, ltcIds, rowMapper);
+        
+        return unassignedLtcs;
     }
     
     @Autowired

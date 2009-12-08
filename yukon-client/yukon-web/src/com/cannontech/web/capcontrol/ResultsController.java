@@ -16,6 +16,7 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.dao.FeederDao;
+import com.cannontech.cbc.dao.LtcDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.cbc.model.LiteCapControlObject;
@@ -57,7 +58,8 @@ public class ResultsController {
     private CapbankControllerDao cbcDao;
     private PaoDao paoDao;
     private ParentStringPrinterFactory printerFactory;
-    private DateFormattingService dateFormattingService; 
+    private DateFormattingService dateFormattingService;
+    private LtcDao ltcDao; 
 
     @RequestMapping
     public ModelAndView searchResults(HttpServletRequest request, LiteYukonUser user) {
@@ -97,6 +99,10 @@ public class ResultsController {
         else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) ) {
             ccObjects = cbcDao.getOrphans();
             label = "Orphaned CBCs";
+        }
+        else if( CBCWebUtils.TYPE_ORPH_LTCS.equals(srchCriteria) ) {
+            ccObjects = ltcDao.getOrphans();
+            label = "Orphaned LTCs";
         }
         else {   
         	orphan = false;
@@ -228,6 +234,11 @@ public class ResultsController {
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setLtcDao(LtcDao ltcDao){
+        this.ltcDao = ltcDao;
     }
     
     @Autowired

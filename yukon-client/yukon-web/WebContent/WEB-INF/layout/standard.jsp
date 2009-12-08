@@ -4,11 +4,12 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
-<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <head>
         <title><c:out value="${title}"/></title>           
 <!-- Page key: ${pageKey} -->
         <!-- Layout CSS files -->
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/reset.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/BaseStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/ext-all.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/xtheme-gray.css"/>" >
@@ -35,7 +36,7 @@
 <body class="<c:out value="${module.moduleName}"/>_module">
 <div id="Header">
     <div class="stdhdr_left"><div id="TopLeftLogo"></div><div id="TopLeftLogo2"></div></div>
-    <div class="stdhdr_right"><img src="<cti:theme key="yukon.web.layout.standard.upperrightlogo" default="/WebConfig/yukon/YukonBW.gif" url="true"/>"></div>
+    <div class="stdhdr_right"><img src="<cti:theme key="yukon.web.layout.standard.upperrightlogo" default="/WebConfig/yukon/YukonBW.gif" url="true"/>" alt=""></div>
     <div class="stdhdr_clear"></div>
 </div>
 <cti:outputContent writable="${menuRenderer}"/>

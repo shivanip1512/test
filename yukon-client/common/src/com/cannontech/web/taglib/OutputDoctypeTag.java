@@ -19,8 +19,8 @@ public class OutputDoctypeTag extends SimpleTagSupport {
     private static final Map<HtmlLevel, String> doctypes = new HashMap<HtmlLevel, String>();
     
     static {
-        doctypes.put(HtmlLevel.transitional, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">");
-        doctypes.put(HtmlLevel.strict, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+        doctypes.put(HtmlLevel.transitional, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n");
+        doctypes.put(HtmlLevel.strict, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n");
     }
     
     private List<HtmlLevel> levels = new ArrayList<HtmlLevel>(0);

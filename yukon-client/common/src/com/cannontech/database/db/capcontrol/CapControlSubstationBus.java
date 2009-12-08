@@ -1,16 +1,18 @@
 package com.cannontech.database.db.capcontrol;
 
+import java.sql.SQLException;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.core.dao.LtcDao;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.point.Point;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -66,12 +68,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             getUsePhaseData(), getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId()};
     
     	add( TABLE_NAME, addValues );
-    	LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
-    	if(getLtcId() > 0 ){
-    	    ltcDao.assign(getSubstationBusID(), getLtcId());
-    	} else {
-    	    ltcDao.unassignBus(getSubstationBusID());
-    	}
+    	handleLtcAssignment(getLtcId());
     }
     
     /**
@@ -142,8 +139,14 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             setControlFlag((String) results[11]);
             setVoltReductionPointId((Integer) results[12]);
 
-            LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
-            setLtcId(ltcDao.getLtcIdForSub(getSubstationBusID()));
+            SqlStatementBuilder sql = new SqlStatementBuilder("select ltcId from CCSubstationBusToLTC where substationBusId = ").appendArgument(substationBusID);
+            JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+            try {
+                setLtcId(yukonTemplate.queryForInt(sql.getSql(), sql.getArguments()));
+            } catch (EmptyResultDataAccessException e) {
+                setLtcId(-1);
+            }
+            
     	}
     	else {
     		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -199,13 +202,22 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     	Object constraintValues[] = { getSubstationBusID()};
     
     	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-    	LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
-    	if(ltcId > 0) {
-    	    ltcDao.assign(substationBusID, ltcId);
-    	} else {
-    	    ltcDao.unassignBus(substationBusID);
-    	}
+    	
     }
+    
+    private void handleLtcAssignment(int ltcId) throws SQLException{
+        if(ltcId > 0) {
+            delete("CCSubstationBusToLTC", "substationBusId", substationBusID);
+            SqlStatementBuilder sql = new SqlStatementBuilder("insert into CCSubstationBusToLTC values (");
+            sql.appendArgument(substationBusID).append(", ").appendArgument(ltcId).append(")");
+            
+            JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+            yukonTemplate.update(sql.getSql(), sql.getArguments());
+        } else {
+            delete("CCSubstationBusToLTC", "substationBusId", substationBusID);
+        }
+    }
+    
     /**
      * @return
      */
@@ -327,9 +339,8 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
         yukonTemplate.update(query, new Integer[]{subBusDeletedId});
     }
     
-    private void handleLtcOnDelete(Integer subBusDeletedId){
-        LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
-        ltcDao.unassignBus(subBusDeletedId);
+    private void handleLtcOnDelete(Integer subBusDeletedId) throws SQLException{
+        delete("CCSubstationBusToLTC", "substationBusId", subBusDeletedId);
     }
 
     public Integer getPhaseB() {
@@ -438,4 +449,5 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     public Integer getLtcId() {
         return ltcId;
     }
+
 }

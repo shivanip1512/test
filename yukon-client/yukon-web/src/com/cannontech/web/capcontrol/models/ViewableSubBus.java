@@ -15,6 +15,8 @@ public class ViewableSubBus {
 	private int alternateStationId;
 	private int alternateAreaId;
 	private List<ViewableFeeder> feeders = null;
+	private Integer ltcId;
+	private String ltcName = null;
 	
 	public SubBus getSubBus() {
 		return this.subBus;
@@ -70,6 +72,22 @@ public class ViewableSubBus {
 
     public void setAlternateAreaId(int alternateAreaId) {
         this.alternateAreaId = alternateAreaId;
+    }
+
+    public Integer getLtcId() {
+        return ltcId;
+    }
+
+    public void setLtcId(int ltcId) {
+        this.ltcId = ltcId;
+    }
+
+    public String getLtcName() {
+        return ltcName;
+    }
+
+    public void setLtcName(String ltcName) {
+        this.ltcName = ltcName;
     }
     
 }

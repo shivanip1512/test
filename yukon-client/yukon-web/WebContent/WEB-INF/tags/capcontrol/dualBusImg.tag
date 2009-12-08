@@ -3,18 +3,18 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<input type="hidden" id="dualBus_${paoId}" value='<cti:capControlValue paoId="${paoId}" type="${type}" format="DUALBUS"/>'></input>
+<input type="hidden" id="dualBus_${paoId}" value='<cti:capControlValue paoId="${paoId}" type="${type}" format="DUALBUS"/>'>
                     
 <span id="dualBus_${paoId}_primary" style="display: none;"
       onmouseover="showDynamicPopup($('dualBusPrimaryPopup_${paoId}'));" 
       onmouseout="nd();">
-    <img src="/WebConfig/yukon/Icons/bullet_orange.gif" style="vertical-align: middle;"/>
+    <img src="/WebConfig/yukon/Icons/bullet_orange.gif" class="tierImg" alt="">
 </span>
 
 <span id="dualBus_${paoId}_alternate" style="display: none;" 
       onmouseover="showDynamicPopup($('dualBusAlternatePopup_${paoId}'));" 
       onmouseout="nd();">
-    <img src="/WebConfig/yukon/Icons/bullet_orange.gif" style="vertical-align: middle;"/>
+    <img src="/WebConfig/yukon/Icons/bullet_orange.gif" class="tierImg" alt="">
 </span>
 
 <cti:dataUpdaterCallback function="updateDualBusImage('dualBus_${paoId}')" initialize="true" value="${type}/${paoId}/DUALBUS"/>            

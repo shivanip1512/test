@@ -544,6 +544,9 @@
           <option id="orphanedcbcs">
             <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
           </option>
+          <option id="orphanedltcs">
+            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oLTCs__</link>
+          </option>
         </links>
       </option>
     </links>

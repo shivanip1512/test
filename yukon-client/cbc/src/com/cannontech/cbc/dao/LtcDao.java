@@ -1,8 +1,8 @@
-package com.cannontech.core.dao;
+package com.cannontech.cbc.dao;
 
 import java.util.List;
 
-import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.database.TransactionException;
 
 public interface LtcDao {
@@ -25,11 +25,7 @@ public interface LtcDao {
      */
     public boolean delete(int id);
     
-    /**
-     * Returns a List<DisplayablePao> of all unassigned LTC's.
-     * @return List<DisplayablePao>
-     */
-    public List<DisplayablePao> findAllOrphanedLTC();
+    public List<LiteCapControlObject> getOrphans();
 
     /**
      * Returns the name of the Load Tap Changer assigned 
@@ -64,5 +60,7 @@ public interface LtcDao {
      * @param subBusId
      * @return
      */
-    public int getLtcIdForSub(int subBusId); 
+    public int getLtcIdForSub(int subBusId);
+
+    public List<Integer> getUnassignedLtcIds(); 
 }

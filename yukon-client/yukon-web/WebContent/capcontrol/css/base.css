@@ -26,6 +26,21 @@
 	
 }
 
+th {
+	font-weight: bold;
+    background-color: transparent;
+    text-align: left;
+}
+
+.tierTable {
+	width: 100%;
+	border-collapse: collapse;
+	vertical-align: middle;
+	padding-top: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+
 .altTableCell, .tableCell, .flyover {
 	font-size: 10px;
 }
@@ -63,12 +78,10 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 
 .altTableCell {
 	background-color: #eeeeee;
-	padding-top: 2px;
 }
 
 .tableCell, .pageBlank {
 	background-color: white;
-	padding-top: 2px;
 }
 
 .tempMoveBackground {
@@ -214,9 +227,21 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
     cursor: help;
 }
 
+a.tierIconLink{
+	text-decoration: none;
+}
+
+.tierImg {
+	border: 0;
+    vertical-align: middle;
+}
+
+.tierCheckBox {
+    vertical-align: middle;
+}
+
 .editImg {
     border: 0;
-    text-decoration: none;
 }
 
 .editImg A:link {text-decoration: none;}

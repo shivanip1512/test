@@ -558,7 +558,7 @@ public class CBCDisplay {
             //add an asterisk if the quality was low
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
             {
-                retVal += "<img src=\"/WebConfig/yukon/Icons/bullet_red.gif\" style=\"vertical-align: middle\"/>";
+                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
             }
 
             retVal += " / ";
@@ -594,7 +594,7 @@ public class CBCDisplay {
 
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
             {
-                retVal += "<img src=\"/WebConfig/yukon/Icons/bullet_red.gif\" style=\"vertical-align: middle\"/>";
+                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
             }
             retVal += " / ";
 
@@ -607,7 +607,7 @@ public class CBCDisplay {
             }
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
             {
-                retVal += "<img src=\"/WebConfig/yukon/Icons/bullet_red.gif\" style=\"vertical-align: middle\"/>";
+                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
             }
 
             return retVal;
@@ -771,7 +771,7 @@ public class CBCDisplay {
                                                          decPlaces);
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
             {
-                retVal += "<img src=\"/WebConfig/yukon/Icons/bullet_red.gif\" style=\"vertical-align: middle\"/>";
+                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
             }
 
             retVal += " / ";
@@ -798,7 +798,7 @@ public class CBCDisplay {
 
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
             {
-                retVal += "<img src=\"/WebConfig/yukon/Icons/bullet_red.gif\" style=\"vertical-align: middle\"/>";
+                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
             }
 
             retVal += " / ";
@@ -812,7 +812,7 @@ public class CBCDisplay {
             }
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
             {
-                retVal += "<img src=\"/WebConfig/yukon/Icons/bullet_red.gif\" style=\"vertical-align: middle\"/>";
+                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
             }
             return retVal;
         }
