@@ -620,6 +620,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("	AND ooe.StartDate").lte(now);
 		sql.append("	AND ooe.StopDate").gte(now);
 		sql.append("	AND ectam.EnergyCompanyId").eq(energyCompany.getEnergyCompanyID());
+		//this is the ANSI-equivalent of JOIN
+		sql.append("    AND OptOutEvent.OptOutEventId = ooe.OptOutEventId");
 		
 		if (webpublishingProgramId != null) {
 			sql.append("    AND lmhcg.ProgramId").eq(webpublishingProgramId);
