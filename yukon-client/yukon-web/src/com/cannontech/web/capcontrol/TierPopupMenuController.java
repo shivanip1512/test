@@ -269,8 +269,8 @@ public class TierPopupMenuController extends MultiActionController {
     
     public ModelAndView localControlMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getRequiredIntParameter(request,"id");
-        final Boolean capBankType = ServletRequestUtils.getBooleanParameter(request,"capBankType",false);
+        final int id = ServletRequestUtils.getRequiredIntParameter(request,"id");
+        final boolean capBankType = ServletRequestUtils.getBooleanParameter(request,"capBankType",false);
         final String controlType = ServletRequestUtils.getRequiredStringParameter(request, "controlType");
         
         final StreamableCapObject capObject = capControlCache.getStreamableCapObjectById(id);
