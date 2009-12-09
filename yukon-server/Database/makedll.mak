@@ -210,15 +210,6 @@ dllyukon.obj:	yukon.h precompiled.h ctidbgmem.h tbl_route.h dllbase.h \
 		collectable.h rwutil.h boost_time.h boostutil.h \
 		tbl_state_grp.h tbl_state.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
-tabletest.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pthist.h \
-		dlldefs.h dbmemobject.h ctibase.h ctinexus.h netports.h \
-		cticonnect.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h ctitime.h tbl_rtroute.h \
-		resolvers.h pointtypes.h db_entry_defines.h rtdb.h hashkey.h \
-		hash_functions.h utility.h queues.h sorted_vector.h
-tbl.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h
 tbl_alm_ndest.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
@@ -310,13 +301,13 @@ tbl_dv_expresscom.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		db_entry_defines.h tbl_dv_expresscom.h vcomdefs.h \
 		dbmemobject.h dllbase.h dsm2.h cticonnect.h netports.h \
 		dbaccess.h sema.h rwutil.h boost_time.h boostutil.h
-tbl_dv_idlcremote.obj:	yukon.h precompiled.h ctidbgmem.h \
-		tbl_dv_idlcremote.h types.h logger.h dlldefs.h thread.h \
-		mutex.h guard.h numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h \
-		utility.h queues.h cticalls.h os2_2w32.h sorted_vector.h \
-		dllbase.h dsm2.h cticonnect.h netports.h dbmemobject.h \
-		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h rwutil.h boost_time.h boostutil.h
+tbl_dv_idlcremote.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
+		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
+		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
+		os2_2w32.h types.h sorted_vector.h dbaccess.h dllbase.h \
+		dsm2.h cticonnect.h netports.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h tbl_dv_idlcremote.h \
+		dbmemobject.h rwutil.h boost_time.h boostutil.h
 tbl_dv_ied.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_ied.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
@@ -511,6 +502,11 @@ tbl_paoexclusion.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		sema.h logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h tbl_paoexclusion.h rwutil.h \
 		boost_time.h boostutil.h
+tbl_paoproperty.obj:	yukon.h precompiled.h ctidbgmem.h \
+		tbl_paoproperty.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticonnect.h netports.h sema.h rwutil.h ctitime.h \
+		boost_time.h boostutil.h utility.h queues.h sorted_vector.h
 tbl_pao_lite.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
@@ -737,4 +733,8 @@ tbl_unitmeasure.obj:	yukon.h precompiled.h ctidbgmem.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
 		logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h rwutil.h boost_time.h boostutil.h
+test_tbl_dv_idlcremote.obj:	tbl_dv_idlcremote.h types.h dlldefs.h \
+		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
+		numstr.h clrdump.h cticonnect.h yukon.h precompiled.h \
+		ctidbgmem.h netports.h dbmemobject.h
 #ENDUPDATE#
