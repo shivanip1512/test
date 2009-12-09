@@ -69,6 +69,16 @@ INT LCR3102::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
+        case GetConfigRequest:
+        {
+            nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            break;
+        }
+        case PutConfigRequest:
+        {
+            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            break;
+        }
     }
 
     if( nRet != NORMAL )
@@ -143,6 +153,16 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
         case Emetcon::GetValue_PropCount:
         {
             status = decodeGetValuePropCount( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::PutConfig_Raw:
+        {
+            status = decodePutConfig( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetConfig_Raw:
+        {
+            status = decodeGetConfig( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
         default:
@@ -405,6 +425,119 @@ INT LCR3102::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list<
     return status;
 }
 
+INT LCR3102::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        switch( InMessage->Sequence )
+        {
+            case Emetcon::PutConfig_Raw:
+            {
+                results = getName() + " / Raw bytes sent";
+                break;
+            }
+            default:
+            {
+
+            }
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT LCR3102::decodeGetConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        switch( InMessage->Sequence )
+        {
+            case Emetcon::GetConfig_Raw:
+            {
+                int rawloc = parse.getiValue("rawloc");
+
+                int rawlen = parse.isKeyValid("rawlen")
+                    ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
+                    : DSt->Length;
+
+                if( parse.isKeyValid("rawfunc") )
+                {
+                    for( int i = 0; i < rawlen; i++ )
+                    {
+                        results += getName()
+                                + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
+                                + " byte " + CtiNumStr(i).zpad(2)
+                                + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                                + "\n";
+                    }
+                }
+                else
+                {
+                    for( int i = 0; i < rawlen; i++ )
+                    {
+                        results += getName()
+                                + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
+                                + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                                + "\n";
+                    }
+                }
+                break;
+            }
+            default:
+            {
+
+            }
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
 
 LCR3102::CommandSet LCR3102::initCommandStore()
 {
@@ -415,6 +548,8 @@ LCR3102::CommandSet LCR3102::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetValue_Runtime,      Emetcon::IO_Function_Read, FuncRead_RuntimePos,      FuncRead_RuntimeLen));
     cs.insert(CommandStore(Emetcon::GetValue_Shedtime,     Emetcon::IO_Function_Read, FuncRead_ShedtimePos,     FuncRead_ShedtimeLen));
     cs.insert(CommandStore(Emetcon::GetValue_PropCount,    Emetcon::IO_Function_Read, FuncRead_PropCountPos,    FuncRead_PropCountLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw,         Emetcon::IO_Write,         0,                        0));    // filled in later
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw,         Emetcon::IO_Read,          0,                        0));    // ...ditto
 
     return cs;
 }
@@ -627,6 +762,99 @@ INT LCR3102::executeScan(CtiRequestMsg                  *pReq,
         OutMessage->Request.RouteID   = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+    }
+
+    return nRet;
+}
+
+INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT nRet = NoMethod;
+
+    int  function = -1;
+    bool found    = false;
+
+    if(parse.isKeyValid("rawloc"))
+    {
+        function = Emetcon::GetConfig_Raw;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+
+        OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
+        if( parse.isKeyValid("rawfunc") )
+        {
+            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
+        }
+        OutMessage->Buffer.BSt.Length = std::min(parse.getiValue("rawlen", 13), 13);    //  default (and maximum) is 13 bytes
+    }
+
+    if(!found)
+    {
+        nRet = NoMethod;
+    }
+    else
+    {
+        // Load all the other stuff that is needed
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Sequence  = function;         // Helps us figure it out later!
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    return nRet;
+}
+
+INT LCR3102::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT nRet = NoMethod;
+
+    int  function = -1;
+    bool found    = false;
+
+    if(parse.isKeyValid("rawloc"))
+    {
+        function = Emetcon::PutConfig_Raw;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+
+        OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
+        if( parse.isKeyValid("rawfunc") )
+        {
+            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
+        }
+
+        string rawData = parse.getsValue("rawdata");
+
+        OutMessage->Buffer.BSt.Length = std::min( rawData.length(), 15u );  //  default (and maximum) is 15 bytes
+
+        rawData.copy( (char *)OutMessage->Buffer.BSt.Message, OutMessage->Buffer.BSt.Length );
+    }
+
+    if(!found)
+    {
+        nRet = NoMethod;
+    }
+    else
+    {
+        // Load all the other stuff that is needed
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Sequence  = function;         // Helps us figure it out later!
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
     }
 
     return nRet;
