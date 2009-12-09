@@ -1175,7 +1175,7 @@ BOOL CtiCCSubstationBusStore::deleteCapControlMaps()
 
 
 BOOL CtiCCSubstationBusStore::getStoreRecentlyReset()
-{   
+{
     return _storeRecentlyReset;
 }
 void CtiCCSubstationBusStore::setStoreRecentlyReset(BOOL flag)
@@ -1248,7 +1248,7 @@ void CtiCCSubstationBusStore::reset()
             ************************************************************/
 
             reloadSubstationFromDatabase(0, &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map,
-                                         &_pointid_station_map, 
+                                         &_pointid_station_map,
                                          &_substation_area_map, &_substation_specialarea_map, _ccSubstations);
 
 
@@ -1265,9 +1265,9 @@ void CtiCCSubstationBusStore::reset()
 
             if (_ccSubstationBuses->size() > 0)
             {
-                {   
+                {
                     reloadFeederFromDatabase(0, &_strategyid_strategy_map, &_paobject_feeder_map,
-                                             &_paobject_subbus_map, &_pointid_feeder_map, 
+                                             &_paobject_subbus_map, &_pointid_feeder_map,
                                              &_feeder_subbus_map);//, &temp_feeder_area_map );
                 }
 
@@ -2559,7 +2559,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
                 dbDll = "msq12d.dll";
                 #endif
             }
-            
+
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3588,7 +3588,7 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
         {
 
             CtiTime currentDateTime = CtiTime();
-            
+
             RWDBTable ccFeederSubAssignmentTable = getDatabase().table("ccfeedersubassignment");
             RWDBDeleter deleter = ccFeederSubAssignmentTable.deleter();
 
@@ -6600,7 +6600,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                     {
                                         dualBus = paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId())->second;
                                         if (!stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
-                                            !stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) || 
+                                            !stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                                             !stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
                                         {
                                             if (dualBus->getCurrentVarLoadPointId() > 0)
@@ -6720,8 +6720,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << dynamicCCSubstationBusTable["phasecvalue"]
                         << dynamicCCSubstationBusTable["lastwattpointtime"]
                         << dynamicCCSubstationBusTable["lastvoltpointtime"]
-                        << dynamicCCSubstationBusTable["phaseavaluebeforecontrol"] 
-                        << dynamicCCSubstationBusTable["phasebvaluebeforecontrol"] 
+                        << dynamicCCSubstationBusTable["phaseavaluebeforecontrol"]
+                        << dynamicCCSubstationBusTable["phasebvaluebeforecontrol"]
                         << dynamicCCSubstationBusTable["phasecvaluebeforecontrol"];
 
                         selector.from(capControlSubstationBusTable);
@@ -7934,7 +7934,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << dynamicCCoriginalParentTable["originalswitchingorder"]
                     << dynamicCCoriginalParentTable["originalcloseorder"]
                     << dynamicCCoriginalParentTable["originaltriporder"];
-                    
+
 
                     selector.from(dynamicCCCapBankTable);
                     selector.from(capBankTable);
@@ -9312,7 +9312,7 @@ void CtiCCSubstationBusStore::deleteLtcById(long ltcId)
 
     //If this is assigned to a bus, remove it.
     map< long, long >::iterator itr = _ltc_subbus_map.find(ltcId);
-    if (itr != NULL)
+    if (itr != _ltc_subbus_map.end())
     {
         CtiCCSubstationBusPtr busPtr = findSubBusByPAObjectID(itr->second);
         if (busPtr != NULL)
@@ -9736,9 +9736,9 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
     }
 }
 
-bool CtiCCSubstationBusStore::handleAreaDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+bool CtiCCSubstationBusStore::handleAreaDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                  CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
-{                                                                                                         
+{
     bool forceFullReload = FALSE;
 
     if (reloadAction == ChangeTypeDelete)
@@ -9763,29 +9763,29 @@ bool CtiCCSubstationBusStore::handleAreaDBChange(LONG reloadId, BYTE reloadActio
             setValid(false);
             _reloadList.clear();
             forceFullReload = TRUE;
-            
+
         }
         else
         {
 
             reloadAreaFromDatabase(reloadId, &_strategyid_strategy_map,
                                      &_paobject_area_map, &_pointid_area_map, _ccGeoAreas);
-    
+
             tempArea = findAreaByPAObjectID(reloadId);
             if (tempArea != NULL)
             {
-                updateModifiedStationsAndBusesSets(tempArea->getSubStationList(),msgBitMask, msgSubsBitMask, 
+                updateModifiedStationsAndBusesSets(tempArea->getSubStationList(),msgBitMask, msgSubsBitMask,
                                                      modifiedSubsSet,  modifiedStationsSet);
                 if (tempArea->getDisableFlag())
                     tempArea->checkForAndStopVerificationOnChildSubBuses(capMessages);
             }
-            
+
         }
     }
     return forceFullReload;
 }
 
-void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                  CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
 
@@ -9907,7 +9907,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
 
 }
 
-void CtiCCSubstationBusStore::handleSubstationDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+void CtiCCSubstationBusStore::handleSubstationDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                  CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
     if (reloadAction == ChangeTypeDelete)
@@ -9929,7 +9929,7 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(LONG reloadId, BYTE reloa
             msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
         }
         else
-        {    
+        {
             msgSubsBitMask |= CtiCCSubstationsMsg::SubAdded;
         }
         reloadSubstationFromDatabase(reloadId, &_paobject_substation_map,
@@ -9945,11 +9945,11 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(LONG reloadId, BYTE reloa
             if (station->getDisableFlag())
                 station->checkForAndStopVerificationOnChildSubBuses(capMessages);
         }
-        
+
     }
 }
 
-void CtiCCSubstationBusStore::handleSubBusDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+void CtiCCSubstationBusStore::handleSubBusDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                      CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
     if (reloadAction == ChangeTypeDelete)
@@ -9985,10 +9985,10 @@ void CtiCCSubstationBusStore::handleSubBusDBChange(LONG reloadId, BYTE reloadAct
             msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
         }
         else
-        {    
+        {
             msgBitMask |= CtiCCSubstationBusMsg::SubBusAdded;
         }
-        
+
         reloadSubBusFromDatabase(reloadId, &_strategyid_strategy_map, &_paobject_subbus_map,
                      &_paobject_substation_map, &_pointid_subbus_map,
                      &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
@@ -10002,7 +10002,7 @@ void CtiCCSubstationBusStore::handleSubBusDBChange(LONG reloadId, BYTE reloadAct
     }
 }
 
-void CtiCCSubstationBusStore::handleFeederDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+void CtiCCSubstationBusStore::handleFeederDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                      CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
 
@@ -10054,7 +10054,7 @@ void CtiCCSubstationBusStore::handleFeederDBChange(LONG reloadId, BYTE reloadAct
     }
 }
 
-bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                  CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
     bool forceFullReload = false;
@@ -10075,10 +10075,10 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
     {
         CtiCCSpecialPtr tempSpArea = findSpecialAreaByPAObjectID(reloadId);
         // update list b4 reload, to capture stations that may have been removed from special area.
-        
+
         if (tempSpArea != NULL && tempSpArea->getSubstationIds()->size() > 1)
         {
-            
+
             deleteSpecialArea(reloadId); //this forces substation flags to saEnabled = false;
             setValid(false);
             _reloadList.clear();
@@ -10087,7 +10087,7 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
          else
          {
              list<LONG> myList;
-            
+
              if (tempSpArea != NULL)
              {
                  myList.clear();
@@ -10102,9 +10102,9 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
              // update list b4 reload, to capture stations that may have been added to special area.
              if (tempSpArea != NULL)
              {
-                 updateModifiedStationsAndBusesSets(&myList,msgBitMask, msgSubsBitMask, 
+                 updateModifiedStationsAndBusesSets(&myList,msgBitMask, msgSubsBitMask,
                                                      modifiedSubsSet,  modifiedStationsSet);
-                 updateModifiedStationsAndBusesSets(tempSpArea->getSubstationIds(),msgBitMask, msgSubsBitMask, 
+                 updateModifiedStationsAndBusesSets(tempSpArea->getSubstationIds(),msgBitMask, msgSubsBitMask,
                                                      modifiedSubsSet,  modifiedStationsSet);
              }
          }
@@ -10113,7 +10113,7 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
 }
 
 
-void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(list <LONG>* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(list <LONG>* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet)
 {
     list <LONG>::const_iterator iter = stationIdList->begin();
@@ -10133,7 +10133,7 @@ void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(list <LONG>* st
     }
     return;
 }
-void CtiCCSubstationBusStore::handleStrategyDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask, 
+void CtiCCSubstationBusStore::handleStrategyDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                                  CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
 
@@ -10279,7 +10279,7 @@ void CtiCCSubstationBusStore::initializeAllPeakTimeFlagsAndMonitorPoints(BOOL se
     }
 }
 
-void CtiCCSubstationBusStore::createAndSendClientMessages( ULONG &msgBitMask, ULONG &msgSubsBitMask, CtiMultiMsg_set &modifiedSubsSet,  
+void CtiCCSubstationBusStore::createAndSendClientMessages( ULONG &msgBitMask, ULONG &msgSubsBitMask, CtiMultiMsg_set &modifiedSubsSet,
                                                            CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages)
 {
 
@@ -10353,7 +10353,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
     BOOL sendBusInfo = false;
     BOOL forceFullReload = false;
     CtiTime currentDateTime;
-    
+
     CtiMultiMsg_set::iterator it;
     CtiMultiMsg_set modifiedSubsSet;
     CtiMultiMsg_set modifiedStationsSet;
@@ -10385,14 +10385,14 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     //capbank
                     case CapBank:
                     {
-                        handleCapBankDBChange(reloadTemp.objectId, reloadTemp.action, msgBitMask, msgSubsBitMask, 
+                        handleCapBankDBChange(reloadTemp.objectId, reloadTemp.action, msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
                         break;
                     }
                     //feeder
                     case Feeder:
                     {
-                        handleFeederDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask, 
+                        handleFeederDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
 
                         break;
@@ -10400,15 +10400,15 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     //subbus
                     case SubBus:
                     {
-                        handleSubBusDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask, 
+                        handleSubBusDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
-                        
+
                         break;
                     }
                     //substation
                     case Substation:
                     {
-                        handleSubstationDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask, 
+                        handleSubstationDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
 
                         break;
@@ -10416,7 +10416,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     //area
                     case Area:
                     {
-                        forceFullReload = handleAreaDBChange(reloadTemp.objectId, reloadTemp.action, msgBitMask, msgSubsBitMask, 
+                        forceFullReload = handleAreaDBChange(reloadTemp.objectId, reloadTemp.action, msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
 
                         break;
@@ -10424,14 +10424,14 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     //special area
                     case SpecialArea:
                     {
-                        forceFullReload = handleSpecialAreaDBChange(reloadTemp.objectId, reloadTemp.action, msgBitMask, msgSubsBitMask, 
+                        forceFullReload = handleSpecialAreaDBChange(reloadTemp.objectId, reloadTemp.action, msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
 
                         break;
                     }
                 case Strategy:
                     {
-                        handleStrategyDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask, 
+                        handleStrategyDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
 
                         break;
@@ -10476,7 +10476,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 registerForAdditionalPoints(modifiedSubsSet, modifiedStationsSet);
 
                 _lastindividualdbreloadtime = _lastindividualdbreloadtime.now();
-               
+
                 initializeAllPeakTimeFlagsAndMonitorPoints(false);
 
                 createAndSendClientMessages(msgBitMask, msgSubsBitMask, modifiedSubsSet, modifiedStationsSet, capMessages);
