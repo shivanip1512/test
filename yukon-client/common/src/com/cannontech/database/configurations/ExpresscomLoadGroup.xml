@@ -1,0 +1,9 @@
+<configurations>
+    <configuration name="Expresscom Load Group">
+        <table name="LMGroupExpressCom" >
+        	<references>
+        		<table name="Point" />
+        	</references>
+        </table>
+    </configuration>
+</configurations>

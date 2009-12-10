@@ -1,0 +1,9 @@
+<configurations>
+    <configuration name="Login Group">
+		<table name="YukonGroup">
+            <references>
+                <table name="YukonGroupRole" />
+            </references>
+        </table>
+    </configuration>
+</configurations>

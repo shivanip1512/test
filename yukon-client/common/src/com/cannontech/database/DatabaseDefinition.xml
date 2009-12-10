@@ -1,0 +1,283 @@
+<database>
+    <table name="ApplianceCategory">
+        <primaryKey name="ApplianceCategoryId" />
+        <identifier name="Description"/>
+        <data name="CategoryId" tableRef="YukonListEntry" refType="manyToOne"/>
+        <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="oneToOne"/>
+    </table>
+	
+	<table name="Device">
+        <primaryKey name="DeviceID" tableRef="YukonPAObject" />
+        <data name="alarminhibit"/>
+        <data name="controlinhibit"/>
+    </table>
+
+    <table name="DynamicLMProgram">
+        <primaryKey name="DeviceId" tableRef="LMProgram" />
+        <data name="ProgramState" />
+        <data name="ReductionTotal" />
+        <data name="StartedControlling" />
+        <data name="LastControlSent" />
+        <data name="ManualControlReceivedFlag" />
+        <data name="TimeStamp" />
+    </table>
+    
+    <table name="DynamicLMProgramDirect">
+        <primaryKey name="DeviceId" tableRef="LMProgramDirect" />
+        <data name="CurrentGearNumber"/>
+        <data name="LastGroupControlled"/>
+        <data name="StartTime"/>
+        <data name="StopTime"/>
+        <data name="TimeStamp"/>
+        <data name="NotifyActiveTime"/>
+        <data name="StartedRampingOut"/>
+        <data name="ConstraintOverride"/>
+        <data name="AdditionalInfo"/>
+        <data name="CurrentLogId"/>
+    </table>
+
+    <table name="GroupPAOPermission">
+        <primaryKey name="GroupPaoPermissionId" />
+        <identifier name="GroupId" tableRef="YukonGroup" refType="oneToOne"/>
+        <identifier name="PaoId" tableRef="YukonPAObject" refType="oneToOne"/>
+        <identifier name="Permission"/>
+        <data name="Allow"/>
+    </table>
+   
+    <table name="LMDirectNotifGrpList">
+        <primaryKey name="ProgramId" tableRef="LMProgramDirect"/>
+        <data name="NotificationGrpId" tableRef="NotificationGroup"  refType="oneToOne" />
+    </table>
+
+    <table name="LMGroup">
+        <primaryKey name="DeviceID" tableRef="Device"/>
+        <data name="KWCapacity"/>
+    </table>
+
+	<table name="LMGroupExpressCom">
+        <primaryKey name="LMGroupID" tableRef="LMGroup"/>
+        <data name="RouteID" tableRef="Route"  refType="manyToOne" />
+        <data name="SerialNumber"/>
+        <data name="ServiceProviderId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
+        <data name="GeoId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
+        <data name="SubstationId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
+        <data name="FeederId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
+        <data name="ZipId" />
+        <data name="UserId" />
+        <data name="ProgramId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
+        <data name="SplinterId" />
+        <data name="AddressUsage" />
+        <data name="RelayUsage" />
+        <data name="ProtocolPriority" />
+    </table>
+    
+    <table name="LMGroupExpressComAddress">
+        <primaryKey name="AddressId" nullId="0"/> <!-- Special Case - holds a oneToMany only on 0 the rest of the entries are oneToOne -->
+        <data name="AddressType"/>
+        <data name="Address"/>
+        <data name="AddressName"/>
+    </table>
+
+    <table name="LMProgram">
+        <primaryKey name="DeviceId" tableRef="YukonPAObject"/>
+        <data name="ControlType" />
+        <data name="ConstraintId" tableRef="LMProgramConstraints" refType="manyToOne" />
+    </table>
+
+    <table name="LMProgramConstraints">
+        <primaryKey name="ConstraintId" />
+        <identifier name="ConstraintName" />
+        <data name="AvailableWeekDays" />
+        <data name="MaxHoursDaily" />
+        <data name="MaxHoursMonthly" />
+        <data name="MaxHoursSeasonal" />
+        <data name="MaxHoursAnnually" />
+        <data name="MinActivateTime" />
+        <data name="MinRestartTime" />
+        <data name="MaxDailyOps" />
+        <data name="MaxActivateTime" />
+        <data name="HolidayScheduleId" tableRef="HolidaySchedule" refType="manyToOne" />
+        <data name="SeasonScheduleId" tableRef="SeasonSchedule" refType="manyToOne" />
+    </table>
+
+    <table name="LMProgramControlWindow">
+        <primaryKey name="DeviceId" tableRef="LMProgram"/>
+        <PrimaryKey name="WindowNumber" />
+        <data name="AvailableStartTime" />
+        <data name="AvailableStopTime" />
+    </table>
+    
+    <table name="LMProgramDirect">
+        <primaryKey name="DeviceId" tableRef="LMProgram"/>
+        <data name="NotifyActiveOffset" />
+        <data name="Heading" />
+        <data name="MessageHeader" />
+        <data name="MessageFooter" />
+        <data name="TriggerOffset" />
+        <data name="RestoreOffset" />
+        <data name="NotifyInactiveOffset" />
+    </table>
+    
+    <table name="LMProgramDirectGroup">
+        <primaryKey name="DeviceId" tableRef="LMProgramDirect"/>
+        <data name="LMGroupDeviceId" tableRef="LMGroup" refType="oneToOne"/>
+        <PrimaryKey name="GroupOrder" />
+    </table>
+    
+    <table name="LMProgramDirectGear">
+        <primaryKey name="GearId" />
+        <identifier name="DeviceId" tableRef="LMProgramDirect" refType="manyToOne" />
+        <identifier name="GearName" />
+        <data name="GearNumber" />
+        <data name="ControlMethod" />
+        <data name="MethodRate" />
+        <data name="MethodPeriod" />
+        <data name="MethodRateCount" />
+        <data name="CycleRefreshRate" />
+        <data name="MethodStopType" />
+        <data name="ChangeCondition" />
+        <data name="ChangeDuration" />
+        <data name="ChangePriority" />
+        <data name="ChangeTriggerNumber" />
+        <data name="ChangeTriggerOffset" />
+        <data name="PercentReduction" />
+        <data name="GroupSelectionMethod" />
+        <data name="MethodOptionType" />
+        <data name="MethodOptionMax" />
+        <data name="RampInInterval" />
+        <data name="RampInPercent" />
+        <data name="RampOutInterval" />
+        <data name="RampOutPercent" />
+        <data name="FrontRampOption" />
+        <data name="FrontRampTime" />
+        <data name="BackRampOption" />
+        <data name="BackRampTime" />
+        <data name="KWReduction" />
+    </table>
+
+    <table name="LMProgramWebPublishing">
+        <primaryKey name="ProgramId" />
+        <identifier name="ApplianceCategoryId" tableRef="ApplianceCategory" refType="manyToOne"/>
+        <identifier name="DeviceId" tableRef="YukonPAObject" refType="manyToOne"/>
+        <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="manyToOne"/>
+        <data name="ChanceOfControlId" tableRef="YukonListEntry" refType="manyToOne"/>
+        <data name="ProgramOrder" />
+    </table>
+    
+    <table name="LMThermostatGear">
+        <primaryKey name="GearId" tableRef="LMProgramDirectGear"/>
+        <data name="Settings" />
+        <data name="MinValue" />
+        <data name="MaxValue" />
+        <data name="ValueB" />
+        <data name="ValueD" />
+        <data name="ValueF" />
+        <data name="Random" />
+        <data name="ValueTa" />
+        <data name="ValueTb" />
+        <data name="ValueTc" />
+        <data name="ValueTd" />
+        <data name="ValueTe" />
+        <data name="ValueTf" />
+        <data name="RampRate" />
+    </table>
+    
+    <table name="NotificationGroup">
+        <primaryKey name="NotificationGroupId"/>
+        <identifier name="GroupName"/>
+        <data name="DisableFlag"/>
+    </table>
+    
+    <table name="Point">
+        <primaryKey name="PointId"/>
+        <data name="PointType"/>
+        <identifier name="PointName"/>
+        <identifier name="PAObjectId" tableRef="YukonPAObject" refType="manyToOne" />
+        <data name="LogicalGroup"/>
+        <data name="StateGroupId" tableRef="StateGroup" refType="manyToOne" />
+        <data name="ServiceFlag"/>
+        <data name="AlarmInhibit"/>
+        <data name="PseudoFlag"/>
+        <data name="PointOffset"/>
+        <data name="ArchiveType"/>
+        <data name="ArchiveInterval"/>
+    </table>
+    
+    <table name="Route">
+        <primaryKey name="RouteID" tableRef="YukonPAObject"/>
+        <data name="DeviceID" tableRef="Device" refType="oneToOne" />
+        <data name="DefaultRoute"/>
+    </table>
+
+    <table name="StateGroup">
+        <primaryKey name="StateGroupId" />
+        <identifier name="Name" />
+        <data name="GroupType" />
+    </table>
+
+    <table name="YukonGroup">
+        <primaryKey name="GroupId"/>
+        <identifier name="GroupName"/>
+        <data name="GroupDescription"/>
+    </table>
+    
+    <table name="YukonGroupRole">
+        <primaryKey name="GroupRoleId"/>
+        <identifier name="GroupId" tableRef="YukonGroup" refType="manyToOne" />
+        <identifier name="RoleId" table="YukonRole" refType="manyToOne" />
+        <identifier name="RolePropertyId" tableRef="YukonRoleProperty" refType="manyToOne" />
+        <data name="Value"/>
+    </table>
+    
+    <table name="YukonListEntry">
+        <primaryKey name="EntryId"/>
+        <identifier name="ListId" tableRef="YukonSelectionList" refType="oneToOne"/>
+        <identifier name="EntryText"/>
+        <data name="EntryOrder"/>
+        <data name="YukonDefinitionId"/>
+    </table>
+
+    <table name="YukonPAObject">
+        <primaryKey name="PAObjectID"/>
+        <identifier name="Type"/>
+        <identifier name="PAOName"/>
+        <data name="Category"/>
+        <data name="PAOClass"/>
+        <data name="Description"/>
+        <data name="DisableFlag"/>
+        <data name="PaoStatistics"/>
+    </table>
+
+    <table name="YukonRoleProperty">
+        <primaryKey name="RolePropertyId"/>
+        <identifier name="RoleId" tableRef="YukonRole" refType="manyToOne"/>
+        <identifier name="KeyName"/>
+        <data name="DefaultValue"/>
+        <data name="Description"/>
+    </table>
+    
+    <table name="YukonRole">
+        <primaryKey name="RoleId"/>
+        <identifier name="RoleName"/>
+        <data name="Category"/>
+        <data name="RoleDescription"/>
+    </table>
+    
+    <table name="YukonSelectionList">
+        <primaryKey name="ListId"/>
+        <identifier name="ListName"/>
+        <data name="Ordering"/>
+        <data name="SelectionLabel"/>
+        <data name="WhereIsList"/>
+        <data name="UserUpdateAvailable"/>
+    </table>
+    
+    <table name="YukonWebConfiguration">
+        <primaryKey name="ConfigurationId"/>
+        <identifier name="Description"/>
+        <identifier name="AlternateDisplayName"/>
+        <data name="LogoLocation"/>
+        <data name="URL"/>
+    </table>
+    
+</database>

@@ -1,0 +1,5 @@
+<configurations>
+    <configuration name="Load Management to Login Group Permissions">
+        <table name="GroupPAOPermission"/>
+    </configuration>
+</configurations>

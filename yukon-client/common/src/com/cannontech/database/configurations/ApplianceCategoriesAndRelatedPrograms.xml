@@ -1,0 +1,9 @@
+<configurations>
+    <configuration name="Appliance Categories And Related Programs">
+        <table name="ApplianceCategory">
+            <references>
+                <table name="LMProgramWebPublishing" />
+            </references>
+        </table>
+    </configuration>
+</configurations>

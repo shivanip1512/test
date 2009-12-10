@@ -1,0 +1,28 @@
+<configurations>
+    <configuration name="Direct Load Program">
+		<table name="LMProgram" >
+			<references>
+				<table name="LMProgramControlWindow" />
+				<table name="LMProgramDirect" >
+					<references>
+						<table name="LMProgramDirectGear" >
+							<references>
+								<table name="LMThermostatGear" />
+							</references>
+						</table>
+						<table name="LMDirectNotifGrpList" />
+						<table name="LMProgramDirectGroup" >
+							<references>
+								<table name="LMGroupExpressCom">
+									<references>
+										<table name="Point" />
+									</references>
+								</table>
+							</references>
+						</table>
+					</references>
+				</table>
+			</references>
+		</table>
+    </configuration>
+</configurations>
