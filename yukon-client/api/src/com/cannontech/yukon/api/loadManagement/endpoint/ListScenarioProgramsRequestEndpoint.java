@@ -1,11 +1,9 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -54,15 +52,9 @@ public class ListScenarioProgramsRequestEndpoint {
         resp.setAttribute(versionAttribute);
         
         // run service
-        List<ScenarioProgramStartingGears> allScenarioProgramStartingGears = null;
+        ScenarioProgramStartingGears scenarioProgramStartingGears = null;
         try {
-            
-        	if (StringUtils.isBlank(scenarioName)) {
-        		allScenarioProgramStartingGears = loadControlService.getAllScenarioProgramStartingGears(user);
-        	} else {
-        		allScenarioProgramStartingGears = Collections.singletonList(loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName, user));
-        	}
-            
+            scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(listScenarioProgramsRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);
@@ -75,33 +67,25 @@ public class ListScenarioProgramsRequestEndpoint {
         
         // build response
         Element tmpElement = null;
+        tmpElement = XmlUtils.createStringElement("scenarioName", ns, scenarioProgramStartingGears.getScenarioName());
+        resp.addContent(tmpElement);
         
-        for (ScenarioProgramStartingGears scenarioProgramStartingGears : allScenarioProgramStartingGears) {
-        	
-        	Element scenarioProgramsList = new Element("scenarioProgramsList", ns);
-        	
-        	tmpElement = XmlUtils.createStringElement("scenarioName", ns, scenarioProgramStartingGears.getScenarioName());
-        	scenarioProgramsList.addContent(tmpElement);
-        	
-        	Element programsList = new Element("programsList", ns);
-        	
-	        List<ProgramStartingGear> programStartingGears = scenarioProgramStartingGears.getProgramStartingGears();
-	        for (ProgramStartingGear programStartingGear : programStartingGears) {
-	            
-	            Element scenarioProgram = new Element("scenarioProgram", ns);
-	            
-	            tmpElement = XmlUtils.createStringElement("programName", ns, programStartingGear.getProgramName());
-	            scenarioProgram.addContent(tmpElement);
-	            tmpElement = XmlUtils.createStringElement("startGearName", ns, programStartingGear.getStartingGearName());
-	            scenarioProgram.addContent(tmpElement);
-	            
-	            programsList.addContent(scenarioProgram);
-	        }
-	        
-	        scenarioProgramsList.addContent(programsList);
-	        
-	        resp.addContent(scenarioProgramsList);
+        Element scenarioProgramsList = new Element("scenarioProgramsList", ns);
+        
+        List<ProgramStartingGear> programStartingGears = scenarioProgramStartingGears.getProgramStartingGears();
+        for (ProgramStartingGear programStartingGear : programStartingGears) {
+            
+            Element scenarioProgram = new Element("scenarioProgram", ns);
+            
+            tmpElement = XmlUtils.createStringElement("programName", ns, programStartingGear.getProgramName());
+            scenarioProgram.addContent(tmpElement);
+            tmpElement = XmlUtils.createStringElement("startGearName", ns, programStartingGear.getStartingGearName());
+            scenarioProgram.addContent(tmpElement);
+            
+            scenarioProgramsList.addContent(scenarioProgram);
         }
+        
+        resp.addContent(scenarioProgramsList);
         
         return resp;
     }

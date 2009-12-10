@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.1">
+	
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+      	    Schema originally for ESO Single Screen integration at BG&amp;E.  
+          	Most recent modification:  Item #5 from Phase 3 SoW - Appendix C.
+          	Similar to ListScenarioProgramsRequest, except that scenarioName is optional. If not used,
+          	all visible scenarios will be returned.
+     	</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="ListAllScenarioProgramsRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+            	    <xsd:element name="scenarioName" type="xsd:string" minOccurs="0">
+            	    	<xsd:annotation>
+                            <xsd:documentation>scenarioName is optional. If omitted, all scenarios and their programs will be returned.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+            	</xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="listAllScenarioProgramsRequest" type="yukon:ListAllScenarioProgramsRequest"/>
+
+</xsd:schema>

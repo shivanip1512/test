@@ -9,23 +9,22 @@
 	<xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
     <xsd:include schemaLocation="ScenarioProgram.xsd"/>
     
-    <xsd:annotation>
-     	<xsd:documentation xml:lang="en">
-      	ESO Single Screen schema for Integration I at BG&amp;E: Item #7 from Requirements Outline
-        Possible errorCode: InvalidScenarioName
-     	</xsd:documentation>
-    </xsd:annotation>
-
-    <xsd:complexType name="ListScenarioProgramsResponse">
+    <xsd:complexType name="ListAllScenarioProgramsResponse">
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
                     <xsd:sequence>
-                        <xsd:element name="scenarioName" type="xsd:string" />
-                        <xsd:element name="scenarioProgramsList">
+                        <xsd:element name="scenarioProgramsList" minOccurs="0" maxOccurs="unbounded">
                             <xsd:complexType>
                                 <xsd:sequence>
-                                    <xsd:element name="scenarioProgram" type="yukon:ScenarioProgram" minOccurs="0" maxOccurs="unbounded"/>
+                                	<xsd:element name="scenarioName" type="xsd:string" />
+                                	<xsd:element name="programsList">
+                                		<xsd:complexType>
+	                                		<xsd:sequence>
+	                                    		<xsd:element name="scenarioProgram" type="yukon:ScenarioProgram" minOccurs="0" maxOccurs="unbounded"/>
+	                                		</xsd:sequence>
+                                		</xsd:complexType>
+                                	</xsd:element>
                                 </xsd:sequence>
                             </xsd:complexType>
                         </xsd:element>
@@ -36,6 +35,6 @@
         </xsd:complexContent>
     </xsd:complexType>
     
-    <xsd:element name="listScenarioProgramsResponse" type="yukon:ListScenarioProgramsResponse"/>
+    <xsd:element name="listAllScenarioProgramsResponse" type="yukon:ListAllScenarioProgramsResponse"/>
     
 </xsd:schema>

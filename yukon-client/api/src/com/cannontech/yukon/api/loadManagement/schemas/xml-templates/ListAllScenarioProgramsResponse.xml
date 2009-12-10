@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<listAllScenarioProgramsResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ListAllScenarioProgramsResponse.xsd"
+           version="1.0">
+           
+    <scenarioProgramsList>
+
+		<scenarioName>PJM Rider 22</scenarioName>
+
+		<programsList>
+
+	        <scenarioProgram>
+	            <programName>
+	                Residential LCR Cooling 100% Contract
+	            </programName>
+	            <startGearName>100% Ramp</startGearName>
+	        </scenarioProgram>
+	        
+	        <scenarioProgram>
+	            <programName>
+	                Commercial ExpressStat Cooling 50% Contract
+	            </programName>
+	            <startGearName>50% Ramp</startGearName>
+	        </scenarioProgram>
+        
+        </programsList>
+        
+    </scenarioProgramsList>
+        
+    <scenarioProgramsList>
+
+		<scenarioName>PJM Rider 99</scenarioName>
+
+		<programsList>
+
+	        <scenarioProgram>
+	            <programName>
+	                Residential LCR Cooling 50% Contract
+	            </programName>
+	            <startGearName>50% Ramp</startGearName>
+	        </scenarioProgram>
+	        
+	        <scenarioProgram>
+	            <programName>
+	                Residential LCR Cooling 75% Contract
+	            </programName>
+	            <startGearName>75% Ramp</startGearName>
+	        </scenarioProgram>
+	        
+        </programsList>
+        
+    </scenarioProgramsList>
+           
+</listAllScenarioProgramsResponse>
