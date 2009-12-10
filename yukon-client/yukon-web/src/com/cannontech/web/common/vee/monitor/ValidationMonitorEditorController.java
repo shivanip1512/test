@@ -30,7 +30,7 @@ public class ValidationMonitorEditorController {
 
     @RequestMapping
     public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
-                       Double threshold, Boolean reread, Double slopeError, Double readingError, Double peakHeightMinimum, Boolean setQuestionable){
+                       Double threshold, Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable){
         if(validationMonitorId == null) validationMonitorId = -1;
         ValidationMonitor validationMonitor = null;
         try {
@@ -57,9 +57,6 @@ public class ValidationMonitorEditorController {
             if(slopeError == null){
                 slopeError = validationMonitor.getKwhSlopeError();
             }
-            if(readingError == null){
-                readingError = validationMonitor.getKwhReadingError();
-            }
             if(peakHeightMinimum == null){
                 peakHeightMinimum = validationMonitor.getPeakHeightMinimum();
             }
@@ -78,7 +75,6 @@ public class ValidationMonitorEditorController {
         model.addAttribute("threshold", threshold);
         model.addAttribute("reread", reread);
         model.addAttribute("slopeError", slopeError);
-        model.addAttribute("readingError", readingError);
         model.addAttribute("peakHeightMinimum", peakHeightMinimum);
         model.addAttribute("setQuestionable", setQuestionable);
         
@@ -89,7 +85,7 @@ public class ValidationMonitorEditorController {
     
     @RequestMapping(method=RequestMethod.POST)
     public String update(ModelMap model, int validationMonitorId, String name, String deviceGroupName, Double threshold,
-                         Boolean reread, Double slopeError, Double readingError, Double peakHeightMinimum, Boolean setQuestionable) throws Exception, ServletException {
+                         Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable) throws Exception, ServletException {
         
         String editError = null;
         
@@ -126,8 +122,6 @@ public class ValidationMonitorEditorController {
             editError= "Unreasonable Threshold must be greater than or equal to 0.";
         } else if (slopeError == null || slopeError < 0) {
             editError = "Slope Error must be greater than or equal to 0.";
-        } else if (readingError == null || readingError < 0) {
-            editError = "Reading Error must be greater than or equal to 0.";
         } else if (peakHeightMinimum == null || peakHeightMinimum < 0) {
             editError = "Peak Height Minimum must be greater than or equal to 0.";
         } 
@@ -142,7 +136,6 @@ public class ValidationMonitorEditorController {
             model.addAttribute("reread", reread);
             model.addAttribute("reread", reread == null ? false : true);
             model.addAttribute("slopeError", slopeError);
-            model.addAttribute("readingError", readingError);
             model.addAttribute("peakHeightMinimum", peakHeightMinimum);
             model.addAttribute("setQuestionable", setQuestionable == null ? false : true);
             return "redirect:edit";
@@ -154,7 +147,6 @@ public class ValidationMonitorEditorController {
             validationMonitor.setReasonableMaxKwhPerDay(threshold);
             validationMonitor.setReReadOnUnreasonable(reread == null ? false : true);
             validationMonitor.setKwhSlopeError(slopeError);
-            validationMonitor.setKwhReadingError(readingError);
             validationMonitor.setPeakHeightMinimum(peakHeightMinimum);
             validationMonitor.setQuestionableOnPeak(setQuestionable == null ? false : true);
             

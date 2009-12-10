@@ -177,18 +177,6 @@
                     
                 </tags:nameValue>
                 
-                <%-- reading error --%>
-                <tags:nameValue name="${readingErrorText}">
-                    
-                    <input type="text" name="readingError" style="text-align:right;" value="${readingError}"> 
-                    ${readingErrorUnits}
-                                                        
-                    <tags:helpInfoPopup title="${readingErrorText}">
-                        ${readingErrorPopupInfoText}
-                    </tags:helpInfoPopup>
-                    
-                </tags:nameValue>
-                
                 <%-- peak height minimum --%>
                 <tags:nameValue name="${peakHeightMinimumText}">
                     <table>
