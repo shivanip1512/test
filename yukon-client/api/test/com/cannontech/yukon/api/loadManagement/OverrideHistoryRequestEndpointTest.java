@@ -48,7 +48,8 @@ public class OverrideHistoryRequestEndpointTest {
     private static final String STOP_DATE_VALID = "2008-09-30T23:59:59Z";
     private static final String SCHEDULED_DATE_VALID = "2008-09-29T12:00:00Z";
     
-    private static final String VERSION_1 = XmlVersionUtils.YUKON_MSG_VERSION_1_0;
+    private static final String VERSION_1_0 = XmlVersionUtils.YUKON_MSG_VERSION_1_0;
+    private static final String VERSION_1_1 = XmlVersionUtils.YUKON_MSG_VERSION_1_1;
     
     private OverrideHistory history1 = null;
     private OverrideHistory history2 = null;
@@ -61,8 +62,10 @@ public class OverrideHistoryRequestEndpointTest {
     static final String byProgramResponseStr = "/y:overrideHistoryByProgramNameResponse";   
     static final String byProgramHistoryElementStr = byProgramResponseStr + "/y:overrideHistoryEntries/y:overrideHistory";    
     
-    private static ByAccountNumber_OverrideHistoryNodeMapper byAccountNumber_overrideHistNodeMapper = new ByAccountNumber_OverrideHistoryNodeMapper();
-    private static ByProgramName_OverrideHistoryNodeMapper byProgramName_overrideHistNodeMapper = new ByProgramName_OverrideHistoryNodeMapper();
+    // both "by acct num" and "by program name v1.0" use the same response format
+    private static OverrideHistoryNodeMapper_v1_0 byAccountNumber_overrideHistNodeMapper = new OverrideHistoryNodeMapper_v1_0();
+    private static OverrideHistoryNodeMapper_v1_0 byProgramName_overrideHistNodeMapper_v1_0 = new OverrideHistoryNodeMapper_v1_0();
+    private static OverrideHistoryNodeMapper_v1_1 byProgramName_overrideHistNodeMapper_v1_1 = new OverrideHistoryNodeMapper_v1_1();
     
 
     @Before
@@ -132,7 +135,7 @@ public class OverrideHistoryRequestEndpointTest {
         // test with unauthorized user
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
-    			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+    			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
     	
     	LiteYukonUser unAuthorizedUser = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invokeHistoryByAccount(requestElement, unAuthorizedUser);
@@ -147,7 +150,7 @@ public class OverrideHistoryRequestEndpointTest {
         //==========================================================================================
         LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
-                EMTPY_RETURN, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+                EMTPY_RETURN, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         respElement = impl.invokeHistoryByAccount(requestElement, user);
         
         // verify the respElement is valid according to schema
@@ -161,7 +164,7 @@ public class OverrideHistoryRequestEndpointTest {
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1);
+        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1_0);
        
         // Check result xml values
         List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
@@ -174,7 +177,7 @@ public class OverrideHistoryRequestEndpointTest {
         // test with valid account, no program, valid user 
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
-    			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+    			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         respElement = impl.invokeHistoryByAccount(requestElement, user);
         
         // verify the respElement is valid according to schema
@@ -188,7 +191,7 @@ public class OverrideHistoryRequestEndpointTest {
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1);
+        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1_0);
        
         // Check result xml values
         expected = new ArrayList<OverrideHistory>();
@@ -203,7 +206,7 @@ public class OverrideHistoryRequestEndpointTest {
         // test with valid account, program, user 
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
-    			ACCOUNT1, PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+    			ACCOUNT1, PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         respElement = impl.invokeHistoryByAccount(requestElement, user);
         
         // verify the respElement is valid according to schema
@@ -217,7 +220,7 @@ public class OverrideHistoryRequestEndpointTest {
 
         // create template and parse response data
         outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1);
+        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1_0);
        
         // Check result xml values
         expected = new ArrayList<OverrideHistory>();
@@ -230,7 +233,7 @@ public class OverrideHistoryRequestEndpointTest {
         // test with invalid account, valid user 
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
-        		INVALID_ACCOUNT, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+        		INVALID_ACCOUNT, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         respElement = impl.invokeHistoryByAccount(requestElement, user);
         
         // verify the respElement is valid according to schema
@@ -250,7 +253,7 @@ public class OverrideHistoryRequestEndpointTest {
         // test with valid account, invalid program, valid user 
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
-        		ACCOUNT1, INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+        		ACCOUNT1, INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         respElement = impl.invokeHistoryByAccount(requestElement, user);
         
         // verify the respElement is valid according to schema
@@ -282,7 +285,7 @@ public class OverrideHistoryRequestEndpointTest {
     	// test with unauthorized user
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
-    			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+    			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
     	
         LiteYukonUser unAuthorizedUser = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invokeHistoryByProgram(requestElement, unAuthorizedUser);
@@ -293,11 +296,11 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByProgramNameResponse", "UserNotAuthorized");
         
-        // test with valid program, user; to return empty list
+        // test with valid program, user; to return empty list (v1.0)
         //==========================================================================================
         LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
-                EMTPY_RETURN, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+                EMTPY_RETURN, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         
         respElement = impl.invokeHistoryByProgram(requestElement, user);
 
@@ -308,17 +311,37 @@ public class OverrideHistoryRequestEndpointTest {
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
        
-        List<OverrideHistory> actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper);
+        List<OverrideHistory> actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_0);
         // Check result xml values
         List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
         
         Assert.assertEquals("Result list not as expected", expected, actual);
         
-        // test with valid program, user 
+        // test with valid program, user; to return empty list (v1.1)
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
+                EMTPY_RETURN, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_1, reqSchemaResource);
+        
+        respElement = impl.invokeHistoryByProgram(requestElement, user);
+
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        // create template and parse response data
+        template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+       
+        actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_1);
+        // Check result xml values
+        expected = new ArrayList<OverrideHistory>();
+        
+        Assert.assertEquals("Result list not as expected", expected, actual);
+        
+        // test with valid program, user (v1.0)
         //==========================================================================================
         user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
-    			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+    			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
     	
         respElement = impl.invokeHistoryByProgram(requestElement, user);
 
@@ -330,7 +353,31 @@ public class OverrideHistoryRequestEndpointTest {
         template = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
        
-        actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper);
+        actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_0);
+        // Check result xml values
+        expected = new ArrayList<OverrideHistory>();
+        expected.add(history1);
+        expected.add(history3);
+        
+        Assert.assertEquals("Result list not as expected", expected, actual);
+        
+        // test with valid program, user (v1.1)
+        //==========================================================================================
+        user = new LiteYukonUser();
+        requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
+    			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_1, reqSchemaResource);
+    	
+        respElement = impl.invokeHistoryByProgram(requestElement, user);
+
+        // verify the respElement is valid according to schema
+        XmlUtils.printElement(respElement, "respElement");
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        // create template and parse response data
+        template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+       
+        actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_1);
         // Check result xml values
         expected = new ArrayList<OverrideHistory>();
         expected.add(history1);
@@ -338,10 +385,25 @@ public class OverrideHistoryRequestEndpointTest {
         
         Assert.assertEquals("Result list not as expected", expected, actual);
 
-        // test with invalid program, valid user 
+        // test with invalid program, valid user (v1.0)
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
-        		INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+        		INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
+        
+        respElement = impl.invokeHistoryByProgram(requestElement, user);
+        
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        // create template and parse response data
+        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(
+        		outputTemplate, "overrideHistoryByProgramNameResponse", "InvalidProgramName");
+        
+        // test with invalid program, valid user (v1.1)
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
+        		INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_1, reqSchemaResource);
         
         respElement = impl.invokeHistoryByProgram(requestElement, user);
         
@@ -467,7 +529,7 @@ public class OverrideHistoryRequestEndpointTest {
     /**
      * Mapper class to map an xml node into an OverrideHistory object
      */
-    private static class ByAccountNumber_OverrideHistoryNodeMapper implements
+    private static class OverrideHistoryNodeMapper_v1_0 implements
             ObjectMapper<Node, OverrideHistory> {
 
         @Override
@@ -493,7 +555,7 @@ public class OverrideHistoryRequestEndpointTest {
         }
     }
     
-    private static class ByProgramName_OverrideHistoryNodeMapper implements
+    private static class OverrideHistoryNodeMapper_v1_1 implements
 	    ObjectMapper<Node, OverrideHistory> {
 	
 		@Override
@@ -514,8 +576,6 @@ public class OverrideHistoryRequestEndpointTest {
 			    programList.add(p);
 		    }
 		    
-//		    Program p = new Program();
-//		    p.setProgramName(template.evaluateAsString("y:enrolledProgramList/y:programName"));
 		    overrideHist.setPrograms(programList);
 		    
 		    overrideHist.setAccountNumber(template.evaluateAsString("y:accountNumber"));

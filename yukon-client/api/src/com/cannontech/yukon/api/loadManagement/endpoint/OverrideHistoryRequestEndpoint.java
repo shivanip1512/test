@@ -66,7 +66,7 @@ public class OverrideHistoryRequestEndpoint {
                                                                            stopTime,
                                                                            user,
                                                                            programName);
-            resultElement = buildHistoryEntriesElement_byAccount(overrideHistoryList);
+            resultElement = buildHistoryEntriesElement_programName(overrideHistoryList);
         } catch (NotAuthorizedException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
                                                                 e,
@@ -93,7 +93,9 @@ public class OverrideHistoryRequestEndpoint {
     public Element invokeHistoryByProgram(Element overrideHistoryByProgramNameRequest, LiteYukonUser user) throws Exception {
         
         //Verify Request message version
-        XmlVersionUtils.verifyYukonMessageVersion(overrideHistoryByProgramNameRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.verifyYukonMessageVersion(overrideHistoryByProgramNameRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+        String version = XmlVersionUtils.getYukonMessageVersion(overrideHistoryByProgramNameRequest);
+        
         
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(overrideHistoryByProgramNameRequest);
@@ -104,7 +106,7 @@ public class OverrideHistoryRequestEndpoint {
         
         // init response
         Element resp = new Element("overrideHistoryByProgramNameResponse", ns);
-        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.addVersionAttribute(resp, version);
         
         // run service
         Element resultElement;
@@ -117,7 +119,15 @@ public class OverrideHistoryRequestEndpoint {
                                                                           startTime,
                                                                           stopTime,
                                                                           user);
-            resultElement = buildHistoryEntriesElement_byProgramName(overrideHistoryList);
+            
+            if (XmlVersionUtils.YUKON_MSG_VERSION_1_0.equals(version)) {
+            	resultElement = buildHistoryEntriesElement_programName(overrideHistoryList);
+            } else if (XmlVersionUtils.YUKON_MSG_VERSION_1_1.equals(version)) {
+            	resultElement = buildHistoryEntriesElement_programList(overrideHistoryList);
+            } else {
+            	throw new IllegalArgumentException("Invalid request version: " + version);
+            }
+            
         } catch (NotAuthorizedException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByProgramNameRequest,
                                                                 e,
@@ -137,7 +147,7 @@ public class OverrideHistoryRequestEndpoint {
     }    
     
     // builds overrideHistoryEntries element
-    private Element buildHistoryEntriesElement_byProgramName(List<OverrideHistory> overrideHistoryList) {
+    private Element buildHistoryEntriesElement_programList(List<OverrideHistory> overrideHistoryList) {
         
         // build overrideHistoryEntries element content
         Element overrideHistoryEntries = new Element("overrideHistoryEntries", ns);
@@ -165,7 +175,7 @@ public class OverrideHistoryRequestEndpoint {
     }
     
     // builds overrideHistoryEntries element
-    private Element buildHistoryEntriesElement_byAccount(List<OverrideHistory> overrideHistoryList) {
+    private Element buildHistoryEntriesElement_programName(List<OverrideHistory> overrideHistoryList) {
         
         // build overrideHistoryEntries element content
         Element overrideHistoryEntries = new Element("overrideHistoryEntries", ns);

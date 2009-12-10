@@ -16,10 +16,41 @@
         </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:complexType name="BasicOverrideHistory">
+    <xsd:complexType name="ProgramListOverrideHistory">
+    	<xsd:annotation>
+	        <xsd:documentation xml:lang="en">
+	      		This types is returned from the OverrideHistoryByProgramNameRequest within each overrideHistory element.
+	      		Depending on the version of the request, either a single programName element will be included, or
+	      		a list of programNames within a enrolledProgramList element.
+	        </xsd:documentation>
+	    </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="serialNumber" type="yukon:SerialNumber" />
-            <xsd:element name="programName" type="xsd:string" />
+            <xsd:choice>
+            
+            	<xsd:element name="programName" type="xsd:string">
+            		<xsd:annotation>
+				        <xsd:documentation xml:lang="en">
+				      		Version 1.0 OverrideHistoryByProgramNameRequests will always return a single programName per overrideHistory element.
+				      		NOTE: Although the ProgramListOverrideHistory type is defined to contain programName and/or enrolledProgramList elements, only 
+				      		one kind or the other will be used in any given response. (programName - v1.0, enrolledProgramList - v1.1).
+				        </xsd:documentation>
+				    </xsd:annotation>
+            	</xsd:element>
+            	
+	    
+          		<xsd:element name="enrolledProgramList" type="yukon:EnrolledProgramList">
+          			<xsd:annotation>
+				        <xsd:documentation xml:lang="en">
+				      		Version 1.1 OverrideHistoryByProgramNameRequests will always return a single 
+				      		enrolledProgramList element per overrideHistory element, each of which containing one or more programName elements.
+				      		NOTE: Although the ProgramListOverrideHistory type is defined to contain programName and/or enrolledProgramList elements, only 
+				      		one kind or the other will be used in any given response. (programName - v1.0, enrolledProgramList - v1.1).
+				        </xsd:documentation>
+				    </xsd:annotation>
+          		</xsd:element>
+          		
+            </xsd:choice>
             <xsd:element name="accountNumber" type="xsd:string" />
             <xsd:element name="status" type="yukon:CurrentOverrideHistory" />
             <xsd:element name="scheduledDateTime" type="xsd:dateTime" />
@@ -31,10 +62,15 @@
         </xsd:sequence>
     </xsd:complexType>
     
-    <xsd:complexType name="ExtendedProgramsListOverrideHistory">
+    <xsd:complexType name="ProgramNameOverrideHistory">
+    	<xsd:annotation>
+	        <xsd:documentation xml:lang="en">
+	      		This types is returned from the OverrideHistoryByAccountNumberRequest within each overrideHistory element..
+	        </xsd:documentation>
+	    </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="serialNumber" type="yukon:SerialNumber" />
-            <xsd:element name="enrolledProgramList" type="yukon:EnrolledProgramList" />
+           	<xsd:element name="programName" type="xsd:string" />
             <xsd:element name="accountNumber" type="xsd:string" />
             <xsd:element name="status" type="yukon:CurrentOverrideHistory" />
             <xsd:element name="scheduledDateTime" type="xsd:dateTime" />
@@ -69,7 +105,7 @@
                         <xsd:complexType>
                             <xsd:sequence>
                                 <xsd:element name="overrideHistory"
-                                    type="yukon:ExtendedProgramsListOverrideHistory"
+                                    type="yukon:ProgramListOverrideHistory"
                                     minOccurs="0" maxOccurs="unbounded" />
                             </xsd:sequence>
                         </xsd:complexType>
@@ -88,7 +124,7 @@
                         <xsd:complexType>
                             <xsd:sequence>
                                 <xsd:element name="overrideHistory"
-                                    type="yukon:BasicOverrideHistory"
+                                    type="yukon:ProgramNameOverrideHistory"
                                     minOccurs="0" maxOccurs="unbounded" />
                             </xsd:sequence>
                         </xsd:complexType>

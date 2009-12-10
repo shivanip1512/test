@@ -15,6 +15,14 @@
     </xsd:annotation>
 
     <xsd:complexType name="OverrideHistoryByProgramNameRequest">
+    	<xsd:annotation>
+	        <xsd:documentation xml:lang="en">
+	            The OverrideHistoryByProgramNameRequest can be made using a version attribute of either "1.0" or "1.1".
+	            In the case of "1.0", the response will contain ProgramListOverrideHistory elements that use a programName element.
+	            In the case of "1.1", the response will contain ProgramListOverrideHistory elements that use the enrolledProgramList element (which each contain one or more programName elements).
+	        	See documentation in the ProgramListOverrideHistory type.
+	        </xsd:documentation>
+	    </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
