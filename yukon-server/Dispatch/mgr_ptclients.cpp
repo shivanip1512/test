@@ -291,8 +291,8 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
-        // This is explicitly done here because if this does not load,
-        // alarming may have been removed for these points.
+        // This is explicitly done here because alarming may have been removed for these points.
+        // If alarming was not removed, it will be re-loaded in the following loop.
         if( pntID )
         {
             removeAlarming(pntID);

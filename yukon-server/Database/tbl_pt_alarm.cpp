@@ -97,7 +97,7 @@ LONG CtiTablePointAlarming::getRecipientID() const
     return _recipientID;
 }
 
-UINT CtiTablePointAlarming::getPointID() const
+LONG CtiTablePointAlarming::getPointID() const
 {
     return _pointID;
 }

@@ -137,7 +137,7 @@ public:
    virtual BOOL getNotifyOnAcknowledge()            const;
    virtual BOOL getNotifyOnClear()                  const;
    virtual UINT getNotificationGroupID()            const;
-   UINT         getPointID()                        const;
+   LONG         getPointID()                        const;
 
    virtual bool isNotifyExcluded( int alarm ) const;
    virtual bool isAutoAcked     ( int alarm ) const;
