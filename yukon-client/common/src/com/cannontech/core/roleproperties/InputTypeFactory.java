@@ -14,6 +14,7 @@ import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.InputOption;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
+import com.cannontech.web.input.type.LongType;
 import com.cannontech.web.input.type.StringType;
 
 /**
@@ -28,6 +29,8 @@ public class InputTypeFactory {
     private static final InputType<String> stringType = new StringType();
     private static final InputType<Boolean> booleanType = new BooleanType();
     private static final InputType<Integer> integerType = new IntegerType();
+    private static final InputType<Long> longType = new LongType();
+
 
     public static <T extends Enum<T>> InputType<T> enumType(final Class<T> enumClass) {
         BaseEnumeratedType<T> type = new BaseEnumeratedType<T>() {
@@ -67,6 +70,10 @@ public class InputTypeFactory {
     
     public static InputType<Integer> integerType() {
         return integerType;
+    }
+    
+    public static InputType<Long> longType() {
+        return longType;
     }
     
     private static class EnumPropertyEditor<T extends Enum<T>> extends PropertyEditorSupport {

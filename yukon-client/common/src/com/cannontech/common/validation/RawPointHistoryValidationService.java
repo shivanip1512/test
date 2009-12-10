@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -117,10 +118,26 @@ public class RawPointHistoryValidationService {
                 do {
                     long newLast;
                     try {
-                        workingExecutions.incrementAndGet();
+                        
+                        SqlStatementBuilder sql1 = new SqlStatementBuilder();
+                        sql1.append("select max(changeId) from RawPointHistory");
+                        
+                        long maxRPHChangeId = 0;
+                        try {
+                            maxRPHChangeId = yukonJdbcTemplate.queryForLong(sql1);
+                        } catch (EmptyResultDataAccessException e) {
+                            // maxChangeId = 0;
+                        }
+                        
                         long lastChangeIdProcessed = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
+                        if (lastChangeIdProcessed == Long.MAX_VALUE) {
+                            lastChangeIdProcessed = maxRPHChangeId;
+                        }
+
+                        final long stopChangeId = Ordering.natural().min(lastChangeIdProcessed + changeIdChunkSize, maxRPHChangeId);
+
                         startingIdForLoggingPurposes = lastChangeIdProcessed + 1;
-                        newLast = processChunkOfRows(lastChangeIdProcessed);
+                        newLast = processChunkOfRows(lastChangeIdProcessed, stopChangeId);
                         String logMessage = "Processed " + lastChangeIdProcessed + " to " + newLast + " (" + changeIdsEvaluated + ", " + rowsPulled + ")";
                         if (lastChangeIdProcessed == newLast) {
                             log.debug(logMessage);
@@ -177,18 +194,19 @@ public class RawPointHistoryValidationService {
         }
     }
 
-    private long processChunkOfRows(long lastChangeIdProcessed) throws ProcessingException {
-        SqlStatementBuilder sql1 = new SqlStatementBuilder();
-        sql1.append("select max(changeId) from RawPointHistory");
-        long maxChangeId = yukonJdbcTemplate.queryForLong(sql1);
+    private long processChunkOfRows(long lastChangeIdProcessed, long stopChangeId) throws ProcessingException {
         
-        final long stopChangeId = Ordering.natural().min(lastChangeIdProcessed + changeIdChunkSize, maxChangeId);
-
-        if (stopChangeId <= lastChangeIdProcessed) {
+        final SetMultimap<ValidationMonitor, Integer> deviceGroupCache = validationMonitorDao.loadEnabledValidationMonitors();
+        
+        if (lastChangeIdProcessed >= stopChangeId) {
             return lastChangeIdProcessed;
         }
         
-        final SetMultimap<ValidationMonitor, Integer> deviceGroupCache = validationMonitorDao.loadValidationMonitors();
+        workingExecutions.incrementAndGet();
+        
+        if (deviceGroupCache.isEmpty()) {
+            return stopChangeId;
+        }
 
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("select rph.ChangeId, rph.Value, rph.Timestamp, ");

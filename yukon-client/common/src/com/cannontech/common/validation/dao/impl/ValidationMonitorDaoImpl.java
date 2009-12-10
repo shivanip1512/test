@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
@@ -44,11 +45,16 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     }
     
     @Override
-    public SetMultimap<ValidationMonitor, Integer> loadValidationMonitors() {
+    public SetMultimap<ValidationMonitor, Integer> loadEnabledValidationMonitors() {
         SetMultimap<ValidationMonitor, Integer> deviceGroupCache = HashMultimap.create();
         for (ValidationMonitor validationMonitor : getValidationMonitors()) {
-            Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(deviceGroupService.findGroupName(validationMonitor.getDeviceGroupName())));
-            deviceGroupCache.putAll(validationMonitor, deviceIds);
+            
+            if (validationMonitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
+                DeviceGroup groupName = deviceGroupService.findGroupName(validationMonitor.getDeviceGroupName());
+                Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(groupName));
+                deviceGroupCache.putAll(validationMonitor, deviceIds);    
+            }
+            
         }
         return deviceGroupCache;
     }
