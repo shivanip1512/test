@@ -57,6 +57,9 @@ CtiLMGroupVersacom::~CtiLMGroupVersacom()
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
+    // Versacom shed times are a maximum of 8 hours (28800 seconds).
+    shedTime = std::min(shedTime, 28800L);
+
     string controlString("control shed ");
     controlString += buildShedString(shedTime);
 
@@ -103,6 +106,9 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
+    // Versacom shed times are a maximum of 8 hours (28800 seconds).
+    shedTime = std::min(shedTime, 28800L);
+
     string controlString("control shed ");
     controlString += buildShedString(shedTime);
 
@@ -122,8 +128,11 @@ CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG 
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
+    // Versacom shed times are a maximum of 8 hours (28800 seconds).
+    offTime = std::min(offTime - 60, 28800L);
+
     string controlString("control shed ");
-    controlString += buildShedString(offTime-60);
+    controlString += buildShedString(offTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
