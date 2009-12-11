@@ -36,12 +36,3 @@
 		<br>
 	</c:otherwise>
 </c:choose>
-
-
-<cti:multiPicker constraint="null" 
-                 paoIdField="${primaryKeyId}" 
-                 propertyValueList="${configurationItems}" 
-                 finalTriggerAction="selectDevices" 
-                 selectionLinkName="${selectButton}"
-                  
-                 asButton="true">${selectLabel}</cti:multiPicker>
