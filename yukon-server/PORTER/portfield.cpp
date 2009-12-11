@@ -2662,6 +2662,32 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                             status = reject_status;
                                         }
                                     }
+                                    else if(status == READTIMEOUT)
+                                    {
+                                        //  We have to assume the CCU got our request, even though we didn't hear the response.
+                                        //
+                                        //  To prevent any delayed response A from being interpreted as a response to request B,
+                                        //    we must throw off the sequence numbers.
+                                        //  We need to increment by two or more, because the CCU treats a single increment as an
+                                        //    acknowledgement of its previous response - and since the CCU waits for an acknowledgement
+                                        //    before clearing queue entries returned by an RCOLQ, that might result in a loss of data.
+                                        //
+                                        //  Note that this guarantees us a sequence adjust from the slave the next time we successfully
+                                        //    communicate, but that is the small price that we pay for this safety.
+                                        //
+                                        //  The protocol-pure method would be to send a reset request to the CCU to absorb any spurious
+                                        //    replies, but if the device is not communicating, any additional port queue entries for this
+                                        //    CCU would generate even more timeouts (the "additional time out/extra timeout" delay
+                                        //    is the biggest variable contributor here, especially for small messages like the reset).
+                                        //  That isn't a problem for a single device on a comm channel, but it is a major problem
+                                        //    for a comm channel with multiple devices.
+
+                                        pInfo->RemoteSequence.Request += 2;
+                                        pInfo->RemoteSequence.Reply   += 2;
+
+                                        pInfo->RemoteSequence.Request %= 8;
+                                        pInfo->RemoteSequence.Reply   %= 8;
+                                    }
                                 }
 
                                 if(trx.doTrace(status))
