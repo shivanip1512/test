@@ -86,6 +86,8 @@ import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.IMACSConnection;
+import com.cannontech.yukon.conns.ConnPool;
 import com.klg.jclass.util.swing.JCSpinNumberBox;
 import com.klg.jclass.util.value.JCValueEvent;
 import com.klg.jclass.util.value.JCValueListener;
@@ -97,6 +99,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     private ScriptTemplate scriptTemplate = null;
     //String for holding the script file.
     private String scriptText = null;
+    private int scheduleId = 0;    
     private JTree meterReadGroupTree = null;
     private JTree billingGroupTree = null;
     private JScrollPane meterReadGroupListScrollPane = null;
@@ -182,6 +185,11 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		//Don't init the connections during edit Mode, they are inited in the setValues call instead
     		initializeConnections();
     }
+    
+    public IMACSConnection getIMACSConnection() 
+    {
+        return (IMACSConnection)ConnPool.getInstance().getDefMacsConn();
+    }    
     /**
      * Method to handle events for the ActionListener interface.
      * @param e java.awt.event.ActionEvent
@@ -2199,6 +2207,9 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	}else if(!isValidFileName(scriptName)) {
             setErrorString("The script name cannot contain invalid file name characters.");
             return false;
+        }else if (getIMACSConnection().isScriptFileNameExists(scriptName, scheduleId)) {
+            setErrorString("The Script Name already exists.");
+            return false;
         }else if(templateType != ScriptTemplateTypes.NO_TEMPLATE_SCRIPT && getMeterReadGroupTree().getSelectionPath() == null ) {
             setErrorString("A meter read group must be selected.");
             return false;
@@ -2531,6 +2542,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      */
     public void setValue(Object o) {
     	Schedule sched = (Schedule)o;
+    	this.scheduleId = sched.getId();
     	setTemplateType(sched.getTemplateType());
     }
     

@@ -14,6 +14,10 @@ public interface IMACSConnection extends IServerConnection
 	public java.util.Hashtable getCategoryNames(); 
 
 	public Schedule[] retrieveSchedules();
+	
+	public boolean isScheduleNameExists(String scheduleName, int scheduleId);
+	
+	public boolean isScriptFileNameExists(String scriptFileName, int scheduleId);
 
 	public void sendCreateSchedule(Schedule sched) throws java.io.IOException; 
 

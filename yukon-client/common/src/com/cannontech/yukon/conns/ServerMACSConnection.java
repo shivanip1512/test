@@ -225,6 +225,30 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 		
 	}
 
+    public boolean isScheduleNameExists(String scheduleName, int scheduleId) {
+        boolean found = false;
+        for( int j = 0; j < getSchedules().size(); j++ ) {
+            Schedule sched = (Schedule)getSchedules().get(j);
+            if( sched.getScheduleName().equalsIgnoreCase(scheduleName) && sched.getId() != scheduleId) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+    
+    public boolean isScriptFileNameExists(String scriptFileName, int scheduleId) {
+        boolean found = false;
+        for( int j = 0; j < getSchedules().size(); j++ ) {
+            Schedule sched = (Schedule)getSchedules().get(j);
+            if( sched.getScriptFileName().equalsIgnoreCase(scriptFileName) && sched.getId() != scheduleId) {
+                found = true;
+                break;
+            }            
+        }
+        return found;        
+    }
+    
 	/**
 	 * This method was created in VisualAge.
 	 * @param streamer CollectableStreamer

@@ -11,10 +11,13 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.IMACSConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class ScheduleBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.KeyListener, javax.swing.event.CaretListener {
 	private java.text.SimpleDateFormat dateFormatter = new java.text.SimpleDateFormat("MMMMMMMM dd, yyyy");
 	private boolean editMode = false;
+	private int scheduleId = 0;
 	private javax.swing.JLabel ivjJLabelCategory = null;
 	private javax.swing.JLabel ivjJLabelName = null;
 	private javax.swing.JLabel ivjJLabelType = null;
@@ -96,6 +99,11 @@ public ScheduleBasePanel( boolean onlyEditMode )
 
 	editMode = onlyEditMode;
 	initialize();
+}
+
+public IMACSConnection getIMACSConnection() 
+{
+    return (IMACSConnection)ConnPool.getInstance().getDefMacsConn();
 }
 /**
  * This method was created in VisualAge.
@@ -1693,6 +1701,10 @@ public boolean isInputValid()
 	    setErrorString("The Schedule Name cannot contain invalid schedule name charaters.");
         return false;
 	}
+    if (getIMACSConnection().isScheduleNameExists(scheduleName, scheduleId)) {
+        setErrorString("The Schedule Name already exists.");
+        return false;
+    }
 
 	if( getJComboBoxCategory().getEditor().getItem() == null
 		 || getJComboBoxCategory().getEditor().getItem().toString().length() <= 0 )
@@ -1984,7 +1996,8 @@ private void setStopFieldVisible()
  */
 public void setValue(Object val) 
 {
-	Schedule sched = (Schedule)val;	
+	Schedule sched = (Schedule)val;
+	this.scheduleId = sched.getId();
 
 	setEditableJComboBox( sched.getNonPersistantData().getCategories() );
 	
