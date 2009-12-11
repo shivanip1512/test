@@ -21,6 +21,14 @@
     <h2>${pageTitle}</h2>
     <br>
     
+
+    <script type="text/javascript">
+
+        function selectCategory(categoryName) {
+        }
+        
+    </script>
+
     <style>
     	div.migrationSection {width:80%;}
     	a.exportComponentLabel {}

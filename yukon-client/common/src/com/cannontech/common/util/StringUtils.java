@@ -157,4 +157,14 @@ public final class StringUtils {
         return string1.equalsIgnoreCase(string2);
     }
 
+    public static String toCamelCase(String string){
+        String[] words = string.split(" ");
+        String resultString = "";
+        for (String word : words) {
+            resultString += word.substring(0,1).toUpperCase() + 
+                            word.substring(1).toLowerCase();
+        }
+        return resultString.substring(0,1).toLowerCase() + resultString.substring(1);
+    }
+    
 }

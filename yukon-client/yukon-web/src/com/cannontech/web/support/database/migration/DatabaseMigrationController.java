@@ -5,8 +5,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -18,14 +23,17 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -40,8 +48,9 @@ public class DatabaseMigrationController {
 
 	private PoolManager poolManager;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
-	
-	private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
+	private DatabaseMigrationService databaseMigrationService;
+
+    private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
 	
 	// HOME
 	@RequestMapping
@@ -53,9 +62,14 @@ public class DatabaseMigrationController {
         boolean exportTab = ServletRequestUtils.getBooleanParameter(request, "export", false);
         boolean importTab = ServletRequestUtils.getBooleanParameter(request, "import", false);
         
+        SortedMap<String, SortedSet<String>> configurationDBTablesMap = 
+            databaseMigrationService.getAvailableConfigurationDatabaseTableMap();
+        
+        
         mav.addObject("errorMsg", errorMsg);
         mav.addObject("export", exportTab);
         mav.addObject("import", importTab);
+        mav.addObject("configurationDBTablesMap", configurationDBTablesMap);
         addDbInfoToMav(mav);
         
         return mav;
@@ -63,9 +77,29 @@ public class DatabaseMigrationController {
 	
 	// EXPORT
 	@RequestMapping
-    public ModelAndView export(HttpServletRequest request, HttpServletResponse response) {
-        
+    public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("database/migration/exportProgress.jsp");
+        String componentType = ServletRequestUtils.getStringParameter(request, "selectedComponent");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        
+        String databaseMigrationIds = ServletRequestUtils.getRequiredStringParameter(request, "databaseMigrationIds");
+        List<Integer> primaryKeyList = new ArrayList<Integer>();
+        for (String databaseMigrationId : databaseMigrationIds.split(",")){
+            primaryKeyList.add(Integer.valueOf(databaseMigrationId));
+        }
+        
+        Map<String, Resource> availableConfigurationMap = databaseMigrationService.getAvailableConfigurationMap();
+        Resource configurationXMLFile = availableConfigurationMap.get(componentType);
+        if(configurationXMLFile != null) {
+            try {
+                databaseMigrationService.processExportDatabaseMigration(configurationXMLFile.getFile(), primaryKeyList, userContext);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            throw new IllegalArgumentException("The configuration file supplied does not exist.");
+        }
         
         addDbInfoToMav(mav);
         
@@ -74,10 +108,20 @@ public class DatabaseMigrationController {
 	
 	// SELECT OBJECTS
 	@RequestMapping
-    public ModelAndView selectObjects(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView selectObjects(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+        String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
+	    
+        List<Map<String, Object>> configurationItems = databaseMigrationService.getConfigurationItems(objectKey);
+
+        Map<String, Object> map = configurationItems.get(0);
+        Set<String> keySet = map.keySet();
+        String primaryKeyId = (String)keySet.toArray()[0];
         
-        ModelAndView mav = new ModelAndView("database/migration/popup/selectObjects.jsp");
-        
+	    ModelAndView mav = new ModelAndView("database/migration/popup/selectObjects.jsp");
+        mav.addObject("configurationItems", configurationItems);
+        mav.addObject("primaryKeyId", primaryKeyId);
+        mav.addObject("objectKey", objectKey);
         addDbInfoToMav(mav);
         
         return mav;
@@ -193,7 +237,7 @@ public class DatabaseMigrationController {
 	@RequestMapping
     public ModelAndView objectsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 	
-		String someObjectKey = ServletRequestUtils.getRequiredStringParameter(request, "someObjectKey");
+		String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
 		
 		ModelAndView mav = new ModelAndView("database/migration/popup/objectsViewPopup.jsp");
 		
@@ -204,7 +248,7 @@ public class DatabaseMigrationController {
 	@RequestMapping
     public ModelAndView warningsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 	
-		String someObjectKey = ServletRequestUtils.getRequiredStringParameter(request, "someObjectKey");
+		String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
 		
 		ModelAndView mav = new ModelAndView("database/migration/popup/warningsViewPopup.jsp");
 		
@@ -215,7 +259,7 @@ public class DatabaseMigrationController {
 	@RequestMapping
     public ModelAndView errorsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 	
-		String someObjectKey = ServletRequestUtils.getRequiredStringParameter(request, "someObjectKey");
+		String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
 		
 		ModelAndView mav = new ModelAndView("database/migration/popup/errorsViewPopup.jsp");
 		
@@ -281,5 +325,10 @@ public class DatabaseMigrationController {
 	@Autowired
 	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
 		this.messageSourceResolver = messageSourceResolver;
+	}
+	
+	@Autowired
+	public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
+	    this.databaseMigrationService = databaseMigrationService;
 	}
 }

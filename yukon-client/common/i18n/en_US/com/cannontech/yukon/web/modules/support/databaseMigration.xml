@@ -11,6 +11,12 @@
 	<entry key="yukon.web.modules.support.databaseMigration.exportConfig">Export Config</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.importConfig">Import Config</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.cancel">Cancel</entry>
+
+	<!-- Select Objects selectObjects.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.support.databaseMigration.selectObjects.selectButton">Select {0}</entry>
+
 	
 	<!-- Export export.jspf -->
     <!-- ================================================================================================================================================= -->
