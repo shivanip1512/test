@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -291,7 +292,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 		for (DisplayablePao scenario : allScenarios) {
 			
 			int scenarioId = scenario.getPaoIdentifier().getPaoId();
-			if (scenarioIsVisibleToUser(user, scenarioId)) {
+			if (scenarioIsVisibleToUser(user, scenario)) {
 				
 				List<ProgramStartingGear> programStartingGears = loadControlProgramDao.getProgramStartingGearsForScenarioId(scenarioId);
 	            ScenarioProgramStartingGears scenarioProgramStartingGears = new ScenarioProgramStartingGears(scenario.getName(), programStartingGears);
@@ -491,8 +492,16 @@ public class LoadControlServiceImpl implements LoadControlService {
     	return isLmPaoVisibleToUser(user, scenarioId);
     }
     
+    private boolean scenarioIsVisibleToUser(LiteYukonUser user, YukonPao scenarioPao) {
+    	return isLmPaoVisibleToUser(user, scenarioPao);
+    }
+    
     private boolean isLmPaoVisibleToUser(LiteYukonUser user, int paoId) {
     	return paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(paoId));
+    }
+    
+    private boolean isLmPaoVisibleToUser(LiteYukonUser user, YukonPao pao) {
+    	return paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, pao);
     }
 
     //==============================================================================================
