@@ -147,19 +147,16 @@ void CtiVanGogh::groupControlStatusVerification(unsigned long pointID)
         const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(pPoint);
         if( pDyn && (INT)(pDyn->getValue()) == CONTROLLED && pDyn->getQuality() != ManualQuality )
         {
-            // Our dynamic info thinks this point is controlled.  What does our pending info say?
-            if(!isPointInPendingControl(pPoint->getPointID()))
+            // We either need to set up a future point if control is still running, or send a point for
+            // now if control stopped while we were shut down.
+            CtiTime stopTime =  _pendingOpThread.getPendingControlCompleteTime(pPoint->getPointID());
+            if(!stopTime.isValid())
             {
-                CtiTime now;
-                // This point is in the CONTROLLED state and NOT in the pending control list... It must be set back to UNCONTROLLED.
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Adjusting point tags for point id " << pPoint->getPointID() << endl;
-                }
-
-                updateGroupPseduoControlPoint( pPoint, now );
+                stopTime = stopTime.now();
             }
+
+            updateGroupPseduoControlPoint( pPoint, stopTime);
+
         }
     }
     return;

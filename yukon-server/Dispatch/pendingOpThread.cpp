@@ -1194,6 +1194,24 @@ bool CtiPendingOpThread::isPointInPendingControl(LONG pointid)
     return(stat);
 }
 
+// Returns an invalid time if there is no pending control for pointid
+CtiTime CtiPendingOpThread::getPendingControlCompleteTime(LONG pointid)
+{
+    CtiTime retVal = CtiTime(CtiTime::not_a_time);
+    CtiLockGuard<CtiMutex> guard(_controlMux);
+
+    if(!_pendingControls.empty())
+    {
+        CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
+        if(it != _pendingControls.end())
+        {
+            retVal = it->getControl().getControlCompleteTime();
+        }
+    }
+
+    return(retVal);
+}
+
 int CtiPendingOpThread::getCurrentControlPriority(LONG pointid)
 {
     int retVal = INT_MAX;

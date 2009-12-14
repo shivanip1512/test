@@ -158,6 +158,7 @@ public:
     void postControlHistoryPoints( CtiPendingPointOperations &ppc, bool doit = false );
     bool isPointInPendingControl(LONG pointid);
     int  getCurrentControlPriority(LONG pointid);
+    CtiTime getPendingControlCompleteTime(LONG pointid);
 
     void insertControlHistoryRow( CtiPendingPointOperations &ppc, int line);
     void writeLMControlHistoryToDB(bool justdoit = false);
