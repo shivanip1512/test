@@ -114,6 +114,11 @@ private:
     void enableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
     void disableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
 
+    // LTC Commands
+    void sendLTCCommands     (const LONG command);
+    void scanLTC             (const LONG commandType, std::vector<CtiSignalMsg*> &signals, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
+    void sendLTCRemoteControl(const LONG commandType, std::vector<CtiSignalMsg*> &signals, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
+    void sendLTCTapPosition  (const LONG commandType, std::vector<CtiSignalMsg*> &signals, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
 
     //Helper Functions
     void setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);

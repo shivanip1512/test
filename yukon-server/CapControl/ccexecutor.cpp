@@ -176,6 +176,15 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::ENABLE_OVUV:
         sendLocalControl();
         break;
+
+    case CtiCCCommand::LTC_SCAN_INTEGRITY:
+    case CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE:
+    case CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE:
+    case CtiCCCommand::LTC_TAP_POSITION_RAISE:
+    case CtiCCCommand::LTC_TAP_POSITION_LOWER:
+        sendLTCCommands( _command->getCommand() );
+        break;
+
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -8044,3 +8053,153 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
 
     return ret_val;
 }
+
+
+void CtiCCCommandExecutor::sendLTCCommands(const LONG command)
+{
+    std::vector<CtiSignalMsg*>      signals;
+    std::vector<CtiCCEventLogMsg*>  events;
+    std::vector<CtiRequestMsg*>     requests;
+
+    switch (command)
+    {
+        case CtiCCCommand::LTC_SCAN_INTEGRITY:
+        {
+            scanLTC(command, signals, events, requests);
+            break;
+        }
+        case CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE:
+        case CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE:
+        {
+            sendLTCRemoteControl(command, signals, events, requests);
+            break;
+        }
+        case CtiCCCommand::LTC_TAP_POSITION_RAISE:
+        case CtiCCCommand::LTC_TAP_POSITION_LOWER:
+        {
+            sendLTCTapPosition(command, signals, events, requests);
+            break;
+        }
+        default:
+        {
+             CtiLockGuard<CtiLogger> logger_guard(dout);
+             dout << CtiTime() << " LTC Command not implemented: " << command << endl;
+        }
+        break;
+    }
+
+    for each(CtiCCEventLogMsg* message in events)
+    {
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(message);
+    }
+    events.clear();
+
+    for each(CtiRequestMsg* message in requests)
+    {
+        CtiCapController::getInstance()->manualCapBankControl(message,new CtiMultiMsg());
+    }
+    requests.clear();
+
+    for each(CtiSignalMsg* message in signals)
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(message);
+    }
+    signals.clear();
+}
+
+
+void CtiCCCommandExecutor::scanLTC(const LONG                       commandType,
+                                   std::vector<CtiSignalMsg*>       &signals,
+                                   std::vector<CtiCCEventLogMsg*>   &events,
+                                   std::vector<CtiRequestMsg*>      &requests)
+{
+    string scanType;
+
+    switch (commandType)
+    {
+        case CtiCCCommand::LTC_SCAN_INTEGRITY:
+        {
+            scanType = "integrity";
+            break;
+        }
+        default:
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " LTC scan type not implemented: " << commandType << endl;
+            return;
+        }
+    }
+
+    string command = "scan " + scanType;
+
+
+    {
+         CtiLockGuard<CtiLogger> logger_guard(dout);
+         dout << CtiTime() << " CtiCCCommandExecutor::scanLTC() not implemented." << endl;
+         dout << CtiTime() << "     DEBUG: " << command << endl;
+    }
+}
+
+
+void CtiCCCommandExecutor::sendLTCRemoteControl(const LONG                       commandType,
+                                                std::vector<CtiSignalMsg*>       &signals,
+                                                std::vector<CtiCCEventLogMsg*>   &events,
+                                                std::vector<CtiRequestMsg*>      &requests)
+{
+    int enable = (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE) ? 1 : 0;
+
+    int offset = 23;
+
+    char command[80];
+
+    _snprintf(command, 80, "putvalue analog %d %d", offset, enable);
+
+
+    {
+         CtiLockGuard<CtiLogger> logger_guard(dout);
+         dout << CtiTime() << " CtiCCCommandExecutor::sendLTCRemoteControl() not implemented." << endl;
+         dout << CtiTime() << "     DEBUG: " << command << endl;
+    }
+}
+
+
+void CtiCCCommandExecutor::sendLTCTapPosition(const LONG                       commandType,
+                                              std::vector<CtiSignalMsg*>       &signals,
+                                              std::vector<CtiCCEventLogMsg*>   &events,
+                                              std::vector<CtiRequestMsg*>      &requests)
+{
+    int offset = -1;
+
+    switch (commandType)
+    {
+        case CtiCCCommand::LTC_TAP_POSITION_RAISE:
+        {
+            offset = 34;
+            break;
+        }
+        case CtiCCCommand::LTC_TAP_POSITION_LOWER:
+        {
+            offset = 45;
+            break;
+        }
+        default:
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Invalid tap position command: " << commandType << endl;
+            return;
+        }
+    }
+
+
+    char command[80];
+
+    _snprintf(command, 80, "control close offset %d", offset);
+
+
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " CtiCCCommandExecutor::sendLTCTapPosition() not implemented." << endl;
+        dout << CtiTime() << "     DEBUG: " << command << endl;
+    }
+}
+
