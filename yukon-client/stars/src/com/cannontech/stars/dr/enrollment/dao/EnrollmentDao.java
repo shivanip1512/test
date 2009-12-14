@@ -20,14 +20,6 @@ public interface EnrollmentDao {
     public List<Program> getCurrentlyEnrolledProgramsByInventoryId(int inventoryId);
     
     /**
-     * Check for enrollment entries for inventoryId and programId
-     * @param inventoryId
-     * @param programId
-     * @return
-     */
-    public boolean isInventoryCurrentlyEnrolledProgram(int inventoryId, int programId);
-    
-    /**
      * Method to get a list of inventory ids for inventory that was opted out for a given
      * program during a given time period
      * @param program - Program to get opt outs for

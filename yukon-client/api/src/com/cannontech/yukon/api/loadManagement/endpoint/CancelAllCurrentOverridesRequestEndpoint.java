@@ -8,15 +8,11 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -29,8 +25,6 @@ public class CancelAllCurrentOverridesRequestEndpoint {
 	private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private RolePropertyDao rolePropertyDao;
-	private StarsDatabaseCache starsDatabaseCache;
-	private ProgramService programService;
 	
 	private String programNameExpressionStr = "/y:cancelAllCurrentOverridesRequest/y:programName";
     
@@ -55,10 +49,7 @@ public class CancelAllCurrentOverridesRequestEndpoint {
             if (StringUtils.isBlank(programName)) {
             	optOutService.cancelAllOptOuts(user);
             } else {
-            	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-            	Program program = programService.getByProgramName(programName, energyCompany);
-            	int programId = program.getProgramId();
-            	optOutService.cancelAllOptOutsByProgramId(programId, user);
+            	optOutService.cancelAllOptOutsByProgramName(programName, user);
             }
             
             resultElement = XmlUtils.createStringElement("success", ns, "");
@@ -68,7 +59,7 @@ public class CancelAllCurrentOverridesRequestEndpoint {
                                                                 e,
                                                                 "UserNotAuthorized",
                                                                 "The user is not authorized to cancel all current overrides.");
-        } catch (NotFoundException e) {
+        } catch (ProgramNotFoundException e) {
             resultElement = XMLFailureGenerator.generateFailure(cancelAllCurrentOverridesRequest,
                                                                 e,
                                                                 "ProgramNotFound",
@@ -88,15 +79,5 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
-	}
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-		this.starsDatabaseCache = starsDatabaseCache;
-	}
-    
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-		this.programService = programService;
 	}
 }

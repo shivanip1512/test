@@ -17,7 +17,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -38,7 +37,6 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Maps;
@@ -56,7 +54,6 @@ public class OptOutAdminController {
 	private StarsDatabaseCache starsDatabaseCache;
 	private OptOutService optOutService;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
-	private ProgramService programService;
 	private ProgramDao programDao;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private RolePropertyDao rolePropertyDao;
@@ -155,12 +152,9 @@ public class OptOutAdminController {
 				
 				try {
 					
-					LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-	            	Program program = programService.getByProgramName(programName, energyCompany);
-	            	int programId = program.getProgramId();
-					optOutService.cancelAllOptOutsByProgramId(programId, user);
+					optOutService.cancelAllOptOutsByProgramName(programName, user);
 					
-				} catch (NotFoundException e) {
+				} catch (ProgramNotFoundException e) {
 					map.addAttribute("programNotFound", true);
 				}
 			}
@@ -318,11 +312,6 @@ public class OptOutAdminController {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
     	this.rolePropertyDao = rolePropertyDao;
     }
-    
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-		this.programService = programService;
-	}
     
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {

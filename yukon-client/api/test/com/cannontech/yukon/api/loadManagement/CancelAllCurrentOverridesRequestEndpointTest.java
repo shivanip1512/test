@@ -44,7 +44,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	// test with unauthorized user
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createCancleCurrentOverridesRequestElement(
-    			XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
+    			XmlVersionUtils.YUKON_MSG_VERSION_1_0, null, reqSchemaResource);
         LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invoke(requestElement, user);
 
@@ -69,22 +69,48 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
+        // test with program name
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createCancleCurrentOverridesRequestElement(
+    			XmlVersionUtils.YUKON_MSG_VERSION_1_0, "Program1", reqSchemaResource);
+    	user = new LiteYukonUser();
+        respElement = impl.invoke(requestElement, user);
+        
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        Assert.assertEquals("cancelAllOptOuts was not called", 2, mockOptOutService.getCallCount());
+        
+        // create template and parse response data
+        template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
+        Assert.assertEquals("Wrong program name", "Program1", mockOptOutService.getProgramName());
+        
     }
+    
     
     private class MockOptOutService extends OptOutServiceAdapter {
     	
     	int callCount = 0;
+    	String programName = null;
     	
     	public int getCallCount() {
     		return callCount;
     	}
     	
-    	public void setCallCount(int callCount) {
-    		this.callCount = callCount;
-    	}
+    	public String getProgramName() {
+			return programName;
+		}
     	
     	@Override
     	public void cancelAllOptOuts(LiteYukonUser user) {
+    		this.callCount++;
+    	}
+    	
+    	@Override
+    	public void cancelAllOptOutsByProgramName(String programName, LiteYukonUser user) {
+    		this.programName = programName;
     		this.callCount++;
     	}
     	

@@ -85,24 +85,6 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 	}
 
 	@Override
-	@Transactional
-	public boolean isInventoryCurrentlyEnrolledProgram(int inventoryId, int programId) {
-
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT COUNT(*)");
-		sql.append("FROM LMHardwareControlGroup lmhcg");
-		sql.append("	JOIN LMProgramWebPublishing pwp ON (lmhcg.ProgramId = pwp.ProgramId)");
-		sql.append("WHERE lmhcg.InventoryId = ?").appendArgument(inventoryId);
-		sql.append("	AND pwp.DeviceId = ?").appendArgument(programId);
-		sql.append("	AND lmhcg.Type = ?").appendArgument(LMHardwareControlGroup.ENROLLMENT_ENTRY);
-		sql.append("	AND lmhcg.ProgramId > 0");
-		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
-		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
-		
-		return yukonJdbcTemplate.queryForInt(sql) > 0;
-	}
-	
-	@Override
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId,
 			Date startTime, Date stopTime) {
 		

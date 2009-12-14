@@ -54,10 +54,10 @@ public interface OptOutService {
 	/**
 	 * Method to cancel all current opt outs for the given user's energy company.
 	 * Limited to those opt outs that tie to inventory that is currently enrolled in a given program.
-	 * @param programId
+	 * @param programName
 	 * @param user
 	 */
-	public void cancelAllOptOutsByProgramId(int programId, LiteYukonUser user);
+	public void cancelAllOptOutsByProgramName(String programName, LiteYukonUser user);
 
 	/**
 	 * Method to resend any current opt out command

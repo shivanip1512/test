@@ -53,6 +53,8 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
@@ -106,6 +108,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private SystemDateFormattingService systemDateFormattingService;
 	private YukonUserDao yukonUserDao;
 	private Executor executor;
+	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -385,28 +388,44 @@ public class OptOutServiceImpl implements OptOutService {
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts(energyCompany);
 		
-		cancelOptOutEvents(currentOptOuts, energyCompany, user);
+		for (OptOutEvent ooe : currentOptOuts) {
+			cancelOptOutEvent(ooe, energyCompany, user);
+		}
 	}
 	
 	@Override
-	public void cancelAllOptOutsByProgramId(int programId, LiteYukonUser user) {
+	public void cancelAllOptOutsByProgramName(String programName, LiteYukonUser user) throws ProgramNotFoundException {
 
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	Program program = programService.getByProgramName(programName, energyCompany);
+    	int programId = program.getProgramId();
+    	
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOutsByProgramId(programId, energyCompany);
 		
-		cancelOptOutEvents(currentOptOuts, energyCompany, user);
+		Date now = new Date();
+		
+		for (OptOutEvent ooe : currentOptOuts) {
+			
+			List<LMHardwareControlGroup> currentEnrollmentList = lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(ooe.getInventoryId(), ooe.getCustomerAccountId());
+
+	        // Clean up the opt out for the given inventory.
+	        if (currentEnrollmentList.size() > 1){
+	            if (optOutEventDao.isOptedOut(ooe.getInventoryId(), ooe.getCustomerAccountId())) {
+	            	lmHardwareControlInformationService.stopOptOut(ooe.getInventoryId(), -1, ooe.getCustomerAccountId(), programId, user, now);
+	            }
+	        } else {
+	        	cancelOptOutEvent(ooe, energyCompany, user);
+	        }
+		}
 	}
 	
-	private void cancelOptOutEvents(List<OptOutEvent> optOuts, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+	private void cancelOptOutEvent(OptOutEvent ooe, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+			
+		Integer inventoryId = ooe.getInventoryId();
+		LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
 		
-		for(OptOutEvent event : optOuts) {
-			
-			Integer inventoryId = event.getInventoryId();
-			LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-			CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
-			
-			cancelSingleOptOut(event, customerAccount, inventory, energyCompany, user);
-		}
+		cancelSingleOptOut(ooe, customerAccount, inventory, energyCompany, user);
 	}
 	
 	private void cancelSingleOptOut(OptOutEvent event, CustomerAccount customerAccount, LiteStarsLMHardware inventory, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
@@ -1176,4 +1195,9 @@ public class OptOutServiceImpl implements OptOutService {
 		this.executor = executor;
 	}
 	
+	@Autowired
+	public void setLmHardwareControlGroupDao(
+			LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+		this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+	}
 }

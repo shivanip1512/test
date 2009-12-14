@@ -34,7 +34,7 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 	
 	@Override
-	public void cancelAllOptOutsByProgramId(int programId, LiteYukonUser user) {
+	public void cancelAllOptOutsByProgramName(String programName, LiteYukonUser user) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

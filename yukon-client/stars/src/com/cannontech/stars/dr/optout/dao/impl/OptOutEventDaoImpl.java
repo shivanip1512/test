@@ -578,10 +578,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("	AND ectam.EnergyCompanyId").eq(energyCompany.getEnergyCompanyID());
 		
 		sql.append("	AND pwp.ProgramId").eq(webpublishingProgramId);
-		sql.append("	AND lmhcg.Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+		sql.append("	AND lmhcg.Type").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
 		sql.append("	AND lmhcg.ProgramId > 0");
-		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
-		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
+		sql.append("	AND lmhcg.OptOutStart IS NOT NULL");
+		sql.append("	AND lmhcg.OptOutStop IS NULL");
 		
 		List<OptOutEvent> optOutEvents = yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		
