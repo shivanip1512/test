@@ -169,6 +169,35 @@ public class TierPopupMenuController extends MultiActionController {
         return mav;
     }
     
+    public ModelAndView ltcMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final int id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        
+        mav.addObject("paoId", id);
+        
+        String paoName = paoDao.getYukonPAOName(id);
+        mav.addObject("paoName", paoName);
+        
+        final List<CommandHolder> list = new ArrayList<CommandHolder>();
+        
+        list.add(CommandHolder.LTC_SCAN_INTEGRITY);
+        list.add(CommandHolder.LTC_REMOTE_ENABLE);
+        list.add(CommandHolder.LTC_REMOTE_DISABLE);
+        list.add(CommandHolder.LTC_TAP_POSITION_RAISE);
+        list.add(CommandHolder.LTC_TAP_POSITION_LOWER);
+        
+        mav.addObject("list", list);
+        
+        mav.addObject("controlType", CapControlType.LTC);
+        
+        mav.addObject("hideRecentCommands", true);
+        mav.addObject("hideComments",true);
+        
+        mav.setViewName("tier/popupmenu/menu.jsp");
+        return mav;
+    }
+    
+    
     public ModelAndView feederMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
@@ -300,8 +329,12 @@ public class TierPopupMenuController extends MultiActionController {
             list.add(CommandHolder.SEND_ENABLE_TIMECONTROL);
             list.add(CommandHolder.SEND_DISABLE_TIMECONTROL);
         }
+        
         mav.addObject("list", list);
         mav.addObject("controlType", CapControlType.valueOf(controlType));
+        mav.addObject("hideRecentCommands", true);
+        mav.addObject("hideComments",true);
+        
         mav.setViewName("tier/popupmenu/menu.jsp");
         return mav;    
     }
@@ -478,5 +511,4 @@ public class TierPopupMenuController extends MultiActionController {
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
-    
 }

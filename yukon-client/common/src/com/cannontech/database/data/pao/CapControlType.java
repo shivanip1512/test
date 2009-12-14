@@ -10,7 +10,8 @@ public enum CapControlType {
     CAPBANK("CAP BANK"),
     CBC("CBC"),
     SCHEDULE("SCHEDULE"),
-    STRATEGY("STRATEGY");
+    STRATEGY("STRATEGY"),
+    LTC("Load Tap Changer");
 
 	private final String displayValue;
 	

@@ -78,6 +78,11 @@ public class CapControlCommandExecutor
                 executeCBCCommand(paoId, optParams);
                 break;
             }
+            case LTC: {
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
+                executeLtcCommand(cmdId,paoId);
+                break;
+            }
             default : throw new UnsupportedOperationException("Unsupported ControlType: " + controlType +
                                                               "cannot execute command: " + cmdId +
                                                               " for pao: " + paoId );
@@ -137,6 +142,10 @@ public class CapControlCommandExecutor
 				cmdId );			
 		}
 	}
+    
+    private void executeLtcCommand(int cmdId, int paoId) {
+        executeCommand(paoId,cmdId);
+    }
     
     private void executeVerifySubstation(int paoId, int cmdId) {
         int action = 0;
@@ -369,9 +378,9 @@ public class CapControlCommandExecutor
     
     private void executeCommand(int paoId, int cmdOperation, int operationalState) {
 		CapControlCommand cmd = new CapControlCommand();
-		cmd.setDeviceID( paoId );
-		cmd.setCommand( cmdOperation );
-		cmd.setUserName( getUserName() );
+		cmd.setDeviceID(paoId);
+		cmd.setCommand(cmdOperation);
+		cmd.setUserName(getUserName());
 		cmd.setToken(operationalState);
 		
 		capControlCache.getConnection().sendCommand( cmd );

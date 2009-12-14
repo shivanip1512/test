@@ -61,7 +61,13 @@ public enum CommandHolder {
     CBC_ENABLE_TIMECONTROL(CapControlCommand.BANK_ENABLE_TIMECONTROL, "Enable Time Control",false),
     CBC_DISABLE_TIMECONTROL(CapControlCommand.BANK_DISABLE_TIMECONTROL, "Disable Time Control",false),    
     
-    OPERATIONAL_STATECHANGE(CapControlCommand.OPERATIONAL_STATECHANGE, "Change Operational State", false);
+    OPERATIONAL_STATECHANGE(CapControlCommand.OPERATIONAL_STATECHANGE, "Change Operational State", false),
+    
+    LTC_SCAN_INTEGRITY(CapControlCommand.LTC_SCAN_INTEGRITY, "Scan Ltc Integrity",false),
+    LTC_REMOTE_ENABLE(CapControlCommand.LTC_REMOTE_ENABLE, "Enable Remote Control",false),
+    LTC_REMOTE_DISABLE(CapControlCommand.LTC_REMOTE_DISABLE, "Disable Remote Control",false),
+    LTC_TAP_POSITION_RAISE(CapControlCommand.LTC_TAP_POSITION_RAISE, "Raise Tap Position",false),
+    LTC_TAP_POSITION_LOWER(CapControlCommand.LTC_TAP_POSITION_LOWER, "Lower Tap Position",false);
     
     private final int cmdId;
     private final String commandName;

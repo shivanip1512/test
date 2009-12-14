@@ -72,6 +72,12 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int BANK_ENABLE_TIMECONTROL = 50;
     public static final int BANK_DISABLE_TIMECONTROL = 51;
     
+    public static final int LTC_SCAN_INTEGRITY = 60;
+    public static final int LTC_REMOTE_ENABLE = 61;
+    public static final int LTC_REMOTE_DISABLE = 62;
+    public static final int LTC_TAP_POSITION_RAISE = 63;
+    public static final int LTC_TAP_POSITION_LOWER = 64;
+    
 	public static final String[] COMMAND_STRINGS = {
 		"Enable Substation Bus",
 		"Disable Substation Bus",
@@ -127,7 +133,18 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
         "",//50
         "",
         "",
-        ""
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Scan Ltc Integrity",//60
+        "Enable Remote Control",
+        "Disable Remote Control",
+        "Raise Tap Position",
+        "Lower Tap Position",
         };
 	
 

@@ -1,4 +1,5 @@
 var manMsgID = 0;
+var menuPopUpWidth = 165;
 
 function checkPageExpire() {
     var inputElements = $$('input');
@@ -54,6 +55,11 @@ function getCapBankMenu(id, event) {
     getMenuFromURLAbove(url, event); 
 }
 
+function getLtcMenu(id, event) {
+    var url = '/spring/capcontrol/tier/popupmenu?menu=ltcMenu&id=' + id;
+    getMenuFromURLLeft(url, event); 
+}
+
 function getLocalControlMenu(id, capBankType, objectType, event) {
 	if(!capBankType) {
 		capBankType = false;
@@ -92,11 +98,27 @@ function getMenuFromURL(url, event) {
         method: 'POST',
         onSuccess: function(transport) {
             var html = transport.responseText;
-            showMenuPopup(html, false, x, y);
+            showMenuPopup(html, false, false, x, y);
         }
     });
 }
 
+function getMenuFromURLLeft(url, event) {
+	/*
+	 *  In IE the event does not pass through the ajax request
+	 *  so the attributes of the event need to be set and passed
+	 *  as variables.
+	 */
+	var x = mouseX(event);
+    var y = mouseY(event);
+    new Ajax.Request(url, {
+        method: 'POST',
+        onSuccess: function(transport) {
+            var html = transport.responseText;
+            showMenuPopup(html, false, true, x, y);
+        }
+    });
+}
 function getMenuFromURLAbove(url, event) {
 	/*
 	 *  In IE the event does not pass through the ajax request
@@ -109,7 +131,7 @@ function getMenuFromURLAbove(url, event) {
 	    method: 'POST',
 	    onSuccess: function(transport) {
 	        var html = transport.responseText;
-	        showMenuPopup(html, true, x, y);
+	        showMenuPopup(html, true, false, x, y);
 	    }
 	});
 }
@@ -149,7 +171,7 @@ function showReasonPopup(html, up, x, y) {
 	});
 }
 
-function showMenuPopup(html, up, x, y) {
+function showMenuPopup(html, up, left, x, y) {
 	var body = $('popupBody');
 	body.innerHTML = html;
 	var popupDiv = $('tierPopup');
@@ -160,10 +182,13 @@ function showMenuPopup(html, up, x, y) {
 	if(up == true){
 		y = y - popupDiv.clientHeight;
 	}
+	if(left == true){
+		x = x - menuPopUpWidth;
+	}
 	popupDiv.setStyle({
 		top: y + "px",
 		left: x + "px",
-		width: 150 + "px"
+		width: menuPopUpWidth + "px"
 	});
 }
 

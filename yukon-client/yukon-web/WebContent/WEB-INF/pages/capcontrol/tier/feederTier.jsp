@@ -312,7 +312,9 @@
                                 <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableSubBus.ltcId}" class="tierIconLink">
                                     <img alt="" class="tierImg" src="${editInfoImage}">
                                 </a>
+                                <a href="javascript:void(0);" ${popupEvent}="getLtcMenu('${viewableSubBus.ltcId}', event);">
                                 ${viewableSubBus.ltcName}
+                                </a>
                             </c:when>
                             <c:otherwise>
                                 ---
