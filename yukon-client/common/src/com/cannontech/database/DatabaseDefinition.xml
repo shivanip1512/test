@@ -2,8 +2,8 @@
     <table name="ApplianceCategory">
         <primaryKey name="ApplianceCategoryId" />
         <identifier name="Description"/>
-        <data name="CategoryId" tableRef="YukonListEntry" refType="manyToOne"/>
-        <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="oneToOne"/>
+        <data name="CategoryId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
+        <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE"/>
     </table>
 	
 	<table name="Device">
@@ -38,15 +38,15 @@
 
     <table name="GroupPAOPermission">
         <primaryKey name="GroupPaoPermissionId" />
-        <identifier name="GroupId" tableRef="YukonGroup" refType="oneToOne"/>
-        <identifier name="PaoId" tableRef="YukonPAObject" refType="oneToOne"/>
+        <identifier name="GroupId" tableRef="YukonGroup" refType="MANY_TO_ONE"/>
+        <identifier name="PaoId" tableRef="YukonPAObject" refType="MANY_TO_ONE"/>
         <identifier name="Permission"/>
         <data name="Allow"/>
     </table>
    
     <table name="LMDirectNotifGrpList">
         <primaryKey name="ProgramId" tableRef="LMProgramDirect"/>
-        <data name="NotificationGrpId" tableRef="NotificationGroup"  refType="oneToOne" />
+        <data name="NotificationGrpId" tableRef="NotificationGroup"  refType="ONE_TO_ONE" />
     </table>
 
     <table name="LMGroup">
@@ -56,15 +56,15 @@
 
 	<table name="LMGroupExpressCom">
         <primaryKey name="LMGroupID" tableRef="LMGroup"/>
-        <data name="RouteID" tableRef="Route"  refType="manyToOne" />
+        <data name="RouteID" tableRef="Route"  refType="MANY_TO_ONE" />
         <data name="SerialNumber"/>
-        <data name="ServiceProviderId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
-        <data name="GeoId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
-        <data name="SubstationId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
-        <data name="FeederId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
+        <data name="ServiceProviderId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
+        <data name="GeoId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
+        <data name="SubstationId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
+        <data name="FeederId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
         <data name="ZipId" />
         <data name="UserId" />
-        <data name="ProgramId" tableRef="LMGroupExpressComAddress" refType="oneToOne" />
+        <data name="ProgramId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
         <data name="SplinterId" />
         <data name="AddressUsage" />
         <data name="RelayUsage" />
@@ -72,7 +72,7 @@
     </table>
     
     <table name="LMGroupExpressComAddress">
-        <primaryKey name="AddressId" nullId="0"/> <!-- Special Case - holds a oneToMany only on 0 the rest of the entries are oneToOne -->
+        <primaryKey name="AddressId" nullId="0"/> <!-- Special Case - holds a oneToMany only on 0 the rest of the entries are ONE_TO_ONE -->
         <data name="AddressType"/>
         <data name="Address"/>
         <data name="AddressName"/>
@@ -81,7 +81,7 @@
     <table name="LMProgram">
         <primaryKey name="DeviceId" tableRef="YukonPAObject"/>
         <data name="ControlType" />
-        <data name="ConstraintId" tableRef="LMProgramConstraints" refType="manyToOne" />
+        <data name="ConstraintId" tableRef="LMProgramConstraints" refType="MANY_TO_ONE" />
     </table>
 
     <table name="LMProgramConstraints">
@@ -96,8 +96,8 @@
         <data name="MinRestartTime" />
         <data name="MaxDailyOps" />
         <data name="MaxActivateTime" />
-        <data name="HolidayScheduleId" tableRef="HolidaySchedule" refType="manyToOne" />
-        <data name="SeasonScheduleId" tableRef="SeasonSchedule" refType="manyToOne" />
+        <data name="HolidayScheduleId" tableRef="HolidaySchedule" refType="MANY_TO_ONE" />
+        <data name="SeasonScheduleId" tableRef="SeasonSchedule" refType="MANY_TO_ONE" />
     </table>
 
     <table name="LMProgramControlWindow">
@@ -120,13 +120,13 @@
     
     <table name="LMProgramDirectGroup">
         <primaryKey name="DeviceId" tableRef="LMProgramDirect"/>
-        <data name="LMGroupDeviceId" tableRef="LMGroup" refType="oneToOne"/>
+        <data name="LMGroupDeviceId" tableRef="LMGroup" refType="ONE_TO_ONE"/>
         <PrimaryKey name="GroupOrder" />
     </table>
     
     <table name="LMProgramDirectGear">
         <primaryKey name="GearId" />
-        <identifier name="DeviceId" tableRef="LMProgramDirect" refType="manyToOne" />
+        <identifier name="DeviceId" tableRef="LMProgramDirect" refType="MANY_TO_ONE" />
         <identifier name="GearName" />
         <data name="GearNumber" />
         <data name="ControlMethod" />
@@ -157,10 +157,10 @@
 
     <table name="LMProgramWebPublishing">
         <primaryKey name="ProgramId" />
-        <identifier name="ApplianceCategoryId" tableRef="ApplianceCategory" refType="manyToOne"/>
-        <identifier name="DeviceId" tableRef="YukonPAObject" refType="manyToOne"/>
-        <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="manyToOne"/>
-        <data name="ChanceOfControlId" tableRef="YukonListEntry" refType="manyToOne"/>
+        <identifier name="ApplianceCategoryId" tableRef="ApplianceCategory" refType="MANY_TO_ONE"/>
+        <identifier name="DeviceId" tableRef="YukonPAObject" refType="MANY_TO_ONE"/>
+        <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="MANY_TO_ONE"/>
+        <data name="ChanceOfControlId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
         <data name="ProgramOrder" />
     </table>
     
@@ -192,9 +192,9 @@
         <primaryKey name="PointId"/>
         <data name="PointType"/>
         <identifier name="PointName"/>
-        <identifier name="PAObjectId" tableRef="YukonPAObject" refType="manyToOne" />
+        <identifier name="PAObjectId" tableRef="YukonPAObject" refType="MANY_TO_ONE" />
         <data name="LogicalGroup"/>
-        <data name="StateGroupId" tableRef="StateGroup" refType="manyToOne" />
+        <data name="StateGroupId" tableRef="StateGroup" refType="MANY_TO_ONE" />
         <data name="ServiceFlag"/>
         <data name="AlarmInhibit"/>
         <data name="PseudoFlag"/>
@@ -205,7 +205,7 @@
     
     <table name="Route">
         <primaryKey name="RouteID" tableRef="YukonPAObject"/>
-        <data name="DeviceID" tableRef="Device" refType="oneToOne" />
+        <data name="DeviceID" tableRef="Device" refType="ONE_TO_ONE" />
         <data name="DefaultRoute"/>
     </table>
 
@@ -223,15 +223,15 @@
     
     <table name="YukonGroupRole">
         <primaryKey name="GroupRoleId"/>
-        <identifier name="GroupId" tableRef="YukonGroup" refType="manyToOne" />
-        <identifier name="RoleId" table="YukonRole" refType="manyToOne" />
-        <identifier name="RolePropertyId" tableRef="YukonRoleProperty" refType="manyToOne" />
+        <identifier name="GroupId" tableRef="YukonGroup" refType="MANY_TO_ONE" />
+        <identifier name="RoleId" tableRef="YukonRole" refType="MANY_TO_ONE" />
+        <identifier name="RolePropertyId" tableRef="YukonRoleProperty" refType="MANY_TO_ONE" />
         <data name="Value"/>
     </table>
     
     <table name="YukonListEntry">
         <primaryKey name="EntryId"/>
-        <identifier name="ListId" tableRef="YukonSelectionList" refType="oneToOne"/>
+        <identifier name="ListId" tableRef="YukonSelectionList" refType="ONE_TO_ONE"/>
         <identifier name="EntryText"/>
         <data name="EntryOrder"/>
         <data name="YukonDefinitionId"/>
@@ -250,7 +250,7 @@
 
     <table name="YukonRoleProperty">
         <primaryKey name="RolePropertyId"/>
-        <identifier name="RoleId" tableRef="YukonRole" refType="manyToOne"/>
+        <identifier name="RoleId" tableRef="YukonRole" refType="MANY_TO_ONE"/>
         <identifier name="KeyName"/>
         <data name="DefaultValue"/>
         <data name="Description"/>

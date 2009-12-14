@@ -1,6 +1,6 @@
 package com.cannontech.common.databaseMigration.bean.database;
 
 public enum ReferenceTypeEnum{
-    oneToOne,
-    manyToOne;
+    ONE_TO_ONE,
+    MANY_TO_ONE;
 }

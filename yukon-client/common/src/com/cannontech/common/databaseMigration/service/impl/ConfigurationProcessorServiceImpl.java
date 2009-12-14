@@ -78,7 +78,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         String tableName = template.getTableName();
         sqlHolder.addFromClause(tableName);
         
-        SqlStatementBuilder selectSQL = sqlHolder.buildSQL();
+        SqlStatementBuilder selectSQL = sqlHolder.buildSelectSQL();
         
         // Add the primary keys to the query
         if (sqlHolder.getWhereClauses().size() > 0){
@@ -121,7 +121,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         String tableName = template.getTableName();
         sqlHolder.getFromClauses().add(tableName);
         
-        SqlStatementBuilder selectSQL = sqlHolder.buildSQL();
+        SqlStatementBuilder selectSQL = sqlHolder.buildSelectSQL();
         
         // Added the primaryKeys of the referenced table to the where clause
         if (sqlHolder.getWhereClauses().size() > 0){
@@ -172,18 +172,18 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     dataTableEntity = buildAndProcessSQLPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
                 
                 // reference
-                } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.reference)) {
+                } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.REFERENCE)) {
                     dataTableEntity = buildAndProcessSQLPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
                     
                 // include
-                } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.include)) {
+                } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.INCLUDE)) {
                     dataTableEntity = buildAndProcessSQLPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
 //                    includedTables.put(dataTableEntity, value);
                 }
             } else if (entry.getValue() instanceof DataValueTemplate) {
                 // Processing nullId case
                 Table table = database.getTable(template.getTableName());
-                List<Column> columns = table.getColumns(ColumnTypeEnum.primaryKey);
+                List<Column> columns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
                 boolean nullIdFound = false;
                 for (Column column : columns) {
                     if(column.getName().equals(entry.getKey()) &&
@@ -209,7 +209,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         
         // Create primayKey identifier for the references
         Table table = database.getTable(template.getTableName());
-        List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.primaryKey));
+        List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         String primaryKey = primaryKeyColumnNames.get(0);
         Integer primaryKeyValue = Integer.parseInt(sqlResult.get(primaryKey).toString());
          

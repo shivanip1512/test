@@ -2,10 +2,11 @@ package com.cannontech.common.databaseMigration.bean.database;
 
 public class Column{
     String name;
-    String tableRef;
-    String nullId;
     ColumnTypeEnum columnType;
+    String defaultValue;
+    String tableRef;
     ReferenceTypeEnum refType;
+    String nullId;
     
     // Name
     public String getName() {
@@ -13,6 +14,22 @@ public class Column{
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    // Column Type
+    public ColumnTypeEnum getColumnType() {
+        return columnType;
+    }
+    public void setColumnType(ColumnTypeEnum columnType) {
+        this.columnType = columnType;
+    }
+
+    // defaultValue
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     // Table Reference
@@ -23,28 +40,20 @@ public class Column{
         this.tableRef = tableRef;
     }
 
-    // Null Id
-    public String getNullId() {
-        return nullId;
-    }
-    public void setNullId(String nullId) {
-        this.nullId = nullId;
-    }
-    
-    // Column Type
-    public ColumnTypeEnum getColumnType() {
-        return columnType;
-    }
-    public void setColumnType(ColumnTypeEnum columnType) {
-        this.columnType = columnType;
-    }
-    
     // Reference Type
     public ReferenceTypeEnum getRefType() {
         return refType;
     }
     public void setRefType(ReferenceTypeEnum refType) {
         this.refType = refType;
+    }
+    
+    // Null Id
+    public String getNullId() {
+        return nullId;
+    }
+    public void setNullId(String nullId) {
+        this.nullId = nullId;
     }
     
     public String toString(){

@@ -179,7 +179,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
         
         CountHolder countHolder = new CountHolder(1);
         DataTableTemplate baseDataTable = 
-            new DataTableTemplate(ElementCategoryEnum.base, countHolder.getCount(), tableName);
+            new DataTableTemplate(ElementCategoryEnum.BASE, countHolder.getCount(), tableName);
         buildDatabaseMapTemplate(baseDataTable, configFileTableElement, countHolder, null);
         
         return baseDataTable;
@@ -209,7 +209,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                 // that symbolizes a foreign key from the primary key.  If so we want to create an inline item. 
                 Table tableRefTable = database.getTable(column.getTableRef());
                 if (column.getRefType() == null ||
-                        column.getRefType().equals(ReferenceTypeEnum.oneToOne)){
+                        column.getRefType().equals(ReferenceTypeEnum.ONE_TO_ONE)){
 
                     processInlineDataTable(dataTable, 
                                            configFileTableElement,
@@ -219,7 +219,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                            finalTableInDrillDown);
 
                 // Checks to see if the column has a one to many relationship.  If is does we want to use an include or reference item.
-                } else if (column.getRefType().equals(ReferenceTypeEnum.manyToOne)){
+                } else if (column.getRefType().equals(ReferenceTypeEnum.MANY_TO_ONE)){
                     // Checking to see if the table reference is in the include element list
                     boolean isTableInIncludes = false;
                     List<ConfigurationIncludeTable> configIncludeElementList = configFileTableElement.getIncludeElementList();
@@ -302,7 +302,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                         Table finalTableInDrillDown) {
         countHolder.add();
         DataTableTemplate includeTable = 
-            new DataTableTemplate(ElementCategoryEnum.include, 
+            new DataTableTemplate(ElementCategoryEnum.INCLUDE, 
                           countHolder.getCount(),
                           tableRefTable.getTableName());
         dataTable.putTableColumn(column.getName(), includeTable);
@@ -321,7 +321,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                           Table finalTableInDrillDown) {
         countHolder.add();
         DataTableTemplate referenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.reference, 
+            new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
                           countHolder.getCount(),
                           tableRefTable.getTableName());
         dataTable.putTableColumn(column.getName(), referenceTable);
@@ -336,7 +336,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                             Table referencesTable) {
         countHolder.add();
         DataTableTemplate referenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.references, 
+            new DataTableTemplate(ElementCategoryEnum.REFERENCES, 
                           countHolder.getCount(),
                           referencesTable.getTableName());
         dataTable.addTableReferences(referenceTable);
@@ -351,7 +351,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
     private void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable,
                                                    CountHolder countHolder){
         Table table = database.getTable(referenceTable.getTableName());
-        List<Column> identifierColumns = table.getColumns(ColumnTypeEnum.primaryKey, ColumnTypeEnum.identifier);
+        List<Column> identifierColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
         for (Column identifierColumn : identifierColumns) {
             if (identifierColumn.getTableRef() != null){
                 processReferenceReferenceDataTable(referenceTable,
@@ -369,7 +369,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
         countHolder.add();
 
         DataTableTemplate nextReferenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.reference, 
+            new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
                           countHolder.getCount(),
                           identifierColumn.getTableRef());
         referenceTable.putTableColumn(identifierColumn.getName(), nextReferenceTable);

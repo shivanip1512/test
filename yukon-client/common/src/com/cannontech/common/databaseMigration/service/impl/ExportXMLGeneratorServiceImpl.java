@@ -51,11 +51,22 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
         Map<String, DataTableEntity> tableColumns = dataTable.getTableColumns();
         List<DataTable> tableReferences = dataTable.getTableReferences();
         if (tableColumns.size() == 0){
-            if(element.getParent() instanceof Element){
-                Element parentElement = (Element)element.getParent();
-                parentElement.setName("reference");
+//            if(element.getParent() instanceof Element){
+//                Element parentElement = (Element)element.getParent();
+//                if (!parentElement.getName().equals("item") ||
+//                    parentElement.getAttributeValue("name") == null) {
+//
+//                    parentElement.setName("reference");
+//                    return;
+//                }
+//            }
+            if (!element.getName().equals("item") ||
+                 element.getAttributeValue("name") == null) {
+
+                element.setName("reference");
                 return;
             }
+
         }
 
         for (Entry<String, DataTableEntity> columnEntry: tableColumns.entrySet()) {
@@ -64,7 +75,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
                 Table table = database.getTable(dataTable.getTableName());
                 
                 // Checks to see if we should display primaryKeys in the XML file or not
-                List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.primaryKey));
+                List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
                 if (!showPrimaryKeys &&
                     primaryKeyColumnNames.contains(columnName)){
                     continue;
@@ -80,7 +91,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
                 DataTable columnDataTable = (DataTable) columnEntry.getValue();
 
                 if (columnDataTable.getElementCategory() == null) {
-                    if(element.getName().equals(ElementCategoryEnum.reference.toString())) {
+                    if(element.getName().equals(ElementCategoryEnum.REFERENCE.toString())) {
                         Element referenceElement = generateReferenceElement(columnName);
                         element.addContent(referenceElement);
                         
@@ -92,13 +103,13 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
                         buildXMLFile(itemElement, columnDataTable);
                     }
 
-                } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.reference)) {
+                } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.REFERENCE)) {
                     Element referenceElement = generateReferenceElement(columnName);
                     element.addContent(referenceElement);
                     
                     buildXMLFile(referenceElement, columnDataTable);
                     
-                } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.include)) {
+                } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.INCLUDE)) {
                     Element referenceElement = generateReferenceElement(columnName);
                     element.addContent(referenceElement);
                     

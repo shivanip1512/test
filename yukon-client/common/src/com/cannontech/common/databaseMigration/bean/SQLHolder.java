@@ -56,7 +56,7 @@ public class SQLHolder{
         this.whereClauses = whereClauses;
     }
     
-    public SqlStatementBuilder buildSQL(){
+    public SqlStatementBuilder buildSelectSQL(){
         SqlStatementBuilder sqlStatement = new SqlStatementBuilder();
         sqlStatement.append(dataSelectClause(this.selectClauses));
         sqlStatement.append(dataFromClause(this.fromClauses));

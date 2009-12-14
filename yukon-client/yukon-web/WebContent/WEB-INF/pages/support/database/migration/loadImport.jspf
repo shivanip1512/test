@@ -38,10 +38,9 @@
 	<tags:nameValue name="Server File">
 		<form id="loadServerFileForm" action="/spring/support/database/migration/loadServerFile" method="post">
 			<select name="dataFilePath">
-				<option value="C:\\Yukon\\Server\\Log\\PSPL0019_dbUser_LoadGroups_123109.xml">C:\Yukon\Server\Log\PSPL0019_dbUser_LoadGroups_123109.xml</option>
-				<option value="pathToFile2">C:\Yukon\Server\Log\PSPL0019_dbUser_LoginGroup_111509.xml</option>
-				<option value="pathToFile3">C:\Yukon\Server\Log\PSPL0019_dbUser_LoadGroups_101309.xml</option>
-				<option value="pathToFile4">C:\Yukon\Server\Log\PSPL0019_dbUser_UserGroupEditor_101209.xml</option>
+				<c:forEach var="serverFile" items="${serverFiles}">
+					<option value="${serverFile}">${serverFile}</option>
+				</c:forEach>
 			</select> 
 			<tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" width="80px"/>
 		</form>

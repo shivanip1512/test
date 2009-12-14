@@ -1,8 +1,6 @@
 package com.cannontech.web.support.database.migration;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,7 +12,6 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +32,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -46,9 +46,10 @@ import com.cannontech.web.util.WebFileUtils;
 @RequestMapping("/database/migration/*")
 public class DatabaseMigrationController {
 
+    private DatabaseMigrationService databaseMigrationService;
 	private PoolManager poolManager;
+	private RolePropertyDao rolePropertyDao;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
-	private DatabaseMigrationService databaseMigrationService;
 
     private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
 	
@@ -58,6 +59,7 @@ public class DatabaseMigrationController {
         
         ModelAndView mav = new ModelAndView("database/migration/home.jsp");
         
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
         boolean exportTab = ServletRequestUtils.getBooleanParameter(request, "export", false);
         boolean importTab = ServletRequestUtils.getBooleanParameter(request, "import", false);
@@ -65,17 +67,19 @@ public class DatabaseMigrationController {
         SortedMap<String, SortedSet<String>> configurationDBTablesMap = 
             databaseMigrationService.getAvailableConfigurationDatabaseTableMap();
         
+        List<String> exportFilePaths = getExportDirectoryFilePaths(userContext);
         
         mav.addObject("errorMsg", errorMsg);
         mav.addObject("export", exportTab);
         mav.addObject("import", importTab);
         mav.addObject("configurationDBTablesMap", configurationDBTablesMap);
+        mav.addObject("serverFiles", exportFilePaths);
         addDbInfoToMav(mav);
         
         return mav;
     }
 	
-	// EXPORT
+    // EXPORT
 	@RequestMapping
     public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("database/migration/exportProgress.jsp");
@@ -210,17 +214,19 @@ public class DatabaseMigrationController {
 		String dataFilePath = ServletRequestUtils.getRequiredStringParameter(request, "dataFilePath");
 		
 		// retrieve file
-		File file = new File(dataFilePath);
-		if (!file.exists()) {
+		File importFile = new File(dataFilePath);
+		if (!importFile.exists()) {
 			mav = new ModelAndView("redirect:home");
 			mav.addObject("import", true);
 			mav.addObject("errorMsg", messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.doesNotExist"));
 			return mav;
 		}
 		
+		databaseMigrationService.validateImportFile(importFile);
+		
 		// store
 		String fileKey = UUID.randomUUID().toString();
-		FileSystemResource resource = new FileSystemResource(file);
+		FileSystemResource resource = new FileSystemResource(importFile);
 		fileStore.put(fileKey, resource);
 		
 		// show validation
@@ -300,23 +306,38 @@ public class DatabaseMigrationController {
 		mav.addObject("dbUrl", poolManager.getPrimaryUrl());
         mav.addObject("dbUsername", poolManager.getPrimaryUser());
 	}
-	
-	//TODO delete
-	@PostConstruct
-	private void makeDummyExportFile() throws IOException {
-		
-		String filePath = "c:\\dummyDatabaseMigrationExport.xml";
-		FileWriter fileWriter = new FileWriter(filePath);
-		BufferedWriter out = new BufferedWriter(fileWriter);
-		out.write("<xml>Componenty Goodness</xml>");
-		out.flush();
-		out.close();
-		
-		String fileKey = "dummyFileKey";
-		FileSystemResource resource = new FileSystemResource(filePath);
-		fileStore.put(fileKey, resource);
+
+	/**
+	 * gets all the exports on the server and returns all the paths of those files
+	 * 
+	 * @param userContext
+	 * @return
+	 */
+	private List<String> getExportDirectoryFilePaths(YukonUserContext userContext) {
+	    List<String> exportFilePaths = new ArrayList<String>();
+	    
+	    String rolePropertyPath = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_MIGRATION_FILE_LOCATION, userContext.getYukonUser());
+	    File exportDir = new File(CtiUtilities.getYukonBase(), rolePropertyPath);
+	    
+	    if (exportDir == null ||
+	        !exportDir.isDirectory()) {
+	        return null;
+	    }
+
+	    for (File file : exportDir.listFiles()) {
+            if(file.getAbsolutePath().endsWith(".xml")){
+                exportFilePaths.add(file.getAbsolutePath());
+            }
+        }
+	    
+	    return exportFilePaths;
 	}
 	
+	@Autowired
+	public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
+	    this.databaseMigrationService = databaseMigrationService;
+	}
+
 	@Autowired
 	public void setPoolManager(PoolManager poolManager) {
 		this.poolManager = poolManager;
@@ -328,7 +349,7 @@ public class DatabaseMigrationController {
 	}
 	
 	@Autowired
-	public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
-	    this.databaseMigrationService = databaseMigrationService;
-	}
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }
