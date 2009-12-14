@@ -122,19 +122,19 @@ public class RawPointHistoryValidationService {
                         SqlStatementBuilder sql1 = new SqlStatementBuilder();
                         sql1.append("select max(changeId) from RawPointHistory");
                         
-                        long maxRPHChangeId = 0;
+                        long maxRphChangeId = 0;
                         try {
-                            maxRPHChangeId = yukonJdbcTemplate.queryForLong(sql1);
+                            maxRphChangeId = yukonJdbcTemplate.queryForLong(sql1);
                         } catch (EmptyResultDataAccessException e) {
-                            // maxChangeId = 0;
+                            // maxRphChangeId = 0;
                         }
                         
                         long lastChangeIdProcessed = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
-                        if (lastChangeIdProcessed == Long.MAX_VALUE) {
-                            lastChangeIdProcessed = maxRPHChangeId;
+                        if (lastChangeIdProcessed > maxRphChangeId) {
+                            lastChangeIdProcessed = maxRphChangeId;
                         }
 
-                        final long stopChangeId = Ordering.natural().min(lastChangeIdProcessed + changeIdChunkSize, maxRPHChangeId);
+                        final long stopChangeId = Ordering.natural().min(lastChangeIdProcessed + changeIdChunkSize, maxRphChangeId);
 
                         startingIdForLoggingPurposes = lastChangeIdProcessed + 1;
                         newLast = processChunkOfRows(lastChangeIdProcessed, stopChangeId);
@@ -195,19 +195,19 @@ public class RawPointHistoryValidationService {
     }
 
     private long processChunkOfRows(long lastChangeIdProcessed, long stopChangeId) throws ProcessingException {
-        
-        final SetMultimap<ValidationMonitor, Integer> deviceGroupCache = validationMonitorDao.loadEnabledValidationMonitors();
-        
+          
         if (lastChangeIdProcessed >= stopChangeId) {
             return lastChangeIdProcessed;
         }
         
         workingExecutions.incrementAndGet();
         
+        final SetMultimap<ValidationMonitor, Integer> deviceGroupCache = validationMonitorDao.loadEnabledValidationMonitors();
+        
         if (deviceGroupCache.isEmpty()) {
             return stopChangeId;
         }
-
+        
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("select rph.ChangeId, rph.Value, rph.Timestamp, ");
         sql2.append("  p.PAObjectID, ypo.Type, p.POINTTYPE, p.POINTID, p.POINTOFFSET, p.POINTTYPE");
