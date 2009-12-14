@@ -621,8 +621,8 @@ void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
     buf.insert(buf.end(), BWORDLEN, 0);
     B_Word( &* (buf.end() - BWORDLEN), BSt, words);
 
-    if( BSt.IO == Emetcon::IO_Write ||
-        BSt.IO == Emetcon::IO_Function_Write )
+    if( words && (BSt.IO == Emetcon::IO_Write ||
+                  BSt.IO == Emetcon::IO_Function_Write) )
     {
         buf.insert(buf.end(), CWORDLEN * words, 0);
 

@@ -37,8 +37,6 @@ BOOST_AUTO_TEST_CASE(test_ccu721_bword)
 {
     Test_CCU721 dev;
 
-    Test_CCU721::byte_buffer_t buf, expected;
-
     BSTRUCT BSt;
 
     BSt.Address = 12345;
@@ -65,27 +63,46 @@ BOOST_AUTO_TEST_CASE(test_ccu721_bword)
     BSt.Message[12] = 0xde;
     BSt.Message[13] = 0xef;
     BSt.Message[14] = 0xf0;
-    // BSt.Port = 1;
-    // BSt.Remote = 1;
 
-    dev.writeBWord(buf, BSt);
+    {
+        Test_CCU721::byte_buffer_t buf, expected;
 
-    cout.setf(ios::hex, ios::basefield);
-    cout.width(2);
+        dev.writeBWord(buf, BSt);
 
-    char *result1 = "\xa2\x10\x0c\x0e\x70\x10\x00"
-                    "\xc1\x22\x33\x44\x55\x62\xb0"
-                    "\xc6\x77\x88\x99\xaa\xb1\x40"
-                    "\xcb\xcc\xdd\xee\xff\x01\xb0";
+        char *result = "\xa2\x10\x0c\x0e\x70\x10\x00"
+                       "\xc1\x22\x33\x44\x55\x62\xb0"
+                       "\xc6\x77\x88\x99\xaa\xb1\x40"
+                       "\xcb\xcc\xdd\xee\xff\x01\xb0";
 
-    expected.assign(reinterpret_cast<unsigned char *>(result1),
-                    reinterpret_cast<unsigned char *>(result1) + 7 * 4);
+        expected.assign(reinterpret_cast<unsigned char *>(result),
+                        reinterpret_cast<unsigned char *>(result) + 7 * 4);
 
-    // copy(buf.begin(), buf.end(), ostream_iterator<int>(cout, " "));
+        BOOST_CHECK_EQUAL(28, buf.size());
 
-    BOOST_CHECK(!memcmp(&*buf.begin(), &*expected.begin(), 29));
+        for( int i = 0; i < 7 * 4; ++i )
+        {
+            BOOST_CHECK_INDEXED_EQUAL(i, buf[i], expected[i]);
+        }
+    }
 
-    BOOST_CHECK(!memcmp(&*buf.begin(), &*expected.begin(), 7 * 4));
+    BSt.Length = 0;
 
+    {
+        Test_CCU721::byte_buffer_t buf, expected;
+
+        dev.writeBWord(buf, BSt);
+
+        char *result = "\xa2\x10\x0c\x0e\x40\x13\x50";
+
+        expected.assign(reinterpret_cast<unsigned char *>(result),
+                        reinterpret_cast<unsigned char *>(result) + 7 * 4);
+
+        BOOST_CHECK_EQUAL(7, buf.size());
+
+        for( int i = 0; i < 7 * 1; ++i )
+        {
+            BOOST_CHECK_INDEXED_EQUAL(i, buf[i], expected[i]);
+        }
+    }
 }
 
