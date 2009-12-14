@@ -129,7 +129,7 @@ function submitEnrollment() {
                                 <img src="../../../WebConfig/${enrollment.applianceLogo}">
                             </td>
                             <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="20%">
-                                <c:if test="{!perProgram}">
+                                <c:if test="${!perProgram}">
                                     <input type="checkbox" 
                                         id="check_${applianceCategoryId}" 
                                         <c:if test="${enrollment.enrolled}">checked</c:if>
