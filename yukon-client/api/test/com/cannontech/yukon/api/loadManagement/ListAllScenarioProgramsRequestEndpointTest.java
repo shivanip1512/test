@@ -21,6 +21,7 @@ import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
+import com.google.common.collect.Lists;
 
 public class ListAllScenarioProgramsRequestEndpointTest {
 
@@ -69,6 +70,33 @@ public class ListAllScenarioProgramsRequestEndpointTest {
             return scenarioProgramStartingGears;
         }
         
+        @Override
+        public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user) {
+        	
+    		List<ScenarioProgramStartingGears> allScenarioProgramStartingGears = Lists.newArrayListWithExpectedSize(3);
+    		
+    		List<ProgramStartingGear> programs1 = Lists.newArrayListWithCapacity(1);
+    		programs1.add(new ProgramStartingGear(1, "Program1", "Gear1", 1));
+            ScenarioProgramStartingGears scenarioProgramStartingGears1 = new ScenarioProgramStartingGears("Scenario1", programs1);
+            allScenarioProgramStartingGears.add(scenarioProgramStartingGears1);
+            
+            List<ProgramStartingGear> programs2 = Lists.newArrayListWithCapacity(2);
+    		programs2.add(new ProgramStartingGear(1, "Program1", "Gear1", 1));
+    		programs2.add(new ProgramStartingGear(2, "Program2", "Gear2", 1));
+            ScenarioProgramStartingGears scenarioProgramStartingGears2 = new ScenarioProgramStartingGears("Scenario2", programs2);
+            allScenarioProgramStartingGears.add(scenarioProgramStartingGears2);
+            
+            List<ProgramStartingGear> programs3 = Lists.newArrayListWithCapacity(2);
+    		programs3.add(new ProgramStartingGear(1, "Program1", "Gear1", 1));
+    		programs3.add(new ProgramStartingGear(2, "Program2", "Gear2", 1));
+    		programs3.add(new ProgramStartingGear(3, "Program3", "Gear3", 1));
+            ScenarioProgramStartingGears scenarioProgramStartingGears3 = new ScenarioProgramStartingGears("Scenario3", programs3);
+            allScenarioProgramStartingGears.add(scenarioProgramStartingGears3);
+        	
+        	
+        	return allScenarioProgramStartingGears;
+        }
+        
         public String getScenarioName() {
             return scenarioName;
         }
@@ -85,6 +113,36 @@ public class ListAllScenarioProgramsRequestEndpointTest {
         SimpleXPathTemplate outputTemplate = null;
         Resource requestSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ListAllScenarioProgramsRequest.xsd", this.getClass());
         Resource responseSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ListAllScenarioProgramsResponse.xsd", this.getClass());
+        
+        // no scenario name
+        //==========================================================================================
+        requestElement = new Element("listAllScenarioProgramsRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+        
+        responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
+        XmlUtils.printElement(responseElement, "");
+        
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        XmlUtils.printElement(responseElement, "");
+        Assert.assertEquals("Wrong scenario name", "Scenario1", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[1]/y:scenarioName"));
+        Assert.assertEquals("Wrong scenario name", "Scenario2", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[2]/y:scenarioName"));
+        Assert.assertEquals("Wrong scenario name", "Scenario3", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[3]/y:scenarioName"));
+        
+        Assert.assertEquals("Wrong number of programs", 1, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[1]/y:programsList/y:scenarioProgram)").longValue());
+        Assert.assertEquals("Wrong number of programs", 2, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[2]/y:programsList/y:scenarioProgram)").longValue());
+        Assert.assertEquals("Wrong number of programs", 3, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[3]/y:programsList/y:scenarioProgram)").longValue());
+        
+        Assert.assertEquals("Wrong number of programs", "Program1", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[3]/y:programsList/y:scenarioProgram[1]/y:programName"));
+        Assert.assertEquals("Wrong number of programs", "Gear2", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[3]/y:programsList/y:scenarioProgram[2]/y:startGearName"));
+        Assert.assertEquals("Wrong number of programs", "Program1", outputTemplate.evaluateAsString("/y:listAllScenarioProgramsResponse/y:scenarioProgramsList[2]/y:programsList/y:scenarioProgram[1]/y:programName"));
+        
+        Assert.assertNotNull("No scenarioProgramsList node present.", outputTemplate.evaluateAsNode("/y:listAllScenarioProgramsResponse/y:scenarioProgramsList"));
+        Assert.assertEquals("Incorrect number of scenarioProgramsList nodes.", 3, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioProgramsList)").longValue());
+        Assert.assertEquals("Incorrect number of scenarioProgram nodes.", 0, outputTemplate.evaluateAsLong("count(/y:listAllScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram)").longValue());
         
         // scenario name, empty program starting gears
         //==========================================================================================

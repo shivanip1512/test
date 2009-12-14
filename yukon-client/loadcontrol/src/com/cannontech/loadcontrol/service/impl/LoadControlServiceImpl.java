@@ -281,7 +281,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         return new ScenarioStatus(scenarioName, programStatuses);
 	}
     
-    // ALL PROGRAM STARTING GEARS BY SCENARIO NAME
+	// GET ALL SCENARIO PROGRAMS
 	@Override
     public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user) {
         

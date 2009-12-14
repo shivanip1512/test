@@ -212,7 +212,7 @@ public interface LoadControlService {
      * Returns a list of ScenarioProgramStartingGears.
      * The ScenarioProgramStartingGears object contains the name of the scenario, and a list of 
      * ProgramStartingGear. Each ProgramStartingGear contains the name of the program, and the name
-     * and id of it's starting gear.
+     * and id of its starting gear.
      * Only those scenarios that the user has visibility to are included.
      * @param user
      * @return
@@ -223,7 +223,7 @@ public interface LoadControlService {
      * Returns ScenarioProgramStartingGears for the given scenarioName.
      * The ScenarioProgramStartingGears object contains the name of the scenario, and a list of 
      * ProgramStartingGear. Each ProgramStartingGear contains the name of the program, and the name
-     * and id of it's starting gear.
+     * and id of its starting gear.
      * @param scenarioName
      * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
