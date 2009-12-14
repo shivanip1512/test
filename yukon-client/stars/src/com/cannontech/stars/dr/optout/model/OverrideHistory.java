@@ -138,10 +138,8 @@ public class OverrideHistory {
 				+ ((inventoryId == null) ? 0 : inventoryId.hashCode());
 		result = prime * result
 				+ (int) (overrideNumber ^ (overrideNumber >>> 32));
-		for (Program p : programs) {
-			result = prime * result
-				+ ((p == null) ? 0 : p.hashCode());
-		}
+		result = prime * result
+				+ ((programs == null) ? 0 : programs.hashCode());
 		result = prime * result
 				+ ((scheduledDate == null) ? 0 : scheduledDate.hashCode());
 		result = prime * result
@@ -179,15 +177,11 @@ public class OverrideHistory {
 			return false;
 		if (overrideNumber != other.overrideNumber)
 			return false;
-		if (programs.size() != other.programs.size()) {
+		if (programs == null) {
+			if (other.programs != null)
+				return false;
+		} else if (!programs.equals(other.programs))
 			return false;
-		} else {
-			for (Program p : programs) {
-				if (!other.programs.contains(p)) {
-					return false;
-				}
-			}
-		}
 		if (scheduledDate == null) {
 			if (other.scheduledDate != null)
 				return false;
@@ -220,7 +214,4 @@ public class OverrideHistory {
 			return false;
 		return true;
 	}
-	
-	
-
 }
