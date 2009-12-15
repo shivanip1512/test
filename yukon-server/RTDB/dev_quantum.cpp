@@ -1851,7 +1851,6 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     ULONG    Pointer;
 
     /* Variables for decoding Messages */
-    SHORT    Value;
     USHORT   UValue;
     FLOAT    PartHour;
     DOUBLE   PValue;

@@ -101,7 +101,6 @@ void CtiDeviceGroupRipple::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
-    CHAR  Temp[80];
     CtiRouteSPtr Route;
 
     if( (Route = getRoute( getRouteID() )) )            // This is "this's" route
@@ -152,6 +151,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
+            CHAR  Temp[80];
             sprintf(Temp, "ERROR %3d performing command on route %s", nRet,  Route->getName().c_str());
             pRet->setStatus(nRet);
             pRet->setResultString(Temp);
@@ -166,15 +166,14 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
     {
         nRet = NoRouteGroupDevice;
 
-        string Temp (" ERROR: Route or Route Transmitter not available for group device " + getName());
-        string Reply = string(Temp);
+        string Reply = " ERROR: Route or Route Transmitter not available for group device " + getName();
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Reply, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         retList.push_back( pRet );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << Temp << endl;
+            dout << CtiTime() << Reply << endl;
         }
     }
 

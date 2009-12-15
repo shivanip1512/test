@@ -780,9 +780,9 @@ bool CtiDeviceLMI::isExecuting() const
     return _lmi_exclusion.isExecuting();
 }
 
-void CtiDeviceLMI::setExecuting(bool set, CtiTime when)
+void CtiDeviceLMI::setExecuting(bool executing, CtiTime when)
 {
-    _lmi_exclusion.setExecuting(set);
+    _lmi_exclusion.setExecuting(executing);
     return;
 }
 

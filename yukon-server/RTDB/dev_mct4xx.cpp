@@ -145,17 +145,17 @@ CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
     return cs;
 }
 
-string CtiDeviceMCT4xx::printable_time(unsigned long seconds)
+string CtiDeviceMCT4xx::printable_time(unsigned long timestamp)
 {
     string retval;
 
-    if( seconds > DawnOfTime_UtcSeconds )
+    if( timestamp > DawnOfTime_UtcSeconds )
     {
-        retval = CtiTime(seconds).asString();
+        retval = CtiTime(timestamp).asString();
     }
     else
     {
-        retval = "[invalid time (" + CtiNumStr(seconds).hex().zpad(8) + ")]";
+        retval = "[invalid time (" + CtiNumStr(timestamp).hex().zpad(8) + ")]";
     }
 
     return retval;
@@ -177,15 +177,15 @@ string CtiDeviceMCT4xx::printable_date(const CtiDate &dt)
     return retval;
 }
 
-string CtiDeviceMCT4xx::printable_date(unsigned long seconds)
+string CtiDeviceMCT4xx::printable_date(unsigned long timestamp)
 {
     string retval;
 
-    if( seconds > DawnOfTime_UtcSeconds )
+    if( timestamp > DawnOfTime_UtcSeconds )
     {
         CtiDate date_to_print;
 
-        date_to_print = CtiDate(CtiTime(seconds));
+        date_to_print = CtiDate(CtiTime(timestamp));
 
         int month,
             day   = date_to_print.dayOfMonth(),
@@ -197,7 +197,7 @@ string CtiDeviceMCT4xx::printable_date(unsigned long seconds)
     }
     else
     {
-        retval = "[invalid date (" + CtiNumStr(seconds).hex().zpad(8) + ")]";
+        retval = "[invalid date (" + CtiNumStr(timestamp).hex().zpad(8) + ")]";
     }
 
     return retval;
@@ -1815,7 +1815,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
     ULONG pfCount = 0;
     string resultString;
 
-    CtiReturnMsg  *ReturnMsg = NULL;
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     bool expectMore = false;
 
@@ -1823,14 +1823,6 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
         switch( InMessage->Sequence )
         {
             case Emetcon::PutConfig_Install:
@@ -1853,8 +1845,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                     ReturnMsg->setExpectMore(true);
                 }
 
-                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-                ReturnMsg = NULL;
+                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
                 break;
             }
@@ -1926,13 +1917,11 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                         newReq->setMessageTime(CtiTime::now().seconds() + fixed_delay);
                     }
 
-                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
                     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
                     ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
                     ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(fixed_delay) + " seconds for IED LP scan");
 
-                    retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList, true);
+                    retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
                 }
 
                 retList.push_back(newReq);
@@ -1946,13 +1935,6 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 break;
             }
         }
-
-        if( ReturnMsg != NULL )
-        {
-            delete ReturnMsg;
-            ReturnMsg = NULL;
-        }
-
     }
     return status;
 }
@@ -2256,19 +2238,19 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
 
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiString resultString;
-        unsigned long time;
+        unsigned long timestamp;
         char timezone_offset;
 
         if( InMessage->Sequence == Emetcon::GetConfig_Time )
         {
             timezone_offset = InMessage->Buffer.DSt.Message[0];
 
-            time = InMessage->Buffer.DSt.Message[1] << 24 |
-                   InMessage->Buffer.DSt.Message[2] << 16 |
-                   InMessage->Buffer.DSt.Message[3] <<  8 |
-                   InMessage->Buffer.DSt.Message[4];
+            timestamp = InMessage->Buffer.DSt.Message[1] << 24 |
+                        InMessage->Buffer.DSt.Message[2] << 16 |
+                        InMessage->Buffer.DSt.Message[3] <<  8 |
+                        InMessage->Buffer.DSt.Message[4];
 
-            resultString  = getName() + " / Current Time: " + printable_time(time) + "\n";
+            resultString  = getName() + " / Current Time: " + printable_time(timestamp) + "\n";
 
             resultString += getName() + " / Timezone Offset: ";
 
@@ -2288,12 +2270,12 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
         }
         else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
         {
-            time = InMessage->Buffer.DSt.Message[0] << 24 |
-                   InMessage->Buffer.DSt.Message[1] << 16 |
-                   InMessage->Buffer.DSt.Message[2] <<  8 |
-                   InMessage->Buffer.DSt.Message[3];
+            timestamp = InMessage->Buffer.DSt.Message[0] << 24 |
+                        InMessage->Buffer.DSt.Message[1] << 16 |
+                        InMessage->Buffer.DSt.Message[2] <<  8 |
+                        InMessage->Buffer.DSt.Message[3];
 
-            resultString = getName() + " / Time Last Synced at: " + printable_time(time);
+            resultString = getName() + " / Time Last Synced at: " + printable_time(timestamp);
         }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -2329,12 +2311,12 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     point_info  pi;
     unsigned long timeStamp, decode_time;
 
-    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-
     //  add error handling for automated load profile retrieval... !
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
+
+        CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2556,7 +2538,7 @@ INT CtiDeviceMCT4xx::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
 
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         string resultString;
-        unsigned long time;
+        unsigned long timestamp;
         CtiTime tmpTime;
 
         int schedulenum = parse.getiValue("tou_schedule");
@@ -2644,12 +2626,12 @@ INT CtiDeviceMCT4xx::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
         {
             resultString = getName() + " / TOU Status:\n\n";
 
-            time = InMessage->Buffer.DSt.Message[6] << 24 |
-                   InMessage->Buffer.DSt.Message[7] << 16 |
-                   InMessage->Buffer.DSt.Message[8] <<  8 |
-                   InMessage->Buffer.DSt.Message[9];
+            timestamp = InMessage->Buffer.DSt.Message[6] << 24 |
+                        InMessage->Buffer.DSt.Message[7] << 16 |
+                        InMessage->Buffer.DSt.Message[8] <<  8 |
+                        InMessage->Buffer.DSt.Message[9];
 
-            resultString += "Current time: " + CtiTime(time).asString() + "\n";
+            resultString += "Current time: " + CtiTime(timestamp).asString() + "\n";
 
             int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
 
@@ -3309,13 +3291,13 @@ void CtiDeviceMCT4xx::createTOUDayScheduleString(string &schedule, long (&times)
 }
 
 
-bool CtiDeviceMCT4xx::is_valid_time( const CtiTime time ) const
+bool CtiDeviceMCT4xx::is_valid_time( const CtiTime timestamp ) const
 {
     bool retval = false;
 
     //  between 2000-jan-01 and tomorrow
-    retval = (time > DawnOfTime_UtcSeconds) &&
-             (time < (CtiTime::now() + 86400));
+    retval = (timestamp > DawnOfTime_UtcSeconds) &&
+             (timestamp < (CtiTime::now() + 86400));
 
     return retval;
 }

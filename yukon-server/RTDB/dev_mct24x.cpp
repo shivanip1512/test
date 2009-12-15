@@ -595,14 +595,6 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    unsigned long timeStamp;
-    double Value;
-    string valReport;
-
-    CtiPointNumericSPtr pPoint;
-    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData     = NULL;
-
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -634,12 +626,12 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
 
         if( getType() == TYPEMCT250 )
         {
-            int status[4], i;
+            int statuses[4], i;
 
-            status[0] = InMessage->Buffer.DSt.Message[0] & 0x40;
-            status[1] = InMessage->Buffer.DSt.Message[0] & 0x80;
-            status[2] = InMessage->Buffer.DSt.Message[2] & 0x02;
-            status[3] = InMessage->Buffer.DSt.Message[2] & 0x04;
+            statuses[0] = InMessage->Buffer.DSt.Message[0] & 0x40;
+            statuses[1] = InMessage->Buffer.DSt.Message[0] & 0x80;
+            statuses[2] = InMessage->Buffer.DSt.Message[2] & 0x02;
+            statuses[3] = InMessage->Buffer.DSt.Message[2] & 0x04;
 
             for( i = 0; i < 4; i++ )
             {
@@ -647,7 +639,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
 
                 Value = CLOSED;
 
-                if( status[i] )
+                if( statuses[i] )
                 {
                     Value = CLOSED;
                     disc = " CLOSED";

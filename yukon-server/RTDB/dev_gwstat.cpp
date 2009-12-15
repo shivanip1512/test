@@ -2087,16 +2087,12 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                             // printPacketData();
 
                             // Add the reply data into the pending op.
-                            if(1)
-                            {
-                                CtiLockGuard< CtiMutex > gd(_collMux);
-                                StatPrintList_t::iterator itr;
+                            StatPrintList_t::iterator itr;
 
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
-                                {
-                                    valtype.addReplyVector( ((*itr).second) );
-                                }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                            {
+                                valtype.addReplyVector( ((*itr).second) );
                             }
                         }
 
@@ -2143,17 +2139,12 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                             generatePacketDataSchedule();
 
                             // Add the reply data into the pending op.
+                            StatPrintList_t::iterator itr;
 
-                            if(1)
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
                             {
-                                CtiLockGuard< CtiMutex > gd(_collMux);
-                                StatPrintList_t::iterator itr;
-
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
-                                {
-                                    valtype.addReplyVector( ((*itr).second) );
-                                }
+                                valtype.addReplyVector( ((*itr).second) );
                             }
                         }
                         else
@@ -2546,11 +2537,6 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
     int processed = 0;
     USHORT operation = 0xffff;
 
-    static int cycleofftime;
-    static int period;
-    static int repeat;
-    static int duration;
-
     BOOL overridedisable = parse.getiValue("overridedisable", FALSE);
 
     try
@@ -2584,14 +2570,11 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             {
                 setLastControlSent(OutMessage);
 
-                USHORT duration = shedminutes;
-
                 if(shedminutes > 255)
                 {
                     if(shedminutes < 65535)
                     {
                         shedminutes = 1;
-                        duration = 65535;
                     }
                 }
 
@@ -2605,15 +2588,15 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             {
                 setLastControlSent(OutMessage);
 
-                period     = parse.getiValue("cycle_period", 30);
-                repeat     = parse.getiValue("cycle_count", 8);
-                duration   = period * repeat;
+                int period     = parse.getiValue("cycle_period", 30);
+                int repeat     = parse.getiValue("cycle_count", 8);
+                int duration   = period * repeat;
 
                 // Add these two items to the list for control accounting!
                 parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
                 parse.setValue("control_interval", 60 * period * repeat);
 
-                cycleofftime = (period * cycle) / 100;
+                int cycleofftime = (period * cycle) / 100;
 
                 controlmatch = sendSetDLC( msgsock, (BYTE)cycleofftime, (BYTE)period, (BYTE)duration, overridedisable );
                 processed++;

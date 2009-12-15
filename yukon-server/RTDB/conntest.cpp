@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------*
 *
 * File:   conntest
-* 
+*
 * Exercise in connections
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -81,7 +81,7 @@ void ConnectionHandlerThread(int portNumber)
 
     CtiCommandMsg     *CmdMsg   = NULL;
 
-    RWSocket                      socket;
+    RWSocket                      sock;
     RWInetPort                    NetPort;
     RWInetAddr                    NetAddr;    // This one for this server!
 
@@ -99,11 +99,11 @@ void ConnectionHandlerThread(int portNumber)
     {
         NetPort  = RWInetPort(portNumber);
         NetAddr  = RWInetAddr(NetPort);
-        
-        socket.listen(NetAddr);
+
+        sock.listen(NetAddr);
 
         // This is here for looks, in reality it is rarely called.
-        if( !socket.valid() )
+        if( !sock.valid() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Could not open socket " << NetAddr << " for listening" << endl;
@@ -130,7 +130,7 @@ void ConnectionHandlerThread(int portNumber)
         {
 
             // It seems necessary to make this copy. RW does this and now so do we.
-            RWSocket tempSocket = socket;
+            RWSocket tempSocket = sock;
             RWSocket newSocket = tempSocket.accept();
             RWSocketPortal sock;
 
@@ -143,18 +143,18 @@ void ConnectionHandlerThread(int portNumber)
             {
                 sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
                 //sock = (*Listener)();
-    
+
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Connection Handler Thread. New connect. " << endl;
                 }
-    
+
                 {
                     XChg                                = CTIDBG_new CtiExchange(sock);
                     CtiConnection *connection = CTIDBG_new CtiConnection(XChg, &MainQueue_);
-    
+
                     connection->ThreadInitiate();     // Kick off the connection's communication threads.
-    
+
                     connections.insert(connection);
                     cout << CtiTime() << " New connection established" << endl;
                 }
@@ -187,7 +187,7 @@ void ConnectionHandlerThread(int portNumber)
         {
             cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-    }  
+    }
 }
 void runServer(int portNumber)
 {

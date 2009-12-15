@@ -371,7 +371,6 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
     string resultString;
-    CtiReturnMsg *retMsg;
 
     if( !ErrReturn )
     {
@@ -625,7 +624,7 @@ bool CtiDeviceRTC::hasQueuedWork() const
 
 bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
 {
-    bool stat = false;
+    bool gotOM = false;
 
     CtiTime now;
     CtiRepeatCol::value_type repeat;
@@ -637,7 +636,7 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
         _repeatList.pop_front();
         OutMessage = repeat.second;
         OutMessage->Buffer.SASt._retransmit = TRUE;     // This makes the slog say retransmit.
-        stat = true;
+        gotOM = true;
     }
     else
     {
@@ -658,17 +657,17 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
         } while( !OutMessage && _workQueue.entries() );
 
         if(OutMessage)
-            stat = true;
+            gotOM = true;
     }
 
-    if(stat)
+    if(gotOM)
     {
         _millis -= messageDuration(OutMessage->Buffer.SASt._groupType);
 
         if(_millis < 0) _millis = 0;
     }
 
-    return stat;
+    return gotOM;
 }
 
 LONG CtiDeviceRTC::deviceQueueCommunicationTime() const

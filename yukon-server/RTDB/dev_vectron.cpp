@@ -1703,7 +1703,6 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
     ULONG Pointer;
 
     /* Variables for decoding Messages */
-    SHORT    Value;
     USHORT   UValue;
     FLOAT    PartHour;
     DOUBLE   PValue;
@@ -2179,9 +2178,9 @@ INT CtiDeviceVectron::ResultDisplay (INMESS *InMessage)
     return(NORMAL);
 }
 
-CHAR * displayRegisterMapping (USHORT map, CHAR *retString)
+CHAR * displayRegisterMapping (USHORT reg, CHAR *retString)
 {
-    switch (map)
+    switch (reg)
     {
         case VECTRON_WATTHOUR_ENERGY:
             strcpy (retString, "Watt h");

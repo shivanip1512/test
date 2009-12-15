@@ -2282,10 +2282,10 @@ INT CtiDeviceLCU::getProtocolWrap() const
 }
 
 /*  */
-INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool set)
+INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool lockout)
 {
     INT status = NORMAL;
-    USHORT cmd = (set ? MASTERLOCKOUTSET : MASTERLOCKOUTRESET);
+    USHORT cmd = (lockout ? MASTERLOCKOUTSET : MASTERLOCKOUTRESET);
 
     /* Load the forced scan message */
     if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), cmd, 0)) != NORMAL)

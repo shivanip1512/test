@@ -279,9 +279,9 @@ bool CtiDeviceExclusion::isExecuting() const
     return(_executingUntil > _executingUntil.now());
 }
 
-void CtiDeviceExclusion::setExecuting(bool set, CtiTime when)
+void CtiDeviceExclusion::setExecuting(bool executing, CtiTime when)
 {
-    if(set)
+    if(executing)
         _executingUntil = when;
     else
         _executingUntil = CtiTime(PASTDATE);
@@ -571,9 +571,9 @@ CtiTime CtiDeviceExclusion::getEvaluateNextAt() const
     return _evalNext;
 }
 
-void CtiDeviceExclusion::setEvaluateNextAt(CtiTime set)
+void CtiDeviceExclusion::setEvaluateNextAt(CtiTime t)
 {
-    _evalNext = set;
+    _evalNext = t;
     return;
 }
 
@@ -581,9 +581,9 @@ CtiTime CtiDeviceExclusion::getExecutionGrantExpires() const
 {
     return _executeGrantExpires;
 }
-void CtiDeviceExclusion::setExecutionGrantExpires(CtiTime set)
+void CtiDeviceExclusion::setExecutionGrantExpires(CtiTime t)
 {
-    _executeGrantExpires = set;
+    _executeGrantExpires = t;
     return;
 }
 
@@ -591,9 +591,9 @@ CtiTime CtiDeviceExclusion::getExecutionGrant() const
 {
     return _executionGrant;
 }
-void CtiDeviceExclusion::setExecutionGrant(CtiTime set)
+void CtiDeviceExclusion::setExecutionGrant(CtiTime t)
 {
-    _executionGrant = set;
+    _executionGrant = t;
     return;
 }
 
@@ -621,40 +621,40 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
 
 CtiTime CtiDeviceExclusion::getTimeSlotOpen() const
 {
-    CtiTime tm;
+    CtiTime t;
 
     if( _cycleTimeExclusion != NULL )
     {
         CtiTime now;
         CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion->getCycleTime() );
         CtiTime open = nextOpen - _cycleTimeExclusion->getCycleTime() + _cycleTimeExclusion->getCycleOffset();
-        tm = open;
+        t = open;
     }
 
-    return tm;
+    return t;
 }
 
 CtiTime CtiDeviceExclusion::getNextTimeSlotOpen() const
 {
-    CtiTime tm;
+    CtiTime t;
 
     if( _cycleTimeExclusion != NULL && _cycleTimeExclusion->getCycleTime() > 0 )
     {
         CtiTime now;
         CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion->getCycleTime() );
-        tm = nextOpen + _cycleTimeExclusion->getCycleOffset();
+        t = nextOpen + _cycleTimeExclusion->getCycleOffset();
     }
     else
     {
-        tm = CtiTime() + gConfigParms.getValueAsInt("PORTER_SA_REPEAT_DELAY", 300);
+        t = CtiTime() + gConfigParms.getValueAsInt("PORTER_SA_REPEAT_DELAY", 300);
     }
 
-    return tm;
+    return t;
 }
 
 CtiTime CtiDeviceExclusion::getTimeSlotClose() const
 {
-    CtiTime tm;
+    CtiTime t;
 
     if( _cycleTimeExclusion != NULL )
     {
@@ -662,10 +662,10 @@ CtiTime CtiDeviceExclusion::getTimeSlotClose() const
         CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion->getCycleTime() );
         CtiTime open = nextOpen - _cycleTimeExclusion->getCycleTime() + _cycleTimeExclusion->getCycleOffset();
         CtiTime close = open + _cycleTimeExclusion->getTransmitTime();
-        tm = close;
+        t = close;
     }
 
-    return tm;
+    return t;
 }
 
 bool CtiDeviceExclusion::proximityExcludes(LONG id) const
@@ -703,7 +703,7 @@ CtiTablePaoExclusion CtiDeviceExclusion::getCycleTimeExclusion() const
     {
         return CtiTablePaoExclusion();
     }
-    
+
 }
 
 unsigned int CtiDeviceExclusion::getMinTimeInSec() const

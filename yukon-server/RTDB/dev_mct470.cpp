@@ -1713,10 +1713,10 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
         {
             case IED_Type_LG_S4:
             case IED_Type_Alpha_A3:
-            case IED_Type_GE_kV:   
-            case IED_Type_GE_kV2:  
+            case IED_Type_GE_kV:
+            case IED_Type_GE_kV2:
             case IED_Type_Sentinel:
-            case IED_Type_DNP:     
+            case IED_Type_DNP:
             case IED_Type_GE_kV2c:
             {
                 function = Emetcon::GetValue_PhaseCurrent;
@@ -3195,7 +3195,6 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
 int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly)
 {
     int nRet = NORMAL;
-    int valCount;
     const int bufferSize = 26;
     BYTE buffer[bufferSize];
 
@@ -4102,8 +4101,6 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                int rate;
-
                 if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
                 {
                     offset = PointOffset_TOU_KMBase;
@@ -4372,8 +4369,7 @@ unsigned long CtiDeviceMCT470::convertTimestamp(const unsigned long timestamp, c
 
 INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    int status = NORMAL,
-        rate   = 0;
+    int status = NORMAL;
 
     point_info     pi;
     string         resultString;
@@ -4593,7 +4589,6 @@ INT CtiDeviceMCT470::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
         string resultString;
 
         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -5317,28 +5312,28 @@ INT CtiDeviceMCT470::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &Time
         CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         point_info  pi, pi_time;
-        pi = getData(DSt.Message, 2, ValueType_IED);  
+        pi = getData(DSt.Message, 2, ValueType_IED);
         //current reported back from mct in mA.
         //converting to Amps.
-        pi.value /= 1000;  
+        pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentNeutral,
                               ReturnMsg, pi, "Neutral Current");
         pi = getData(DSt.Message + 2, 2, ValueType_IED);
         //current reported back from mct in mA.
         //converting to Amps.
-        pi.value /= 1000;  
+        pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseA,
                               ReturnMsg, pi, "Phase A Current");
         pi = getData(DSt.Message + 4, 2, ValueType_IED);
         //current reported back from mct in mA.
         //converting to Amps.
-        pi.value /= 1000;  
+        pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseB,
                               ReturnMsg, pi, "Phase B Current");
         pi = getData(DSt.Message + 6, 2, ValueType_IED);
         //current reported back from mct in mA.
         //converting to Amps.
-        pi.value /= 1000;  
+        pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
                               ReturnMsg, pi, "Phase C Current");
 

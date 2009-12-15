@@ -1964,11 +1964,11 @@ int CtiDeviceSingle::getGroupMessageCount(long userID, long comID)
     channelWithID temp;
     temp.channel = comID;
     temp.identifier = userID;
-    MessageCount_t::iterator iterator = _messageCount.find(temp);
+    MessageCount_t::iterator itr = _messageCount.find(temp);
 
-    if(iterator != _messageCount.end())
+    if(itr != _messageCount.end())
     {
-        retVal = iterator->second;
+        retVal = itr->second;
     }
     return retVal;
 }
@@ -1994,11 +1994,11 @@ void CtiDeviceSingle::incrementGroupMessageCount(long userID, long comID, int en
         }
     }
 
-    MessageCount_t::iterator iterator = _messageCount.find(temp);
+    MessageCount_t::iterator itr = _messageCount.find(temp);
 
-    if(iterator != _messageCount.end())
+    if(itr != _messageCount.end())
     {
-        iterator->second += entries;
+        itr->second += entries;
     }
     else
     {
@@ -2009,23 +2009,23 @@ void CtiDeviceSingle::incrementGroupMessageCount(long userID, long comID, int en
 
 void CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int entries /*=1*/ )
 {
-    int count;
+    int msgCount;
     channelWithID temp;
     temp.channel = comID;
     temp.identifier = userID;
-    MessageCount_t::iterator iterator = _messageCount.find(temp);
+    MessageCount_t::iterator itr = _messageCount.find(temp);
 
-    if(iterator != _messageCount.end())
+    if(itr != _messageCount.end())
     {
-        count = iterator->second;
-        count -= entries;
-        if(count <=0)
+        msgCount = itr->second;
+        msgCount -= entries;
+        if(msgCount <=0)
         {
             _messageCount.erase(temp);
         }
         else
         {
-            iterator->second = count;
+            itr->second = msgCount;
         }
     }
 }

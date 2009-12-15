@@ -1054,7 +1054,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
 
                 CtiTraceMsg trace;
                 string msg;
-                CHAR traceBuffer[20];
+                CHAR traceBuf[20];
 
                 /********************************************
                 * comm error return
@@ -1081,7 +1081,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                         trace.setTrace( CtiTime().asString().c_str() );
                         traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
+                        msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string("\n");
                         trace.setTrace(msg);
                         traceList.push_back (trace.replicateMessage());
                     }
@@ -1091,7 +1091,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                         trace.setTrace( CtiTime().asString().c_str() );
                         traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
+                        msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string ("\n");
                         trace.setTrace(msg);
                         traceList.push_back (trace.replicateMessage());
                     }
@@ -1219,7 +1219,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                     int ret_crc,ret_length;
                     CtiTraceMsg trace;
                     string msg;
-                    CHAR traceBuffer[20];
+                    CHAR traceBuf[20];
 
                     if ((ret_crc=checkCRC(_singleMsgBuffer,getSingleMsgByteCount())) ||
                         (ret_length=getSingleMsgByteCount() != ((_singleMsgBuffer[4] & ~0x80)+7)))
@@ -1230,7 +1230,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                             trace.setTrace( CtiTime().asString().c_str() );
                             traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
+                            msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string("\n");
                             trace.setTrace(msg);
                             traceList.push_back (trace.replicateMessage());
                         }
@@ -1240,7 +1240,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                             trace.setTrace( CtiTime().asString().c_str() );
                             traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
+                            msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string ("\n");
                             trace.setTrace(msg);
                             traceList.push_back (trace.replicateMessage());
                         }
@@ -1426,7 +1426,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                 int ret_crc,ret_length;
                 CtiTraceMsg trace;
                 string msg;
-                CHAR traceBuffer[20];
+                CHAR traceBuf[20];
 
                 /********************************************
                 * comm error return
@@ -1452,7 +1452,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                         trace.setTrace( CtiTime().asString().c_str() );
                         traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
+                        msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string("\n");
                         trace.setTrace(msg);
                         traceList.push_back (trace.replicateMessage());
                     }
@@ -1462,7 +1462,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                         trace.setTrace( CtiTime().asString().c_str() );
                         traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
+                        msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string ("\n");
                         trace.setTrace(msg);
                         traceList.push_back (trace.replicateMessage());
                     }
@@ -1640,7 +1640,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                     int ret_crc,ret_length;
                     CtiTraceMsg trace;
                     string msg;
-                    CHAR traceBuffer[20];
+                    CHAR traceBuf[20];
 
                     if ((ret_crc=checkCRC(_singleMsgBuffer,getSingleMsgByteCount())) ||
                         (ret_length=getSingleMsgByteCount() != ((_singleMsgBuffer[4] & ~0x80)+7)))
@@ -1651,7 +1651,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                             trace.setTrace( CtiTime().asString().c_str() );
                             traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
+                            msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string("\n");
                             trace.setTrace(msg);
                             traceList.push_back (trace.replicateMessage());
                         }
@@ -1661,7 +1661,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                             trace.setTrace( CtiTime().asString().c_str() );
                             traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
+                            msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuf,10)) + string ("\n");
                             trace.setTrace(msg);
                             traceList.push_back (trace.replicateMessage());
                         }

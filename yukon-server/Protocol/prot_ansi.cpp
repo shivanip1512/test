@@ -938,8 +938,8 @@ void CtiProtocolANSI::convertToTable(  )
                            {
                                _table08->printResult(getAnsiDeviceName());
                            }
-                      
-                      
+
+
                            if (_scanOperation == CtiProtocolANSI::demandReset)
                            {
                                getApplicationLayer().setWriteSeqNbr( 0 );
@@ -954,19 +954,19 @@ void CtiProtocolANSI::convertToTable(  )
                                    _lpStartBlockIndex = 0;
                                    _lpOffset = 0;
                                    if( _table63->getNbrValidIntvls(1) < _table63->getNbrValidBlocks(1) )
-                                   {    
+                                   {
                                        _lpNbrFullBlocks = _table63->getNbrValidBlocks(1) -1;
                                    }
                                    else
-                                   {    
+                                   {
                                        _lpNbrFullBlocks = _table63->getNbrValidBlocks(1);
                                    }
                                }
                                else
-                               {    
+                               {
                                    _lpOffset = _lpStartBlockIndex * _lpBlockSize;
                                }
-                           
+
                            }
                        }
                    }
@@ -1044,7 +1044,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table14 = NULL;
                        }
                        if( _table11 != NULL )
-                       { 
+                       {
                            _table14 = new CtiAnsiTable14( getApplicationLayer().getCurrentTable(),
                                                                _table11->getDataControlLength(),
                                                                _table11->getNumberDataControlEntries());
@@ -1091,7 +1091,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table16 = NULL;
                        }
                        if( _table11 != NULL )
-                       {    
+                       {
                            _table16 = new CtiAnsiTable16( getApplicationLayer().getCurrentTable(),
                                                              _table11->getNumberSources() );
                            if( _table16 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
@@ -1125,7 +1125,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table22 = NULL;
                        }
                        if( _table21 != NULL)
-                       {    
+                       {
                             _table22 = new CtiAnsiTable22( getApplicationLayer().getCurrentTable(),
                                                              _table21->getNumberSummations(),
                                                              _table21->getNumberDemands(),
@@ -1146,7 +1146,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table23 = NULL;
                        }
                        if ( _table21 != NULL && _table00 != NULL)
-                       {    
+                       {
                            _table23 = new CtiAnsiTable23( getApplicationLayer().getCurrentTable(),
                                                                  _table21->getOccur(),
                                                                  _table21->getNumberSummations(),
@@ -1295,7 +1295,7 @@ void CtiProtocolANSI::convertToTable(  )
 
                            if( _table33 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                            {
-                           
+
                                _table33->printResult(getAnsiDeviceName());
                            }
                       }
@@ -1344,7 +1344,7 @@ void CtiProtocolANSI::convertToTable(  )
                        {
                            _table61 = new CtiAnsiTable61( getApplicationLayer().getCurrentTable(), _table00->getStdTblsUsed(), _table00->getDimStdTblsUsed() );
                            if( _table61 != NULL )
-                           {    
+                           {
                               if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                               {
                                   _table61->printResult(getAnsiDeviceName());
@@ -1390,7 +1390,7 @@ void CtiProtocolANSI::convertToTable(  )
                               _table63->printResult(getAnsiDeviceName());
                           }
                       }
-                      
+
                    }
                    break;
                 case 64:
@@ -1403,7 +1403,7 @@ void CtiProtocolANSI::convertToTable(  )
                     UINT16 validIntvls = 0;
                     if( _table63 != NULL )
                     {
-                    
+
                         validIntvls = _table63->getNbrValidIntvls(1);
                         if (getApplicationLayer().getPartialProcessLPDataFlag())
                         {
@@ -1438,7 +1438,7 @@ void CtiProtocolANSI::convertToTable(  )
                                                                _table62->getIntervalFmtCde(1), validIntvls,
                                                                _table00->getRawNIFormat1(), _table00->getRawNIFormat2(),
                                                                _table00->getRawTimeFormat(), meterHour );
-                       
+
                         getApplicationLayer().setLPDataMode( false, 0 );
 
                         if (_invalidLastLoadProfileTime && _table64 != NULL)
@@ -1453,7 +1453,7 @@ void CtiProtocolANSI::convertToTable(  )
                     break;
                 }
             }
-            
+
         }
     }
     catch(...)
@@ -2053,7 +2053,7 @@ void CtiProtocolANSI::receiveCommResult( INMESS *InMessage )
 ////////////////////////////////////////////////////////////////////////////////////
 // Demand - KW, KVAR, KVA, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
+bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timestamp )
 {
     try
     {
@@ -2088,12 +2088,12 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
                             {
                                 *value = ((_table23->getDemandValue(x, ansiTOURate) *
                                    _table15->getElecMultiplier((demandSelect[x]%20))) / 1000000000);
-                                *time = _table23->getDemandEventTime( x, ansiTOURate );
+                                *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
                                     if (_table52->adjustTimeForDST())
                                     {
-                                        *time -= 3600;
+                                        *timestamp -= 3600;
                                     }
                                 }
                             }
@@ -2103,12 +2103,12 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
                                 *value = (_table23->getDemandValue(x, ansiTOURate) *
                                            _table15->getElecMultiplier((demandSelect[x]%20)) /
                                           _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                *time = _table23->getDemandEventTime( x, ansiTOURate );
+                                *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
                                     if (_table52->adjustTimeForDST())
                                     {
-                                        *time -= 3600;
+                                        *timestamp -= 3600;
                                     }
                                 }
                             }
@@ -2118,12 +2118,12 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
                             if(ansiDeviceType != 2)
                             {
                                 *value = (_table23->getDemandValue(x, ansiTOURate)  / 1000000000);
-                                *time = _table23->getDemandEventTime( x, ansiTOURate );
+                                *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
                                     if (_table52->adjustTimeForDST())
                                     {
-                                        *time -= 3600;
+                                        *timestamp -= 3600;
                                     }
                                 }
                             }
@@ -2132,12 +2132,12 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
                                 // will bring back value in KW/KVAR ...
                                  *value = (_table23->getDemandValue(x, ansiTOURate) /
                                            _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                 *time = _table23->getDemandEventTime( x, ansiTOURate );
+                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                  if (_table52 != NULL)
                                  {
                                      if (_table52->adjustTimeForDST())
                                      {
-                                         *time -= 3600;
+                                         *timestamp -= 3600;
                                      }
                                  }
                             }
@@ -2154,12 +2154,12 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
                         if(ansiDeviceType != 2)
                         {
                             *value = _table23->getDemandValue(x, ansiTOURate);
-                            *time = _table23->getDemandEventTime( x, ansiTOURate );
+                            *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
                                 if (_table52->adjustTimeForDST())
                                 {
-                                    *time -= 3600;
+                                    *timestamp -= 3600;
                                 }
                             }
                         }
@@ -2168,12 +2168,12 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
                             // will bring back value in KW/KVAR ...
                             *value = (_table23->getDemandValue(x, ansiTOURate) /
                                        _table12->getResolvedMultiplier(demandSelect[x]))/1000;
-                            *time = _table23->getDemandEventTime( x, ansiTOURate );
+                            *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
                                 if (_table52->adjustTimeForDST() )
                                 {
-                                    *time -= 3600;
+                                    *timestamp -= 3600;
                                 }
                             }
                         }
@@ -2308,7 +2308,7 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
 ////////////////////////////////////////////////////////////////////////////////////
 // Demand - KW, KVAR, KVA, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *time )
+bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *timestamp )
 {
     bool success = false;
     if( _ansiAbortOperation )
@@ -2343,12 +2343,12 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                             {
                                 *value = ((_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) *
                                    _table15->getElecMultiplier((demandSelect[x]%20))) / 1000000000);
-                                *time = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                                *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
                                     if (_table52->adjustTimeForDST() )
                                     {
-                                        *time -= 3600;
+                                        *timestamp -= 3600;
                                     }
                                 }
                             }
@@ -2358,16 +2358,16 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) *
                                            _table15->getElecMultiplier((demandSelect[x]%20)) /
                                           _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                *time = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                                if (isTimeUninitialized(*time))
+                                *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                                if (isTimeUninitialized(*timestamp))
                                 {
-                                    *time = _frozenRegTable->getEndDateTime();
+                                    *timestamp = _frozenRegTable->getEndDateTime();
                                 }
                                 if (_table52 != NULL)
                                 {
                                     if (_table52->adjustTimeForDST() )
                                     {
-                                        *time -= 3600;
+                                        *timestamp -= 3600;
                                     }
                                 }
                             }
@@ -2377,12 +2377,12 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                             if(ansiDeviceType != 2)
                             {
                                 *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate)  / 1000000000);
-                                *time = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                                *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
                                     if (_table52->adjustTimeForDST() )
                                     {
-                                        *time -= 3600;
+                                        *timestamp -= 3600;
                                     }
                                 }
                             }
@@ -2391,16 +2391,16 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 // will bring back value in KW/KVAR ...
                                  *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) /
                                            _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                 *time = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                                 if (isTimeUninitialized(*time))
+                                 *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                                 if (isTimeUninitialized(*timestamp))
                                  {
-                                     *time = _frozenRegTable->getEndDateTime();
+                                     *timestamp = _frozenRegTable->getEndDateTime();
                                  }
                                  if (_table52 != NULL)
                                  {
                                      if (_table52->adjustTimeForDST() )
                                      {
-                                         *time -= 3600;
+                                         *timestamp -= 3600;
                                      }
                                  }
                             }
@@ -2417,12 +2417,12 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                         if(ansiDeviceType != 2)
                         {
                             *value = _frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate);
-                            *time = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                            *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
                                 if (_table52->adjustTimeForDST() )
                                 {
-                                    *time -= 3600;
+                                    *timestamp -= 3600;
                                 }
                             }
                         }
@@ -2431,17 +2431,17 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                             // will bring back value in KW/KVAR ...
                             *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) /
                                        _table12->getResolvedMultiplier(demandSelect[x]))/1000;
-                            *time = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                            *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
 
-                            if (isTimeUninitialized(*time))
+                            if (isTimeUninitialized(*timestamp))
                             {
-                                *time = _frozenRegTable->getEndDateTime();
+                                *timestamp = _frozenRegTable->getEndDateTime();
                             }
                             if (_table52 != NULL)
                             {
                                 if (_table52->adjustTimeForDST() )
                                 {
-                                    *time -= 3600;
+                                    *timestamp -= 3600;
                                 }
                             }
                         }
@@ -2464,7 +2464,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
 ////////////////////////////////////////////////////////////////////////////////////
 // Summations = Energy - KWH, KVARH, KVAH, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double *time)
+bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double *timestamp)
 {
     bool success = false;
     if( _ansiAbortOperation )
@@ -2510,7 +2510,7 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
                                             {
                                                 *value = ((_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) *
                                                    _table15->getElecMultiplier(summationSelect[x])) / 1000000000);
-                                                *time = _frozenRegTable->getEndDateTime();
+                                                *timestamp = _frozenRegTable->getEndDateTime();
                                             }
                                             else //sentinel = 2
                                             {
@@ -2518,7 +2518,7 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
                                                  *value = ((_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) *
                                                    _table15->getElecMultiplier(summationSelect[x])) /
                                                            _table12->getResolvedMultiplier(summationSelect[x])) / 1000;
-                                                 *time = _frozenRegTable->getEndDateTime();
+                                                 *timestamp = _frozenRegTable->getEndDateTime();
                                             }
                                         }
                                         else
@@ -2526,14 +2526,14 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
                                             if(ansiDeviceType != 2)
                                             {
                                                 *value = (_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) / 1000000000);
-                                                *time = _frozenRegTable->getEndDateTime();
+                                                *timestamp = _frozenRegTable->getEndDateTime();
                                             }
                                             else  // 2 = sentinel
                                             {
                                                 // will bring back value in KWH/KVARH ...
                                                  *value = (_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) /
                                                            _table12->getResolvedMultiplier(summationSelect[x])) / 1000;
-                                                 *time = _frozenRegTable->getEndDateTime();
+                                                 *timestamp = _frozenRegTable->getEndDateTime();
                                             }
                                         }
                                         success = true;
@@ -2548,14 +2548,14 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
                                         if(ansiDeviceType != 2)
                                         {
                                             *value = _frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate);
-                                            *time = _frozenRegTable->getEndDateTime();
+                                            *timestamp = _frozenRegTable->getEndDateTime();
                                         }
                                         else  // 2 = sentinel
                                         {
                                             // will bring back value in KW/KVAR ...
                                             *value = (_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) /
                                                        _table12->getResolvedMultiplier(summationSelect[x]))/1000;
-                                            *time = _frozenRegTable->getEndDateTime();
+                                            *timestamp = _frozenRegTable->getEndDateTime();
                                         }
                                         success = true;
                                     }
@@ -3912,9 +3912,9 @@ bool CtiProtocolANSI::forceProcessDispatchMsg()
         return false;
 }
 
-bool CtiProtocolANSI::isTimeUninitialized(double time)
+bool CtiProtocolANSI::isTimeUninitialized(double timestamp)
 {
-    CtiTime t1 = CtiTime(time);
+    CtiTime t1 = CtiTime(timestamp);
     CtiTime t2 = CtiTime(CtiDate(1,1,2000));
     if ( t1.seconds() == t2.seconds() )
         return true;

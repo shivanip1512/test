@@ -733,12 +733,12 @@ int CtiDeviceFMU::decode(CtiXfer &xfer,  int status)
                     else if( _inbound[6] == TimeResponse )
                     {
                         CtiTime now;
-                        ULONG time = ((ULONG) _inbound[8]  << 24) |
-                                     ((ULONG) _inbound[9]  << 16) |
-                                     ((ULONG) _inbound[10] << 8)  |
-                                     ((ULONG) _inbound[11]);
-                        time += DawnOfTime;
-                        _stringList.push_back(CTIDBG_new string("Current Time is: " + now.asString() + " received time is: " + CtiTime(time).asString()));
+                        ULONG sec = ((ULONG) _inbound[8]  << 24) |
+                                    ((ULONG) _inbound[9]  << 16) |
+                                    ((ULONG) _inbound[10] << 8)  |
+                                    ((ULONG) _inbound[11]);
+                        sec += DawnOfTime;
+                        _stringList.push_back(CTIDBG_new string("Current Time is: " + now.asString() + " received time is: " + CtiTime(sec).asString()));
                         _state = State_Complete;
                     }
                     else if( _inbound[6] == LoCommResponse || _inbound[6] == ExternalDevResponse )
@@ -896,18 +896,18 @@ void CtiDeviceFMU::setupResetLogMessage(CtiXfer &xfer)
 void CtiDeviceFMU::setupTimeSyncMessage(CtiXfer &xfer)
 {
     int length = 0;
-    ULONG time;
+    ULONG timestamp;
     int sequenceFlags = SequenceFlagStart | SequenceFlagEnd;
     setupHeader(xfer, TimeSend, length, sequenceFlags);
 
     xfer.getOutBuffer()[length++] = 4;    //Data length
 
-    time = CtiTime::now().seconds();
-    time = time - DawnOfTime;
-    xfer.getOutBuffer()[length++] = time >> 24;
-    xfer.getOutBuffer()[length++] = time >> 16;
-    xfer.getOutBuffer()[length++] = time >> 8;
-    xfer.getOutBuffer()[length++] = time;
+    timestamp = CtiTime::now().seconds();
+    timestamp = timestamp - DawnOfTime;
+    xfer.getOutBuffer()[length++] = timestamp >> 24;
+    xfer.getOutBuffer()[length++] = timestamp >> 16;
+    xfer.getOutBuffer()[length++] = timestamp >> 8;
+    xfer.getOutBuffer()[length++] = timestamp;
 
     USHORT crc1 = crc16( xfer.getOutBuffer()+1, length-1 );
     xfer.getOutBuffer()[length++] = crc1;
@@ -1066,7 +1066,7 @@ void CtiDeviceFMU::decodeDataRead()
     int readLoc = 8; //9th byte
     if( dataLength > 0 )
     {
-        ULONG time;
+        ULONG timestamp;
         UCHAR flexCode;
         UCHAR rssi;
         UCHAR recvLen;
@@ -1076,11 +1076,11 @@ void CtiDeviceFMU::decodeDataRead()
         do
         {
             _codes_received ++;
-            time = ((ULONG) _inbound[readLoc++] << 24) |
-                   ((ULONG) _inbound[readLoc++] << 16) |
-                   ((ULONG) _inbound[readLoc++] << 8)  |
-                   ((ULONG) _inbound[readLoc++]);
-            time += DawnOfTime;
+            timestamp = ((ULONG) _inbound[readLoc++] << 24) |
+                        ((ULONG) _inbound[readLoc++] << 16) |
+                        ((ULONG) _inbound[readLoc++] << 8)  |
+                        ((ULONG) _inbound[readLoc++]);
+            timestamp += DawnOfTime;
             flexCode = _inbound[readLoc++];
             rssi     = _inbound[readLoc++];
             recvLen  = _inbound[readLoc++];
@@ -1104,7 +1104,7 @@ void CtiDeviceFMU::decodeDataRead()
                 code += CtiNumStr(_inbound[readLoc++]).hex();
             }
 
-            CtiVerificationReport(p, getID(), code, from_time_t(time));
+            CtiVerificationReport(p, getID(), code, from_time_t(timestamp));
 
         } while (readLoc < (recvLen + 7));
     }

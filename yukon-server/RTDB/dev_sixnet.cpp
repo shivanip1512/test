@@ -256,8 +256,8 @@ _ptOffset(0),
 _ptValue(0)
 {
 }
-CtiSxlRecord::CtiSxlRecord(CtiPointType_t type, int offset, double val, const CtiTime &time) :
-_ptTime(time),
+CtiSxlRecord::CtiSxlRecord(CtiPointType_t type, int offset, double val, const CtiTime &timestamp) :
+_ptTime(timestamp),
 _ptType(type),
 _ptOffset(offset),
 _ptValue(val)

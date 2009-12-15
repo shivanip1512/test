@@ -766,7 +766,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
     CtiPointAnalogSPtr pPoint;
     CtiPointStatusSPtr pStatusPoint;
     double value = 0;
-    double time = 0;
+    double timestamp = 0;
     double lpValue = 0;
     int    qual = 0;
     bool                             foundSomething = false;
@@ -837,7 +837,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         {
                             if (archiveFlag & CMD_FLAG_FROZEN)
                             {
-                                gotValue = getSentinelProtocol().retreiveFrozenSummation( x, &value, &time );
+                                gotValue = getSentinelProtocol().retreiveFrozenSummation( x, &value, &timestamp );
                             }
                             else
                             {
@@ -865,11 +865,11 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         {
                             if (archiveFlag & CMD_FLAG_FROZEN)
                             {
-                                gotValue = getSentinelProtocol().retreiveFrozenDemand( x, &value, &time );
+                                gotValue = getSentinelProtocol().retreiveFrozenDemand( x, &value, &timestamp );
                             }
                             else
                             {
-                                gotValue = getSentinelProtocol().retreiveDemand( x, &value, &time );
+                                gotValue = getSentinelProtocol().retreiveDemand( x, &value, &timestamp );
                             }
                             break;
                         }
@@ -938,9 +938,9 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                     }
                     if (gotValue)
                     {
-                        if (isUnintializedTimeAndValue(value, time))
+                        if (isUnintializedTimeAndValue(value, timestamp))
                         {
-                            time = 0;
+                            timestamp = 0;
                         }
 
                         pData = CTIDBG_new CtiPointDataMsg();
@@ -964,9 +964,9 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         {
                             pData->setTags(TAG_POINT_MUST_ARCHIVE);
                         }
-                        if (time != 0)
+                        if (timestamp != 0)
                         {
-                            pData->setTime(CtiTime(time));
+                            pData->setTime(CtiTime(timestamp));
                         }
                         else
                         {
@@ -1125,7 +1125,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                 }
                 resultString = "";
                 value = 0;
-                time = 0;
+                timestamp = 0;
                 gotValue = false;
                 gotLPValues = false;
                 x++;
@@ -1140,9 +1140,9 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
     }
 }
 
-bool isUnintializedTimeAndValue(double value, double time)
+bool isUnintializedTimeAndValue(double value, double timestamp)
 {
-    CtiTime t1 =  CtiTime(time);
+    CtiTime t1 =  CtiTime(timestamp);
     CtiTime t2 =  CtiTime(CtiDate(1,1,2000));
 
     if ( t1.seconds() == t2.seconds() &&

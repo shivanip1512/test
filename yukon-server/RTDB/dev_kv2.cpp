@@ -875,7 +875,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
     CtiPointAnalogSPtr pPoint;
     CtiPointStatusSPtr pStatusPoint;
     double value = 0;
-    double time = 0;
+    double timestamp = 0;
     double lpValue = 0;
     int    qual = 0;
     bool                             foundSomething = false;
@@ -941,7 +941,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     {
                         if (archiveFlag & CMD_FLAG_FROZEN)
                         {
-                            gotValue = getKV2Protocol().retreiveFrozenSummation( x, &value, &time );
+                            gotValue = getKV2Protocol().retreiveFrozenSummation( x, &value, &timestamp );
                         }
                         else
                         {
@@ -972,11 +972,11 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     {
                         if (archiveFlag & CMD_FLAG_FROZEN)
                         {
-                            gotValue = getKV2Protocol().retreiveFrozenDemand( x, &value, &time );
+                            gotValue = getKV2Protocol().retreiveFrozenDemand( x, &value, &timestamp );
                         }
                         else
                         {
-                            gotValue = getKV2Protocol().retreiveDemand( x, &value, &time );
+                            gotValue = getKV2Protocol().retreiveDemand( x, &value, &timestamp );
                         }
                         break;
                     }
@@ -1055,9 +1055,9 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     {
                         pData->setTags(TAG_POINT_MUST_ARCHIVE);
                     }
-                    if (time != 0)
+                    if (timestamp != 0)
                     {
-                        pData->setTime(CtiTime(time));
+                        pData->setTime(CtiTime(timestamp));
                     }
                     else
                     {
@@ -1209,7 +1209,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
             }
             resultString = "";
             value = 0;
-            time = 0;
+            timestamp = 0;
             gotValue = false;
             gotLPValues = false;
             x++;

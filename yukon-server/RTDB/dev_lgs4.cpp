@@ -2351,7 +2351,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     *
                     *****************************
                     */
-                    CtiTime todayMidnight(0,0);
+                    const CtiTime todayMidnight(0,0);
                     expectedLastInterval = (CtiTime::now().seconds() - todayMidnight.seconds()) /
                                              (localLP->configuration.intervalLength * 60.0);
 
@@ -2453,8 +2453,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                         }
                         else
                         {
-                            CtiTime todayMidnight(0,0);
-
                             // we are one today, check for repeated data
                             if (todayMidnight.seconds() == getCurrentLPDate())
                             {
@@ -3621,7 +3619,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
 }
 
 
-void CtiDeviceLandisGyrS4::syncAppropriateTime (ULONG seconds)
+void CtiDeviceLandisGyrS4::syncAppropriateTime (ULONG timestamp)
 {
     /****************************
     * here we decide which timestamp we came across
@@ -3633,16 +3631,16 @@ void CtiDeviceLandisGyrS4::syncAppropriateTime (ULONG seconds)
     // first of the pair
     if (getPowerDownTime() == 0)
     {
-        setPowerDownTime(seconds);
+        setPowerDownTime(timestamp);
     }
     else if (getPowerUpTime() == 0)
     {
-        setPowerUpTime(seconds);
+        setPowerUpTime(timestamp);
     }
     else
     {
         // we must be another pair of timestamps
-        setPowerDownTime(seconds);
+        setPowerDownTime(timestamp);
         setPowerUpTime(0);
     }
 }

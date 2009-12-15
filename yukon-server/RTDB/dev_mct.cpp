@@ -1548,8 +1548,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                                   list< CtiMessage* >      &retList,
                                   list< OUTMESS* >         &outList)
 {
-    INT    nRet = NoError,
-           i;
+    INT    nRet = NoError;
     long   rawPulses;
     double reading;
 
@@ -1590,7 +1589,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
 
 
             //  copy the reading into the output buffer, MSB style
-            for(i = 0; i < 3; i++)
+            for(int i = 0; i < 3; i++)
             {
                 OutMessage->Buffer.BSt.Message[i]   = (rawPulses >> ((2-i)*8)) & 0xFF;
                 OutMessage->Buffer.BSt.Message[i+3] = (rawPulses >> ((2-i)*8)) & 0xFF;
@@ -3053,34 +3052,34 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             //  needs to be moved to the 4xx base class when the inheritance gets reworked
             case Emetcon::GetConfig_Holiday:
             {
-                unsigned long seconds;
+                unsigned long timestamp;
                 CtiTime holiday;
                 string result;
 
                 result  = getName() + " / Holiday schedule:\n";
 
-                seconds = DSt.Message[0] << 24 |
-                          DSt.Message[1] << 16 |
-                          DSt.Message[2] << 8  |
-                          DSt.Message[3];
+                timestamp = DSt.Message[0] << 24 |
+                            DSt.Message[1] << 16 |
+                            DSt.Message[2] << 8  |
+                            DSt.Message[3];
 
-                holiday = CtiTime(seconds);
+                holiday = CtiTime(timestamp);
                 result += "Holiday 1: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
-                seconds = DSt.Message[4] << 24 |
-                          DSt.Message[5] << 16 |
-                          DSt.Message[6] << 8  |
-                          DSt.Message[7];
+                timestamp = DSt.Message[4] << 24 |
+                            DSt.Message[5] << 16 |
+                            DSt.Message[6] << 8  |
+                            DSt.Message[7];
 
-                holiday = CtiTime(seconds);
+                holiday = CtiTime(timestamp);
                 result += "Holiday 2: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
-                seconds = DSt.Message[8]  << 24 |
-                          DSt.Message[9]  << 16 |
-                          DSt.Message[10] << 8  |
-                          DSt.Message[11];
+                timestamp = DSt.Message[8]  << 24 |
+                            DSt.Message[9]  << 16 |
+                            DSt.Message[10] << 8  |
+                            DSt.Message[11];
 
-                holiday = CtiTime(seconds);
+                holiday = CtiTime(timestamp);
                 result += "Holiday 3: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
 
                 ReturnMsg->setResultString( result );

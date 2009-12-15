@@ -877,11 +877,11 @@ bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k, unsigned long &destination) co
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        double &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,       CtiTime &destination) const
 {
-    ctitime_t seconds;
+    ctitime_t t;
 
-    bool retval = getInfo(_paoInfo, getID(), k, (unsigned long&)seconds);
+    bool retval = getInfo(_paoInfo, getID(), k, (unsigned long&)t);
 
-    destination = seconds;
+    destination = t;
 
     return retval;
 }
@@ -1007,9 +1007,9 @@ bool CtiDeviceBase::isExecuting() const
     return _exclusion.isExecuting();
 }
 
-void CtiDeviceBase::setExecuting(bool set, CtiTime when)
+void CtiDeviceBase::setExecuting(bool executing, CtiTime when)
 {
-    _exclusion.setExecuting(set, when);
+    _exclusion.setExecuting(executing, when);
     return;
 }
 

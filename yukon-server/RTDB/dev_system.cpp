@@ -279,7 +279,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         OutMessage->TargetID = -1;
                         OutMessage->Retry    =  2;  //  Default to two tries per route!
 
-                        int gold, silver, address = -1, time = 0, function = -1;
+                        int gold, silver, address = -1, shedtime = 0, function = -1;
 
                         gold   = parse.getiValue("gold",   -1);
                         silver = parse.getiValue("silver", -1);
@@ -320,7 +320,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         }
                         else if( parse.getFlags() & CMD_FLAG_CTL_SHED )
                         {
-                            if( time = parse.getiValue("shed", 0) )
+                            if( shedtime = parse.getiValue("shed", 0) )
                             {
                                 //  normal relay request
                                 switch( parse.getiValue("relaymask", 0) )
@@ -343,7 +343,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             OutMessage->Buffer.ASt.Group    = address;
                             OutMessage->Buffer.ASt.Function = function;
 
-                            OutMessage->Buffer.ASt.Time = resolveAWordTime( time );
+                            OutMessage->Buffer.ASt.Time = resolveAWordTime( shedtime );
 
                             OutMessage->EventCode = AWORD | ACTIN | NOWAIT | NORESULT;
                         }

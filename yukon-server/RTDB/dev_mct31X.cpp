@@ -520,7 +520,6 @@ INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool expectMore)
 {
     INT status = NORMAL;
-    ULONG i;
     USHORT SaveCount;
     string resultString;
 
@@ -949,10 +948,10 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                     {
                         case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
                         {
-                            for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                            for( int j = 0; j < 7; j++ )  //  excluding byte 7 - it's a bitfield, not BCD
                             {
                                 //  Convert the bytes from BCD to normal byte values
-                                DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                                DSt->Message[j] = (((DSt->Message[j] & 0xf0) / 16) * 10) + (DSt->Message[j] & 0x0f);
                             }
 
                             resultString += getName() + " / IED / current time: ";
@@ -970,10 +969,10 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                         case CtiTableDeviceMCTIEDPort::LandisGyrS4:
                         {
-                            for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                            for( int j = 0; j < 7; j++ )  //  excluding byte 7 - it's a bitfield, not BCD
                             {
                                 //  Convert the bytes from BCD to normal byte values
-                                DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                                DSt->Message[j] = (((DSt->Message[j] & 0xf0) / 16) * 10) + (DSt->Message[j] & 0x0f);
                             }
 
                             resultString += getName() + " / IED / current time: ";
@@ -1168,7 +1167,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
-    DOUBLE demandValue, Value;
+    DOUBLE Value;
     CtiTime timestamp;
     CtiDate datestamp;
 
@@ -1289,16 +1288,16 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     }
                     case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
                     {
-                        unsigned long tmp, exp;
+                        unsigned long tmp, exponent;
 
                         tmp  = 0;
                         tmp |=  DSt->Message[0]         << 12;
                         tmp |=  DSt->Message[1]         <<  4;
                         tmp |= (DSt->Message[2] & 0xf0) >>  4;
 
-                        exp  =  DSt->Message[2] & 0x0f;
+                        exponent  =  DSt->Message[2] & 0x0f;
 
-                        Value = tmp * pow(2.0, (double) exp);
+                        Value = tmp * pow(2.0, (double) exponent);
 
                         break;
                     }
@@ -1348,15 +1347,15 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     }
                     case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
                     {
-                        unsigned long tmp, exp;
+                        unsigned long tmp, exponent;
 
                         tmp  = 0;
                         tmp |=  DSt->Message[3]         << 12;
                         tmp |=  DSt->Message[4]         <<  4;
                         tmp |= (DSt->Message[5] & 0xf0) >>  4;
-                        exp  =  DSt->Message[5] & 0x0f;
+                        exponent  =  DSt->Message[5] & 0x0f;
 
-                        Value = tmp * pow(2.0, (double) exp);
+                        Value = tmp * pow(2.0, (double) exponent);
 
                         break;
                     }
@@ -1655,19 +1654,19 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                     case CtiTableDeviceMCTIEDPort::LandisGyrS4:
                     {
-                        int tmp, i;
+                        int tmp, j;
 
-                        for( i = 0; i < 3; i++ )
+                        for( j = 0; j < 3; j++ )
                         {
-                            tmp = DSt->Message[i];
-                            DSt->Message[i] = DSt->Message[5-i];
-                            DSt->Message[5-i] = tmp;
+                            tmp = DSt->Message[j];
+                            DSt->Message[j] = DSt->Message[5-j];
+                            DSt->Message[5-j] = tmp;
                         }
-                        for( i = 0; i < 3; i++ )
+                        for( j = 0; j < 3; j++ )
                         {
-                            tmp = DSt->Message[i+6];
-                            DSt->Message[i+6] = DSt->Message[11-i];
-                            DSt->Message[11-i] = tmp;
+                            tmp = DSt->Message[j+6];
+                            DSt->Message[j+6] = DSt->Message[11-j];
+                            DSt->Message[11-j] = tmp;
                         }
 
                         if( parse.getFlags() & CMD_FLAG_GV_KVAH || parse.getFlags() & CMD_FLAG_GV_KVARH )
@@ -1767,11 +1766,11 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                         //  reverse the order so it works with a standard BCD->base10 call
                         char tmp;
-                        for( int i = 0; i < 3; i++ )
+                        for( int j = 0; j < 3; j++ )
                         {
-                            tmp = DSt->Message[i];
-                            DSt->Message[i] = DSt->Message[5-i];
-                            DSt->Message[5-i] = tmp;
+                            tmp = DSt->Message[j];
+                            DSt->Message[j] = DSt->Message[5-j];
+                            DSt->Message[5-j] = tmp;
                         }
 
                         Value  = BCDtoBase10( DSt->Message, 6 );
@@ -1881,16 +1880,16 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                     case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
                     {
-                        unsigned long tmp, exp;
+                        unsigned long tmp, exponent;
                         unsigned year, month, day, hour, minute, second;
 
                         tmp  = 0;
                         tmp |=  DSt->Message[6]         << 12;
                         tmp |=  DSt->Message[7]         <<  4;
                         tmp |= (DSt->Message[8] & 0xf0) >>  4;
-                        exp  =  DSt->Message[8] & 0x0f;
+                        exponent  =  DSt->Message[8] & 0x0f;
 
-                        Value = tmp * pow(2.0, (double) exp);
+                        Value = tmp * pow(2.0, (double) exponent);
 
                         year        =   DSt->Message[ 9]         >> 1;
                         month       = ((DSt->Message[ 9] & 0x01) << 3) |
@@ -1954,9 +1953,9 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                                 dout << CtiTime() << " **** Checkpoint - invalid time on device \"" << getName() << "\", code BL346H **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 dout << CtiTime() << " data: ";
 
-                                for( int i = 0; i < 13; i++ )
+                                for( int j = 0; j < 13; j++ )
                                 {
-                                    dout << std::hex << (int)DSt->Message[i] << " ";
+                                    dout << std::hex << (int)DSt->Message[j] << " ";
                                 }
 
                                 dout << endl;

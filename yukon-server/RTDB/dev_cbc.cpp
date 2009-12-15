@@ -291,16 +291,16 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
 
             if(pPoint)
             {
-                string resultString;
+                string controlState;
                 double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
 
-                resultString = "CBC Control ";
+                controlState = "CBC Control ";
                 if( val == ((double)OPENED) )
-                    resultString += "OPENED";
+                    controlState += "OPENED";
                 else
-                    resultString += "CLOSED";
+                    controlState += "CLOSED";
 
-                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, controlState));
             }
             else
             {
@@ -483,14 +483,14 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
         {
             if( parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_CLOSE) )
             {
-                string resultString;
+                string controlState;
                 double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
 
-                resultString = "CBC Control ";
-                if( val == ((double)OPENED) ) resultString += "OPENED";
-                else resultString += "CLOSED";
+                controlState = "CBC Control ";
+                if( val == ((double)OPENED) ) controlState += "OPENED";
+                else controlState += "CLOSED";
 
-                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, controlState));
             }
             else if( parse.isKeyValid("xcflip") )
             {

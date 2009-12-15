@@ -36,19 +36,19 @@
 VOID ParserToAStruct(CtiCommandParser &parse, ASTRUCT *ASt)
 {
     INT Flags = parse.getFlags();
-    int time  = 0;
+    int shedtime  = 0;
 
     if(Flags & CMD_FLAG_CTL_SHED)
     {
-        time = parse.getiValue("shed", 0);
+        shedtime = parse.getiValue("shed", 0);
     }
 
-    if(Flags & CMD_FLAG_CTL_RESTORE || time == 0)
+    if(Flags & CMD_FLAG_CTL_RESTORE || shedtime == 0)
     {
         ASt->Function = A_RESTORE;
     }
 
-    ASt->Time = resolveAWordTime( time );
+    ASt->Time = resolveAWordTime( shedtime );
 
 }
 

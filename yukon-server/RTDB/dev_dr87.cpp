@@ -2212,18 +2212,18 @@ USHORT  CtiDeviceDR87::calculateCRC(UCHAR* buffer, LONG length, BOOL bAdd)
         042000};
 
     BYTEUSHORT newCRC;
-    USHORT j0,j1,j2;
+    USHORT j_0,j_1,j_2;
 
     newCRC.sh = 0;
 
     for (int x=1; x < length; x++)
     {
-        j0 = newCRC.sh ^ (buffer[x] & 0377);
-        j1 = j0 & 017;
-        j2 = (j0 >> 4) & 017;
-        j0 = lowNib[j1] ^ highNib[j2];
+        j_0 = newCRC.sh ^ (buffer[x] & 0377);
+        j_1 = j_0 & 017;
+        j_2 = (j_0 >> 4) & 017;
+        j_0 = lowNib[j_1] ^ highNib[j_2];
 
-        newCRC.sh = (newCRC.sh >> 8) ^ j0;
+        newCRC.sh = (newCRC.sh >> 8) ^ j_0;
     }
 
     /*******************

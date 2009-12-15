@@ -348,24 +348,24 @@ int CtiDeviceGateway::checkPendingOperations(  )
 int CtiDeviceGateway::sendQueryRuntime(LONG dev, UCHAR Reset)
 {
     int cnt = 0;
-    SMAP_t::iterator smitr;
+    SMAP_t::iterator itr;
 
     if(dev != 0)
     {
-        SMAP_t::iterator smitr = _statMap.find( dev );
-        if( smitr != _statMap.end() )
+        SMAP_t::iterator itr = _statMap.find( dev );
+        if( itr != _statMap.end() )
         {
             cnt++;
-            CtiDeviceGatewayStat *pGW = (*smitr).second;
+            CtiDeviceGatewayStat *pGW = (*itr).second;
             pGW->sendQueryRuntime(_msgsock, Reset);
         }
     }
     else
     {
-        for( smitr = _statMap.begin(); smitr != _statMap.end(); smitr++ )
+        for( itr = _statMap.begin(); itr != _statMap.end(); itr++ )
         {
             cnt++;
-            CtiDeviceGatewayStat *pGW = (*smitr).second;
+            CtiDeviceGatewayStat *pGW = (*itr).second;
             pGW->sendQueryRuntime(_msgsock, Reset);
         }
     }

@@ -296,8 +296,6 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
         _modbus.clearPoints();
         _modbus.setCommand(_porter_info.protocol_command);
 
-        CtiPointSPtr PointRecord;
-
         switch(_porter_info.protocol_command)
         {
             case Protocol::Modbus::Command_ScanALL:

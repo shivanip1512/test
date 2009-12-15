@@ -259,7 +259,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     int serial = 0;
     int group = 0;
-    int div = 0;
+    int division = 0;
     int sub = 0;
 
     serial = (int)(getLoadGroup().getIndividual());
@@ -279,12 +279,12 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     }
 
     if(findStringIgnoreCase(au,"G"))          group = (int)(getLoadGroup().getGroup());
-    if(findStringIgnoreCase(au,"D"))          div = (int)(getLoadGroup().getDivision());
+    if(findStringIgnoreCase(au,"D"))          division = (int)(getLoadGroup().getDivision());
     if(findStringIgnoreCase(au,"S"))          sub = (int)(getLoadGroup().getSubstation());
 
     // These elements are gravy
     parse.setValue("sa_group", group);
-    parse.setValue("sa_division", div);
+    parse.setValue("sa_division", division);
     parse.setValue("sa_substation", sub);
 
     parse.setValue("sa_function", getLoadGroup().getFunction());
@@ -296,8 +296,6 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         // OutMessage->Retry = 0;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
         OutMessage->ExpirationTime = etime;
-
-        int serial = (int)(getLoadGroup().getIndividual());
 
         reportActionItemsToDispatch(pReq, parse, vgList);
 

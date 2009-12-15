@@ -388,7 +388,6 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
     string resultString;
-    CtiReturnMsg *retMsg;
 
     resetScanFlag();
 

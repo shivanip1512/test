@@ -1287,29 +1287,29 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         if( parse.isKeyValid("config_byte") ||
             hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration))
         {
-            char configuration = (parse.isKeyValid("config_byte") ? 
+            char configuration = (parse.isKeyValid("config_byte") ?
                                   parse.getiValue("config_byte") : getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) );
-        
+
             int alarmMask = parse.getiValue("alarm_mask", 0);
 
             OutMessage->Buffer.BSt.Message[0] = (configuration);
             OutMessage->Buffer.BSt.Message[1] = (alarmMask & 0xFF);
             OutMessage->Buffer.BSt.Message[2] = ((alarmMask >> 8) & 0xFF);
-            
+
             if( parse.isKeyValid("alarm_mask_meter") )
             {
                 int meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
                 OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask & 0xFF);
                 OutMessage->Buffer.BSt.Message[4] = ((meterAlarmMask >> 8) & 0xFF);
             }
-            
+
             function = Emetcon::PutConfig_Options;
             getOperation(function, OutMessage->Buffer.BSt);
 
             OutMessage->Sequence = Emetcon::PutConfig_AlarmMask;
             found = true;
         }
-        else 
+        else
         {
             found = false;
             nRet  = NoMethod;
@@ -1915,7 +1915,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
     }
     else if(parse.isKeyValid("phasedetectread"))
     {
-        
+
         OutMessage->Buffer.BSt.Function = Emetcon::GetConfig_PhaseDetect;
         found = getOperation(OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt);
 
@@ -2812,7 +2812,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
             for( int i = 0; i < 2; i++ )
             {
-                int days, hours, minutes, seconds, cycles;
+                int cycles;
 
                 timestamp  = msgbuf[(i*6)+0] << 24;
                 timestamp |= msgbuf[(i*6)+1] << 16;
@@ -2894,27 +2894,27 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                 {
                     if( multiplier != 2 || cycles != 0xffff )
                     {
-                        seconds = cycles  / 60;
-                        minutes = seconds / 60;
-                        hours   = minutes / 60;
-                        days    = hours   / 24;
+                        int ss = cycles / 60;
+                        int mm = ss / 60;
+                        int hh = mm / 60;
+                        int dd = hh / 24;
 
-                        seconds %= 60;
-                        minutes %= 60;
-                        hours   %= 24;
+                        ss %= 60;
+                        mm %= 60;
+                        hh %= 24;
 
-                        if( days == 1 )
+                        if( dd == 1 )
                         {
-                            pointString += CtiNumStr(days) + " day, ";
+                            pointString += CtiNumStr(dd) + " day, ";
                         }
-                        else if( days > 1 )
+                        else if( dd > 1 )
                         {
-                            pointString += CtiNumStr(days) + " days, ";
+                            pointString += CtiNumStr(dd) + " days, ";
                         }
 
-                        pointString += CtiNumStr(hours).zpad(2) + string(":") +
-                                       CtiNumStr(minutes).zpad(2) + ":" +
-                                       CtiNumStr(seconds).zpad(2);
+                        pointString += CtiNumStr(hh).zpad(2) + string(":") +
+                                       CtiNumStr(mm).zpad(2) + ":" +
+                                       CtiNumStr(ss).zpad(2);
 
                         if( cycles % 60 )
                         {
@@ -3455,7 +3455,6 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
         string resultString;
 
         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -4181,9 +4180,9 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
                                   DSt->Message[6] ) * 0.1;
         last_interval_voltage =  (DSt->Message[7] <<  8 |
                                   DSt->Message[8] ) * 0.1;
-          
-        if (InMessage->Sequence == Emetcon::GetConfig_PhaseDetectArchive)     
-        {           
+
+        if (InMessage->Sequence == Emetcon::GetConfig_PhaseDetectArchive)
+        {
             insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
         }
         resultStr  = getName() + " / Phase = " + phaseStr ;
@@ -4194,7 +4193,7 @@ INT CtiDeviceMCT410::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &Time
         ReturnMsg->setResultString(resultStr);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-        
+
     }
 
     return status;
