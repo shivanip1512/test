@@ -254,7 +254,7 @@ public:
     string getControlStatusQualityString();
     string getIgnoreReasonText() const;
     CtiCCCapBank& initVerificationControlStatus();
-    CtiCCCapBank& addAllCapBankPointsToMsg(CtiPointRegistrationMsg *pointAddMsg);
+    CtiCCCapBank& addAllCapBankPointsToMsg(std::list<int>& pointAddMsg);
     string getControlStatusText() const;
     BOOL isPendingStatus();
 

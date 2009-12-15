@@ -19,7 +19,7 @@ PointOffestValueHolder::PointOffestValueHolder()
  *
  * @return bool
  */
-void PointOffestValueHolder::addPointOffset(int offset, CtiPointType_t type, int pointId, int pointValue)
+void PointOffestValueHolder::addPointOffset(int offset, CtiPointType_t type, int pointId, double pointValue)
 {
     PointOffsetTypePair offsetType(offset,type);
     PointIdValuePair newData;
@@ -41,7 +41,7 @@ void PointOffestValueHolder::addPointOffset(int offset, CtiPointType_t type, int
  *
  * @return bool
  */
-bool PointOffestValueHolder::getPointValueByOffsetAndType(int offset, CtiPointType_t type, int& value)
+bool PointOffestValueHolder::getPointValueByOffsetAndType(int offset, CtiPointType_t type, double& value)
 {
     PointOffsetTypePair offsetType(offset,type);
     OffsetMapItr idAndValue = _offsetMap.find(offsetType);
@@ -78,4 +78,9 @@ bool PointOffestValueHolder::getPointIdByOffsetAndType(int offset, CtiPointType_
 
     pointId = idAndValue->second.pointId;
     return true;
+}
+
+void PointOffestValueHolder::updatePointValue(CtiPointDataMsg* message)
+{
+    //addPointOffset(nameItr->second.pointOffset,nameItr->second.pointType,message->getId(),message->getValue());
 }

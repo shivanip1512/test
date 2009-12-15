@@ -19,15 +19,19 @@ class LtcPointHolder : public PointOffestValueHolder
         LtcPointHolder();
 
         //Do something about the required points?
-        virtual void addPointOffset(std::string name, int offset, CtiPointType_t type, int pointId, int pointValue);
+        virtual void addPointOffset(std::string name, int offset, CtiPointType_t type, int pointId, double pointValue);
 
-        bool getPointValueByName(std::string name, int& value);
+        bool getPointValueByName(std::string name, double& value);
+        virtual void updatePointValue(CtiPointDataMsg* message);
 
     private:
         typedef PointOffestValueHolder Inherited;
 
         typedef std::map<std::string,Inherited::PointOffsetTypePair> NameToOffsetMap;
         typedef std::map<std::string,Inherited::PointOffsetTypePair>::iterator NameToOffsetMapItr;
+        typedef std::map<int,std::string> PointIdToNameMap;
+        typedef std::map<int,std::string>::iterator PointIdToNameMapItr;
 
         NameToOffsetMap nameToOffset;
+        PointIdToNameMap pointIdToName;
 };

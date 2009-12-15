@@ -15,3 +15,8 @@ LtcPointHolder& LoadTapChanger::getPointValueHolder()
 {
     return _pointValues;
 }
+
+void LoadTapChanger::handlePointData(CtiPointDataMsg* message)
+{
+    _pointValues.updatePointValue(message);
+}

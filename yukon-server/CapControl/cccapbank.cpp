@@ -32,13 +32,13 @@ RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCCapBank::CtiCCCapBank() 
+CtiCCCapBank::CtiCCCapBank()
 {
     _twoWayPoints = NULL;
     _ovuvSituationFlag = false;
 }
 
-CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr) 
+CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
 {
     restore(rdr);
      _monitorPoint.clear();
@@ -50,7 +50,7 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
      _originalParent.setPAOId(_paoid);
 }
 
-CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)  
+CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 {
     operator=(cap);
     //_twoWayPoints = NULL;
@@ -62,7 +62,7 @@ CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 CtiCCCapBank::~CtiCCCapBank()
 {
     _pointIds.clear();
-    if (!_monitorPoint.empty()) 
+    if (!_monitorPoint.empty())
     {
         for (int i = 0; i < _monitorPoint.size(); i++)
         {
@@ -72,7 +72,7 @@ CtiCCCapBank::~CtiCCCapBank()
         _monitorPoint.clear();
     }
 
-    if (!_pointResponses.empty()) 
+    if (!_pointResponses.empty())
     {
         for (int i = 0; i < _pointResponses.size(); i++)
         {
@@ -83,7 +83,7 @@ CtiCCCapBank::~CtiCCCapBank()
     }
     try
     {
-        if (_twoWayPoints != NULL) 
+        if (_twoWayPoints != NULL)
         {
             delete _twoWayPoints;
             _twoWayPoints = NULL;
@@ -94,16 +94,16 @@ CtiCCCapBank::~CtiCCCapBank()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-     
+
 }
 CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
 {
     if ( _twoWayPoints == NULL )
           _twoWayPoints = new CtiCCTwoWayPoints(_controldeviceid);
-    
+
     return _twoWayPoints;
 
-} 
+}
 
 CtiCCOperationStats& CtiCCCapBank::getOperationStats()
 {
@@ -257,7 +257,7 @@ const string& CtiCCCapBank::getPercentChangeString() const
 }
 LONG CtiCCCapBank::getActionId() const
 {
-    if (_actionId != -1) 
+    if (_actionId != -1)
         return _actionId;
     else
         return CCEventActionIdGen(getStatusPointId());
@@ -470,7 +470,7 @@ LONG CtiCCCapBank::getStatusPointId() const
 
 /*---------------------------------------------------------------------------
     getVerificationFlag
-    
+
     Returns the verification flag of the cap bank
 ---------------------------------------------------------------------------*/
 BOOL CtiCCCapBank::getVerificationFlag() const
@@ -574,7 +574,7 @@ BOOL CtiCCCapBank::getSendAllCommandFlag() const
 
 /*---------------------------------------------------------------------------
     getVCtrlIndex
-    
+
     Returns the VerificationCtrlIndex of the cap bank
 ---------------------------------------------------------------------------*/
 int  CtiCCCapBank::getVCtrlIndex() const
@@ -585,7 +585,7 @@ int  CtiCCCapBank::getVCtrlIndex() const
 
 /*---------------------------------------------------------------------------
     getAssumedOrigVerificationState
-        
+
     Returns the AssumedOrigVerificationState of the cap bank
 ---------------------------------------------------------------------------*/
 int CtiCCCapBank::getAssumedOrigVerificationState() const
@@ -608,7 +608,7 @@ int CtiCCCapBank::getAssumedOrigVerificationState() const
     {
         return CtiCCCapBank::Open;
     }
-    
+
     return controlStatus;
 }
 
@@ -1045,7 +1045,7 @@ CtiCCCapBank& CtiCCCapBank::setStatusPointId(LONG statuspoint)
 }
 /*---------------------------------------------------------------------------
     setVerificationFlag
-    
+
     Sets the verification flag, b4 capbank is exercised in the verification routine
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setVerificationFlag(BOOL verificationFlag)
@@ -1098,7 +1098,7 @@ CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(BOOL flag)
 
 /*---------------------------------------------------------------------------
     setRetryOpenFailedFlag
-    
+
     Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(BOOL retryOpenFailedFlag)
@@ -1114,7 +1114,7 @@ CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(BOOL retryOpenFailedFlag)
 }
 /*---------------------------------------------------------------------------
     setRetryCloseFailedFlag
-    
+
     Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(BOOL retryCloseFailedFlag)
@@ -1130,7 +1130,7 @@ CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(BOOL retryCloseFailedFlag)
 }
 /*---------------------------------------------------------------------------
     setOvUvDisabledFlag
-    
+
     Sets the ovUvDisabledFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(BOOL ovUvDisabledFlag)
@@ -1147,7 +1147,7 @@ CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(BOOL ovUvDisabledFlag)
 
 /*---------------------------------------------------------------------------
     setLocalControlFlag
-    
+
     Sets the LocalControlFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(BOOL localControlFlag)
@@ -1164,7 +1164,7 @@ CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(BOOL localControlFlag)
 
 /*---------------------------------------------------------------------------
     setOvUvDisabledFlag
-    
+
     Sets the ovUvDisabledFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(BOOL ovUvSituationFlag)
@@ -1181,7 +1181,7 @@ CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(BOOL ovUvSituationFlag)
 
 /*---------------------------------------------------------------------------
     setMaxDailyOpsHitFlag
-    
+
     Sets the maxDailyOpsHitFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(BOOL flag)
@@ -1197,7 +1197,7 @@ CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(BOOL flag)
 }
 /*---------------------------------------------------------------------------
     setControlStatusPartialFlag(
-    
+
     Sets the ControlStatusPartialFlag( ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(BOOL flag)
@@ -1213,7 +1213,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(BOOL flag)
 }
 /*---------------------------------------------------------------------------
     setControlStatusSignificantFlag
-    
+
     Sets the ControlStatusPartialFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(BOOL flag)
@@ -1230,7 +1230,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(BOOL flag)
 
 /*---------------------------------------------------------------------------
     setControlStatusAbnQualityFlag
-    
+
     Sets the ControlStatusAbnQualityFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(BOOL flag)
@@ -1246,7 +1246,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(BOOL flag)
 }
 /*---------------------------------------------------------------------------
     setControlStatusFailFlag
-    
+
     Sets the ControlStatusFailFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(BOOL flag)
@@ -1262,7 +1262,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(BOOL flag)
 }
 /*---------------------------------------------------------------------------
     setControlStatusCommFailFlag
-    
+
     Sets the ControlStatusCommFailFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(BOOL flag)
@@ -1278,7 +1278,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(BOOL flag)
 }
 /*---------------------------------------------------------------------------
     setControlStatusNoControlFlag
-    
+
     Sets the ControlStatusNoControlFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(BOOL flag)
@@ -1295,7 +1295,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(BOOL flag)
 
 /*---------------------------------------------------------------------------
     setControlStatusNoControlFlag
-    
+
     Sets the ControlStatusNoControlFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(BOOL flag)
@@ -1312,7 +1312,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(BOOL flag)
 
 /*---------------------------------------------------------------------------
     setReEnableOvUvFlag
-    
+
     Sets the ReEnableOvUvFlag ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(BOOL flag)
@@ -1330,7 +1330,7 @@ CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(BOOL flag)
 
 /*---------------------------------------------------------------------------
     setControlStatusQuality
-    
+
     Sets the ControlStatusQuality ..
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity quality, string partialPhaseInfo)
@@ -1351,7 +1351,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusUnSolicitedFlag(FALSE);
             break;
         }
-       
+
         case CC_Significant:
         {
             setControlStatusPartialFlag(FALSE);
@@ -1362,7 +1362,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusNoControlFlag(FALSE);
             setControlStatusUnSolicitedFlag(FALSE);
             break;
-       
+
         }
         case CC_AbnormalQuality:
         {
@@ -1446,12 +1446,12 @@ string CtiCCCapBank::getControlStatusQualityString()
             retString = "Partial";
             break;
         }
-       
+
         case CC_Significant:
         {
             retString = "Significant";
             break;
-       
+
         }
         case CC_AbnormalQuality:
         {
@@ -1512,11 +1512,11 @@ string CtiCCCapBank::getIgnoreReasonText() const
         case 12: retVal = "Temp"; break;
         case 13: retVal = "Remote"; break;
         case 14: retVal = "NtrlLockOut"; break;
-        case 15: retVal = "BrownOut"; break;    
-        case 16: retVal = "BadActRelay"; break;  
+        case 15: retVal = "BrownOut"; break;
+        case 16: retVal = "BadActRelay"; break;
         default: retVal = "unknown"; break;
     }
-    
+
     return retVal;
 }
 
@@ -1525,7 +1525,7 @@ string CtiCCCapBank::getIgnoreReasonText() const
 CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
 {
     _ipAddress = "(none)";
-    if (value > 0) 
+    if (value > 0)
     {
         char tempchar[4];
         //char* tempchar = NULL;
@@ -1540,8 +1540,8 @@ CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
         _ipAddress += itoa(temp,tempchar,10);
         _ipAddress += ".";
         temp = (value & 0xFF);
-        _ipAddress += itoa(temp,tempchar,10);   
-    } 
+        _ipAddress += itoa(temp,tempchar,10);
+    }
     return *this;
 }
 CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value)
@@ -1703,7 +1703,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
             if ( stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
                   _USE_FLIP_FLAG == TRUE &&
                   (getControlStatus() == OpenFail || getControlStatus() == CloseFail) )
-            {  
+            {
                 _verificationDoneFlag = TRUE;
                 ctrlIdx = 5;
             }
@@ -1717,7 +1717,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
         }
     case 2:
         {
-            if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") && 
+            if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
                 _USE_FLIP_FLAG == TRUE)
             {
 
@@ -1734,7 +1734,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                          _prevVerificationControlStatus == CloseFail )
                     {
                         if (getControlStatus() == OpenFail ||
-                            getControlStatus() == CloseFail ) 
+                            getControlStatus() == CloseFail )
                         {
                             _verificationDoneFlag = TRUE;
                             ctrlIdx = 5;
@@ -1750,7 +1750,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                     else //_prevVerificationControlStatus == Questionable, Open or Close (Success)!!!
                     {
                         if (getControlStatus() == OpenFail ||
-                            getControlStatus() == CloseFail ) 
+                            getControlStatus() == CloseFail )
                         {
                             if (_retryFlag)
                             {
@@ -1766,7 +1766,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                         }
                         else // getControlStatus() == Open or Close (Success)!!   MUST HAVE BEEN A RETRY!
                         {
-                             _retryFlag = FALSE; 
+                             _retryFlag = FALSE;
                              ctrlIdx = 5;
                              _verificationDoneFlag = TRUE;
                         }
@@ -1791,12 +1791,12 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     case 3:
         {
             if (getControlStatus() == OpenFail ||
-                getControlStatus() == CloseFail ) 
+                getControlStatus() == CloseFail )
             {
-                if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") && 
+                if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
                     _USE_FLIP_FLAG == TRUE)
                 {
-                    ctrlIdx = 5; 
+                    ctrlIdx = 5;
                     _verificationDoneFlag = TRUE;
                     _retryFlag = FALSE;
                 }
@@ -1891,11 +1891,11 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
                 dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPAOName()<<" Point ID: "<<pResponse->getPointId()<<" preOpValue: "<<pResponse->getPreOpValue() <<" currentValue: "<<point->getValue()<< endl;
             }
 
-            //if (pResponse->getDelta() != 0) 
+            //if (pResponse->getDelta() != 0)
             DOUBLE nInAvg = (point->getNInAvg()!=0?point->getNInAvg():1);
-            DOUBLE fabsy = fabs(pResponse->getPreOpValue() - point->getValue());  
-            DOUBLE delta = ( (pResponse->getDelta()*(nInAvg -1)) + 
-                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) / 
+            DOUBLE fabsy = fabs(pResponse->getPreOpValue() - point->getValue());
+            DOUBLE delta = ( (pResponse->getDelta()*(nInAvg -1)) +
+                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) /
                                   nInAvg;
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
@@ -1903,11 +1903,11 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
                 dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPAOName()<<" Point ID: "<<pResponse->getPointId()<<" fabs: "<<fabsy <<" delta: "<<delta<< endl;
             }
             {
-                pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1.0)) + 
-                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) / 
+                pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1.0)) +
+                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) /
                                   nInAvg);
             }
-            
+
             break;
         }
     }
@@ -2035,18 +2035,18 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
 }
 
 
-CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(CtiPointRegistrationMsg *pointAddMsg)
+CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::list<int>& pointAddMsg)
 {
 
     if( getStatusPointId() > 0 )
     {
-        pointAddMsg->insert(getStatusPointId());
+        pointAddMsg.push_back(getStatusPointId());
     }
     if( getOperationAnalogPointId() > 0 )
     {
-        pointAddMsg->insert(getOperationAnalogPointId());
+        pointAddMsg.push_back(getOperationAnalogPointId());
     }
- 
+
     return *this;
 }
 
@@ -2165,7 +2165,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     ostrm <<  _tagscontrolstatus;
     ostrm <<  tempParentId;
     ostrm <<  _currentdailyoperations;
-    ostrm <<  _ignoreFlag;   
+    ostrm <<  _ignoreFlag;
     ostrm << _ignoreReason;
     ostrm << _ovUvDisabledFlag;
     ostrm << _triporder;
@@ -2224,14 +2224,14 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _prevVerificationControlStatus = right._prevVerificationControlStatus;
         _vCtrlIndex = right._vCtrlIndex;
         _additionalFlags = right._additionalFlags;
-        _verificationFlag = right._verificationFlag;          
+        _verificationFlag = right._verificationFlag;
         _performingVerificationFlag = right._performingVerificationFlag;
-        _verificationDoneFlag = right._verificationDoneFlag;      
+        _verificationDoneFlag = right._verificationDoneFlag;
         _retryOpenFailedFlag = right._retryOpenFailedFlag;
-        _retryCloseFailedFlag = right._retryCloseFailedFlag;           
+        _retryCloseFailedFlag = right._retryCloseFailedFlag;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
-        _controlStatusPartialFlag =     right._controlStatusPartialFlag;   
+        _controlStatusPartialFlag =     right._controlStatusPartialFlag;
         _controlStatusSignificantFlag = right._controlStatusSignificantFlag;
         _controlStatusAbnQualityFlag = right._controlStatusAbnQualityFlag;
         _controlStatusFailFlag = right._controlStatusFailFlag;
@@ -2274,7 +2274,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         }
         else
             _twoWayPoints = NULL;
-        
+
     }
     return *this;
 }
@@ -2330,7 +2330,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["maxopdisable"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     setMaxOpsDisableFlag(tempBoolString=="y"?TRUE:FALSE);
-            
+
 
     setAlarmInhibitFlag(false);
     setControlInhibitFlag(false);
@@ -2351,10 +2351,10 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setRetryCloseFailedFlag(FALSE);
     setOvUvDisabledFlag(FALSE);
     setMaxDailyOpsHitFlag(FALSE);
-    setControlStatusPartialFlag(FALSE);     
+    setControlStatusPartialFlag(FALSE);
     setControlStatusSignificantFlag(FALSE);
     setControlStatusAbnQualityFlag(FALSE);
-    setControlStatusQuality(CC_Normal); 
+    setControlStatusQuality(CC_Normal);
     setReEnableOvUvFlag(FALSE);
     setLocalControlFlag(FALSE);
     setControlRecentlySentFlag(FALSE);
@@ -2418,7 +2418,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _ovUvDisabledFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
     _maxDailyOpsHitFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
     _ovuvSituationFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
-    _controlStatusPartialFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);   
+    _controlStatusPartialFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
     _controlStatusSignificantFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
     _controlStatusAbnQualityFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
     _controlStatusFailFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
@@ -2447,12 +2447,12 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
         _controlStatusQuality = CC_UnSolicited;
     else
         _controlStatusQuality = CC_Normal;
-    
+
     rdr["currentdailyoperations"] >> _currentdailyoperations;
     rdr["twowaycbcstate"] >> _reportedCBCState;
     rdr["twowaycbcstatetime"] >> _reportedCBCStateTime;
-    rdr["beforevar"] >> _sBeforeVars;  
-    rdr["aftervar"] >> _sAfterVars;   
+    rdr["beforevar"] >> _sBeforeVars;
+    rdr["aftervar"] >> _sAfterVars;
     rdr["changevar"] >> _sPercentChange;
     rdr["twowaycbclastcontrol"] >> _reportedCBCLastControlReason;
     rdr["partialphaseinfo"] >> _partialPhaseInfo;
@@ -2546,25 +2546,25 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[19] = (_unsolicitedPendingFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
-            _additionalFlags.append(char2string(*(addFlags+2))); 
+            _additionalFlags.append(char2string(*(addFlags+2)));
             _additionalFlags.append(char2string(*(addFlags+3)));
-            _additionalFlags.append(char2string(*(addFlags+4))); 
-            _additionalFlags.append(char2string(*(addFlags+5))); 
-            _additionalFlags.append(char2string(*(addFlags+6))); 
-            _additionalFlags.append(char2string(*(addFlags+7))); 
-            _additionalFlags.append(char2string(*(addFlags+8))); 
-            _additionalFlags.append(char2string(*(addFlags+9))); 
-            _additionalFlags.append(char2string(*(addFlags+10))); 
-            _additionalFlags.append(char2string(*(addFlags+11))); 
-            _additionalFlags.append(char2string(*(addFlags+12))); 
-            _additionalFlags.append(char2string(*(addFlags+13))); 
-            _additionalFlags.append(char2string(*(addFlags+14))); 
-            _additionalFlags.append(char2string(*(addFlags+15))); 
-            _additionalFlags.append(char2string(*(addFlags+16))); 
-            _additionalFlags.append(char2string(*(addFlags+17))); 
-            _additionalFlags.append(char2string(*(addFlags+18))); 
-            _additionalFlags.append(char2string(*(addFlags+19))); 
-            
+            _additionalFlags.append(char2string(*(addFlags+4)));
+            _additionalFlags.append(char2string(*(addFlags+5)));
+            _additionalFlags.append(char2string(*(addFlags+6)));
+            _additionalFlags.append(char2string(*(addFlags+7)));
+            _additionalFlags.append(char2string(*(addFlags+8)));
+            _additionalFlags.append(char2string(*(addFlags+9)));
+            _additionalFlags.append(char2string(*(addFlags+10)));
+            _additionalFlags.append(char2string(*(addFlags+11)));
+            _additionalFlags.append(char2string(*(addFlags+12)));
+            _additionalFlags.append(char2string(*(addFlags+13)));
+            _additionalFlags.append(char2string(*(addFlags+14)));
+            _additionalFlags.append(char2string(*(addFlags+15)));
+            _additionalFlags.append(char2string(*(addFlags+16)));
+            _additionalFlags.append(char2string(*(addFlags+17)));
+            _additionalFlags.append(char2string(*(addFlags+18)));
+            _additionalFlags.append(char2string(*(addFlags+19)));
+
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
             updater.where(dynamicCCCapBankTable["capbankid"]==_paoid);

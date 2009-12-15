@@ -14,7 +14,6 @@
 #include "ctitime.h"
 #include "ccfeeder.h"
 #include "ccsubstationbus.h"
-#include "ccsubstationbusstore.h"
 
 #include "ccUnitTestUtil.h"
 

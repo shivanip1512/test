@@ -1,6 +1,8 @@
 #pragma once
 #pragma warning( disable : 4786)
 
+#include "devicetypes.h"
+
 enum CapControlType
 {
     Undefined = 0,
@@ -11,5 +13,6 @@ enum CapControlType
     Area,
     Strategy,
     Schedule,
-    SpecialArea
+    SpecialArea,
+    Ltc = TYPELTC
 };

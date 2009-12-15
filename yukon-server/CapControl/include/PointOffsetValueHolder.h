@@ -3,6 +3,8 @@
 
 #include "yukon.h"
 #include "pointtypes.h"
+#include "msg_pdata.h"
+
 #include <map>
 
 using std::map;
@@ -12,9 +14,10 @@ class PointOffestValueHolder
     public:
         PointOffestValueHolder();
 
-        virtual void addPointOffset(int offset, CtiPointType_t type, int pointId, int pointValue);
+        virtual void addPointOffset(int offset, CtiPointType_t type, int pointId, double pointValue);
+        virtual void updatePointValue(CtiPointDataMsg* message);
 
-        bool getPointValueByOffsetAndType(int offset, CtiPointType_t type, int& result);
+        bool getPointValueByOffsetAndType(int offset, CtiPointType_t type, double& result);
         bool getPointIdByOffsetAndType(int offset, CtiPointType_t type, int& result);
 
         struct PointOffsetTypePair
@@ -51,7 +54,7 @@ class PointOffestValueHolder
 
         struct PointIdValuePair {
             int pointId;
-            int pointValue;
+            double pointValue;
         };
 
         typedef std::map<PointOffsetTypePair,PointIdValuePair> OffsetMap;

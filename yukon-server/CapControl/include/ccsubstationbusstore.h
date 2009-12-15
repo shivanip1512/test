@@ -34,8 +34,10 @@
 #include "ccmessage.h"
 #include "ccstatsobject.h"
 #include "LoadTapChanger.h"
-
+#include "PointDataHandler.h"
+#include "PointDataListener.h"
 #include "ccutil.h"
+
 
 using std::multimap;
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
@@ -97,7 +99,7 @@ private:
 };
 
 
-class CtiCCSubstationBusStore
+class CtiCCSubstationBusStore : public PointDataListener
 {
 public:
 
@@ -466,6 +468,8 @@ public:
     std::vector<CtiCCCapBankPtr> getCapBanksByPaoIdAndType(int paoId, CapControlType type);
     CapControlType determineTypeById(int paoId);
 
+    PointDataHandler& getPointDataHandler();
+    virtual bool handlePointDataByPaoId(int paoId, CtiPointDataMsg* message);
 private:
 
     /* Relating to Max Kvar Cparm */
@@ -525,6 +529,7 @@ private:
     BOOL _voltReductionSystemDisabled;
     int  _voltDisabledCount;
 
+    PointDataHandler _pointDataHandler;
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;

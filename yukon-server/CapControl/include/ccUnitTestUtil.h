@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ccsubstationbusstore.h"
+
 class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
 {
     public:

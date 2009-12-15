@@ -7,8 +7,9 @@
 
 #include "LtcPointHolder.h"
 #include "CapControlPao.h"
+#include "UpdatablePao.h"
 
-class LoadTapChanger : public CapControlPao
+class LoadTapChanger : public CapControlPao, public UpdatablePao
 {
     private:
         LtcPointHolder _pointValues;
@@ -20,6 +21,9 @@ class LoadTapChanger : public CapControlPao
         LoadTapChanger(RWDBReader& rdr);
 
         LtcPointHolder& getPointValueHolder();
+
+        //From UpdatablePao Interface
+        virtual void handlePointData(CtiPointDataMsg* message);
 
 };
 

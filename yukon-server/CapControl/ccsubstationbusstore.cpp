@@ -43,7 +43,6 @@
 
 #include "ctistring.h"
 #include <string>
-//#include <rwutil.h>
 
 #define HOURLY_RATE 3600
 
@@ -66,7 +65,13 @@ CtiTime timeSaver;
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregisterforpoints(TRUE), _reloadfromamfmsystemflag(FALSE), _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)), _wassubbusdeletedflag(FALSE), _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0))
+CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
+                                                    _reregisterforpoints(TRUE),
+                                                    _reloadfromamfmsystemflag(FALSE),
+                                                    _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
+                                                    _wassubbusdeletedflag(FALSE),
+                                                    _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
+                                                    _pointDataHandler(this)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
@@ -852,6 +857,32 @@ CapControlType CtiCCSubstationBusStore::determineTypeById(int paoId)
     //Unknown
     return Undefined;
 }
+
+PointDataHandler& CtiCCSubstationBusStore::getPointDataHandler()
+{
+    return _pointDataHandler;
+}
+
+bool CtiCCSubstationBusStore::handlePointDataByPaoId(int paoId, CtiPointDataMsg* message)
+{
+    //Currently only LTC does this. The idea will be all types do it
+    // and this can be accomplished once all objects inherit off CapControlPao
+    CapControlType type = determineTypeById(paoId);
+
+    switch (type)
+    {
+        case Ltc:
+            ((UpdatablePao*) findLtcById(paoId))->handlePointData(message);
+            break;
+        default:
+            return false;
+            break;
+    }
+
+    return true;
+}
+
+
 
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
@@ -5978,6 +6009,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         if (ltcPtr != NULL)
         {
             deleteLtcById(ltcId);
+            _pointDataHandler.removeAllPointsForPao(ltcId);
         }
     }
 
@@ -6030,6 +6062,77 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
             }
         }
 
+        //Load Points
+        {
+            RWDBTable yukonPointTable = db.table("point");
+            RWDBTable yukonPaoTable = db.table("YukonPAObject");
+
+            RWDBSelector selector = db.selector();
+            selector << yukonPointTable["POINTID"]
+                     << yukonPointTable["POINTTYPE"]
+                     << yukonPointTable["POINTNAME"]
+                     << yukonPointTable["PAObjectID"]
+                     << yukonPointTable["POINTOFFSET"];
+
+            selector.from(yukonPointTable);
+            selector.from(yukonPaoTable);
+
+            if (ltcId > 0)
+            {
+                //Only Points on ltcId
+                selector.where(yukonPaoTable["Type"] == string2RWCString(desolveDeviceType(TYPELTC)) &&
+                               yukonPaoTable["PAObjectID"] == yukonPointTable["PAObjectID"] &&
+                               yukonPointTable["PAObjectID"] == ltcId);
+            }
+            else
+            {
+                //All LTC Points.
+                selector.where(yukonPaoTable["Type"] == string2RWCString(desolveDeviceType(TYPELTC)) &&
+                               yukonPaoTable["PAObjectID"] == yukonPointTable["PAObjectID"]);
+            }
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                string loggedSQLstring = selector.asString();
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
+            }
+
+            RWDBReader rdr = selector.reader(conn);
+            RWDBNullIndicator isNull;
+            while ( rdr() )
+            {
+                int paoId = 0;
+                rdr["PAObjectID"] >> paoId;
+
+                LoadTapChangerPtr ltc = findLtcById(paoId);
+                if (ltc != NULL)
+                {
+                    string temp;
+                    int pointId = 0;
+                    CtiPointType_t pointType = InvalidPointType;
+                    string pointName;
+                    int pointOffset = 0;
+
+                    rdr["POINTID"] >> pointId;
+                    rdr["POINTTYPE"] >> temp;
+                    pointType = resolvePointType(temp);
+                    rdr["POINTNAME"] >> pointName;
+                    rdr["POINTOFFSET"] >> pointOffset;
+
+                    ltc->getPointValueHolder().addPointOffset(pointName,pointOffset,pointType,pointId,0);
+                    _pointDataHandler.addPoint(pointId,paoId);
+                }
+                else
+                {
+                    //Error it should have been in the map. Points assigned to a non existant ltc
+                }
+            }
+        }
+
+        //Assign to subs
         {
             RWDBTable busToLtc = db.table("CCSubstationBusToLTC");
 
@@ -6065,7 +6168,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
                 rdr["substationbusid"] >> subbusId;
                 rdr["ltcId"] >> ltcId;
 
-                currentBus = _paobject_subbus_map.find(subbusId)->second;
+                currentBus = findSubBusByPAObjectID(subbusId);
                 if (currentBus != NULL)
                 {
                     currentBus->setLtcId(ltcId);
@@ -6265,12 +6368,12 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             while(rdr())
                             {
                                 int ltcId;
-                                int subbusId;
+                                int busId;
 
-                                rdr["substationbusid"] >> subbusId;
+                                rdr["substationbusid"] >> busId;
                                 rdr["ltcId"] >> ltcId;
 
-                                currentBus = paobject_subbus_map->find(subbusId)->second;
+                                currentBus = findSubBusByPAObjectID(busId);
                                 if (currentBus != NULL)
                                 {
                                     currentBus->setLtcId(ltcId);
@@ -6279,7 +6382,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - ERROR: SubStation Bus with id: " << subbusId << " not found. Ltc with id: " << ltcId << " is assigned to it."  << endl;
+                                        dout << CtiTime() << " - ERROR: SubStation Bus with id: " << busId << " not found. Ltc with id: " << ltcId << " is assigned to it."  << endl;
                                     }
                                 }
                             }
@@ -10194,32 +10297,36 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(CtiMultiMsg_set &modif
    try
    {
        CtiMultiMsg_set::iterator it;
-       CtiPointRegistrationMsg *pointAddMsg = CTIDBG_new CtiPointRegistrationMsg();
+       //CtiPointRegistrationMsg *pointAddMsg = CTIDBG_new CtiPointRegistrationMsg();
+       std::list<int> pointList;
+
        for(it = modifiedSubsSet.begin(); it != modifiedSubsSet.end();it++)
        {
            CtiCCSubstationBus* sub = (CtiCCSubstationBusPtr)*it;
-           sub->addAllSubPointsToMsg(pointAddMsg);
+           sub->addAllSubPointsToMsg(pointList);
            CtiFeeder_vec& feeds = sub->getCCFeeders();
            for (LONG j = 0; j < feeds.size(); j++)
            {
                CtiCCFeederPtr feed = (CtiCCFeederPtr)feeds[j];
-               feed->addAllFeederPointsToMsg(pointAddMsg);
+               feed->addAllFeederPointsToMsg(pointList);
                CtiCCCapBank_SVector& caps = feed->getCCCapBanks();
                for (LONG k = 0; k < caps.size(); k++)
                {
                    CtiCCCapBankPtr cap = (CtiCCCapBankPtr)caps[k];
-                   cap->addAllCapBankPointsToMsg(pointAddMsg);
+                   cap->addAllCapBankPointsToMsg(pointList);
                    if (stringContainsIgnoreCase(cap->getControlDeviceType(), "CBC 702") )
                    {
                        CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)cap->getTwoWayPoints();
-                       twoWayPts->addAllCBCPointsToRegMsg(pointAddMsg);
+                       twoWayPts->addAllCBCPointsToRegMsg(pointList);
                    }
                }
            }
-
        }
 
-       CtiCapController::getInstance()->sendMessageToDispatch(pointAddMsg);
+       getPointDataHandler().getAllPointIds(pointList);
+
+       CtiCapController::getInstance()->getDispatchConnection()->addRegistrationForPoints(pointList);
+       //CtiCapController::getInstance()->sendMessageToDispatch(pointAddMsg);
    }
    catch(...)
    {

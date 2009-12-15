@@ -2196,173 +2196,213 @@ BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG v
 
 
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(CtiPointRegistrationMsg *pointAddMsg)
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::list<int>& pointList)
 {
 
     if( getCapacitorBankStateId()  > 0 )
     {
-        pointAddMsg->insert( getCapacitorBankStateId());
+        pointList.push_back(getCapacitorBankStateId());
+        //pointAddMsg->insert( getCapacitorBankStateId());
     }
     if ( getReCloseBlockedId()  > 0 )
     {
-        pointAddMsg->insert(getReCloseBlockedId());
+        pointList.push_back(getReCloseBlockedId());
+        //pointAddMsg->insert(getReCloseBlockedId());
     }
     if ( getControlModeId()  > 0 )
     {
-        pointAddMsg->insert(getControlModeId());
+        pointList.push_back(getControlModeId());
+        //pointAddMsg->insert(getControlModeId());
     }
     if ( getAutoVoltControlId()  > 0 )
     {
-        pointAddMsg->insert(getAutoVoltControlId());
+        pointList.push_back(getAutoVoltControlId());
+        //pointAddMsg->insert(getAutoVoltControlId());
     }
     if ( getLastControlLocalId()  > 0 )
     {
-        pointAddMsg->insert(getLastControlLocalId());
+        pointList.push_back(getLastControlLocalId());
+        //pointAddMsg->insert(getLastControlLocalId());
     }
     if ( getLastControlRemoteId()  > 0 )
     {
-        pointAddMsg->insert(getLastControlRemoteId());
+        pointList.push_back(getLastControlRemoteId());
+        //pointAddMsg->insert(getLastControlRemoteId());
     }
     if ( getLastControlOvUvId() > 0 )
     {
-        pointAddMsg->insert(getLastControlOvUvId());
+        pointList.push_back(getLastControlOvUvId());
+        //pointAddMsg->insert(getLastControlOvUvId());
     }
     if ( getLastControlNeutralFaultId()  > 0 )
     {
-        pointAddMsg->insert(getLastControlNeutralFaultId());
+        pointList.push_back(getLastControlNeutralFaultId());
+        //pointAddMsg->insert(getLastControlNeutralFaultId());
     }
     if ( getLastControlScheduledId()  > 0 )
     {
-        pointAddMsg->insert(getLastControlScheduledId());
+        pointList.push_back(getLastControlScheduledId());
+        //pointAddMsg->insert(getLastControlScheduledId());
     }
     if ( getLastControlDigitalId()  > 0 )
     {
-        pointAddMsg->insert(getLastControlDigitalId());
+        pointList.push_back(getLastControlDigitalId());
+        //pointAddMsg->insert(getLastControlDigitalId());
     }
     if ( getLastControlAnalogId()  > 0 )
     {
-        pointAddMsg->insert(getLastControlAnalogId());
+        pointList.push_back(getLastControlAnalogId());
+        //pointAddMsg->insert(getLastControlAnalogId());
     }
     if ( getLastControlTemperatureId()  > 0 )
     {
-        pointAddMsg->insert(getLastControlTemperatureId());
+        pointList.push_back(getLastControlTemperatureId());
+        //pointAddMsg->insert(getLastControlTemperatureId());
     }
     if ( getOvConditionId()  > 0 )
     {
-        pointAddMsg->insert(getOvConditionId());
+        pointList.push_back(getOvConditionId());
+        //pointAddMsg->insert(getOvConditionId());
     }
     if ( getUvConditionId()  > 0 )
     {
-        pointAddMsg->insert(getUvConditionId());
+        pointList.push_back(getUvConditionId());
+        //pointAddMsg->insert(getUvConditionId());
     }
     if ( getOpFailedNeutralCurrentId()  > 0 )
     {
-        pointAddMsg->insert(getOpFailedNeutralCurrentId());
+        pointList.push_back(getOpFailedNeutralCurrentId());
+        //pointAddMsg->insert(getOpFailedNeutralCurrentId());
     }
     if ( getNeutralCurrentFaultId()  > 0 )
     {
-        pointAddMsg->insert(getNeutralCurrentFaultId());
+        pointList.push_back(getNeutralCurrentFaultId());
+        //pointAddMsg->insert(getNeutralCurrentFaultId());
     }
     if ( getBadRelayId()  > 0 )
     {
-        pointAddMsg->insert(getBadRelayId());
+        pointList.push_back(getBadRelayId());
+        //pointAddMsg->insert(getBadRelayId());
     }
     if ( getDailyMaxOpsId()  > 0 )
     {
-        pointAddMsg->insert(getDailyMaxOpsId());
+        pointList.push_back(getDailyMaxOpsId());
+        //pointAddMsg->insert(getDailyMaxOpsId());
     }
     if ( getVoltageDeltaAbnormalId()  > 0 )
     {
-        pointAddMsg->insert(getVoltageDeltaAbnormalId());
+        pointList.push_back(getVoltageDeltaAbnormalId());
+        //pointAddMsg->insert(getVoltageDeltaAbnormalId());
     }
     if ( getTempAlarmId()  > 0 )
     {
-        pointAddMsg->insert(getTempAlarmId());
+        pointList.push_back(getTempAlarmId());
+        //pointAddMsg->insert(getTempAlarmId());
     }
     if ( getDSTActiveId()  > 0 )
     {
-        pointAddMsg->insert(getDSTActiveId());
+        pointList.push_back(getDSTActiveId());
+        //pointAddMsg->insert(getDSTActiveId());
     }
     if ( getNeutralLockoutId() > 0 )
     {
-        pointAddMsg->insert(getNeutralLockoutId());
+        pointList.push_back(getNeutralLockoutId());
+        //pointAddMsg->insert(getNeutralLockoutId());
     }
     if ( getIgnoredIndicatorId()  > 0 )
     {
-        pointAddMsg->insert(getIgnoredIndicatorId());
+        pointList.push_back(getIgnoredIndicatorId());
+        //pointAddMsg->insert(getIgnoredIndicatorId());
     }
     if ( getRSSIId()  > 0 )
     {
-        pointAddMsg->insert(getRSSIId());
+        pointList.push_back(getRSSIId());
+        //pointAddMsg->insert(getRSSIId());
     }
     if ( getIgnoredReasonId()  > 0 )
     {
-        pointAddMsg->insert(getIgnoredReasonId());
+        pointList.push_back(getIgnoredReasonId());
+        //pointAddMsg->insert(getIgnoredReasonId());
     }
     if ( getUvSetPointId()  > 0 )
     {
-        pointAddMsg->insert(getUvSetPointId());
+        pointList.push_back(getUvSetPointId());
+        //pointAddMsg->insert(getUvSetPointId());
     }
     if ( getOvSetPointId() > 0 )
     {
-        pointAddMsg->insert(getOvSetPointId());
+        pointList.push_back(getOvSetPointId());
+        //pointAddMsg->insert(getOvSetPointId());
     }
     if ( getOVUVTrackTimeId() > 0 )
     {
-        pointAddMsg->insert(getOVUVTrackTimeId());
+        pointList.push_back(getOVUVTrackTimeId());
+        //pointAddMsg->insert(getOVUVTrackTimeId());
     }
     if ( getNeutralCurrentSensorId() > 0 )
     {
-        pointAddMsg->insert(getNeutralCurrentSensorId());
+        pointList.push_back(getNeutralCurrentSensorId());
+        //pointAddMsg->insert(getNeutralCurrentSensorId());
     }
     if ( getNeutralCurrentAlarmSetPointId() > 0 )
     {
-        pointAddMsg->insert(getNeutralCurrentAlarmSetPointId());
+        pointList.push_back(getNeutralCurrentAlarmSetPointId());
+        //pointAddMsg->insert(getNeutralCurrentAlarmSetPointId());
     }
     if ( getUDPIpAddressId() > 0 )
     {
-        pointAddMsg->insert(getUDPIpAddressId());
+        pointList.push_back(getUDPIpAddressId());
+        //pointAddMsg->insert(getUDPIpAddressId());
     }
     if ( getUDPPortNumberId() > 0 )
     {
-        pointAddMsg->insert(getUDPPortNumberId());
+        pointList.push_back(getUDPPortNumberId());
+        //pointAddMsg->insert(getUDPPortNumberId());
     }
     if ( getVoltageId()  > 0 )
     {
-        pointAddMsg->insert(getVoltageId());
+        pointList.push_back(getVoltageId());
+        //pointAddMsg->insert(getVoltageId());
     }
     if ( getHighVoltageId()  > 0 )
     {
-        pointAddMsg->insert(getHighVoltageId());
+        pointList.push_back(getHighVoltageId());
+        //pointAddMsg->insert(getHighVoltageId());
     }
     if ( getLowVoltageId()  > 0 )
     {
-        pointAddMsg->insert(getLowVoltageId());
+        pointList.push_back(getLowVoltageId());
+        //pointAddMsg->insert(getLowVoltageId());
     }
     if ( getDeltaVoltageId()  > 0 )
     {
-        pointAddMsg->insert(getDeltaVoltageId());
+        pointList.push_back(getDeltaVoltageId());
+        //pointAddMsg->insert(getDeltaVoltageId());
     }
     if ( getAnalogInput1Id()  > 0 )
     {
-        pointAddMsg->insert(getAnalogInput1Id());
+        pointList.push_back(getAnalogInput1Id());
+        //pointAddMsg->insert(getAnalogInput1Id());
     }
     if ( getTemperatureId() > 0 )
     {
-        pointAddMsg->insert(getTemperatureId());
+        pointList.push_back(getTemperatureId());
+        //pointAddMsg->insert(getTemperatureId());
     }
 
     if ( getTotalOpCountId()  > 0 )
     {
-        pointAddMsg->insert(getTotalOpCountId());
+        pointList.push_back(getTotalOpCountId());
+        //pointAddMsg->insert(getTotalOpCountId());
     }
     if ( getOvCountId()  > 0 )
     {
-        pointAddMsg->insert(getOvCountId());
+        pointList.push_back(getOvCountId());
+        //pointAddMsg->insert(getOvCountId());
     }
     if ( getUvCountId() > 0 )
     {
-        pointAddMsg->insert(getUvCountId());
+        pointList.push_back(getUvCountId());
     }
 
     return *this;

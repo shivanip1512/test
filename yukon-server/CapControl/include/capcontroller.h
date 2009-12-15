@@ -27,6 +27,7 @@
 
 #include "dbaccess.h"
 #include "connection.h"
+#include "DispatchConnection.h"
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"
@@ -75,6 +76,8 @@ public:
     void readClientMsgQueue();
     void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+
+    DispatchConnection* getDispatchConnection();
 private:
 
     CtiCapController();
@@ -86,7 +89,7 @@ private:
     void processCCEventMsgs();
 
     CtiConnection* getPILConnection();
-    CtiConnection* getDispatchConnection();
+
     void checkDispatch(ULONG secondsFrom1901);
     void checkPIL(ULONG secondsFrom1901);
     void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
@@ -94,7 +97,7 @@ private:
     void adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr currentBus);
     void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
     void parseMessage(RWCollectable* message, ULONG secondsFrom1901);
-    void pointDataMsg(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
+    void pointDataMsg(CtiPointDataMsg* message, unsigned long secondsFrom1901);
     void pointDataMsgBySubBus(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
     void pointDataMsgByFeeder(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
     void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
@@ -110,7 +113,7 @@ private:
     RWThread _messageSenderThread;
 
     CtiConnection* _pilConnection;
-    CtiConnection* _dispatchConnection;
+    DispatchConnection* _dispatchConnection;
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     CtiPCPtrQueue< RWCollectable > _inClientMsgQueue;

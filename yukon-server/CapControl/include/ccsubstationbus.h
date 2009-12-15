@@ -401,7 +401,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     CtiCCSubstationBus& checkAndUpdateRecentlyControlledFlag();
 
-    CtiCCSubstationBus& addAllSubPointsToMsg(CtiPointRegistrationMsg *pointAddMsg);
+    CtiCCSubstationBus& addAllSubPointsToMsg(std::list<int>& pointAddMsg);
     CtiCCSubstationBus& verifyControlledStatusFlags();
     LONG getNextTODStartTime();
 

@@ -5377,7 +5377,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control open");
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
-                        {    
+                        {
                             setLastOperationTime(currentDateTime);
                             currentCapBank->setLastStatusChangeTime(currentDateTime);
                         }
@@ -5419,7 +5419,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control close");
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
-                        {    
+                        {
                             setLastOperationTime(currentDateTime);
                             currentCapBank->setLastStatusChangeTime(currentDateTime);
                         }
@@ -6630,36 +6630,36 @@ BOOL CtiCCFeeder::scanAllMonitorPoints()
     return retVal;
 }
 
-CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(CtiPointRegistrationMsg *pointAddMsg)
+CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(std::list<int>& pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )
     {
-        pointAddMsg->insert(getCurrentVarLoadPointId());
+        pointAddMsg.push_back(getCurrentVarLoadPointId());
     }
     if( getCurrentWattLoadPointId() > 0 )
     {
-        pointAddMsg->insert(getCurrentWattLoadPointId());
+        pointAddMsg.push_back(getCurrentWattLoadPointId());
     }
     if (getCurrentVoltLoadPointId() > 0)
     {
-        pointAddMsg->insert(getCurrentVoltLoadPointId());
+        pointAddMsg.push_back(getCurrentVoltLoadPointId());
     }
     if (getEstimatedVarLoadPointId() > 0)
     {
-        pointAddMsg->insert(getEstimatedVarLoadPointId());
+        pointAddMsg.push_back(getEstimatedVarLoadPointId());
     }
     if (getDailyOperationsAnalogPointId() > 0)
     {
-        pointAddMsg->insert(getDailyOperationsAnalogPointId());
+        pointAddMsg.push_back(getDailyOperationsAnalogPointId());
     }
     if (getPowerFactorPointId() > 0)
     {
-        pointAddMsg->insert(getPowerFactorPointId());
+        pointAddMsg.push_back(getPowerFactorPointId());
     }
     if (getEstimatedPowerFactorPointId() > 0)
     {
-        pointAddMsg->insert(getEstimatedPowerFactorPointId());
+        pointAddMsg.push_back(getEstimatedPowerFactorPointId());
     }
 
     return *this;
