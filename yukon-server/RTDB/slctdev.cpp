@@ -84,7 +84,6 @@
 #include "dev_repeater.h"
 #include "dev_rtc.h"
 #include "dev_sixnet.h"
-#include "dev_foreignporter.h"
 #include "rte_macro.h"
 #include "rte_ccu.h"
 #include "rte_xcu.h"
@@ -273,8 +272,6 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_SYSTEM:               NewDevice = CTIDBG_new CtiDeviceSystem;     break;
 
-        case TYPE_FOREIGNPORTER:        NewDevice = CTIDBG_new Device::ForeignPorter;   break;
-
         case TYPECBC6510:               NewDevice = CTIDBG_new CtiDeviceCBC6510;    break;
 
         case TYPECBC7020:               NewDevice = CTIDBG_new Device::CBC7020;     break;
@@ -354,7 +351,6 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
             case RouteTypeSNPP:
             case RouteTypeRTC:
             case RouteTypeSeriesVLMI:
-            case RouteTypeForeignPorter:
             case RouteTypeXML:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteXCU;

@@ -127,42 +127,8 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
 
                 if(parse.getiValue("type") == ProtocolExpresscomType)
                 {
-                    if( _transmitterDevice->getType() == TYPE_FOREIGNPORTER )
-                    {
-                        string cmd = OutMessage->Request.CommandStr;
-
-                        int relay = 0;
-                        int segment;
-
-                        if( segment = parse.getiValue("xc_spid",     0)  )  cmd += " spid "     + CtiNumStr(segment);
-                        if( segment = parse.getiValue("xc_geo",      0)  )  cmd += " geo "      + CtiNumStr(segment);
-                        if( segment = parse.getiValue("xc_sub",      0)  )  cmd += " sub "      + CtiNumStr(segment);
-                        if( segment = parse.getiValue("xc_feeder",   0)  )  cmd += " feeder "   + CtiNumStr(segment);
-                        if( segment = parse.getiValue("xc_zip",      0)  )  cmd += " zip "      + CtiNumStr(segment);
-                        if( segment = parse.getiValue("xc_uda",      0)  )  cmd += " uda "      + CtiNumStr(segment);
-                        if( segment = parse.getiValue("xc_program",  0)  )  cmd += " program "  + CtiNumStr(segment);
-                        if( segment = parse.getiValue("xc_splinter", 0)  )  cmd += " splinter " + CtiNumStr(segment);
-
-                        for( int i = parse.getiValue("relaymask"); i > 0; i >>= 1 )
-                        {
-                            relay++;
-                        }
-
-                        if( relay ) cmd += " relay " + CtiNumStr(relay);
-
-                        strncpy(OutMessage->Request.CommandStr, cmd.data(), COMMAND_STR_SIZE);
-                        OutMessage->Request.CommandStr[COMMAND_STR_SIZE] = 0;
-
-                        OutMessage->DeviceID = _transmitterDevice->getID();
-                        OutMessage->Port     = _transmitterDevice->getPortID();
-
-                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    }
-                    else
-                    {
-                        enablePrefix(true);
-                        status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
-                    }
+                    enablePrefix(true);
+                    status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
                 }
                 else if(parse.getiValue("type") == ProtocolSA305Type)
                 {
@@ -186,17 +152,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                 }
                 else if( parse.getiValue("type") == ProtocolEmetconType )
                 {
-                    if( _transmitterDevice->getType() == TYPE_FOREIGNPORTER )
-                    {
-                        OutMessage->DeviceID = _transmitterDevice->getID();
-                        OutMessage->Port     = _transmitterDevice->getPortID();
-
-                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    }
-                    else
-                    {
-                        status = !NORMAL;
-                    }
+                    status = !NORMAL;
                 }
                 else if(OutMessage->EventCode & VERSACOM)
                 {

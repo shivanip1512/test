@@ -31,6 +31,8 @@ CtiMutex CtiDeviceBase::_configMux;
 
 CtiDeviceBase::~CtiDeviceBase()
 {
+    _pointMgr = NULL;  //  We don't own these - null them out to make
+    _routeMgr = NULL;  //    PC-Lint happy
 }
 
 

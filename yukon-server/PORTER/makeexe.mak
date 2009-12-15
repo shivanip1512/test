@@ -197,11 +197,8 @@ disp_thd.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
 		mgr_config.h msg_pcreturn.h msg_dbchg.h msg_cmd.h mgr_port.h \
 		port_base.h tbl_port_base.h xfer.h tbl_port_statistics.h \
 		slctprt.h thread_monitor.h thread_register_data.h portglob.h \
-		tcpsup.h statistics.h port_thread_udp.h unsolicited_handler.h \
-		dev_single.h tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h \
-		port_udp.h port_serial.h tbl_port_settings.h \
-		tbl_port_timing.h tbl_port_tcpip.h EncodingFilterFactory.h \
-		EncodingFilter.h
+		tcpsup.h statistics.h unsolicited_handler.h dev_single.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h
 dllmain.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		cticonnect.h netports.h portglob.h tcpsup.h ctinexus.h \
@@ -367,10 +364,10 @@ porter.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		mgr_route.h repeaterrole.h mgr_config.h mgr_point.h \
 		port_thread_udp.h unsolicited_handler.h dev_single.h \
 		msg_pcrequest.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		prot_base.h port_udp.h port_serial.h tbl_port_settings.h \
-		tbl_port_timing.h tbl_port_tcpip.h EncodingFilterFactory.h \
-		EncodingFilter.h port_thread_tcp.h port_tcp.h port_shr.h \
-		port_shr_ip.h msg_dbchg.h msg_trace.h rte_macro.h \
+		prot_base.h msg_dbchg.h port_udp.h port_serial.h \
+		tbl_port_settings.h tbl_port_timing.h tbl_port_tcpip.h \
+		EncodingFilterFactory.h EncodingFilter.h port_thread_tcp.h \
+		port_tcp.h port_shr.h port_shr_ip.h msg_trace.h rte_macro.h \
 		tbl_rtmacro.h eventlog.h configparms.h trx_711.h trx_info.h \
 		dllyukon.h pilserver.h server_b.h con_mgr.h cmdopts.h \
 		argkey.h argval.h dev_ccu721.h dev_remote.h tbl_dialup.h \
@@ -750,7 +747,7 @@ port_thread_tcp.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h \
-		port_tcp.h port_serial.h tbl_port_settings.h \
+		msg_dbchg.h port_tcp.h port_serial.h tbl_port_settings.h \
 		tbl_port_timing.h tbl_paoproperty.h c_port_interface.h \
 		elogger.h portglob.h tcpsup.h porter.h dsm2err.h \
 		devicetypes.h statistics.h portfield.h prot_gpuff.h \
@@ -777,7 +774,7 @@ port_thread_udp.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h \
-		port_udp.h port_serial.h tbl_port_settings.h \
+		msg_dbchg.h port_udp.h port_serial.h tbl_port_settings.h \
 		tbl_port_timing.h tbl_port_tcpip.h EncodingFilterFactory.h \
 		EncodingFilter.h c_port_interface.h elogger.h prot_gpuff.h \
 		portglob.h tcpsup.h porter.h dsm2err.h devicetypes.h \
@@ -854,11 +851,11 @@ unsolicited_handler.obj:	yukon.h precompiled.h ctidbgmem.h boostutil.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h prot_base.h prot_gpuff.h portglob.h tcpsup.h \
-		porter.h dsm2err.h devicetypes.h statistics.h dev_dnp.h \
-		dev_remote.h tbl_dialup.h tbl_direct.h prot_dnp.h \
+		configval.h prot_base.h msg_dbchg.h prot_gpuff.h portglob.h \
+		tcpsup.h porter.h dsm2err.h devicetypes.h statistics.h \
+		dev_dnp.h dev_remote.h tbl_dialup.h tbl_direct.h prot_dnp.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h msg_dbchg.h \
-		msg_trace.h portdecl.h
+		dnp_object_binaryoutput.h tbl_dv_address.h msg_trace.h \
+		portdecl.h
 #ENDUPDATE#

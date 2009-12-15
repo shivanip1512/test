@@ -169,7 +169,6 @@
 #define TYPE_SYSTEM                          3000
 #define TYPE_VIRTUAL_SYSTEM                  3001
 #define TYPE_ENERGYPRO                       3100
-#define TYPE_FOREIGNPORTER                   3200
 
 // Port types occupy the range 6000 to 6100.  !!!!!! DO NOT USE !!!!!!
 

@@ -41,6 +41,7 @@ CCU721::CCU721() :
 
 CCU721::~CCU721()
 {
+    _current_om = 0;  //  owned by Porter, not us
 }
 
 

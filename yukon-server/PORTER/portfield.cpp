@@ -1329,7 +1329,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
-                    case TYPE_FOREIGNPORTER:
                     case TYPE_FMU:
                     case TYPE_CCU721:
                     {

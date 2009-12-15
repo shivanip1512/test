@@ -88,10 +88,6 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeSeriesVLMI;
     }
-    else if(rwsTemp == "foreign porter")
-    {
-        Ret = RouteTypeForeignPorter;
-    }
     else
     {
         Ret = RouteTypeInvalid;
@@ -714,10 +710,6 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
        nRet = TYPE_ENERGYPRO;
     }
-    else if(rwsTemp == "foreign porter")
-    {
-       nRet = TYPE_FOREIGNPORTER;
-    }
     else if(rwsTemp == "fmu")
     {
         nRet = TYPE_FMU;
@@ -1242,7 +1234,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_RTM:
         case TYPE_FMU:
         case TYPE_PAGING_RECEIVER:
-        case TYPE_FOREIGNPORTER:
         case TYPE_FCI:
         case TYPE_NEUTRAL_MONITOR:
         case TYPE_XML_XMIT:

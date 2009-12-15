@@ -49,7 +49,6 @@ BOOST_AUTO_TEST_CASE(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("wctp terminal route"),  RouteTypeWCTP);
     BOOST_CHECK_EQUAL(resolveRouteType("rtc route"),            RouteTypeRTC);
     BOOST_CHECK_EQUAL(resolveRouteType("series 5 lmi"),   RouteTypeSeriesVLMI);
-    BOOST_CHECK_EQUAL(resolveRouteType("foreign porter"), RouteTypeForeignPorter);
     BOOST_CHECK_EQUAL(resolveRouteType("integration route"), RouteTypeXML);
 }
 
@@ -450,9 +449,6 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "energypro";
     devType = TYPE_ENERGYPRO;
-    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "foreign porter";
-    devType = TYPE_FOREIGNPORTER;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "fmu";
     devType = TYPE_FMU;

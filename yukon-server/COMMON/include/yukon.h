@@ -402,7 +402,6 @@ enum CtiRoute_t
     RouteTypeRTC,
     RouteTypeSeriesVLMI,
     RouteTypeSNPP,
-    RouteTypeForeignPorter,
     RouteTypeXML,
 
     RouteTypeMax

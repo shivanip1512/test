@@ -592,25 +592,6 @@ dev_fmu.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h rwutil.h \
 		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h tbl_dialup.h \
 		tbl_direct.h tbl_dv_ied.h verification_objects.h msg_cmd.h \
 		porter.h devicetypes.h ctistring.h
-dev_foreignporter.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
-		rwutil.h ctitime.h dlldefs.h boost_time.h boostutil.h \
-		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h configkey.h configval.h devicetypes.h \
-		dev_foreignporter.h dev_remote.h dev_single.h dsm2.h mutex.h \
-		guard.h clrdump.h cticonnect.h netports.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h counter.h \
-		dev_exclusion.h tbl_paoexclusion.h config_device.h logger.h \
-		thread.h CtiPCPtrQueue.h dllbase.h hashkey.h hash_functions.h \
-		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
-		collectable.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h sema.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		msg_signal.h tbl_base.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
-		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
-		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
-		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h tbl_dialup.h \
-		tbl_direct.h
 dev_fulcrum.obj:	yukon.h precompiled.h ctidbgmem.h ctidate.h dlldefs.h \
 		logger.h thread.h mutex.h guard.h numstr.h clrdump.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
@@ -2304,7 +2285,7 @@ port_tcp.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		pointdefs.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
 		tbl_pt_property.h tbl_pt_trigger.h tbl_port_base.h xfer.h \
 		critical_section.h tbl_port_statistics.h tbl_port_settings.h \
-		tbl_port_timing.h tbl_port_tcpip.h
+		tbl_port_timing.h
 port_tcpipdirect.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
 		rwutil.h ctitime.h dlldefs.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -2593,9 +2574,9 @@ slctdev.obj:	yukon.h precompiled.h ctidbgmem.h dev_710.h dev_idlc.h \
 		transdata_application.h transdata_tracker.h \
 		transdata_datalink.h prot_ymodem.h transdata_data.h msg_cmd.h \
 		dev_repeater800.h dev_repeater.h dev_rtc.h tbl_dv_rtc.h \
-		dev_sixnet.h prot_sixnet.h dev_foreignporter.h rte_macro.h \
-		tbl_rtmacro.h rte_versacom.h tbl_rtversacom.h master.h \
-		rte_expresscom.h dev_fmu.h dev_xml.h rtdb.h slctdev.h
+		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
+		rte_versacom.h tbl_rtversacom.h master.h rte_expresscom.h \
+		dev_fmu.h dev_xml.h rtdb.h slctdev.h
 slctpnt.obj:	yukon.h precompiled.h ctidbgmem.h rtdb.h dlldefs.h \
 		hashkey.h hash_functions.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
