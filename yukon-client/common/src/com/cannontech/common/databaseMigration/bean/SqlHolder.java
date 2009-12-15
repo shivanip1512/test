@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 
-public class SQLHolder{
+public class SqlHolder{
     private int databaseMappingKey;
     private List<Integer> primaryKeys;
     private List<String> selectClauses = new ArrayList<String>();

@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
@@ -222,8 +223,8 @@ public class DatabaseMigrationController {
 			return mav;
 		}
 		
-		databaseMigrationService.validateImportFile(importFile);
-		
+		ImportDatabaseMigrationStatus validateImportFile = databaseMigrationService.validateImportFile(importFile);
+		System.out.println(validateImportFile);
 		// store
 		String fileKey = UUID.randomUUID().toString();
 		FileSystemResource resource = new FileSystemResource(importFile);

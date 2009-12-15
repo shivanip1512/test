@@ -27,15 +27,8 @@ import com.cannontech.common.databaseMigration.service.ConfigurationParserServic
 public class ConfigurationParserServiceImpl implements ConfigurationParserService{
 
     private static Logger log = YukonLogManager.getLogger(ConfigurationParserServiceImpl.class);
-
     private Database database;
     
-    /**
-     * builds configuration object using the database configuration file.
-     * 
-     * @param configurationXMLFile
-     * @return
-     */
     public ConfigurationTable buildConfigurationTemplate(File configurationXMLFile) {
         SAXBuilder saxBuilder = new SAXBuilder();
         
@@ -76,22 +69,23 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     private void buildConfigurationTemplate(ConfigurationTable tableElement,
                                             Element configFileElement){
-        @SuppressWarnings("unchecked")
-        List children = configFileElement.getChildren();
 
+        List<?> children = configFileElement.getChildren();
         for (int i = 0; i < children.size(); i++) {
+            
             Object object = children.get(i);
             if (object instanceof Element) {
                 Element configElement = (Element) object;
                 if (configElement.getName().equals("include")){
+
                     ConfigurationIncludeTable includeElement = new ConfigurationIncludeTable();
                     includeElement.setLabel(tableElement.getLabel());
                     includeElement.setTableName(configElement.getAttributeValue("name"));
+
                     tableElement.getIncludeElementList().add(includeElement);
-                    
                     buildConfigurationTemplate(includeElement, configElement);
                 } else if (configElement.getName().equals("references")){
-                    buildConfigurationTemplateReferenceElement(tableElement, configElement);
+                    buildConfigurationTemplateReferencesElement(tableElement, configElement);
                 } else
                     throw new IllegalArgumentException("The element in the configuration file does not exist or is not a valid element compared to its parent element. ("+configElement.getName()+")");
             } else {
@@ -101,99 +95,102 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
     }
     
     /**
-     * builds configuration object using the IncludeElement.
+     * This is a recursive call the goes through the configuration 
+     * and builds the include elements into a java representation.  
+     * This method also handles configuration validation
      * 
      * @param includeElement
      * @param configFileElement
      */
     private void buildConfigurationTemplate(ConfigurationIncludeTable includeElement,
                                             Element configFileElement) {
-        @SuppressWarnings("unchecked")
-        List children = configFileElement.getChildren();
 
+        List<?> children = configFileElement.getChildren();
         for (int i = 0; i < children.size(); i++) {
             Object object = children.get(i);
-            if (object instanceof Element) {
-                Element configElement = (Element) object;
-                if (configElement.getName().equals("include")){
-                    ConfigurationIncludeTable includedIncludeElement = new ConfigurationIncludeTable();
-                    includedIncludeElement.setLabel(includeElement.getLabel());
-                    includedIncludeElement.setTableName(configElement.getAttributeValue("name"));
-                    includeElement.getIncludeElementList().add(includedIncludeElement);
-                    
-                    buildConfigurationTemplate(includedIncludeElement, configElement);
-                } else if (configElement.getName().equals("references")){
-                    ConfigurationTable configurationReferenceTable = new ConfigurationTable();
-                    configurationReferenceTable.setLabel(includeElement.getLabel());
-                    configurationReferenceTable.setTableName(includeElement.getTableName());
-                    includeElement.getReferencesTables().add(configurationReferenceTable);
-                    
-                    buildConfigurationTemplateReferenceElement(configurationReferenceTable, configElement);
-                } else
-                    throw new IllegalArgumentException("The element in the configuration file does not exist or is not a valid element compared to its parent element. ("+configElement.getName()+")");
-            } else {
+            if (!(object instanceof Element)) {
                 throw new IllegalArgumentException("A none element was supplied in the configuration file. ("+object+")");
+            }
+
+            Element configElement = (Element) object;
+            if (configElement.getName().equals("include")){
+                ConfigurationIncludeTable includedIncludeElement = new ConfigurationIncludeTable();
+                includedIncludeElement.setLabel(includeElement.getLabel());
+                includedIncludeElement.setTableName(configElement.getAttributeValue("name"));
+                includeElement.getIncludeElementList().add(includedIncludeElement);
+
+                buildConfigurationTemplate(includedIncludeElement, configElement);
+
+            } else if (configElement.getName().equals("references")){
+                ConfigurationTable configurationReferencesTable = new ConfigurationTable();
+                configurationReferencesTable.setLabel(includeElement.getLabel());
+                configurationReferencesTable.setTableName(includeElement.getTableName());
+                includeElement.getReferencesTables().add(configurationReferencesTable);
+
+                buildConfigurationTemplateReferencesElement(configurationReferencesTable, 
+                                                            configElement);
+            } else {
+                throw new IllegalArgumentException("The element in the configuration file does not exist or is not a valid element compared to its parent element. ("+configElement.getName()+")");
             }
         }
     }
 
     /**
-     * builds configuration object using the ReferenceElement.
+     * This is a recursive call the goes through the configuration 
+     * and builds the references elements into a java representation.  
+     * This method also handles configuration validation
      * 
      * @param includeElement
      * @param configFileElement
-     */
-    private void buildConfigurationTemplateReferenceElement(ConfigurationTable configurationTable,
+     */    
+    private void buildConfigurationTemplateReferencesElement(ConfigurationTable configurationTable,
                                                             Element configFileElement) {
-        @SuppressWarnings("unchecked")
-        List children = configFileElement.getChildren();
 
+        List<?> children = configFileElement.getChildren();
         for (int i = 0; i < children.size(); i++) {
             Object object = children.get(i);
-            if (object instanceof Element) {
-                Element configElement = (Element) object;
-                if (configElement.getName().equals("table")){
-                    ConfigurationTable tableElement = new ConfigurationTable();
-                    tableElement.setLabel(configurationTable.getLabel());
-                    tableElement.setTableName(configElement.getAttributeValue("name"));
-                    configurationTable.getReferencesTables().add(tableElement);
-                    
-                    buildConfigurationTemplate(tableElement, configElement);
-                    continue;
-                } else
-                    throw new IllegalArgumentException("The element in the configuration file does not exist or is not a valid element compared to its parent element. ("+configElement.getName()+")");
-            } else {
+            if (!(object instanceof Element)) {
                 throw new IllegalArgumentException("A none element was supplied in the configuration file. ("+object+")");
+            }
+
+            Element configElement = (Element) object;
+            if (configElement.getName().equals("table")){
+                ConfigurationTable tableElement = new ConfigurationTable();
+                tableElement.setLabel(configurationTable.getLabel());
+                tableElement.setTableName(configElement.getAttributeValue("name"));
+                configurationTable.getReferencesTables().add(tableElement);
+
+                buildConfigurationTemplate(tableElement, configElement);
+            } else {
+                throw new IllegalArgumentException("The element in the configuration file does not exist or is not a valid element compared to its parent element. ("+configElement.getName()+")");
             }
         }
     }
 
-    ///// build database data template /////
 
-    /**
-     * This method takes in a configurationTable and builds a template to be used when gathering the data for the export process
-     */
-    public DataTableTemplate buildDatabaseMapTemplate(ConfigurationTable configFileTableElement){
+    public DataTableTemplate buildDataTableTemplate(ConfigurationTable configFileTableElement){
 
         String tableName = configFileTableElement.getTableName();
         
         CountHolder countHolder = new CountHolder(1);
         DataTableTemplate baseDataTable = 
             new DataTableTemplate(ElementCategoryEnum.BASE, countHolder.getCount(), tableName);
-        buildDatabaseMapTemplate(baseDataTable, configFileTableElement, countHolder, null);
+        buildDataTableTemplate(baseDataTable, configFileTableElement, countHolder, null);
         
         return baseDataTable;
     }
 
     /**
-     * This method will drill down into a table until it reaches the finalTableInDrillDown.  If the finalTableInDrillDown is null
-     * the method will travel all the way down the database tree until it no longer has table references.
+     * This method will drill down into a table, creating all the links, until it 
+     * reaches the finalTableInDrillDown.  If the finalTableInDrillDown is null
+     * the method will travel all the way down the database tree until it no longer 
+     * has a table references.
      *  
      */
-    private void buildDatabaseMapTemplate(DataTableTemplate dataTable, 
-                                          ConfigurationTable configFileTableElement, 
-                                          CountHolder countHolder,
-                                          Table finalTableInDrillDown){
+    private void buildDataTableTemplate(DataTableTemplate dataTable, 
+                                        ConfigurationTable configFileTableElement, 
+                                        CountHolder countHolder,
+                                        Table finalTableInDrillDown){
         Table table = database.getTable(dataTable.getTableName());
         List<Column> allColumns = table.getAllColumns();
         for (Column column : allColumns) {
@@ -209,9 +206,8 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                 // that symbolizes a foreign key from the primary key.  If so we want to create an inline item. 
                 Table tableRefTable = database.getTable(column.getTableRef());
                 if (column.getRefType() == null ||
-                        column.getRefType().equals(ReferenceTypeEnum.ONE_TO_ONE)){
-
-                    processInlineDataTable(dataTable, 
+                    column.getRefType().equals(ReferenceTypeEnum.ONE_TO_ONE)){
+                    processInlineDataTableTemplate(dataTable, 
                                            configFileTableElement,
                                            countHolder, 
                                            column,
@@ -225,7 +221,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                     List<ConfigurationIncludeTable> configIncludeElementList = configFileTableElement.getIncludeElementList();
                     for (ConfigurationIncludeTable configIncludeElement : configIncludeElementList) {
                         if (configIncludeElement.getTableName().equals(tableRefTable.getTableName())) {
-                            processIncludeDataTable(dataTable,
+                            processIncludeDataTableTemplate(dataTable,
                                                     configIncludeElement,
                                                     countHolder,
                                                     column,
@@ -266,7 +262,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
             for (Column referencesTableColumn : referencesTableColumns) {
                 if (table.getTableName().equals(referencesTableColumn.getTableRef())){
 
-                    processReferencesDataTable(dataTable,
+                    processReferencesDataTableTemplate(dataTable,
                                                configurationTable,
                                                table,
                                                countHolder,
@@ -277,29 +273,49 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
         }
     }
 
-    private void processInlineDataTable(DataTableTemplate dataTable,
-                                        ConfigurationTable configFileTableElement,
-                                        CountHolder countHolder, 
-                                        Column column,
-                                        Table tableRefTable,
-                                        Table finalTableInDrillDown) {
+    /**
+     * This generates the inline information and then sends the next part of the 
+     * configurationTable back into the recursive method
+     * 
+     * @param dataTable
+     * @param configFileTableElement
+     * @param countHolder
+     * @param column
+     * @param tableRefTable
+     * @param finalTableInDrillDown
+     */
+    private void processInlineDataTableTemplate(DataTableTemplate dataTable,
+                                                ConfigurationTable configFileTableElement,
+                                                CountHolder countHolder, 
+                                                Column column,
+                                                Table tableRefTable,
+                                                Table finalTableInDrillDown) {
         DataTableTemplate inlineTable = 
-            new DataTableTemplate(null,
-                          0,
-                          tableRefTable.getTableName());
+            new DataTableTemplate(null, 0, tableRefTable.getTableName());
         dataTable.putTableColumn(column.getName(), inlineTable);
-        buildDatabaseMapTemplate(inlineTable, 
-                                                configFileTableElement, 
-                                                countHolder,
-                                                finalTableInDrillDown);
+        buildDataTableTemplate(inlineTable, 
+                               configFileTableElement, 
+                               countHolder,
+                               finalTableInDrillDown);
     }
 
-    private void processIncludeDataTable(DataTableTemplate dataTable,
-                                        ConfigurationIncludeTable configIncludeElement,
-                                        CountHolder countHolder, 
-                                        Column column,
-                                        Table tableRefTable,
-                                        Table finalTableInDrillDown) {
+    /**
+     * This generates the include information and then sends the next part of the 
+     * configurationTable back into the recursive method
+     * 
+     * @param dataTable
+     * @param configIncludeElement
+     * @param countHolder
+     * @param column
+     * @param tableRefTable
+     * @param finalTableInDrillDown
+     */
+    private void processIncludeDataTableTemplate(DataTableTemplate dataTable,
+                                                 ConfigurationIncludeTable configIncludeElement,
+                                                 CountHolder countHolder, 
+                                                 Column column,
+                                                 Table tableRefTable,
+                                                 Table finalTableInDrillDown) {
         countHolder.add();
         DataTableTemplate includeTable = 
             new DataTableTemplate(ElementCategoryEnum.INCLUDE, 
@@ -307,12 +323,23 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                           tableRefTable.getTableName());
         dataTable.putTableColumn(column.getName(), includeTable);
         
-        buildDatabaseMapTemplate(includeTable, 
-                                                configIncludeElement,
-                                                countHolder,
-                                                finalTableInDrillDown);
+        buildDataTableTemplate(includeTable, 
+                               configIncludeElement,
+                               countHolder,
+                               finalTableInDrillDown);
     }
 
+    /**
+     * This generates the reference information and then sends the next part of the 
+     * configurationTable back into the recursive method
+     * 
+     * @param dataTable
+     * @param configFileTableElement
+     * @param countHolder
+     * @param column
+     * @param tableRefTable
+     * @param finalTableInDrillDown
+     */
     private void processReferenceDataTable(DataTableTemplate dataTable,
                                           ConfigurationTable configFileTableElement,
                                           CountHolder countHolder, 
@@ -321,57 +348,73 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                           Table finalTableInDrillDown) {
         countHolder.add();
         DataTableTemplate referenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
-                          countHolder.getCount(),
-                          tableRefTable.getTableName());
+            new DataTableTemplate(ElementCategoryEnum.REFERENCE, countHolder.getCount(), tableRefTable.getTableName());
         dataTable.putTableColumn(column.getName(), referenceTable);
-        
         buildDatabaseMapReferenceTemplate(referenceTable, countHolder);
     }
     
-    private void processReferencesDataTable(DataTableTemplate dataTable, 
-                                            ConfigurationTable configFileTableElement,
-                                            Table finalTableInDrillDown,
-                                            CountHolder countHolder,
-                                            Table referencesTable) {
+    /**
+     * This generates the references information and then sends the next part of the 
+     * configurationTable back into the recursive method
+     * 
+     * @param dataTable
+     * @param configFileTableElement
+     * @param countHolder
+     * @param column
+     * @param tableRefTable
+     * @param finalTableInDrillDown
+     */
+    private void processReferencesDataTableTemplate(DataTableTemplate dataTable, 
+                                                    ConfigurationTable configFileTableElement,
+                                                    Table finalTableInDrillDown,
+                                                    CountHolder countHolder,
+                                                    Table referencesTable) {
         countHolder.add();
         DataTableTemplate referenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.REFERENCES, 
-                          countHolder.getCount(),
-                          referencesTable.getTableName());
+            new DataTableTemplate(ElementCategoryEnum.REFERENCES, countHolder.getCount(), referencesTable.getTableName());
         dataTable.addTableReferences(referenceTable);
-
-        buildDatabaseMapTemplate(referenceTable, 
-                                 configFileTableElement,
-                                 countHolder,
-                                 finalTableInDrillDown);
+        buildDataTableTemplate(referenceTable, 
+                               configFileTableElement,
+                               countHolder,
+                               finalTableInDrillDown);
     }
 
-    
+    /**
+     * This method handles the recursion case of references.
+     * 
+     * @param referenceTable
+     * @param countHolder
+     */
     private void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable,
                                                    CountHolder countHolder){
         Table table = database.getTable(referenceTable.getTableName());
         List<Column> identifierColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
         for (Column identifierColumn : identifierColumns) {
             if (identifierColumn.getTableRef() != null){
-                processReferenceReferenceDataTable(referenceTable,
-                                                   identifierColumn,
-                                                   countHolder);
+                processReferenceReferenceDataTableTemplate(referenceTable,
+                                                           identifierColumn,
+                                                           countHolder);
             } else {
                 referenceTable.putTableColumn(identifierColumn.getName(), new DataValueTemplate());
             }
         }
     }
 
-    private void processReferenceReferenceDataTable(DataTableTemplate referenceTable,
-                                                    Column identifierColumn,
-                                                    CountHolder countHolder) {
+    /**
+     * This generates the Reference information and then sends the next part of the 
+     * configurationTable back into the reference recursive method
+     * 
+     * @param referenceTable
+     * @param identifierColumn
+     * @param countHolder
+     */
+    private void processReferenceReferenceDataTableTemplate(DataTableTemplate referenceTable,
+                                                            Column identifierColumn,
+                                                            CountHolder countHolder) {
         countHolder.add();
 
         DataTableTemplate nextReferenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
-                          countHolder.getCount(),
-                          identifierColumn.getTableRef());
+            new DataTableTemplate(ElementCategoryEnum.REFERENCE, countHolder.getCount(), identifierColumn.getTableRef());
         referenceTable.putTableColumn(identifierColumn.getName(), nextReferenceTable);
         buildDatabaseMapReferenceTemplate(nextReferenceTable, 
                                           countHolder);

@@ -11,6 +11,7 @@ public class ImportDatabaseMigrationStatus {
     int totalCount = 0;
     
     List<String> labelList = Lists.newArrayList();
+    WarningProcessingEnum warningProcessing = WarningProcessingEnum.VALIDATE;
     Map<String, List<String>> warningsMap = Maps.newLinkedHashMap();
     Map<String, List<String>> errorsMap = Maps.newLinkedHashMap();
 
@@ -47,6 +48,14 @@ public class ImportDatabaseMigrationStatus {
     }
     public void setLabelList(List<String> labelList) {
         this.labelList = labelList;
+    }
+
+    // Warning Processing
+    public WarningProcessingEnum getWarningProcessing() {
+        return warningProcessing;
+    }
+    public void setWarningProcessing(WarningProcessingEnum warningProcessing) {
+        this.warningProcessing = warningProcessing;
     }
     
     // Warnings Map

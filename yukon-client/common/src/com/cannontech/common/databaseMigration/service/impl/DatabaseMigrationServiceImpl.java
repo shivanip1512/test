@@ -35,15 +35,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.databaseMigration.TableChangeCallback;
-import com.cannontech.common.databaseMigration.bean.DatabaseMigrationImportCallback;
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
-import com.cannontech.common.databaseMigration.bean.SQLHolder;
+import com.cannontech.common.databaseMigration.bean.SqlHolder;
+import com.cannontech.common.databaseMigration.bean.WarningProcessingEnum;
 import com.cannontech.common.databaseMigration.bean.config.ConfigurationTable;
 import com.cannontech.common.databaseMigration.bean.data.DataTable;
 import com.cannontech.common.databaseMigration.bean.data.template.DataTableTemplate;
@@ -55,14 +54,18 @@ import com.cannontech.common.databaseMigration.service.ConfigurationParserServic
 import com.cannontech.common.databaseMigration.service.ConfigurationProcessorService;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.databaseMigration.service.ExportXMLGeneratorService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
@@ -82,17 +85,20 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver; 
     private RolePropertyDao rolePropertyDao;
     private TransactionOperations transactionTemplate;
+    private TemplateProcessorFactory templateProcessorFactory;
     private ScheduledExecutor scheduledExecutor = null;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     public ImportDatabaseMigrationStatus validateImportFile(File importFile){
-        
+        String configurationNameValue = getConfigurationNameValue(importFile);
         List<Element> importItemList = getElementListFromFile(importFile);
 
-        return validateElementList(importItemList);
+        return validateElementList(importItemList, configurationNameValue);
         
     }
 
-    private ImportDatabaseMigrationStatus validateElementList(final List<Element> importItemList) {
+    private ImportDatabaseMigrationStatus validateElementList(final List<Element> importItemList, 
+                                                              final String configurationNameValue) {
         final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus();
         
 /////// Change isolation level and make sure it works in both cases: SQL Server and Oracle.
@@ -104,14 +110,15 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     
                     String label;
                     try {
-                        label = getElementLable(element);
+                        label = getElementLabel(element, configurationNameValue);
+                        importDatabaseMigrationStatus.addLabelListEntry(label);
                     } catch (IllegalArgumentException e) {
                         importDatabaseMigrationStatus.addErrorListEntry("Invalid entry", e.getMessage());
                         continue;
                     }
                     
                     try {
-                        processElement(element, null);
+                        processElement(element, null, importDatabaseMigrationStatus);
                     } catch (ConfigurationErrorException e) {
                         e.printStackTrace();
                         log.error(e.getMessage());
@@ -129,36 +136,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
         return importDatabaseMigrationStatus;
     }
-
-    
+        
     /**
      * 
-     * @param element
-     * @return
      */
-    private String getElementLable(Element element) {
-        if(element.getName() != "item" ||
-           element.getAttributeValue("name") == null) {
-            throw new IllegalArgumentException("The configuration element is not the currect format. ");
-        }
-        String initialTableName = element.getAttributeValue("name");
-        Table table = database.getTable(initialTableName);
-        
-        List<String> columnNames = 
-            Table.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER));
-        
-        
-        
-        return null;
-    }
-
-        
-    /**
-     * @return ******************/
-
     public ImportDatabaseMigrationStatus processImportDatabaseMigration (final File importFile){
         
-        final ImportDatabaseMigrationStatus importMigrationStatus = new ImportDatabaseMigrationStatus();
+        final String configurationNameValue = getConfigurationNameValue(importFile);
+        final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus();
 
         scheduledExecutor.execute(new Runnable() {
             @Override
@@ -167,38 +152,48 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 String tableName = "";
 
                 List<Element> importItemList = getElementListFromFile(importFile);
-                processElementList(importItemList, importMigrationStatus);
+                processElementList(importItemList, configurationNameValue, importDatabaseMigrationStatus);
                 handleRowInserted(tableName, primaryKey);
             }
         });
         
-        return importMigrationStatus;
+        return importDatabaseMigrationStatus;
     }
     
-    private void processElementList(final List<Element> importItemList, 
-                                    ImportDatabaseMigrationStatus importMigrationStatus) {
-        final DatabaseMigrationImportCallback databaseMigrationImportCallback = new DatabaseMigrationImportCallback();
+    private ImportDatabaseMigrationStatus processElementList(final List<Element> importItemList,
+                                                             final String configurationNameValue,
+                                                             final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
+
         for (final Element element : importItemList) {
-            databaseMigrationImportCallback.incrementProcessed();
+            importDatabaseMigrationStatus.incrementProcessed();
+            
+            final String label;
+            try {
+                label = getElementLabel(element, configurationNameValue);
+                importDatabaseMigrationStatus.addLabelListEntry(label);
+            } catch (IllegalArgumentException e) {
+                importDatabaseMigrationStatus.addErrorListEntry("Invalid entry", e.getMessage());
+                continue;
+            }
+            
             transactionTemplate.execute(new TransactionCallback() {
                 public Object doInTransaction(TransactionStatus status) {
                     try {
-                        processElement(element, null);
-//                    } catch (ConfigurationWarningException e) {
-//                        log.warn(e.getMessage());
-//                        databaseMigrationImportCallback.addWarningListEntry(e.getMessage());
+                        processElement(element, null, importDatabaseMigrationStatus);
                     } catch (ConfigurationErrorException e) {
                         log.error(e.getMessage());
-                        databaseMigrationImportCallback.addErrorListEntry(e.getMessage());
+                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
                     } catch (Exception e) {
                         log.error(e.getMessage());
-                        databaseMigrationImportCallback.addErrorListEntry(e.getMessage());
+                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
                     }
                     status.setRollbackOnly();
                     return null;
                 }
             });
         }
+        
+        return importDatabaseMigrationStatus;
     }
     
     /**
@@ -207,19 +202,25 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
      * @param importItem
      * @throws ConfigurationErrorException 
      */
-    private void processElement(Element importItem, Map<String, String> primaryKeyColumnValuePair) throws ConfigurationErrorException{
+    private void processElement(Element importItem, 
+                                Map<String, String> primaryKeyColumnValuePair,
+                                ImportDatabaseMigrationStatus importDatabaseMigrationStatus) throws ConfigurationErrorException{
         if (!importItem.getName().equals("item")) {
             throw new IllegalArgumentException("Invalid import configuration file structure. Items must start with an item tag. "+importItem.getName());
         }
         
         String initialTableName = importItem.getAttributeValue("name");
         Table table = database.getTable(initialTableName);
-        processElement(table, importItem, primaryKeyColumnValuePair);
+        processElement(table, importItem, primaryKeyColumnValuePair, importDatabaseMigrationStatus);
     }
 
     
     
-    private Integer processElement(Table table, Element importItem, Map<String, String> primaryKeyTableValuePair) throws ConfigurationErrorException{
+    private Integer processElement(Table table,
+                                   Element importItem, 
+                                   Map<String, String> primaryKeyTableValuePair,
+                                   ImportDatabaseMigrationStatus importDatabaseMigrationStatus) throws ConfigurationErrorException{
+
         List<Column> allColumns = table.getAllColumns();
         List<String> columnNames = Table.getColumnNames(allColumns);
         List<?> children = importItem.getChildren();
@@ -265,7 +266,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                         }
 
                         Table childTable = database.getTable(column.getTableRef());
-                        Integer primaryKeyId = processElement(childTable, childElement, null);
+                        Integer primaryKeyId = processElement(childTable, childElement, null, importDatabaseMigrationStatus);
                         columnValueMap.put(column.getName(),primaryKeyId.toString());
                     } else if (childElementType.equals("reference")) {
                         if(column.getTableRef() == null){
@@ -284,7 +285,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             }
         }
         
-        Integer primaryKeyId = processTableEntry(columnValueMap, table, importItem);
+        Integer primaryKeyId = processTableEntry(columnValueMap, table, importItem, importDatabaseMigrationStatus);
 
         // handle references
         Map<String, String> newPrimaryKeyTableValuePair = Collections.singletonMap(table.getTableName(), primaryKeyId.toString());
@@ -295,7 +296,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             for (Object referencesItem : referencesItems) {
                 if (!(referencesItem instanceof Element)){continue;}
                 Element referencesItemElement = (Element) referencesItem;
-                processElement(referencesItemElement, newPrimaryKeyTableValuePair);
+                processElement(referencesItemElement, newPrimaryKeyTableValuePair, importDatabaseMigrationStatus);
             }
         }
         
@@ -390,7 +391,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private Integer buildAndProcessReferenceSQL(Map<String, String> columnValueMap,
                                                 Table table) throws ConfigurationErrorException {
         
-        SQLHolder sqlHolder = new SQLHolder();
+        SqlHolder sqlHolder = new SqlHolder();
 
         List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         String primaryKeyColumnName = primaryKeyColumnNames.get(0);
@@ -427,7 +428,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
      */
     private Integer processTableEntry(Map<String, String> columnValueMap,
                                       Table table,
-                                      Element importItem) throws ConfigurationErrorException {
+                                      Element importItem,
+                                      ImportDatabaseMigrationStatus importDatabaseMigrationStatus) throws ConfigurationErrorException {
 
         // Check and make sure all the identifier keys are supplied.
         List<String> referenceColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.IDENTIFIER));
@@ -438,11 +440,12 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         }
         
         // Check to see if the primary keys were supplied;  If they weren't we need to grab the max value.
-        return buildAndProcessPrimaryKeySQL(columnValueMap, table);
+        return buildAndProcessPrimaryKeySQL(columnValueMap, table, importDatabaseMigrationStatus);
     }
 
     private Integer buildAndProcessPrimaryKeySQL(Map<String, String> columnValueMap,
-                                                 Table table) throws ConfigurationErrorException {
+                                                 Table table,
+                                                 ImportDatabaseMigrationStatus importDatabaseMigrationStatus) throws ConfigurationErrorException {
         List<Column> primaryKeyColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
         List<String> primaryKeyColumnNames = Table.getColumnNames(primaryKeyColumns);
         
@@ -469,11 +472,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             if (primaryKeySelectResultMap != null) {
                 try {
                     compareResultTableDataToImportTableData(table, columnValueMap, primaryKeySelectResultMap);
-                } catch (ConfigurationWarningException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                } catch (ConfigurationWarningException e) {
+                    List<String> labelList = importDatabaseMigrationStatus.getLabelList();
+                    importDatabaseMigrationStatus.addWarningListEntry(labelList.get(labelList.size()-1), 
+                                                                      "The supplied item already exists in the system.  ("+table.getTableName()+")");
                 }
-
                 return Integer.valueOf(columnValueMap.get(primaryKeyColumnNames.get(0)));
 
             // The imported item does not exist.  Creating new instance.
@@ -483,26 +486,32 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
         // One primary key was missing.  Get the max primary key to insert.
         } else {
-            
-            // Figure out the missing primaryKey
-//            String missingPrimaryKeyName = missingPrimaryKeyNameList.get(0);
-//            Integer missingPrimaryKeyValue = getMissingPrimaryKeyInformation(table, columnValueMap, missingPrimaryKeyName);
-//            columnValueMap.put(missingPrimaryKeyName, missingPrimaryKeyValue.toString());
-            
+            String missingPrimaryKey = missingPrimaryKeyNameList.get(0);
+
             // Using the identifiers to see if the object currently exists in the system.
             Map<String, Object> identifierSelectResultMap =
                 buildAndProcessIdentifierSelect(columnValueMap, table);
         
-            // Checks to see if the imported item exists in the system and then tries to compare it
-            // to see if the item matches the table;
+            // Checks to see if the imported item exists in the system,
+            // and then checks to see if a user action was submitted.
             if (identifierSelectResultMap != null) {
-                try {
-                    compareResultTableDataToImportTableData(table, columnValueMap, identifierSelectResultMap);
-                    String primaryKeyName = primaryKeyColumnNames.get(0);
-                    return Integer.valueOf(identifierSelectResultMap.get(primaryKeyName).toString());
-                } catch (ConfigurationWarningException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
+                if (warningProcessing.equals(WarningProcessingEnum.VALIDATE)) {
+                    importDatabaseMigrationStatus.addWarningListEntry(importDatabaseMigrationStatus.getLabelList().get(importDatabaseMigrationStatus.getLabelList().size()-1), 
+                                                                      "The supplied item already exists in the system.  ("+table.getTableName()+")");
+                    Integer primaryKeyValue = Integer.valueOf(identifierSelectResultMap.get(missingPrimaryKey).toString());
+                    return primaryKeyValue;
+
+                } else if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
+                    Integer primaryKeyValue = Integer.valueOf(identifierSelectResultMap.get(missingPrimaryKey).toString());
+                    return primaryKeyValue;
+
+                } else if (warningProcessing.equals(WarningProcessingEnum.OVER_WRITE)) {
+                    String primaryKeyValue = identifierSelectResultMap.get(missingPrimaryKey).toString();
+                    columnValueMap.put(missingPrimaryKey, primaryKeyValue);
+                    updateTableEntry(table, columnValueMap);
+                    
+                    return Integer.valueOf(primaryKeyValue);
                 }
 
             // The imported item does not exist.  Creating new instance.
@@ -526,6 +535,41 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             }
         }
         return null;
+    }
+
+    /**
+     * Builds and process the Sql to update a table entry.
+     * 
+     * @param table
+     * @param columnValueMap
+     */
+    private void updateTableEntry(Table table,
+                                  Map<String, String> columnValueMap) {
+
+        // UPDATE
+        Object[] columnValueMapKeys  = columnValueMap.keySet().toArray();
+        SqlStatementBuilder updateSQL = new SqlStatementBuilder();
+        updateSQL.append("UPDATE "+table.getTableName());
+        
+        // SET
+        List<Object> argValues = new ArrayList<Object>();
+        updateSQL.append("SET "+columnValueMapKeys[0].toString()+ " ? ");
+        argValues.add(columnValueMap.get(columnValueMapKeys[0].toString()));
+        for (int i = 1; i < columnValueMapKeys.length; i++) {
+            updateSQL.append(", "+columnValueMapKeys[i].toString()+" = ? ");
+            argValues.add(columnValueMap.get(columnValueMapKeys[i].toString()));
+        }
+
+        // WHERE
+        List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
+        updateSQL.append("WHERE "+primaryKeyColumnNames.get(0)+" = ? ");
+        argValues.add(columnValueMap.get(primaryKeyColumnNames.get(0)));
+        for (int i = 1; i < primaryKeyColumnNames.size(); i++) {
+            updateSQL.append("AND "+primaryKeyColumnNames.get(i)+" = ? ");
+            argValues.add(columnValueMap.get(primaryKeyColumnNames.get(i)));
+        }
+        // Insert entry into the database
+        jdbcTemplate.update(updateSQL.getSql(), argValues.toArray());
     }
 
     /**
@@ -568,7 +612,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         List<String> allColumnNames = 
             Table.getColumnNames(table.getAllColumns());
         
-        SQLHolder sqlHolder = new SQLHolder();
+        SqlHolder sqlHolder = new SqlHolder();
         sqlHolder.addSelectClause("MAX ("+missingColumnName+")");
         sqlHolder.addFromClause(table.getTableName());
 
@@ -635,15 +679,15 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private Map<String, Object> buildAndProcessPrimaryKeySelect(Map<String, String> columnValueMap,
                                                                 Table table) {
         // Get information from primary key
-        SQLHolder primaryKeySelectSQLHolder = new SQLHolder();
+        SqlHolder primaryKeySelectSqlHolder = new SqlHolder();
         for (Column column : table.getAllColumns()) {
-            primaryKeySelectSQLHolder.addSelectClause(column.getName());
+            primaryKeySelectSqlHolder.addSelectClause(column.getName());
         }
-        primaryKeySelectSQLHolder.addFromClause(table.getTableName());
+        primaryKeySelectSqlHolder.addFromClause(table.getTableName());
         for (Column primaryKeyColumn : table.getColumns(ColumnTypeEnum.PRIMARY_KEY)) {
-            primaryKeySelectSQLHolder.addWhereClause(primaryKeyColumn.getName()+" = "+columnValueMap.get(primaryKeyColumn.getName()));
+            primaryKeySelectSqlHolder.addWhereClause(primaryKeyColumn.getName()+" = "+columnValueMap.get(primaryKeyColumn.getName()));
         }
-        SqlStatementBuilder primaryKeySelectSQL = primaryKeySelectSQLHolder.buildSelectSQL();
+        SqlStatementBuilder primaryKeySelectSQL = primaryKeySelectSqlHolder.buildSelectSQL();
         
         // Process primaryKey Select clause
         try {
@@ -667,18 +711,18 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                                                 Table table) {
         
         // Get information from identifier key
-        SQLHolder identifierSelectSQLHolder = new SQLHolder();
+        SqlHolder identifierSelectSqlHolder = new SqlHolder();
         for (Column column : table.getAllColumns()) {
-            identifierSelectSQLHolder.addSelectClause(column.getName());
+            identifierSelectSqlHolder.addSelectClause(column.getName());
         }
-        identifierSelectSQLHolder.addFromClause(table.getTableName());
+        identifierSelectSqlHolder.addFromClause(table.getTableName());
         
         List<Object> whereParameterValues = new ArrayList<Object>();
         for (Column identifierColumn : table.getColumns(ColumnTypeEnum.IDENTIFIER)) {
-            identifierSelectSQLHolder.addWhereClause(identifierColumn.getName()+" = ? ");
+            identifierSelectSqlHolder.addWhereClause(identifierColumn.getName()+" = ? ");
             whereParameterValues.add(columnValueMap.get(identifierColumn.getName()));
         }
-        SqlStatementBuilder identifierSelectSQL = identifierSelectSQLHolder.buildSelectSQL();
+        SqlStatementBuilder identifierSelectSQL = identifierSelectSqlHolder.buildSelectSQL();
         
         // Process identifier Select clause
         try{
@@ -697,10 +741,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                                          Map<String, String> columnValueMap,
                                                          Map<String, Object> resultMap) throws ConfigurationErrorException, ConfigurationWarningException {
         
-        // The resultMap has no entries therefore symbolizing no conflicts
-        if (resultMap == null) {
-            return;
-        }
         
         List<String> warningList = new ArrayList<String>();
         List<String> errorList = new ArrayList<String>();
@@ -772,13 +812,29 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
     /********************************/
     
+    private String getConfigurationNameValue(File importFile){
+        SAXBuilder saxBuilder = new SAXBuilder();
+        try {
+            Document importXMLDocument = saxBuilder.build(importFile);
+            Element importRoot = importXMLDocument.getRootElement();
+            Element configurationElement = importRoot.getChild("configuration");
+            
+            return configurationElement.getAttributeValue("name");
+        } catch (JDOMException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     private List<Element> getElementListFromFile(File importFile){
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
             Document importXMLDocument = saxBuilder.build(importFile);
             Element importRoot = importXMLDocument.getRootElement();
-            
-//            Element dataElement = importRoot.getChild("data");
             Element configurationElement = importRoot.getChild("configuration");
             
             List<?> children = configurationElement.getChildren();
@@ -799,6 +855,75 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     }
     
     
+    /**
+     * Returns the identifier for a given element that is in the user's format, 
+     * which was processed through the template process.
+     * 
+     * @param element
+     * @return
+     */
+    private String getElementLabel(Element element, String configurationNameValue) {
+        // Check to make sure the format is correct and we can get the initial table.
+        if(element.getName() != "item" ||
+           element.getAttributeValue("name") == null) {
+            throw new IllegalArgumentException("The configuration element is not the currect format. ");
+        }
+        String initialTableName = element.getAttributeValue("name");
+        Table table = database.getTable(initialTableName);
+        
+        Map<String, String> labelValueMap = getElementLabelValueMap(element, table);
+
+        // Builds up the label by using the database migration message template 
+        // and the key value pairs.
+        SystemUserContext systemUserContext = new SystemUserContext();
+        FormattingTemplateProcessor formattingTemplateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(systemUserContext);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(systemUserContext);
+
+        String messageKey = com.cannontech.common.util.StringUtils.toCamelCase(configurationNameValue);
+        String message = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigrationTemplate."+messageKey);
+
+        String label = formattingTemplateProcessor.process(message, labelValueMap);
+        return label;
+    }
+
+    /**
+     * This method iterates through a list of identifying columns and builds up a column name value map, 
+     * which contains the column name as a key and the value of that element as the value. 
+     * 
+     * @param element
+     * @param identifyingColumns
+     * @return
+     */
+    private Map<String, String> getElementLabelValueMap(Element element,
+                                                        Table table) {
+        Map<String, String> labelValueMap = Maps.newLinkedHashMap();
+
+        List<?> children = element.getChildren();
+        for (Object child : children) {
+            if (!(child instanceof Element)) {continue;}
+            Element childElement = (Element) child;
+            String elementColumnName = childElement.getAttributeValue("field");
+            
+            List<Column> identifyingColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
+            for (Column identifyingColumn : identifyingColumns) {
+                if (!(identifyingColumn.getName().equals(elementColumnName))) {continue;}
+                
+                if (identifyingColumn.getTableRef() != null) {
+                    String referenceTableName = identifyingColumn.getTableRef();
+                    Table referenceTable = database.getTable(referenceTableName);
+                    
+                    labelValueMap.putAll(getElementLabelValueMap(childElement, referenceTable));
+                    break;
+                } else {
+                    if(elementColumnName != null) {
+                        labelValueMap.put(identifyingColumn.getName(), childElement.getTextTrim());
+                    }
+                    break;
+                }
+            }
+        }
+        return labelValueMap;
+    }    
     
     
     
@@ -848,15 +973,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         
         // Parses the configuration file into a java object and uses that object to generate a template for processing
         ConfigurationTable baseTableElement = configurationParserService.buildConfigurationTemplate(configurationXMLFile);
-        DataTableTemplate databaseMapTemplateWithMappingKeys = configurationParserService.buildDatabaseMapTemplate(baseTableElement);
+        DataTableTemplate databaseMapTemplateWithMappingKeys = configurationParserService.buildDataTableTemplate(baseTableElement);
 
         ExportDatabaseMigrationStatus exportDatabaseMigrationStatus = new ExportDatabaseMigrationStatus();
         exportDatabaseMigrationStatus.setTotalCount(primaryKeyList.size());
-////////// Build counter around this
         Iterable<DataTable> data = configurationProcessorService.processDataTableTemplate(databaseMapTemplateWithMappingKeys, primaryKeyList);
-//////////
+
         Element generatedXMLFile = null;
-        generatedXMLFile = exportXMLGeneratorService.buildXMLFile(data, baseTableElement.getLabel());
+        generatedXMLFile = exportXMLGeneratorService.buildXmlElement(data, baseTableElement.getLabel());
 
         // Output the configuration to the XML file
         Format format = Format.getPrettyFormat(  );
@@ -884,23 +1008,20 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             @SuppressWarnings("unchecked")
             Iterator<Element> tableElements = configurationDocument.getDescendants(new ElementFilter("table"));
             String baseTableName = null;
-            if(tableElements.hasNext()) {
-                baseTableName = tableElements.next().getAttributeValue("name");
-            } else {
+            
+            if(!tableElements.hasNext()) {
                 throw new IllegalArgumentException("The configuration file does not have a table element.");
-            }
+            }                
+            baseTableName = tableElements.next().getAttributeValue("name");
 
             Table table = database.getTable(baseTableName);
             return getTableIdentifiersAndInfo(table);
 
         } catch (JDOMException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An parsing error occured while parsing the "+configurationResource.getFilename()+" configuration file.",e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An issue occured when trying to parse the "+configurationResource.getFilename()+" configuration file.",e);
         }
-        
         return null;
     }
 
@@ -923,13 +1044,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             return getConfigurationItemColumnIdentifiers(table);
 
         } catch (JDOMException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An parsing error occured while parsing the "+configurationResource.getFilename()+" configuration file.",e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An issue occured when trying to parse the "+configurationResource.getFilename()+" configuration file.",e);
         }
-        
         return null;
     }
     
@@ -969,13 +1087,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             return generateIdentifiersAndInfoSQL(table);
 
         } catch (JDOMException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An parsing error occured while parsing the "+configurationResource.getFilename()+" configuration file.",e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An issue occured when trying to parse the "+configurationResource.getFilename()+" configuration file.",e);
         }
-        
         return null;
     }
 
@@ -1081,12 +1196,12 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return configNameToDatabaseTablesMap;
     }
     
-    private SortedSet<String> getDBTables(File configurationXMLFile){
+    private SortedSet<String> getDBTables(File configurationXmlFile){
         SortedSet<String> tables = new TreeSet<String>();
         
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
-            Document configurationDocument = saxBuilder.build(configurationXMLFile);
+            Document configurationDocument = saxBuilder.build(configurationXmlFile);
         
             @SuppressWarnings("unchecked")
             Iterator<Element> descendants = configurationDocument.getDescendants(new ElementFilter("table")); 
@@ -1100,11 +1215,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
             return tables;
         } catch (JDOMException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An parsing error occured while parsing the "+configurationXmlFile.getName()+" configuration file.",e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An issue occured when trying to parse the "+configurationXmlFile.getName()+" configuration file.",e);
         }
         return null;
         
@@ -1121,22 +1234,20 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
      * @param configurationXMLFile
      * @return
      */
-    public String getConfigurationLabel(File configurationXMLFile){
+    public String getConfigurationLabel(File configurationXmlFile){
         
         SAXBuilder saxBuilder = new SAXBuilder();
         try {
-            Document configurationDocument = saxBuilder.build(configurationXMLFile);
+            Document configurationDocument = saxBuilder.build(configurationXmlFile);
             Element rootElement = configurationDocument.getRootElement();
         
             Element firstLabelElement = rootElement.getChild("configuration");
             return firstLabelElement.getAttribute("name").getValue();
 
         } catch (JDOMException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An parsing error occured while parsing the "+configurationXmlFile.getName()+" configuration file.",e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("An issue occured when trying to parse the "+configurationXmlFile.getName()+" configuration file.",e);
         }
         return null;
     }
@@ -1211,6 +1322,17 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
     }
+
+    @Autowired
+    public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
+        this.templateProcessorFactory = templateProcessorFactory;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
 }
 
 class ConfigurationErrorException extends Exception {
@@ -1244,5 +1366,4 @@ class CountHolder{
     public int getCount(){return this.count;}
     public void add(){this.count++;}
 }
-
 

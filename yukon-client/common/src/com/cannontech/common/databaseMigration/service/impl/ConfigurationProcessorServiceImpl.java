@@ -10,7 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.databaseMigration.bean.SQLHolder;
+import com.cannontech.common.databaseMigration.bean.SqlHolder;
 import com.cannontech.common.databaseMigration.bean.data.DataTable;
 import com.cannontech.common.databaseMigration.bean.data.DataTableEntity;
 import com.cannontech.common.databaseMigration.bean.data.DataTableReference;
@@ -38,7 +38,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template,
                                                          List<Integer> primaryKeyList) {
         Map<DataTableReference, DataTable> includedTables = Maps.newHashMap();
-        List<DataTable> byPrimaryKeys = buildAndProcessSQLPrimaryKey(template, primaryKeyList, includedTables);
+        List<DataTable> byPrimaryKeys = buildAndProcessSqlPrimaryKey(template, primaryKeyList, includedTables);
         
         Iterable<DataTable> result = Iterables.concat(includedTables.values(), byPrimaryKeys);
         
@@ -46,30 +46,30 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         
     }
     
-    private DataTable buildAndProcessSQLPrimaryKey(DataTableTemplate template,
+    private DataTable buildAndProcessSqlPrimaryKey(DataTableTemplate template,
                                                    Integer primaryKey,
                                                    Map<DataTableReference, DataTable> includedTables) {
         
         List<Integer> primaryKeyList = Collections.singletonList(primaryKey);
-        List<DataTable> inlineDataTables = buildAndProcessSQLPrimaryKey(template, primaryKeyList, includedTables);
+        List<DataTable> inlineDataTables = buildAndProcessSqlPrimaryKey(template, primaryKeyList, includedTables);
         return inlineDataTables.get(0);
         
     }
     
     /**
-     * Builds and processes the SQL
+     * Builds and processes the SQL for a DataTable that has the primary key values supplied
      * 
      * @param template
      * @param primaryKeyList
      * @param includedTables
      * @return
      */
-    private List<DataTable> buildAndProcessSQLPrimaryKey(DataTableTemplate template,
+    private List<DataTable> buildAndProcessSqlPrimaryKey(DataTableTemplate template,
                                                          List<Integer> primaryKeyList,
                                                          Map<DataTableReference, DataTable> includedTables) {
 
         // Build up the sql
-        SQLHolder sqlHolder = new SQLHolder();
+        SqlHolder sqlHolder = new SqlHolder();
         Map<String, DataEntryTemplate> tableColumns = template.getTableColumns();
         for (String columnName : tableColumns.keySet()) {
             sqlHolder.addSelectClause(columnName);
@@ -94,22 +94,31 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults);
     }
 
-    private List<DataTable> buildAndProcessSQLForeignKey(DataTableTemplate template,
+    private List<DataTable> buildAndProcessSqlForeignKey(DataTableTemplate template,
                                                          Integer primaryKey,
                                                          Map<DataTableReference, DataTable> includedTables,
                                                          String referencesColumnName) {
         
         List<Integer> primaryKeyList = Collections.singletonList(primaryKey);
-        return buildAndProcessSQLForeignKey(template, primaryKeyList, includedTables, referencesColumnName);
+        return buildAndProcessSqlForeignKey(template, primaryKeyList, includedTables, referencesColumnName);
     }
     
-    private List<DataTable> buildAndProcessSQLForeignKey(DataTableTemplate template,
+    /**
+     * Builds and processes the SQL for a DataTable that has the values of a foreign key supplied
+     * 
+     * @param template
+     * @param primaryKey
+     * @param includedTables
+     * @param referencesColumnName
+     * @return
+     */
+    private List<DataTable> buildAndProcessSqlForeignKey(DataTableTemplate template,
                                                          List<Integer> primaryKeyList,
                                                          Map<DataTableReference, DataTable> includedTables,
                                                          String referencesColumnName) {
 
         // Build up the sql
-        SQLHolder sqlHolder = new SQLHolder();
+        SqlHolder sqlHolder = new SqlHolder();
         Map<String, DataEntryTemplate> tableColumns = template.getTableColumns();
         for (String columnName : tableColumns.keySet()) {
             sqlHolder.addSelectClause(columnName);
@@ -151,6 +160,15 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         return result;
     }
 
+    /**
+     * This method takes the information generated from the buildAndProcessSql calls and uses that
+     * data to populate the DataTable object
+     * 
+     * @param template
+     * @param includedTables
+     * @param sqlResult
+     * @return
+     */
     private DataTable processDataTableTemplate(DataTableTemplate template,
                                                Map<DataTableReference, DataTable> includedTables,
                                                Map<String, Object> sqlResult) {
@@ -162,22 +180,25 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         for (Map.Entry<String, DataEntryTemplate> entry : tableColumns.entrySet()) {
             String columnName = entry.getKey();
             DataTableEntity dataTableEntity = null;
-            Object value = sqlResult.get(columnName); 
+            Object value = sqlResult.get(columnName);
+            
+            // The column we are looking at has a reference to another column
+            // Process and build that Sql before jumping to the next column
             if (entry.getValue() instanceof DataTableTemplate) {
                 DataTableTemplate thisTemplate = (DataTableTemplate) entry.getValue();
                 int thisPrimaryKey = Integer.parseInt(value.toString());
                 
                 // inline
                 if (thisTemplate.getElementCategory() == null) {
-                    dataTableEntity = buildAndProcessSQLPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
+                    dataTableEntity = buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
                 
                 // reference
                 } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.REFERENCE)) {
-                    dataTableEntity = buildAndProcessSQLPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
+                    dataTableEntity = buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
                     
                 // include
                 } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.INCLUDE)) {
-                    dataTableEntity = buildAndProcessSQLPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
+                    dataTableEntity = buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
 //                    includedTables.put(dataTableEntity, value);
                 }
             } else if (entry.getValue() instanceof DataValueTemplate) {
@@ -197,8 +218,9 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     break;
                 }
                 
+                // Adds a value of a column to the DataTable object
                 DataTableValue dataTableValue = new DataTableValue();
-                dataTableValue.setValue(value.toString()); // might need something fancier
+                dataTableValue.setValue(value.toString());
                 dataTableEntity = dataTableValue;
             }
             if (dataTableEntity == null) {
@@ -217,6 +239,15 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         return dataForTable;
     }
     
+    /**
+     * This method generates the information for the references portion of the DataTable object.
+     * This also handles omitting the reference column that is inherited from the DataTable higher up the structure
+     * 
+     * @param template
+     * @param dataForTable
+     * @param primaryKey
+     * @param includedTables
+     */
     private void generateReferencesDataTables(DataTableTemplate template,
                                               DataTable dataForTable,
                                               Integer primaryKey,
@@ -233,9 +264,9 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     column.getTableRef().equals(dataForTable.getTableName())) {
                     String referencesColumnName = column.getName();
                                        
-                    List<DataTable> dumpTableByForeignKey = 
-                        buildAndProcessSQLForeignKey(referencesDataTableTemplate, primaryKey, includedTables, referencesColumnName);
-                    dataForTable.getTableReferences().addAll(dumpTableByForeignKey);
+                    List<DataTable> result = 
+                        buildAndProcessSqlForeignKey(referencesDataTableTemplate, primaryKey, includedTables, referencesColumnName);
+                    dataForTable.getTableReferences().addAll(result);
 
                 }
             }

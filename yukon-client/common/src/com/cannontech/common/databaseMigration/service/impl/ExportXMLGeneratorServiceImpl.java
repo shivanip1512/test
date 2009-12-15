@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.databaseMigration.bean.data.DataTable;
 import com.cannontech.common.databaseMigration.bean.data.DataTableEntity;
 import com.cannontech.common.databaseMigration.bean.data.DataTableValue;
@@ -18,59 +20,70 @@ import com.cannontech.common.databaseMigration.service.ExportXMLGeneratorService
 
 public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
  
-//    private static Logger log = YukonLogManager.getLogger(ConfigurationProcessorServiceImpl.class);
+    private static Logger log = YukonLogManager.getLogger(ExportXMLGeneratorServiceImpl.class);
     private Database database;
     private boolean showPrimaryKeys = false;
 
-    // generates an XML file from the populated dataTable
-    public Element buildXMLFile(Iterable<DataTable> data, String label) {
-        // Create base XML Element
+    public Element buildXmlElement(Iterable<DataTable> data, String label) {
+        // Create base data XML Element
         Element baseElement = new Element("data");
         
-        // Add configurationElement
+        // Add configurationElement with a name of the label supplied
         Element configurationElement = generateConfigurationElement(label);
         baseElement.addContent(configurationElement);
         
-        buildXMLFile(data, configurationElement);
+        buildXmlElement(data, configurationElement);
         
         return baseElement;
     }
     
-    private void buildXMLFile(Iterable<DataTable> data, Element element){
+    /**
+     * This piece of the buildXmlElement generates the first item tag underneath
+     * a configuration element or a references element.  The name field is the
+     * name of the table the xml starts at.
+     * 
+     * @param data
+     * @param element
+     */
+    private void buildXmlElement(Iterable<DataTable> data, Element element){
         for (DataTable dataTable : data) {
+            log.debug("buildingXmlElement - "+dataTable.toString());
             String tableName = dataTable.getTableName();
             Element itemElement = generateItemElementName(tableName);
             element.addContent(itemElement);
 
-            buildXMLFile(itemElement, dataTable);
+            buildXmlElement(itemElement, dataTable);
         }
     }
     
-    private void buildXMLFile(Element element,
+    /**
+     * This is the heart of the recursion process for this method.  This piece iterates over itself
+     * to build the tree of data columns into the corresponding xml element.
+     * 
+     * @param element
+     * @param dataTable
+     */
+    private void buildXmlElement(Element element,
                               DataTable dataTable) {
         Map<String, DataTableEntity> tableColumns = dataTable.getTableColumns();
         List<DataTable> tableReferences = dataTable.getTableReferences();
+        
+        // The is a special case that checks for a null reference.
+        // This is symbolized in the databaseDefinition.xml as a nullId attribute.
         if (tableColumns.size() == 0){
-//            if(element.getParent() instanceof Element){
-//                Element parentElement = (Element)element.getParent();
-//                if (!parentElement.getName().equals("item") ||
-//                    parentElement.getAttributeValue("name") == null) {
-//
-//                    parentElement.setName("reference");
-//                    return;
-//                }
-//            }
             if (!element.getName().equals("item") ||
                  element.getAttributeValue("name") == null) {
 
                 element.setName("reference");
                 return;
             }
-
         }
 
         for (Entry<String, DataTableEntity> columnEntry: tableColumns.entrySet()) {
             String columnName = columnEntry.getKey();
+            
+            // Checks to see if the table is just a value 
+            // or if it ties to another table of information
             if (columnEntry.getValue() instanceof DataTableValue) {
                 Table table = database.getTable(dataTable.getTableName());
                 
@@ -80,7 +93,6 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
                     primaryKeyColumnNames.contains(columnName)){
                     continue;
                 }
-
                 
                 DataTableValue dataTableValue = (DataTableValue) columnEntry.getValue();
                 Element valueElement = generateValueElement(columnEntry.getKey());
@@ -90,44 +102,49 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
             } else if (columnEntry.getValue() instanceof DataTable) {
                 DataTable columnDataTable = (DataTable) columnEntry.getValue();
 
+                // Checks to see if the elementCategory is null.  If this is the case
+                // we want to inherit the type from the element above this element.
                 if (columnDataTable.getElementCategory() == null) {
                     if(element.getName().equals(ElementCategoryEnum.REFERENCE.toString())) {
                         Element referenceElement = generateReferenceElement(columnName);
                         element.addContent(referenceElement);
                         
-                        buildXMLFile(referenceElement, columnDataTable);
+                        buildXmlElement(referenceElement, columnDataTable);
                     } else {
                         Element itemElement = generateItemElementField(columnName);
                         element.addContent(itemElement);
                         
-                        buildXMLFile(itemElement, columnDataTable);
+                        buildXmlElement(itemElement, columnDataTable);
                     }
 
+                // Processes the Reference Element found in the dataTable
                 } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.REFERENCE)) {
                     Element referenceElement = generateReferenceElement(columnName);
                     element.addContent(referenceElement);
                     
-                    buildXMLFile(referenceElement, columnDataTable);
+                    buildXmlElement(referenceElement, columnDataTable);
                     
+                // Processes the Include Element found in the dataTable
                 } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.INCLUDE)) {
                     Element referenceElement = generateReferenceElement(columnName);
                     element.addContent(referenceElement);
                     
-                    buildXMLFile(referenceElement, columnDataTable);
+                    buildXmlElement(referenceElement, columnDataTable);
                 }
             }
         }
         
+        // Prosses the References Element found in the dataTable
         if (tableReferences.size() > 0 ){
             Element referencesElement = generateReferencesElement();
             element.addContent(referencesElement);
 
-            buildXMLFile(tableReferences, referencesElement);
+            buildXmlElement(tableReferences, referencesElement);
         }        
     }
 
     /**
-     * Builds a value element (<item name="${nameField}">)
+     * Builds a references element (<references>)
      * 
      * @param nameField
      * @return
@@ -137,7 +154,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
     }
     
     /**
-     * Builds a value element (<item name="${nameField}">)
+     * Builds a reference element (<reference field="${referenceFieldName}">)
      * 
      * @param nameField
      * @return
@@ -149,7 +166,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
     }
     
     /**
-     * Builds a value element (<item name="${nameField}">)
+     * Builds a value element (<value field="${fieldValue}">)
      * 
      * @param nameField
      * @return
@@ -161,7 +178,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
     }
     
     /**
-     * Builds an item element (<item field="${nameField}">)
+     * Builds an item element with a field attribute (<item field="${fieldValue}">)
      * 
      * @param fieldValue
      * @return
@@ -173,7 +190,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
     }
     
     /**
-     * Builds an item element (<item name="${nameField}">)
+     * Builds an item element with a name attribute (<item name="${nameField}">)
      * 
      * @param nameValue
      * @return

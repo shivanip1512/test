@@ -7,6 +7,14 @@ import com.cannontech.common.databaseMigration.bean.data.template.DataTableTempl
 
 public interface ConfigurationProcessorService {
 
+    /**
+     * This method creates a java object that matches the DataTableTemplate, 
+     * and fills in all the information from the primary keys supplied.
+     * 
+     * @param template
+     * @param primaryKeyList
+     * @return
+     */
     public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template,
                                                         List<Integer> primaryKeyList);
    
