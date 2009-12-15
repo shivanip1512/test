@@ -83,7 +83,7 @@
 				<tags:nameValueGap gapHeight="15px;"/>
 				<tags:nameValue name="${filePathLabel}" nameColumnWidth="190px">
 					<form id="openFileForm" action="/spring/support/database/migration/openFile" method="post">
-						<input type="hidden" name="fileKey" value="${fileKey}">
+						<input type="hidden" name="fileKey" value="${status.id}">
 			    	</form>
 					<a href="javascript:void(0);" onclick="$('openFileForm').submit();" title="${fileViewContentsLabel}">${filePath}</a>
 				</tags:nameValue>
