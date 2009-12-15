@@ -60,8 +60,19 @@
 
 CtiDeviceFMU::CtiDeviceFMU() :
     _state(State_Uninit),
-    _sequence(SequenceUnknown)
+    _sequence(SequenceUnknown),
+    _cmd(0),
+    _cmd_len(0),
+    _code_len(0),
+    _codes_received(0),
+    _endOfTransactionFlag(false),
+    _error_count(0),
+    _in_actual(0),
+    _in_expected(0),
+    _in_remaining(0),
+    _prevState(State_Uninit)
 {
+    memset(_inbound, 0, sizeof(_inbound[0]));
 }
 
 CtiDeviceFMU::~CtiDeviceFMU()

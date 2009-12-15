@@ -638,18 +638,10 @@ _massMemoryLoadProfile ( mmlProfilePtr ),
 _massMemoryRequestInputs ( mmlProfileInputPtr ),
 _loadProfileBuffer ( lProfilePtr ),
 _totalByteCount ( totalByteCount ),
-_retryAttempts( SCHLUMBERGER_RETRIES )
+_retryAttempts( SCHLUMBERGER_RETRIES ),
+_CRCErrors(0)
 {
-}
-
-CtiDeviceSchlumberger::CtiDeviceSchlumberger(const CtiDeviceSchlumberger& aRef)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "copy constructor is invalid for this device" << endl;
-    }
-//      *this = aRef;
+    memset(&_meterParams, 0, sizeof(_meterParams));
 }
 
 CtiDeviceSchlumberger::~CtiDeviceSchlumberger()
@@ -689,32 +681,5 @@ CtiDeviceSchlumberger::~CtiDeviceSchlumberger()
       delete []_loadProfileBuffer;
       _loadProfileBuffer = NULL;
    }
-}
-
-// need a copy constructor
-
-CtiDeviceSchlumberger& CtiDeviceSchlumberger::operator=(const CtiDeviceSchlumberger& aRef)
-{
-   // DEBUG DLS    must come back to this !!!!!!!!!!!!!!!!
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Running equality operator on a Schlumberger" << endl << endl;
-    }
-
-   if(this != &aRef)
-   {
-//         if (_dataBuffer != NULL)
-//         {
-//            aRef._dataBuffer = ((BYTE *) CTIDBG_new BYTE (sizeof (FulcrumScanData_t)));
-//            memcpy (&aRef._dataBuffer, &_dataBuffer, sizeof (FulcrumScanData_t));
-//         }
-//         else
-//            aRef._dataBuffer = NULL;
-
-      Inherited::operator=(aRef);
-   }
-   return *this;
 }
 

@@ -88,7 +88,8 @@ _numberStarted(0),
 _nextCommandTime( PASTDATE ),
 _honktime(DUTYCYCLESIZE, make_pair(CtiTime().seconds() - CtiTime().seconds() % DUTYCYCLESIZE, 0.0)),
 _lockedOut(false),
-_lastControlMessage(0)
+_lastControlMessage(0),
+_lcuStatus(0)
 {
     switch(type)
     {

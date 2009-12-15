@@ -33,7 +33,8 @@ using Cti::Protocol::Emetcon;
 const CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::_commandStore = CtiDeviceMCTBroadcast::initCommandStore();
 
 
-CtiDeviceMCTBroadcast::CtiDeviceMCTBroadcast()
+CtiDeviceMCTBroadcast::CtiDeviceMCTBroadcast() :
+_last_freeze(0)
 {
 }
 

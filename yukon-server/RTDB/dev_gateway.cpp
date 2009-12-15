@@ -46,7 +46,16 @@ void CtiDeviceGateway::postPorter()
 CtiDeviceGateway::CtiDeviceGateway(SOCKET msgsock) :
 _ipaddr(0),
 _socketConnected(false),
-_msgsock(msgsock)
+_msgsock(msgsock),
+_feeder(0),
+_geo(0),
+_minutesWestOfGreenwich(0),
+_program(0),
+_rfId(0),
+_spid(0),
+_splinter(0),
+_uda(0),
+_zip(0)
 {
     for(int i = 0; i < 6; i++)
     {
@@ -143,7 +152,7 @@ void CtiDeviceGateway::sendGMTClock (BYTE hour, BYTE minute)
     struct tm *newtime;
     CtiTime now;
     CtiDate today(now.asGMT());
-    
+
     //  Unused... ?  mskf 20070910
     //  string gmt_str = today.asString() + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
 
@@ -194,8 +203,8 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
                 boost::char_separator<char> sep(" \t\n\0");
                 Boost_char_tokenizer tokens(CmdStr, sep);
 
-                Boost_char_tokenizer::iterator tok_iter = tokens.begin(); 
-                
+                Boost_char_tokenizer::iterator tok_iter = tokens.begin();
+
                 //RWCTokenizer tokens(CmdStr);
 
                 USHORT zone = 0;    // Default to GMT

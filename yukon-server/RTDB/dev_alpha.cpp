@@ -93,7 +93,9 @@ _totalByteCount (cnt),
 _readClass(0),
 _readLength(0),
 _readFunction(0),
-_classReadComplete(FALSE)
+_classReadComplete(FALSE),
+_bytesToRetrieve(0),
+_singleMsgBufferBytes(0)
 {
 }
 

@@ -1327,7 +1327,13 @@ _outMessage(NULL)
 
 
 CtiDeviceWctpTerminal::CtiDeviceWctpTerminal(const CtiDeviceWctpTerminal& aRef) :
-   _sendFiller(true)
+_sendFiller(true),
+_outMessage(NULL),
+_pacingReport(false),
+handler(0),
+headerParsed(false),
+statusParsed(false),
+timeEllapsed(0)
 {
    *this = aRef;
 }

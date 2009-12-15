@@ -35,7 +35,9 @@ CtiDeviceDR87::CtiDeviceDR87(BYTE *aPtr, BYTE *lpPtr, ULONG cnt) :
     iTotalByteCount (cnt),
     iPorterSide(NULL),
     iDataBuffer(NULL),
-    iLoadProfileBuffer(lpPtr)
+    iLoadProfileBuffer(lpPtr),
+    iRequestedState(StateInvalid),
+    iRetryAttempts(0)
 {
 }
 

@@ -39,8 +39,15 @@ CtiDeviceGatewayStat::CtiDeviceGatewayStat(ULONG sn) :
 _pMulti(0),
 _controlOutMessage(0),
 _primed(false),
-_deviceSN(sn)
+_deviceSN(sn),
+_lastCoolRuntime(0),
+_lastHeatRuntime(0)
 {
+    memset(&_clockDST,     0, sizeof(_clockDST));
+    memset(&_lastSchedule, 0, sizeof(_lastSchedule));
+    memset(&_returnCode,   0, sizeof(_returnCode));
+    memset(&_rssi,         0, sizeof(_rssi));
+
     _lastRuntimeRead = YUKONEOT;
 
     _allowedSystemSwitch._utime = YUKONEOT;

@@ -33,7 +33,8 @@ namespace Device    {
 
 CCU721::CCU721() :
     _initialized(false),
-    _queueInterface(_klondike)
+    _queueInterface(_klondike),
+    _current_om(0)
 {
 }
 

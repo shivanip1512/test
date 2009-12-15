@@ -116,8 +116,14 @@
 
 
 CtiDeviceRTM::CtiDeviceRTM() :
-    _state(State_Uninit)
+    _state(State_Uninit),
+    _code_len(0),
+    _codes_received(0),
+    _error_count(0),
+    _in_actual(0),
+    _in_expected(0)
 {
+    memset(_inbound, 0, sizeof(_inbound));
 }
 
 CtiDeviceRTM::~CtiDeviceRTM()

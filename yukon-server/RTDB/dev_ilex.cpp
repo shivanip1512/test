@@ -39,7 +39,9 @@ using namespace std;
 
 #define DEBUG_PRINT_DECODE 0
 
-CtiDeviceILEX::CtiDeviceILEX() : _freezeNumber(0)
+CtiDeviceILEX::CtiDeviceILEX() :
+    _freezeNumber(0),
+    _sequence(0)
 {}
 
 CtiDeviceILEX::CtiDeviceILEX(const CtiDeviceILEX& aRef)

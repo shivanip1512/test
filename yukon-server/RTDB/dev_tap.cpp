@@ -1510,7 +1510,8 @@ _pagePrefix('a'),
 _pageLength(0),
 _inStr(string()),
 _pageBuffer(NULL),
-_outMessage(NULL)
+_outMessage(NULL),
+_pacingReport(false)
 {}
 
 /*

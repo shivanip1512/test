@@ -44,6 +44,7 @@ public:
       // possible states in our big list of state machines
     enum CtiMeterMachineStates_t
     {
+        StateInvalid = 0,
         StateHandshakeSendStart = 1,
         StateHandshakeInitialize,
         StateHandshakeDecodeStart,

@@ -92,7 +92,7 @@ typedef struct
 #pragma pack(pop, schlumberger_packing)     // Restore the prior packing alignment..
 
 
-class IM_EX_DEVDB CtiDeviceSchlumberger : public CtiDeviceMeter
+class IM_EX_DEVDB CtiDeviceSchlumberger : public CtiDeviceMeter, boost::noncopyable
 {
 private:
 
@@ -127,11 +127,7 @@ public:
                            BYTE         *lProfilePtr = NULL,
                            ULONG        totalByteCount = 0 );
 
-   CtiDeviceSchlumberger(const CtiDeviceSchlumberger& aRef);
-
    virtual ~CtiDeviceSchlumberger();
-
-   CtiDeviceSchlumberger& operator=(const CtiDeviceSchlumberger& aRef);
 
    ULONG                   getTotalByteCount() const;
    CtiDeviceSchlumberger&  setTotalByteCount(ULONG c);

@@ -43,7 +43,9 @@
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 
-CtiDeviceION::CtiDeviceION()
+CtiDeviceION::CtiDeviceION() :
+    _lastLPTime(0),
+    _postControlScanCount(0)
 {
 //    resetIONScansPending();
 }

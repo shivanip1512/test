@@ -250,7 +250,10 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
     return status;
 }
 
-CtiSxlRecord::CtiSxlRecord()
+CtiSxlRecord::CtiSxlRecord() :
+_ptType(StatusPointType),
+_ptOffset(0),
+_ptValue(0)
 {
 }
 CtiSxlRecord::CtiSxlRecord(CtiPointType_t type, int offset, double val, const CtiTime &time) :
@@ -643,7 +646,16 @@ bool CtiDeviceSixnet::processGetAlias()
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CtiDeviceSixnet::CtiDeviceSixnet()
+CtiDeviceSixnet::CtiDeviceSixnet() :
+    _demAccumCnt(0),
+    _head(0),
+    _logRate(0),
+    _records(0),
+    _recSize(0),
+    _registerCnt(0),
+    _tail(0),
+    _tailTime(0),
+    _timeFormat(0)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
