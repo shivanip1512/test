@@ -978,6 +978,8 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, l
                     statusParsed = FALSE;
                     headerParsed = FALSE;
 
+                    setCurrentState( StateScanDecode2 );
+
                     /* FALL THROUGH! */
                 }
             case StateScanDecode2:
