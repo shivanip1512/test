@@ -27,6 +27,10 @@ INCLPATHS+= \
 ;$(BOOST) \
 ;$(RW)
 
+TESTOBJS=\
+test_pointDataHandler.obj \
+test_message.obj \
+
 LIBS=\
 kernel32.lib user32.lib advapi32.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
@@ -36,7 +40,7 @@ $(COMPILEBASE)\lib\clrdump.lib \
 
 ALL:            ctimsgtest
 
-ctimsgtest:    test_message.obj Makefile
+ctimsgtest:     $(TESTOBJS) Makefile
 
 deps:
                 scandeps -Output maketest.mak *.cpp
@@ -97,6 +101,15 @@ connection.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		rwutil.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h
+dispatchconnection.obj:	yukon.h precompiled.h ctidbgmem.h \
+		DispatchConnection.h connection.h dlldefs.h exchange.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h numstr.h clrdump.h cticonnect.h netports.h logger.h \
+		thread.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
+		sorted_vector.h message.h collectable.h rwutil.h boost_time.h \
+		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h
 dll_msg.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		os2_2w32.h types.h cticalls.h connection.h exchange.h \
@@ -240,6 +253,12 @@ msg_trace.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
 		thread.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h msg_trace.h message.h rwutil.h boost_time.h \
 		boostutil.h
+pointdatahandler.obj:	yukon.h precompiled.h ctidbgmem.h \
+		PointDataHandler.h PointDataListener.h msg_pdata.h dlldefs.h \
+		pointdefs.h pointtypes.h message.h collectable.h rwutil.h \
+		ctitime.h boost_time.h boostutil.h utility.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
+		msg_ptreg.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 test_message.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		collectable.h dlldefs.h rwutil.h ctitime.h boost_time.h \
@@ -247,4 +266,5 @@ test_message.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		numstr.h sorted_vector.h queue.h cparms.h configkey.h \
 		configval.h logger.h thread.h mutex.h guard.h clrdump.h \
 		CtiPCPtrQueue.h
+test_pointdatahandler.obj:	yukon.h precompiled.h ctidbgmem.h
 #ENDUPDATE#

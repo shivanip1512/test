@@ -32,7 +32,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "logger.h"
 
-#pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file 
+#pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file
                             // and that all header files are before this!
 
 CtiConnection::~CtiConnection()
@@ -530,6 +530,8 @@ void CtiConnection::OutThread()
         {
             if( waitForConnect() ) continue;
 
+            preWork();
+
             try
             {
                 MyMsg = outQueue.getQueue(1000);
@@ -850,9 +852,9 @@ void CtiConnection::ShutdownConnection()
                 CtiLockGuard< CtiMutex > guard(_mux, 60000);
                 // 1.  We want the outQueue/OutThread to flush itself.
                 //     I allow _termTime seconds for this to occur
-    
+
                 int i = 0;
-    
+
                 while(outQueue.entries() > 0 && _valid)
                 {
                     string whoStr = who();
@@ -860,16 +862,16 @@ void CtiConnection::ShutdownConnection()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Waiting for outbound Queue " << whoStr << " to flush " << outQueue.entries() << " entries" << endl;
                     }
-    
+
                     Sleep(1000);
-    
+
                     if(i++ > _termTime)
                     {
                         outQueue.clearAndDestroy();      // Get rid of the evidence...
                         break;
                     }
                 }
-    
+
                 // This flag tells InThread not to wait for a reconnection....
                 _dontReconnect = TRUE;
 
@@ -896,7 +898,7 @@ void CtiConnection::ShutdownConnection()
                     // 20051201 CGP... NOT GOOD // outthread_.terminate();
                 }
             }
-            
+
 
             if( inQueue && _localQueueAlloc && inQueue->entries() != 0 )
             {
@@ -1463,10 +1465,10 @@ void CtiConnection::cleanExchange()
             _preventOutThreadReset = TRUE;
             _exchange->close();
             Sleep(1000);
-            
+
             delete _exchange;
             _exchange = NULL;
-            
+
         }
     }
     catch(...)
@@ -1478,4 +1480,9 @@ void CtiConnection::cleanExchange()
     }
 }
 
-#pragma optimize( "", on ) 
+void CtiConnection::preWork()
+{
+    //No op.
+}
+
+#pragma optimize( "", on )
