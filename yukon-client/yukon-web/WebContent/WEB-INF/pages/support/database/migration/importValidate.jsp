@@ -38,7 +38,9 @@
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
 	    <cti:crumbLink url="/spring/support/" title="Support" />
-	    <cti:crumbLink url="/spring/support/database/migration/home" title="${homePageTitle}" />
+	    <cti:crumbLink url="/spring/support/database/migration/home" title="${homePageTitle}">
+	    	<cti:param name="import" value="true"/>
+	    </cti:crumbLink>
 	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
 	</cti:breadCrumbs>
 	
@@ -76,8 +78,8 @@
 		<tags:sectionContainer title="${fileInfoSection}" styleClass="migrationSection">
 		
 			<tags:nameValueContainer>
-				<tags:nameValue name="${orgEnvironment}" nameColumnWidth="180px">-- NOT IMPLEMENTED --</tags:nameValue>
-				<tags:nameValue name="${orgSchemaUser}">-- NOT IMPLEMENTED --</tags:nameValue>
+				<tags:nameValue name="${orgEnvironment}" nameColumnWidth="180px">${orgDbUrl}</tags:nameValue>
+				<tags:nameValue name="${orgSchemaUser}">${orgDbUsername}</tags:nameValue>
 				<tags:nameValueGap gapHeight="15px;"/>
 				<tags:nameValue name="${filePathLabel}" nameColumnWidth="190px">
 					<form id="openFileForm" action="/spring/support/database/migration/openFile" method="post">

@@ -3,7 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:set var="objectCount" value="10"/>
 <c:set var="maxObjectCountBeforeScroll" value="30"/>
 
 <c:if test="${objectCount > maxObjectCountBeforeScroll}">

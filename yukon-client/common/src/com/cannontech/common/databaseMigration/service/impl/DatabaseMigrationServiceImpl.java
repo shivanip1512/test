@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +58,7 @@ import com.cannontech.common.databaseMigration.service.ExportXMLGeneratorService
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FormattingTemplateProcessor;
+import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TemplateProcessorFactory;
@@ -69,6 +71,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -89,25 +92,34 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private ScheduledExecutor scheduledExecutor = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private Map<String, ExportDatabaseMigrationStatus> exportStatusMap = Maps.newLinkedHashMap();
-    private Map<String, ImportDatabaseMigrationStatus> importStatusMap = Maps.newLinkedHashMap();
+    
+    private RecentResultsCache<ExportDatabaseMigrationStatus> exportStatusCache = new RecentResultsCache<ExportDatabaseMigrationStatus>();
+    private RecentResultsCache<ImportDatabaseMigrationStatus> importStatusCache = new RecentResultsCache<ImportDatabaseMigrationStatus>();
     
     @Override
     public ExportDatabaseMigrationStatus getExportStatus(String id) {
-    	return exportStatusMap.get(id);
-    }
-    @Override
-    public List<ExportDatabaseMigrationStatus> getAllExportStatuses() {
-    	return new ArrayList<ExportDatabaseMigrationStatus>(exportStatusMap.values());
+    	return exportStatusCache.getResult(id);
     }
     
     @Override
     public ImportDatabaseMigrationStatus getImportStatus(String id) {
-    	return importStatusMap.get(id);
+    	return importStatusCache.getResult(id);
     }
     @Override
     public List<ImportDatabaseMigrationStatus> getAllImportStatuses() {
-    	return new ArrayList<ImportDatabaseMigrationStatus>(importStatusMap.values());
+    	
+    	List<ImportDatabaseMigrationStatus> all = Lists.newArrayList();
+    	all.addAll(importStatusCache.getPending());
+    	all.addAll(importStatusCache.getCompleted());
+    	
+    	Comparator<ImportDatabaseMigrationStatus> comparator = new Comparator<ImportDatabaseMigrationStatus>() {
+    		@Override
+    		public int compare(ImportDatabaseMigrationStatus o1, ImportDatabaseMigrationStatus o2) {
+    			return o2.getStartTime().compareTo(o1.getStartTime());
+    		}
+		};
+		Collections.sort(all, comparator);
+    	return all;
     }
     
     public ImportDatabaseMigrationStatus validateImportFile(File importFile){
@@ -127,7 +139,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                                               final String configurationNameValue,
                                                               final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
     	
-        importStatusMap.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
+    	importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         
 /////// Change isolation level and make sure it works in both cases: SQL Server and Oracle.
         
@@ -184,7 +196,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         final List<Element> importItemList = getElementListFromFile(importFile);
         
         final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(importItemList.size(), importFile);
-        importStatusMap.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
+        importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
 
         scheduledExecutor.execute(new Runnable() {
             @Override
@@ -1013,7 +1025,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     	
     	// init status
         final ExportDatabaseMigrationStatus exportDatabaseMigrationStatus = new ExportDatabaseMigrationStatus(primaryKeyList.size(), xmlDataFile);
-        exportStatusMap.put(exportDatabaseMigrationStatus.getId(), exportDatabaseMigrationStatus);
+        exportStatusCache.addResult(exportDatabaseMigrationStatus.getId(), exportDatabaseMigrationStatus);
         
         // run file generation in background thread
         scheduledExecutor.execute(new Runnable() {

@@ -4,7 +4,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 
-<c:set var="objectCount" value="40"/>
 <c:set var="maxObjectCountBeforeScroll" value="30"/>
 
 <c:if test="${objectCount > maxObjectCountBeforeScroll}">

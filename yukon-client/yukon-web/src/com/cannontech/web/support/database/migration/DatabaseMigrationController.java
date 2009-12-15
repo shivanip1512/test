@@ -200,7 +200,7 @@ public class DatabaseMigrationController {
                     }
                 }
 
-                importFile = WebFileUtils.convertToTempFile(dataFile, "databaseMigration", "");
+                importFile = WebFileUtils.convertToTempFile(dataFile, dataFile.getOriginalFilename() + "_", "");
 
             } catch (IOException e) {
             	loadError = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noFile");
@@ -292,9 +292,23 @@ public class DatabaseMigrationController {
 		ImportDatabaseMigrationStatus status = importStatusStore.get(statusKey);
 		FileSystemResource resource = fileStore.get(statusKey);
 		
+		String fileName = resource.getFilename();
+		String orgEnvironment = "Not Available";
+		String orgSchemaUser = "Not Available";
+		try {
+			
+			String[] split = StringUtils.split(fileName, "_");
+			orgEnvironment = split[0];
+			orgSchemaUser = split[1];
+		} catch (IndexOutOfBoundsException e) {
+			// pass
+		}
+		
         mav.addObject("status", status);
         mav.addObject("filePath", resource.getPath());
         mav.addObject("fileSize", resource.getFile().length() / 1024);
+        mav.addObject("orgDbUrl", orgEnvironment);
+        mav.addObject("orgDbUsername", orgSchemaUser);
         
         addDbInfoToMav(mav);
         
@@ -311,6 +325,7 @@ public class DatabaseMigrationController {
 		List<String> labelList = importDatabaseMigrationStatus.getLabelList();
 		
 		mav.addObject("itemList", labelList);
+		mav.addObject("objectCount", labelList.size());
 		return mav;
 	}
 	
@@ -324,6 +339,13 @@ public class DatabaseMigrationController {
         Map<String, List<String>> warningListMap = importDatabaseMigrationStatus.getWarningsMap();
 
         mav.addObject("warningListMap", warningListMap);
+        
+        int objectCount = 0;
+        for (String key : warningListMap.keySet()) {
+        	objectCount += warningListMap.get(key).size();
+        }
+        mav.addObject("objectCount", objectCount);
+        
 		return mav;
 	}
 	
@@ -337,6 +359,14 @@ public class DatabaseMigrationController {
 	    Map<String, List<String>> errorListMap = importDatabaseMigrationStatus.getErrorsMap();
 
 	    mav.addObject("errorListMap", errorListMap);
+	    
+	    int objectCount = 0;
+        for (String key : errorListMap.keySet()) {
+        	objectCount += errorListMap.get(key).size();
+        }
+        mav.addObject("objectCount", objectCount);
+        
+        
 	    return mav;
 
 	}
