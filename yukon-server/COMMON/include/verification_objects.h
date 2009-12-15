@@ -76,6 +76,7 @@ public:
 
     enum Protocol
     {
+        Protocol_Invalid,
         Protocol_Golay,
         Protocol_SA205,
         Protocol_SA305,

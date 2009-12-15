@@ -280,7 +280,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
    CtiPointDataMsg   *pData = NULL;
    CtiPointSPtr      pPoint;
    int               index;
-   int               offset;
+   int               offset = 0;
    int               time_id;
    int               date_id;
    CtiReturnMsg      *pPIL = CTIDBG_new CtiReturnMsg( getID(),

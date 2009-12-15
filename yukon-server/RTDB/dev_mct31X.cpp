@@ -1167,7 +1167,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
-    DOUBLE Value;
+    DOUBLE Value = 0.0;
     CtiTime timestamp;
     CtiDate datestamp;
 

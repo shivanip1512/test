@@ -669,7 +669,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiM
             }
         case StateScanValueSet3:
             {
-                ULONG LPTime;
+                ULONG LPTime = 0;
                 bool validMeterClock = true;
 
                 // Number of records which fit in MM

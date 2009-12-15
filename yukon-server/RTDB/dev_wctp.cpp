@@ -952,7 +952,9 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, l
     INT status = commReturnValue;
 
     INT inCnt = 0, msgLen = 0;
-    CHAR *in, *out, buf[256];
+    CHAR *in  = (CHAR*)xfer.getInBuffer();
+    CHAR *out = (CHAR*)xfer.getOutBuffer();
+    CHAR buf[256];
 
     SAX2XMLReader  *parser;
     SAXWctpHandler *handler;
@@ -971,29 +973,10 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, l
 
                     // Clear the out buffer, we're going to store the input data in this buffer
                     // in case that it's not received in one time
-                    in = (CHAR*)xfer.getInBuffer();
-                    out = (CHAR*)xfer.getOutBuffer();
                     out[0] = 0;
 
                     statusParsed = FALSE;
                     headerParsed = FALSE;
-
-                    #if 0
-                    if(in[0] != 0)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        for(int b = 0; in[b] != 0 && b <= xfer.getInCountActual(); b++)
-                        {
-                            if( isprint(in[b]) ) dout << in[b];
-                        }
-                        dout << "  CHARCNT = " << b << endl;
-                    }
-
-                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
-                    #endif
-
-                    setCurrentState( StateScanDecode2 );
 
                     /* FALL THROUGH! */
                 }

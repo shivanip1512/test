@@ -207,7 +207,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
             CtiPointSPtr   point;
             CtiPointStatusSPtr control;
 
-            Protocol::DNP::BinaryOutputControl::ControlCode controltype;
+            Protocol::DNP::BinaryOutputControl::ControlCode controltype = Protocol::DNP::BinaryOutputControl::Noop;
             Protocol::DNP::BinaryOutputControl::TripClose   trip_close = Protocol::DNP::BinaryOutputControl::NUL;
             int offset   = 0,
                 on_time  = 0,
@@ -853,7 +853,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
                             {
                                 demandValue = current.point_value - previous.point_value;
                             }
-                            if( previous.point_value > current.point_value )
+                            else // previous.point_value > current.point_value
                             {
                                 //  rollover has occurred - figure out how big the accumulator was
                                 if( previous.point_value > 0x0000ffff )

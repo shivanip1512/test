@@ -893,7 +893,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
             }
         case StateHandshakeDecodeIdentify:
             {
-                int ret_crc;
+                int ret_crc = 0;
 
                 // decode message
                 if ( commReturnValue ||
@@ -930,7 +930,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
 
         case StateHandshakeDecodeSecurity:
             {
-                int ret_crc;
+                int ret_crc = 0;
 
                 if (decodeAckNak(Transfer.getInBuffer()[2]) ||
                     (Transfer.getInCountActual() != 6) ||

@@ -1050,7 +1050,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
         case StateScanDecode3:
             {
                 // deciding if we go back to the beginning and try again
-                int ret_crc,ret_length;
+                int ret_crc = 0, ret_length = 0;
 
                 CtiTraceMsg trace;
                 string msg;
@@ -1219,7 +1219,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     * last message in a class download) and add 4 for header and 2 for crc
                     *********************************************
                     */
-                    int ret_crc,ret_length;
+                    int ret_crc = 0, ret_length = 0;
                     CtiTraceMsg trace;
                     string msg;
                     CHAR traceBuf[20];
@@ -1424,7 +1424,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
             }
         case StateScanDecode3:
             {
-                int ret_crc,ret_length;
+                int ret_crc = 0, ret_length = 0;
                 CtiTraceMsg trace;
                 string msg;
                 CHAR traceBuf[20];
@@ -1614,7 +1614,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     * last message in a class download) and add 4 for header and 2 for crc
                     *********************************************
                     */
-                    int ret_crc,ret_length;
+                    int ret_crc = 0, ret_length = 0;
                     CtiTraceMsg trace;
                     string msg;
                     CHAR traceBuf[20];

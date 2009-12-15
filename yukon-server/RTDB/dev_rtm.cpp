@@ -617,7 +617,7 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                         {
                             CtiString codestr("-");
                             string cmdStr = CtiProtocolSA3rdParty::asString(sacode);
-                            CtiVerificationBase::Protocol prot_type;
+                            CtiVerificationBase::Protocol prot_type = CtiVerificationBase::Protocol_Invalid;
                             switch(sacode.type)
                             {
                             case GOLAY:

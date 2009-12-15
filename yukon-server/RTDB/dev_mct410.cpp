@@ -2790,7 +2790,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
         CtiPointDataMsg *pData = NULL;
         double value;
 
-        int outagenum, multiplier;
+        int outagenum, multiplier = 0;
         unsigned long  timestamp;
         unsigned short duration;
         string pointString, resultString, timeString;

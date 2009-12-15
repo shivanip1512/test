@@ -517,9 +517,6 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                     }
                     else
                     {
-                        // get the current pulse count
-                        ULONG curPulseValue;
-
                         /* mark the freeze as valid */
                         if(isScanFlagSet(ScanFreezeFailed))
                             setLastFreezeNumber(InMessage->Buffer.InMessage[Offset]);
@@ -540,10 +537,11 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                         }
                         for(AIPointOffset = StartAccum + 1; AIPointOffset <= EndAccum; AIPointOffset++)
                         {
+                            // get the current pulse count
+                            ULONG curPulseValue = MAKEUSHORT(InMessage->Buffer.InMessage[Offset], InMessage->Buffer.InMessage[Offset + 1]);
+
                             if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(AIPointOffset, DemandAccumulatorPointType)))
                             {
-                                curPulseValue = MAKEUSHORT(InMessage->Buffer.InMessage[Offset], InMessage->Buffer.InMessage[Offset + 1]);
-
                                 /* Copy the pulses */
                                 pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
                                 pAccumPoint->getPointHistory().setPresentPulseCount(curPulseValue);

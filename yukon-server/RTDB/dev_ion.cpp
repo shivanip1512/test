@@ -183,30 +183,29 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         case ControlRequest:
         {
-            bool has_offset = false;
-            unsigned int offset;
+            unsigned int offset = 0;
             CtiPointSPtr point;
 
             if( parse.getiValue("point") > 0 )
             {
                 if( (point = getDevicePointEqual(parse.getiValue("point"))) && point->isStatus() )
                 {
-                    if( boost::static_pointer_cast<CtiPointStatus>(point)->getPointStatus().getControlType() == NormalControlType )
+                    CtiPointStatusSPtr statusPoint = boost::static_pointer_cast<CtiPointStatus>(point);
+
+                    if( statusPoint->getPointStatus().getControlType() == NormalControlType )
                     {
-                        offset = boost::static_pointer_cast<CtiPointStatus>(point)->getPointStatus().getControlOffset();
-                        has_offset = true;
+                        offset = statusPoint->getPointStatus().getControlOffset();
                     }
                 }
             }
             else if( parse.getFlags() & CMD_FLAG_OFFSET )
             {
                 offset = parse.getiValue("offset");
-                has_offset = true;
 
                 point = getDeviceControlPointOffsetEqual(offset);
             }
 
-            if( parse.getFlags() & CMD_FLAG_CTL_CLOSE && has_offset )
+            if( parse.getFlags() & CMD_FLAG_CTL_CLOSE && offset > 0 )
             {
                 if( findStringIgnoreCase(gConfigParms.getValueAsString("DUKE_ISSG"),"true") == 0 )
                 {

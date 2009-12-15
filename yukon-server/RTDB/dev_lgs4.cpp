@@ -2958,7 +2958,7 @@ DOUBLE CtiDeviceLandisGyrS4::calculateIntervalData (USHORT aInterval,
                                                     LGS4LPPointInfo_t aLPPoint)
 {
     DOUBLE constant;
-    DOUBLE finalValue;
+    DOUBLE finalValue = 0.0;
 
     switch (aLPPoint.metric)
     {

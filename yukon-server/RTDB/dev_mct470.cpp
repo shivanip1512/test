@@ -2188,7 +2188,7 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
     }
     else if( parse.isKeyValid("channel_config") )
     {
-        int channel, input, channel_config;
+        int channel, input, channel_config = 0;
         unsigned numerator, denominator;
         double multiplier;
         string type;
