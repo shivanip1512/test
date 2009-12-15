@@ -17,31 +17,22 @@
 		<th>Warning Reason</th>
 	</tr>
 
-	<tr>
-		<td>LM Group 1234</td>
-		<td>
-			&lt;Descriptive warning message X&gt;
-		</td>
-	</tr>
-	<tr>
-		<td>LM Group 4985093</td>
-		<td>
-			&lt;Descriptive warning message Y&gt;
-		</td>
-	</tr>
-	<tr>
-		<td>LM Group 6457</td>
-		<td>
-			&lt;Descriptive warning message Z&gt;
-		</td>
-	</tr>
-	<tr>
-		<td>LM Group 34234</td>
-		<td>
-			&lt;Descriptive warning message Q&gt;
-		</td>
-	</tr>
-	
+	<c:forEach var="warningList" items="${warningListMap}">
+		<tr>
+			<td>${warningList.key}</td>
+			<td>
+				<table>
+					<c:forEach var="warning" items="${warningList.value}">
+						<tr>
+							<td>
+								&lt;${warning}&gt;
+							</td>
+						</tr>
+					</c:forEach>
+				</table>
+			</td>
+		</tr>
+	</c:forEach>
 
 </table>
 

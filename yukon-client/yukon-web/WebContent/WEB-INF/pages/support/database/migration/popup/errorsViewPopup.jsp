@@ -17,31 +17,24 @@
 		<th>Error Reason</th>
 	</tr>
 
-	<tr>
-		<td>LM Group 1234</td>
-		<td>
-			&lt;Descriptive error message X&gt;
-		</td>
-	</tr>
-	<tr>
-		<td>LM Group 4985093</td>
-		<td>
-			&lt;Descriptive error message Y&gt;
-		</td>
-	</tr>
-	<tr>
-		<td>LM Group 6457</td>
-		<td>
-			&lt;Descriptive error message Z&gt;
-		</td>
-	</tr>
-	<tr>
-		<td>LM Group 34234</td>
-		<td>
-			&lt;Descriptive error message Q&gt;
-		</td>
-	</tr>
-	
+	<c:forEach var="errorList" items="${errorListMap}">
+		<tr>
+			<td>${errorList.key}</td>
+			<td>
+				<table>
+					<c:forEach var="error" items="${errorList.value}">
+						<tr>
+							<td>
+								&lt;${error}&gt;
+							</td>
+						</tr>
+					</c:forEach>
+				</table>
+			</td>
+		</tr>
+	</c:forEach>
+
+</table>	
 
 </table>
 

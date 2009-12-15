@@ -117,9 +117,9 @@
 				
 					<%-- objects --%>
 					<td class="component basic">
-						265
+						${objectCount}
 						<cti:url var="componentName_1_objects_url" value="/spring/support/database/migration/objectsViewPopup">
-							<cti:param name="someObjectKey" value="ABC"/>
+							<cti:param name="fileKey" value="${fileKey}"/>
 						</cti:url>
 						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.objects" 
                                                dialogId="sharedPopupDialog" 
@@ -129,9 +129,9 @@
 					
 					<%-- warnings --%>
 					<td class="component warnings">
-						15
+						${warningCount}
 						<cti:url var="componentName_1_warnings_url" value="/spring/support/database/migration/warningsViewPopup">
-							<cti:param name="someObjectKey" value="ABC"/>
+							<cti:param name="fileKey" value="${fileKey}"/>
 						</cti:url>
 						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.warnings" 
                                                dialogId="sharedPopupDialog" 
@@ -146,9 +146,9 @@
 					
 					<%-- errors --%>
 					<td class="component basic">
-						4
+						${errorCount}
 						<cti:url var="componentName_1_errors_url" value="/spring/support/database/migration/errorsViewPopup">
-							<cti:param name="someObjectKey" value="ABC"/>
+							<cti:param name="fileKey" value="${fileKey}"/>
 						</cti:url>
 						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.errors" 
                                                dialogId="sharedPopupDialog" 

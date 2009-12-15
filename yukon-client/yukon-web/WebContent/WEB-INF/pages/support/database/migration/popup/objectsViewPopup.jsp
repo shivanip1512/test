@@ -13,26 +13,10 @@
 
 <table class="compactResultsTable">
 	
-	<c:forEach var="configurationColumn" items="${configurationItems}">
+	<c:forEach var="item" items="${itemList}">
 		<tr>
-			<th>${configurationColumn.key}</th>
+			<td>${item}</td>
 		</tr>
-		<c:forEach var="configurationColumnValue" items="${configurationColumn.value}">
-			<tr>
-				<td>configurationColumnValue</td>
-			</tr>
-		</c:forEach>
 	</c:forEach>
 
 </table>
-
-<c:choose>
-	<c:when test="${objectCount > maxObjectCountBeforeScroll}">
-		<br>
-		</div>
-	</c:when>
-	<c:otherwise>
-		<br>
-	</c:otherwise>
-</c:choose>
-

@@ -43,6 +43,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/database/migration/*")
@@ -54,6 +55,8 @@ public class DatabaseMigrationController {
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
+    private Map<String, ImportDatabaseMigrationStatus> importStatusStore = Maps.newHashMap();
+
 	
 	// HOME
 	@RequestMapping
@@ -244,15 +247,20 @@ public class DatabaseMigrationController {
 			return mav;
 		}
 		
-		ImportDatabaseMigrationStatus validateImportFile = databaseMigrationService.validateImportFile(importFile);
-		System.out.println(validateImportFile);
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile);
 		// store
 		String fileKey = UUID.randomUUID().toString();
+		importStatusStore.put(fileKey, importDatabaseMigrationStatus);
 		FileSystemResource resource = new FileSystemResource(importFile);
 		fileStore.put(fileKey, resource);
+
 		
 		// show validation
 		mav = new ModelAndView("database/migration/importValidate.jsp");
+		mav.addObject("objectCount", importDatabaseMigrationStatus.getLabelList().size());
+	    mav.addObject("warningCount", importDatabaseMigrationStatus.getWarningsMap().size());
+	    mav.addObject("errorCount", importDatabaseMigrationStatus.getErrorsMap().size());
+
 		mav.addObject("fileKey", fileKey);
 		mav.addObject("filePath", resource.getPath());
 		mav.addObject("fileSize", resource.getFile().length() / 1024);
@@ -264,34 +272,41 @@ public class DatabaseMigrationController {
 	// VIEW OBJECTS
 	@RequestMapping
     public ModelAndView objectsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	    ModelAndView mav = new ModelAndView("database/migration/popup/objectsViewPopup.jsp");
 	
-		String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
+		String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = importStatusStore.get(fileKey);
+		List<String> labelList = importDatabaseMigrationStatus.getLabelList();
 		
-		ModelAndView mav = new ModelAndView("database/migration/popup/objectsViewPopup.jsp");
-		
+		mav.addObject("itemList", labelList);
 		return mav;
 	}
 	
 	// VIEW WARNINGS
 	@RequestMapping
     public ModelAndView warningsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	    ModelAndView mav = new ModelAndView("database/migration/popup/warningsViewPopup.jsp");
 	
-		String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
-		
-		ModelAndView mav = new ModelAndView("database/migration/popup/warningsViewPopup.jsp");
-		
+	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = importStatusStore.get(fileKey);
+        Map<String, List<String>> warningListMap = importDatabaseMigrationStatus.getWarningsMap();
+
+        mav.addObject("warningListMap", warningListMap);
 		return mav;
 	}
 	
 	// VIEW ERRORS
 	@RequestMapping
     public ModelAndView errorsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	
-		String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
-		
-		ModelAndView mav = new ModelAndView("database/migration/popup/errorsViewPopup.jsp");
-		
-		return mav;
+	    ModelAndView mav = new ModelAndView("database/migration/popup/errorsViewPopup.jsp");
+
+	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
+	    ImportDatabaseMigrationStatus importDatabaseMigrationStatus = importStatusStore.get(fileKey);
+	    Map<String, List<String>> errorListMap = importDatabaseMigrationStatus.getErrorsMap();
+
+	    mav.addObject("errorListMap", errorListMap);
+	    return mav;
+
 	}
 	
 	// IMPORT CONFIRM
