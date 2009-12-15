@@ -1408,7 +1408,6 @@ ULONG CtiDeviceLCU::lcuTime(OUTMESS *&OutMessage, UINT lcuType)
 
 void CtiDeviceLCU::initLCUGlobals()
 {
-    char temp[80];
     string str;
 
     if(!_lcuGlobalsInit)
@@ -1418,19 +1417,17 @@ void CtiDeviceLCU::initLCUGlobals()
 
         if( !(str = gConfigParms.getValueAsString("DSM2_LANDGMINIMUMTIME")).empty() )
         {
-            char *eptr;
-            _landgMinimumTime = strtoul(str.c_str(), &eptr, 10);
+            _landgMinimumTime = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter DSM2_LANDGMINIMUMTIME found : " << temp << endl;
+                dout << "Configuration Parameter DSM2_LANDGMINIMUMTIME found : " << str << endl;
             }
         }
 
         if( !(str = gConfigParms.getValueAsString("DSM2_LANDGTIMEOUT")).empty() )
         {
-            char *eptr;
-            _landgTimeout = strtoul(str.c_str(), &eptr, 10);
+            _landgTimeout = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1440,8 +1437,7 @@ void CtiDeviceLCU::initLCUGlobals()
 
         if( !(str = gConfigParms.getValueAsString("DSM2_LANDGRETRIES")).empty() )
         {
-            char *eptr;
-            _landgRetries = strtoul(str.c_str(), &eptr, 10);
+            _landgRetries = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1451,8 +1447,7 @@ void CtiDeviceLCU::initLCUGlobals()
 
         if( !(str = gConfigParms.getValueAsString("DSM2_EREPCRETRIES")).empty() )
         {
-            char *eptr;
-            _erepcRetries = strtoul(str.c_str(), &eptr, 10);
+            _erepcRetries = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1462,8 +1457,7 @@ void CtiDeviceLCU::initLCUGlobals()
 
         if( !(str = gConfigParms.getValueAsString("RIPPLE_STARTSTOP_CROSSINGS")).empty() )
         {
-            char *eptr;
-            _lcuStartStopCrossings = strtoul(str.c_str(), &eptr, 10);
+            _lcuStartStopCrossings = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1473,8 +1467,7 @@ void CtiDeviceLCU::initLCUGlobals()
 
         if( !(str = gConfigParms.getValueAsString("RIPPLE_BIT_CROSSINGS")).empty() )
         {
-            char *eptr;
-            _lcuStartStopCrossings = strtoul(str.c_str(), &eptr, 10);
+            _lcuStartStopCrossings = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1484,8 +1477,7 @@ void CtiDeviceLCU::initLCUGlobals()
 
         if( !(str = gConfigParms.getValueAsString("RIPPLE_DUTY_CYCLE_PERCENT")).empty() )
         {
-            char *eptr;
-            _lcuDutyCyclePercent = strtoul(str.c_str(), &eptr, 10);
+            _lcuDutyCyclePercent = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1495,8 +1487,7 @@ void CtiDeviceLCU::initLCUGlobals()
 
         if( !(str = gConfigParms.getValueAsString("RIPPLE_SLOW_SCAN_DELAY")).empty() )
         {
-            char *eptr;
-            _lcuSlowScanDelay = strtoul(str.c_str(), &eptr, 10);
+            _lcuSlowScanDelay = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
