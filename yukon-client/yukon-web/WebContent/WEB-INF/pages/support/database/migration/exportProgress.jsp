@@ -44,20 +44,20 @@
     
 		<tags:nameValueContainer>
 			<tags:nameValue name="File Location" nameColumnWidth="120px">
-				C:\Yukon\Server\Log\PSPL0019_dbUser_LoginGroup_111509.xml
+				${migrationStatus.exportFile.path}
 			</tags:nameValue>
 		</tags:nameValueContainer>
 		<br>
 	    
 	    <%-- PROGRESS BAR --%>
-	    <tags:resultProgressBar totalCount="5"
-	        						 countKey="DATABASE_MIGRATION/12345/COMPLETED_ITEMS"
+	    <tags:resultProgressBar totalCount="${migrationStatus.totalCount}"
+	        						 countKey="DATABASE_MIGRATION/${migrationStatus.id}/COMPLETED_ITEMS"
 	        						 progressLabelTextKey="yukon.web.modules.support.databaseMigration.exportProgress.progressLabel"
-	        						 statusTextKey="DATABASE_MIGRATION/12345/STATUS_TEXT"/>
+	        						 statusTextKey="DATABASE_MIGRATION/${migrationStatus.id}/STATUS_TEXT"/>
 	
 	
 		<%-- DOWNLOAD BUTTON --%>	
-		<cti:dataUpdaterCallback function="enableDownloadButton('5')" initialize="true" completedItems="DATABASE_MIGRATION/12345/COMPLETED_ITEMS"/>
+		<cti:dataUpdaterCallback function="enableDownloadButton('${migrationStatus.totalCount}')" initialize="true" completedItems="DATABASE_MIGRATION/${migrationStatus.id}/COMPLETED_ITEMS"/>
 	
 		<br>
 		<form id="cancelForm" action="/spring/support/database/migration/home" method="post">

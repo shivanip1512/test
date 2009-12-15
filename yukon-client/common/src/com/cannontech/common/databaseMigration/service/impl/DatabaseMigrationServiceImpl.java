@@ -69,6 +69,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -88,7 +89,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private TemplateProcessorFactory templateProcessorFactory;
     private ScheduledExecutor scheduledExecutor = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    
+    private Map<String, ExportDatabaseMigrationStatus> exportStatusMap = Maps.newHashMap();
+    
+    @Override
+    public ExportDatabaseMigrationStatus getExportStatus(String id) {
+    	return exportStatusMap.get(id);
+    }
+    
     public ImportDatabaseMigrationStatus validateImportFile(File importFile){
         String configurationNameValue = getConfigurationNameValue(importFile);
         List<Element> importItemList = getElementListFromFile(importFile);
@@ -96,7 +104,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return validateElementList(importItemList, configurationNameValue);
         
     }
-
+    
+    
+    
     private ImportDatabaseMigrationStatus validateElementList(final List<Element> importItemList, 
                                                               final String configurationNameValue) {
         final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus();
@@ -965,27 +975,40 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     
     
     
-    public ExportDatabaseMigrationStatus processExportDatabaseMigration(File configurationXMLFile, List<Integer> primaryKeyList, YukonUserContext userContext) throws IOException{
-        // Create export file
-///////        // move file out
-        File xmlDataFile = createFile(configurationXMLFile,userContext);
-///////
+    public ExportDatabaseMigrationStatus processExportDatabaseMigration(final File configurationXMLFile, final List<Integer> primaryKeyList, YukonUserContext userContext) throws IOException{
+
+    	// create file
+    	final File xmlDataFile = createFile(configurationXMLFile,userContext);
+    	
+    	// init status
+        final ExportDatabaseMigrationStatus exportDatabaseMigrationStatus = new ExportDatabaseMigrationStatus(primaryKeyList.size(), xmlDataFile);
+        exportStatusMap.put(exportDatabaseMigrationStatus.getId(), exportDatabaseMigrationStatus);
         
-        // Parses the configuration file into a java object and uses that object to generate a template for processing
-        ConfigurationTable baseTableElement = configurationParserService.buildConfigurationTemplate(configurationXMLFile);
-        DataTableTemplate databaseMapTemplateWithMappingKeys = configurationParserService.buildDataTableTemplate(baseTableElement);
+        // run file generation in background thread
+        scheduledExecutor.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				// Parses the configuration file into a java object and uses that object to generate a template for processing
+		        ConfigurationTable baseTableElement = configurationParserService.buildConfigurationTemplate(configurationXMLFile);
+		        DataTableTemplate databaseMapTemplateWithMappingKeys = configurationParserService.buildDataTableTemplate(baseTableElement);
+		        
+		        // build data
+		        Iterable<DataTable> data = configurationProcessorService.processDataTableTemplate(databaseMapTemplateWithMappingKeys, primaryKeyList, exportDatabaseMigrationStatus);
+		        Element generatedXMLFile = exportXMLGeneratorService.buildXmlElement(data, baseTableElement.getLabel());
 
-        ExportDatabaseMigrationStatus exportDatabaseMigrationStatus = new ExportDatabaseMigrationStatus();
-        exportDatabaseMigrationStatus.setTotalCount(primaryKeyList.size());
-        Iterable<DataTable> data = configurationProcessorService.processDataTableTemplate(databaseMapTemplateWithMappingKeys, primaryKeyList);
-
-        Element generatedXMLFile = null;
-        generatedXMLFile = exportXMLGeneratorService.buildXmlElement(data, baseTableElement.getLabel());
-
-        // Output the configuration to the XML file
-        Format format = Format.getPrettyFormat(  );
-        XMLOutputter xmlOutputter = new XMLOutputter(format);
-        xmlOutputter.output(generatedXMLFile, new FileWriter(xmlDataFile));
+		        // write data to file
+		        Format format = Format.getPrettyFormat(  );
+		        XMLOutputter xmlOutputter = new XMLOutputter(format);
+		        
+		        try {
+		        	xmlOutputter.output(generatedXMLFile, new FileWriter(xmlDataFile));
+		        } catch (IOException e) {
+		        	log.error("Error outputting xml file.", e);
+		        }
+			}
+		});
 
         return exportDatabaseMigrationStatus;
     }
@@ -1261,7 +1284,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         String schemaUsername = PoolManager.getInstance().getPrimaryUser();
         String component = getConfigurationLabel(configurationXMLFile);
         
-        String currentDate = dateFormattingService.format(new Date(), DateFormatEnum.LONG_BOTH, new SystemUserContext());
+        String currentDate = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, new SystemUserContext());
         String defaultDataFileName = 
             databaseName+"_"+schemaUsername+"_"+component+"_"+currentDate+".xml";;
 
@@ -1322,7 +1345,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
     }
-
+    
     @Autowired
     public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
         this.templateProcessorFactory = templateProcessorFactory;
@@ -1333,6 +1356,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         this.messageSourceResolver = messageSourceResolver;
     }
     
+    @Autowired
+    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
+		this.scheduledExecutor = scheduledExecutor;
+	}
 }
 
 class ConfigurationErrorException extends Exception {

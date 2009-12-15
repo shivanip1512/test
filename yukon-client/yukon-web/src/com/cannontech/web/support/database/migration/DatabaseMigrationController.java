@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -80,10 +81,24 @@ public class DatabaseMigrationController {
         return mav;
     }
 	
+	@RequestMapping
+    public ModelAndView exportProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+	
+		ModelAndView mav = new ModelAndView("database/migration/exportProgress.jsp");
+		
+		ExportDatabaseMigrationStatus migrationStatus = databaseMigrationService.getExportStatus(statusKey);
+        mav.addObject("migrationStatus", migrationStatus);
+        
+        addDbInfoToMav(mav);
+        
+        return mav;
+	}
+		
     // EXPORT
 	@RequestMapping
-    public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
-        ModelAndView mav = new ModelAndView("database/migration/exportProgress.jsp");
+    public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException {
+		
+        
         String componentType = ServletRequestUtils.getStringParameter(request, "selectedComponent");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
@@ -95,19 +110,15 @@ public class DatabaseMigrationController {
         
         Map<String, Resource> availableConfigurationMap = databaseMigrationService.getAvailableConfigurationMap();
         Resource configurationXMLFile = availableConfigurationMap.get(componentType);
+        ExportDatabaseMigrationStatus status = null;
         if(configurationXMLFile != null) {
-            try {
-                databaseMigrationService.processExportDatabaseMigration(configurationXMLFile.getFile(), primaryKeyList, userContext);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            status = databaseMigrationService.processExportDatabaseMigration(configurationXMLFile.getFile(), primaryKeyList, userContext);
         } else {
             throw new IllegalArgumentException("The configuration file supplied does not exist.");
         }
         
-        addDbInfoToMav(mav);
-        
+        ModelAndView mav = new ModelAndView("redirect:exportProgress");
+        mav.addObject("statusKey", status.getId());
         return mav;
     }
 	

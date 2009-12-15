@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.SqlHolder;
 import com.cannontech.common.databaseMigration.bean.data.DataTable;
 import com.cannontech.common.databaseMigration.bean.data.DataTableEntity;
@@ -35,12 +36,18 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     private Database database;
     private JdbcTemplate jdbcTemplate;
     
-    public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template,
-                                                         List<Integer> primaryKeyList) {
+    public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template, List<Integer> primaryKeyList, ExportDatabaseMigrationStatus status) {
+    	
         Map<DataTableReference, DataTable> includedTables = Maps.newHashMap();
-        List<DataTable> byPrimaryKeys = buildAndProcessSqlPrimaryKey(template, primaryKeyList, includedTables);
         
-        Iterable<DataTable> result = Iterables.concat(includedTables.values(), byPrimaryKeys);
+        List<DataTable> allData = Lists.newArrayList();
+        
+        for (int pk : primaryKeyList) {
+        	allData.addAll(buildAndProcessSqlPrimaryKey(template, Collections.singletonList(pk), includedTables, status));
+        	status.addCurrentCount();
+        }
+        
+        Iterable<DataTable> result = Iterables.concat(includedTables.values(), allData);
         
         return result;
         
@@ -51,7 +58,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                                                    Map<DataTableReference, DataTable> includedTables) {
         
         List<Integer> primaryKeyList = Collections.singletonList(primaryKey);
-        List<DataTable> inlineDataTables = buildAndProcessSqlPrimaryKey(template, primaryKeyList, includedTables);
+        List<DataTable> inlineDataTables = buildAndProcessSqlPrimaryKey(template, primaryKeyList, includedTables, null);
         return inlineDataTables.get(0);
         
     }
@@ -66,7 +73,8 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
      */
     private List<DataTable> buildAndProcessSqlPrimaryKey(DataTableTemplate template,
                                                          List<Integer> primaryKeyList,
-                                                         Map<DataTableReference, DataTable> includedTables) {
+                                                         Map<DataTableReference, DataTable> includedTables,
+                                                         ExportDatabaseMigrationStatus status) {
 
         // Build up the sql
         SqlHolder sqlHolder = new SqlHolder();
@@ -91,7 +99,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql());
 
-        return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults);
+        return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults, status);
     }
 
     private List<DataTable> buildAndProcessSqlForeignKey(DataTableTemplate template,
@@ -141,13 +149,14 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql());
-        return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults);
+        return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults, null);
     }
     
     private List<DataTable> processDataTableTemplate(DataTableTemplate template,
                                                      List<Integer> primaryKeyList,
                                                      Map<DataTableReference, DataTable> includedTables,
-                                                     List<Map<String, Object>> sqlResults) {
+                                                     List<Map<String, Object>> sqlResults,
+                                                     ExportDatabaseMigrationStatus status) {
         List<DataTable> result = Lists.newArrayList();
         for (Map<String, Object> sqlResult : sqlResults) {
             
@@ -178,6 +187,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
 
         Map<String, DataEntryTemplate> tableColumns = template.getTableColumns();
         for (Map.Entry<String, DataEntryTemplate> entry : tableColumns.entrySet()) {
+        	
             String columnName = entry.getKey();
             DataTableEntity dataTableEntity = null;
             Object value = sqlResult.get(columnName);
