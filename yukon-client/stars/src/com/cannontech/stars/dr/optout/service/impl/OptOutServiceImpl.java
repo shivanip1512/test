@@ -402,20 +402,8 @@ public class OptOutServiceImpl implements OptOutService {
     	
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOutsByProgramId(programId, energyCompany);
 		
-		Date now = new Date();
-		
 		for (OptOutEvent ooe : currentOptOuts) {
-			
-			List<LMHardwareControlGroup> currentEnrollmentList = lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(ooe.getInventoryId(), ooe.getCustomerAccountId());
-
-	        // Clean up the opt out for the given inventory.
-	        if (currentEnrollmentList.size() > 1){
-	            if (optOutEventDao.isOptedOut(ooe.getInventoryId(), ooe.getCustomerAccountId())) {
-	            	lmHardwareControlInformationService.stopOptOut(ooe.getInventoryId(), -1, ooe.getCustomerAccountId(), programId, user, now);
-	            }
-	        } else {
-	        	cancelOptOutEvent(ooe, energyCompany, user);
-	        }
+			cancelOptOutEvent(ooe, energyCompany, user);
 		}
 	}
 	
