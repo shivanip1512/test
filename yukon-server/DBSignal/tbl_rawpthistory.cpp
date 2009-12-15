@@ -26,9 +26,9 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
     getValue() <<
     getMillis();
 
-    RWDBStatus stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    RWDBStatus dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
-    if( stat.errorCode() != RWDBStatus::ok )
+    if( dbstat.errorCode() != RWDBStatus::ok )
     {
         LONG newcid = ChangeIdGen(true);
 
@@ -43,9 +43,9 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
             }
 
             setChangeID( newcid );
-            stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+            dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
-            if( stat.errorCode() != RWDBStatus::ok )
+            if( dbstat.errorCode() != RWDBStatus::ok )
             {
                 string loggedSQLstring = inserter.asString();
                 {

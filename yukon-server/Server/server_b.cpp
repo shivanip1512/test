@@ -20,7 +20,7 @@
 #include "logger.h"
 #include "utility.h"
 #include "id_svr.h"
- 
+
 using namespace std;
 
 DLLEXPORT bool isQuestionable(CtiServer::ptr_type &ptr, void* narg)
@@ -326,7 +326,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Unhandled command message " << Cmd->getOperation() << " sent to Main.." << endl;
             }
-        } 
+        }
       }
 
     return status;
@@ -465,9 +465,9 @@ void CtiServer::join()
 {
     MainThread_.join();     // He will have waited for this to terminate.
 }
-RWWaitStatus CtiServer::join(unsigned long milliseconds)
+RWWaitStatus CtiServer::join(unsigned long millis)
 {
-    return MainThread_.join(milliseconds);     // He will have waited for this to terminate.
+    return MainThread_.join(millis);     // He will have waited for this to terminate.
 }
 
 /* Use Only as a last resort */
