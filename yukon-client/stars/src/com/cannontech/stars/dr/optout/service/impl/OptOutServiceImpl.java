@@ -53,8 +53,6 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
@@ -108,7 +106,6 @@ public class OptOutServiceImpl implements OptOutService {
 	private SystemDateFormattingService systemDateFormattingService;
 	private YukonUserDao yukonUserDao;
 	private Executor executor;
-	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -1181,11 +1178,5 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired
 	public void setExecutor(@Qualifier("main") Executor executor) {
 		this.executor = executor;
-	}
-	
-	@Autowired
-	public void setLmHardwareControlGroupDao(
-			LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-		this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
 	}
 }
