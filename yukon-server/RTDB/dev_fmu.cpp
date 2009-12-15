@@ -72,7 +72,7 @@ CtiDeviceFMU::CtiDeviceFMU() :
     _in_remaining(0),
     _prevState(State_Uninit)
 {
-    memset(_inbound, 0, sizeof(_inbound[0]));
+    memset(_inbound, 0, sizeof(_inbound));
 }
 
 CtiDeviceFMU::~CtiDeviceFMU()
