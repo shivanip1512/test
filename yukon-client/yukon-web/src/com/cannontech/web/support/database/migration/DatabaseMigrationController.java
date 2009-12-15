@@ -81,20 +81,9 @@ public class DatabaseMigrationController {
         return mav;
     }
 	
-	@RequestMapping
-    public ModelAndView exportProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
 	
-		ModelAndView mav = new ModelAndView("database/migration/exportProgress.jsp");
-		
-		ExportDatabaseMigrationStatus migrationStatus = databaseMigrationService.getExportStatus(statusKey);
-        mav.addObject("migrationStatus", migrationStatus);
-        
-        addDbInfoToMav(mav);
-        
-        return mav;
-	}
-		
-    // EXPORT
+	
+	// EXPORT
 	@RequestMapping
     public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException {
 		
@@ -117,10 +106,37 @@ public class DatabaseMigrationController {
             throw new IllegalArgumentException("The configuration file supplied does not exist.");
         }
         
+        File exportFile = status.getExportFile();
+        FileSystemResource resource = new FileSystemResource(exportFile);
+        fileStore.put(status.getId(), resource);
+        
         ModelAndView mav = new ModelAndView("redirect:exportProgress");
         mav.addObject("statusKey", status.getId());
         return mav;
     }
+	
+	@RequestMapping
+    public ModelAndView exportProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+	
+		ModelAndView mav = new ModelAndView("database/migration/exportProgress.jsp");
+		
+		ExportDatabaseMigrationStatus migrationStatus = databaseMigrationService.getExportStatus(statusKey);
+        mav.addObject("migrationStatus", migrationStatus);
+        
+        addDbInfoToMav(mav);
+        
+        return mav;
+	}
+	
+	@RequestMapping
+    public void downloadExportFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+		String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
+		downloadFile(fileKey, response);
+	}
+	
+	
+	
 	
 	// SELECT OBJECTS
 	@RequestMapping
@@ -143,13 +159,7 @@ public class DatabaseMigrationController {
         return mav;
     }
 	
-	// DOWNLOAD EXPORT FILE
-	@RequestMapping
-    public void downloadExportFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
-		String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-		downloadFile(fileKey, response);
-	}
 	
 	// LOAD LOCAL FILE
 	@RequestMapping

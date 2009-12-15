@@ -65,7 +65,7 @@
     	</form>
     	
 		<form id="downloadExportFileForm" action="/spring/support/database/migration/downloadExportFile" method="post">
-	    	<input type="hidden" name="fileKey" value="dummyFileKey">
+	    	<input type="hidden" name="fileKey" value="${migrationStatus.id}">
 	    </form>
 	    
 	    <input type="button" id="downloadButton" value="${downloadButton}" onclick="$('downloadExportFileForm').submit();" style="width:80px;"/>
