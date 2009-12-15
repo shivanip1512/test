@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -407,29 +406,19 @@ public class DatabaseMigrationController {
 		
 		public RecentImport(ImportDatabaseMigrationStatus status) {
 		
-			this.importKey = status.getId();
+			this.status = status;
 			FileSystemResource resource = new FileSystemResource(status.getImportFile());
 			this.filePath = resource.getPath();
-			this.startTime = status.getStartTime();
-			this.stopTime = status.getStopTime();
 		}
 		
-		private String importKey;
+		private ImportDatabaseMigrationStatus status;
 		private String filePath;
-		private Date startTime;
-		private Date stopTime;
 		
-		public String getImportKey() {
-			return importKey;
+		public ImportDatabaseMigrationStatus getStatus() {
+			return status;
 		}
 		public String getFilePath() {
 			return filePath;
-		}
-		public Date getStartTime() {
-			return startTime;
-		}
-		public Date getStopTime() {
-			return stopTime;
 		}
 	}
 	

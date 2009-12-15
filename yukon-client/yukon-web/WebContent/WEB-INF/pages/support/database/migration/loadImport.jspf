@@ -66,13 +66,27 @@
 		<c:forEach var="recentImport" items="${recentImports}">
 			<tr>
 				<td>${recentImport.filePath}</td>
-				<td><cti:formatDate type="BOTH" value="${recentImport.startTime}"/></td>
-				<td><cti:formatDate type="BOTH" value="${recentImport.stopTime}" nullText="In Progress..."/></td>
+				<td><cti:formatDate type="BOTH" value="${recentImport.status.startTime}"/></td>
+				<td><cti:formatDate type="BOTH" value="${recentImport.status.stopTime}" nullText="In Progress..."/></td>
+				
 				<td>
+					
 					<cti:url var="progressUrl" value="/spring/support/database/migration/importProgress">
-						<cti:param name="statusKey" value="${recentImport.importKey}"/>
+						<cti:param name="statusKey" value="${recentImport.status.id}"/>
 					</cti:url>
-					<a href="${progressUrl}">View</a>
+					
+					<cti:url var="validateUrl" value="/spring/support/database/migration/importValidate">
+						<cti:param name="statusKey" value="${recentImport.status.id}"/>
+					</cti:url>
+					
+					<c:choose>
+						<c:when test="${recentImport.status.complete}">
+							<a href="${validateUrl}">View Validation</a>
+						</c:when>
+						<c:otherwise>
+							<a href="${progressUrl}">View Progress</a>
+						</c:otherwise>
+					</c:choose>
 				</td>
 			</tr>
 		</c:forEach>
