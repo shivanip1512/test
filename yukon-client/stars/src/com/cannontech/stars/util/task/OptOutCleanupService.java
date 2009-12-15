@@ -66,6 +66,7 @@ public class OptOutCleanupService implements InitializingBean {
                 List<Integer> inventoryIds = enrollmentDao.getCurrentlyOptedOutInventory();
                 List<LiteStarsLMHardware> completedOptOuts = getCompletedOptOuts(inventoryIds);
                 cleanUpCompletedOptOuts(completedOptOuts, user);
+                logger.debug("Finished opt out task.");
         
             }
         }, 1, 5, TimeUnit.MINUTES);
