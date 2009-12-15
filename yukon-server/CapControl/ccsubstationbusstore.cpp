@@ -854,6 +854,13 @@ CapControlType CtiCCSubstationBusStore::determineTypeById(int paoId)
         return SpecialArea;
     }
 
+    //Ltc is not off extending RWCollectable
+    CapControlPao* pao = findLtcById(paoId);
+    if (pao != NULL)
+    {
+        return Ltc;
+    }
+
     //Unknown
     return Undefined;
 }
