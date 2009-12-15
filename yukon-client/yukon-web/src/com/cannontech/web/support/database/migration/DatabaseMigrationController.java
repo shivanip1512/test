@@ -306,7 +306,7 @@ public class DatabaseMigrationController {
 		
         mav.addObject("status", status);
         mav.addObject("filePath", resource.getPath());
-        mav.addObject("fileSize", resource.getFile().length() / 1024);
+        mav.addObject("fileSize", CtiUtilities.formatFileSize(resource.getFile().length(), 1));
         mav.addObject("orgDbUrl", orgEnvironment);
         mav.addObject("orgDbUsername", orgSchemaUser);
         

@@ -88,7 +88,7 @@
 					<a href="javascript:void(0);" onclick="$('openFileForm').submit();" title="${fileViewContentsLabel}">${filePath}</a>
 				</tags:nameValue>
 				<tags:nameValue name="${fileSizeLabel}">
-					${fileSize}kB
+					${fileSize}
 				</tags:nameValue>
 			</tags:nameValueContainer>
 			

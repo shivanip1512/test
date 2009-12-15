@@ -22,6 +22,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -49,9 +50,6 @@ import javax.swing.text.BadLocationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -1920,6 +1918,24 @@ public static double convertTemperature(double temperature, String fromUnit, Str
 
     public static void setRunningAsClient() {
         runningAsClient  = true;
+    }
+    
+    public static String formatFileSize(long longSize, int decimalPos) {
+    	
+       NumberFormat fmt = NumberFormat.getNumberInstance();
+       if (decimalPos >= 0) {
+          fmt.setMaximumFractionDigits(decimalPos);
+       }
+       final double size = longSize;
+       double val = size / (1024 * 1024);
+       if (val > 1) {
+          return fmt.format(val).concat(" MB");
+       }
+       val = size / 1024;
+       if (val > 10) {
+          return fmt.format(val).concat(" KB");
+       }
+       return fmt.format(val).concat(" bytes");
     }
 }
 
