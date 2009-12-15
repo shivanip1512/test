@@ -1402,26 +1402,30 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception {
         if(appFields == null)
             appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
-        
-        EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
-        EnrollmentEnum enrollType = EnrollmentEnum.ENROLL;
-        enrollmentHelper.setAccountNumber(liteAcctInfo.getCustomerAccount().getAccountNumber());
-        enrollmentHelper.setSerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
-        if(UNENROLL_CASE.equalsIgnoreCase( hwFields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
-            enrollType = EnrollmentEnum.UNENROLL;
-            // leave programName blank, to unenroll from all programs for the Inventory
-        } else {
-            enrollmentHelper.setProgramName(hwFields[ImportManagerUtil.IDX_PROGRAM_NAME]);    
-        }
-        enrollmentHelper.setLoadGroupName(hwFields[ImportManagerUtil.IDX_ADDR_GROUP]);
-        enrollmentHelper.setRelay(appFields[ImportManagerUtil.IDX_RELAY_NUM]);        
-        enrollmentHelper.setApplianceCategoryName(appFields[ImportManagerUtil.IDX_APP_TYPE]);
-        if (appFields[ImportManagerUtil.IDX_APP_KW].length() > 0) {
-            Double appKw = Double.parseDouble(appFields[ImportManagerUtil.IDX_APP_KW]);
-            if (appKw >= 0) enrollmentHelper.setApplianceKW(appKw.floatValue());
-        }
-
         try {
+            EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
+            EnrollmentEnum enrollType = EnrollmentEnum.ENROLL;
+            enrollmentHelper.setAccountNumber(liteAcctInfo.getCustomerAccount().getAccountNumber());
+            enrollmentHelper.setSerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
+            if(UNENROLL_CASE.equalsIgnoreCase( hwFields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
+                enrollType = EnrollmentEnum.UNENROLL;
+                // leave programName blank, to unenroll from all programs for the Inventory
+            } else {
+                enrollmentHelper.setProgramName(hwFields[ImportManagerUtil.IDX_PROGRAM_NAME]);    
+            }
+            enrollmentHelper.setLoadGroupName(hwFields[ImportManagerUtil.IDX_ADDR_GROUP]);
+            enrollmentHelper.setRelay(appFields[ImportManagerUtil.IDX_RELAY_NUM]);        
+            enrollmentHelper.setApplianceCategoryName(appFields[ImportManagerUtil.IDX_APP_TYPE]);
+            if (!StringUtils.isBlank(appFields[ImportManagerUtil.IDX_APP_KW])) {
+                try {
+                    Double appKw = Double.parseDouble(appFields[ImportManagerUtil.IDX_APP_KW]);
+                    if (appKw < 0) throw new IllegalArgumentException("Appliance KW should be a valid numeric value");
+                    enrollmentHelper.setApplianceKW(appKw.floatValue());                
+                } catch(NumberFormatException e) {
+                    throw new IllegalArgumentException("Appliance KW should be a valid numeric value");
+                }
+            }
+            // call enrollment service now
             enrollmentHelperService.doEnrollment(enrollmentHelper, enrollType, this.currentUser);
         } catch(NotFoundException e) {
             automationCheck(e.getMessage());
