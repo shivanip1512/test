@@ -1,24 +1,53 @@
 package com.cannontech.common.databaseMigration.bean;
 
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import com.cannontech.common.util.Completable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class ImportDatabaseMigrationStatus {
-    int currentCount = 0;
+public class ImportDatabaseMigrationStatus implements Completable {
+    
+	String id = null;
+	File importFile = null;
+	int currentCount = 0;
     int totalCount = 0;
+    Date startTime = null;
+    Date stopTime = null;
     
     List<String> labelList = Lists.newArrayList();
     WarningProcessingEnum warningProcessing = WarningProcessingEnum.VALIDATE;
     Map<String, List<String>> warningsMap = Maps.newLinkedHashMap();
     Map<String, List<String>> errorsMap = Maps.newLinkedHashMap();
 
-    public ImportDatabaseMigrationStatus() {}
-    public ImportDatabaseMigrationStatus(int totalCount) {
-        this.totalCount = totalCount;
+    public ImportDatabaseMigrationStatus(int totalCount, File importFile) {
+    	this.totalCount = totalCount;
+    	this.id = UUID.randomUUID().toString();
+    	this.startTime = new Date();
+    	this.importFile = importFile;
     }
+    
+    // ID
+    public String getId() {
+		return id;
+	}
+    
+    // start/stop
+    public Date getStartTime() {
+		return startTime;
+	}
+    public Date getStopTime() {
+		return stopTime;
+	}
+    
+    // file
+    public File getImportFile() {
+		return importFile;
+	}
     
     // Current Count
     public void incrementProcessed() {
@@ -46,6 +75,9 @@ public class ImportDatabaseMigrationStatus {
     public List<String> getLabelList() {
         return labelList;
     }
+    public int getLabelCount() {
+    	return getLabelList().size();
+    }
     public void setLabelList(List<String> labelList) {
         this.labelList = labelList;
     }
@@ -70,6 +102,9 @@ public class ImportDatabaseMigrationStatus {
     public Map<String, List<String>> getWarningsMap() {
         return warningsMap;
     }
+    public int getWarningCount() {
+    	return getWarningsMap().size();
+    }
     public void setWarningsMap(Map<String, List<String>> warningsMap) {
         this.warningsMap = warningsMap;
     }
@@ -86,7 +121,19 @@ public class ImportDatabaseMigrationStatus {
     public Map<String, List<String>> getErrorsMap() {
         return errorsMap;
     }
+    public int getErrorCount() {
+    	return getErrorsMap().size();
+    }
     public void setErrorsMap(Map<String, List<String>> errorsMap) {
         this.errorsMap = errorsMap;
+    }
+    
+    public void complete() {
+    	this.stopTime = new Date();
+    }
+    
+    @Override
+    public boolean isComplete() {
+    	return this.currentCount == this.totalCount;
     }
 }

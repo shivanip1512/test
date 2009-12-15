@@ -52,4 +52,7 @@ public interface DatabaseMigrationService {
     public void addDBTableListener(String tableName, TableChangeCallback tableChangeCallback);
     
     public ExportDatabaseMigrationStatus getExportStatus(String id);
+    public ImportDatabaseMigrationStatus getImportStatus(String id);
+    public List<ExportDatabaseMigrationStatus> getAllExportStatuses();
+    public List<ImportDatabaseMigrationStatus> getAllImportStatuses();
 }

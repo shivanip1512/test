@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
+import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
@@ -19,15 +20,33 @@ public class DatabaseMigrationBackingService implements UpdateBackingService {
         String id = idParts[0];
         String updaterTypeStr = idParts[1];
         
-        if (updaterTypeStr.equals("COMPLETED_ITEMS")) {
+        // EXPORT
+        if (updaterTypeStr.equals("EXPORT_COMPLETED_ITEMS")) {
         	
         	ExportDatabaseMigrationStatus status = databaseMigrationService.getExportStatus(id);
         	int currentCount = status.getCurrentCount();
         	return String.valueOf(currentCount);
         	
-        } else if (updaterTypeStr.equals("STATUS_TEXT")) {
+        } else if (updaterTypeStr.equals("EXPORT_STATUS_TEXT")) {
         	
         	ExportDatabaseMigrationStatus status = databaseMigrationService.getExportStatus(id);
+        	
+        	if (status.isComplete()) {
+        		return "Complete";
+        	} else {
+        		return "In Progress";
+        	}
+        	
+        // IMPORT
+        } else if (updaterTypeStr.equals("IMPORT_COMPLETED_ITEMS")) {
+        	
+        	ImportDatabaseMigrationStatus status = databaseMigrationService.getImportStatus(id);
+        	int currentCount = status.getCurrentCount();
+        	return String.valueOf(currentCount);
+        	
+        } else if (updaterTypeStr.equals("IMPORT_STATUS_TEXT")) {
+        	
+        	ImportDatabaseMigrationStatus status = databaseMigrationService.getImportStatus(id);
         	
         	if (status.isComplete()) {
         		return "Complete";

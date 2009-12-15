@@ -25,7 +25,7 @@
 					<c:forEach var="warning" items="${warningList.value}">
 						<tr>
 							<td>
-								&lt;${warning}&gt;
+								${warning}
 							</td>
 						</tr>
 					</c:forEach>

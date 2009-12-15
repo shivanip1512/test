@@ -69,7 +69,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -90,59 +89,88 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private ScheduledExecutor scheduledExecutor = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private Map<String, ExportDatabaseMigrationStatus> exportStatusMap = Maps.newHashMap();
+    private Map<String, ExportDatabaseMigrationStatus> exportStatusMap = Maps.newLinkedHashMap();
+    private Map<String, ImportDatabaseMigrationStatus> importStatusMap = Maps.newLinkedHashMap();
     
     @Override
     public ExportDatabaseMigrationStatus getExportStatus(String id) {
     	return exportStatusMap.get(id);
     }
+    @Override
+    public List<ExportDatabaseMigrationStatus> getAllExportStatuses() {
+    	return new ArrayList<ExportDatabaseMigrationStatus>(exportStatusMap.values());
+    }
+    
+    @Override
+    public ImportDatabaseMigrationStatus getImportStatus(String id) {
+    	return importStatusMap.get(id);
+    }
+    @Override
+    public List<ImportDatabaseMigrationStatus> getAllImportStatuses() {
+    	return new ArrayList<ImportDatabaseMigrationStatus>(importStatusMap.values());
+    }
     
     public ImportDatabaseMigrationStatus validateImportFile(File importFile){
+    	
         String configurationNameValue = getConfigurationNameValue(importFile);
         List<Element> importItemList = getElementListFromFile(importFile);
 
-        return validateElementList(importItemList, configurationNameValue);
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(importItemList.size(), importFile);
+        validateElementList(importItemList, configurationNameValue, importDatabaseMigrationStatus);
         
+        return importDatabaseMigrationStatus;
     }
     
     
     
     private ImportDatabaseMigrationStatus validateElementList(final List<Element> importItemList, 
-                                                              final String configurationNameValue) {
-        final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus();
+                                                              final String configurationNameValue,
+                                                              final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
+    	
+        importStatusMap.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         
 /////// Change isolation level and make sure it works in both cases: SQL Server and Oracle.
         
-        transactionTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
-                for (Element element : importItemList) {
-                    importDatabaseMigrationStatus.incrementProcessed();
-                    
-                    String label;
-                    try {
-                        label = getElementLabel(element, configurationNameValue);
-                        importDatabaseMigrationStatus.addLabelListEntry(label);
-                    } catch (IllegalArgumentException e) {
-                        importDatabaseMigrationStatus.addErrorListEntry("Invalid entry", e.getMessage());
-                        continue;
-                    }
-                    
-                    try {
-                        processElement(element, null, importDatabaseMigrationStatus);
-                    } catch (ConfigurationErrorException e) {
-                        e.printStackTrace();
-                        log.error(e.getMessage());
-                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        log.error(e.getMessage());
-                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
-                    }
-                }
-                status.setRollbackOnly();
-                return null;
-            }
-        });
+        scheduledExecutor.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+
+				transactionTemplate.execute(new TransactionCallback() {
+		            public Object doInTransaction(TransactionStatus status) {
+		                for (Element element : importItemList) {
+		                    importDatabaseMigrationStatus.incrementProcessed();
+		                    
+		                    String label;
+		                    try {
+		                        label = getElementLabel(element, configurationNameValue);
+		                        importDatabaseMigrationStatus.addLabelListEntry(label);
+		                    } catch (IllegalArgumentException e) {
+		                        importDatabaseMigrationStatus.addErrorListEntry("Invalid entry", e.getMessage());
+		                        continue;
+		                    }
+		                    
+		                    try {
+		                        processElement(element, null, importDatabaseMigrationStatus);
+		                    } catch (ConfigurationErrorException e) {
+		                        e.printStackTrace();
+		                        log.error(e.getMessage());
+		                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+		                    } catch (Exception e) {
+		                        e.printStackTrace();
+		                        log.error(e.getMessage());
+		                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+		                    }
+		                }
+
+		                importDatabaseMigrationStatus.complete();
+		                
+		                status.setRollbackOnly();
+		                return null;
+		            }
+		        });
+			}
+		});
 
         return importDatabaseMigrationStatus;
     }
@@ -153,7 +181,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     public ImportDatabaseMigrationStatus processImportDatabaseMigration (final File importFile){
         
         final String configurationNameValue = getConfigurationNameValue(importFile);
-        final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus();
+        final List<Element> importItemList = getElementListFromFile(importFile);
+        
+        final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(importItemList.size(), importFile);
+        importStatusMap.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
 
         scheduledExecutor.execute(new Runnable() {
             @Override
@@ -170,7 +201,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return importDatabaseMigrationStatus;
     }
     
-    private ImportDatabaseMigrationStatus processElementList(final List<Element> importItemList,
+    private void processElementList(final List<Element> importItemList,
                                                              final String configurationNameValue,
                                                              final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
 
@@ -203,7 +234,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             });
         }
         
-        return importDatabaseMigrationStatus;
+        importDatabaseMigrationStatus.complete();
     }
     
     /**

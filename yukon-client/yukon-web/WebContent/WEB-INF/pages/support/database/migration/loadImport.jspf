@@ -48,3 +48,35 @@
 
 </tags:nameValueContainer>
 <br>
+
+<%-- RECENT IMPORTS --%>
+<c:if test="${fn:length(recentImports) > 0}">
+
+<br>
+<tags:sectionContainer title="Recent Imports">
+	<table class="compactResultsTable">
+		
+		<tr>
+			<th>File Path</th>
+			<th>Start Time</th>
+			<th>Stop Time</th>
+			<th>Details</th>
+		</tr>
+		
+		<c:forEach var="recentImport" items="${recentImports}">
+			<tr>
+				<td>${recentImport.filePath}</td>
+				<td><cti:formatDate type="BOTH" value="${recentImport.startTime}"/></td>
+				<td><cti:formatDate type="BOTH" value="${recentImport.stopTime}" nullText="In Progress..."/></td>
+				<td>
+					<cti:url var="progressUrl" value="/spring/support/database/migration/importProgress">
+						<cti:param name="statusKey" value="${recentImport.importKey}"/>
+					</cti:url>
+					<a href="${progressUrl}">View</a>
+				</td>
+			</tr>
+		</c:forEach>
+	
+	</table>
+</tags:sectionContainer>
+</c:if>

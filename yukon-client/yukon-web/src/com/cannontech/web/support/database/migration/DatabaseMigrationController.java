@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +43,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -80,6 +81,14 @@ public class DatabaseMigrationController {
         mav.addObject("configurationDBTablesMap", configurationDBTablesMap);
         mav.addObject("serverFiles", exportFilePaths);
         addDbInfoToMav(mav);
+        
+        // recent imports
+        List<ImportDatabaseMigrationStatus> allImportStatuses = databaseMigrationService.getAllImportStatuses();
+        List<RecentImport> recentImports = Lists.newArrayListWithCapacity(allImportStatuses.size());
+        for (ImportDatabaseMigrationStatus status : allImportStatuses) {
+        	recentImports.add(new RecentImport(status));
+        }
+        mav.addObject("recentImports", recentImports);
         
         return mav;
     }
@@ -172,7 +181,7 @@ public class DatabaseMigrationController {
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 		
-		File file = null;
+		File importFile = null;
 		String loadError = null;
 		
 		if(ServletFileUpload.isMultipartContent(request)) {
@@ -192,7 +201,7 @@ public class DatabaseMigrationController {
                     }
                 }
 
-                file = WebFileUtils.convertToTempFile(dataFile, "databaseMigration", "");
+                importFile = WebFileUtils.convertToTempFile(dataFile, "databaseMigration", "");
 
             } catch (IOException e) {
             	loadError = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noFile");
@@ -209,26 +218,27 @@ public class DatabaseMigrationController {
 			mav.addObject("errorMsg", loadError);
 			return mav;
 		}
-		
-		// store
-		if (file == null) {
+
+		if (importFile == null) {
 			throw new IllegalStateException("No file set");
 		}
-		String fileKey = UUID.randomUUID().toString();
-		FileSystemResource resource = new FileSystemResource(file);
-		fileStore.put(fileKey, resource);
 		
-		// show validation
-		mav = new ModelAndView("database/migration/importValidate.jsp");
-		mav.addObject("fileKey", fileKey);
-		mav.addObject("filePath", resource.getPath());
-		mav.addObject("fileSize", resource.getFile().length() / 1024);
-		addDbInfoToMav(mav);
+		// run validation
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile);
+		
+		// store
+		importStatusStore.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
+		FileSystemResource resource = new FileSystemResource(importFile);
+		fileStore.put(importDatabaseMigrationStatus.getId(), resource);
+		
+		// import progress
+		mav = new ModelAndView("redirect:importProgress");
+		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
 		
         return mav;
     }
 	
-	// LOAD LOCAL FILE
+	// LOAD SERVER FILE
 	@RequestMapping
     public ModelAndView loadServerFile(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
@@ -247,26 +257,49 @@ public class DatabaseMigrationController {
 			return mav;
 		}
 		
+		// run validation
 		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile);
-		// store
-		String fileKey = UUID.randomUUID().toString();
-		importStatusStore.put(fileKey, importDatabaseMigrationStatus);
-		FileSystemResource resource = new FileSystemResource(importFile);
-		fileStore.put(fileKey, resource);
-
 		
-		// show validation
-		mav = new ModelAndView("database/migration/importValidate.jsp");
-		mav.addObject("objectCount", importDatabaseMigrationStatus.getLabelList().size());
-	    mav.addObject("warningCount", importDatabaseMigrationStatus.getWarningsMap().size());
-	    mav.addObject("errorCount", importDatabaseMigrationStatus.getErrorsMap().size());
-
-		mav.addObject("fileKey", fileKey);
-		mav.addObject("filePath", resource.getPath());
-		mav.addObject("fileSize", resource.getFile().length() / 1024);
-		addDbInfoToMav(mav);
+		// store
+		importStatusStore.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
+		FileSystemResource resource = new FileSystemResource(importFile);
+		fileStore.put(importDatabaseMigrationStatus.getId(), resource);
+		
+		// import progress
+		mav = new ModelAndView("redirect:importProgress");
+		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
 		
 		return mav;
+	}
+	
+	// IMPORT PROGRESS
+	@RequestMapping
+    public ModelAndView importProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+	
+		ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
+		
+		ImportDatabaseMigrationStatus status = importStatusStore.get(statusKey);
+        mav.addObject("status", status);
+        
+        return mav;
+	}
+	
+	// IMPORT VALIDATE
+	@RequestMapping
+    public ModelAndView importValidate(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+	
+		ModelAndView mav = new ModelAndView("database/migration/importValidate.jsp");
+		
+		ImportDatabaseMigrationStatus status = importStatusStore.get(statusKey);
+		FileSystemResource resource = fileStore.get(statusKey);
+		
+        mav.addObject("status", status);
+        mav.addObject("filePath", resource.getPath());
+        mav.addObject("fileSize", resource.getFile().length() / 1024);
+        
+        addDbInfoToMav(mav);
+        
+        return mav;
 	}
 	
 	// VIEW OBJECTS
@@ -368,6 +401,36 @@ public class DatabaseMigrationController {
         }
 	    
 	    return exportFilePaths;
+	}
+	
+	public class RecentImport {
+		
+		public RecentImport(ImportDatabaseMigrationStatus status) {
+		
+			this.importKey = status.getId();
+			FileSystemResource resource = new FileSystemResource(status.getImportFile());
+			this.filePath = resource.getPath();
+			this.startTime = status.getStartTime();
+			this.stopTime = status.getStopTime();
+		}
+		
+		private String importKey;
+		private String filePath;
+		private Date startTime;
+		private Date stopTime;
+		
+		public String getImportKey() {
+			return importKey;
+		}
+		public String getFilePath() {
+			return filePath;
+		}
+		public Date getStartTime() {
+			return startTime;
+		}
+		public Date getStopTime() {
+			return stopTime;
+		}
 	}
 	
 	@Autowired

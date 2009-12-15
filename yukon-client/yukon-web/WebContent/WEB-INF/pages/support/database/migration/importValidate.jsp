@@ -76,8 +76,8 @@
 		<tags:sectionContainer title="${fileInfoSection}" styleClass="migrationSection">
 		
 			<tags:nameValueContainer>
-				<tags:nameValue name="${orgEnvironment}" nameColumnWidth="180px">jdbc:jtds:sqlserver://ABCD9999:1433;APPNAME=yukon-client;TDS=8.0</tags:nameValue>
-				<tags:nameValue name="${orgSchemaUser}">yukonTestUser</tags:nameValue>
+				<tags:nameValue name="${orgEnvironment}" nameColumnWidth="180px">-- NOT IMPLEMENTED --</tags:nameValue>
+				<tags:nameValue name="${orgSchemaUser}">-- NOT IMPLEMENTED --</tags:nameValue>
 				<tags:nameValueGap gapHeight="15px;"/>
 				<tags:nameValue name="${filePathLabel}" nameColumnWidth="190px">
 					<form id="openFileForm" action="/spring/support/database/migration/openFile" method="post">
@@ -117,9 +117,9 @@
 				
 					<%-- objects --%>
 					<td class="component basic">
-						${objectCount}
+						${status.labelCount}
 						<cti:url var="componentName_1_objects_url" value="/spring/support/database/migration/objectsViewPopup">
-							<cti:param name="fileKey" value="${fileKey}"/>
+							<cti:param name="fileKey" value="${status.id}"/>
 						</cti:url>
 						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.objects" 
                                                dialogId="sharedPopupDialog" 
@@ -129,9 +129,9 @@
 					
 					<%-- warnings --%>
 					<td class="component warnings">
-						${warningCount}
+						${status.warningCount}
 						<cti:url var="componentName_1_warnings_url" value="/spring/support/database/migration/warningsViewPopup">
-							<cti:param name="fileKey" value="${fileKey}"/>
+							<cti:param name="fileKey" value="${status.id}"/>
 						</cti:url>
 						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.warnings" 
                                                dialogId="sharedPopupDialog" 
@@ -146,9 +146,9 @@
 					
 					<%-- errors --%>
 					<td class="component basic">
-						${errorCount}
+						${status.errorCount}
 						<cti:url var="componentName_1_errors_url" value="/spring/support/database/migration/errorsViewPopup">
-							<cti:param name="fileKey" value="${fileKey}"/>
+							<cti:param name="fileKey" value="${status.id}"/>
 						</cti:url>
 						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.errors" 
                                                dialogId="sharedPopupDialog" 
@@ -169,7 +169,7 @@
     	</form>
     
 		<form id="confirmForm" action="/spring/support/database/migration/importConfirm" method="post">
-	    	<input type="hidden" name="fileKey" value="${fileKey}">
+	    	<input type="hidden" name="fileKey" value="${status.id}">
 	    </form>
 	    
 	    <tags:slowInput myFormId="confirmForm" label="${commitFile}"/>

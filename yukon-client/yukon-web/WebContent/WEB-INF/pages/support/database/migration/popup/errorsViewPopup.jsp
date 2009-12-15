@@ -25,7 +25,7 @@
 					<c:forEach var="error" items="${errorList.value}">
 						<tr>
 							<td>
-								&lt;${error}&gt;
+								${error}
 							</td>
 						</tr>
 					</c:forEach>
