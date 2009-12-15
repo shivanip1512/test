@@ -60,7 +60,7 @@ CHAR *replaceWith[]  = {"&amp;", "&lt;esc&gt;", "&quot;", "&apos;", "&lt;", "&gt
 */
 CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
 {
-    freeDataBins();
+    CtiDeviceWctpTerminal::freeDataBins();  //  qualified to prevent virtual dispatch
     destroyBuffers();
     if(handler != NULL)
     {

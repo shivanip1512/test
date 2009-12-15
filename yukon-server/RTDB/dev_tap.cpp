@@ -39,7 +39,7 @@ static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
 CtiDeviceTapPagingTerminal::~CtiDeviceTapPagingTerminal()
 {
-    freeDataBins();
+    CtiDeviceTapPagingTerminal::freeDataBins();  //  qualified to prevent virtual dispatch
 }
 
 INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)

@@ -44,7 +44,7 @@ CtiDeviceDR87::CtiDeviceDR87(BYTE *aPtr, BYTE *lpPtr, ULONG cnt) :
 
 CtiDeviceDR87::~CtiDeviceDR87 ()
 {
-    freeDataBins();
+    CtiDeviceDR87::freeDataBins();  //  qualified to prevent virtual dispatch
 }
 
 CtiDeviceIED::CtiMeterMachineStates_t CtiDeviceDR87::getRequestedState () const
