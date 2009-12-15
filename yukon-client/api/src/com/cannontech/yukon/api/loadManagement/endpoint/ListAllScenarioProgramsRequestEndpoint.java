@@ -66,15 +66,16 @@ public class ListAllScenarioProgramsRequestEndpoint {
         	}
 
         	Element tmpElement = null;
+        	Element scenarioList = new Element("scenarioList", ns);
             
             for (ScenarioProgramStartingGears scenarioProgramStartingGears : allScenarioProgramStartingGears) {
             	
-            	Element scenarioProgramsList = new Element("scenarioProgramsList", ns);
+            	Element scenario = new Element("scenario", ns);
             	
             	tmpElement = XmlUtils.createStringElement("scenarioName", ns, scenarioProgramStartingGears.getScenarioName());
-            	scenarioProgramsList.addContent(tmpElement);
+            	scenario.addContent(tmpElement);
             	
-            	Element programsList = new Element("programsList", ns);
+            	Element programsList = new Element("scenarioProgramsList", ns);
             	
     	        List<ProgramStartingGear> programStartingGears = scenarioProgramStartingGears.getProgramStartingGears();
     	        for (ProgramStartingGear programStartingGear : programStartingGears) {
@@ -89,10 +90,12 @@ public class ListAllScenarioProgramsRequestEndpoint {
     	            programsList.addContent(scenarioProgram);
     	        }
     	        
-    	        scenarioProgramsList.addContent(programsList);
+    	        scenario.addContent(programsList);
     	        
-    	        resp.addContent(scenarioProgramsList);
+    	        scenarioList.addContent(scenario);
             }
+            
+            resp.addContent(scenarioList);
             
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(listAllScenarioProgramsRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);

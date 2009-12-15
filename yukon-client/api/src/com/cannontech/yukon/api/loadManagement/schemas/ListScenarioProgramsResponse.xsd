@@ -3,11 +3,11 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
             xmlns:yukon="http://yukon.cannontech.com/api" 
             targetNamespace="http://yukon.cannontech.com/api"
-            elementFormDefault="qualified" version="1.0">
+            elementFormDefault="qualified" version="1.1">
     
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
 	<xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
-    <xsd:include schemaLocation="ScenarioProgram.xsd"/>
+    <xsd:include schemaLocation="ScenarioProgramsList.xsd"/>
     
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
@@ -22,13 +22,7 @@
                 <xsd:choice>
                     <xsd:sequence>
                         <xsd:element name="scenarioName" type="xsd:string" />
-                        <xsd:element name="scenarioProgramsList">
-                            <xsd:complexType>
-                                <xsd:sequence>
-                                    <xsd:element name="scenarioProgram" type="yukon:ScenarioProgram" minOccurs="0" maxOccurs="unbounded"/>
-                                </xsd:sequence>
-                            </xsd:complexType>
-                        </xsd:element>
+                        <xsd:element name="scenarioProgramsList" type="yukon:ScenarioProgramsList"/>
                    	</xsd:sequence>
                     <xsd:element name="failure" type="yukon:Failure" />
                 </xsd:choice>

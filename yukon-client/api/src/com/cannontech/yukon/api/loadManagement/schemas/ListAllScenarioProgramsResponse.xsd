@@ -7,28 +7,34 @@
     
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
 	<xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
-    <xsd:include schemaLocation="ScenarioProgram.xsd"/>
+    <xsd:include schemaLocation="ScenarioProgramsList.xsd"/>
     
     <xsd:complexType name="ListAllScenarioProgramsResponse">
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
-                    <xsd:sequence>
-                        <xsd:element name="scenarioProgramsList" minOccurs="0" maxOccurs="unbounded">
-                            <xsd:complexType>
-                                <xsd:sequence>
-                                	<xsd:element name="scenarioName" type="xsd:string" />
-                                	<xsd:element name="programsList">
-                                		<xsd:complexType>
-	                                		<xsd:sequence>
-	                                    		<xsd:element name="scenarioProgram" type="yukon:ScenarioProgram" minOccurs="0" maxOccurs="unbounded"/>
-	                                		</xsd:sequence>
-                                		</xsd:complexType>
-                                	</xsd:element>
-                                </xsd:sequence>
-                            </xsd:complexType>
-                        </xsd:element>
-                   	</xsd:sequence>
+                
+                
+                
+                	<xsd:sequence>
+                		<xsd:element name="scenarioList">
+                			<xsd:complexType>
+						    	<xsd:sequence>
+						    		<xsd:element name="scenario" minOccurs="0" maxOccurs="unbounded">
+						    			<xsd:complexType>
+						    				<xsd:sequence>
+						    					<xsd:element name="scenarioName" type="xsd:string" />
+						    					<xsd:element name="scenarioProgramsList" type="yukon:ScenarioProgramsList"/>
+						    				</xsd:sequence>
+						    			</xsd:complexType>
+						    		</xsd:element>
+						    	</xsd:sequence>
+						    </xsd:complexType>
+                		</xsd:element>
+                	</xsd:sequence>
+                	
+                	
+                	
                     <xsd:element name="failure" type="yukon:Failure" />
                 </xsd:choice>
             </xsd:extension>
