@@ -97,7 +97,7 @@ CtiOutMessage *CtiVerificationWork::getRetryOM() const
     if( _retry_om.ExpirationTime )
     {
         ptime::time_duration_type expiration = (second_clock::universal_time() - ptime(date(1970, 1, 1))) + _patience;
-                                                         
+
         retval->ExpirationTime = expiration.total_seconds();  //  ExpirationTime is an CtiTime.seconds()
     }
 
@@ -205,10 +205,10 @@ deque< pair< long, ptime > > CtiVerificationWork::getReceipts() const
 }
 
 
-CtiVerificationReport::CtiVerificationReport(Protocol p, long id, const string &code, ptime time, const string &command) :
+CtiVerificationReport::CtiVerificationReport(Protocol p, long id, const string &code, ptime timestamp, const string &command) :
     CtiVerificationBase(Type_Report, p, command, code),
     _receiver_id(id),
-    _receipt_time(time)
+    _receipt_time(timestamp)
 {
 }
 

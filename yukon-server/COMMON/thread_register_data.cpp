@@ -30,7 +30,7 @@ CtiThreadRegData::CtiThreadRegData( int id,
     _tickledTime( second_clock::local_time() ),
     _critical(true),
     _actionTaken(false),
-	_unreportedCount(0),
+   _unreportedCount(0),
     _reported(true)
 {
    _id = id;
@@ -43,7 +43,7 @@ CtiThreadRegData::CtiThreadRegData( int id,
    if(( !_id ) || ( _name == "default" ))
       setReported(  false );
 }
- 
+
 //===========================================================================================================
 //===========================================================================================================
 
@@ -201,9 +201,9 @@ void CtiThreadRegData::setTickledTime( ptime in )
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setTickleFreq( ULONG seconds )
+void CtiThreadRegData::setTickleFreq( ULONG seconds_between_tickles )
 {
-   _tickleFreq = seconds;
+   _tickleFreq = seconds_between_tickles;
 }
 
 //===========================================================================================================
@@ -239,7 +239,7 @@ void CtiThreadRegData::setId( const int &in )
 
 int CtiThreadRegData::getUnreportedCount(void)
 {
-	return _unreportedCount;
+   return _unreportedCount;
 }
 
 //===========================================================================================================
@@ -247,5 +247,5 @@ int CtiThreadRegData::getUnreportedCount(void)
 
 void CtiThreadRegData::setUnreportedCount(int count)
 {
-	_unreportedCount = count;
+   _unreportedCount = count;
 }

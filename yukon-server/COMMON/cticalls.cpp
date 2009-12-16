@@ -179,14 +179,14 @@ APIRET IM_EX_CTIBASE CTICreateMutexSem(PSZ pszName, PHMTX phmtx, ULONG Flags, BO
 #endif
 }
 
-APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG time)
+APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG duration)
 {
 #if __OS2__
-   return(DosRequestMutexSem(hmtx, time));
+   return(DosRequestMutexSem(hmtx, duration));
 #elif defined(_WIN32)
    DWORD rVal;
 
-   rVal = WaitForSingleObject(hmtx, time);
+   rVal = WaitForSingleObject(hmtx, duration);
 
    switch(rVal)
    {

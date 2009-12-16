@@ -114,7 +114,7 @@ void CtiFileInterface::stop()
             _watchthr.terminate();
 
             {
-                RWMutexLock::LockGuard guard(coutMux);
+                RWMutexLock::LockGuard coutGuard(coutMux);
                 cerr << CtiTime() << " - CtiFileInterface::stop() - Watch thread aborted cancellation and has been terminated" << endl;
             }
         }

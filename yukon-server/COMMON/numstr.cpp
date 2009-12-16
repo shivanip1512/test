@@ -174,15 +174,15 @@ CtiNumStr::operator string() const
             {
                 if( _fmt == Format_Exponential )
                 {
-                    int exp = 0;
+                    int exponent = 0;
                     if( _float != 0 )
                     {
-                        exp = floor(log10(_float));
+                        exponent = floor(log10(_float));
                     }
 
-                    stream << setw(padding - 5) << (int)((_float / pow((double)10, exp)) + ((_float < 0)?(-0.5):(0.5)));
+                    stream << setw(padding - 5) << (int)((_float / pow((double)10, exponent)) + ((_float < 0)?(-0.5):(0.5)));
 
-                    stream << setw(0) << "e" << showpos << internal <<  setw(4) << setfill('0') << exp;
+                    stream << setw(0) << "e" << showpos << internal <<  setw(4) << setfill('0') << exponent;
                 }
                 else
                 {

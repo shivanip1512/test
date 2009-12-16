@@ -71,7 +71,7 @@ public:
    void setBehaviour( CtiThreadRegData::Behaviours in );
 
    ULONG getTickleFreq( void );
-   void setTickleFreq( ULONG seconds );
+   void setTickleFreq( ULONG seconds_between_tickles );
 
    ptime getTickledTime( void );
    void setTickledTime( ptime in );

@@ -66,41 +66,41 @@ RWBoolean virtual
   }
   return bRet;
 }
-void setManager( CtiConnectionManager *  RT )  
-{ 
+void setManager( CtiConnectionManager *  RT )
+{
    ReplyTo = RT;
 }
 
 CtiConnectionManager*   getManager( )
-{ 
+{
    return ReplyTo;
 }
 
 const string & getString()
-{ 
-   return DataString; 
+{
+   return DataString;
 }
 void setString(const string &str)
-{ 
-   DataString = str;  
+{
+   DataString = str;
 }
 
-int      getTag() const 
-{ 
-   return tag_; 
+int      getTag() const
+{
+   return tag_;
 }
-int      getPriority() const 
-{ 
-   return priority_; 
+int      getPriority() const
+{
+   return priority_;
 }
-CtiTime   getTime() const 
-{ 
-   return entrytime_; 
+CtiTime   getTime() const
+{
+   return entrytime_;
 }
 
-RWThreadId  getOrigin() const 
-{ 
-   return mycreator_; 
+RWThreadId  getOrigin() const
+{
+   return mycreator_;
 }
 
 void     Dump() const
@@ -109,18 +109,6 @@ void     Dump() const
      "Created by " << mycreator_ <<
      " Tag " << tag_ <<
      " Priority " << priority_ << endl;
-}
-
-RWBoolean TagMatch(const CtiQueueEnt *p, void *pTag)
-{
-  int Tag = *(int*)pTag;
-
-  if(p->getTag() == Tag)
-  {
-     return RWBoolean(TRUE);
-  }
-
-  return RWBoolean(FALSE);
 }
 
 

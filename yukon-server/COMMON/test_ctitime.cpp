@@ -107,21 +107,21 @@ BOOST_AUTO_TEST_CASE(test_ctitime_methods)
     BOOST_CHECK_EQUAL( rw_time.isDST(), d.isDST() );
 
     // check the CtiTime.extract() method, to see if the extracted ctime is correct
-    struct tm ctime;
-    rw_time.extract(&ctime);
-    struct tm ctime1;
-    d.extract(&ctime1);
-    BOOST_CHECK_EQUAL( ctime1.tm_mday, ctime.tm_mday );
-    BOOST_CHECK_EQUAL( ctime1.tm_mon, ctime.tm_mon );
-    BOOST_CHECK_EQUAL( ctime1.tm_year, ctime.tm_year );
-    BOOST_CHECK_EQUAL( ctime1.tm_hour, ctime.tm_hour );
+    struct tm rw_extracted_tm;
+    rw_time.extract(&rw_extracted_tm);
+    struct tm extracted_tm;
+    d.extract(&extracted_tm);
+    BOOST_CHECK_EQUAL( extracted_tm.tm_mday, rw_extracted_tm.tm_mday );
+    BOOST_CHECK_EQUAL( extracted_tm.tm_mon,  rw_extracted_tm.tm_mon );
+    BOOST_CHECK_EQUAL( extracted_tm.tm_year, rw_extracted_tm.tm_year );
+    BOOST_CHECK_EQUAL( extracted_tm.tm_hour, rw_extracted_tm.tm_hour );
 
     //check copy constructor
     CtiTime ct5(d);
     BOOST_CHECK_EQUAL( d.second(), ct5.second() );
     // using the ctime struct to construct CtiTime, check its correctness
-    CtiTime d2(&ctime);
-    RWTime rw2(&ctime);
+    CtiTime d2(&rw_extracted_tm);
+    RWTime rw2(&rw_extracted_tm);
     BOOST_CHECK_EQUAL( d2.second(), rw2.second() );
 
     ct5 = d2;

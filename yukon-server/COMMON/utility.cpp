@@ -110,7 +110,7 @@ LONG LMControlHistoryIdGen(bool force)
             }
             else
             {
-                RWMutexLock::LockGuard  guard(coutMux);
+                RWMutexLock::LockGuard  coutGuard(coutMux);
                 cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
@@ -313,7 +313,7 @@ INT ChangeIdGen(bool force)
         }
         else
         {
-            RWMutexLock::LockGuard  guard(coutMux);
+            RWMutexLock::LockGuard  coutGuard(coutMux);
             cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
@@ -476,13 +476,13 @@ INT CCEventSeqIdGen()
     return(++id);
 }
 
-// Reserve <count> values for the sequence named <name>
-INT SynchronizedIdGen(string name, int count)
+// Reserve <values_needed> values for the sequence named <name>
+INT SynchronizedIdGen(string name, int values_needed)
 {
     int status = NORMAL;
     INT last = 0;
 
-    if(count > 0 && name.length() > 1)
+    if(values_needed > 0 && name.length() > 1)
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         // In this case, we poke at the PAO table
@@ -493,7 +493,7 @@ INT SynchronizedIdGen(string name, int count)
         RWDBUpdater updater = yukonSequenceTable.updater();
 
         updater.where( yukonSequenceTable["sequencename"] == name.c_str() );
-        updater << yukonSequenceTable["lastvalue"].assign( yukonSequenceTable["lastvalue"] + count );
+        updater << yukonSequenceTable["lastvalue"].assign( yukonSequenceTable["lastvalue"] + values_needed );
 
         conn.beginTransaction();
         status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
@@ -2658,15 +2658,15 @@ string getEncodingKeyForPort(long portId)
     return type;
 }
 
-double limitValue(double input, double min, double max)
+double limitValue(double input, double minValue, double maxValue)
 {
-    if(input < min)
+    if(input < minValue)
     {
-        input = min;
+        input = minValue;
     }
-    else if(input > max)
+    else if(input > maxValue)
     {
-        input = max;
+        input = maxValue;
     }
 
     return input;

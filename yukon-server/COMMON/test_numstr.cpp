@@ -53,43 +53,43 @@ using namespace std;
 
 //  for integer types
 template <class T>
-void numstr_test_helper(T value, int padding, const string &base, const string &base_spad, const string &base_zpad,
-                                              const string &hex,  const string &hex_spad,  const string &hex_zpad,
-                                              const string &xhex, const string &xhex_spad, const string &xhex_zpad )
+void numstr_test_helper(T value, int padding, const string &str_base, const string &str_base_spad, const string &str_base_zpad,
+                                              const string &str_hex,  const string &str_hex_spad,  const string &str_hexstr_zpad,
+                                              const string &str_xhex, const string &str_xhex_spad, const string &str_xhex_zpad )
 {
-    const string &exp = base, &exp_spad = base_spad, &exp_zpad = base_zpad;
+    const string &str_exp = str_base, &str_exp_spad = str_base_spad, &str_exp_zpad = str_base_zpad;
 
 
     CtiNumStr numstr(value);
 
     //  test without formats
-                          BOOST_CHECK_EQUAL(numstr.toString(), base);
-    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), base_spad);
-    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), base_zpad);
+                          BOOST_CHECK_EQUAL(numstr.toString(), str_base);
+    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_base_spad);
+    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_base_zpad);
 
     //  reset padding
     numstr.spad(0);
 
     //  test exp format
-    numstr.exp();         BOOST_CHECK_EQUAL(numstr.toString(), exp);
-    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), exp_spad);
-    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), exp_zpad);
+    numstr.exp();         BOOST_CHECK_EQUAL(numstr.toString(), str_exp);
+    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_exp_spad);
+    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_exp_zpad);
 
     //  reset padding
     numstr.spad(0);
 
     //  test hex format
-    numstr.hex();         BOOST_CHECK_EQUAL(numstr.toString(), hex);
-    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), hex_spad);
-    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), hex_zpad);
+    numstr.hex();         BOOST_CHECK_EQUAL(numstr.toString(), str_hex);
+    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_hex_spad);
+    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_hexstr_zpad);
 
     //  reset padding
     numstr.spad(0);
 
     //  test xhex format
-    numstr.xhex();        BOOST_CHECK_EQUAL(numstr.toString(), xhex);
-    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), xhex_spad);
-    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), xhex_zpad);
+    numstr.xhex();        BOOST_CHECK_EQUAL(numstr.toString(), str_xhex);
+    numstr.spad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_xhex_spad);
+    numstr.zpad(padding); BOOST_CHECK_EQUAL(numstr.toString(), str_xhex_zpad);
 }
 
 

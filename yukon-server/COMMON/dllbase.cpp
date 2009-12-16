@@ -60,10 +60,11 @@ RWDBDatabase *sqlDatabase = NULL;
  *  These are the Configuration Parameters for the Real Time Database
  */
 
-IM_EX_CTIBASE string     dbDll("ora15d.dll");
-IM_EX_CTIBASE string     dbName("yukon");
-IM_EX_CTIBASE string     dbUser("yukon");
-IM_EX_CTIBASE string     dbPassword("yukon");
+string     dbDll("ora15d.dll");
+string     dbName("yukon");
+string     dbUser("yukon");
+string     dbPassword("yukon");
+
 IM_EX_CTIBASE string     VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
 IM_EX_CTIBASE string     NotificationMachine("127.0.0.1");     // Connect locally if we don't know any better
 IM_EX_CTIBASE INT        NotificationPort = NOTIFICATIONNEXUS;

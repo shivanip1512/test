@@ -73,10 +73,6 @@ IM_EX_CTIBASE extern ActiveMQConnectionManager gActiveMQConnection;
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
 
-IM_EX_CTIBASE extern string      dbDll;
-IM_EX_CTIBASE extern string      dbName;
-IM_EX_CTIBASE extern string      dbUser;
-IM_EX_CTIBASE extern string      dbPassword;
 IM_EX_CTIBASE extern string      VanGoghMachine;
 IM_EX_CTIBASE extern string      NotificationMachine;
 IM_EX_CTIBASE extern int         NotificationPort;

@@ -937,7 +937,6 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
 void  CtiCommandParser::doParseControl(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
-    INT         _num;
     UINT        flag   = 0;
     UINT        iValue = 0;
     DOUBLE      dValue = 0.0;
@@ -1254,22 +1253,22 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             if(!(token = CmdStr.match("gold [0-9]")).empty())
             {
-                CtiTokenizer tok( token );
+                CtiTokenizer addr_tok( token );
 
-                tok();   // Get us past "gold"
+                addr_tok();   // Get us past "gold"
 
-                _cmd["gold"] = CtiParseValue(atoi(tok().c_str()));
+                _cmd["gold"] = CtiParseValue(atoi(addr_tok().c_str()));
             }
         }
         if(CmdStr.contains(" silver"))
         {
             if(!(token = CmdStr.match("silver [0-9][0-9]")).empty())
             {
-                CtiTokenizer tok( token );
+                CtiTokenizer addr_tok( token );
 
-                tok();   // Get us past "silver"
+                addr_tok();   // Get us past "silver"
 
-                _cmd["silver"] = CtiParseValue(atoi(tok().c_str()));
+                _cmd["silver"] = CtiParseValue(atoi(addr_tok().c_str()));
             }
         }
 
@@ -1531,15 +1530,13 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     static const boost::regex    re_rolenum(CtiString("role *") + str_num);
     static const boost::regex    re_rawcmd(CtiString("raw (func(tion)? )?start ?= ?") + str_hexnum + CtiString("( ") + str_num + CtiString(")?"));
     static const boost::regex    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
-    static const boost::regex    re_time("time( |$)");  //  only match "time" as a single word
+    static const boost::regex    re_time_word("time( |$)");  //  only match "time" as a single word
     static const boost::regex    re_multiplier(CtiString("mult(iplier)?( kyz *") + str_num + CtiString(")?"));
     static const boost::regex    re_address("address (group|uniq)");
     static const boost::regex    re_lp_channel(CtiString(" lp channel ") + str_num);
     static const boost::regex    re_centron("centron (ratio|parameters)");
     static const boost::regex    re_tou_schedule("tou schedule [0-9]");
     static const boost::regex    re_dnp( CtiString("dnp ") +  str_num);
-
-    char *p;
 
     int roleNum, channel;
     CtiTokenizer   tok(CmdStr);
@@ -1630,7 +1627,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             _cmd["phasedetect"] = CtiParseValue(TRUE);
             if(CmdStr.contains("read"))
-            {  
+            {
                 _cmd["phasedetectread"] = CtiParseValue(TRUE);
             }
             if(CmdStr.contains("archive"))
@@ -1644,7 +1641,6 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
             {
                 CtiTokenizer cmdtok(token);
                 CtiString rawData;
-                char *p;
 
                 //  go past "raw"
                 cmdtok(" =");
@@ -1663,7 +1659,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 temp2 = cmdtok(" =");
 
                 //  get the start address
-                _cmd["rawloc"] = CtiParseValue( strtol(temp2.c_str(), &p, 16) );
+                _cmd["rawloc"] = CtiParseValue( strtol(temp2.c_str(), NULL, 16) );
 
                 //  get the length
                 temp2 = cmdtok(" =");
@@ -1686,7 +1682,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         }
         if(CmdStr.contains(" time"))
         {
-            if(!(token = CmdStr.match(re_time)).empty())
+            if(!(token = CmdStr.match(re_time_word)).empty())
             {
                 _cmd["time"] = CtiParseValue("TRUE");
 
@@ -1889,13 +1885,13 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             if(!(tou_schedule = CmdStr.match(re_tou)).empty())
             {
                 //  tou [0-9]+ (schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]
-                CtiTokenizer tok(tou_schedule);
+                CtiTokenizer tou_tok(tou_schedule);
 
-                token = tok();  //  tou
+                token = tou_tok();  //  tou
 
-                _cmd["tou_days"] = CtiParseValue(tok());
+                _cmd["tou_days"] = CtiParseValue(tou_tok());
 
-                token = tok();
+                token = tou_tok();
 
                 int schedulenum = 0;
                 while( !token.compareTo("schedule") )
@@ -1905,9 +1901,9 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                     schedule_name.append(CtiNumStr(schedulenum).zpad(2));
 
                     //  even if there are no rates supplied, we did successfully parse it
-                    _cmd[schedule_name.data()] = CtiParseValue(atoi(tok().data()));
+                    _cmd[schedule_name.data()] = CtiParseValue(atoi(tou_tok().data()));
 
-                    token = tok();
+                    token = tou_tok();
 
                     int changenum = 0;
                     while(!token.match("[a-z]/[0-9]+:[0-9]+").empty())
@@ -1919,7 +1915,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 
                         _cmd[change_name.data()] = CtiParseValue(token);
 
-                        token = tok();
+                        token = tou_tok();
 
                         changenum++;
                     }
@@ -1929,7 +1925,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 
                 if( !token.compareTo("default") )
                 {
-                    _cmd["tou_default"] = CtiParseValue(tok());
+                    _cmd["tou_default"] = CtiParseValue(tou_tok());
                 }
             }
             if( CmdStr.contains(" enable") )
@@ -2208,7 +2204,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_timezone(CtiString("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?") + str_floatnum + CtiString("))"));
 
     char *p;
- 
+
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -2423,10 +2419,10 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 temp = cmdtok();        // move past "display" to get the display resolution configuration
                 _cmd["centron_display"] = CtiParseValue(temp);
-                
+
                 cmdtok();               // move to "test"
                 _cmd["centron_test_duration"] = CtiParseValue(atoi(cmdtok().c_str()));
-                
+
                 cmdtok();               // move to "errors"
                 temp = cmdtok();        // "enable" or "disable"
                 if(temp[0] == 'e')
@@ -2550,7 +2546,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                     }
                 }
             }
-            else 
+            else
             {
                 if(CmdStr.contains(" tamper"))                  flag |= CMD_FLAG_PC_EA1_TAMPER | CMD_FLAG_PC_EA2_REVERSEPWR | CMD_FLAG_PC_EA2_ZEROUSAGE;
                 if(CmdStr.contains(" power_fail"))              flag |= CMD_FLAG_PC_EA1_PFEVENT;
@@ -2587,7 +2583,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                     }
 
                 }
-                _cmd["alarm_mask_meter"] =  CtiParseValue( flag ); 
+                _cmd["alarm_mask_meter"] =  CtiParseValue( flag );
             }
         }
 
@@ -2679,18 +2675,18 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
             {
                 CtiTokenizer cmdtok(token);
                 char *end;
-                double timezone;
+                double timezone_offset;
 
                 //  go past "timezone"
                 cmdtok();
 
                 temp2 = cmdtok();
-                timezone = strtod(temp2.data(), &end);
+                timezone_offset = strtod(temp2.data(), &end);
 
                 //  Did we read a numeric value?
                 if( end != temp2.data() )
                 {
-                    _cmd["timezone_offset"] = CtiParseValue( timezone );
+                    _cmd["timezone_offset"] = CtiParseValue( timezone_offset );
                 }
                 else
                 {
@@ -2944,16 +2940,16 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                                            "( *, *[0-9]+)?" \
                                           )).empty())
             {
-                CtiTokenizer   tok( token );
+                CtiTokenizer   class_tok( token );
                 _num = 0;
                 int  mask = 0x0001;
                 int  val;
 
-                tok();   // Get over the class entry
+                class_tok();   // Get over the class entry
 
                 // dout << __LINE__ << " " << token << endl;
 
-                for(int i = 0; i < 16 && !(temp = tok(", \n\0")).empty() ; i++)
+                for(int i = 0; i < 16 && !(temp = class_tok(", \n\0")).empty() ; i++)
                 {
                     val = atoi( temp.c_str() );
 
@@ -3018,16 +3014,16 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                                            "( *, *[0-9]+)?" \
                                           )).empty())
             {
-                CtiTokenizer   tok( token );
+                CtiTokenizer   division_tok( token );
                 _num = 0;
                 int  mask = 0x0001;
                 int  val;
 
-                tok();   // Get over the "division" entry
+                division_tok();   // Get over the "division" entry
 
                 // dout << __LINE__ << " " << token << endl;
 
-                for(int i = 0; i < 16 && !(temp = tok(", \n\0")).empty() ; i++)
+                for(int i = 0; i < 16 && !(temp = division_tok(", \n\0")).empty() ; i++)
                 {
                     val = atoi( temp.c_str() );
 
@@ -3275,7 +3271,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
         {
             if(!(token = CmdStr.match(" serv(ice)? (in|out|enable|disable)( temp)?")).empty())
             {
-                INT   flag = 0;
+                INT   service_flag = 0;
 
                 /*
                  *  serviceflag == VC_SERVICE_T_OUT == 1 is Temporary OUT of service
@@ -3289,14 +3285,14 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 if(token.contains("in") ||
                    token.contains("enable"))
                 {
-                    flag |= 0x0a;
+                    service_flag |= 0x0a;
 
                     _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE");
                 }
                 else if(token.contains("out") ||
                         token.contains("disable"))
                 {
-                    flag |= 0x04;
+                    service_flag |= 0x04;
 
                     _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
                 }
@@ -3306,7 +3302,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     char t2[80];
                     ::strcpy(t2, tbuf);
 
-                    flag >>= 2;       // Make the flag match the protocol
+                    service_flag >>= 2;       // Make the flag match the protocol
 
                     ::_snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
 
@@ -3377,7 +3373,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     }
                 }
 
-                _cmd["service"] = CtiParseValue( flag );
+                _cmd["service"] = CtiParseValue( service_flag );
 
                 _actionItems.push_back(tbuf);
             }
@@ -3609,16 +3605,16 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                 CtiString      rawStr;     // This is to contain the raw bytes
 
-                CtiTokenizer   tok(token);
+                CtiTokenizer   raw_tok(token);
 
-                tok();   // Get us past the "raw" moniker..
-                token = tok(); // Returns each whitespace seperated token successivly.
+                raw_tok();   // Get us past the "raw" moniker..
+                token = raw_tok(); // Returns each whitespace seperated token successivly.
                 for(i = 0; i < 20 && !token.empty(); i++)
                 {
                     //  strtol returns 0 if token is empty or not convertable, which is what we want
                     rawStr.append(1, (CHAR)strtol(token.c_str(), &ptr, 16));
 
-                    token = tok(); // Returns each whitespace seperated token successivly.
+                    token = raw_tok(); // Returns each whitespace seperated token successivly.
                 }
 
                 _cmd["raw"] = CtiParseValue(rawStr);
@@ -3629,11 +3625,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
         {
             if(!(token = CmdStr.match("lcrmode (e|v)")).empty())
             {
-                CtiTokenizer tok( token );
+                CtiTokenizer lcrmode_tok( token );
 
-                tok();   // Get us past "lcrmode"
+                lcrmode_tok();   // Get us past "lcrmode"
 
-                _cmd["lcrmode"] = CtiParseValue(tok());
+                _cmd["lcrmode"] = CtiParseValue(lcrmode_tok());
             }
         }
 
@@ -3642,11 +3638,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             //  emetcon cold load pickup
             if(!(token = CmdStr.match("eclp (en(able)?|dis(able)?)")).empty())
             {
-                CtiTokenizer tok( token );
+                CtiTokenizer eclp_tok( token );
 
-                tok();   // Get us past "eclp" moniker..
+                eclp_tok();   // Get us past "eclp" moniker..
 
-                _cmd["eclp"] = CtiParseValue(tok());
+                _cmd["eclp"] = CtiParseValue(eclp_tok());
             }
         }
 
@@ -3654,11 +3650,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
         {
             if(!(token = CmdStr.match("gold [0-9]")).empty())
             {
-                CtiTokenizer tok( token );
+                CtiTokenizer gold_tok( token );
 
-                tok();   // Get us past "gold"
+                gold_tok();   // Get us past "gold"
 
-                _cmd["gold"] = CtiParseValue(atoi(tok().c_str()));
+                _cmd["gold"] = CtiParseValue(atoi(gold_tok().c_str()));
             }
         }
 
@@ -3666,11 +3662,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
         {
             if(!(token = CmdStr.match("silver [0-9]*")).empty())
             {
-                CtiTokenizer tok( token );
+                CtiTokenizer silver_tok( token );
 
-                tok();   // Get us past "silver"
+                silver_tok();   // Get us past "silver"
 
-                _cmd["silver"] = CtiParseValue(atoi(tok().c_str()));
+                _cmd["silver"] = CtiParseValue(atoi(silver_tok().c_str()));
             }
         }
 
@@ -3781,8 +3777,6 @@ void  CtiCommandParser::doParsePutStatusVersacom(const string &_CmdStr)
     CtiString   temp2;
     CtiString   strnum;
 
-    INT         _num = 0;
-
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -3859,8 +3853,6 @@ void  CtiCommandParser::doParsePutStatusFisherP(const string &_CmdStr)
     CtiString   token;
     CtiString   temp2;
     CtiString   strnum;
-
-    INT         _num = 0;
 
     CtiTokenizer   tok(CmdStr);
 
@@ -4349,7 +4341,6 @@ CtiCommandParser& CtiCommandParser::setValue(const string &key, string val)
 void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
-    INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
     INT         iValue = 0;
@@ -4660,14 +4651,14 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             CtiTokenizer cmdtok(token);
             cmdtok(); //go past adjustment
 
-            int count = 0;
+            int bytes = 0;
             while( !(temp = cmdtok()).empty() )
             {
-                count++;
+                bytes++;
                 iValue = atoi(temp.c_str());
-                _cmd["param_" + CtiNumStr(count)] = CtiParseValue( iValue );
+                _cmd["param_" + CtiNumStr(bytes)] = CtiParseValue( iValue );
             }
-            _cmd["bytes_to_follow"] = CtiParseValue(count);
+            _cmd["bytes_to_follow"] = CtiParseValue(bytes);
         }
         else
         {
@@ -4984,7 +4975,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     }
 
     // The parser removes our "serial XYZ", so we have to go back to the original line.
-    CtiString originalCmdStr = _cmdString; 
+    CtiString originalCmdStr = _cmdString;
     if(!(token = originalCmdStr.match(re_target)).empty())
     {
         _cmd["xcgenericaddress"] = TRUE;
@@ -5228,7 +5219,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     {
         if(CmdStr.contains("temp") && !(token = CmdStr.match("serv(ice)? (in|out|enable|disable)")).empty())
         {
-            CHAR tbuf[80];
+            CHAR buf[80];
             INT offtime = 0;
             INT cancel = 0;  // default to cancelling a previous t-service message.
             INT bitP = 0;    // default to using cold load
@@ -5237,11 +5228,11 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             if(token.contains(" out") || token.contains(" disable"))
             {
                 cancel = 1;
-                _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE TEMPORARY");
+                _snprintf(buf, sizeof(buf), "SERVICE DISABLE TEMPORARY");
             }
             else
             {
-                _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE TEMPORARY");
+                _snprintf(buf, sizeof(buf), "SERVICE ENABLE TEMPORARY");
             }
 
             if(CmdStr.contains(" noclp"))
@@ -5263,22 +5254,22 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xctservicebitl"] = CtiParseValue( bitL );
             _cmd["xctservicetime"] = CtiParseValue( offtime );
             _cmd["xctservicecancel"] = CtiParseValue( cancel );
-            _actionItems.push_back(tbuf);
+            _actionItems.push_back(buf);
         }
         else if(!(token = CmdStr.match("serv(ice)? (in|out|enable|disable)( (relay|load) [0-9]+)?")).empty())
         {
-            CHAR tbuf[80];
+            CHAR buf[80];
             INT flag = 0;
 
             if(token.contains(" in") || token.contains(" enable"))
             {
                 flag |= 0x80;
-                _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE");
+                _snprintf(buf, sizeof(buf), "SERVICE ENABLE");
             }
             else if(token.contains(" out") || token.contains(" disable"))
             {
                 flag |= 0x00;
-                _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
+                _snprintf(buf, sizeof(buf), "SERVICE DISABLE");
             }
 
             if(!(str = token.match(((const boost::regex) (CtiString("(relay|load) ") + str_num ) ))).empty() )
@@ -5291,7 +5282,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             }
 
             _cmd["xcpservice"] = CtiParseValue( flag );
-            _actionItems.push_back(tbuf);
+            _actionItems.push_back(buf);
         }
     }
     else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
@@ -5475,7 +5466,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                                   "(( *r[=][0-9]+[hms]?)|( *r[0-9]+[=][0-9]+[hms]?)*)")).empty())
         {
             //This code is this way to match what verscom does.
-            CtiTokenizer   tok(token);
+            CtiTokenizer   cold_tok(token);
 
             _cmd["xccold"] = CtiParseValue(TRUE);
 
@@ -5487,18 +5478,18 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             }
             else
             {
-                tok();//go past cold?
-                token = tok();
+                cold_tok();//go past cold?
+                token = cold_tok();
                 while(!(strnum = token.match("r[0-9]+[=][0-9]+[hms]?")).empty())
                 {
-                    token = tok();
+                    token = cold_tok();
                     CtiString relay = strnum.match("r[0-9]+");
-                    CtiString time = strnum.match("[=][0-9]+[hms]?");
+                    CtiString cold_time = strnum.match("[=][0-9]+[hms]?");
 
                     relay = relay.strip(CtiString::leading, 'r');
-                    time = time.strip(CtiString::leading, '=');
+                    cold_time = cold_time.strip(CtiString::leading, '=');
 
-                    _num = convertTimeInputToSeconds(time);
+                    _num = convertTimeInputToSeconds(cold_time);
                     string identifier = "xccoldload_r";
                     identifier += relay;
                     _cmd[identifier] = CtiParseValue(_num);
@@ -5511,11 +5502,11 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     {
         if(!(token = CmdStr.match("lcrmode *[a-zA-Z]*")).empty())
         {
-            CtiTokenizer tok( token );
+            CtiTokenizer lcrmode_tok( token );
 
-            tok();   // Get us past "lcrmode"
+            lcrmode_tok();   // Get us past "lcrmode"
 
-            temp = tok();
+            temp = lcrmode_tok();
             temp.toLower();
 
             _cmd["lcrmode"] = CtiParseValue(true);
@@ -5541,33 +5532,33 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     {
         if(!(token = CmdStr.match("gold [0-9]")).empty())
         {
-            CtiTokenizer tok( token );
+            CtiTokenizer gold_tok( token );
 
-            tok();   // Get us past "gold"
+            gold_tok();   // Get us past "gold"
 
-            _cmd["gold"] = CtiParseValue(atoi(tok().c_str()));
+            _cmd["gold"] = CtiParseValue(atoi(gold_tok().c_str()));
         }
     }
     else if(CmdStr.contains(" silver"))
     {
         if(!(token = CmdStr.match("silver [0-9]*")).empty())
         {
-            CtiTokenizer tok( token );
+            CtiTokenizer silver_tok( token );
 
-            tok();   // Get us past "silver"
+            silver_tok();   // Get us past "silver"
 
-            _cmd["silver"] = CtiParseValue(atoi(tok().c_str()));
+            _cmd["silver"] = CtiParseValue(atoi(silver_tok().c_str()));
         }
     }
     else if(CmdStr.contains(" targetloadamps"))
     {
         if(!(token = CmdStr.match(CtiString("targetloadamps ") + str_floatnum)).empty())
         {
-            CtiTokenizer tok( token );
+            CtiTokenizer tla_tok( token );
 
-            tok();   // Get us past "targetloadamps"
+            tla_tok();   // Get us past "targetloadamps"
 
-            _cmd["xctargetloadamps"] = CtiParseValue(atof(tok().c_str()));
+            _cmd["xctargetloadamps"] = CtiParseValue(atof(tla_tok().c_str()));
         }
     }
 }
@@ -5575,7 +5566,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
-    INT         _num;
     CHAR        tbuf[80];
     UINT        flag   = 0;
     UINT        offset = 0;
@@ -5629,11 +5619,11 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
 
         if(op != -1)
         {
-            CHAR  tbuf[80];
+            CHAR  buf[80];
             _cmd["xcproptest"] = CtiParseValue( op );
 
-            _snprintf(tbuf, sizeof(tbuf), "PROP TEST: %01x = %s", op, op_name);
-            _actionItems.push_back(tbuf);
+            _snprintf(buf, sizeof(buf), "PROP TEST: %01x = %s", op, op_name);
+            _actionItems.push_back(buf);
         }
     }
     else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
@@ -5838,7 +5828,6 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, 
 void CtiCommandParser::doParseControlSA(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
-    INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
     INT         iValue = 0;
@@ -6107,7 +6096,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
         if(CmdStr.contains(" assign"))
         {
             char *p;
-            CHAR        tbuf[80];
+            CHAR        sabuf[80];
 
             _cmd["sa_f0bit"] = 1;
             _cmd["sa_assign"] = TRUE;
@@ -6122,32 +6111,32 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_group"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG GROUP = %d", _num);
-                _actionItems.push_back(tbuf);
+                _snprintf(sabuf, sizeof(sabuf), "CONFIG GROUP = %d", _num);
+                _actionItems.push_back(sabuf);
             }
             if(!(valStr = CmdStr.match((const boost::regex)  (CtiString(" d[ =]*") + str_num) )).empty())
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_division"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %d", _num);
-                _actionItems.push_back(tbuf);
+                _snprintf(sabuf, sizeof(sabuf), "CONFIG DIVISION = %d", _num);
+                _actionItems.push_back(sabuf);
             }
             if(!(valStr = CmdStr.match((const boost::regex)  (CtiString(" s[ =]*") + str_num) )).empty())
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_substation"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
-                _actionItems.push_back(tbuf);
+                _snprintf(sabuf, sizeof(sabuf), "CONFIG SUBSTATION = %d", _num);
+                _actionItems.push_back(sabuf);
             }
             if(!(valStr = CmdStr.match( (const boost::regex) (CtiString(" [pr][ =]*") + str_num) )).empty())
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_package"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG RATE PACKAGE = %d", _num);
-                _actionItems.push_back(tbuf);
+                _snprintf(sabuf, sizeof(sabuf), "CONFIG RATE PACKAGE = %d", _num);
+                _actionItems.push_back(sabuf);
             }
             else
             {
@@ -6156,16 +6145,16 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                     _cmd["sa_family"] = CtiParseValue( _num );
 
-                    _snprintf(tbuf, sizeof(tbuf), "CONFIG FAMILY = %d", _num);
-                    _actionItems.push_back(tbuf);
+                    _snprintf(sabuf, sizeof(sabuf), "CONFIG FAMILY = %d", _num);
+                    _actionItems.push_back(sabuf);
                 }
                 if(!(valStr = CmdStr.match((const boost::regex)  (CtiString(" m[ =]*") + str_num) )).empty())
                 {
                     _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                     _cmd["sa_member"] = CtiParseValue( _num );
 
-                    _snprintf(tbuf, sizeof(tbuf), "CONFIG MEMBER = %d", _num);
-                    _actionItems.push_back(tbuf);
+                    _snprintf(sabuf, sizeof(sabuf), "CONFIG MEMBER = %d", _num);
+                    _actionItems.push_back(sabuf);
                 }
             }
         }
@@ -6464,7 +6453,6 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
     CHAR *p;
-    INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
     UINT        iValue = 0;

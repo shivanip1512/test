@@ -47,7 +47,7 @@ IM_EX_CTIBASE INT  CCEventActionIdGen(LONG capBankPointId);
 IM_EX_CTIBASE INT  CCEventLogIdGen();
 IM_EX_CTIBASE INT  CCEventSeqIdGen();
 IM_EX_CTIBASE INT  PAOIdGen();
-IM_EX_CTIBASE INT  SynchronizedIdGen(string name, int count);
+IM_EX_CTIBASE INT  SynchronizedIdGen(string name, int values_needed);
 
 IM_EX_CTIBASE BOOL InEchoToOut(const INMESS *In, CtiOutMessage *Out);
 IM_EX_CTIBASE BOOL OutEchoToIN(const CtiOutMessage *Out, INMESS *In);

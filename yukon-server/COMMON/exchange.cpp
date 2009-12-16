@@ -23,7 +23,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "exchange.h"
 #include "dlldefs.h"
 
-#pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file 
+#pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file
                             // and that all header files are before this!
 
 // Throws RWSockErr with error.errorNumber() != WSAECONNREFUSED
@@ -31,9 +31,9 @@ CtiExchange::CtiExchange(RWInetAddr sockAddress)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
-    RWSocket socket;
-    socket.connect(sockAddress);
-    Portal_ = new RWSocketPortal(socket, RWSocketPortal::Application);
+    RWSocket sock;
+    sock.connect(sockAddress);
+    Portal_ = new RWSocketPortal(sock, RWSocketPortal::Application);
     sinbuf  = new RWPortalStreambuf(*Portal_);
     soubuf  = new RWPortalStreambuf(*Portal_);
     oStream = new RWpostream(soubuf);
@@ -89,9 +89,9 @@ CtiExchange::~CtiExchange()
         oStream = NULL;
         iStream = NULL;
 
-        
 
-        
+
+
     }
     catch(RWxmsg& msg )
     {
@@ -121,4 +121,4 @@ void CtiExchange::close()
     }
 }
 
-#pragma optimize( "", on ) 
+#pragma optimize( "", on )

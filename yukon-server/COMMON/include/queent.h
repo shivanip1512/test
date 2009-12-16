@@ -25,7 +25,7 @@ class IM_EX_CTIBASE CtiQueueEnt
 {
 private:
    int                     priority_;
-   int                     tag_;   
+   int                     tag_;
    CtiTime                  entrytime_;
 
    RWThreadId              mycreator_;
@@ -65,15 +65,13 @@ public:
    void                 setString(const string &str);
 
    int      getTag() const;
-   int      getPriority() const;   
+   int      getPriority() const;
    CtiTime   getTime() const;
    RWThreadId  getOrigin() const;
    void     Dump() const;
 
    // const int MaxPriorty = 15;
 };
-
-RWBoolean TagMatch(const CtiQueueEnt *p, void *pTag);
 
 
 #endif // #ifndef  __QUEENT_H__

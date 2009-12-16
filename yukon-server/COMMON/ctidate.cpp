@@ -15,33 +15,33 @@ CtiDate::CtiDate() :
 {}
 
 
-CtiDate::CtiDate(unsigned int day, unsigned int month, unsigned int year) :
+CtiDate::CtiDate(unsigned int dd, unsigned int mm, unsigned int yy) :
     bdate(boost::date_time::not_a_date_time)
 {
     try
     {
-        bdate = date(year, month, day);
+        bdate = date(yy, mm, dd);
     }
     catch( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(day,month,year) (" << day << "," << month << "," << year << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(day,month,year) (" << dd << "," << mm << "," << yy << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         bdate = date(1970, 1, 1);
     }
 }
 
-CtiDate::CtiDate(unsigned int days, unsigned int year) :
+CtiDate::CtiDate(unsigned int dd, unsigned int yy) :
     bdate(boost::date_time::not_a_date_time)
 {
     try
     {
-        bdate = date(year, 1, 1) + date_duration(days-1);
+        bdate = date(yy, 1, 1) + date_duration(dd-1);
     }
     catch( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(days,year) (" << days << "," << year << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(days,year) (" << dd << "," << yy << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         bdate = date(1970, 1, 1);
     }
@@ -65,13 +65,13 @@ CtiDate::CtiDate(const CtiTime& ct) :
         }
         else
         {
-            struct tm ctime;
+            tm extracted_time;
 
             try
             {
-                ct.extract(&ctime);
+                ct.extract(&extracted_time);
 
-                bdate = date(ctime.tm_year + 1900, ctime.tm_mon + 1, ctime.tm_mday);
+                bdate = date(extracted_time.tm_year + 1900, extracted_time.tm_mon + 1, extracted_time.tm_mday);
             }
             catch( ... )
             {
@@ -112,15 +112,15 @@ CtiDate& CtiDate::operator=(const CtiDate& cd)
     return *this;
 }
 
-CtiDate& CtiDate::operator+=(const int days)
+CtiDate& CtiDate::operator+=(const int day_offset)
 {
-    bdate = bdate + date_duration(days);
+    bdate = bdate + date_duration(day_offset);
     return *this;
 }
 
-CtiDate& CtiDate::operator-=(const int days)
+CtiDate& CtiDate::operator-=(const int day_offset)
 {
-    bdate = bdate - date_duration(days);
+    bdate = bdate - date_duration(day_offset);
     return *this;
 }
 
@@ -222,21 +222,21 @@ unsigned int CtiDate::firstDayOfMonth() const
 }
 
 
-unsigned int CtiDate::daysInMonthYear(unsigned month, unsigned year)
+unsigned int CtiDate::daysInMonthYear(unsigned mm, unsigned yy)
 {
-    unsigned int days = 0;
+    unsigned int days_in_month = 0;
 
     try
     {
-        days = gregorian_calendar::end_of_month_day(year, month);
+        days_in_month = gregorian_calendar::end_of_month_day(yy, mm);
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate::daysInMonthYear(month,year) (" << month << "," << year << ") - returning 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - exception in CtiDate::daysInMonthYear(month,year) (" << mm << "," << yy << ") - returning 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return days;
+    return days_in_month;
 }
 
 CtiDate CtiDate::now()

@@ -303,17 +303,17 @@ bool CtiStatistics::operator<( const CtiStatistics &rhs ) const
     return(getID() < rhs.getID());
 }
 
-string getHourName(const CtiTime &tm)
+string getHourName(const CtiTime &t)
 {
-    return "Hour" + CtiNumStr(tm.hour()).zpad(2);
+    return "Hour" + CtiNumStr(t.hour()).zpad(2);
 }
 
-string CtiStatistics::getCounterName( int Counter, const CtiTime &tm )
+string CtiStatistics::getCounterName( int Counter, const CtiTime &t )
 {
     switch( Counter )
     {
-        case CurrentHour:  return getHourName(tm);
-        case PreviousHour: return getHourName(tm);
+        case CurrentHour:  return getHourName(t);
+        case PreviousHour: return getHourName(t);
         case Daily:        return "Daily";
         case Yesterday:    return "Yesterday";
         case Monthly:      return "Monthly";
@@ -365,13 +365,12 @@ void CtiStatistics::getSQL(RWDBDatabase &db, RWDBTable &table, RWDBSelector &sel
 void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
 {
     string      typeStr;
-    int         counter;
     int         val;
     CtiTime     startdt;
     RWDBStatus  dbstat(RWDBStatus::ok);
     long        current_id = -1;
     bool        first_row = true;
-    CtiStatistics *stat = 0;
+    CtiStatistics *pStat = 0;
 
     string hourname = getHourName(CtiTime::now());
 
@@ -383,17 +382,17 @@ void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
 
         if( first_row || new_id != current_id )
         {
-            if( stat )
+            if( pStat )
             {
-                restored.push_back(stat);
+                restored.push_back(pStat);
             }
 
             current_id = new_id;
-            stat = new CtiStatistics(current_id);
+            pStat = new CtiStatistics(current_id);
             first_row = false;
         }
 
-        if( stat )
+        if( pStat )
         {
             rdr["statistictype"] >> typeStr;
             rdr["startdatetime"] >> startdt;
@@ -407,7 +406,7 @@ void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
                     counter = CurrentHour;
                 }
 
-                stat->_hourRowExists.set(atoi(typeStr.substr(4).c_str()));
+                pStat->_hourRowExists.set(atoi(typeStr.substr(4).c_str()));
             }
             else if( typeStr == getCounterName(Daily, startdt) )
             {
@@ -433,26 +432,26 @@ void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
             if( counter >= 0 )
             {
                 // This ensures we only load the values if they are current. Old values are not loaded.
-                if( startdt == stat->_intervalBounds[counter].first || counter == Lifetime )
+                if( startdt == pStat->_intervalBounds[counter].first || counter == Lifetime )
                 {
-                    rdr["requests"]         >> val;  stat->setInitialCounterVal( Requests,       counter, val);
-                    rdr["completions"]      >> val;  stat->setInitialCounterVal( Completions,    counter, val);
-                    rdr["attempts"]         >> val;  stat->setInitialCounterVal( Attempts,       counter, val);
-                    rdr["commerrors"]       >> val;  stat->setInitialCounterVal( CommErrors,     counter, val);
-                    rdr["protocolerrors"]   >> val;  stat->setInitialCounterVal( ProtocolErrors, counter, val);
-                    rdr["systemerrors"]     >> val;  stat->setInitialCounterVal( SystemErrors,   counter, val);
+                    rdr["requests"]         >> val;  pStat->setInitialCounterVal( Requests,       counter, val);
+                    rdr["completions"]      >> val;  pStat->setInitialCounterVal( Completions,    counter, val);
+                    rdr["attempts"]         >> val;  pStat->setInitialCounterVal( Attempts,       counter, val);
+                    rdr["commerrors"]       >> val;  pStat->setInitialCounterVal( CommErrors,     counter, val);
+                    rdr["protocolerrors"]   >> val;  pStat->setInitialCounterVal( ProtocolErrors, counter, val);
+                    rdr["systemerrors"]     >> val;  pStat->setInitialCounterVal( SystemErrors,   counter, val);
                 }
 
-                stat->_rowExists[counter] = true;
+                pStat->_rowExists[counter] = true;
             }
         }
 
         dbstat = rdr.status();
     }
 
-    if( stat )
+    if( pStat )
     {
-        restored.push_back(stat);
+        restored.push_back(pStat);
     }
 }
 
@@ -492,7 +491,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn, int counter)
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
-    RWDBStatus stat;
+    RWDBStatus dbstat;
     RWDBTable table = getDatabase().table(getTableName().c_str());
     RWDBInserter ins = table.inserter();
 
@@ -510,20 +509,20 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn, int counter)
             _intervalBounds[counter].first <<
             _intervalBounds[counter].second;
 
-        stat = ExecuteInserter(conn,ins,__FILE__,__LINE__);
+        dbstat = ExecuteInserter(conn,ins,__FILE__,__LINE__);
 
-        if( stat.errorCode() != RWDBStatus::ok )
+        if( dbstat.errorCode() != RWDBStatus::ok )
         {
             string loggedSQLstring = ins.asString();
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
+                dout << "Statistics Insert Error Code = " << dbstat.errorCode() << endl;
                 dout << loggedSQLstring << endl;
             }
         }
     }
 
-    return stat.errorCode();
+    return dbstat.errorCode();
 }
 
 RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn, int counter)
@@ -581,14 +580,14 @@ RWDBStatus::ErrorCode  CtiStatistics::InsertDaily(RWDBConnection &conn)
 
     _doHistInsert = false;
 
-    RWDBStatus stat;
+    RWDBStatus dbstat;
 
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
         RWDBTable insertTable = getDatabase().table(getTableNameDynamicHistory().c_str());
-        RWDBInserter inserter = insertTable.inserter();
-        inserter <<
+        RWDBInserter dbinserter = insertTable.inserter();
+        dbinserter <<
             getID() <<
             _intervalBounds[Yesterday].first.date().daysFrom1970() <<
             getCounter( Requests, Yesterday ) <<
@@ -598,20 +597,20 @@ RWDBStatus::ErrorCode  CtiStatistics::InsertDaily(RWDBConnection &conn)
             getCounter( ProtocolErrors, Yesterday ) <<
             getCounter( SystemErrors, Yesterday );
 
-        stat = ExecuteInserter(conn, inserter, __FILE__, __LINE__);
+        dbstat = ExecuteInserter(conn, dbinserter, __FILE__, __LINE__);
 
-        if( stat.errorCode() != RWDBStatus::ok )
+        if( dbstat.errorCode() != RWDBStatus::ok )
         {
-            string loggedSQLstring = inserter.asString();
+            string loggedSQLstring = dbinserter.asString();
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
+                dout << "Statistics Insert Error Code = " << dbstat.errorCode() << endl;
                 dout << loggedSQLstring << endl;
             }
         }
     }
 
-    return stat.errorCode();
+    return dbstat.errorCode();
 }
 
 RWDBStatus::ErrorCode  CtiStatistics::PruneDaily(RWDBConnection &conn)

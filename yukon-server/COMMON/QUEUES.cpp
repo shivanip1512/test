@@ -82,16 +82,16 @@ IM_EX_CTIBASE INT GetIndividualRequestStartPos(HCTIQUEUE QueueHandle, ULONG Requ
             Entry = QueueHandle->First;
         }
 
-        INT count = 1;
+        INT pos = 1;
         while(Entry != NULL && Entry->Request != RequestID)
         {
             Entry = Entry->Next;
-            count++;
+            pos++;
         }
 
         if(Entry != NULL)
         {
-            StartPos = tempPos + count;
+            StartPos = tempPos + pos;
         }
         else
         {
@@ -1291,7 +1291,7 @@ void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous
 
 IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(void*, void*))
 {
-    INT count = 0;
+    INT apply_count = 0;
     PQUEUEENT Entry;
 
     if(QueueHandle != (HCTIQUEUE) NULL && (QueueHandle->Elements) > 0)
@@ -1306,7 +1306,7 @@ IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(v
 
                 while(Entry != NULL)
                 {
-                    count++;
+                    apply_count++;
                     try
                     {
                         (*myFunc)(ptr, Entry->Data);
@@ -1326,5 +1326,5 @@ IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(v
         }
     }
 
-    return count;
+    return apply_count;
 }

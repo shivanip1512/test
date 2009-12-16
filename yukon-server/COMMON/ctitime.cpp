@@ -43,11 +43,11 @@ struct thread_tm
 
 boost::thread_specific_ptr<struct thread_tm> tm_value;
 
-ctitime_t CtiTime::maketm(const CtiDate& d, unsigned hour, unsigned minute, unsigned second){
+ctitime_t CtiTime::maketm(const CtiDate& d, unsigned hh, unsigned mm, unsigned ss){
     tm ctm;
-    ctm.tm_sec = second;     /* seconds after the minute - [0,59] */
-    ctm.tm_min = minute;     /* minutes after the hour - [0,59] */
-    ctm.tm_hour = hour;    /* hours since midnight - [0,23] */
+    ctm.tm_sec = ss;     /* seconds after the minute - [0,59] */
+    ctm.tm_min = mm;     /* minutes after the hour - [0,59] */
+    ctm.tm_hour = hh;    /* hours since midnight - [0,23] */
     ctm.tm_mday = d.dayOfMonth();    /* day of the month - [1,31] */
     ctm.tm_mon = d.month() - 1;     /* months since January - [0,11] */
     ctm.tm_year = d.year() - 1900;    /* years since 1900 */
@@ -73,11 +73,11 @@ CtiTime::CtiTime(specialvalues sv) :
 }
 
 
-CtiTime::CtiTime(unsigned hour, unsigned minute, unsigned second) :
-  _seconds(maketm(CtiDate::now(), hour, minute, second))
+CtiTime::CtiTime(unsigned hh, unsigned mm, unsigned ss) :
+  _seconds(maketm(CtiDate::now(), hh, mm, ss))
 {}
 
-CtiTime::CtiTime(const CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
+CtiTime::CtiTime(const CtiDate& d, unsigned hh, unsigned mm, unsigned ss) :
   _seconds(0)
 {
     if(d.isValid()) {
@@ -86,7 +86,7 @@ CtiTime::CtiTime(const CtiDate& d, unsigned hour, unsigned minute, unsigned seco
         } else if(d.is_pos_infinity() || d.isEndOfTime()){
             _seconds = std::numeric_limits<ctitime_t>::max();
         } else {
-            _seconds = maketm(d, hour, minute, second);
+            _seconds = maketm(d, hh, mm, ss);
         }
     }
 }

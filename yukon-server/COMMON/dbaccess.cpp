@@ -102,8 +102,8 @@ DLLEXPORT void cleanupDB()
 **/
 DLLEXPORT
 void setDatabaseParams(unsigned dbID,
-                       const string& dbDll, const string& dbName,
-                       const string& dbUser, const string& dbPassword )
+                       const string& dll, const string& name,
+                       const string& user, const string& password )
 {
     assert( dbID == 0 || dbID == 1 );
 
@@ -116,10 +116,10 @@ void setDatabaseParams(unsigned dbID,
         info->db = NULL;
     }
 
-    info->dll = dbDll;
-    info->name = dbName;
-    info->user = dbUser;
-    info->password = dbPassword;
+    info->dll = dll;
+    info->name = name;
+    info->user = user;
+    info->password = password;
 
     if(info->db != NULL)
     {
@@ -337,8 +337,8 @@ DLLEXPORT
 RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file, int line, long *rowsAffected)
 {
     RWDBResult myResult = updater.execute( conn );
-    RWDBStatus stat = myResult.status();
-    RWDBStatus::ErrorCode ec = stat.errorCode();
+    RWDBStatus dbstat = myResult.status();
+    RWDBStatus::ErrorCode ec = dbstat.errorCode();
 
     if(rowsAffected)                                        // Ha.  The calls to table and rowCount ALTER stat!!!!
     {                                                       // This may make the usage of the return VERY suspect!
@@ -363,21 +363,21 @@ RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater,
         {
             CtiTime Now;
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Error Code = " << stat.errorCode() << ". ";
+            dout << CtiTime() << " Error Code = " << dbstat.errorCode() << ". ";
             if(file != 0) dout << file << " (" << line << ")";
             dout << endl << endl << loggedSQLstring << endl << endl;
 
 
-            if(stat.vendorError1() != 0)
+            if(dbstat.vendorError1() != 0)
             {
                 dout << Now << " Thread id:        " << rwThreadId() << endl
-                << Now << " Error code:       " << (int) stat.errorCode() << endl
-                << Now << " Error message     " << stat.message() << endl
-                << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
-                << Now << " Vendor error 1:   " << stat.vendorError1() << endl
-                << Now << " Vendor error 2:   " << stat.vendorError2() << endl
-                << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
-                << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
+                << Now << " Error code:       " << (int) dbstat.errorCode() << endl
+                << Now << " Error message     " << dbstat.message() << endl
+                << Now << " Is terminal:      " << (dbstat.isTerminal() ? "Yes" : "No") << endl
+                << Now << " Vendor error 1:   " << dbstat.vendorError1() << endl
+                << Now << " Vendor error 2:   " << dbstat.vendorError2() << endl
+                << Now << " Vendor message 1: " << dbstat.vendorMessage1() << endl
+                << Now << " Vendor message 2: " << dbstat.vendorMessage2() << endl << endl;
                 if(rowsAffected) dout << Now << " Rows Updated      " << *rowsAffected << endl;
             }
         }
@@ -388,13 +388,13 @@ RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater,
 }
 
 DLLEXPORT
-RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const char *file, int line)
+RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &dbinserter, const char *file, int line)
 {
-    RWDBStatus stat = inserter.execute( conn ).status();
+    RWDBStatus dbstat = dbinserter.execute( conn ).status();
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = inserter.asString();
+        string loggedSQLstring = dbinserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << endl << CtiTime() << " **** Checkpoint **** ";
@@ -403,32 +403,32 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
         }
     }
 
-    if( stat.errorCode() != RWDBStatus::ok )
+    if( dbstat.errorCode() != RWDBStatus::ok )
     {
-        string loggedSQLstring = inserter.asString();
+        string loggedSQLstring = dbinserter.asString();
         {
             CtiTime Now;
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << Now << " Error Code = " << stat.errorCode() << ". ";
+            dout << Now << " Error Code = " << dbstat.errorCode() << ". ";
 
             if(file != 0) dout << file << " (" << line << ")";
             dout << endl << endl << loggedSQLstring << endl << endl;
 
-            if(stat.vendorError1() != 0)
+            if(dbstat.vendorError1() != 0)
             {
                 dout << Now << " Thread id:        " << rwThreadId() << endl
-                << Now << " Error code:       " << (int) stat.errorCode() << endl
-                << Now << " Error message     " << stat.message() << endl
-                << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
-                << Now << " Vendor error 1:   " << stat.vendorError1() << endl
-                << Now << " Vendor error 2:   " << stat.vendorError2() << endl
-                << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
-                << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
+                << Now << " Error code:       " << (int) dbstat.errorCode() << endl
+                << Now << " Error message     " << dbstat.message() << endl
+                << Now << " Is terminal:      " << (dbstat.isTerminal() ? "Yes" : "No") << endl
+                << Now << " Vendor error 1:   " << dbstat.vendorError1() << endl
+                << Now << " Vendor error 2:   " << dbstat.vendorError2() << endl
+                << Now << " Vendor message 1: " << dbstat.vendorMessage1() << endl
+                << Now << " Vendor message 2: " << dbstat.vendorMessage2() << endl << endl;
             }
         }
     }
 
-    return stat;
+    return dbstat;
 }
 
 

@@ -912,14 +912,13 @@ static PCHAR ModemResponseText[] = {"OK", "ERROR", "BUSY", "NO CARRIER",
 BOOL ValidModemResponse (PCHAR Response)
 {
    BOOL isValid = FALSE;
-   int count;
 
-   for(count = 0; ModemResponseText[count] != NULL; count++)
+   for(int i = 0; ModemResponseText[i] != NULL; i++)
    {
-      if( strstr(Response, ModemResponseText[count]) != NULL )
+      if( strstr(Response, ModemResponseText[i]) != NULL )
       {
          // Valid modem return
-         strcpy(Response, ModemResponseText[count]);
+         strcpy(Response, ModemResponseText[i]);
          isValid = TRUE;
          break;
       }

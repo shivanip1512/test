@@ -197,7 +197,7 @@ void CtiLogger::doOutput()
         {
             bool logfile_current = true;
 
-            time_t now = ::time(0);
+            const time_t now = ::time(0);
 
             if( now >= _next_logfile_check )
             {
@@ -231,22 +231,22 @@ void CtiLogger::doOutput()
             if( outfile && (_first_output || !logfile_current) )
             {
                 strstream s;
-                CtiTime now;
+                const CtiTime headerTime;
 
                 if( !_project.empty() && !_version.empty() )
                 {
-                    s << now << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << endl;
+                    s << headerTime << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << endl;
                 }
 
                 if( _first_output )
                 {
                     _first_output = false;
 
-                    s << now << " --------  LOG BEGINS  --------" << endl;
+                    s << headerTime << " --------  LOG BEGINS  --------" << endl;
                 }
                 else
                 {
-                    s << now << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------" << endl;
+                    s << headerTime << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------" << endl;
                 }
 
                 outfile.write(s.str(), s.pcount());

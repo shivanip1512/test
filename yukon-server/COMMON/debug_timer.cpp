@@ -8,20 +8,20 @@ using namespace std;
 
 namespace Cti {
 
-string DebugTimer::formatSystemTime(const SYSTEMTIME &time)
+string DebugTimer::formatSystemTime(const SYSTEMTIME &systime)
 {
     ostringstream formatted;
 
     formatted.fill('0');
 
-    formatted << setw(2) << time.wMonth << "/";
-    formatted << setw(2) << time.wDay   << "/";
-    formatted << setw(2) << time.wYear  << " ";
+    formatted << setw(2) << systime.wMonth << "/";
+    formatted << setw(2) << systime.wDay   << "/";
+    formatted << setw(2) << systime.wYear  << " ";
 
-    formatted << setw(2) << time.wHour   << ":";
-    formatted << setw(2) << time.wMinute << ":";
-    formatted << setw(2) << time.wSecond << ".";
-    formatted << setw(3) << time.wMilliseconds;
+    formatted << setw(2) << systime.wHour   << ":";
+    formatted << setw(2) << systime.wMinute << ":";
+    formatted << setw(2) << systime.wSecond << ".";
+    formatted << setw(3) << systime.wMilliseconds;
 
     return formatted.str();
 }
