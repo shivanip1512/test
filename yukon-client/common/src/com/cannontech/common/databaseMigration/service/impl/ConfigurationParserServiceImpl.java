@@ -448,3 +448,11 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
     }
     
 }
+
+class CountHolder{
+    private int count = 0;
+    
+    public CountHolder(int startingValue){this.count = startingValue;}
+    public int getCount(){return this.count;}
+    public void add(){this.count++;}
+}

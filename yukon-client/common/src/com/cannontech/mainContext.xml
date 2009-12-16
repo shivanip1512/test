@@ -240,5 +240,8 @@
 
     <bean id="exportXMLGeneratorService" class="com.cannontech.common.databaseMigration.service.impl.ExportXMLGeneratorServiceImpl">
    	    <property name="databaseDefinitionXML" value="classpath:com/cannontech/database/DatabaseDefinition.xml" />
-	</bean>      
+	</bean>
+
+    <bean id="databaseMigrationDao" class="com.cannontech.common.databaseMigration.dao.impl.DatabaseMigrationDaoImpl" />
+
 </beans>

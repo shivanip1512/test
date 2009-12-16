@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -54,6 +55,7 @@ import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
 import com.cannontech.common.databaseMigration.model.DatabaseMigrationPicker;
 import com.cannontech.common.databaseMigration.model.DisplayableExportType;
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
+import com.cannontech.common.databaseMigration.dao.DatabaseMigrationDao;
 import com.cannontech.common.databaseMigration.service.ConfigurationParserService;
 import com.cannontech.common.databaseMigration.service.ConfigurationProcessorService;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
@@ -71,6 +73,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -96,9 +99,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     
     private ConfigurationProcessorService configurationProcessorService;
     private ConfigurationParserService configurationParserService;
+    private DatabaseMigrationDao databaseMigrationDao;
     private DateFormattingService dateFormattingService;
     private ExportXMLGeneratorService exportXMLGeneratorService;
     private JdbcTemplate jdbcTemplate;
+    private NextValueHelper nextValueHelper;
     private RolePropertyDao rolePropertyDao;
     private TransactionOperations transactionTemplate;
     private TemplateProcessorFactory templateProcessorFactory;
@@ -193,16 +198,25 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return importDatabaseMigrationStatus;
     }
     
-    
-    
+    /**
+     * This method handles getting the first label or each element and then runs the validation
+     * of the database migration import process through creating a transaction and rolling back
+     * after all the elements have been processed.
+     * 
+     * 
+     * @param importItemList
+     * @param configurationNameValue
+     * @param importDatabaseMigrationStatus
+     * @return
+     */
     private ImportDatabaseMigrationStatus validateElementList(final List<Element> importItemList, 
                                                               final ExportTypeEnum exportType,
                                                               final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
     	
     	importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         
-/////// Change isolation level and make sure it works in both cases: SQL Server and Oracle.
-        
+    	// TODO Change isolation level and make sure it works in both cases: SQL Server and Oracle.
+    	
 //        scheduledExecutor.execute(new Runnable() {
 			
 //			@Override
@@ -270,6 +284,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return importDatabaseMigrationStatus;
     }
     
+    /**
+     * This method handles getting the first label or each element and then processes them through
+     * the database migration import process.
+     * 
+     * @param importItemList
+     * @param configurationNameValue
+     * @param importDatabaseMigrationStatus
+     */
     private void processElementList(final List<Element> importItemList,
                                     ExportTypeEnum exportType,
                                     final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
@@ -286,6 +308,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 continue;
             }
             
+            // Uses a transaction so we can roll back any items that have issues while processing
             transactionTemplate.execute(new TransactionCallback() {
                 public Object doInTransaction(TransactionStatus status) {
                     try {
@@ -295,10 +318,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     } catch (ConfigurationErrorException e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+                        status.setRollbackOnly();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+                        status.setRollbackOnly();
                     }
+                    log.log(Priority.INFO, "Processed the entry "+label);
+                    
                     return null;
                 }
             });
@@ -517,9 +544,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         }
         
         SqlStatementBuilder selectSQL = sqlHolder.buildSelectSQL();
-        
-        Integer primaryKey = jdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
-        
+        Integer primaryKey = 0;
+        try {
+            primaryKey = jdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
+        } catch (IncorrectResultSizeDataAccessException e) {
+            System.out.println(selectSQL);
+            System.out.println(whereParameterValues);
+        }
+            
         if (primaryKey == null) {
             throw new ConfigurationErrorException("The reference in the import file does not exist for the table "+table.getTableName());
         }
@@ -577,7 +609,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         } else if (missingPKCount == 0) {
 
             Map<String, Object> primaryKeySelectResultMap = 
-                buildAndProcessPrimaryKeySelect(columnValueMap, table);
+                databaseMigrationDao.findResultSetForPrimaryKeyValues(columnValueMap, table);
 
             // comparing data sets against each other using the table object;
             if (primaryKeySelectResultMap != null) {
@@ -592,7 +624,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
             // The imported item does not exist.  Creating new instance.
             } else {
-                insertNewTableEntry(table, columnValueMap);
+                return databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
             }
 
         // One primary key was missing.  Get the max primary key to insert.
@@ -601,7 +633,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
             // Using the identifiers to see if the object currently exists in the system.
             Map<String, Object> identifierSelectResultMap =
-                buildAndProcessIdentifierSelect(columnValueMap, table);
+                databaseMigrationDao.findResultSetForIdentifierValues(columnValueMap, table);
         
             // Checks to see if the imported item exists in the system,
             // and then checks to see if a user action was submitted.
@@ -620,201 +652,33 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 } else if (warningProcessing.equals(WarningProcessingEnum.OVERWRITE)) {
                     String primaryKeyValue = identifierSelectResultMap.get(missingPrimaryKey).toString();
                     columnValueMap.put(missingPrimaryKey, primaryKeyValue);
-                    updateTableEntry(table, columnValueMap);
+                    databaseMigrationDao.updateTableEntry(table, columnValueMap);
                     
                     return Integer.valueOf(primaryKeyValue);
                 }
 
             // The imported item does not exist.  Creating new instance.
             } else {
-                // !!! CURRENTLY NOT THREAD SAFE
-                //     This needs to be locked down in some form so we can guarantee that this value 
-                //     doesn't not get added while we are trying to add the entry.  Maybe sequence number table? !!!
-                // !!! { !!!
-                
-/////////////////// next value helper.  Add missing entries
-/////////////////// add to table_sequence if it is missing
                 
                 // Finding next primary key for insert and inserting it into the columnValueMap
-                Integer primaryKeyValue = 
-                    buildAndProcessGetNextPrimaryKeyValue(columnValueMap, table);
-                String primaryKeyName = primaryKeyColumnNames.get(0);
-                columnValueMap.put(primaryKeyName, primaryKeyValue.toString());
+                Integer nextPrimaryKeyId = nextValueHelper.getNextValue(table.getTableName());
                 
-                return insertNewTableEntry(table, columnValueMap);
-                // !!! } !!!
+                if (nextPrimaryKeyId == 0){
+                    nextPrimaryKeyId = 
+                        databaseMigrationDao.getNextMissingPrimaryKeyValue(columnValueMap, table, missingPrimaryKey);
+                }
+                columnValueMap.put(missingPrimaryKey, nextPrimaryKeyId.toString());
+                
+                return databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
             }
         }
         return null;
     }
 
-    /**
-     * Builds and process the Sql to update a table entry.
-     * 
-     * @param table
-     * @param columnValueMap
-     */
-    private void updateTableEntry(TableDefinition table,
-                                  Map<String, String> columnValueMap) {
-
-        // UPDATE
-        Object[] columnValueMapKeys  = columnValueMap.keySet().toArray();
-        SqlStatementBuilder updateSQL = new SqlStatementBuilder();
-        updateSQL.append("UPDATE "+table.getTableName());
-        
-        // SET
-        List<Object> argValues = new ArrayList<Object>();
-        updateSQL.append("SET "+columnValueMapKeys[0].toString()+" = ? ");
-        argValues.add(columnValueMap.get(columnValueMapKeys[0].toString()));
-        for (int i = 1; i < columnValueMapKeys.length; i++) {
-            updateSQL.append(", "+columnValueMapKeys[i].toString()+" = ? ");
-            argValues.add(columnValueMap.get(columnValueMapKeys[i].toString()));
-        }
-
-        // WHERE
-        List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
-        updateSQL.append("WHERE "+primaryKeyColumnNames.get(0)+" = ? ");
-        argValues.add(columnValueMap.get(primaryKeyColumnNames.get(0)));
-        for (int i = 1; i < primaryKeyColumnNames.size(); i++) {
-            updateSQL.append("AND "+primaryKeyColumnNames.get(i)+" = ? ");
-            argValues.add(columnValueMap.get(primaryKeyColumnNames.get(i)));
-        }
-        // Insert entry into the database
-        jdbcTemplate.update(updateSQL.getSql(), argValues.toArray());
-    }
-
-    /**
-     * This method will get the available primary key
-     * 
-     * @param columnValueMap
-     * @param table
-     * @return
-     */
-    private Integer buildAndProcessGetNextPrimaryKeyValue(Map<String, String> columnValueMap,
-                                                          TableDefinition table) {
- 
-        List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
-        String primaryKeyColumnName = primaryKeyColumnNames.get(0);
-        
-        SqlStatementBuilder selectMaxSQL = new SqlStatementBuilder();
-        selectMaxSQL.append("SELECT MAX("+primaryKeyColumnName+")");
-        selectMaxSQL.append("FROM "+table.getTableName());
-        
-        try {
-            int maxPrimaryKeyValue = jdbcTemplate.queryForInt(selectMaxSQL.getSql());
-            return ++maxPrimaryKeyValue;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            // A value does not exist for this column.  Using the default of 0.
-            return 0;
-        }
-    }
-
-    /**
-     * Insert new table entry into the database
-     * 
-     * @param table
-     * @param columnValueMap
-     */
-    private Integer insertNewTableEntry(TableDefinition table,
-                                        Map<String, String> columnValueMap) {
-        
-        // Builds insert statement
-        Object[] columnValueMapKeys  = columnValueMap.keySet().toArray();
-        SqlStatementBuilder insertSQL = new SqlStatementBuilder();
-        insertSQL.append("INSERT INTO "+table.getTableName()+"(");
-        insertSQL.append(columnValueMapKeys[0].toString());
-        for (int i = 1; i < columnValueMapKeys.length; i++) {
-            insertSQL.append(", "+columnValueMapKeys[i].toString());
-        }
-        insertSQL.append(")");
-        insertSQL.append("VALUES (?");
-        
-        List<Object> insertValues = new ArrayList<Object>();
-        insertValues.add(columnValueMap.get(columnValueMapKeys[0].toString()));
-        for (int i = 1; i < columnValueMapKeys.length; i++) {
-            insertSQL.append(", ?");
-            insertValues.add(columnValueMap.get(columnValueMapKeys[i].toString()));
-        }
-        insertSQL.append(") ");
-
-        // Insert entry into the database
-        jdbcTemplate.update(insertSQL.getSql(), insertValues.toArray());
-        
-        List<String> primaryKeyColumns = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
-        return Integer.valueOf(columnValueMap.get(primaryKeyColumns.get(0)));
-
-    }
-
-    /**
-     * builds and processes a select sql generated from the primary key fields found in the database definition file
-     * and the values from the columnValueMap created from the import file.
-     * 
-     * @param columnValueMap
-     * @param table
-     * @return
-     */
-    private Map<String, Object> buildAndProcessPrimaryKeySelect(Map<String, String> columnValueMap,
-                                                                TableDefinition table) {
-        // Get information from primary key
-        SqlHolder primaryKeySelectSqlHolder = new SqlHolder();
-        for (Column column : table.getAllColumns()) {
-            primaryKeySelectSqlHolder.addSelectClause(column.getName());
-        }
-        primaryKeySelectSqlHolder.addFromClause(table.getTableName());
-        for (Column primaryKeyColumn : table.getColumns(ColumnTypeEnum.PRIMARY_KEY)) {
-            primaryKeySelectSqlHolder.addWhereClause(primaryKeyColumn.getName()+" = "+columnValueMap.get(primaryKeyColumn.getName()));
-        }
-        SqlStatementBuilder primaryKeySelectSQL = primaryKeySelectSqlHolder.buildSelectSQL();
-        
-        // Process primaryKey Select clause
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> primaryKeySelectResultMap = jdbcTemplate.queryForMap(primaryKeySelectSQL.getSql());
-            return primaryKeySelectResultMap;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
-    }
     
-    /**
-     * builds and processes a select sql generated from the identifiers fields found in the database definition file
-     * and the values from the columnValueMap created from the import file.
-     * 
-     * @param columnValueMap
-     * @param table
-     * @return
-     */
-    private Map<String, Object> buildAndProcessIdentifierSelect(Map<String, String> columnValueMap,
-                                                                TableDefinition table) {
-        
-        // Get information from identifier key
-        SqlHolder identifierSelectSqlHolder = new SqlHolder();
-        for (Column column : table.getAllColumns()) {
-            identifierSelectSqlHolder.addSelectClause(column.getName());
-        }
-        identifierSelectSqlHolder.addFromClause(table.getTableName());
-        
-        List<Object> whereParameterValues = new ArrayList<Object>();
-        for (Column identifierColumn : table.getColumns(ColumnTypeEnum.IDENTIFIER)) {
-            identifierSelectSqlHolder.addWhereClause(identifierColumn.getName()+" = ? ");
-            whereParameterValues.add(columnValueMap.get(identifierColumn.getName()));
-        }
-        SqlStatementBuilder identifierSelectSQL = identifierSelectSqlHolder.buildSelectSQL();
-        
-        // Process identifier Select clause
-        try{
-            @SuppressWarnings("unchecked")
-            Map<String, Object> primaryKeySelectResultMap = jdbcTemplate.queryForMap(identifierSelectSQL.getSql(), whereParameterValues.toArray());
-            return primaryKeySelectResultMap;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            // The entry does not exist in the system.
-            return null;
-        }
-        
-        
-    }
 
-    private void compareResultTableDataToImportTableData(TableDefinition table,
+    
+    private void compareResultTableDataToImportTableData(TableDefinition tableDefinition,
                                                          Map<String, String> columnValueMap,
                                                          Map<String, Object> resultMap) throws ConfigurationErrorException, ConfigurationWarningException {
         
@@ -824,7 +688,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         boolean tableMatched = true;
 
         // Compare primary key values
-        List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
+        List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         for (String primaryKeyColumnName : primaryKeyColumnNames) {
             String sqlColumnValue = resultMap.get(primaryKeyColumnName).toString();
             String importColumnValue = columnValueMap.get(primaryKeyColumnName);
@@ -837,12 +701,12 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             if(sqlColumnValue == null) {}
             if(importColumnValue == null) {}
             tableMatched = false;
-            errorList.add("The column "+table.getTableName()+"."+primaryKeyColumnName+" does not match the value in the database for an existing object. "+
+            errorList.add("The column "+tableDefinition.getTableName()+"."+primaryKeyColumnName+" does not match the value in the database for an existing object. "+
                           " (Database value = "+sqlColumnValue+", Import value = "+importColumnValue+") " );
         }
 
         // Compare foreign key values
-        List<String> identifierColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.IDENTIFIER));
+        List<String> identifierColumnNames = TableDefinition.getColumnNames(tableDefinition.getColumns(ColumnTypeEnum.IDENTIFIER));
         for (String identifierColumnName : identifierColumnNames) {
             String sqlColumnValue = resultMap.get(identifierColumnName).toString();
             String importColumnValue = columnValueMap.get(identifierColumnName);
@@ -853,13 +717,13 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             
             if(sqlColumnValue == null) {}
             if(importColumnValue == null) {}
-            errorList.add("The column "+table.getTableName()+"."+identifierColumnName+" does not match the value in the database for an existing object. "+
+            errorList.add("The column "+tableDefinition.getTableName()+"."+identifierColumnName+" does not match the value in the database for an existing object. "+
                           " (Database value = "+sqlColumnValue+", Import value = "+importColumnValue+") " );
             tableMatched = false;
         }
 
         
-        List<String> dataColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.DATA));
+        List<String> dataColumnNames = TableDefinition.getColumnNames(tableDefinition.getColumns(ColumnTypeEnum.DATA));
         for (String dataColumnName : dataColumnNames) {
             String sqlColumnValue = resultMap.get(dataColumnName).toString();
             String importColumnValue = columnValueMap.get(dataColumnName);
@@ -871,7 +735,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             if(sqlColumnValue == null) {}
             if(importColumnValue == null) {}
             
-            warningList.add("The column "+table.getTableName()+"."+dataColumnName+" does not match the value in the database for an existing object. "+
+            warningList.add("The column "+tableDefinition.getTableName()+"."+dataColumnName+" does not match the value in the database for an existing object. "+
             		" (Database value = "+sqlColumnValue+", Import value = "+importColumnValue+") " );
             tableMatched = false;
         }
@@ -1364,6 +1228,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     }
 
     @Autowired
+    public void setDatabaseMigrationDao(DatabaseMigrationDao databaseMigrationDao) {
+        this.databaseMigrationDao = databaseMigrationDao;
+    }
+    
+    @Autowired
     public void setConfigurationParserService(ConfigurationParserService configurationParserService) {
         this.configurationParserService = configurationParserService;
     }
@@ -1431,6 +1300,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
 		this.scheduledExecutor = scheduledExecutor;
 	}
+    
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
 }
 
 class ConfigurationErrorException extends Exception {
@@ -1455,13 +1329,5 @@ class ConfigurationWarningException extends Exception {
         super(message, cause);
     }
 
-}
-
-class CountHolder{
-    private int count = 0;
-    
-    public CountHolder(int startingValue){this.count = startingValue;}
-    public int getCount(){return this.count;}
-    public void add(){this.count++;}
 }
 

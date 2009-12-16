@@ -259,7 +259,7 @@
     <table name="YukonRole">
         <primaryKey name="RoleId"/>
         <identifier name="RoleName"/>
-        <data name="Category"/>
+        <identifier name="Category"/>
         <data name="RoleDescription"/>
     </table>
     
