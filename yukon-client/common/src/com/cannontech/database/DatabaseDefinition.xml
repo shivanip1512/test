@@ -102,7 +102,7 @@
 
     <table name="LMProgramControlWindow">
         <primaryKey name="DeviceId" tableRef="LMProgram"/>
-        <PrimaryKey name="WindowNumber" />
+        <primaryKey name="WindowNumber" />
         <data name="AvailableStartTime" />
         <data name="AvailableStopTime" />
     </table>
