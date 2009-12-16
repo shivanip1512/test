@@ -80,10 +80,19 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
 
                     ConfigurationIncludeTable includeElement = new ConfigurationIncludeTable();
                     includeElement.setLabel(tableElement.getLabel());
-                    includeElement.setTableName(configElement.getAttributeValue("name"));
+                    includeElement.setIncludeReferenceColumnName(configElement.getAttributeValue("field"));
 
+                    Element child = configElement.getChild("table");
+                    if (child == null ||
+                        child.getAttributeValue("name") == null) {
+                        throw new IllegalArgumentException("The table element was missing under an include element or the name attribute was not supplied");
+                    }
+
+                    String tableName = child.getAttributeValue("name");
+                    includeElement.setTableName(tableName);
+                    
                     tableElement.getIncludeElementList().add(includeElement);
-                    buildConfigurationTemplate(includeElement, configElement);
+                    buildConfigurationTemplate(includeElement, child);
                 } else if (configElement.getName().equals("references")){
                     buildConfigurationTemplateReferencesElement(tableElement, configElement);
                 } else
@@ -116,19 +125,22 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
             if (configElement.getName().equals("include")){
                 ConfigurationIncludeTable includedIncludeElement = new ConfigurationIncludeTable();
                 includedIncludeElement.setLabel(includeElement.getLabel());
-                includedIncludeElement.setTableName(configElement.getAttributeValue("name"));
+                includedIncludeElement.setIncludeReferenceColumnName(configElement.getAttributeValue("field"));
+
+                Element child = configElement.getChild("table");
+                if (child == null ||
+                    child.getAttributeValue("name") == null) {
+                    throw new IllegalArgumentException("The table element was missing under an include element or the name attribute was not supplied");
+                }
+
+                String tableName = child.getAttributeValue("name");
+                includedIncludeElement.setTableName(tableName);
                 includeElement.getIncludeElementList().add(includedIncludeElement);
 
-                buildConfigurationTemplate(includedIncludeElement, configElement);
+                buildConfigurationTemplate(includedIncludeElement, child);
 
             } else if (configElement.getName().equals("references")){
-                ConfigurationTable configurationReferencesTable = new ConfigurationTable();
-                configurationReferencesTable.setLabel(includeElement.getLabel());
-                configurationReferencesTable.setTableName(includeElement.getTableName());
-                includeElement.getReferencesTables().add(configurationReferencesTable);
-
-                buildConfigurationTemplateReferencesElement(configurationReferencesTable, 
-                                                            configElement);
+                buildConfigurationTemplateReferencesElement(includeElement, configElement);
             } else {
                 throw new IllegalArgumentException("The element in the configuration file does not exist or is not a valid element compared to its parent element. ("+configElement.getName()+")");
             }
@@ -208,11 +220,11 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                 if (column.getRefType() == null ||
                     column.getRefType().equals(ReferenceTypeEnum.ONE_TO_ONE)){
                     processInlineDataTableTemplate(dataTable, 
-                                           configFileTableElement,
-                                           countHolder, 
-                                           column,
-                                           tableRefTable,
-                                           finalTableInDrillDown);
+                                                   configFileTableElement,
+                                                   countHolder, 
+                                                   column,
+                                                   tableRefTable,
+                                                   finalTableInDrillDown);
 
                 // Checks to see if the column has a one to many relationship.  If is does we want to use an include or reference item.
                 } else if (column.getRefType().equals(ReferenceTypeEnum.MANY_TO_ONE)){
@@ -220,13 +232,13 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                     boolean isTableInIncludes = false;
                     List<ConfigurationIncludeTable> configIncludeElementList = configFileTableElement.getIncludeElementList();
                     for (ConfigurationIncludeTable configIncludeElement : configIncludeElementList) {
-                        if (configIncludeElement.getTableName().equals(tableRefTable.getTableName())) {
+                        if (column.getName().equals(configIncludeElement.getIncludeReferenceColumnName())) {
                             processIncludeDataTableTemplate(dataTable,
-                                                    configIncludeElement,
-                                                    countHolder,
-                                                    column,
-                                                    tableRefTable,
-                                                    finalTableInDrillDown);
+                                                            configIncludeElement,
+                                                            countHolder,
+                                                            column,
+                                                            tableRefTable,
+                                                            null);
                             isTableInIncludes = true;
                             continue;
                         }
@@ -385,8 +397,19 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      * @param referenceTable
      * @param countHolder
      */
-    private void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable,
-                                                   CountHolder countHolder){
+    public void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable){
+        CountHolder countHolder = new CountHolder(0);
+        buildDatabaseMapReferenceTemplate(referenceTable, countHolder);
+    }
+    
+    /**
+     * This method handles the recursion case of references.
+     * 
+     * @param referenceTable
+     * @param countHolder
+     */
+    public void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable,
+                                                  CountHolder countHolder){
         Table table = database.getTable(referenceTable.getTableName());
         List<Column> identifierColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
         for (Column identifierColumn : identifierColumns) {

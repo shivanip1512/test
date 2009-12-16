@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
+import com.cannontech.common.databaseMigration.bean.WarningProcessingEnum;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
@@ -374,10 +375,18 @@ public class DatabaseMigrationController {
 	// IMPORT CONFIRM
 	@RequestMapping
     public ModelAndView importConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	
-		ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
-		
-		
+	    ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
+        String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
+        String warningProcessingValueStr = ServletRequestUtils.getRequiredStringParameter(request, "warningProcessingValue");
+        WarningProcessingEnum warningProcessingValue = WarningProcessingEnum.valueOf(warningProcessingValueStr);
+        
+        // retrieve file
+        FileSystemResource fileSystemResource = fileStore.get(fileKey);
+        File importFile = fileSystemResource.getFile();
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.processImportDatabaseMigration(importFile, warningProcessingValue);
+		importStatusStore.put(fileKey, importDatabaseMigrationStatus);
+        
+		mav.addObject("fileKey", fileKey);
 		return mav;
 	}
 	

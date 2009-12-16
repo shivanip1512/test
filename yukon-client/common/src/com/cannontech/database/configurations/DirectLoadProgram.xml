@@ -12,13 +12,14 @@
 						</table>
 						<table name="LMDirectNotifGrpList" />
 						<table name="LMProgramDirectGroup" >
-							<references>
-								<table name="LMGroupExpressCom">
+							<include field="LMGroupDeviceId" >
+								<table name="LMGroup" >
 									<references>
+										<table name="LMGroupExpressCom" />
 										<table name="Point" />
 									</references>
 								</table>
-							</references>
+							</include>
 						</table>
 					</references>
 				</table>

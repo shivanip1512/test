@@ -1,7 +1,7 @@
 package com.cannontech.common.databaseMigration.bean;
 
 public enum WarningProcessingEnum {
-    OVER_WRITE("Over Write"),
+    OVERWRITE("Overwrite"),
     USE_EXISTING("Use Existing"),
     VALIDATE("Validate");
     

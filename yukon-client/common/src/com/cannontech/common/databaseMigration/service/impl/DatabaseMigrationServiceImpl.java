@@ -190,23 +190,21 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     /**
      * 
      */
-    public ImportDatabaseMigrationStatus processImportDatabaseMigration (final File importFile){
+    public ImportDatabaseMigrationStatus processImportDatabaseMigration (final File importFile,
+                                                                         WarningProcessingEnum warningProcessingEnum){
         
         final String configurationNameValue = getConfigurationNameValue(importFile);
         final List<Element> importItemList = getElementListFromFile(importFile);
         
         final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(importItemList.size(), importFile);
+        importDatabaseMigrationStatus.setWarningProcessing(warningProcessingEnum);
         importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
-
+                
         scheduledExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                int primaryKey = 0;
-                String tableName = "";
-
                 List<Element> importItemList = getElementListFromFile(importFile);
                 processElementList(importItemList, configurationNameValue, importDatabaseMigrationStatus);
-                handleRowInserted(tableName, primaryKey);
             }
         });
         
@@ -232,7 +230,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             transactionTemplate.execute(new TransactionCallback() {
                 public Object doInTransaction(TransactionStatus status) {
                     try {
-                        processElement(element, null, importDatabaseMigrationStatus);
+                        Integer primaryKey = processElement(element, null, importDatabaseMigrationStatus);
+                        String tableName = element.getAttributeValue("name");
+                        handleRowInserted(tableName, primaryKey);
                     } catch (ConfigurationErrorException e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
@@ -240,7 +240,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
                     }
-                    status.setRollbackOnly();
                     return null;
                 }
             });
@@ -255,16 +254,16 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
      * @param importItem
      * @throws ConfigurationErrorException 
      */
-    private void processElement(Element importItem, 
-                                Map<String, String> primaryKeyColumnValuePair,
-                                ImportDatabaseMigrationStatus importDatabaseMigrationStatus) throws ConfigurationErrorException{
+    private Integer processElement(Element importItem, 
+                                   Map<String, String> primaryKeyColumnValuePair,
+                                   ImportDatabaseMigrationStatus importDatabaseMigrationStatus) throws ConfigurationErrorException{
         if (!importItem.getName().equals("item")) {
             throw new IllegalArgumentException("Invalid import configuration file structure. Items must start with an item tag. "+importItem.getName());
         }
         
         String initialTableName = importItem.getAttributeValue("name");
         Table table = database.getTable(initialTableName);
-        processElement(table, importItem, primaryKeyColumnValuePair, importDatabaseMigrationStatus);
+        return processElement(table, importItem, primaryKeyColumnValuePair, importDatabaseMigrationStatus);
     }
 
     
@@ -559,7 +558,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     Integer primaryKeyValue = Integer.valueOf(identifierSelectResultMap.get(missingPrimaryKey).toString());
                     return primaryKeyValue;
 
-                } else if (warningProcessing.equals(WarningProcessingEnum.OVER_WRITE)) {
+                } else if (warningProcessing.equals(WarningProcessingEnum.OVERWRITE)) {
                     String primaryKeyValue = identifierSelectResultMap.get(missingPrimaryKey).toString();
                     columnValueMap.put(missingPrimaryKey, primaryKeyValue);
                     updateTableEntry(table, columnValueMap);
@@ -606,7 +605,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         
         // SET
         List<Object> argValues = new ArrayList<Object>();
-        updateSQL.append("SET "+columnValueMapKeys[0].toString()+ " ? ");
+        updateSQL.append("SET "+columnValueMapKeys[0].toString()+" = ? ");
         argValues.add(columnValueMap.get(columnValueMapKeys[0].toString()));
         for (int i = 1; i < columnValueMapKeys.length; i++) {
             updateSQL.append(", "+columnValueMapKeys[i].toString()+" = ? ");

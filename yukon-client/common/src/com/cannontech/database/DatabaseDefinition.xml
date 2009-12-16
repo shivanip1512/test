@@ -120,8 +120,8 @@
     
     <table name="LMProgramDirectGroup">
         <primaryKey name="DeviceId" tableRef="LMProgramDirect"/>
-        <data name="LMGroupDeviceId" tableRef="LMGroup" refType="ONE_TO_ONE"/>
-        <PrimaryKey name="GroupOrder" />
+        <data name="LMGroupDeviceId" tableRef="LMGroup" refType="MANY_TO_ONE"/>
+        <primaryKey name="GroupOrder" />
     </table>
     
     <table name="LMProgramDirectGear">

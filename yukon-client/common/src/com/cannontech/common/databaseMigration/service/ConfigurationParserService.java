@@ -25,4 +25,13 @@ public interface ConfigurationParserService {
      */
     public DataTableTemplate buildDataTableTemplate(ConfigurationTable configFileTableElement);
 
+    
+    /**
+     * This method is used to create a reference DataTableTemplate when using an include.
+     * 
+     * @param referenceTable
+     */
+    public void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable);
+                                                  
+    
 }

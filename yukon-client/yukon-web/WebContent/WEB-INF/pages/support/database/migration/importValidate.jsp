@@ -60,7 +60,11 @@
     </style>
     
     <script type="text/javascript">
-
+    	function setWarningProcessing() {
+        	var warningProcessingSelect = $('warningProcessing');
+        	var warningProcessValue = warningProcessingSelect.options[warningProcessingSelect.selectedIndex].value;
+        	$('warningProcessingValue').value = warningProcessValue;
+    	}
     </script>
     
     <tags:simpleDialog id="sharedPopupDialog"/>
@@ -140,8 +144,8 @@
                                                actionUrl="${componentName_1_warnings_url}" 
                                                logoKey="yukon.web.modules.support.databaseMigration.importValidate.warning.img"/>
 						&nbsp;
-						<select name="S1" class="warning">
-							<option value="IGNORE">Use Existing</option>
+						<select id="warningProcessing" name="warningProcessing" onchange="setWarningProcessing()" class="warning">
+							<option value="USE_EXISTING">Use Existing</option>
 							<option value="OVERWRITE">Overwrite</option>
 						</select>
 					</td>
@@ -172,6 +176,7 @@
     
 		<form id="confirmForm" action="/spring/support/database/migration/importConfirm" method="post">
 	    	<input type="hidden" name="fileKey" value="${status.id}">
+	    	<input type="hidden" id="warningProcessingValue" name="warningProcessingValue" value="USE_EXISTING">
 	    </form>
 	    
 	    <tags:slowInput myFormId="confirmForm" label="${commitFile}"/>

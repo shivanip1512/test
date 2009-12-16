@@ -12,6 +12,7 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.databaseMigration.TableChangeCallback;
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
+import com.cannontech.common.databaseMigration.bean.WarningProcessingEnum;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.user.YukonUserContext;
 
@@ -19,7 +20,8 @@ public interface DatabaseMigrationService {
     
     public ImportDatabaseMigrationStatus validateImportFile(File importFile);
     
-    public ImportDatabaseMigrationStatus processImportDatabaseMigration (File importFile);
+    public ImportDatabaseMigrationStatus processImportDatabaseMigration (File importFile,
+                                                                         WarningProcessingEnum warningProcessingEnum);
     
     public ExportDatabaseMigrationStatus processExportDatabaseMigration(File configurationXMLFile, 
                                                List<Integer> primaryKeyList, 
