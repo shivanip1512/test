@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   numstr.cpp
-*
-* Date:   12/7/2001
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15.2.1 $
-* DATE         :  $Date: 2008/11/12 17:27:31 $
-*
-* Copyright (c) 2007 Cannon Technologies. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <ostream>
@@ -35,9 +20,6 @@ CtiNumStr::CtiNumStr( unsigned short us ) : _dataType(DataType_Unsigned)  {  ini
 CtiNumStr::CtiNumStr( unsigned int   ui ) : _dataType(DataType_Unsigned)  {  init(32);  _unsigned = ui;  }
 CtiNumStr::CtiNumStr( unsigned long  ul ) : _dataType(DataType_Unsigned)  {  init(32);  _unsigned = ul;  }
 
-//If you are looking for this feature, see CtiString::zeroPad and CtiString::spacePad
-//CtiNumStr::CtiNumStr( void *vp ) : _dataType(DataType_Pointer)  {  init(32);  _pointer = vp;  }  //  32-bit pointers
-
 CtiNumStr::~CtiNumStr( )
 {
 }
@@ -54,7 +36,6 @@ void CtiNumStr::init( unsigned int width )
     _float     = 0;
     _integer   = 0;
     _unsigned  = 0;
-    _pointer   = 0x00000000;
 
     switch( _dataType )
     {
@@ -211,7 +192,6 @@ CtiNumStr::operator string() const
 
             break;
         }
-        case DataType_Pointer:          stream << _pointer;  break;
     }
 
     return stream.str();

@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:
-*
-* Class:  CtiNumStr
-* Date:   12/7/2001
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10.6.2 $
-* DATE         :  $Date: 2008/11/12 17:27:30 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __NUMSTR_H__
-#define __NUMSTR_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dlldefs.h"
 #include <string>
@@ -26,15 +7,9 @@ class IM_EX_CTIBASE CtiNumStr
 {
 private:
 
-    enum
-    {
-        DataStringLength = 40
-    };
-
     long          _integer;
     unsigned long _unsigned;
     double  _float;
-    void   *_pointer;
 
     int    _precision;  //  stores floating precision
     int    _bits;       //  stores integer bit sizes for negative hex representations
@@ -54,7 +29,6 @@ private:
         DataType_FloatingPoint,
         DataType_Integer,
         DataType_Unsigned,
-        DataType_Pointer,
     } _dataType;
 
     //  both of these are undefined - no one should call these...  CtiNumStr is a one-shot object
@@ -67,7 +41,6 @@ protected:
 
     void buildIntString    ( std::string &s ) const;
     void buildFloatString  ( std::string &s ) const;
-    void buildPointerString( std::string &s ) const;
 
 public:
 
@@ -82,8 +55,6 @@ public:
     explicit CtiNumStr(          int    iVal );
     explicit CtiNumStr( unsigned long  ulVal );
     explicit CtiNumStr(          long   lVal );
-
-    //CtiNumStr( void *vpVal );
 
     ~CtiNumStr( );
 
@@ -120,4 +91,3 @@ IM_EX_CTIBASE std::string operator +(CtiNumStr &numStr, const char *s);
 //  overload the << operator for ostream
 IM_EX_CTIBASE std::ostream &operator <<(std::ostream &o, CtiNumStr &numStr);
 
-#endif // #ifndef __NUMSTR_H__
