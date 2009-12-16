@@ -1,5 +1,5 @@
 <configurations>
-    <configuration name="Direct Load Program">
+    <configuration name="DIRECT_PROGRAM"><!-- Direct Load Program -->
 		<table name="LMProgram" >
 			<references>
 				<table name="LMProgramControlWindow" />

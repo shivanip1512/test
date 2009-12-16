@@ -1,10 +1,10 @@
-package com.cannontech.web.picker.databaseMigration;
+package com.cannontech.common.databaseMigration.model;
 
 public class DatabaseMigrationContainer {
     private int databaseMigrationId;
     private String databaseMigrationDisplay;
     
-    DatabaseMigrationContainer(int databaseMigrationId, String databaseMigrationDisplay){
+    public DatabaseMigrationContainer(int databaseMigrationId, String databaseMigrationDisplay){
         this.databaseMigrationId = databaseMigrationId;
         this.databaseMigrationDisplay = databaseMigrationDisplay;
     }

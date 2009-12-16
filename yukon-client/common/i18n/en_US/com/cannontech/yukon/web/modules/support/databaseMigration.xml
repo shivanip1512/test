@@ -2,6 +2,13 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+	<!-- Export Type labels -->
+    <entry key="yukon.web.modules.support.databaseMigration.label.APP_CATEGORY">Appliance Categories And Related Programs</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.label.DIRECT_PROGRAM">Direct Load Program</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.label.EXPRESSCOM_LOAD_GROUP">Expresscom Load Group</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.label.LM_GROUP_PERMISSIONS">Load Management to Login Group Permissions</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.label.LOGIN_GROUP">Login Group</entry>
+
 	<!-- Home home.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
@@ -28,6 +35,9 @@
 	<entry key="yukon.web.modules.support.databaseMigration.export.componentsToBeExport">Components To Be Exported</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.export.selectObjects">Select Objects</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.export.exportFile">Export</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.export.mag.img">/WebConfig/yukon/Icons/magnifier.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.export.mag.img.hover">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.export.componentsInfoSection.header.objects">Objects</entry>
 	
 	<!-- Export Progress exportProgress.jsp -->
     <!-- ================================================================================================================================================= -->

@@ -1,5 +1,5 @@
 <configurations>
-    <configuration name="Expresscom Load Group">
+    <configuration name="EXPRESSCOM_LOAD_GROUP"><!-- Expresscom Load Group -->
         <table name="LMGroupExpressCom" >
         	<references>
         		<table name="Point" />

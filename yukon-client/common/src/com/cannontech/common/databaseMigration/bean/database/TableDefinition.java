@@ -11,22 +11,21 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
-public class Table{
+public class TableDefinition {
     String tableName;
     ListMultimap<String, Column> columns = ArrayListMultimap.create();
     
-    public Table(String tableName){
+    public TableDefinition(String tableName){
         this.tableName = tableName;
     }
 
-    public Table(String tableName, Element tableElement){
+    public TableDefinition(String tableName, Element tableElement){
         this.tableName = tableName;
         
         ColumnTypeEnum[] columnTypes = ColumnTypeEnum.values();
         for (ColumnTypeEnum columnType : columnTypes)
             addColumns(tableElement, columnType);
     }
-
     
     @SuppressWarnings("unchecked")
     private void addColumns(Element tableElement, ColumnTypeEnum columnType){

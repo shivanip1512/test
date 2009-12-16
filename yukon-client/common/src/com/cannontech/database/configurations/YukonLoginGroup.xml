@@ -1,5 +1,5 @@
 <configurations>
-    <configuration name="Login Group">
+    <configuration name="LOGIN_GROUP"><!-- Login Group -->
 		<table name="YukonGroup">
             <references>
                 <table name="YukonGroupRole" />

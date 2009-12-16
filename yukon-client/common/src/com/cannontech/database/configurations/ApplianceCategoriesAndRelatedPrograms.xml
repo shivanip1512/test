@@ -1,5 +1,5 @@
 <configurations>
-    <configuration name="Appliance Categories And Related Programs">
+    <configuration name="APP_CATEGORY"><!-- Appliance Categories And Related Programs -->
         <table name="ApplianceCategory">
             <references>
                 <table name="LMProgramWebPublishing" />

@@ -52,6 +52,11 @@ public class SqlHolder{
     public List<String> getWhereClauses() {
         return whereClauses;
     }
+    
+    public boolean hasWhereClause() {
+        return this.whereClauses.size() > 0;
+    }
+    
     public void setWhereClauses(List<String> whereClauses) {
         this.whereClauses = whereClauses;
     }
@@ -77,10 +82,10 @@ public class SqlHolder{
         selectSQLFragment.append("SELECT ");
         for (int i = 0; i < selectColumns.size()-1; i++) {
             String columnName = selectColumns.get(i);
-            selectSQLFragment.append(columnName+" "+columnName.replace(".", "_")+", ");
+            selectSQLFragment.append(columnName + ", ");
         }
         String lastColumnName = selectColumns.get(selectColumns.size()-1);
-        selectSQLFragment.append(lastColumnName+" "+lastColumnName.replace(".", "_"));
+        selectSQLFragment.append(lastColumnName);
         return selectSQLFragment;
     }
 

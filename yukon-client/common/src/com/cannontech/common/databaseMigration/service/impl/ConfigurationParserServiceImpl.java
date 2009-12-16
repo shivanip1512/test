@@ -19,15 +19,15 @@ import com.cannontech.common.databaseMigration.bean.data.template.DataTableTempl
 import com.cannontech.common.databaseMigration.bean.data.template.DataValueTemplate;
 import com.cannontech.common.databaseMigration.bean.database.Column;
 import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
-import com.cannontech.common.databaseMigration.bean.database.Database;
+import com.cannontech.common.databaseMigration.bean.database.DatabaseDefinition;
 import com.cannontech.common.databaseMigration.bean.database.ReferenceTypeEnum;
-import com.cannontech.common.databaseMigration.bean.database.Table;
+import com.cannontech.common.databaseMigration.bean.database.TableDefinition;
 import com.cannontech.common.databaseMigration.service.ConfigurationParserService;
 
 public class ConfigurationParserServiceImpl implements ConfigurationParserService{
 
     private static Logger log = YukonLogManager.getLogger(ConfigurationParserServiceImpl.class);
-    private Database database;
+    private DatabaseDefinition database;
     
     public ConfigurationTable buildConfigurationTemplate(File configurationXMLFile) {
         SAXBuilder saxBuilder = new SAXBuilder();
@@ -202,8 +202,8 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
     private void buildDataTableTemplate(DataTableTemplate dataTable, 
                                         ConfigurationTable configFileTableElement, 
                                         CountHolder countHolder,
-                                        Table finalTableInDrillDown){
-        Table table = database.getTable(dataTable.getTableName());
+                                        TableDefinition finalTableInDrillDown){
+        TableDefinition table = database.getTable(dataTable.getTableName());
         List<Column> allColumns = table.getAllColumns();
         for (Column column : allColumns) {
             if (column.getTableRef() != null){
@@ -216,7 +216,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
 
                 // Checks to see if the column has a one to one relationship or if the item does not have a definied relationship
                 // that symbolizes a foreign key from the primary key.  If so we want to create an inline item. 
-                Table tableRefTable = database.getTable(column.getTableRef());
+                TableDefinition tableRefTable = database.getTable(column.getTableRef());
                 if (column.getRefType() == null ||
                     column.getRefType().equals(ReferenceTypeEnum.ONE_TO_ONE)){
                     processInlineDataTableTemplate(dataTable, 
@@ -269,7 +269,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
         // Check to see if any elements are in the references list
         List<ConfigurationTable> configurationTableList = configFileTableElement.getReferencesTables();
         for (ConfigurationTable configurationTable : configurationTableList) {
-            Table referencesTable = database.getTable(configurationTable.getTableName());
+            TableDefinition referencesTable = database.getTable(configurationTable.getTableName());
             List<Column> referencesTableColumns = referencesTable.getAllColumns();
             for (Column referencesTableColumn : referencesTableColumns) {
                 if (table.getTableName().equals(referencesTableColumn.getTableRef())){
@@ -300,8 +300,8 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                                 ConfigurationTable configFileTableElement,
                                                 CountHolder countHolder, 
                                                 Column column,
-                                                Table tableRefTable,
-                                                Table finalTableInDrillDown) {
+                                                TableDefinition tableRefTable,
+                                                TableDefinition finalTableInDrillDown) {
         DataTableTemplate inlineTable = 
             new DataTableTemplate(null, 0, tableRefTable.getTableName());
         dataTable.putTableColumn(column.getName(), inlineTable);
@@ -326,8 +326,8 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                                  ConfigurationIncludeTable configIncludeElement,
                                                  CountHolder countHolder, 
                                                  Column column,
-                                                 Table tableRefTable,
-                                                 Table finalTableInDrillDown) {
+                                                 TableDefinition tableRefTable,
+                                                 TableDefinition finalTableInDrillDown) {
         countHolder.add();
         DataTableTemplate includeTable = 
             new DataTableTemplate(ElementCategoryEnum.INCLUDE, 
@@ -356,8 +356,8 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                           ConfigurationTable configFileTableElement,
                                           CountHolder countHolder, 
                                           Column column,
-                                          Table tableRefTable,
-                                          Table finalTableInDrillDown) {
+                                          TableDefinition tableRefTable,
+                                          TableDefinition finalTableInDrillDown) {
         countHolder.add();
         DataTableTemplate referenceTable = 
             new DataTableTemplate(ElementCategoryEnum.REFERENCE, countHolder.getCount(), tableRefTable.getTableName());
@@ -378,9 +378,9 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     private void processReferencesDataTableTemplate(DataTableTemplate dataTable, 
                                                     ConfigurationTable configFileTableElement,
-                                                    Table finalTableInDrillDown,
+                                                    TableDefinition finalTableInDrillDown,
                                                     CountHolder countHolder,
-                                                    Table referencesTable) {
+                                                    TableDefinition referencesTable) {
         countHolder.add();
         DataTableTemplate referenceTable = 
             new DataTableTemplate(ElementCategoryEnum.REFERENCES, countHolder.getCount(), referencesTable.getTableName());
@@ -410,7 +410,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     public void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable,
                                                   CountHolder countHolder){
-        Table table = database.getTable(referenceTable.getTableName());
+        TableDefinition table = database.getTable(referenceTable.getTableName());
         List<Column> identifierColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
         for (Column identifierColumn : identifierColumns) {
             if (identifierColumn.getTableRef() != null){
@@ -444,7 +444,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
     }
 
     public void setDatabaseDefinitionXML(Resource databaseDefinitionXML){
-        database = new Database(databaseDefinitionXML);
+        database = new DatabaseDefinition(databaseDefinitionXML);
     }
     
 }

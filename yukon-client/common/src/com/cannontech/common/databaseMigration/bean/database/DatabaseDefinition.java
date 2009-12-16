@@ -12,11 +12,12 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.springframework.core.io.Resource;
 
-public class Database{
-    Map<String, Table> databaseMap = new TreeMap<String, Table>();
+public class DatabaseDefinition {
+    // Table name to def
+    Map<String, TableDefinition> databaseMap = new TreeMap<String, TableDefinition>();
     
     @SuppressWarnings("unchecked")
-    public Database(Resource databaseDefinitionXML){
+    public DatabaseDefinition(Resource databaseDefinitionXML){
         // Setup JDOM Element
         SAXBuilder saxBuilder = new SAXBuilder();
         Document databaseDefinitionXMLDocument;
@@ -29,7 +30,7 @@ public class Database{
             List<Element> tables = databaseRoot.getChildren();
             for (Element tableElmenet : tables) {
                 String tableName = tableElmenet.getAttributeValue("name");
-                Table table = new Table(tableName, tableElmenet);
+                TableDefinition table = new TableDefinition(tableName, tableElmenet);
                 this.databaseMap.put(tableName, table);
             }
         
@@ -43,18 +44,18 @@ public class Database{
     }
     
     
-    public Map<String, Table> getDatabaseMap() {
+    public Map<String, TableDefinition> getDatabaseMap() {
         return databaseMap;
     }
-    public void addTable(Table table) {
+    public void addTable(TableDefinition table) {
         this.databaseMap.put(table.getTableName(), table);
     }
 
-    public Table getTable(String dbTableName) {
+    public TableDefinition getTable(String dbTableName) {
         return this.databaseMap.get(dbTableName);
     }
 
-    public List<String> getConnectedTables(Table table) {
+    public List<String> getConnectedTables(TableDefinition table) {
         List<String> connectedTables = new ArrayList<String>();
         if(table != null){
             connectedTables.add(table.getTableName());

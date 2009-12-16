@@ -22,8 +22,8 @@ import com.cannontech.common.databaseMigration.bean.data.template.DataTableTempl
 import com.cannontech.common.databaseMigration.bean.data.template.DataValueTemplate;
 import com.cannontech.common.databaseMigration.bean.database.Column;
 import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
-import com.cannontech.common.databaseMigration.bean.database.Database;
-import com.cannontech.common.databaseMigration.bean.database.Table;
+import com.cannontech.common.databaseMigration.bean.database.DatabaseDefinition;
+import com.cannontech.common.databaseMigration.bean.database.TableDefinition;
 import com.cannontech.common.databaseMigration.service.ConfigurationParserService;
 import com.cannontech.common.databaseMigration.service.ConfigurationProcessorService;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -34,8 +34,8 @@ import com.google.common.collect.Maps;
 public class ConfigurationProcessorServiceImpl implements ConfigurationProcessorService {
 
     private static Logger log = YukonLogManager.getLogger(ConfigurationProcessorServiceImpl.class);
+    private DatabaseDefinition database;
     private ConfigurationParserService configurationParserService;
-    private Database database;
     private JdbcTemplate jdbcTemplate;
     
     public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template, List<Integer> primaryKeyList, ExportDatabaseMigrationStatus status) {
@@ -236,7 +236,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                 }
             } else if (entry.getValue() instanceof DataValueTemplate) {
                 // Processing nullId case
-                Table table = database.getTable(template.getTableName());
+                TableDefinition table = database.getTable(template.getTableName());
                 List<Column> columns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
                 boolean nullIdFound = false;
                 for (Column column : columns) {
@@ -263,8 +263,8 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         }
         
         // Create primayKey identifier for the references
-        Table table = database.getTable(template.getTableName());
-        List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
+        TableDefinition table = database.getTable(template.getTableName());
+        List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         String primaryKey = primaryKeyColumnNames.get(0);
         Integer primaryKeyValue = Integer.parseInt(sqlResult.get(primaryKey).toString());
          
@@ -290,7 +290,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         for (DataTableTemplate referencesDataTableTemplate : tableReferences) {
             
             // Build up the table object and figure out which table we are pointing to
-            Table referencesTable = database.getTable(referencesDataTableTemplate.getTableName());
+            TableDefinition referencesTable = database.getTable(referencesDataTableTemplate.getTableName());
             List<Column> allReferencesTableColumns = referencesTable.getAllColumns();
             for (Column column : allReferencesTableColumns) {
                 if (column.getTableRef() != null &&
@@ -307,7 +307,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     }
 
     public void setDatabaseDefinitionXML(Resource databaseDefinitionXML){
-        database = new Database(databaseDefinitionXML);
+        database = new DatabaseDefinition(databaseDefinitionXML);
     }
 
     @Autowired

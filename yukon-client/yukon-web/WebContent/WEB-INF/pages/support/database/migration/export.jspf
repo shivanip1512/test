@@ -36,34 +36,42 @@
 	<tags:sectionContainer title="${sectionTitle}" styleClass="migrationSection">
 
 		<table cellspacing="4">
-			<c:forEach var="dbTableList" items="${configurationDBTablesMap}">
+			<c:forEach var="exportType" items="${exportTypeList}">
+                <c:set var="exportTypeName" value="${exportType.exportType.name}" />
 				<tr>
 					<td>
 						<c:choose>
 							<c:when test="${allowMultipleComponentSelection}">
-								<input type="checkbox" id="${dbTableList.key}_selectedComponent" name="selectedComponent" value="${dbTableList.key}">
+								<input type="checkbox" id="${exportTypeName}_selectedComponent" name="exportType" value="${exportTypeName}">
 							</c:when>
 							<c:otherwise>
-								<input type="radio" id="${dbTableList.key}_selectedComponent" name="selectedComponent" value="${dbTableList.key}">
+								<input type="radio" id="${exportTypeName}_selectedComponent" name="exportType" value="${exportTypeName}">
 							</c:otherwise>
 						</c:choose>
 					</td>
 					<td>
 						<cti:url var="selectObjects_url" value="/spring/support/database/migration/selectObjects">
-							<cti:param name="objectKey" value="${dbTableList.key}"/>
+							<cti:param name="objectKey" value="${exportTypeName}"/>
 						</cti:url>
 						
-						<b><c:out value="${dbTableList.key}" /></b>
+						<b><cti:msg key="${exportType.exportType.typeKey}" /></b>
 						
-			            <cti:databaseMigrationPicker paoIdField="databaseMigrationIds" finalTriggerAction="selectCategory" imgUrl="${bookOpenIcon}" configurationName="${dbTableList.key}"> </cti:databaseMigrationPicker>
-						<img src="${mag}">
+			            <cti:databaseMigrationPicker paoIdField="databaseMigrationIds" finalTriggerAction="selectCategory" imgUrl="${bookOpenIcon}" configurationName="${exportTypeName}"> </cti:databaseMigrationPicker>
+						
+                        <cti:url var="selectedItemsUrl" value="/spring/support/database/migration/viewSelectedItems">
+                            <cti:param name="exportType" value="${exportTypeName}"/>
+                        </cti:url>
+                        <tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.export.componentsInfoSection.header.objects" 
+                                               dialogId="sharedPopupDialog" 
+                                               actionUrl="${selectedItemsUrl}"
+                                               logoKey="yukon.web.modules.support.databaseMigration.export.mag.img"/>
 						
 					</td>
 				</tr>
-				<c:forEach var="dbTable" items="${dbTableList.value}">
+				<c:forEach var="exportTable" items="${exportType.tableNameSet}">
 					<tr>
 						<td>&nbsp;</td>
-						<td><img src="${dbPickerIconDisabled}"><c:out value="${dbTable}" /></td>
+						<td><img src="${dbPickerIconDisabled}"><c:out value="${exportTable}" /></td>
 					</tr>
 				</c:forEach>
 			</c:forEach>

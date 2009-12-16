@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +16,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -32,6 +28,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.WarningProcessingEnum;
+import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
+import com.cannontech.common.databaseMigration.model.DisplayableExportType;
+import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
@@ -70,15 +69,15 @@ public class DatabaseMigrationController {
         boolean exportTab = ServletRequestUtils.getBooleanParameter(request, "export", false);
         boolean importTab = ServletRequestUtils.getBooleanParameter(request, "import", false);
         
-        SortedMap<String, SortedSet<String>> configurationDBTablesMap = 
-            databaseMigrationService.getAvailableConfigurationDatabaseTableMap();
+        List<DisplayableExportType> exportTypeList = 
+            databaseMigrationService.getAvailableExportTypes();
         
         List<String> exportFilePaths = getExportDirectoryFilePaths(userContext);
         
         mav.addObject("errorMsg", errorMsg);
         mav.addObject("export", exportTab);
         mav.addObject("import", importTab);
-        mav.addObject("configurationDBTablesMap", configurationDBTablesMap);
+        mav.addObject("exportTypeList", exportTypeList);
         mav.addObject("serverFiles", exportFilePaths);
         addDbInfoToMav(mav);
         
@@ -100,23 +99,19 @@ public class DatabaseMigrationController {
     public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException {
 		
         
-        String componentType = ServletRequestUtils.getStringParameter(request, "selectedComponent");
+        String exportTypeString = ServletRequestUtils.getStringParameter(request, "exportType");
+        ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
+        
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        String databaseMigrationIds = ServletRequestUtils.getRequiredStringParameter(request, "databaseMigrationIds");
-        List<Integer> primaryKeyList = new ArrayList<Integer>();
-        for (String databaseMigrationId : databaseMigrationIds.split(",")){
-            primaryKeyList.add(Integer.valueOf(databaseMigrationId));
+        String exportIds = ServletRequestUtils.getRequiredStringParameter(request, "databaseMigrationIds");
+        List<Integer> exportIdList = new ArrayList<Integer>();
+        for (String exportId : exportIds.split(",")){
+            exportIdList.add(Integer.valueOf(exportId));
         }
         
-        Map<String, Resource> availableConfigurationMap = databaseMigrationService.getAvailableConfigurationMap();
-        Resource configurationXMLFile = availableConfigurationMap.get(componentType);
-        ExportDatabaseMigrationStatus status = null;
-        if(configurationXMLFile != null) {
-            status = databaseMigrationService.processExportDatabaseMigration(configurationXMLFile.getFile(), primaryKeyList, userContext);
-        } else {
-            throw new IllegalArgumentException("The configuration file supplied does not exist.");
-        }
+        ExportDatabaseMigrationStatus status = 
+            databaseMigrationService.processExportDatabaseMigration(exportType, exportIdList, userContext);
         
         File exportFile = status.getExportFile();
         FileSystemResource resource = new FileSystemResource(exportFile);
@@ -147,26 +142,32 @@ public class DatabaseMigrationController {
 		downloadFile(fileKey, response);
 	}
 	
-	
-	
-	
 	// SELECT OBJECTS
 	@RequestMapping
-    public ModelAndView selectObjects(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public ModelAndView viewSelectedItems(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        String objectKey = ServletRequestUtils.getRequiredStringParameter(request, "objectKey");
-	    
-        List<Map<String, Object>> configurationItems = databaseMigrationService.getConfigurationItems(objectKey);
-
-        Map<String, Object> map = configurationItems.get(0);
-        Set<String> keySet = map.keySet();
-        String primaryKeyId = (String)keySet.toArray()[0];
+        ModelAndView mav = new ModelAndView("database/migration/popup/objectsViewPopup.jsp");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-	    ModelAndView mav = new ModelAndView("database/migration/popup/selectObjects.jsp");
-        mav.addObject("configurationItems", configurationItems);
-        mav.addObject("primaryKeyId", primaryKeyId);
-        mav.addObject("objectKey", objectKey);
-        addDbInfoToMav(mav);
+        String exportTypeString = ServletRequestUtils.getRequiredStringParameter(request, "exportType");
+        ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
+
+        List<Integer> exportItemIdList = Lists.newArrayList();
+        String exportItemIdsString = ServletRequestUtils.getRequiredStringParameter(request, "exportItemIds");
+        String[] exportItemIdsArray = exportItemIdsString.split(",");
+        for(String exportItemId : exportItemIdsArray) {
+            exportItemIdList.add(Integer.valueOf(exportItemId));
+        }
+        List<DatabaseMigrationContainer> exportItems = 
+            databaseMigrationService.getItemsByIds(exportType, exportItemIdList, userContext);
+        
+        List<String> itemLabelList = Lists.newArrayList();
+        for(DatabaseMigrationContainer container : exportItems) {
+            itemLabelList.add(container.getDatabaseMigrationDisplay());
+        }
+        
+        mav.addObject("itemList", itemLabelList);
+        mav.addObject("objectCount", itemLabelList.size());
         
         return mav;
     }

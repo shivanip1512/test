@@ -14,14 +14,14 @@ import com.cannontech.common.databaseMigration.bean.data.DataTableEntity;
 import com.cannontech.common.databaseMigration.bean.data.DataTableValue;
 import com.cannontech.common.databaseMigration.bean.data.ElementCategoryEnum;
 import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
-import com.cannontech.common.databaseMigration.bean.database.Database;
-import com.cannontech.common.databaseMigration.bean.database.Table;
+import com.cannontech.common.databaseMigration.bean.database.DatabaseDefinition;
+import com.cannontech.common.databaseMigration.bean.database.TableDefinition;
 import com.cannontech.common.databaseMigration.service.ExportXMLGeneratorService;
 
 public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
  
     private static Logger log = YukonLogManager.getLogger(ExportXMLGeneratorServiceImpl.class);
-    private Database database;
+    private DatabaseDefinition database;
     private boolean showPrimaryKeys = false;
 
     public Element buildXmlElement(Iterable<DataTable> data, String label) {
@@ -85,10 +85,10 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
             // Checks to see if the table is just a value 
             // or if it ties to another table of information
             if (columnEntry.getValue() instanceof DataTableValue) {
-                Table table = database.getTable(dataTable.getTableName());
+                TableDefinition table = database.getTable(dataTable.getTableName());
                 
                 // Checks to see if we should display primaryKeys in the XML file or not
-                List<String> primaryKeyColumnNames = Table.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
+                List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
                 if (!showPrimaryKeys &&
                     primaryKeyColumnNames.contains(columnName)){
                     continue;
@@ -214,7 +214,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
     }
     
     public void setDatabaseDefinitionXML(Resource databaseDefinitionXML){
-        database = new Database(databaseDefinitionXML);
+        database = new DatabaseDefinition(databaseDefinitionXML);
     }
 
 }

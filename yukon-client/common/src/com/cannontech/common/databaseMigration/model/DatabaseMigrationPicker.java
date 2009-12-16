@@ -1,4 +1,4 @@
-package com.cannontech.web.picker.databaseMigration;
+package com.cannontech.common.databaseMigration.model;
 
 import java.util.Map;
 import java.util.Set;
