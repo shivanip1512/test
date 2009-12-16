@@ -238,14 +238,6 @@
    #define IM_EX_MEMPOINTDB      __declspec(dllimport)
 #endif
 
-#ifdef _DLL_CMDLINE                // The ctibase.dll
-   #define IM_EX_CMDLINE      __declspec(dllexport)
-#elif defined( STI_UNDERSTAND )
-   #define IM_EX_CMDLINE
-#else
-   #define IM_EX_CMDLINE      __declspec(dllimport)
-#endif
-
 #ifdef DEVICEDB                // The ctibase.dll
    #define IM_EX_DEVICEDB      __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )

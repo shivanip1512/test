@@ -53,7 +53,6 @@ $(COMPILEBASE)\lib\cti_fdr.lib \
 $(COMPILEBASE)\lib\apiclilib.lib \
 $(COMPILEBASE)\lib\pllib.lib \
 $(COMPILEBASE)\lib\psapi.lib \
-$(COMPILEBASE)\lib\cmdline.lib
 
 
 

@@ -48,7 +48,6 @@ $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
-$(COMPILEBASE)\lib\cmdline.lib \
 wininet.lib
 
 

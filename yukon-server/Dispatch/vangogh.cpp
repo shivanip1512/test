@@ -60,8 +60,6 @@ int DispatchMainFunction(int argc, char **argv)
 
         pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
 
-        VanGogh.CmdLine(argc, argv);      // Record the Command line options for the world to see.
-
         int i = VanGogh.execute();
 
         while( !bGCtrlC )

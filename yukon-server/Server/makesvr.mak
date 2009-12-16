@@ -39,7 +39,6 @@ SVRLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
-$(COMPILEBASE)\lib\cmdline.lib \
 
 
 SERVEROBJS=\
@@ -140,9 +139,8 @@ exe_cmd.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h con_mgr.h \
 		collectable.h rwutil.h boost_time.h boostutil.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
-		server_b.h cmdopts.h argkey.h argval.h critical_Section.h \
-		smartmap.h readers_writer_lock.h msg_cmd.h exe_cmd.h \
-		executor.h
+		server_b.h critical_Section.h smartmap.h \
+		readers_writer_lock.h msg_cmd.h exe_cmd.h executor.h
 exe_reg.obj:	yukon.h precompiled.h ctidbgmem.h message.h collectable.h \
 		dlldefs.h rwutil.h ctitime.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -152,9 +150,8 @@ exe_reg.obj:	yukon.h precompiled.h ctidbgmem.h message.h collectable.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h ctibase.h \
 		ctinexus.h con_mgr_vg.h vgexe_factory.h exe_ptchg.h \
-		executorfactory.h exe_cmd.h msg_cmd.h server_b.h cmdopts.h \
-		argkey.h argval.h critical_Section.h smartmap.h \
-		readers_writer_lock.h
+		executorfactory.h exe_cmd.h msg_cmd.h server_b.h \
+		critical_Section.h smartmap.h readers_writer_lock.h
 id_svr.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h id_svr.h id_vinfo.h
@@ -167,6 +164,6 @@ server_b.obj:	yukon.h precompiled.h ctidbgmem.h server_b.h con_mgr.h \
 		collectable.h rwutil.h boost_time.h boostutil.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
-		cmdopts.h argkey.h argval.h critical_Section.h smartmap.h \
-		readers_writer_lock.h executor.h msg_cmd.h id_svr.h
+		critical_Section.h smartmap.h readers_writer_lock.h \
+		executor.h msg_cmd.h id_svr.h
 #ENDUPDATE#

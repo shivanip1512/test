@@ -453,14 +453,6 @@ CtiServer::~CtiServer()
     shutdown();
 }
 
-void CtiServer::CmdLine(int argc, char **argv)
-{
-    CtiServerExclusion server_guard(_server_exclusion);
-    Options_.setOpts(argc, argv);
-    Options_.Puke();
-    return;
-}
-
 void CtiServer::join()
 {
     MainThread_.join();     // He will have waited for this to terminate.

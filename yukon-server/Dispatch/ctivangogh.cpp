@@ -256,13 +256,7 @@ int CtiVanGogh::execute()
 
 void CtiVanGogh::VGMainThread()
 {
-    BOOL bQuit = FALSE;
-    int  Tag = 100;
-    int  nCount = 0;
     int  nRet;
-    UINT iteration = 0;
-    UINT maxiterations = Options_.ReturnIntOpt('i') * 60;
-    UINT sanity = 0;
     ULONG MessageCount = 0;
     ULONG MessageLog = 0;
     CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
@@ -277,16 +271,8 @@ void CtiVanGogh::VGMainThread()
     /*
      *  Iterators, place pointers etc.
      */
-    CtiConnection::Que_t          *APQueue;
     CtiExecutor                   *pExec;
     CtiMessage                    *MsgPtr;
-
-    if(maxiterations)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dispatch Main Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
-        dout << " MAX ITERATIONS = " << maxiterations << endl;
-    }
 
     try
     {
@@ -376,7 +362,7 @@ void CtiVanGogh::VGMainThread()
         // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
         CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
-        for(;!bQuit;)
+        for(;!bGCtrlC;)
         {
             QueryPerformanceCounter(&getQTime);
             if((MsgPtr = DeferredQueue_.getQueue(0)) == NULL)
@@ -599,33 +585,17 @@ void CtiVanGogh::VGMainThread()
                 }
             }
 
-            iteration++;
-
-            if(maxiterations && !(iteration%15) )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Iteration " << iteration << endl;
-                }
-            }
-
-            if(bGCtrlC || (maxiterations && ( iteration > maxiterations )))
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << endl << "Shutting down on CTRL-C" << endl << endl;
-                }
-                bQuit = TRUE;
-                bGCtrlC = TRUE;
-            }
-
             QueryPerformanceCounter(&loopDoneTime);
             if(PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) > 5000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Main loop duration: " << PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) << " ms.  MainQueue_ has " << MainQueue_.entries() << endl;
             }
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << "Shutting down on CTRL-C" << endl << endl;
         }
 
         stopDispatch();
@@ -649,7 +619,6 @@ void CtiVanGogh::VGMainThread()
             dout << "**** MAIN JUST DIED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        bQuit = TRUE;
         stopDispatch();
 
         {
@@ -676,7 +645,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
     NetPort = RWInetPort(gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS));
     NetAddr = RWInetAddr(NetPort);
-    
+
     socket.listen(NetAddr);
 
     // This is here for looks, in reality it is rarely called.
@@ -709,22 +678,22 @@ void CtiVanGogh::VGConnectionHandlerThread()
             {
                 // This is very important. We tell the socket portal that we own the socket!
                 sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
-    
+
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Connection Handler Thread. New connect. " << endl;
                 }
-    
+
                 {
                     CtiServerExclusion guard(_server_exclusion);
-    
+
                     XChg                                = CTIDBG_new CtiExchange(sock);
                     CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
                     CtiServer::ptr_type sptrConMan(ConMan);
-    
+
                     clientConnect( sptrConMan );
                     sptrConMan->ThreadInitiate();     // Kick off the connection's communication threads.
-    
+
                     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

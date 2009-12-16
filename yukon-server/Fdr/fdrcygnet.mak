@@ -46,7 +46,6 @@ $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\cti_fdr.lib \
 $(COMPILEBASE)\lib\dclnd.lib \
-$(COMPILEBASE)\lib\cmdline.lib
 
 
 

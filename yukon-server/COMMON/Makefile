@@ -3,9 +3,8 @@ include rwglobal.inc
 
 all:
 	 @build -nologo -f .\DLL\makedll.mak $@
-         @build -nologo -f makepch.mak	
+         @build -nologo -f makepch.mak
          @build -nologo -f makebase.mak
-         @build -nologo -f makecmdline.mak
 	 @build -nologo -f maketest.mak
 
 
@@ -19,12 +18,10 @@ copy:
 	@build -nologo -f .\DLL\makedll.mak $@
         @build -nologo -f makepch.mak $@
         @build -nologo -f makebase.mak $@
-        @build -nologo -f makecmdline.mak $@
 	@build -nologo -f maketest.mak $@
 
 
 deps:
         @build -nologo -f makebase.mak $@
-        @build -nologo -f makecmdline.mak $@
 	@build -nologo -f maketest.mak $@
 

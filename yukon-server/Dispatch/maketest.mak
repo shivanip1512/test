@@ -47,7 +47,6 @@ $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
-$(COMPILEBASE)\lib\cmdline.lib \
 $(COMPILEBASE)\lib\ctidbres.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
@@ -128,10 +127,10 @@ test_mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h \
 		hash_functions.h con_mgr.h connection.h exchange.h logger.h \
 		thread.h CtiPCPtrQueue.h msg_multi.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
-		server_b.h cmdopts.h argkey.h argval.h pt_dyn_dispatch.h \
-		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
-		tbl_rawpthistory.h pt_status.h tbl_pt_status.h pt_analog.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h
+		server_b.h pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
+		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h pt_status.h \
+		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h
 test_signalmanager.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \

@@ -37,7 +37,6 @@ using std::equal_to;
 #include <rw\rwerr.h>
 
 #include "con_mgr.h"
-#include "cmdopts.h"
 #include "critical_Section.h"
 #include "mutex.h"
 #include "queue.h"
@@ -79,8 +78,6 @@ protected:
    RWThreadFunction           MainThread_;      // Thread which does work on the MainQueue_
    RWThreadFunction           ConnThread_;      // Thread which accepts connections.
 
-   CtiCmdLineOpts             Options_;         // Found in the CMDLINE.DLL currently!
-
    /*
     *  Data Stores.
     */
@@ -98,7 +95,6 @@ public:
    CtiServer();
    virtual ~CtiServer();
 
-   void CmdLine(int argc, char **argv);
    virtual void join();
 
    virtual RWWaitStatus join(unsigned long milliseconds);
