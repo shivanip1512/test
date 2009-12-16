@@ -40,6 +40,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.ResultResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
@@ -319,6 +320,11 @@ public class GroupCommanderController implements InitializingBean {
     public void resultDetail(String resultKey, ModelMap map) {
         
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
+        
+        // friendly exception
+        if (result == null) {
+			throw new ResultResultExpiredException("Group Meter Result No Longer Exists");
+		}
         
         map.addAttribute("result", result);
     }

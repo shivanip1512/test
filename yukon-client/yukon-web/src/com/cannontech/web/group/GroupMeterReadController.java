@@ -36,6 +36,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.common.util.ResultResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -244,10 +245,14 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
 		GroupMeterReadResult result = groupMeterReadService.getResult(resultKey);
+
+		// friendly exception
+		if (result == null) {
+			throw new ResultResultExpiredException("Group Meter Result No Longer Exists");
+		}
+		
 		GroupMeterReadResultWrapper resultWrapper = new GroupMeterReadResultWrapper(result);
-		
 		mav.addObject("resultWrapper", resultWrapper);
-		
 		return mav;
 	}
 	
