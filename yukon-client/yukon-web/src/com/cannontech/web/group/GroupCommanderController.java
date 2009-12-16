@@ -323,7 +323,7 @@ public class GroupCommanderController implements InitializingBean {
         
         // friendly exception
         if (result == null) {
-			throw new ResultResultExpiredException("Group Meter Result No Longer Exists");
+			throw new ResultResultExpiredException("Group Command Result No Longer Exists");
 		}
         
         map.addAttribute("result", result);
