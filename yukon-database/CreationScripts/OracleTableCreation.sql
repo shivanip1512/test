@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/16/2009 8:29:40 PM                        */
+/* Created on:     12/16/2009 8:59:02 PM                        */
 /*==============================================================*/
 
 
@@ -12096,7 +12096,8 @@ alter table PAOFavorites
 
 alter table PAOProperty
    add constraint FK_PAOProp_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table PAORecentViews
    add constraint FK_PAORecentViews_YukonPAO foreign key (PAObjectId)

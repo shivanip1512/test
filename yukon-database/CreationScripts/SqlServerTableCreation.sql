@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/16/2009 8:32:05 PM                        */
+/* Created on:     12/16/2009 8:54:40 PM                        */
 /*==============================================================*/
 
 
@@ -15550,6 +15550,7 @@ go
 alter table PAOProperty
    add constraint FK_PAOProp_YukonPAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table PAORecentViews
