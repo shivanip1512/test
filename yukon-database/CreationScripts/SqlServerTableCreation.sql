@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/16/2009 8:54:40 PM                        */
+/* Created on:     12/16/2009 9:29:16 PM                        */
 /*==============================================================*/
 
 
@@ -15540,11 +15540,13 @@ go
 alter table PAOFavorites
    add constraint FK_PAOFav_YukonPAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table PAOFavorites
    add constraint FK_PAOFav_YukonUser foreign key (UserId)
       references YukonUser (UserID)
+         on delete cascade
 go
 
 alter table PAOProperty
@@ -15556,6 +15558,7 @@ go
 alter table PAORecentViews
    add constraint FK_PAORecentViews_YukonPAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table PAOScheduleAssignment

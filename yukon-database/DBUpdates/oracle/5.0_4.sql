@@ -16,6 +16,26 @@ ALTER TABLE PAOProperty
          ON DELETE CASCADE;
 /* End YUK-8172 */
 
+/* Start YUK-8158 */ 
+ALTER TABLE PAOFavorites DROP CONSTRAINT FK_PAOFav_YukonPAO;
+ALTER TABLE PAOFavorites
+   ADD CONSTRAINT FK_PAOFav_YukonPAO FOREIGN KEY (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId)
+      	ON DELETE CASCADE;
+
+ALTER TABLE PAOFavorites DROP CONSTRAINT FK_PAOFav_YukonUser;
+ALTER TABLE PAOFavorites
+   ADD CONSTRAINT FK_PAOFav_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserId)
+      	ON DELETE CASCADE;
+
+ALTER TABLE PAORecentViews DROP CONSTRAINT FK_PAORecentViews_YukonPAO;
+ALTER TABLE PAORecentViews
+   ADD CONSTRAINT FK_PAORecentViews_YukonPAO FOREIGN KEY (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId)
+      	ON DELETE CASCADE;
+/* End YUK-8158 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

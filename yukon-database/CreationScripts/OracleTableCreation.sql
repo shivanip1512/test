@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/16/2009 8:59:02 PM                        */
+/* Created on:     12/16/2009 9:24:28 PM                        */
 /*==============================================================*/
 
 
@@ -12088,11 +12088,13 @@ alter table PAOExclusion
 
 alter table PAOFavorites
    add constraint FK_PAOFav_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table PAOFavorites
    add constraint FK_PAOFav_YukonUser foreign key (UserId)
-      references YukonUser (UserID);
+      references YukonUser (UserID)
+      on delete cascade;
 
 alter table PAOProperty
    add constraint FK_PAOProp_YukonPAO foreign key (PAObjectId)
@@ -12101,7 +12103,8 @@ alter table PAOProperty
 
 alter table PAORecentViews
    add constraint FK_PAORecentViews_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table PAOScheduleAssignment
    add constraint FK_PAOSCHASS_PAOSCH foreign key (ScheduleID)
