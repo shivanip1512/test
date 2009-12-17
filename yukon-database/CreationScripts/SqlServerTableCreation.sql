@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/16/2009 10:31:39 PM                       */
+/* Created on:     12/16/2009 10:48:53 PM                       */
 /*==============================================================*/
 
 
@@ -9681,6 +9681,7 @@ create table OptOutTemporaryOverride (
    StartDate            datetime             not null,
    StopDate             datetime             not null,
    OptOutValue          varchar(10)          not null,
+   ProgramId            numeric              null,
    constraint PK_OPTOUTTEMPORARYOVERRIDE primary key (OptOutTemporaryOverrideId)
 )
 go
