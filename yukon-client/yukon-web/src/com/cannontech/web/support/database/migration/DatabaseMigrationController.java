@@ -226,7 +226,7 @@ public class DatabaseMigrationController {
 		}
 		
 		// run validation
-		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile);
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile, userContext);
 		
 		// store
 		importStatusStore.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
@@ -260,7 +260,7 @@ public class DatabaseMigrationController {
 		}
 		
 		// run validation
-		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile);
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile, userContext);
 		
 		// store
 		importStatusStore.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
@@ -378,14 +378,17 @@ public class DatabaseMigrationController {
 	@RequestMapping
     public ModelAndView importConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 	    ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
-        String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
+	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
         String warningProcessingValueStr = ServletRequestUtils.getRequiredStringParameter(request, "warningProcessingValue");
         WarningProcessingEnum warningProcessingValue = WarningProcessingEnum.valueOf(warningProcessingValueStr);
         
         // retrieve file
         FileSystemResource fileSystemResource = fileStore.get(fileKey);
         File importFile = fileSystemResource.getFile();
-        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.processImportDatabaseMigration(importFile, warningProcessingValue);
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
+            databaseMigrationService.processImportDatabaseMigration(importFile, warningProcessingValue, userContext);
 		importStatusStore.put(fileKey, importDatabaseMigrationStatus);
         
 		mav.addObject("fileKey", fileKey);
