@@ -27,16 +27,18 @@
     <script type="text/javascript">
 
 	    Event.observe(window, 'load', function() {
-	    	$('downloadButton').disable();
+
+		    <c:if test="${not migrationStatus.complete}">
+		    	$('downloadButton').disable();
+		    </c:if>
 	    });
 
-	    function enableDownloadButton(totalCount) {
-	        return function(data) {
-	            if (data['completedItems'] == totalCount) {
-		            $('downloadButton').enable();
-	            }
-	        };
-	    } 
+	    function enableMigrationExportDownloadButton() {
+		    try {
+	    		$('downloadButton').enable();
+	    		// may not be rendered yet
+		    } catch(e){}
+	    }
     
     </script>
     
@@ -53,17 +55,14 @@
 	    <tags:resultProgressBar totalCount="${migrationStatus.totalCount}"
 	        						 countKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_COMPLETED_ITEMS"
 	        						 progressLabelTextKey="yukon.web.modules.support.databaseMigration.exportProgress.progressLabel"
-	        						 statusTextKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_STATUS_TEXT"/>
+	        						 statusTextKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_STATUS_TEXT"
+	        						 hideCount="true"
+	        						 completionCallback="enableMigrationExportDownloadButton"/>
 	
 	
-		<%-- DOWNLOAD BUTTON --%>	
-		<cti:dataUpdaterCallback function="enableDownloadButton('${migrationStatus.totalCount}')" initialize="true" completedItems="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_COMPLETED_ITEMS"/>
-	
+		
+		<%-- DOWNLOAD --%>	
 		<br>
-		<form id="cancelForm" action="/spring/support/database/migration/home" method="post">
-			<input type="hidden" name="export" value="true">
-    	</form>
-    	
 		<form id="downloadExportFileForm" action="/spring/support/database/migration/downloadExportFile" method="post">
 	    	<input type="hidden" name="fileKey" value="${migrationStatus.id}">
 	    </form>

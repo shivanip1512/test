@@ -44,7 +44,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/database/migration/*")
@@ -56,8 +55,6 @@ public class DatabaseMigrationController {
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
-    private Map<String, ImportDatabaseMigrationStatus> importStatusStore = Maps.newHashMap();
-
 	
 	// HOME
 	@RequestMapping
@@ -81,6 +78,14 @@ public class DatabaseMigrationController {
         mav.addObject("exportTypeList", exportTypeList);
         mav.addObject("serverFiles", exportFilePaths);
         addDbInfoToMav(mav);
+        
+        // recent validations
+        List<ImportDatabaseMigrationStatus> allValidationStatuses = databaseMigrationService.getAllValidationStatuses();
+        List<RecentImport> recentValidations = Lists.newArrayListWithCapacity(allValidationStatuses.size());
+        for (ImportDatabaseMigrationStatus status : allValidationStatuses) {
+        	recentValidations.add(new RecentImport(status));
+        }
+        mav.addObject("recentValidations", recentValidations);
         
         // recent imports
         List<ImportDatabaseMigrationStatus> allImportStatuses = databaseMigrationService.getAllImportStatuses();
@@ -111,8 +116,13 @@ public class DatabaseMigrationController {
             exportIdList.add(Integer.valueOf(exportId));
         }
         
+        List<Integer> fakeIds = Lists.newArrayList();
+        for (int i = 0; i < 300; i++) {
+        	fakeIds.addAll(exportIdList);
+        }
+        
         ExportDatabaseMigrationStatus status = 
-            databaseMigrationService.processExportDatabaseMigration(exportType, exportIdList, userContext);
+            databaseMigrationService.processExportDatabaseMigration(exportType, fakeIds, userContext);
         
         File exportFile = status.getExportFile();
         FileSystemResource resource = new FileSystemResource(exportFile);
@@ -229,12 +239,11 @@ public class DatabaseMigrationController {
 		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile, userContext);
 		
 		// store
-		importStatusStore.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
 		FileSystemResource resource = new FileSystemResource(importFile);
 		fileStore.put(importDatabaseMigrationStatus.getId(), resource);
 		
 		// import progress
-		mav = new ModelAndView("redirect:importProgress");
+		mav = new ModelAndView("redirect:validationProgress");
 		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
 		
         return mav;
@@ -263,24 +272,23 @@ public class DatabaseMigrationController {
 		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile, userContext);
 		
 		// store
-		importStatusStore.put(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
 		FileSystemResource resource = new FileSystemResource(importFile);
 		fileStore.put(importDatabaseMigrationStatus.getId(), resource);
 		
 		// import progress
-		mav = new ModelAndView("redirect:importProgress");
+		mav = new ModelAndView("redirect:validationProgress");
 		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
 		
 		return mav;
 	}
 	
-	// IMPORT PROGRESS
+	// VALIDATION PROGRESS
 	@RequestMapping
-    public ModelAndView importProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+    public ModelAndView validationProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
 	
-		ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
+		ModelAndView mav = new ModelAndView("database/migration/validationProgress.jsp");
 		
-		ImportDatabaseMigrationStatus status = importStatusStore.get(statusKey);
+		ImportDatabaseMigrationStatus status = databaseMigrationService.getValidationStatus(statusKey);
         mav.addObject("status", status);
         
         return mav;
@@ -292,7 +300,7 @@ public class DatabaseMigrationController {
 	
 		ModelAndView mav = new ModelAndView("database/migration/importValidate.jsp");
 		
-		ImportDatabaseMigrationStatus status = importStatusStore.get(statusKey);
+		ImportDatabaseMigrationStatus status = databaseMigrationService.getValidationStatus(statusKey);
 		FileSystemResource resource = fileStore.get(statusKey);
 		
 		String fileName = resource.getFilename();
@@ -318,13 +326,48 @@ public class DatabaseMigrationController {
         return mav;
 	}
 	
+	// IMPORT CONFIRM
+	@RequestMapping
+    public ModelAndView importConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		
+	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
+        String warningProcessingValueStr = ServletRequestUtils.getRequiredStringParameter(request, "warningProcessingValue");
+        WarningProcessingEnum warningProcessingValue = WarningProcessingEnum.valueOf(warningProcessingValueStr);
+        
+        // retrieve file
+        FileSystemResource fileSystemResource = fileStore.get(fileKey);
+        File importFile = fileSystemResource.getFile();
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.processImportDatabaseMigration(importFile, warningProcessingValue, userContext);
+        
+		ModelAndView mav = new ModelAndView("redirect:importProgress");
+		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
+        
+		return mav;
+	}
+	
+	// IMPORT PROGRESS
+	@RequestMapping
+    public ModelAndView importProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+	
+		ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
+		
+		ImportDatabaseMigrationStatus status = databaseMigrationService.getImportStatus(statusKey);
+        mav.addObject("status", status);
+        
+        return mav;
+	}
+	
+	
+	
 	// VIEW OBJECTS
 	@RequestMapping
     public ModelAndView objectsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 	    ModelAndView mav = new ModelAndView("database/migration/popup/objectsViewPopup.jsp");
 	
 		String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = importStatusStore.get(fileKey);
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
 		List<String> labelList = importDatabaseMigrationStatus.getLabelList();
 		
 		mav.addObject("itemList", labelList);
@@ -338,7 +381,7 @@ public class DatabaseMigrationController {
 	    ModelAndView mav = new ModelAndView("database/migration/popup/warningsViewPopup.jsp");
 	
 	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = importStatusStore.get(fileKey);
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
         Map<String, List<String>> warningListMap = importDatabaseMigrationStatus.getWarningsMap();
 
         mav.addObject("warningListMap", warningListMap);
@@ -358,7 +401,7 @@ public class DatabaseMigrationController {
 	    ModelAndView mav = new ModelAndView("database/migration/popup/errorsViewPopup.jsp");
 
 	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-	    ImportDatabaseMigrationStatus importDatabaseMigrationStatus = importStatusStore.get(fileKey);
+	    ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
 	    Map<String, List<String>> errorListMap = importDatabaseMigrationStatus.getErrorsMap();
 
 	    mav.addObject("errorListMap", errorListMap);
@@ -372,29 +415,6 @@ public class DatabaseMigrationController {
         
 	    return mav;
 
-	}
-	
-	// IMPORT CONFIRM
-	@RequestMapping
-    public ModelAndView importConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	    ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
-	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
-	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-        String warningProcessingValueStr = ServletRequestUtils.getRequiredStringParameter(request, "warningProcessingValue");
-        WarningProcessingEnum warningProcessingValue = WarningProcessingEnum.valueOf(warningProcessingValueStr);
-        
-        // retrieve file
-        FileSystemResource fileSystemResource = fileStore.get(fileKey);
-        File importFile = fileSystemResource.getFile();
-        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
-            databaseMigrationService.processImportDatabaseMigration(importFile, warningProcessingValue, userContext);
-		importStatusStore.put(fileKey, importDatabaseMigrationStatus);
-        
-		mav.addObject("fileKey", fileKey);
-        mav.addObject("status", importDatabaseMigrationStatus);
-        
-		return mav;
 	}
 	
 	// OPEN FILE

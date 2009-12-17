@@ -49,7 +49,7 @@
 </tags:nameValueContainer>
 <br>
 
-<%-- RECENT IMPORTS --%>
+<%-- RECENT IMPORT --%>
 <c:if test="${fn:length(recentImports) > 0}">
 
 <br>
@@ -57,9 +57,9 @@
 	<table class="compactResultsTable">
 		
 		<tr>
-			<th>File Path</th>
-			<th>Start Time</th>
-			<th>Stop Time</th>
+			<th style="width:60%;">File Path</th>
+			<th style="width:15%;">Start Time</th>
+			<th style="width:15%;">Stop Time</th>
 			<th>Details</th>
 		</tr>
 		
@@ -75,12 +75,48 @@
 						<cti:param name="statusKey" value="${recentImport.status.id}"/>
 					</cti:url>
 					
+					<a href="${progressUrl}">View</a>
+				</td>
+			</tr>
+		</c:forEach>
+	
+	</table>
+</tags:sectionContainer>
+</c:if>
+
+
+<%-- RECENT VALIDATIONS --%>
+<c:if test="${fn:length(recentValidations) > 0}">
+
+<br>
+<tags:sectionContainer title="Recent Validations">
+	<table class="compactResultsTable">
+		
+		<tr>
+			<th style="width:60%;">File Path</th>
+			<th style="width:15%;">Start Time</th>
+			<th style="width:15%;">Stop Time</th>
+			<th>Details</th>
+		</tr>
+		
+		<c:forEach var="recentValidation" items="${recentValidations}">
+			<tr>
+				<td>${recentValidation.filePath}</td>
+				<td><cti:formatDate type="BOTH" value="${recentValidation.status.startTime}"/></td>
+				<td><cti:formatDate type="BOTH" value="${recentValidation.status.stopTime}" nullText="In Progress..."/></td>
+				
+				<td>
+					
+					<cti:url var="progressUrl" value="/spring/support/database/migration/importProgress">
+						<cti:param name="statusKey" value="${recentValidation.status.id}"/>
+					</cti:url>
+					
 					<cti:url var="validateUrl" value="/spring/support/database/migration/importValidate">
-						<cti:param name="statusKey" value="${recentImport.status.id}"/>
+						<cti:param name="statusKey" value="${recentValidation.status.id}"/>
 					</cti:url>
 					
 					<c:choose>
-						<c:when test="${recentImport.status.complete}">
+						<c:when test="${recentValidation.status.complete}">
 							<a href="${validateUrl}">View Validation</a>
 						</c:when>
 						<c:otherwise>

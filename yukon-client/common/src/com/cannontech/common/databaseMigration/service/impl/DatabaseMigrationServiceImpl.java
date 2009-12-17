@@ -112,11 +112,33 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private RecentResultsCache<ExportDatabaseMigrationStatus> exportStatusCache = new RecentResultsCache<ExportDatabaseMigrationStatus>();
+    private RecentResultsCache<ImportDatabaseMigrationStatus> validationStatusCache = new RecentResultsCache<ImportDatabaseMigrationStatus>();
     private RecentResultsCache<ImportDatabaseMigrationStatus> importStatusCache = new RecentResultsCache<ImportDatabaseMigrationStatus>();
+    
+    private Comparator<ImportDatabaseMigrationStatus> importDatabaseMigrationStatusComparator = new Comparator<ImportDatabaseMigrationStatus>() {
+		@Override
+		public int compare(ImportDatabaseMigrationStatus o1, ImportDatabaseMigrationStatus o2) {
+			return o2.getStartTime().compareTo(o1.getStartTime());
+		}
+	};
     
     @Override
     public ExportDatabaseMigrationStatus getExportStatus(String id) {
     	return exportStatusCache.getResult(id);
+    }
+    
+    @Override
+    public ImportDatabaseMigrationStatus getValidationStatus(String id) {
+    	return validationStatusCache.getResult(id);
+    }
+    @Override
+    public List<ImportDatabaseMigrationStatus> getAllValidationStatuses() {
+    	
+    	List<ImportDatabaseMigrationStatus> all = Lists.newArrayList();
+    	all.addAll(validationStatusCache.getPending());
+    	all.addAll(validationStatusCache.getCompleted());
+		Collections.sort(all, importDatabaseMigrationStatusComparator);
+    	return all;
     }
     
     @Override
@@ -129,14 +151,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     	List<ImportDatabaseMigrationStatus> all = Lists.newArrayList();
     	all.addAll(importStatusCache.getPending());
     	all.addAll(importStatusCache.getCompleted());
-    	
-    	Comparator<ImportDatabaseMigrationStatus> comparator = new Comparator<ImportDatabaseMigrationStatus>() {
-    		@Override
-    		public int compare(ImportDatabaseMigrationStatus o1, ImportDatabaseMigrationStatus o2) {
-    			return o2.getStartTime().compareTo(o1.getStartTime());
-    		}
-		};
-		Collections.sort(all, comparator);
+		Collections.sort(all, importDatabaseMigrationStatusComparator);
     	return all;
     }
     
@@ -218,7 +233,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                                               final ExportTypeEnum exportType,
                                                               final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
     	
-    	importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
+    	validationStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         
     	// TODO Change isolation level and make sure it works in both cases: SQL Server and Oracle.
     	
@@ -283,14 +298,15 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         final ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
         
         final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(0, importFile);
+        
+        final List<Element> importItemList = getElementListFromFile(importFile);
+        importDatabaseMigrationStatus.setTotalCount(importItemList.size());
+        importDatabaseMigrationStatus.setWarningProcessing(warningProcessingEnum);
+        importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
+        
         scheduledExecutor.execute(new Runnable() {
             @Override
             public void run() {
-
-                List<Element> importItemList = getElementListFromFile(importFile);
-                importDatabaseMigrationStatus.setTotalCount(importItemList.size());
-                importDatabaseMigrationStatus.setWarningProcessing(warningProcessingEnum);
-                importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
                 processElementList(importItemList, exportType, importDatabaseMigrationStatus);
             }
         });

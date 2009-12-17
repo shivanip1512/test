@@ -2,7 +2,7 @@
 // becuase updater are contained in tags used throughout page instead of usual place at
 // bottom of page, this occurs sometimes =\
 
-function updateProgressBar(pbarId, totalCount) {
+function updateProgressBar(pbarId, totalCount, completionCallback) {
 
     return function(data) {
     
@@ -18,6 +18,11 @@ function updateProgressBar(pbarId, totalCount) {
             $('completedCount_' + pbarId).innerHTML = completedCount; 
             $('percentComplete_' + pbarId).innerHTML = percentDone + '%'; 
         } catch(e) {}
+        
+        // completionCallback
+        if (completionCallback != null && percentDone == 100) {
+        	completionCallback();
+        }
     };
 }
 

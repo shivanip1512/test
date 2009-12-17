@@ -24,19 +24,6 @@
     <br>
     
     <script type="text/javascript">
-
-	    Event.observe(window, 'load', function() {
-	    	$('validateButton').disable();
-	    });
-
-	    function enableValidateButton(totalCount) {
-	        return function(data) {
-	            if (data['completedItems'] == totalCount) {
-		            $('validateButton').enable();
-	            }
-	        };
-	    } 
-    
     </script>
     
     <tags:boxContainer title="${boxTitle}" hideEnabled="false">
@@ -45,17 +32,8 @@
 	    <tags:resultProgressBar totalCount="${status.totalCount}"
 	        						 countKey="DATABASE_MIGRATION/${status.id}/IMPORT_COMPLETED_ITEMS"
 	        						 progressLabelTextKey="yukon.web.modules.support.databaseMigration.importProgress.progressLabel"
-	        						 statusTextKey="DATABASE_MIGRATION/${status.id}/IMPORT_STATUS_TEXT"/>
-	        						 
-	    <%-- BUTTON --%>
-	    <br>
-		<cti:dataUpdaterCallback function="enableValidateButton('${status.totalCount}')" initialize="true" completedItems="DATABASE_MIGRATION/${status.id}/IMPORT_COMPLETED_ITEMS"/>
-	
-		<form id="importValidateForm" action="/spring/support/database/migration/importValidate" method="get">
-	    	<input type="hidden" name="statusKey" value="${status.id}">
-	    </form>
-	    
-	    <input type="button" id="validateButton" value="Validate" onclick="$('importValidateForm').submit();" style="width:80px;"/>
+	        						 statusTextKey="DATABASE_MIGRATION/${status.id}/IMPORT_STATUS_TEXT"
+									 hideCount="true"/>
 
    </tags:boxContainer>
    	

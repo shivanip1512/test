@@ -46,6 +46,9 @@ public interface DatabaseMigrationService {
     
     public ExportDatabaseMigrationStatus getExportStatus(String id);
     
+    public ImportDatabaseMigrationStatus getValidationStatus(String id);
+    public List<ImportDatabaseMigrationStatus> getAllValidationStatuses();
+    
     public ImportDatabaseMigrationStatus getImportStatus(String id);
     public List<ImportDatabaseMigrationStatus> getAllImportStatuses();
     

@@ -37,6 +37,23 @@ public class DatabaseMigrationBackingService implements UpdateBackingService {
         		return "In Progress";
         	}
         	
+        // VALIDATION
+        } else if (updaterTypeStr.equals("VALIDATION_COMPLETED_ITEMS")) {
+        	
+        	ImportDatabaseMigrationStatus status = databaseMigrationService.getValidationStatus(id);
+        	int currentCount = status.getCurrentCount();
+        	return String.valueOf(currentCount);
+        	
+        } else if (updaterTypeStr.equals("VALIDATION_STATUS_TEXT")) {
+        	
+        	ImportDatabaseMigrationStatus status = databaseMigrationService.getValidationStatus(id);
+        	
+        	if (status.isComplete()) {
+        		return "Complete";
+        	} else {
+        		return "In Progress";
+        	}
+        	
         // IMPORT
         } else if (updaterTypeStr.equals("IMPORT_COMPLETED_ITEMS")) {
         	

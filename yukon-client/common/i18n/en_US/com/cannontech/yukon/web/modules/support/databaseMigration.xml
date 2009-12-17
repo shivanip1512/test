@@ -93,7 +93,15 @@
 	<entry key="yukon.web.modules.support.databaseMigration.importValidate.commitFile">Commit</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.importValidate.cancel">Cancel</entry>
 	
-	<!-- Import Progress importProgress.jsp -->
+	<!-- Validation Progress validationProgress.jsp -->
+    <!-- ================================================================================================================================================= -->
+    <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.support.databaseMigration.validationProgress.boxTitle">Validating Component</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.validationProgress.pageTitle">Validation Progress</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.validationProgress.progressLabel">Progress</entry>
+	<entry key="yukon.web.modules.support.databaseMigration.validationProgress.viewResultsButton">View Results</entry>
+	
+	<!-- Confirm Progress confirmProgress.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.web.modules.support.databaseMigration.importProgress.boxTitle">Importing Component</entry>
