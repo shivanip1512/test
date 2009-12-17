@@ -5259,16 +5259,16 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         else if(!(token = CmdStr.match("serv(ice)? (in|out|enable|disable)( (relay|load) [0-9]+)?")).empty())
         {
             CHAR buf[80];
-            INT flag = 0;
+            INT service_flag = 0;
 
             if(token.contains(" in") || token.contains(" enable"))
             {
-                flag |= 0x80;
+                service_flag |= 0x80;
                 _snprintf(buf, sizeof(buf), "SERVICE ENABLE");
             }
             else if(token.contains(" out") || token.contains(" disable"))
             {
-                flag |= 0x00;
+                service_flag |= 0x00;
                 _snprintf(buf, sizeof(buf), "SERVICE DISABLE");
             }
 
@@ -5278,10 +5278,10 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 tok2();  // hop over relay | load.
                 str = tok2();
                 INT load = atoi(str.c_str());
-                flag |= (load & 0x0f);
+                service_flag |= (load & 0x0f);
             }
 
-            _cmd["xcpservice"] = CtiParseValue( flag );
+            _cmd["xcpservice"] = CtiParseValue( service_flag );
             _actionItems.push_back(buf);
         }
     }
