@@ -11,6 +11,16 @@ ALTER TABLE OptOutTemporaryOverride
 ADD ProgramId NUMERIC;
 /* End YUK-8119 */
 
+/* Start YUK-8117 */
+UPDATE LMThermostatManualEvent 
+SET OperationStateID = 1214
+WHERE OperationStateID = 1211;
+
+UPDATE LMThermostatManualEvent 
+SET FanOperationID = 1222
+WHERE FanOperationID = 1221;
+/* End YUK-8117 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
