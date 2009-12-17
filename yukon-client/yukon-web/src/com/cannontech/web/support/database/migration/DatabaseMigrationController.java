@@ -389,6 +389,8 @@ public class DatabaseMigrationController {
 		importStatusStore.put(fileKey, importDatabaseMigrationStatus);
         
 		mav.addObject("fileKey", fileKey);
+        mav.addObject("status", importDatabaseMigrationStatus);
+        
 		return mav;
 	}
 	

@@ -242,10 +242,15 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		                        e.printStackTrace();
 		                        log.error(e.getMessage());
 		                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+		                        log.error("Validation Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
 		                    } catch (Exception e) {
 		                        e.printStackTrace();
 		                        log.error(e.getMessage());
 		                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+		                        log.error("Validation Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
+		                    }
+		                    if (importDatabaseMigrationStatus.getWarningCount() > 0) {
+		                        log.error("Validation Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap());
 		                    }
 		                }
 
@@ -318,12 +323,18 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     } catch (ConfigurationErrorException e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+                        log.error("Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
                         status.setRollbackOnly();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
+                        log.error("Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
                         status.setRollbackOnly();
                     }
+                    if (importDatabaseMigrationStatus.getWarningCount() > 0) {
+                        log.error("Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap());
+                    }
+
                     log.log(Priority.INFO, "Processed the entry "+label);
                     
                     return null;
