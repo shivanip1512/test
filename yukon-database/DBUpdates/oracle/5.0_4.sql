@@ -35,7 +35,7 @@ ALTER TABLE PAORecentViews
       REFERENCES YukonPAObject (PAObjectId)
       	ON DELETE CASCADE;
 /* End YUK-8158 */
-      	
+
 /* Start YUK-8104 */
 UPDATE YukonServices
 SET ServiceId = -11
@@ -45,6 +45,15 @@ UPDATE YukonRoleProperty
 SET DefaultValue = 'false'
 WHERE RolePropertyId = -20216;
 /* End YUK-8104 */
+
+/* Start YUK-8140 */
+DELETE FROM PersistedSystemValue 
+WHERE Name = 'VALIDATION_ENGINE_LAST_CHANGE_ID';
+
+UPDATE ValidationMonitor 
+SET EvaluatorStatus = 'DISABLED' 
+WHERE ValidationMonitorName = 'Default All Meters';
+/* End YUK-8140 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

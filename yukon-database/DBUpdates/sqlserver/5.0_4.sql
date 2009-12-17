@@ -52,6 +52,15 @@ SET DefaultValue = 'false'
 WHERE RolePropertyId = -20216;
 /* End YUK-8104 */
 
+/* Start YUK-8140 */
+DELETE FROM PersistedSystemValue 
+WHERE Name = 'VALIDATION_ENGINE_LAST_CHANGE_ID';
+
+UPDATE ValidationMonitor 
+SET EvaluatorStatus = 'DISABLED' 
+WHERE ValidationMonitorName = 'Default All Meters';
+/* End YUK-8140 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

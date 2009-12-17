@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/16/2009 9:54:45 PM                        */
+/* Created on:     12/16/2009 10:31:39 PM                       */
 /*==============================================================*/
 
 
@@ -10896,7 +10896,7 @@ create table ValidationMonitor (
 )
 go
 
-INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1, 4, .1, 15, 1, 'ENABLED');
+INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1, 4, .1, 15, 1, 'DISABLED');
 
 /*==============================================================*/
 /* Table: VersacomRoute                                         */
