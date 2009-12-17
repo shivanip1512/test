@@ -35,6 +35,16 @@ ALTER TABLE PAORecentViews
       REFERENCES YukonPAObject (PAObjectId)
       	ON DELETE CASCADE;
 /* End YUK-8158 */
+      	
+/* Start YUK-8104 */
+UPDATE YukonServices
+SET ServiceId = -11
+WHERE ServiceId = 11;
+
+UPDATE YukonRoleProperty
+SET DefaultValue = 'false'
+WHERE RolePropertyId = -20216;
+/* End YUK-8104 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
