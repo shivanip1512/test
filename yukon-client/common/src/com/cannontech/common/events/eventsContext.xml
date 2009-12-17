@@ -16,6 +16,10 @@
     <bean id="meteringEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.MeteringEventLogService"/>
     </bean>
+
+    <bean id="databaseMigrationEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.DatabaseMigrationEventLogService"/>
+    </bean>    
     
     <bean id="demandResponseEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.DemandResponseEventLogService"/>
@@ -35,5 +39,6 @@
     
     <bean id="systemEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.SystemEventLogService"/>
-    </bean>    
+    </bean>
+    
 </beans>

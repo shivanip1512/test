@@ -16,10 +16,12 @@ import com.cannontech.user.YukonUserContext;
 
 public interface DatabaseMigrationService {
     
-    public ImportDatabaseMigrationStatus validateImportFile(File importFile);
+    public ImportDatabaseMigrationStatus validateImportFile(File importFile,
+                                                            YukonUserContext userContext);
 
     public ImportDatabaseMigrationStatus processImportDatabaseMigration (File importFile,
-                                                                         WarningProcessingEnum warningProcessingEnum);
+                                                                         WarningProcessingEnum warningProcessingEnum,
+                                                                         YukonUserContext userContext);
     
     public ExportDatabaseMigrationStatus processExportDatabaseMigration(ExportTypeEnum exportType, 
                                                                         List<Integer> exportIdList, 
