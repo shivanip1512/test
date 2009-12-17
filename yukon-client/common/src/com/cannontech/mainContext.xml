@@ -226,22 +226,5 @@
     
     <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />
       
-    <bean id="databaseMigrationService" class="com.cannontech.common.databaseMigration.service.impl.DatabaseMigrationServiceImpl">
-    	<property name="databaseDefinitionXML" value="classpath:com/cannontech/database/DatabaseDefinition.xml" />
-    </bean>
-
-    <bean id="configurationParserService" class="com.cannontech.common.databaseMigration.service.impl.ConfigurationParserServiceImpl">
-	    <property name="databaseDefinitionXML" value="classpath:com/cannontech/database/DatabaseDefinition.xml" />
-    </bean>
-
-    <bean id="configurationProcessorService" class="com.cannontech.common.databaseMigration.service.impl.ConfigurationProcessorServiceImpl">
-   	    <property name="databaseDefinitionXML" value="classpath:com/cannontech/database/DatabaseDefinition.xml" />
-    </bean>
-
-    <bean id="exportXMLGeneratorService" class="com.cannontech.common.databaseMigration.service.impl.ExportXMLGeneratorServiceImpl">
-   	    <property name="databaseDefinitionXML" value="classpath:com/cannontech/database/DatabaseDefinition.xml" />
-	</bean>
-
-    <bean id="databaseMigrationDao" class="com.cannontech.common.databaseMigration.dao.impl.DatabaseMigrationDaoImpl" />
-
+    
 </beans>
