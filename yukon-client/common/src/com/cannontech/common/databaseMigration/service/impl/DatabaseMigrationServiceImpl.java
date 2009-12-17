@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -32,7 +31,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -74,6 +72,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.SystemUserContext;
@@ -104,7 +103,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private DatabaseMigrationEventLogService databaseMigrationEventLogService;
     private DateFormattingService dateFormattingService;
     private ExportXMLGeneratorService exportXMLGeneratorService;
-    private JdbcTemplate jdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private RolePropertyDao rolePropertyDao;
     private TransactionOperations transactionTemplate;
@@ -153,8 +152,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         for(Resource configurationResource : configurationResourceList) {
             try {
                 
-                File configurationFile = configurationResource.getFile();
-                Document configurationDocument = saxBuilder.build(configurationFile);
+                Document configurationDocument = saxBuilder.build(configurationResource.getInputStream());
 
                 // Get the name of the configuration
                 Element rootElement = configurationDocument.getRootElement();
@@ -166,7 +164,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 @SuppressWarnings("unchecked")
                 Iterator<Element> tableElements = configurationDocument.getDescendants(new ElementFilter("table"));
                 if(!tableElements.hasNext()) {
-                    throw new IllegalArgumentException("The configuration file: " + configurationFile.getPath() + " does not have a table element.");
+                    throw new IllegalArgumentException("The configuration file: " + configurationResource + " does not have a table element.");
                 }                
                 String baseTableName = tableElements.next().getAttributeValue("name");
                 TableDefinition tableDefinition = databaseDefinition.getTable(baseTableName);
@@ -174,16 +172,16 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 
                 // build databaseTableTemplate map
                 ConfigurationTable baseTableElement = 
-                    configurationParserService.buildConfigurationTemplate(configurationFile);
+                    configurationParserService.buildConfigurationTemplate(configurationResource);
                 DataTableTemplate databaseTableTemplate = 
                     configurationParserService.buildDataTableTemplate(baseTableElement);
                 
                 configurationMap.put(exportType, databaseTableTemplate);
 
             } catch (JDOMException e) {
-                log.error("An parsing error occured while parsing the " + configurationResource.getFilename() + " configuration file.",e);
+                log.error("An parsing error occured while parsing the " + configurationResource + " configuration file.",e);
             } catch (IOException e) {
-                log.error("An issue occured when trying to parse the " + configurationResource.getFilename() + " configuration file.",e);
+                log.error("An issue occured when trying to parse the " + configurationResource + " configuration file.",e);
             }
         }
     }
@@ -346,7 +344,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                         log.error("Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap());
                     }
 
-                    log.log(Priority.INFO, "Processed the entry "+label);
+                    log.info("Processed the entry "+label);
                     
                     return null;
                 }
@@ -568,7 +566,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         SqlStatementBuilder selectSQL = sqlHolder.buildSelectSQL();
         Integer primaryKey = 0;
         try {
-            primaryKey = jdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
+            primaryKey = yukonJdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
         } catch (IncorrectResultSizeDataAccessException e) {
             System.out.println(selectSQL);
             System.out.println(whereParameterValues);
@@ -985,7 +983,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         tableChangeCallbacks.put(tableName, tableChangeCallback);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public SearchResult<DatabaseMigrationContainer> search(ExportTypeEnum exportType, 
                                                            String searchText, 
@@ -1018,7 +1015,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         }
         
         List<Map<String, Object>> results = 
-            jdbcTemplate.queryForList(sql.getSql(), sql.getArguments());
+        	yukonJdbcTemplate.queryForList(sql.getSql(), sql.getArguments());
 
         List<Column> primaryKeyColumns = 
             tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY);
@@ -1074,7 +1071,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         sql.append(primaryKeyColumnName).in(idList);
         
         List<Map<String, Object>> results = 
-            jdbcTemplate.queryForList(sql.getSql(), sql.getArguments());
+        	yukonJdbcTemplate.queryForList(sql.getSql(), sql.getArguments());
 
         List<DatabaseMigrationPicker> pickerList = Lists.newArrayList();
         for(Map<String, Object> valueMap : results) {
@@ -1287,9 +1284,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     }
 
     @Autowired
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
     
     public void setDatabaseDefinitionXML(Resource databaseDefinitionResource){
         this.databaseDefinitionResource = databaseDefinitionResource; 

@@ -1,6 +1,5 @@
 package com.cannontech.common.databaseMigration.service.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,12 +28,12 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
     private static Logger log = YukonLogManager.getLogger(ConfigurationParserServiceImpl.class);
     private DatabaseDefinition database;
     
-    public ConfigurationTable buildConfigurationTemplate(File configurationXMLFile) {
+    public ConfigurationTable buildConfigurationTemplate(Resource configurationResource) {
         SAXBuilder saxBuilder = new SAXBuilder();
         
         try {
             // Convert all the xml files to a document format to make them easier to use.
-            Document configXMLDocument = saxBuilder.build(configurationXMLFile);
+            Document configXMLDocument = saxBuilder.build(configurationResource.getInputStream());
             Element configRoot = configXMLDocument.getRootElement();
             
             // Get the first configuration label
@@ -54,9 +53,9 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
             return baseTableElement;
             
         } catch (JDOMException e) {
-            log.error("An parsing error occured while parsing the "+configurationXMLFile.getName()+" configuration file.",e);
+            log.error("An parsing error occured while parsing the " + configurationResource + " configuration file.",e);
         } catch (IOException e) {
-            log.error("An issue occured when trying to parse the "+configurationXMLFile.getName()+" configuration file.",e);
+            log.error("An issue occured when trying to parse the " + configurationResource + " configuration file.",e);
         }
         return null;
     }

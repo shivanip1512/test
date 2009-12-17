@@ -23,7 +23,7 @@ public class DatabaseDefinition {
         Document databaseDefinitionXMLDocument;
 
         try {
-            databaseDefinitionXMLDocument = saxBuilder.build(databaseDefinitionXML.getFile());
+            databaseDefinitionXMLDocument = saxBuilder.build(databaseDefinitionXML.getInputStream());
             Element databaseRoot = databaseDefinitionXMLDocument.getRootElement();
 
             // Build Database from JDOM Object

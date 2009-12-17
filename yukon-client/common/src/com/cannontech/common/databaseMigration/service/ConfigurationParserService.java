@@ -1,6 +1,8 @@
 package com.cannontech.common.databaseMigration.service;
 
-import java.io.File;
+import java.io.InputStream;
+
+import org.springframework.core.io.Resource;
 
 import com.cannontech.common.databaseMigration.bean.config.ConfigurationTable;
 import com.cannontech.common.databaseMigration.bean.data.template.DataTableTemplate;
@@ -13,7 +15,7 @@ public interface ConfigurationParserService {
      * @param configurationXMLFile
      * @return
      */
-    public ConfigurationTable buildConfigurationTemplate(File configurationXMLFile);
+    public ConfigurationTable buildConfigurationTemplate(Resource configurationResource);
 
     /**
      * This method takes a configuration file and generate a DataTableTemplate.
