@@ -3271,7 +3271,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
         {
             if(!(token = CmdStr.match(" serv(ice)? (in|out|enable|disable)( temp)?")).empty())
             {
-                INT   service_flag = 0;
+                INT   flag = 0;
 
                 /*
                  *  serviceflag == VC_SERVICE_T_OUT == 1 is Temporary OUT of service
@@ -3285,14 +3285,14 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 if(token.contains("in") ||
                    token.contains("enable"))
                 {
-                    service_flag |= 0x0a;
+                    flag |= 0x0a;
 
                     _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE");
                 }
                 else if(token.contains("out") ||
                         token.contains("disable"))
                 {
-                    service_flag |= 0x04;
+                    flag |= 0x04;
 
                     _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
                 }
@@ -3302,7 +3302,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     char t2[80];
                     ::strcpy(t2, tbuf);
 
-                    service_flag >>= 2;       // Make the flag match the protocol
+                    flag >>= 2;       // Make the flag match the protocol
 
                     ::_snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
 
@@ -3373,7 +3373,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                     }
                 }
 
-                _cmd["service"] = CtiParseValue( service_flag );
+                _cmd["service"] = CtiParseValue( flag );
 
                 _actionItems.push_back(tbuf);
             }
