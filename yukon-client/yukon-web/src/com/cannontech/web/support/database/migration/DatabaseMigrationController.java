@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +70,7 @@ public class DatabaseMigrationController {
         boolean exportTab = ServletRequestUtils.getBooleanParameter(request, "export", false);
         boolean importTab = ServletRequestUtils.getBooleanParameter(request, "import", false);
         
-        List<DisplayableExportType> exportTypeList = 
+        Set<DisplayableExportType> exportTypeList = 
             databaseMigrationService.getAvailableExportTypes();
         
         List<String> exportFilePaths = getExportDirectoryFilePaths(userContext);

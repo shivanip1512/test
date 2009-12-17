@@ -51,11 +51,11 @@ import com.cannontech.common.databaseMigration.bean.database.Column;
 import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
 import com.cannontech.common.databaseMigration.bean.database.DatabaseDefinition;
 import com.cannontech.common.databaseMigration.bean.database.TableDefinition;
+import com.cannontech.common.databaseMigration.dao.DatabaseMigrationDao;
 import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
 import com.cannontech.common.databaseMigration.model.DatabaseMigrationPicker;
 import com.cannontech.common.databaseMigration.model.DisplayableExportType;
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
-import com.cannontech.common.databaseMigration.dao.DatabaseMigrationDao;
 import com.cannontech.common.databaseMigration.service.ConfigurationParserService;
 import com.cannontech.common.databaseMigration.service.ConfigurationProcessorService;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
@@ -1154,9 +1154,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         }
     }
     
-    public List<DisplayableExportType> getAvailableExportTypes(){
+    public Set<DisplayableExportType> getAvailableExportTypes(){
         
-        List<DisplayableExportType> exportTypeList = Lists.newArrayList();
+        Set<DisplayableExportType> exportTypeList = Sets.newTreeSet();
         Set<String> tableSet = Sets.newTreeSet();
         
         for(ExportTypeEnum exportType : configurationIdentityMap.keySet()) {

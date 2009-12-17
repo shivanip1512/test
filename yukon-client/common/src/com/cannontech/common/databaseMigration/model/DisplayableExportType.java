@@ -2,7 +2,7 @@ package com.cannontech.common.databaseMigration.model;
 
 import java.util.Set;
 
-public class DisplayableExportType {
+public class DisplayableExportType implements Comparable<DisplayableExportType>{
 
     private ExportTypeEnum exportType;
     private Set<String> tableNameSet;
@@ -21,6 +21,11 @@ public class DisplayableExportType {
 
     public void setTableNameSet(Set<String> tableNameSet) {
         this.tableNameSet = tableNameSet;
+    }
+
+    @Override
+    public int compareTo(DisplayableExportType displayableExportType2) {
+        return this.exportType.compareTo(displayableExportType2.exportType);
     }
 
 }
