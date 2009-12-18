@@ -112,6 +112,12 @@ DatabaseMigrationPicker.prototype = Object.extend(new ItemPicker(), {
 	cancel: function() {
 	    this.selectedItems = new Array();
 	    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
+	},
+	
+	onPickerShown: function(transport, json) {
+	    $('itemPicker_query').focus();
+	    this.showAll();
 	}
+
 	
 });
