@@ -28,6 +28,10 @@ LMGroupDeviceId ASC
 );
 /* End YUK-8174 */ 
 
+/* Start YUK-8180 */
+INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Database Migration','false','Controls access to database migration tool.');
+/* End YUK-8180 */ 
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
