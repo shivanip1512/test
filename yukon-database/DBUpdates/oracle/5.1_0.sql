@@ -32,3 +32,4 @@ LMGroupDeviceId ASC
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '18-DEC-2009', 'Latest Update', 0);
