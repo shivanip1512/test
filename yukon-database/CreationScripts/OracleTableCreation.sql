@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/16/2009 10:53:10 PM                       */
+/* Created on:     12/17/2009 11:21:33 PM                       */
 /*==============================================================*/
 
 
@@ -186,6 +186,8 @@ drop index LmHrd_LmHrdCfg_FK;
 drop index INDX_LMHardContGroup_AcctId;
 
 drop index INDX_LMHardContGroup_InvId;
+
+drop index Indx_LMPDG_DevId_LMGrpDev_UNQ;
 
 drop index INDX_LMProgEvent_AcctId_ProgId;
 
@@ -6362,6 +6364,14 @@ create table LMProgramDirectGroup  (
    LMGroupDeviceID      NUMBER                          not null,
    GroupOrder           NUMBER                          not null,
    constraint PK_LMPROGRAMDIRECTGROUP primary key (DeviceID, GroupOrder)
+);
+
+/*==============================================================*/
+/* Index: Indx_LMPDG_DevId_LMGrpDev_UNQ                         */
+/*==============================================================*/
+create unique index Indx_LMPDG_DevId_LMGrpDev_UNQ on LMProgramDirectGroup (
+   DeviceID ASC,
+   LMGroupDeviceID ASC
 );
 
 /*==============================================================*/

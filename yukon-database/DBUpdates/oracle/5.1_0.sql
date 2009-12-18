@@ -21,6 +21,13 @@ SET FanOperationID = 1222
 WHERE FanOperationID = 1221;
 /* End YUK-8117 */
 
+/* Start YUK-8174 */
+CREATE UNIQUE INDEX Indx_LMPDG_DevId_LMGrpDev_UNQ ON LMProgramDirectGroup(
+DeviceId ASC,
+LMGroupDeviceId ASC
+);
+/* End YUK-8174 */ 
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

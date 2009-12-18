@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/16/2009 10:48:53 PM                       */
+/* Created on:     12/18/2009 12:13:14 AM                       */
 /*==============================================================*/
 
 
@@ -750,6 +750,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index LMHardwareControlGroup.INDX_LMHardContGroup_InvId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMProgramDirectGroup')
+            and   name  = 'Indx_LMPDG_DevId_LMGrpDev_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMProgramDirectGroup.Indx_LMPDG_DevId_LMGrpDev_UNQ
 go
 
 if exists (select 1
@@ -9193,7 +9202,16 @@ create table LMProgramDirectGroup (
    DeviceID             numeric              not null,
    LMGroupDeviceID      numeric              not null,
    GroupOrder           numeric              not null,
-   constraint PK_LMPROGRAMDIRECTGROUP primary key (DeviceID, GroupOrder)
+   constraint PK_LMPROGRAMDIRECTGROUP primary key nonclustered (DeviceID, GroupOrder)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_LMPDG_DevId_LMGrpDev_UNQ                         */
+/*==============================================================*/
+create unique index Indx_LMPDG_DevId_LMGrpDev_UNQ on LMProgramDirectGroup (
+DeviceID ASC,
+LMGroupDeviceID ASC
 )
 go
 
