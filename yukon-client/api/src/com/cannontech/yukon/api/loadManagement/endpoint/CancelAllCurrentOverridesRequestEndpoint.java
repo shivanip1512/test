@@ -31,14 +31,15 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="cancelAllCurrentOverridesRequest")
     public Element invoke(Element cancelAllCurrentOverridesRequest, LiteYukonUser user) throws Exception {
         
-    	XmlVersionUtils.verifyYukonMessageVersion(cancelAllCurrentOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    	XmlVersionUtils.verifyYukonMessageVersion(cancelAllCurrentOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+    	String version = XmlVersionUtils.getYukonMessageVersion(cancelAllCurrentOverridesRequest);
     	
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(cancelAllCurrentOverridesRequest);
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         
     	// init response
         Element resp = new Element("cancelAllCurrentOverridesResponse", ns);
-        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.addVersionAttribute(resp, version);
         
         // run service
         Element resultElement;
@@ -46,7 +47,7 @@ public class CancelAllCurrentOverridesRequestEndpoint {
             
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
             
-            if (StringUtils.isBlank(programName)) {
+            if (XmlVersionUtils.YUKON_MSG_VERSION_1_0.equals(version) || StringUtils.isBlank(programName)) {
             	optOutService.cancelAllOptOuts(user);
             } else {
             	optOutService.cancelAllOptOutsByProgramName(programName, user);
