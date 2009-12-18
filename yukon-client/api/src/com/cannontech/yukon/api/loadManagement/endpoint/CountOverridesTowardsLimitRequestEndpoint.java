@@ -30,13 +30,14 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     public Element invoke(Element countOverridesTowardsLimitRequest, LiteYukonUser user) throws Exception {
         
     	XmlVersionUtils.verifyYukonMessageVersion(countOverridesTowardsLimitRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+    	String version = XmlVersionUtils.getYukonMessageVersion(countOverridesTowardsLimitRequest);
     	
     	SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(countOverridesTowardsLimitRequest);
     	String programName = template.evaluateAsString("/y:countOverridesTowardsLimitRequest/y:programName");
     	
     	// init response
         Element resp = new Element("countOverridesTowardsLimitResponse", ns);
-        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.addVersionAttribute(resp, version);
         
         // run service
         Element resultElement;
@@ -45,7 +46,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         	// Check authorization
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
         	
-        	if (StringUtils.isBlank(programName)) {
+        	if (XmlVersionUtils.YUKON_MSG_VERSION_1_0.equals(version) || StringUtils.isBlank(programName)) {
         		
         		optOutService.changeOptOutCountStateForToday(user, true);
         	
