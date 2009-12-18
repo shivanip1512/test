@@ -76,6 +76,9 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         
         // test with authorized user, with program name
         //==========================================================================================
+        requestElement = LoadManagementTestUtils.createCountOverridesRequestElement(
+    			XmlVersionUtils.YUKON_MSG_VERSION_1_1, reqSchemaResource);
+        
         user = new LiteYukonUser();
         
         Element tmpElement = XmlUtils.createStringElement("programName", ns, "TEST_PROGRAM");
@@ -90,7 +93,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         
         // create template and parse response data
         template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
     }
