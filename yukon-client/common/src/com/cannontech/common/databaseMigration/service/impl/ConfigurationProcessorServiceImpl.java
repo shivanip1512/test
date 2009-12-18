@@ -24,9 +24,12 @@ import com.cannontech.common.databaseMigration.bean.database.Column;
 import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
 import com.cannontech.common.databaseMigration.bean.database.DatabaseDefinition;
 import com.cannontech.common.databaseMigration.bean.database.TableDefinition;
+import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
 import com.cannontech.common.databaseMigration.service.ConfigurationParserService;
 import com.cannontech.common.databaseMigration.service.ConfigurationProcessorService;
+import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.user.SystemUserContext;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -38,7 +41,17 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     private ConfigurationParserService configurationParserService;
     private JdbcTemplate jdbcTemplate;
     
-    public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template, List<Integer> primaryKeyList, ExportDatabaseMigrationStatus status) {
+    
+    private DatabaseMigrationService databaseMigrationService;
+    @Autowired
+    public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
+        this.databaseMigrationService = databaseMigrationService;
+    }
+    
+    public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template, 
+                                                        List<Integer> primaryKeyList, 
+                                                        ExportDatabaseMigrationStatus status,
+                                                        java.util.logging.Logger logger) {
     	
         Map<DataTableTemplate, Map<Integer, DataTable>> includedTables = Maps.newHashMap();
         
@@ -47,6 +60,16 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         for (int pk : primaryKeyList) {
         	allData.addAll(buildAndProcessSqlPrimaryKey(template, Collections.singletonList(pk), includedTables, status));
         	status.addCurrentCount();
+        	
+        	List<DatabaseMigrationContainer> databaseMigrationContainers = 
+        	    databaseMigrationService.getItemsByIds(status.getExportTypeEnum(), 
+        	                                           Collections.singletonList(pk), 
+        	                                           new SystemUserContext());
+        	for (DatabaseMigrationContainer databaseMigrationContainer : databaseMigrationContainers) {
+        	    String message = "Exported "+databaseMigrationContainer.getDatabaseMigrationDisplay();
+        	    log.debug(message);
+        	    logger.info(message);
+            }
         }
         
         Iterable<DataTable> result = allData;

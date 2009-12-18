@@ -3,6 +3,7 @@ package com.cannontech.common.databaseMigration.bean;
 import java.io.File;
 import java.util.UUID;
 
+import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
 import com.cannontech.common.util.Completable;
 
 public class ExportDatabaseMigrationStatus implements Completable {
@@ -10,11 +11,13 @@ public class ExportDatabaseMigrationStatus implements Completable {
 	String id = null;
     int currentCount = 0;
     int totalCount = 0;
+    ExportTypeEnum exportTypeEnum;
     File exportFile = null;
     
-    public ExportDatabaseMigrationStatus(int totalCount, File exportFile) {
-    	this.id = UUID.randomUUID().toString();
+    public ExportDatabaseMigrationStatus(int totalCount, File exportFile, ExportTypeEnum exportType) {
+        this.id = UUID.randomUUID().toString();
         this.totalCount = totalCount;
+        this.exportTypeEnum = exportType;
         this.exportFile = exportFile;
     }
     
@@ -36,6 +39,9 @@ public class ExportDatabaseMigrationStatus implements Completable {
     public File getExportFile() {
 		return exportFile;
 	}
+    public ExportTypeEnum getExportTypeEnum() {
+        return exportTypeEnum;
+    }
     
     @Override
     public boolean isComplete() {

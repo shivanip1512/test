@@ -3,6 +3,7 @@ package com.cannontech.common.databaseMigration.service.impl;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -206,9 +212,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     	
         databaseMigrationEventLogService.startingValidation(userContext.getYukonUser(), importFile.getName());
         
-//        Logger logger = new Logger("Test.log");
-        
-        
         String exportTypeString = getConfigurationNameValue(importFile);
         ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
         List<Element> importItemList = getElementListFromFile(importFile);
@@ -293,8 +296,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                                                          YukonUserContext userContext){
 
         databaseMigrationEventLogService.startingImport(userContext.getYukonUser(), importFile.getName());
-        // TODO The user,${user} , is importing the import file (${importFile})
-        
+        final java.util.logging.Logger logger = createLogFile(userContext, importFile, DatabaseMigrationActionEnum.IMPORT);
         final String exportTypeString = getConfigurationNameValue(importFile);
         final ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
         
@@ -308,7 +310,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         scheduledExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                processElementList(importItemList, exportType, importDatabaseMigrationStatus);
+                processElementList(importItemList, exportType, importDatabaseMigrationStatus, logger);
             }
         });
         
@@ -325,7 +327,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
      */
     private void processElementList(final List<Element> importItemList,
                                     ExportTypeEnum exportType,
-                                    final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
+                                    final ImportDatabaseMigrationStatus importDatabaseMigrationStatus,
+                                    final java.util.logging.Logger logger) {
 
         for (final Element element : importItemList) {
             importDatabaseMigrationStatus.incrementProcessed();
@@ -343,39 +346,50 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             transactionTemplate.execute(new TransactionCallback() {
                 public Object doInTransaction(TransactionStatus status) {
                     try {
-                        Integer primaryKey = processElement(element, null, importDatabaseMigrationStatus);
-                        String tableName = element.getAttributeValue("name");
+                        processElement(element, null, importDatabaseMigrationStatus);
                     } catch (ConfigurationErrorException e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
-                        log.error("Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
+                        String errorMessage = "Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap();
+                        log.error(errorMessage);
+                        logger.severe(errorMessage);
                         status.setRollbackOnly();
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
-                        log.error("Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
+                        String errorMessage = "Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap();
+                        log.error(errorMessage);
+                        logger.severe(errorMessage);
                         status.setRollbackOnly();
                     }
 
                     WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
                     if (importDatabaseMigrationStatus.getWarningsMap().containsKey(label)) {
                         if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
-                            log.error("Preserving the entry "+label+".");
+                            String warningMessage = "Preserving the entry "+label+".";
+                            log.error(warningMessage);
+                            logger.warning(warningMessage);
                         } else if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
-                            log.error("Overwriting the entry "+label+" was sucessful.");
+                            String warningMessage = "Overwriting the entry "+label+" was sucessful.";
+                            log.error(warningMessage);
+                            logger.warning(warningMessage);
                         }
                     } else {
-                        log.error("Genereated the entry "+label+" was sucessful.");
+                        String message = "Genereated the entry "+label+" was sucessful.";
+                        log.error(message);
+//                        logger.info(message);
                     }
                     
                     return null;
                 }
             });
         }
+
+        closeLogger(logger);
         
         importDatabaseMigrationStatus.complete();
     }
-    
+
     /**
      * 
      * 
@@ -590,14 +604,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         try {
             primaryKey = yukonJdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
         } catch (IncorrectResultSizeDataAccessException e) {
-            System.out.println(selectSQL);
-            System.out.println(whereParameterValues);
+            throw new ConfigurationErrorException("The reference in the import file does not exist or returns two many entries ("+table.getTableName()+")");
         }
             
-        if (primaryKey == null) {
-            throw new ConfigurationErrorException("The reference in the import file does not exist for the table "+table.getTableName());
-        }
-        
         return primaryKey;
     }
 
@@ -633,6 +642,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                                  ImportDatabaseMigrationStatus importDatabaseMigrationStatus) throws ConfigurationErrorException {
         List<Column> primaryKeyColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
         List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(primaryKeyColumns);
+        WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
         
         // Counting the number of missing primaryKeys this is used for special cases like dual primary keys.
         int missingPKCount = 0;
@@ -658,7 +668,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 try {
                     compareResultTableDataToImportTableData(table, columnValueMap, primaryKeySelectResultMap);
                 } catch (ConfigurationWarningException e) {
-                    WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
                     
                     List<String> labelList = importDatabaseMigrationStatus.getLabelList();
                     String label = labelList.get(labelList.size()-1);
@@ -667,6 +676,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
                     } else if (warningProcessing.equals(WarningProcessingEnum.OVERWRITE)) {
                         databaseMigrationDao.updateTableEntry(table, columnValueMap);
+                        if (primaryKeyColumnNames.size() == 1) {
+                            String primaryKeyValue = columnValueMap.get(primaryKeyColumnNames.get(0));
+                            handleRowChange(table.getTableName(), Integer.valueOf(primaryKeyValue), DbTransactionEnum.UPDATE);
+                        }
                     }
                     
                     if (primaryKeyColumnNames.size() == 1){
@@ -680,7 +693,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             // The imported item does not exist.  Creating new instance.
             } else {
                 Integer primaryKeyIds = databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
-                handleRowChange(table.getTableName(), primaryKeyIds, DbTransactionEnum.INSERT);
+                if (!warningProcessing.equals(WarningProcessingEnum.VALIDATE)) {
+                    handleRowChange(table.getTableName(), primaryKeyIds, DbTransactionEnum.INSERT);
+                }
                 return primaryKeyIds;
             }
 
@@ -695,7 +710,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             // Checks to see if the imported item exists in the system,
             // and then checks to see if a user action was submitted.
             if (identifierSelectResultMap != null) {
-                WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
                 List<String> labelList = importDatabaseMigrationStatus.getLabelList();
                 String label = labelList.get(labelList.size()-1);
                 importDatabaseMigrationStatus.addWarningListEntry(label,
@@ -732,7 +746,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 columnValueMap.put(missingPrimaryKey, nextPrimaryKeyId.toString());
                 
                 Integer primaryKeyIds = databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
-                handleRowChange(table.getTableName(), primaryKeyIds, DbTransactionEnum.INSERT);
+                if (!warningProcessing.equals(WarningProcessingEnum.VALIDATE)) {
+                    handleRowChange(table.getTableName(), primaryKeyIds, DbTransactionEnum.INSERT);
+                }
                 return primaryKeyIds;
                 
             }
@@ -933,56 +949,19 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     public ExportDatabaseMigrationStatus processExportDatabaseMigration(final ExportTypeEnum exportType, 
                                                                         final List<Integer> exportIdList, 
-                                                                        YukonUserContext userContext) {
+                                                                        final YukonUserContext userContext) {
 
         // create file
-    	final File xmlDataFile = createFile(exportType, userContext);
+    	final File xmlDataFile = createBlankExportFile(exportType, userContext);
     	
     	// TODO
     	databaseMigrationEventLogService.startingExport(userContext.getYukonUser(), xmlDataFile.getName());
     	
     	// init status
         final ExportDatabaseMigrationStatus exportDatabaseMigrationStatus = 
-            new ExportDatabaseMigrationStatus(exportIdList.size(), xmlDataFile);
+            new ExportDatabaseMigrationStatus(exportIdList.size(), xmlDataFile, exportType);
         exportStatusCache.addResult(exportDatabaseMigrationStatus.getId(), exportDatabaseMigrationStatus);
         
         // run file generation in background thread
@@ -991,13 +970,15 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 			@Override
 			public void run() {
 				
+			    java.util.logging.Logger logger = createLogFile(userContext, xmlDataFile, DatabaseMigrationActionEnum.EXPORT);
 			    DataTableTemplate dataTableTemplate = configurationMap.get(exportType);
 		        
 		        // build data
 		        Iterable<DataTable> data = 
 		            configurationProcessorService.processDataTableTemplate(dataTableTemplate, 
 		                                                                   exportIdList, 
-		                                                                   exportDatabaseMigrationStatus);
+		                                                                   exportDatabaseMigrationStatus,
+		                                                                   logger);
 		        Element generatedXMLFile = 
 		            exportXMLGeneratorService.buildXmlElement(data, exportType.name());
 
@@ -1010,6 +991,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		        } catch (IOException e) {
 		        	log.error("Error outputting xml file.", e);
 		        }
+
+		        closeLogger(logger);
 			}
 		});
 
@@ -1289,12 +1272,16 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return null;
     }
     
-    private File createFile(ExportTypeEnum exportType, YukonUserContext userContext) {
+    /**
+     * Creates a new file which will be used for creating the export file.
+     * 
+     * @param exportType
+     * @param userContext
+     * @return
+     */
+    private File createBlankExportFile(ExportTypeEnum exportType, YukonUserContext userContext) {
         
-        String exportFilePath = 
-            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_MIGRATION_FILE_LOCATION, 
-                                                   userContext.getYukonUser());
-        String path = CtiUtilities.getYukonBase() + exportFilePath;
+        String exportFilePath = getFileBasePath(userContext);
         
         String databaseName = MasterConfigHelper.getConfiguration().getRequiredString("DB_SQLSERVER");
         String schemaUsername = PoolManager.getInstance().getPrimaryUser();
@@ -1303,14 +1290,78 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         String defaultDataFileName = 
             databaseName + "_" + schemaUsername + "_" + exportType.getName() + "_" + currentDate + ".xml";
 
-        File file = new File(path + defaultDataFileName);
+        File file = null;
         try {
+            file = new File(exportFilePath + defaultDataFileName);
             file.createNewFile();
+            
         } catch (IOException e) {
-            throw new RuntimeException("Could not write export file", e);
+            throw new RuntimeException("Could not create new export file", e);
         }
         return file;
     }
+    
+    /**
+     * Creates a new logger which will be used for the export or import process.
+     * 
+     * @param userContext
+     * @param importFile
+     * @param databaseMigrationAction
+     * @return
+     */
+    private java.util.logging.Logger createLogFile(YukonUserContext userContext, File importFile, DatabaseMigrationActionEnum databaseMigrationAction) {
+        
+        String logFilePath = getFileBasePath(userContext);
+        
+        String databaseName = MasterConfigHelper.getConfiguration().getRequiredString("DB_SQLSERVER");
+        String schemaUsername = PoolManager.getInstance().getPrimaryUser();
+        
+        String currentDate = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, new SystemUserContext());
+        String defaultDataFileName = 
+            databaseName + "_" + schemaUsername + "_" + currentDate + "_" + databaseMigrationAction.name() +".log";
+
+        java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DatabaseMigrationServiceImpl.class.getName());
+        try {
+            String loggerFileName = logFilePath + defaultDataFileName;
+            FileHandler handler = new FileHandler(loggerFileName, true);
+            handler.setFormatter(new SeperateLogFileFormatter(){});
+            logger.addHandler(handler);
+            logger.setUseParentHandlers(false);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create log file", e);
+        }
+        
+        logger.info(databaseMigrationAction.getLabel()+" "+importFile.getName()+" by user "+userContext.getYukonUser().getUsername()+"\n");
+        
+        return logger;
+    }
+    
+    
+    /**
+     * Closes all the handlers thus closing the logger.
+     * 
+     * @param logger
+     */
+    private void closeLogger(java.util.logging.Logger logger){
+        Handler[] handlers = logger.getHandlers();
+        for (Handler handler : handlers) {
+            handler.close();
+        }
+    }
+    
+    /**
+     * Returns a string that represents the path where the export and log files will be placed
+     * 
+     * @return
+     */
+    private String getFileBasePath(YukonUserContext userContext) {
+        String exportFilePath = 
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_MIGRATION_FILE_LOCATION, 
+                                                   userContext.getYukonUser());
+        return CtiUtilities.getYukonBase() + exportFilePath;
+        
+    }
+    
     
     private void handleRowChange(String tableName, int primaryKey, DbTransactionEnum dbTransactionEnum) {
         Collection<TableChangeCallback> collection = tableChangeCallbacks.get(tableName);
@@ -1348,7 +1399,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     public void setExportXMLGeneratorService(ExportXMLGeneratorService exportXMLGeneratorService) {
         this.exportXMLGeneratorService = exportXMLGeneratorService;
     }
-
 
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
@@ -1412,6 +1462,40 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         INSERT,
         UPDATE;
     }
+    
+    enum DatabaseMigrationActionEnum{
+        EXPORT("Exporting"),
+        IMPORT("Importing"),
+        Validation("Validating");
+        
+        String label;
+        
+        DatabaseMigrationActionEnum(String label) {
+            this.label = label;
+        }
+        
+        String getLabel(){
+            return this.label;
+        }
+        
+    }
+    
+    class SeperateLogFileFormatter extends Formatter{
+
+        @Override
+        public String format(LogRecord record) {
+            SimpleDateFormat simpleDateFormat = 
+                new SimpleDateFormat("yyyy-MM-dd hh:mm:ss mmm aa");
+            
+            String message = simpleDateFormat.format(record.getMillis())+" "+
+                             record.getSourceClassName()+" ["+ 
+                             record.getLevel()+"] "+
+                             record.getMessage()+" \n ";
+            return message;
+        }
+        
+    }
+    
 }
 
 class ConfigurationErrorException extends Exception {
