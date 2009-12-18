@@ -44,6 +44,7 @@ import com.cannontech.common.databaseMigration.bean.SqlHolder;
 import com.cannontech.common.databaseMigration.bean.WarningProcessingEnum;
 import com.cannontech.common.databaseMigration.bean.config.ConfigurationTable;
 import com.cannontech.common.databaseMigration.bean.data.DataTable;
+import com.cannontech.common.databaseMigration.bean.data.template.DataEntryTemplate;
 import com.cannontech.common.databaseMigration.bean.data.template.DataTableTemplate;
 import com.cannontech.common.databaseMigration.bean.database.Column;
 import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
@@ -344,7 +345,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     try {
                         Integer primaryKey = processElement(element, null, importDatabaseMigrationStatus);
                         String tableName = element.getAttributeValue("name");
-                        handleRowInserted(tableName, primaryKey);
                     } catch (ConfigurationErrorException e) {
                         log.error(e.getMessage());
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
@@ -358,11 +358,12 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     }
 
                     WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
-                    if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING) &&
-                        importDatabaseMigrationStatus.getWarningsMap().containsKey(label)) {
-                        log.error("Preserving the entry "+label+".");
-                    } else if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
-                        log.error("Overwriting the entry "+label+" was sucessful.");
+                    if (importDatabaseMigrationStatus.getWarningsMap().containsKey(label)) {
+                        if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
+                            log.error("Preserving the entry "+label+".");
+                        } else if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
+                            log.error("Overwriting the entry "+label+" was sucessful.");
+                        }
                     } else {
                         log.error("Genereated the entry "+label+" was sucessful.");
                     }
@@ -678,7 +679,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
             // The imported item does not exist.  Creating new instance.
             } else {
-                return databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
+                Integer primaryKeyIds = databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
+                handleRowChange(table.getTableName(), primaryKeyIds, DbTransactionEnum.INSERT);
+                return primaryKeyIds;
             }
 
         // One primary key was missing.  Get the max primary key to insert.
@@ -709,7 +712,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     String primaryKeyValue = identifierSelectResultMap.get(missingPrimaryKey).toString();
                     columnValueMap.put(missingPrimaryKey, primaryKeyValue);
                     databaseMigrationDao.updateTableEntry(table, columnValueMap);
-                    
+                    handleRowChange(table.getTableName(), Integer.valueOf(primaryKeyValue), DbTransactionEnum.UPDATE);
                     return Integer.valueOf(primaryKeyValue);
                 }
 
@@ -728,7 +731,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 }
                 columnValueMap.put(missingPrimaryKey, nextPrimaryKeyId.toString());
                 
-                return databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
+                Integer primaryKeyIds = databaseMigrationDao.insertNewTableEntry(table, columnValueMap);
+                handleRowChange(table.getTableName(), primaryKeyIds, DbTransactionEnum.INSERT);
+                return primaryKeyIds;
+                
             }
         }
         return null;
@@ -1218,20 +1224,45 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     public Set<DisplayableExportType> getAvailableExportTypes(){
         
         Set<DisplayableExportType> exportTypeList = Sets.newTreeSet();
-        Set<String> tableSet = Sets.newTreeSet();
         
         for(ExportTypeEnum exportType : configurationIdentityMap.keySet()) {
-            TableDefinition tableDefinition = configurationIdentityMap.get(exportType);
-            tableSet.addAll(databaseDefinition.getConnectedTables(tableDefinition));
+            DataTableTemplate dataTableTemplate = configurationMap.get(exportType);
             
             DisplayableExportType displayableExportType = new DisplayableExportType();
             displayableExportType.setExportType(exportType);
-            displayableExportType.setTableNameSet(tableSet);
+            displayableExportType.setTableNameSet(getConnectedTables(dataTableTemplate));
             
             exportTypeList.add(displayableExportType);
         }
 
         return exportTypeList;
+    }
+    
+    /**
+     * Returns all the tables for a given exportType
+     * 
+     * @param dataTableTemplate
+     * @return
+     */
+    private Set<String> getConnectedTables(DataTableTemplate dataTableTemplate) {
+        Set<String> results = Sets.newTreeSet();
+        results.add(dataTableTemplate.getTableName());
+        
+        Map<String, DataEntryTemplate> tableColumns = dataTableTemplate.getTableColumns();
+        for (Entry<String, DataEntryTemplate> dataEntryColumn : tableColumns.entrySet()) {
+            if (dataEntryColumn.getValue() instanceof DataTableTemplate) {
+                DataTableTemplate nextDataTableTemplate = 
+                    (DataTableTemplate) dataEntryColumn.getValue();
+                results.addAll(getConnectedTables(nextDataTableTemplate));
+            }
+        }
+        
+        List<DataTableTemplate> tableReferences = dataTableTemplate.getTableReferences();
+        for (DataTableTemplate referencesDataTableTemplate : tableReferences) {
+            results.addAll(getConnectedTables(referencesDataTableTemplate));
+        }
+        
+        return results;
     }
     
     /** 
@@ -1281,10 +1312,15 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return file;
     }
     
-    private void handleRowInserted(String tableName, int primaryKey) {
+    private void handleRowChange(String tableName, int primaryKey, DbTransactionEnum dbTransactionEnum) {
         Collection<TableChangeCallback> collection = tableChangeCallbacks.get(tableName);
         for (TableChangeCallback tableChangeCallback : collection) {
-            tableChangeCallback.rowInserted(primaryKey);
+            if (dbTransactionEnum.equals(DbTransactionEnum.INSERT)) {
+                tableChangeCallback.rowInserted(primaryKey);
+            }
+            if (dbTransactionEnum.equals(DbTransactionEnum.UPDATE)) {
+                tableChangeCallback.rowUpdated(primaryKey);
+            }
         }
     }
 
@@ -1370,6 +1406,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     @Autowired
     public void setDatabaseMigrationEventLogService(DatabaseMigrationEventLogService databaseMigrationEventLogService) {
         this.databaseMigrationEventLogService = databaseMigrationEventLogService;
+    }
+    
+    private enum DbTransactionEnum{
+        INSERT,
+        UPDATE;
     }
 }
 
