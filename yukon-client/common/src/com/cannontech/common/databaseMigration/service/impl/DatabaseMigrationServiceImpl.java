@@ -356,11 +356,16 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                         log.error("Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
                         status.setRollbackOnly();
                     }
-                    if (importDatabaseMigrationStatus.getWarningCount() > 0) {
-                        log.error("Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap());
-                    }
 
-                    log.info("Processed the entry "+label);
+                    WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
+                    if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING) &&
+                        importDatabaseMigrationStatus.getWarningsMap().containsKey(label)) {
+                        log.error("Preserving the entry "+label+".");
+                    } else if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
+                        log.error("Overwriting the entry "+label+" was sucessful.");
+                    } else {
+                        log.error("Genereated the entry "+label+" was sucessful.");
+                    }
                     
                     return null;
                 }
@@ -652,9 +657,22 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 try {
                     compareResultTableDataToImportTableData(table, columnValueMap, primaryKeySelectResultMap);
                 } catch (ConfigurationWarningException e) {
+                    WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
+                    
                     List<String> labelList = importDatabaseMigrationStatus.getLabelList();
-                    importDatabaseMigrationStatus.addWarningListEntry(labelList.get(labelList.size()-1), 
+                    String label = labelList.get(labelList.size()-1);
+                    importDatabaseMigrationStatus.addWarningListEntry(label, 
                                                                       "The supplied item already exists in the system.  ("+table.getTableName()+")");
+                    if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
+                    } else if (warningProcessing.equals(WarningProcessingEnum.OVERWRITE)) {
+                        databaseMigrationDao.updateTableEntry(table, columnValueMap);
+                    }
+                    
+                    if (primaryKeyColumnNames.size() == 1){
+                        return Integer.valueOf(columnValueMap.get(primaryKeyColumnNames.get(0)));
+                    } else {
+                        return null;
+                    }
                 }
                 return Integer.valueOf(columnValueMap.get(primaryKeyColumnNames.get(0)));
 
@@ -669,15 +687,17 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
             // Using the identifiers to see if the object currently exists in the system.
             Map<String, Object> identifierSelectResultMap =
-                databaseMigrationDao.findResultSetForIdentifierValues(columnValueMap, table);
+                databaseMigrationDao.findResultSetForIdentifierValues(columnValueMap, table, missingPrimaryKey);
         
             // Checks to see if the imported item exists in the system,
             // and then checks to see if a user action was submitted.
             if (identifierSelectResultMap != null) {
                 WarningProcessingEnum warningProcessing = importDatabaseMigrationStatus.getWarningProcessing();
+                List<String> labelList = importDatabaseMigrationStatus.getLabelList();
+                String label = labelList.get(labelList.size()-1);
+                importDatabaseMigrationStatus.addWarningListEntry(label,
+                                                                  "The supplied item already exists in the system.  ("+table.getTableName()+")");
                 if (warningProcessing.equals(WarningProcessingEnum.VALIDATE)) {
-                    importDatabaseMigrationStatus.addWarningListEntry(importDatabaseMigrationStatus.getLabelList().get(importDatabaseMigrationStatus.getLabelList().size()-1), 
-                                                                      "The supplied item already exists in the system.  ("+table.getTableName()+")");
                     Integer primaryKeyValue = Integer.valueOf(identifierSelectResultMap.get(missingPrimaryKey).toString());
                     return primaryKeyValue;
 
@@ -702,7 +722,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     nextPrimaryKeyId = nextValueHelper.getNextValue(table.getTableName());
                 } catch (IllegalArgumentException e) {
                     // The value was not found in the nextValueHelper.  Using the select method to figure out the next value.
-                    log.debug("Next value not found in next value helper.  Using select method to generate the primary key for "+table.getTableName());
+                    log.error("Next value not found in next value helper.  Using select method to generate the primary key for "+table.getTableName());
                     nextPrimaryKeyId = 
                         databaseMigrationDao.getNextMissingPrimaryKeyValue(columnValueMap, table, missingPrimaryKey);
                 }

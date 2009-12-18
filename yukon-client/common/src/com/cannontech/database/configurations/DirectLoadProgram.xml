@@ -2,6 +2,7 @@
     <configuration name="DIRECT_PROGRAM"><!-- Direct Load Program -->
 		<table name="LMProgram" >
 			<references>
+				<table name="Point" />
 				<table name="LMProgramControlWindow" />
 				<table name="LMProgramDirect" >
 					<references>

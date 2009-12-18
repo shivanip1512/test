@@ -32,13 +32,13 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         SqlStatementBuilder selectMaxSQL = new SqlStatementBuilder();
         selectMaxSQL.append("SELECT MAX("+missingPrimaryKeyName+")");
         selectMaxSQL.append("FROM "+tableDefinition.getTableName());
-        if (primaryKeyColumnNames.size() > 1) {
+        if (primaryKeyColumnNames.size() > 0) {
             selectMaxSQL.append("WHERE "+primaryKeyColumnNames.get(0)+" = ?");
             whereClauseValues.add(columnValueMap.get(primaryKeyColumnNames.get(0)));
         }
         
         try {
-            int maxPrimaryKeyValue = jdbcTemplate.queryForInt(selectMaxSQL.getSql());
+            int maxPrimaryKeyValue = jdbcTemplate.queryForInt(selectMaxSQL.getSql(), whereClauseValues.toArray());
             return ++maxPrimaryKeyValue;
         } catch (IncorrectResultSizeDataAccessException e) {
             // A value does not exist for this column.  Using the default of 0.
@@ -70,7 +70,8 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
     }
     
     public Map<String, Object> findResultSetForIdentifierValues(Map<String, String> columnValueMap,
-                                                                TableDefinition tableDefinition) {
+                                                                TableDefinition tableDefinition,
+                                                                String missingPrimaryKey) {
         
         // Generating the sql for all the columns and whereing all the identifier columns
         SqlHolder identifierSelectSqlHolder = new SqlHolder();
@@ -80,9 +81,11 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         identifierSelectSqlHolder.addFromClause(tableDefinition.getTableName());
         
         List<Object> whereParameterValues = new ArrayList<Object>();
-        for (Column identifierColumn : tableDefinition.getColumns(ColumnTypeEnum.IDENTIFIER)) {
-            identifierSelectSqlHolder.addWhereClause(identifierColumn.getName()+" = ? ");
-            whereParameterValues.add(columnValueMap.get(identifierColumn.getName()));
+        for (Column identifyingColumn : tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER)) {
+            if (!identifyingColumn.getName().equals(missingPrimaryKey)) {
+                identifierSelectSqlHolder.addWhereClause(identifyingColumn.getName()+" = ? ");
+                whereParameterValues.add(columnValueMap.get(identifyingColumn.getName()));
+            }
         }
         SqlStatementBuilder identifierSelectSQL = identifierSelectSqlHolder.buildSelectSQL();
         

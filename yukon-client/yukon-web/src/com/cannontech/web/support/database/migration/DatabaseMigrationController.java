@@ -116,13 +116,8 @@ public class DatabaseMigrationController {
             exportIdList.add(Integer.valueOf(exportId));
         }
         
-        List<Integer> fakeIds = Lists.newArrayList();
-        for (int i = 0; i < 300; i++) {
-        	fakeIds.addAll(exportIdList);
-        }
-        
         ExportDatabaseMigrationStatus status = 
-            databaseMigrationService.processExportDatabaseMigration(exportType, fakeIds, userContext);
+            databaseMigrationService.processExportDatabaseMigration(exportType, exportIdList, userContext);
         
         File exportFile = status.getExportFile();
         FileSystemResource resource = new FileSystemResource(exportFile);

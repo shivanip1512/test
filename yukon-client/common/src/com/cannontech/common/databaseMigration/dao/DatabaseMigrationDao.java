@@ -44,7 +44,8 @@ public interface DatabaseMigrationDao {
      * @return
      */
     public Map<String, Object> findResultSetForIdentifierValues(Map<String, String> columnValueMap,
-                                                                TableDefinition tableDefinition);
+                                                                TableDefinition tableDefinition,
+                                                                String missingPrimaryKey);
         
     /**
      * This method will use the table object and column value map to create an insert sql call

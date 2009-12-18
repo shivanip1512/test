@@ -46,7 +46,7 @@
    
     <table name="LMDirectNotifGrpList">
         <primaryKey name="ProgramId" tableRef="LMProgramDirect"/>
-        <data name="NotificationGrpId" tableRef="NotificationGroup"  refType="ONE_TO_ONE" />
+        <data name="NotificationGrpId" tableRef="NotificationGroup"  refType="MANY_TO_ONE" />
     </table>
 
     <table name="LMGroup">

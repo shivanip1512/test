@@ -24,6 +24,8 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
     @PostConstruct
     public void startup() {
         addDBTableListener("LMGroupExpressCom", 0, PAOGroups.STRING_CAT_DEVICE, PaoType.LM_GROUP_EXPRESSCOMM.getDbString());
+        addDBTableListener("LMProgram", 0, PAOGroups.STRING_CAT_LOADMANAGEMENT, PaoType.LM_DIRECT_PROGRAM.getDbString());
+        addDBTableListener("YukonGroup", 10, DBChangeMsg.CAT_YUKON_USER_GROUP, DBChangeMsg.CAT_YUKON_USER);
         addPointDBTableListener("Point", 1, DBChangeMsg.CAT_POINT);
         
     }
