@@ -46,7 +46,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         	// Check authorization
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
         	
-        	if (XmlVersionUtils.YUKON_MSG_VERSION_1_0.equals(version) || StringUtils.isBlank(programName)) {
+        	if (StringUtils.isBlank(programName)) {
         		
         		optOutService.changeOptOutCountStateForToday(user, true);
         	
