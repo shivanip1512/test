@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/18/2009 12:13:14 AM                       */
+/* Created on:     12/18/2009 9:50:27 AM                        */
 /*==============================================================*/
 
 
@@ -9202,7 +9202,7 @@ create table LMProgramDirectGroup (
    DeviceID             numeric              not null,
    LMGroupDeviceID      numeric              not null,
    GroupOrder           numeric              not null,
-   constraint PK_LMPROGRAMDIRECTGROUP primary key nonclustered (DeviceID, GroupOrder)
+   constraint PK_LMPROGRAMDIRECTGROUP primary key (DeviceID, GroupOrder)
 )
 go
 
