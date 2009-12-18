@@ -19,7 +19,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -217,6 +216,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         List<Element> importItemList = getElementListFromFile(importFile);
 
         ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(importItemList.size(), importFile);
+        validationStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         validateElementList(importItemList, exportType, importDatabaseMigrationStatus);
         
         return importDatabaseMigrationStatus;
@@ -236,8 +236,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private ImportDatabaseMigrationStatus validateElementList(final List<Element> importItemList, 
                                                               final ExportTypeEnum exportType,
                                                               final ImportDatabaseMigrationStatus importDatabaseMigrationStatus) {
-    	
-    	validationStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         
     	// TODO Change isolation level and make sure it works in both cases: SQL Server and Oracle.
     	
@@ -302,11 +300,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         final ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
         
         final ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(0, importFile);
+        importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         
         final List<Element> importItemList = getElementListFromFile(importFile);
         importDatabaseMigrationStatus.setTotalCount(importItemList.size());
         importDatabaseMigrationStatus.setWarningProcessing(warningProcessingEnum);
-        importStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         
         scheduledExecutor.execute(new Runnable() {
             @Override
@@ -1009,44 +1007,33 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         tableChangeCallbacks.put(tableName, tableChangeCallback);
     }
     
+    
+    @Override
+    public List<Integer> getAllSearchIds(ExportTypeEnum exportType) {
+    	
+    	List<Map<String, Object>> results = getConfigurationSearchResultMaps(exportType, null);
+    	
+        String primaryKeyColumnName = getPrimaryKeyColumnNameForExportType(exportType);
+        
+    	List<Integer> ids = Lists.newArrayListWithCapacity(results.size());
+    	for(Map<String, Object> valueMap : results) {
+
+            int id = Integer.valueOf(valueMap.get(primaryKeyColumnName).toString());
+            ids.add(id);
+        }
+    	
+    	return ids;
+    }
+    
     @Override
     public SearchResult<DatabaseMigrationContainer> search(ExportTypeEnum exportType, 
                                                            String searchText, 
                                                            int startIndex, int count, 
                                                            YukonUserContext userContext) {
         
-        TableDefinition tableDefinition = configurationIdentityMap.get(exportType);
-        SqlHolder sqlHolder = generateIdentifiersAndInfoSQL(tableDefinition);
+        List<Map<String, Object>> results = getConfigurationSearchResultMaps(exportType, searchText);
         
-        SqlStatementBuilder sql = sqlHolder.buildSelectSQL();
-        
-        if(!StringUtils.isBlank(searchText)) {
-            if(sqlHolder.hasWhereClause()) {
-                sql.append(" AND (");
-            } else {
-                sql.append(" WHERE (");
-            }
-            
-            List<String> searchColumnSql = getConfigurationItemColumnIdentifiers(tableDefinition);
-            Iterator<String> iterator = searchColumnSql.iterator();
-            while(iterator.hasNext()) {
-                String columnSql = iterator.next();
-                sql.append(" UPPER(" + columnSql + ") ").startsWith(searchText.toUpperCase());
-    
-                if(iterator.hasNext()) {
-                    sql.append(" OR ");
-                }
-            }
-            sql.append(")");
-        }
-        
-        List<Map<String, Object>> results = 
-        	yukonJdbcTemplate.queryForList(sql.getSql(), sql.getArguments());
-
-        List<Column> primaryKeyColumns = 
-            tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY);
-        Column primaryKeyColumn = primaryKeyColumns.get(0);
-        String primaryKeyColumnName = primaryKeyColumn.getName();
+        String primaryKeyColumnName = getPrimaryKeyColumnNameForExportType(exportType);
         
         List<DatabaseMigrationPicker> pickerList = Lists.newArrayList();
         for(Map<String, Object> valueMap : results) {
@@ -1074,6 +1061,36 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return searchResult;
     }
     
+    private List<Map<String, Object>> getConfigurationSearchResultMaps(ExportTypeEnum exportType, String searchText) {
+    	
+    	TableDefinition tableDefinition = configurationIdentityMap.get(exportType);
+        SqlHolder sqlHolder = generateIdentifiersAndInfoSQL(tableDefinition);
+        
+        SqlStatementBuilder sql = sqlHolder.buildSelectSQL();
+        
+        if(!StringUtils.isBlank(searchText)) {
+            if(sqlHolder.hasWhereClause()) {
+                sql.append(" AND (");
+            } else {
+                sql.append(" WHERE (");
+            }
+            
+            List<String> searchColumnSql = getConfigurationItemColumnIdentifiers(tableDefinition);
+            Iterator<String> iterator = searchColumnSql.iterator();
+            while(iterator.hasNext()) {
+                String columnSql = iterator.next();
+                sql.append(" UPPER(" + columnSql + ") ").startsWith(searchText.toUpperCase());
+    
+                if(iterator.hasNext()) {
+                    sql.append(" OR ");
+                }
+            }
+            sql.append(")");
+        }
+        
+        return yukonJdbcTemplate.queryForList(sql.getSql(), sql.getArguments());
+    }
+    
     @Override
     public List<DatabaseMigrationContainer> getItemsByIds(ExportTypeEnum exportType, 
                                                           List<Integer> idList, 
@@ -1084,10 +1101,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         
         SqlStatementBuilder sql = sqlHolder.buildSelectSQL();
         
-        List<Column> primaryKeyColumns = 
-            tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY);
-        Column primaryKeyColumn = primaryKeyColumns.get(0);
-        String primaryKeyColumnName = primaryKeyColumn.getName();
+        String primaryKeyColumnName = getPrimaryKeyColumnNameForExportType(exportType);
         
         if(sqlHolder.hasWhereClause()) {
             sql.append(" AND ");
@@ -1114,6 +1128,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             this.convertPickerToContainer(exportType, pickerList, userContext);
         
         return containerList;
+    }
+    
+    private String getPrimaryKeyColumnNameForExportType(ExportTypeEnum exportType) {
+    	
+    	TableDefinition tableDefinition = configurationIdentityMap.get(exportType);
+        List<Column> primaryKeyColumns = tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY);
+        Column primaryKeyColumn = primaryKeyColumns.get(0);
+        return primaryKeyColumn.getName();
     }
     
     private List<DatabaseMigrationContainer> convertPickerToContainer(ExportTypeEnum exportType, 

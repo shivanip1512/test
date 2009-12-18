@@ -15,6 +15,22 @@
 <c:set var="dbPickerIconDisabled" value="/WebConfig/yukon/Icons/database_disabled_gray.gif"/>
 <c:set var="mag" value="/WebConfig/yukon/Icons/magnifier.gif"/>
 
+<script type="text/javascript">
+
+    function checkIds() {
+
+		var allowExportAll = ${allowExportAll};
+    	
+        if ($('databaseMigrationIds').value.trim() == '' && !allowExportAll) {
+			alert('No Items Selected');
+			return;
+        } else {
+        	$('exportForm').submit();
+        }
+    }
+    
+</script>
+
 <%-- CURRENT DB --%>
 <tags:nameValueContainer>
 	<tags:nameValue name="${currentEnvironment}" nameColumnWidth="190px">${dbUrl}</tags:nameValue>
@@ -26,7 +42,7 @@
 <c:set var="allowMultipleComponentSelection" value="false"/>
 
 <form id="exportForm" action="/spring/support/database/migration/export" method="post">
-	<input type="hidden" name="databaseMigrationIds" id="databaseMigrationIds">
+	<input type="hidden" name="databaseMigrationIds" id="databaseMigrationIds" value="">
 
 	<c:set var="sectionTitle" value="${componentToBeExport}"/>
 	<c:if test="${allowMultipleComponentSelection}">
@@ -45,7 +61,7 @@
 								<input type="checkbox" id="${exportTypeName}_selectedComponent" name="exportType" value="${exportTypeName}">
 							</c:when>
 							<c:otherwise>
-								<input type="radio" id="${exportTypeName}_selectedComponent" name="exportType" value="${exportTypeName}">
+								<input type="radio" id="${exportTypeName}_selectedComponent" name="exportType" value="${exportTypeName}" onclick="$('exportButton').enable();">
 							</c:otherwise>
 						</c:choose>
 					</td>
@@ -80,6 +96,7 @@
 	</tags:sectionContainer>
 	<br>
 	
-	<tags:slowInput myFormId="exportForm" label="${exportFile}" width="80px"/>
+	<input id="exportButton" type="button" value="${exportFile}" style="width:80x;" onclick="checkIds();" disabled/>
+	
 
 </form>

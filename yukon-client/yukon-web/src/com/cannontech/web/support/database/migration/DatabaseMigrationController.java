@@ -58,6 +58,9 @@ public class DatabaseMigrationController {
 
     private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
 	
+    private boolean ALLOW_EXPORT_ALL = false;
+    
+    
 	// HOME
 	@RequestMapping
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) {
@@ -97,6 +100,8 @@ public class DatabaseMigrationController {
         }
         mav.addObject("recentImports", recentImports);
         
+        mav.addObject("allowExportAll", ALLOW_EXPORT_ALL);
+        
         return mav;
     }
 	
@@ -115,20 +120,30 @@ public class DatabaseMigrationController {
         
         String exportIds = ServletRequestUtils.getRequiredStringParameter(request, "databaseMigrationIds");
         List<Integer> exportIdList = Lists.newArrayList();
-        if(! StringUtils.isBlank(exportIds)) {
-            for (String exportId : exportIds.split(",")){
+        
+        if (StringUtils.isBlank(exportIds)) {
+        	
+        	if (!ALLOW_EXPORT_ALL) {
+        		throw new IllegalArgumentException("No Items Selected");
+        	}
+            
+        	exportIdList = databaseMigrationService.getAllSearchIds(exportType);
+        	
+        } else {
+        	
+        	for (String exportId : exportIds.split(",")){
                 exportIdList.add(Integer.valueOf(exportId));
             }
-
-            ExportDatabaseMigrationStatus status = 
-                databaseMigrationService.processExportDatabaseMigration(exportType, exportIdList, userContext);
-
-            File exportFile = status.getExportFile();
-            FileSystemResource resource = new FileSystemResource(exportFile);
-            fileStore.put(status.getId(), resource);
-
-            mav.addObject("statusKey", status.getId());
         }
+        
+        ExportDatabaseMigrationStatus status = 
+            databaseMigrationService.processExportDatabaseMigration(exportType, exportIdList, userContext);
+
+        File exportFile = status.getExportFile();
+        FileSystemResource resource = new FileSystemResource(exportFile);
+        fileStore.put(status.getId(), resource);
+
+        mav.addObject("statusKey", status.getId());
 
         return mav;
     }

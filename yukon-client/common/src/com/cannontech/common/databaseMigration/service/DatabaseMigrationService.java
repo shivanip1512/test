@@ -72,4 +72,7 @@ public interface DatabaseMigrationService {
                                                           List<Integer> idList, 
                                                           YukonUserContext userContext);
     
+    public List<Integer> getAllSearchIds(ExportTypeEnum exportType);
+    
+    
 }
