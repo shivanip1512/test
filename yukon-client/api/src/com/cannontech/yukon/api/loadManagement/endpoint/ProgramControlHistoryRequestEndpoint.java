@@ -55,7 +55,7 @@ public class ProgramControlHistoryRequestEndpoint {
         List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
         try {
         	
-        	if (XmlVersionUtils.YUKON_MSG_VERSION_1_1.equals(version) && StringUtils.isBlank(programName)) {
+        	if (StringUtils.isBlank(programName)) {
         		programControlHistory = loadControlService.getAllControlHistory(startTime, stopTime, user);
         	} else {
         		programControlHistory = loadControlService.getControlHistoryByProgramName(programName, startTime, stopTime, user);
