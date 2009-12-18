@@ -37,6 +37,7 @@ public class ProgramControlHistoryRequestEndpoint {
     public Element invoke(Element programControlHistoryRequest, LiteYukonUser user) throws Exception {
         
     	XmlVersionUtils.verifyYukonMessageVersion(programControlHistoryRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+    	String version = XmlVersionUtils.getYukonMessageVersion(programControlHistoryRequest);
     	
         // create template and parse data
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(programControlHistoryRequest);
@@ -47,14 +48,14 @@ public class ProgramControlHistoryRequestEndpoint {
 
         // init response
         Element resp = new Element("programControlHistoryResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0");
+        Attribute versionAttribute = new Attribute("version", version);
         resp.setAttribute(versionAttribute);
         
         // run service
         List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
         try {
         	
-        	if (StringUtils.isBlank(programName)) {
+        	if (XmlVersionUtils.YUKON_MSG_VERSION_1_1.equals(version) && StringUtils.isBlank(programName)) {
         		programControlHistory = loadControlService.getAllControlHistory(startTime, stopTime, user);
         	} else {
         		programControlHistory = loadControlService.getControlHistoryByProgramName(programName, startTime, stopTime, user);
