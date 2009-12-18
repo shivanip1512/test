@@ -239,6 +239,7 @@ public enum YukonRoleProperty {
     ADMIN_VIEW_CONFIG(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_VIEW_CONFIG, booleanType()),
     ADMIN_MANAGE_INDEXES(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_MANAGE_INDEXES, booleanType()),
     ADMIN_VIEW_LOGS(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_VIEW_LOGS, booleanType()),
+    ADMIN_DATABASE_MIGRATION(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_DATABASE_MIGRATION, booleanType()),
     
     CURTAILMENT_LABEL(CI_CURTAILMENT, com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL, stringType()),
 

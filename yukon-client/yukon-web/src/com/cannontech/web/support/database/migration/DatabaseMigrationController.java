@@ -42,9 +42,11 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
+@CheckRoleProperty(YukonRoleProperty.ADMIN_DATABASE_MIGRATION)
 @Controller
 @RequestMapping("/database/migration/*")
 public class DatabaseMigrationController {
@@ -104,6 +106,7 @@ public class DatabaseMigrationController {
 	@RequestMapping
     public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException {
 		
+	    ModelAndView mav = new ModelAndView("redirect:exportProgress");
         
         String exportTypeString = ServletRequestUtils.getStringParameter(request, "exportType");
         ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
@@ -111,20 +114,30 @@ public class DatabaseMigrationController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         String exportIds = ServletRequestUtils.getRequiredStringParameter(request, "databaseMigrationIds");
-        List<Integer> exportIdList = new ArrayList<Integer>();
-        for (String exportId : exportIds.split(",")){
-            exportIdList.add(Integer.valueOf(exportId));
+        List<Integer> exportIdList = Lists.newArrayList();
+        if(! StringUtils.isBlank(exportIds)) {
+            for (String exportId : exportIds.split(",")){
+                exportIdList.add(Integer.valueOf(exportId));
+            }
+
+            // Copy tons GO!
+            List<Integer> fakeIdList = Lists.newArrayList();
+            for (int i = 0; i < 300; i++) {
+                for (Integer exportId : exportIdList) {
+                    fakeIdList.add(exportId);
+                }
+            }
+            
+            ExportDatabaseMigrationStatus status = 
+                databaseMigrationService.processExportDatabaseMigration(exportType, fakeIdList, userContext);
+
+            File exportFile = status.getExportFile();
+            FileSystemResource resource = new FileSystemResource(exportFile);
+            fileStore.put(status.getId(), resource);
+
+            mav.addObject("statusKey", status.getId());
         }
-        
-        ExportDatabaseMigrationStatus status = 
-            databaseMigrationService.processExportDatabaseMigration(exportType, exportIdList, userContext);
-        
-        File exportFile = status.getExportFile();
-        FileSystemResource resource = new FileSystemResource(exportFile);
-        fileStore.put(status.getId(), resource);
-        
-        ModelAndView mav = new ModelAndView("redirect:exportProgress");
-        mav.addObject("statusKey", status.getId());
+
         return mav;
     }
 	

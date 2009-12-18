@@ -753,6 +753,7 @@
                     </option>
                     <option id="migration">
                         <link>/spring/support/database/migration/home</link>
+                        <requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
                     </option>
                 </links>
             </option>
