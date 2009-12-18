@@ -266,15 +266,16 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		                        e.printStackTrace();
 		                        log.error(e.getMessage());
 		                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
-		                        log.error("Validation Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
+		                        log.error("Validation Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap().get(label));
 		                    } catch (Exception e) {
 		                        e.printStackTrace();
 		                        log.error(e.getMessage());
 		                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
-		                        log.error("Validation Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap());
+		                        log.error("Validation Error ("+label+") --> "+importDatabaseMigrationStatus.getErrorsMap().get(label));
 		                    }
 		                    if (importDatabaseMigrationStatus.getWarningCount() > 0) {
-		                        log.error("Validation Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap());
+		                        log.error("Validation Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap().get(label));
+		                        List<String> warningMessages = importDatabaseMigrationStatus.getWarningsMap().get(label);
 		                    }
 		                }
 
