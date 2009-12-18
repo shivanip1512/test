@@ -92,7 +92,8 @@ public:
     vector<CtiLMControlArea*>* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
     bool findProgram(LONG programID, CtiLMProgramBaseSPtr& program = CtiLMProgramBaseSPtr(), CtiLMControlArea** controlArea = NULL);
     
-    CtiLMGroupPtr findGroupByPointID(long point_id);
+    CtiLMGroupPtr             findGroupByPointID       (long point_id);
+    vector<CtiLMControlArea*> findControlAreasByPointID(long point_id);
     
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
@@ -138,6 +139,7 @@ private:
 
     vector<CtiLMControlArea*>* _controlAreas;
     map< long, CtiLMGroupPtr > _point_group_map;
+    std::multimap<long, long > _point_control_area_map;
     map< long, CtiLMGroupPtr > _all_group_map;
     map< long, CtiLMProgramBaseSPtr > _all_program_map;
     map< long, CtiLMControlArea*> _all_control_area_map;

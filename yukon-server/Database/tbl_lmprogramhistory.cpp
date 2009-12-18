@@ -108,6 +108,41 @@ RWDBStatus CtiTableLMProgramHistory::Insert()
     return inserter.status();
 }
 
+RWDBStatus CtiTableLMProgramHistory::getPeakProgramAndGearId(unsigned int& programId, unsigned int& gearId)
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBTable gearTable = getDatabase().table( "LMProgramGearHistory" );
+    RWDBTable programTable = getDatabase().table( "LMProgramHistory" );
+    RWDBSelector selector = conn.database().selector();
+
+    selector << rwdbMax(programTable["LMProgramHistoryId"]);
+    selector.from(programTable);
+
+    RWDBReader rdr = selector.reader(conn);
+
+    if( rdr() )
+    {
+        rdr >> programId;
+    }
+
+    selector.clear();
+
+    selector << rwdbMax(gearTable["LMProgramGearHistoryId"]);
+    selector.from(gearTable);
+
+    rdr = selector.reader(conn);
+
+    if( rdr() )
+    {
+        rdr >> gearId;
+    }
+
+    return rdr.status();
+        
+}
+
 // Note the action field is a varchar(50)
 string CtiTableLMProgramHistory::getStrFromAction(long action)
 {

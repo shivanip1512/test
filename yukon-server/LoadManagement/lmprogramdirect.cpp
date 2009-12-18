@@ -5997,6 +5997,8 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
  */
 bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time)
 {
+    extern unsigned int _HISTORY_PROGRAM_ID;
+    extern unsigned int _HISTORY_GROUP_ID;
     bool retVal  = false;
     unsigned long programLogID = getCurrentLogID();
 
@@ -6004,12 +6006,12 @@ bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryAction
 
     if( action == CtiTableLMProgramHistory::Start )
     {
-        programLogID = SynchronizedIdGen("LMProgramHistoryID", 1); // Both of the ID gens here are not necessary.
+        programLogID = ++_HISTORY_PROGRAM_ID; // SynchronizedIdGen("LMProgramHistoryID", 1);
         setCurrentLogEventID(programLogID);
     }
     if( gear != NULL && programLogID != 0)
     {
-        unsigned long gearLogID = SynchronizedIdGen("LMGearHistoryID", 1);
+        unsigned long gearLogID = ++_HISTORY_GROUP_ID; // SynchronizedIdGen("LMGearHistoryID", 1);
         if( gearLogID != 0 )
         {
             _PROGRAM_HISTORY_QUEUE.push(CtiTableLMProgramHistory(programLogID, gearLogID, getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(), getLastUser(), gear->getGearName(), time));

@@ -62,6 +62,7 @@
 #include "utility.h"
 #include "rwutil.h"
 #include "tbl_paoexclusion.h"
+#include "tbl_lmprogramhistory.h"
 
 using namespace std;
 
@@ -69,6 +70,9 @@ extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_GROUP_LIST;
 extern set<long> _CHANGED_CONTROL_AREA_LIST;
 extern set<long> _CHANGED_PROGRAM_LIST;
+
+extern unsigned int _HISTORY_PROGRAM_ID;
+extern unsigned int _HISTORY_GROUP_ID;
 
 struct id_hash
 {
@@ -185,6 +189,24 @@ CtiLMGroupPtr CtiLMControlAreaStore::findGroupByPointID(long point_id)
     return(iter == _point_group_map.end() ? CtiLMGroupPtr() : iter->second);
 }
 
+/*----------------------------------------------------------------------------
+  Returns a vector with pointers to the control areas that reference the point
+  id. This can be multiple control areas as trigger inputs can be shared.
+----------------------------------------------------------------------------*/
+vector<CtiLMControlArea*> CtiLMControlAreaStore::findControlAreasByPointID(long point_id)
+{
+    vector<CtiLMControlArea*> retVal;
+
+    std::multimap< long, long >::_Pairii range = _point_control_area_map.equal_range(point_id);
+    for( ; range.first != range.second; ++range.first )
+    {
+        CtiLMControlArea* area = getLMControlArea(range.first->second);
+        retVal.push_back(area);
+    }
+
+    return retVal;
+}
+
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
 
@@ -292,8 +314,10 @@ void CtiLMControlAreaStore::reset()
         vector<CtiLMControlArea*> temp_control_areas;
         std::map<long, CtiLMGroupPtr > temp_all_group_map;
         std::map<long, CtiLMGroupPtr > temp_point_group_map;
+        std::multimap<long, long >     temp_point_control_area_map;
         std::map<long, CtiLMProgramBaseSPtr > temp_all_program_map;
         std::map<long, CtiLMControlArea* > temp_all_control_area_map;
+        
 
         LONG currentAllocations = ResetBreakAlloc();
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
@@ -2006,6 +2030,13 @@ void CtiLMControlAreaStore::reset()
                                     currentLMControlArea->getLMControlAreaTriggers().push_back(newTrigger);
                                     break;
                                 }
+                                
+                            }
+
+                            temp_point_control_area_map.insert(make_pair(newTrigger->getPointId(), tempControlAreaId));
+                            if( newTrigger->getPeakPointId() != 0 )
+                            {
+                                temp_point_control_area_map.insert(make_pair(newTrigger->getPeakPointId(), tempControlAreaId));
                             }
                         }
                     }//loading control area triggers end
@@ -2014,6 +2045,11 @@ void CtiLMControlAreaStore::reset()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Triggers is: " << trigTimer.elapsedTime() << endl;
                         trigTimer.reset();
+                    }
+
+                    if( _HISTORY_PROGRAM_ID == 0 || _HISTORY_GROUP_ID == 0 )
+                    {
+                        CtiTableLMProgramHistory::getPeakProgramAndGearId(_HISTORY_PROGRAM_ID, _HISTORY_GROUP_ID);
                     }
 
                     //Make sure holidays and season schedules are refreshed
@@ -2041,6 +2077,7 @@ void CtiLMControlAreaStore::reset()
             _all_group_map.clear();
             _all_program_map.clear();
             _point_group_map.clear();
+            _point_control_area_map.clear();
 
             // Lets start using the new objects we just loaded.
             // do a swap, make sure we have the mux
@@ -2048,6 +2085,7 @@ void CtiLMControlAreaStore::reset()
             _all_group_map = temp_all_group_map;
             _all_program_map = temp_all_program_map;
             _point_group_map = temp_point_group_map;
+            _point_control_area_map = temp_point_control_area_map;
             _all_control_area_map = temp_all_control_area_map;
 
             _CHANGED_GROUP_LIST.clear();

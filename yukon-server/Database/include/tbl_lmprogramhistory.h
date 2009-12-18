@@ -59,6 +59,7 @@ public:
     CtiTableLMProgramHistory& operator=(const CtiTableLMProgramHistory &aRef);
 
     RWDBStatus Insert();
+    static RWDBStatus getPeakProgramAndGearId(unsigned int& programId, unsigned int& gearId);
 };
 
 #endif

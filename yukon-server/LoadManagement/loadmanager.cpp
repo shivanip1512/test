@@ -59,6 +59,9 @@ set<long> _CHANGED_GROUP_LIST;
 set<long> _CHANGED_CONTROL_AREA_LIST;
 set<long> _CHANGED_PROGRAM_LIST;
 
+unsigned int _HISTORY_PROGRAM_ID = 0;
+unsigned int _HISTORY_GROUP_ID = 0;
+
 queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 
 /* The singleton instance of CtiLoadManager */
@@ -1147,7 +1150,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
 
-    vector<CtiLMControlArea*>& controlAreas = (*store->getControlAreas(secondsFrom1901));
+    vector<CtiLMControlArea*> controlAreas = store->findControlAreasByPointID(pointID);
     for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
