@@ -30,11 +30,11 @@
                 <value>com/cannontech/core/dynamic/applicationContext.xml</value>
                 <value>com/cannontech/core/service/coreServicesContext.xml</value>
                 <value>com/cannontech/core/service/dateContext.xml</value>
+                <value>com/cannontech/common/databaseMigration/databaseMigrationContext.xml</value>
                 <value>com/cannontech/loadcontrol/applicationContext.xml</value>
                 <value>com/cannontech/cc/applicationContext.xml</value>
                 <value>com/cannontech/common/events/eventsContext.xml</value>
                 <value>com/cannontech/common/validation/validationClientContext.xml</value>
-                <value>com/cannontech/common/databaseMigration/databaseMigrationContext.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true" />

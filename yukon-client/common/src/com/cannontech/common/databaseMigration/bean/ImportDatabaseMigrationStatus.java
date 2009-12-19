@@ -4,11 +4,13 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import com.cannontech.common.util.Completable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class ImportDatabaseMigrationStatus implements Completable {
     
@@ -21,8 +23,8 @@ public class ImportDatabaseMigrationStatus implements Completable {
     
     List<String> labelList = Lists.newArrayList();
     WarningProcessingEnum warningProcessing = WarningProcessingEnum.VALIDATE;
-    Map<String, List<String>> warningsMap = Maps.newLinkedHashMap();
-    Map<String, List<String>> errorsMap = Maps.newLinkedHashMap();
+    Map<String, Set<String>> warningsMap = Maps.newLinkedHashMap();
+    Map<String, Set<String>> errorsMap = Maps.newLinkedHashMap();
 
     public ImportDatabaseMigrationStatus(int totalCount, File importFile) {
     	this.totalCount = totalCount;
@@ -92,39 +94,39 @@ public class ImportDatabaseMigrationStatus implements Completable {
     
     // Warnings Map
     public void addWarningListEntry(String label, String warningMessage) {
-        List<String> warningList = this.warningsMap.get(label);
+        Set<String> warningList = this.warningsMap.get(label);
         if (warningList == null) {
-            warningList = Lists.newArrayList();
+            warningList = Sets.newHashSet();
             this.warningsMap.put(label, warningList);
         }
         warningList.add(warningMessage);
     }
-    public Map<String, List<String>> getWarningsMap() {
+    public Map<String, Set<String>> getWarningsMap() {
         return warningsMap;
     }
     public int getWarningCount() {
     	return getWarningsMap().size();
     }
-    public void setWarningsMap(Map<String, List<String>> warningsMap) {
+    public void setWarningsMap(Map<String, Set<String>> warningsMap) {
         this.warningsMap = warningsMap;
     }
     
     // Errors Map
     public void addErrorListEntry(String label, String errorMessage) {
-        List<String> errorList = this.errorsMap.get(label);
+        Set<String> errorList = this.errorsMap.get(label);
         if (errorList == null) {
-            errorList = Lists.newArrayList();
+            errorList = Sets.newHashSet();
             this.errorsMap.put(label, errorList);
         }
         errorList.add(errorMessage);
     }
-    public Map<String, List<String>> getErrorsMap() {
+    public Map<String, Set<String>> getErrorsMap() {
         return errorsMap;
     }
     public int getErrorCount() {
     	return getErrorsMap().size();
     }
-    public void setErrorsMap(Map<String, List<String>> errorsMap) {
+    public void setErrorsMap(Map<String, Set<String>> errorsMap) {
         this.errorsMap = errorsMap;
     }
     

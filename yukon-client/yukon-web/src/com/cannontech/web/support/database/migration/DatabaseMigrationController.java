@@ -397,7 +397,7 @@ public class DatabaseMigrationController {
 	
 	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
         ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
-        Map<String, List<String>> warningListMap = importDatabaseMigrationStatus.getWarningsMap();
+        Map<String, Set<String>> warningListMap = importDatabaseMigrationStatus.getWarningsMap();
 
         mav.addObject("warningListMap", warningListMap);
         
@@ -417,7 +417,7 @@ public class DatabaseMigrationController {
 
 	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
 	    ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
-	    Map<String, List<String>> errorListMap = importDatabaseMigrationStatus.getErrorsMap();
+	    Map<String, Set<String>> errorListMap = importDatabaseMigrationStatus.getErrorsMap();
 
 	    mav.addObject("errorListMap", errorListMap);
 	    
@@ -427,9 +427,7 @@ public class DatabaseMigrationController {
         }
         mav.addObject("objectCount", objectCount);
         
-        
 	    return mav;
-
 	}
 	
 	// OPEN FILE

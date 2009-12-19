@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -273,7 +271,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		                    }
 		                    if (importDatabaseMigrationStatus.getWarningCount() > 0) {
 		                        log.error("Validation Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap().get(label));
-		                        List<String> warningMessages = importDatabaseMigrationStatus.getWarningsMap().get(label);
 		                    }
 		                }
 
@@ -960,7 +957,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     	
     	// init status
         final ExportDatabaseMigrationStatus exportDatabaseMigrationStatus = 
-            new ExportDatabaseMigrationStatus(exportIdList.size(), xmlDataFile, exportType);
+            new ExportDatabaseMigrationStatus(exportIdList.size()+1, xmlDataFile, exportType);
         exportStatusCache.addResult(exportDatabaseMigrationStatus.getId(), exportDatabaseMigrationStatus);
         
         // run file generation in background thread
@@ -990,7 +987,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		        } catch (IOException e) {
 		        	log.error("Error outputting xml file.", e);
 		        }
-
+		        
+		        exportDatabaseMigrationStatus.addCurrentCount();
+		        
 		        closeLogger(logger);
 			}
 		});
@@ -1439,16 +1438,14 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
     @Autowired
     public void setResourceLoader(ResourceLoader resourceLoader) {
-        PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = 
-            new PathMatchingResourcePatternResolver(resourceLoader);
 
-        try {
-            Resource[] configurationResources = 
-                pathMatchingResourcePatternResolver.getResources("classpath:com/cannontech/database/configurations/*.xml");
-            this.configurationResourceList = new ArrayList<Resource>(Arrays.asList(configurationResources));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            List<Resource> configurationResourceList = Lists.newArrayList();
+            configurationResourceList.add(resourceLoader.getResource("classpath:com/cannontech/database/configurations/ApplianceCategoriesAndRelatedPrograms.xml"));
+            configurationResourceList.add(resourceLoader.getResource("classpath:com/cannontech/database/configurations/DirectLoadProgram.xml"));
+            configurationResourceList.add(resourceLoader.getResource("classpath:com/cannontech/database/configurations/ExpresscomLoadGroup.xml"));
+            configurationResourceList.add(resourceLoader.getResource("classpath:com/cannontech/database/configurations/LoadManagementToLoginGroupPermissions.xml"));
+            configurationResourceList.add(resourceLoader.getResource("classpath:com/cannontech/database/configurations/YukonLoginGroup.xml"));
+            this.configurationResourceList = configurationResourceList;
     }
     
     @Autowired
