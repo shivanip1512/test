@@ -30,7 +30,14 @@ LMGroupDeviceId ASC
 
 /* Start YUK-8180 */
 INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Database Migration','false','Controls access to database migration tool.');
-/* End YUK-8180 */ 
+/* End YUK-8180 */
+
+/* Start YUK-8182 */
+CREATE INDEX Indx_PAO_PAOName_Type ON YukonPAObject(
+    PAOName ASC,
+    Type ASC
+);
+/* End YUK-8182 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

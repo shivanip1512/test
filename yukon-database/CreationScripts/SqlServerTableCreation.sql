@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/19/2009 11:50:57 AM                       */
+/* Created on:     12/20/2009 9:36:32 PM                        */
 /*==============================================================*/
 
 
@@ -1065,6 +1065,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index YukonPAObject.Indx_PAO
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonPAObject')
+            and   name  = 'Indx_PAO_PAOName_Type'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonPAObject.Indx_PAO_PAOName_Type
 go
 
 if exists (select 1
@@ -12071,6 +12080,15 @@ create unique index Indx_PAO on YukonPAObject (
 Category ASC,
 PAOName ASC,
 PAOClass ASC
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_PAO_PAOName_Type                                 */
+/*==============================================================*/
+create index Indx_PAO_PAOName_Type on YukonPAObject (
+PAOName ASC,
+Type ASC
 )
 go
 
