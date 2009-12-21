@@ -231,7 +231,7 @@
     
     <table name="YukonListEntry">
         <primaryKey name="EntryId"/>
-        <identifier name="ListId" tableRef="YukonSelectionList" refType="ONE_TO_ONE"/>
+        <identifier name="ListId"/>
         <identifier name="EntryText"/>
         <data name="EntryOrder"/>
         <data name="YukonDefinitionId"/>
