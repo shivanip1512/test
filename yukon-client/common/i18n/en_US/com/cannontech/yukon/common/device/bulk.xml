@@ -479,7 +479,7 @@
     <entry key="yukon.common.device.bulk.removePointsHome.viewDefinitionDetailPopupTitle">View Device Definition</entry>
     
     <!-- options text -->
-    <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionLabel">Mask Missing Points</entry>
+    <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionLabel">Missing Points</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionDescription">* Masking points may take a a little longer when working with a collection containg many devices.</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsFalseOptionText">Mask Points That No Devices Have</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsFalseOptionTooltip">Click the button to mask those points that none of the selected devices currently have.</entry>
