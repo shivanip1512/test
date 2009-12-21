@@ -365,7 +365,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                             String warningMessage = "Preserving the entry "+label+".";
                             log.error(warningMessage);
                             logger.warning(warningMessage);
-                        } else if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
+                        } else if (warningProcessing.equals(WarningProcessingEnum.OVERWRITE)) {
                             String warningMessage = "Overwriting the entry "+label+" was sucessful.";
                             log.error(warningMessage);
                             logger.warning(warningMessage);
