@@ -2,6 +2,7 @@ package com.cannontech.database.db.device.lm;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.spring.YukonSpringHook;
 /**
  * This type was created in VisualAge.
  */
@@ -244,36 +245,13 @@ public final static LMGroupExpressComAddress[] getAllExpressCommAddressWithNames
  */
 public final static int getNextAddressID( java.sql.Connection conn )
 {
-	int retVal = 0;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-		
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection can not be (null).");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement("select max(AddressID) AS maxid from " + TABLE_NAME );
-			rset = pstmt.executeQuery();							
 
-			// Just one please
-			if( rset.next() )
-				retVal = rset.getInt("maxid") + 1;
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt);
-	}
+    if( conn == null ) {
+        throw new IllegalStateException("Database connection can not be (null).");
+    } else {
+        return YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+    }		
 
-	return retVal;
 }
 /**
  * retrieve method comment.
