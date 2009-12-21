@@ -23,5 +23,7 @@
     <xsd:include schemaLocation="UnenrollmentResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateControllableDevicesRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateControllableDevicesResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="EnrolledDevicesByAccountNumberRequest.xsd" />
+    <xsd:include schemaLocation="EnrolledDevicesByAccountNumberResponse.xsd" />
     
 </xsd:schema>

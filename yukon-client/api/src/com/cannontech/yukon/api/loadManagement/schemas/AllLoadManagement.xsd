@@ -19,6 +19,8 @@
     <xsd:include schemaLocation="DecrementDeviceOverrideLimitResponse.xsd" />
     <xsd:include schemaLocation="ListScenarioProgramsRequest.xsd" />
     <xsd:include schemaLocation="ListScenarioProgramsResponse.xsd" />
+    <xsd:include schemaLocation="ListAllScenarioProgramsRequest.xsd" />
+    <xsd:include schemaLocation="ListAllScenarioProgramsResponse.xsd" />
     <xsd:include schemaLocation="OverrideHistoryByAccountNumberRequest.xsd" />
     <xsd:include schemaLocation="OverrideHistoryByAccountNumberResponse.xsd" />
     <xsd:include schemaLocation="OverrideHistoryByProgramNameRequest.xsd" />
@@ -47,6 +49,8 @@
     <xsd:include schemaLocation="TotalOverriddenDevicesByProgramNameRequest.xsd" />
     <xsd:include schemaLocation="TotalOverriddenDevicesByProgramNameResponse.xsd" />
     <xsd:include schemaLocation="TotalOverriddenDevicesTypes.xsd" />
+    <xsd:include schemaLocation="ResetOverrideCountBySerialNumberRequest.xsd" />
+    <xsd:include schemaLocation="ResetOverrideCountBySerialNumberResponse.xsd" />
 	
     
 </xsd:schema>
