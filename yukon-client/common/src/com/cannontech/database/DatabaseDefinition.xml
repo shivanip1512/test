@@ -3,7 +3,7 @@
         <primaryKey name="ApplianceCategoryId" />
         <identifier name="Description"/>
         <data name="CategoryId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
-        <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE"/>
+        <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" nullId="0" />
     </table>
 	
 	<table name="Device">
@@ -120,7 +120,7 @@
     
     <table name="LMProgramDirectGroup">
         <primaryKey name="DeviceId" tableRef="LMProgramDirect"/>
-        <data name="LMGroupDeviceId" tableRef="LMGroup" refType="MANY_TO_ONE"/>
+        <identifier name="LMGroupDeviceId" tableRef="LMGroup" refType="MANY_TO_ONE"/>
         <primaryKey name="GroupOrder" />
     </table>
     
@@ -159,7 +159,7 @@
         <primaryKey name="ProgramId" />
         <identifier name="ApplianceCategoryId" tableRef="ApplianceCategory" refType="MANY_TO_ONE"/>
         <identifier name="DeviceId" tableRef="YukonPAObject" refType="MANY_TO_ONE"/>
-        <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="MANY_TO_ONE"/>
+        <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" nullId="0" />
         <data name="ChanceOfControlId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
         <data name="ProgramOrder" />
     </table>
