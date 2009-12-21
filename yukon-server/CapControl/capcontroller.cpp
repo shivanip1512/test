@@ -454,6 +454,11 @@ void CtiCapController::controlLoop()
         CtiTime tickleTime((unsigned long) 0);
         CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
 
+        long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControl);
+        CtiTime LastThreadMonitorTime = LastThreadMonitorTime.now();
+        CtiThreadMonitor::State previous;
+        UCHAR checkCount = 0;
+
         while(TRUE)
         {
             long main_wait = control_loop_delay;
@@ -858,6 +863,22 @@ void CtiCapController::controlLoop()
                 }
 
                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl controlLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            }
+
+            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+            {
+                if(pointID!=0)
+                {
+                    CtiThreadMonitor::State next;
+                    LastThreadMonitorTime = LastThreadMonitorTime.now();
+                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                    {
+                        previous = next;
+                        checkCount = 0;
+
+                        getDispatchConnection()->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                    }
+                }
             }
         }
 

@@ -65,6 +65,7 @@
 
 #include "utility.h"
 #include "dllyukon.h"
+#include "thread_monitor.h"
 
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
@@ -370,10 +371,34 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
+    CtiTime LastThreadMonitorTime = LastThreadMonitorTime.now();
+    CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
+    UCHAR checkCount = 0;
 
+    // Initialize the connection to VanGogh....
+    VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
+    VanGoghConnection.setName("Dispatch");
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
 
     do
     {
+        if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+        {
+            if(pointID!=0)
+            {
+                CtiThreadMonitor::State next;
+                LastThreadMonitorTime = LastThreadMonitorTime.now();
+                if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                {
+                    previous = next;
+                    checkCount = 0;
+
+                    VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                }
+            }
+        }
+
         LoadScannableDevices();
 
         for(i = 0; i < MAX_SCAN_TYPE; i++)
@@ -410,11 +435,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     if(!ScannerQuit)
     {
-        // Initialize the connection to VanGogh....
-        VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
-        VanGoghConnection.setName("Dispatch");
-        VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
-
         if(_beginthread (NexusThread, RESULT_THREAD_STK_SIZE, (VOID *)SCANNER_REGISTRATION_NAME) == -1)
         {
             dout << "Error starting Nexus Thread" << endl;
@@ -448,6 +468,22 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* Everything is ready so go into the scan loop */
     for(;!ScannerQuit;)
     {
+        if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+        {
+            if(pointID!=0)
+            {
+                CtiThreadMonitor::State next;
+                LastThreadMonitorTime = LastThreadMonitorTime.now();
+                if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                {
+                    previous = next;
+                    checkCount = 0;
+
+                    VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                }
+            }
+        }
+
         /* Release the Lock Semaphore */
         ReleaseMutex( hScannerSyncs[S_LOCK_MUTEX] );
 
@@ -697,9 +733,25 @@ VOID ResultThread (VOID *Arg)
         }
     }
 
+    CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
+    CtiTime lastReportTime((unsigned long) 0); //Ditto
+
     /* perform the wait loop forever */
     for(;!ScannerQuit;)
     {
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
+        {
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+            {
+                lastReportTime = lastReportTime.now();
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Scanner Result Thread Active. TID:  " << rwThreadId() << endl;
+            }
+
+            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "Scanner Result Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime ) );
+            lastTickleTime = lastTickleTime.now();
+        }
+
         /* Release the Lock Semaphore */
         if(dwWait == 1) ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
         dwWait = 0;
@@ -1309,14 +1361,25 @@ void DispatchMsgHandlerThread(VOID *Arg)
     CtiTime         TimeNow;
     CtiTime         LastTime;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << TimeNow << " DispatchMsgHandlerThread started as TID " << rwThreadId() << endl;
-    }
+    CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
+    CtiTime lastReportTime((unsigned long) 0); //Ditto
 
     /* perform the wait loop forever */
     for( ; !ScannerQuit ; )
     {
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
+        {
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+            {
+                lastReportTime = lastReportTime.now();
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Scanner DispatchMsgHandlerThread Active. TID:  " << rwThreadId() << endl;
+            }
+
+            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "Scanner DispatchMsgHandlerThread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime ) );
+            lastTickleTime = lastTickleTime.now();
+        }
+
         CtiMessage *MsgPtr = VanGoghConnection.ReadConnQue(5000L);
 
         if(MsgPtr != NULL)
@@ -1438,34 +1501,44 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
 void DatabaseHandlerThread(VOID *Arg)
 {
-    BOOL           bServerClosing = FALSE;
+    BOOL    bServerClosing = FALSE;
 
-    CtiTime         TimeNow;
-    CtiTime         RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
-    ULONG          delta;
+    CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
+    CtiTime lastReportTime((unsigned long) 0); //Ditto
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << TimeNow << " DatabaseHandlerThread started as TID " << rwThreadId() << endl;
-    }
+    CtiTime TimeNow;
+    CtiTime RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
+
+    ULONG   refreshRate = 900L;     // Max 15 minute (900 second) time between database processing.
+    ULONG   delta       = std::min( static_cast<ULONG>(RefreshTime.seconds() - TimeNow.seconds()), refreshRate);
+    ULONG   counter     = 0;
 
     /* perform the wait loop forever */
     for( ; !ScannerQuit ; )
     {
-        TimeNow = TimeNow.now();
-
-        delta = (RefreshTime.seconds() - TimeNow.seconds()) * 1000;
-
-        if(delta > 900000)      // Every 15 minutes, I want to write the DynamicScanData.
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
         {
-            delta = 900000;
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+            {
+                lastReportTime = lastReportTime.now();
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Scanner DatabaseHandlerThread Active. TID:  " << rwThreadId() << endl;
+            }
+
+            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "Scanner DatabaseHandlerThread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime ) );
+            lastTickleTime = lastTickleTime.now();
         }
 
-        if( WAIT_OBJECT_0 == WaitForSingleObject(hScannerSyncs[S_QUIT_EVENT], delta) )
+        if( WAIT_OBJECT_0 == WaitForSingleObject(hScannerSyncs[S_QUIT_EVENT], 1000) )
         {
             ScannerQuit = TRUE;
         }
         else
+        {
+            counter++;
+        }
+
+        if( !ScannerQuit && counter >= delta )
         {
             TimeNow = TimeNow.now();
 
@@ -1486,6 +1559,10 @@ void DatabaseHandlerThread(VOID *Arg)
 
                 RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
             }
+
+            counter = 0;
+            TimeNow = TimeNow.now();
+            delta   = std::min( static_cast<ULONG>(RefreshTime.seconds() - TimeNow.seconds()), refreshRate);
         }
     } /* End of for */
 

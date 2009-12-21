@@ -142,7 +142,9 @@ void CtiCalcLogicService::Run( )
     long pointID;
 
     ThreadMonitor.start(); //ecs 1/4/2005
-    CtiTime LastThreadMonitorTime;
+    CtiTime LastThreadMonitorTime = LastThreadMonitorTime.now();
+    CtiThreadMonitor::State previous;
+    UCHAR checkCount = 0;
 
     pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
 
@@ -183,6 +185,25 @@ void CtiCalcLogicService::Run( )
 
         while( !UserQuit )
         {
+            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+            {
+                if(pointID!=0)
+                {
+                    CtiThreadMonitor::State next;
+                    LastThreadMonitorTime = LastThreadMonitorTime.now();
+                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                    {
+                        previous = next;
+                        checkCount = 0;
+
+                        if(_conxion)
+                        {
+                            _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                        }
+                    }
+                }
+            }
+
             try
             {
                 if( _conxion == NULL || (_conxion != NULL && _conxion->verifyConnection()) )
@@ -431,15 +452,26 @@ void CtiCalcLogicService::Run( )
             {
                 try
                 {
-                    rwnow = rwnow.now();
-                    if(rwnow > LastThreadMonitorTime)
+                    if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
                     {
-                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 60 );//If you change this timing, be sure to fix the timing on the dispatch reset
                         if(pointID!=0)
                         {
-                            _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString()));;
+                            CtiThreadMonitor::State next;
+                            LastThreadMonitorTime = LastThreadMonitorTime.now();
+                            if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                            {
+                                previous = next;
+                                checkCount = 0;
+
+                                if(_conxion)
+                                {
+                                    _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                                }
+                            }
                         }
                     }
+
+                    rwnow = rwnow.now();
 
                     if(rwnow > announceTime)
                     {

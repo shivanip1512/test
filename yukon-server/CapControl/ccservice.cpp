@@ -20,6 +20,7 @@
 #include "ccsubstationbus.h"
 #include "logger.h"
 #include "ctitime.h"
+#include "thread_monitor.h"
 
 //Boolean if debug messages are printed
 ULONG _CC_DEBUG;
@@ -120,6 +121,9 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
 
     OnStop();
 
+    ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+    ThreadMonitor.join();
+
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
     SetStatus(SERVICE_STOPPED);
@@ -133,6 +137,8 @@ void CtiCCService::Init()
     dout.setOutputPath(gLogDirectory);
     dout.setToStdOut(true);
     dout.setWriteInterval(1);
+
+    ThreadMonitor.start();
 
     string str;
     char var[128];

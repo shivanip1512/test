@@ -2477,7 +2477,6 @@ void CtiCCSubstationBusStore::doResetThr()
     }
 
     CtiTime lastPeriodicDatabaseRefresh = CtiTime();
-    ThreadMonitor.start();
     CtiTime rwnow;
     CtiTime announceTime((unsigned long) 0);
     CtiTime tickleTime((unsigned long) 0);

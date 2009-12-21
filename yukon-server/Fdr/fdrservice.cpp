@@ -64,6 +64,10 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "guard.h"
 #include "fdrservice.h"
+#include "thread_monitor.h"
+#include "connection.h"
+
+CtiConnection     FdrVanGoghConnection;
 
 
 BOOL MyCtrlHandler( DWORD fdwCtrlType )
@@ -149,6 +153,8 @@ void CtiFDRService::Init( )
 
     try
     {
+        ThreadMonitor.start();
+
         if ( !(gConfigParms.isOpt(CPARM_NAME_FDR_INTERFACES)) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -257,6 +263,9 @@ void CtiFDRService::OnStop( )
     //UserQuit = true;
     SetEvent(iShutdown);
 
+    ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+    ThreadMonitor.join();
+
     // stop dout thread
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
@@ -270,6 +279,12 @@ void CtiFDRService::OnStop( )
 
 void CtiFDRService::Run( )
 {
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
+    CtiTime LastThreadMonitorTime = LastThreadMonitorTime.now();
+    CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
+    UCHAR checkCount = 0;
+
+    string FdrVanGoghMachine = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
 
     // for shutting down
     iShutdown = CreateEvent(NULL,TRUE,FALSE,NULL);
@@ -285,10 +300,34 @@ void CtiFDRService::Run( )
         SetStatus(SERVICE_RUNNING, 0, 0,
                   SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
+        // Initialize the connection to VanGogh....
+        FdrVanGoghConnection.doConnect(VANGOGHNEXUS, FdrVanGoghMachine);
+        FdrVanGoghConnection.setName("FDR to Dispatch");
+        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR", rwThreadId(), TRUE));
 
-        //Wait for the shutdown event to become signalled
-        WaitForSingleObject( iShutdown, INFINITE );
+        do
+        {
+            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+            {
+                if(pointID!=0)
+                {
+                    CtiThreadMonitor::State next;
+                    LastThreadMonitorTime = LastThreadMonitorTime.now();
+                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                    {
+                        previous = next;
+                        checkCount = 0;
 
+                        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                    }
+                }
+            }
+
+
+        }
+        while ( WAIT_TIMEOUT == WaitForSingleObject( iShutdown, 10000 ) );   // 10 seconds
+
+        FdrVanGoghConnection.ShutdownConnection();
     }
     catch( RWxmsg &msg )
     {

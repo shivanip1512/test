@@ -25,6 +25,7 @@ using namespace std;
 #include "dllbase.h"
 #include "ctibase.h"
 #include "logger.h"
+#include "thread_monitor.h"
 
 extern INT ScannerMainFunction(INT, CHAR**);
 
@@ -41,6 +42,7 @@ int main(int argc, char* argv[] )
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);
 
+   ThreadMonitor.start();
 
    if( SetConsoleTitle("Scanner") )
    {
@@ -88,6 +90,9 @@ int main(int argc, char* argv[] )
       SERVICE_MAP_ENTRY(CtiScannerService, Scanner)
       END_SERVICE_MAP
    }
+
+   ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+   ThreadMonitor.join();
 
    // Make sure all the logs get output and done!
    dout.interrupt(CtiThread::SHUTDOWN);
