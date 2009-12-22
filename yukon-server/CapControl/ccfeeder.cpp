@@ -30,6 +30,7 @@
 #include "utility.h"
 #include "msg_lmcontrolhistory.h"
 #include "tbl_pt_alarm.h"
+#include "ccutil.h"
 #include "ccsubstationbus.h"
 
 extern ULONG _CC_DEBUG;
