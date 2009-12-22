@@ -257,6 +257,9 @@ public:
     CtiCCCapBank& addAllCapBankPointsToMsg(std::list<int>& pointAddMsg);
     string getControlStatusText() const;
     BOOL isPendingStatus();
+    BOOL isFailedStatus();
+    BOOL isQuestionableStatus();
+    BOOL isFailedOrQuestionableStatus();
 
     CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
 

@@ -52,7 +52,8 @@ enum CtiCCEventType_t
     capControlEnableOvUv = 11,
     capControlDisableOvUv = 12,
     capBankStateUpdateFail = 13,
-    capControlCommandRetrySent
+    capControlCommandRetrySent = 14,
+    capControlUnexpectedCBCStateReported
 
 };
 
@@ -139,12 +140,15 @@ public:
         BANK_DISABLE_VARCONTROL,
         BANK_ENABLE_TIMECONTROL,//50
         BANK_DISABLE_TIMECONTROL,
+        SYNC_CBC_CAPBANK_STATE, //52
+        SEND_ALL_SYNC_CBC_CAPBANK_STATE, //53
 
         LTC_SCAN_INTEGRITY = 60,
         LTC_REMOTE_CONTROL_ENABLE,
         LTC_REMOTE_CONTROL_DISABLE,
         LTC_TAP_POSITION_RAISE,
         LTC_TAP_POSITION_LOWER,
+
 
 
     };

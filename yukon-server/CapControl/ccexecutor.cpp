@@ -141,6 +141,7 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::SYSTEM_STATUS:
         SendSystemStatus();
         break;
+    case CtiCCCommand::SEND_ALL_SYNC_CBC_CAPBANK_STATE:
     case CtiCCCommand::SEND_ALL_OPEN:
     case CtiCCCommand::SEND_ALL_CLOSE:
     case CtiCCCommand::SEND_ALL_ENABLE_OVUV:
@@ -184,6 +185,10 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::LTC_TAP_POSITION_LOWER:
         sendLTCCommands( _command->getCommand() );
         break;
+    case CtiCCCommand::SYNC_CBC_CAPBANK_STATE:
+        syncCbcAndCapBankStates();
+        break;
+
 
     default:
         {
@@ -986,6 +991,95 @@ void CtiCCCommandExecutor::sendLocalControl()
     signals.clear();
 
 
+}
+
+void CtiCCCommandExecutor::syncCbcAndCapBankStates()
+{
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG bankID = _command->getId();
+    string commandName = " Sync CBC and CapBank States";
+    //Add check for 702 device type?
+    int controllerId = _command->getId();
+    if (controllerId == 0 )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName <<" command rejected, controller id of 0 received. " << endl;
+        return;
+    }
+    int bankId = store->findCapBankIDbyCbcID(controllerId);
+    if (bankId == 0)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Bank not found attached to controller with id: " << controllerId << endl;
+        return;
+    }
+    CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
+    if (capBank == NULL)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId
+                                         << " and controller with id: " << controllerId << endl;
+        return;
+    }
+    if ( !(stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702") ||
+           stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC DNP")) )
+    {
+        return;
+    }
+    if ( capBank->getDisableFlag() )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName <<" command rejected, CapBank: "<< capBank->getPAOName()<<" is Disabled." << endl;
+        return;
+    }
+    if ( capBank->isPendingStatus() )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << commandName <<" command rejected, CapBank: "<< capBank->getPAOName()<<" is in a Pending State." << endl;
+        return;
+    }
+
+    //Logging Action
+    string text = string("Manual CBC/CapBank State Sync.  Adjusting CapBank State from: ");
+    text += capBank->getControlStatusText() + " to ";
+    text += ( capBank->getTwoWayPoints()->getCapacitorBankState() ? "Close." : "Open.");
+    string additional = string("Cap Bank: ");
+    additional += capBank->getPAOName();
+
+    if (_LOG_MAPID_INFO)
+    {
+        additional += " MapID: ";
+        additional += capBank->getMapLocationId();
+        additional += " (";
+        additional += capBank->getPAODescription();
+        additional += ")";
+    }
+
+    capBank->setControlStatus(capBank->getTwoWayPoints()->getCapacitorBankState());
+
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+    CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+
+    int subId = store->findSubBusIDbyCapBankID(bankId);
+    int feederId = store->findFeederIDbyCapBankID(bankId);
+    CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(subId);
+
+    int seqId = CCEventSeqIdGen();
+    subBus->setEventSequence(seqId);
+    long stationId, areaId, spAreaId;
+    store->getSubBusParentInfo(subBus, spAreaId, areaId, stationId);
+    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capBankStateUpdate, seqId, capBank->getControlStatus(), text, _command->getUser()));
+
+
+    CtiCCExecutorFactory f;
+    CtiCCExecutor *executor = NULL;
+
+    executor = f.createExecutor(new CtiCCSubstationBusMsg(subBus));
+    executor->Execute();
+    delete executor;
 }
 
 /*---------------------------------------------------------------------------
@@ -2237,6 +2331,12 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
         {
             actionText = string(" - Disable Time Control");
             action = CtiCCCommand::BANK_DISABLE_TIMECONTROL;
+            break;
+        }
+        case CtiCCCommand::SEND_ALL_SYNC_CBC_CAPBANK_STATE:
+        {
+            actionText = string(" - Sync CBC and CapBank States");
+            action = CtiCCCommand::SYNC_CBC_CAPBANK_STATE;
             break;
         }
         default:

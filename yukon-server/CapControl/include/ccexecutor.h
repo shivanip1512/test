@@ -102,6 +102,7 @@ private:
     void AutoControlOvUvBySubBus(BOOL disableFlag);
     bool checkForCommandRefusal(CtiCCFeeder* feeder);
     void ControlAllCapBanks(LONG paoId, int control);
+    void syncCbcAndCapBankStates();
 
     // Local Control Command Funtions
     void sendLocalControl();

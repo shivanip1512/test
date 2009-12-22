@@ -631,6 +631,36 @@ BOOL CtiCCCapBank::isPendingStatus()
     }
     return FALSE;
 }
+
+BOOL CtiCCCapBank::isFailedOrQuestionableStatus()
+{
+    if (isQuestionableStatus() || isFailedStatus())
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+
+BOOL CtiCCCapBank::isQuestionableStatus()
+{
+    if ( getControlStatus() ==  CtiCCCapBank::OpenQuestionable ||
+         getControlStatus() ==  CtiCCCapBank::CloseQuestionable)
+    {
+        return TRUE;
+    }
+    return FALSE;
+
+}
+BOOL CtiCCCapBank::isFailedStatus()
+{
+    if (getControlStatus() == CtiCCCapBank::OpenFail ||
+        getControlStatus() ==  CtiCCCapBank::CloseFail )
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
 /*---------------------------------------------------------------------------
     getControlStatus
 
