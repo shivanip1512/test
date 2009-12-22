@@ -75,7 +75,9 @@ $(OBJ)\ccoriginalparent.obj \
 $(OBJ)\PointOffsetValueHolder.obj \
 $(OBJ)\LtcPointHolder.obj \
 $(OBJ)\CapControlPao.obj \
-$(OBJ)\LoadTapChanger.obj
+$(OBJ)\LoadTapChanger.obj \
+$(OBJ)\ccutil.obj 
+
 
 TARGS = capcontrol.exe
 
