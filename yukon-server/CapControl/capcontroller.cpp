@@ -85,6 +85,7 @@ extern BOOL _OP_STATS_DYNAMIC_UPDATE;
 extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 extern ULONG _REFUSAL_TIMEOUT;
 extern BOOL _USE_PHASE_INDICATORS;
+extern ULONG _MSG_PRIORITY;
 
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -4743,6 +4744,12 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE: " << _OP_STATS_DYNAMIC_UPDATE << endl;
+        }
+        _MSG_PRIORITY = gConfigParms.getValueAsULong("CAP_CONTROL_MSG_PRIORITY", 13);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY << endl;
         }
 
     }

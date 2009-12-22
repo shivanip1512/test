@@ -9962,9 +9962,33 @@ CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::list<int>& poi
     {
         pointAddMsg.push_back(getSwitchOverPointId());
     }
+    if (getPhaseBId() > 0)
+    {
+        pointAddMsg.push_back(getPhaseBId());
+    }
+    if (getPhaseCId() > 0)
+    {
+        pointAddMsg.push_back(getPhaseCId());
+    }
     if (getVoltReductionControlId() > 0)
     {
         pointAddMsg.push_back(getVoltReductionControlId());
+    }
+    if (getOperationStats().getUserDefOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getUserDefOpSuccessPercentId());
+    }
+    if (getOperationStats().getDailyOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getDailyOpSuccessPercentId());
+    }
+    if (getOperationStats().getWeeklyOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getWeeklyOpSuccessPercentId());
+    }
+    if (getOperationStats().getMonthlyOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getMonthlyOpSuccessPercentId());
     }
 
     return *this;

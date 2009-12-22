@@ -2,6 +2,7 @@
 #pragma warning( disable : 4786)
 
 #include "devicetypes.h"
+#include "msg_pcrequest.h"
 
 enum CapControlType
 {
@@ -16,3 +17,4 @@ enum CapControlType
     SpecialArea,
     Ltc = TYPELTC
 };
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString);

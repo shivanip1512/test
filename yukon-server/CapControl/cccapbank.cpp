@@ -2046,7 +2046,22 @@ CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::list<int>& pointAddMsg
     {
         pointAddMsg.push_back(getOperationAnalogPointId());
     }
-
+    if (getOperationStats().getUserDefOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getUserDefOpSuccessPercentId());
+    }
+    if (getOperationStats().getDailyOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getDailyOpSuccessPercentId());
+    }
+    if (getOperationStats().getWeeklyOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getWeeklyOpSuccessPercentId());
+    }
+    if (getOperationStats().getMonthlyOpSuccessPercentId() > 0)
+    {
+        pointAddMsg.push_back(getOperationStats().getMonthlyOpSuccessPercentId());
+    }
     return *this;
 }
 

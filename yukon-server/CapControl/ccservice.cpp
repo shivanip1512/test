@@ -55,7 +55,7 @@ ULONG _OP_STATS_REFRESH_RATE;
 BOOL _OP_STATS_DYNAMIC_UPDATE;
 BOOL _RETRY_ADJUST_LAST_OP_TIME;
 BOOL _USE_PHASE_INDICATORS;
-
+ULONG _MSG_PRIORITY;
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -638,6 +638,12 @@ void CtiCCService::Init()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+    _MSG_PRIORITY = gConfigParms.getValueAsULong("CAP_CONTROL_MSG_PRIORITY", 13);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY << endl;
     }
     _quit = false;
 }

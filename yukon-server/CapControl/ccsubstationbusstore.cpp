@@ -10570,7 +10570,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 locateOrphans(&_orphanedCapBanks, &_orphanedFeeders, _paobject_capbank_map, _paobject_feeder_map,
                                      _capbank_feeder_map, _feeder_subbus_map);
 
-                registerForAdditionalPoints(modifiedSubsSet,  modifiedStationsSet);
                 try
                 {
                     for(int i=0;i<capMessages.size( );i++)

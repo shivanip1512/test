@@ -22,7 +22,7 @@ using std::list;
 #include "ccid.h"
 #include "logger.h"
 #include "utility.h"
-
+#include "ccutil.h"
 #include <rw/collstr.h>
 using namespace std;
 

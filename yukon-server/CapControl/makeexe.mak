@@ -70,7 +70,8 @@ ccconfirmationstats.obj \
 ccstatsobject.obj \
 ccoriginalparent.obj \
 CapControlPao.obj \
-LoadTapChanger.obj
+LoadTapChanger.obj \
+ccutil.obj
 
 
 TARGS = capcontrol.exe
