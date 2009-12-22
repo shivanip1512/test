@@ -360,11 +360,6 @@ void CtiTime::extract(struct tm* ctm) const
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - attempt to extract invalid CtiTime (seconds = " << _seconds << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         ctm->tm_hour  = 0;
         ctm->tm_isdst = 0;
         ctm->tm_mday  = 0;

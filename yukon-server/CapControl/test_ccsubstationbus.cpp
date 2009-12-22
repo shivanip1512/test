@@ -148,6 +148,16 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     store->deleteInstance();
 }
 
+BOOST_AUTO_TEST_CASE(test_lock_invalid_ctitime)
+{
+    unsigned long x = 0;
+    CtiTime now(x);
+    struct tm start_tm;
+
+    now.extract(&start_tm);
+
+
+}
 BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 {
 
