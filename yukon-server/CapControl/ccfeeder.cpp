@@ -2300,7 +2300,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         }
     }
 
-    reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
+    reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control open");
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -2389,9 +2389,9 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
          _USE_FLIP_FLAG == TRUE)
-        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control flip");
     else
-        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control open");
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -2480,9 +2480,9 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
          _USE_FLIP_FLAG == TRUE)
-        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control flip");
     else
-        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control close");
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control close");
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -2588,7 +2588,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         }
     }
 
-    reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control close" );
+    reqMsg = createPorterRequestMsg( capBank->getControlDeviceId(),"control close" );
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -2701,10 +2701,10 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
     }
     if (capBank->getControlStatus() == CtiCCCapBank::Close )
     {
-        reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control close" );
+        reqMsg = createPorterRequestMsg( capBank->getControlDeviceId(),"control close" );
     }
     else
-        reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control open" );
+        reqMsg = createPorterRequestMsg( capBank->getControlDeviceId(),"control open" );
 
     reqMsg->setSOE(4);
 
@@ -5374,7 +5374,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                             << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
 
-                        CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control open");
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(),"control open");
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {
@@ -5416,7 +5416,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                             << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
 
-                        CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control close");
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(),"control close");
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {
@@ -6604,7 +6604,7 @@ BOOL CtiCCFeeder::scanAllMonitorPoints()
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " MULTIVOLT: Requesting scans at the alternate scan rate for " << currentCapBank->getPAOName() << endl;
                             }
-                            //CtiCapController::getInstance()->sendMessageToDispatch(new CtiRequestMsg(currentCapBank->getControlDeviceId(), "scan general"));
+                            //CtiCapController::getInstance()->sendMessageToDispatch(createPorterRequestMsg(currentCapBank->getControlDeviceId(), "scan general"));
                             point->setScanInProgress(TRUE);
                             retVal = TRUE;
                         }

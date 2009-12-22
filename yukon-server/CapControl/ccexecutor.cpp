@@ -1084,11 +1084,11 @@ void CtiCCCommandExecutor::enableOvUv(std::vector<CtiSignalMsg*>& signals,
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)voltageValue).toString();
-        reqMsg = new CtiRequestMsg(controllerId,commandString);
+        reqMsg = createPorterRequestMsg(controllerId,commandString);
     }
     else
     {
-        reqMsg = new CtiRequestMsg(controllerId,"putconfig ovuv enable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig ovuv enable");
     }
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
@@ -1192,11 +1192,11 @@ void CtiCCCommandExecutor::disableOvUv(std::vector<CtiSignalMsg*>& signals,
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)voltageValue).toString();
-        reqMsg = new CtiRequestMsg(controllerId,commandString);
+        reqMsg = createPorterRequestMsg(controllerId,commandString);
     }
     else
     {
-        reqMsg = new CtiRequestMsg(controllerId,"putconfig ovuv disable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig ovuv disable");
     }
 
     reqMsg->setSOE(5);
@@ -1296,7 +1296,7 @@ void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
     string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringOne);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1307,7 +1307,7 @@ void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals
     seasonTwoValue |= 0x80;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1392,7 +1392,7 @@ void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signal
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
     string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringOne);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1403,7 +1403,7 @@ void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signal
     seasonTwoValue &= 0x7f;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1498,7 +1498,7 @@ void CtiCCCommandExecutor::enableVarControl(std::vector<CtiSignalMsg*>& signals,
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
     string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandString);
+    reqMsg = createPorterRequestMsg(controllerId,commandString);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1593,7 +1593,7 @@ void CtiCCCommandExecutor::disableVarControl(std::vector<CtiSignalMsg*>& signals
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
     string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandString);
+    reqMsg = createPorterRequestMsg(controllerId,commandString);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1692,7 +1692,7 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
     string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringOne);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1703,7 +1703,7 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     seasonTwoValue |= 0x01;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1789,7 +1789,7 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     //Send point update message with new value.
     CtiRequestMsg* reqMsg = NULL;
     string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringOne);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1800,7 +1800,7 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     seasonTwoValue &= 0xfe;
 
     string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-    reqMsg = new CtiRequestMsg(controllerId,commandStringTwo);
+    reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 
@@ -1873,7 +1873,7 @@ void CtiCCCommandExecutor::SendTimeSync()
         controlID = currentCapBank->getControlDeviceId();
         if (controlID > 0)
         {
-            pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
+            pilMessages.push_back(createPorterRequestMsg(controlID,"putconfig timesync"));
         }
     }
     else if (currentFeeder != NULL)
@@ -1904,7 +1904,7 @@ void CtiCCCommandExecutor::SendTimeSync()
                     if (controlID > 0 &&
                         stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                     {
-                        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig timesync");
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"putconfig timesync");
                         reqMsg->setUser(_command->getUser());
                         pilMessages.push_back(reqMsg);
                     }
@@ -1943,7 +1943,7 @@ void CtiCCCommandExecutor::SendTimeSync()
                     if (controlID > 0 &&
                         stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                     {
-                        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig timesync");
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"putconfig timesync");
                         reqMsg->setUser(_command->getUser());
                         pilMessages.push_back(reqMsg);
                     }
@@ -1991,7 +1991,7 @@ void CtiCCCommandExecutor::SendTimeSync()
                             if (controlID > 0 &&
                                 stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                             {
-                                CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig timesync");
+                                CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"putconfig timesync");
                                 reqMsg->setUser(_command->getUser());
                                 pilMessages.push_back(reqMsg);
                             }
@@ -2048,7 +2048,7 @@ void CtiCCCommandExecutor::SendTimeSync()
                                     if (controlID > 0 &&
                                         stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                                     {
-                                        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig timesync");
+                                        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"putconfig timesync");
                                         reqMsg->setUser(_command->getUser());
                                         pilMessages.push_back(reqMsg);
                                     }
@@ -2122,7 +2122,7 @@ void CtiCCCommandExecutor::SendTimeSync()
                                         if (controlID > 0 &&
                                             stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                                         {
-                                            CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig timesync");
+                                            CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"putconfig timesync");
                                             reqMsg->setUser(_command->getUser());
                                             pilMessages.push_back(reqMsg);
                                         }
@@ -2941,7 +2941,7 @@ void CtiCCCommandExecutor::OpenCapBank()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
@@ -3260,7 +3260,7 @@ void CtiCCCommandExecutor::CloseCapBank()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
@@ -3583,13 +3583,13 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
                             {
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
-                                    CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
+                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
                                     reqMsg->setSOE(2);
                                     pilMessages.push_back(reqMsg);
                                 }
                                 else //CLOSE
                                 {
-                                    CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
+                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
                                     reqMsg->setSOE(2);
                                     pilMessages.push_back(reqMsg);
                                 }
@@ -5129,7 +5129,7 @@ void CtiCCCommandExecutor::Flip7010Device()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control flip");
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control flip");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
@@ -5221,7 +5221,7 @@ void CtiCCCommandExecutor::Scan2WayDevice()
     }
     if( cbcID > 0 )
     {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(cbcID,"scan integrity");
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(cbcID,"scan integrity");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
@@ -5390,13 +5390,13 @@ void CtiCCCommandExecutor::ConfirmSub()
                             {
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
-                                    CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
+                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
                                     reqMsg->setSOE(2);
                                     pilMessages.push_back(reqMsg);
                                 }
                                 else //CLOSE
                                 {
-                                    CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
+                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
                                     reqMsg->setSOE(2);
                                     pilMessages.push_back(reqMsg);
                                 }
@@ -5584,13 +5584,13 @@ void CtiCCCommandExecutor::ConfirmFeeder()
                 {
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                     {
-                        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
                         reqMsg->setSOE(2);
                         pilMessages.push_back(reqMsg);
                     }
                     else //CLOSE
                     {
-                        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
                         reqMsg->setSOE(2);
                         pilMessages.push_back(reqMsg);
                     }
@@ -6134,7 +6134,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
         if (eventMulti->getCount() >0)
@@ -6426,7 +6426,7 @@ void CtiCCCommandExecutor::ConfirmClose()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
         if (eventMulti->getCount() >0)
