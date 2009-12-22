@@ -67,7 +67,11 @@ public enum CommandHolder {
     LTC_REMOTE_ENABLE(CapControlCommand.LTC_REMOTE_ENABLE, "Enable Remote Control",false),
     LTC_REMOTE_DISABLE(CapControlCommand.LTC_REMOTE_DISABLE, "Disable Remote Control",false),
     LTC_TAP_POSITION_RAISE(CapControlCommand.LTC_TAP_POSITION_RAISE, "Raise Tap Position",false),
-    LTC_TAP_POSITION_LOWER(CapControlCommand.LTC_TAP_POSITION_LOWER, "Lower Tap Position",false);
+    LTC_TAP_POSITION_LOWER(CapControlCommand.LTC_TAP_POSITION_LOWER, "Lower Tap Position",false),
+    
+    SYNC_CAPBANK_STATE(CapControlCommand.SYNC_CBC_CAPBANK_STATE, "Sync CapBank State", false),
+    SYNC_ALL_CAPBANK_STATE(CapControlCommand.SYNC_ALL_CAPBANK_STATES, "Sync Mismatched CapBank States", false);
+   
     
     private final int cmdId;
     private final String commandName;

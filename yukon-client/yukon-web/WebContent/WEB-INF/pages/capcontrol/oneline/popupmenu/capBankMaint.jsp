@@ -31,6 +31,11 @@
                 <input type="button" value="Send TimeSync" onclick="submitOnelineCommand(${sendTimeSyncCmdId})"/>
             </td>
 	   </tr>
+	   <tr>
+            <td>
+                <input type="button" value="Sync CapBank State" onclick="submitOnelineCommand(${syncCapBankState})"/>
+            </td>
+	   </tr>
     </table>
     
     <input type="hidden" id="url" name="url" value="${url}" />

@@ -20,7 +20,7 @@
             <td colspan="2">
                 <input type="button" value="Reset Opcount" onclick="submitOnelineCommand(${resetOpCount});"/>
                 <input type ="button" value="Confirm All" onclick="submitOnelineCommand(${confirmSub});"/>
-            <td>
+            </td>
         </tr>
     	<tr>
 	       	<td colspan="2">
@@ -35,6 +35,7 @@
 				    </cti:checkProperty>
                     <option  value="${sendAll2WaySub}" style="color:white;">Scan All 2way CBCs</option>
 				    <option  value="${sendTimeSyncSub}" style="color:white;">Send All TimeSync</option>
+    				<option  value="${syncCapBankStatesSub}" style="color:white;">Sync CapBank States</option>
     				<c:choose>
     					<c:when test="${!isV}">
                             <option  value="${verifyAll}" style="color:white;">Verify All</option>

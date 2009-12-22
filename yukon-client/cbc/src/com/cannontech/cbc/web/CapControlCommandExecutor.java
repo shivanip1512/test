@@ -216,7 +216,8 @@ public class CapControlCommandExecutor
 	        case CapControlCommand.OPEN_CAPBANK :
 	        case CapControlCommand.BANK_DISABLE_OVUV :
 	        case CapControlCommand.BANK_ENABLE_OVUV :
-	        case CapControlCommand.SCAN_2WAY_DEV : {
+	        case CapControlCommand.SCAN_2WAY_DEV : 
+	        case CapControlCommand.SYNC_CBC_CAPBANK_STATE: {
 	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
                 break;
 	        }
@@ -245,7 +246,7 @@ public class CapControlCommandExecutor
 	        case CapControlCommand.OPERATIONAL_STATECHANGE :
 	        case CapControlCommand.RETURN_BANK_TO_FEEDER :
 	        case CapControlCommand.SEND_TIMESYNC :
-	        case CapControlCommand.FLIP_7010_CAPBANK : {
+	        case CapControlCommand.FLIP_7010_CAPBANK :  {
 	            executeCapBankDefault(paoId, cmdId, operationalState);
                 break;
             }

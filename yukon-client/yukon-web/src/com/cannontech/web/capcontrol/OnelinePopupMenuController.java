@@ -298,6 +298,9 @@ public class OnelinePopupMenuController extends MultiActionController {
         int sendTimeSyncFdr = CapControlCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncFdr", sendTimeSyncFdr);
         
+        int syncCapBankStatesFdr = CapControlCommand.SYNC_ALL_CAPBANK_STATES;
+        mav.addObject("syncCapBankStatesFdr", syncCapBankStatesFdr);
+        
         mav.addObject("controlType", CapControlType.FEEDER);
         mav.setViewName("oneline/popupmenu/feederMenu.jsp");
         return mav;
@@ -339,6 +342,9 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         int sendTimeSyncSub = CapControlCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncSub", sendTimeSyncSub);
+        
+        int syncCapBankStatesSub = CapControlCommand.SYNC_ALL_CAPBANK_STATES;
+        mav.addObject("syncCapBankStatesSub", syncCapBankStatesSub);
         
         int verifyAll = CapControlCommand.CMD_ALL_BANKS;
         mav.addObject("verifyAll", verifyAll);
@@ -386,6 +392,9 @@ public class OnelinePopupMenuController extends MultiActionController {
         int sendTimeSyncCmdId = CapControlCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncCmdId", sendTimeSyncCmdId);
         
+        int syncCapBankState = CapControlCommand.SYNC_CBC_CAPBANK_STATE;
+        mav.addObject("syncCapBankState", syncCapBankState);
+        
         mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("oneline/popupmenu/capBankMaint.jsp");
         return mav;
@@ -403,7 +412,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         int resetOpcount = CapControlCommand.RESET_OPCOUNT;
         mav.addObject("resetOpcount", resetOpcount);
-        
+
         LiteState[] states = CBCUtils.getCBCStateNames();
         mav.addObject("states", states);
         

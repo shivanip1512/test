@@ -111,6 +111,8 @@ public class TierPopupMenuController extends MultiActionController {
 
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
+        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
+
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.SUBSTATION);
@@ -152,6 +154,8 @@ public class TierPopupMenuController extends MultiActionController {
 
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
+        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
+
         
         if (!isVerify) {
             list.add(CommandHolder.VERIFY_ALL_BANKS);
@@ -232,6 +236,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
+        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
+
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.FEEDER);
@@ -274,6 +280,7 @@ public class TierPopupMenuController extends MultiActionController {
 
         if (isTwoWay) {
             list.add(CommandHolder.CBC_SCAN_2WAY);
+            list.add(CommandHolder.SYNC_CAPBANK_STATE);
         }
         
         list.add(CommandHolder.CBC_TIMESYNC);
@@ -493,6 +500,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
+        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
+
         mav.addObject("list", list);
         
         mav.addObject("controlType", controlType);

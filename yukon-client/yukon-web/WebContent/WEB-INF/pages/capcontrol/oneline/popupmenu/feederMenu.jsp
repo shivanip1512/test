@@ -37,6 +37,7 @@
                     </cti:checkProperty>    
 				    <option  value="${sendAll2WayFdr}" style="color:white;">Scan All 2way CBCs</option>
 				    <option  value="${sendTimeSyncFdr}" style="color:white;">Send All TimeSync</option>
+				    <option  value="${syncCapBankStatesFdr}" style="color:white;">Sync CapBank States</option>
                 </select>
             </td>
         </tr>

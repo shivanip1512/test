@@ -72,6 +72,9 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int BANK_ENABLE_TIMECONTROL = 50;
     public static final int BANK_DISABLE_TIMECONTROL = 51;
     
+    public static final int SYNC_CBC_CAPBANK_STATE = 52;
+    public static final int SYNC_ALL_CAPBANK_STATES = 53;
+    
     public static final int LTC_SCAN_INTEGRITY = 60;
     public static final int LTC_REMOTE_ENABLE = 61;
     public static final int LTC_REMOTE_DISABLE = 62;
@@ -132,8 +135,8 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
         "",
         "",//50
         "",
-        "",
-        "",
+        "Sync CapBank State",
+        "Sync Mismatched CapBank State",
         "",
         "",
         "",
@@ -146,6 +149,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
         "Raise Tap Position",
         "Lower Tap Position",
         };
+
 	
 
 

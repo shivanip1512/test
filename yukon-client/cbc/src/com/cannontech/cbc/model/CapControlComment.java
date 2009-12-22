@@ -138,7 +138,12 @@ public class CapControlComment {
                 cmdId == CapControlCommand.CMD_DISABLE_VERIFY || 
                 cmdId == CapControlCommand.CMD_STANDALONE_VERIFY){ 
             action = CommentAction.VERIFY_CONTROL; 
-        } else {
+        } else if (cmdId == CapControlCommand.SYNC_CBC_CAPBANK_STATE ||
+        		cmdId == CapControlCommand.SYNC_ALL_CAPBANK_STATES) {
+
+            action = CommentAction.SYNC_CAPBANK_STATE;
+
+        }else {
             throw new RuntimeException("Unsupported Action: " + cmdId);
         }
 

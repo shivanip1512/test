@@ -9,5 +9,6 @@ public enum CommentAction {
     USER_COMMENT,
     SEND_ALL_CONTROL, 
     CAPBANK_CONTROL, 
-    VERIFY_CONTROL 
+    VERIFY_CONTROL,
+    SYNC_CAPBANK_STATE
 }
