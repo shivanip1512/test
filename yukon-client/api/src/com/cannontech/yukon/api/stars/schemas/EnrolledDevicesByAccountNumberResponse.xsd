@@ -34,7 +34,7 @@
     
     <xsd:complexType name="EnrolledDevicesList">
        	<xsd:sequence>
-    		<xsd:element name="enrolledDevice" type="yukon:EnrolledDevice" maxOccurs="unbounded"/>
+    		<xsd:element name="enrolledDevice" type="yukon:EnrolledDevice" minOccurs="0" maxOccurs="unbounded"/>
 	    </xsd:sequence>
     </xsd:complexType>
     
