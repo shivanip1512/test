@@ -153,6 +153,9 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
      */
     public LMControlArea findControlAreaForProgram(int programId) {
         Integer controlAreaId = controlAreaByProgram.get(programId);
+        if(controlAreaId == null) {
+            return null;
+        }
         DatedObject<LMControlArea> datedControlArea = controlAreas.get(controlAreaId);
         return datedControlArea == null ? null : datedControlArea.getObject();
     }
