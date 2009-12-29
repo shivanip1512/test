@@ -118,7 +118,7 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                     SqlStatementBuilder sql = new SqlStatementBuilder();
                     if(getAll){
                         sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
-                        sql.append("  rph.Timestamp date, p.PointType pointType, p.PointId pointId ");
+                        sql.append("  rph.Timestamp dateTime, p.PointType pointType, p.PointId pointId ");
                         sql.append("from YukonPAObject yp");
                         sql.append("  join Point p on p.PAObjectID = yp.PAObjectID");
                         sql.append("  join RawPointHistory rph on p.PointId = rph.PointId");
@@ -127,12 +127,12 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                         sql.append("  and rph.Timestamp > ").appendArgument(getStartDate());
                         sql.append("  and rph.Timestamp <= ").appendArgument(getStopDate());
                         sql.append("  and yp.PAObjectID in (").appendArgumentList(subList).append(") ");
-                        sql.append("order by deviceName, date desc");
+                        sql.append("order by deviceName, dateTime desc");
                     }else {
                         sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
-                        sql.append("    p.PointType pointType, p.PointId pointId, rph.Timestamp date ");
+                        sql.append("    p.PointType pointType, p.PointId pointId, rph.Timestamp dateTime ");
                         sql.append("from (");
-                        sql.append("  select p.PointId pointId, max(rph.Timestamp) date"); 
+                        sql.append("  select p.PointId pointId, max(rph.Timestamp) dateTime"); 
                         sql.append("  from YukonPAObject yp");
                         sql.append("    join Point p on p.PAObjectID = yp.PAObjectID"); 
                         sql.append("    join RawPointHistory rph on p.PointId = rph.PointId");
@@ -141,7 +141,7 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                         sql.append("    and yp.PAObjectID in (").appendArgumentList(subList).append(")");
                         sql.append("  group by p.PointId");
                         sql.append(") lastReading");
-                        sql.append("  join RawPointHistory rph on lastReading.pointId = rph.pointId and lastReading.date = rph.TIMESTAMP");
+                        sql.append("  join RawPointHistory rph on lastReading.pointId = rph.pointId and lastReading.dateTime = rph.TIMESTAMP");
                         sql.append("  join Point p on rph.POINTID = p.POINTID");
                         sql.append("  join YukonPAObject yp on yp.PAObjectID = p.PAObjectID");
                     }
@@ -160,11 +160,11 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                     String value = rs.getString("value"); 
                     String pointtype = rs.getString("pointType");
                     Double doubleValue = Double.parseDouble(value);
-                    row.date = rs.getString("date");
+                    row.date = rs.getString("dateTime");
 
                     PointValueBuilder builder = PointValueBuilder.create();
                     builder.withPointId(rs.getInt("pointId"));
-                    builder.withTimeStamp(rs.getDate("date"));
+                    builder.withTimeStamp(rs.getDate("dateTime"));
                     builder.withType(PointTypes.getType(pointtype));
                     builder.withValue(doubleValue.doubleValue());
                     PointValueQualityHolder pointValueQualityHolder = builder.build();
