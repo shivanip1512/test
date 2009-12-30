@@ -668,19 +668,6 @@ function showRecentCmdsForSingle( baseUrl, id ){
 }
 
 // -------------------------------------------
-//Shows a sticky popup for the given urlStr The returned
-// html is placed in the popup box and then the box is
-// made visible
-// -------------------------------------------
-function showPopUp( urlStr )
-{
-    if( urlStr == null ){
-        return;
-	}
-    manMsgID = loadXMLDoc(urlStr, 'processMenuReq');
-}
-
-// -------------------------------------------
 //Simple post for a Wizard->Create action
 // -------------------------------------------
 function post( href )
@@ -710,19 +697,6 @@ function getValidChecks( elems, validElems )
 }
 
 // -------------------------------------------
-//Creates an IFrame to be used primarily for
-// popups
-// -------------------------------------------
-function createIFrame(src, width, height, name, frameborder) {
-
-    return '<iframe src="'+src+'" width="'+width+'" height="'+height+'"'
-        + (name!=null?' name="'+name+'" id="'+name+'"':'')
-        + (frameborder!=null?' frameborder="'+frameborder+'"':'')
-        + ' scrolling="auto" marginwidth="1" marginheight="1" >'
-        + '<div>[iframe not supported]</div></iframe>';
-}
-
-// -------------------------------------------
 //Toggles the img from an expanded state to a collapsed state
 // -------------------------------------------
 function toggleImg( imgID ) {   
@@ -735,50 +709,6 @@ function toggleImg( imgID ) {
     else {
         imgElem.src = '/capcontrol/images/nav-minus.gif';
         return true;
-    }
-}
-
-
-
-function alignHeaders(mainTable, headerTable) {
-    mytable = document.getElementById(mainTable);
-    hdrTable =  document.getElementById(headerTable);
-	
-    if (mytable == null || hdrTable == null) return;
-    
-    $(mainTable).hide();
-    
-	hdrRow = hdrTable.getElementsByTagName('tr').item(0);
-	
-    for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
-        var myrow = mytable.getElementsByTagName('tr').item(j);  
-		if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
-		  var colNum = myrow.cells.length;
-		        
-		  for (i=0; i < colNum - 1; i++) {
-		      var hdrCell = hdrRow.getElementsByTagName('td').item(i);
-		      var myrowCell = myrow.cells[i];
-		      if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
-		          maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
-		          hdrCell.width = maxWidth;
-		          myrowCell.width = maxWidth;
-		      }                                                                     
-		  }	    
-	   }
-    }
-    
-    $(mainTable).show();
-}
-
-var CtiNonScrollTable = Class.create();
-CtiNonScrollTable.prototype = {
-  initialize: function(mainTable, headerTable) {
-    this.mainTable = mainTable;
-    this.headerTable = headerTable;
-    alignHeaders(mainTable, headerTable);
-    Event.observe(window, 'resizeend', function () { 
-                                                    alignHeaders (mainTable, headerTable)
-        });
     }
 }
 
@@ -839,32 +769,9 @@ function pause(numberMillis) {
                 return;
         }
     }
-    
 
-
-    function applyFilter(select_filter, parent_table, column_filter_index) {
-        var rows = parent_table.getElementsByTagName('tr'); 
-        //make all rows visible
-        for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-            row.style.display = 'block';        
-        }
-        if (select_filter.options[select_filter.selectedIndex].text == 'All Feeders')
-            return;
-        for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-            var cells = row.getElementsByTagName('td');
-            var parent_fdr = cells[column_filter_index];
-            displayed_name = new String (parent_fdr.innerText);
-            selected_name = new String (select_filter.options[select_filter.selectedIndex].text);
-            //displayed name always contains a white space at the end
-            if (trim(displayed_name) != trim (selected_name))
-                row.style.display = 'none';
-        }   
-    }
-    
     function applySubBusFilter(select){
-		var rows = $$('#subTable tr.altTableCell', '#subTable tr.tableCell');
+		var rows = $$('#subBusTable tr.altTableCell', '#subBusTable tr.tableCell');
         var subBusNames = new Array();
         if(select.options[select.selectedIndex].text == 'All SubBuses'){
         	selectedSubBus = 'All SubBuses';
@@ -872,10 +779,11 @@ function pause(numberMillis) {
 	            var row = rows[i];
             	row.setStyle({'display' : ''});
             	var cells = row.getElementsByTagName('td');
-	            var sub = cells[2];
-                var anchor = sub.getElementsByTagName('a')[0];
-                var subName = anchor.innerHTML;
-	            subBusNames.push(trim(subName));
+                var firstCell = cells[0];
+                var firstSpan = firstCell.getElementsByTagName('span')[0];
+                var subBusName = new String (firstSpan.innerHTML);
+                
+	            subBusNames.push(trim(subBusName));
        		}
        		$('feederFilter').selectedIndex = 0;
        		applyFeederFilter(subBusNames);
@@ -883,15 +791,15 @@ function pause(numberMillis) {
 	        for (var i=0; i < rows.length; i++) {
 	            var row = rows[i];
 	            var cells = row.getElementsByTagName('td');
-	            var sub = cells[2];
-	            var anchor = sub.getElementsByTagName('a')[0];
-	            var subName = anchor.innerHTML;
+	            var firstCell = cells[0];
+                var firstSpan = firstCell.getElementsByTagName('span')[0];
+                var subBusName = new String (firstSpan.innerHTML);
 	            
 	            var selectedSubBus = new String (select.options[select.selectedIndex].text);
 	            //displayed name always contains a white space at the end
-	            if (trim(subName) == trim (selectedSubBus)){
+	            if (trim(subBusName) == trim (selectedSubBus)){
 	                row.setStyle({'display' : ''});
-	                subBusNames.push(trim(subName));
+	                subBusNames.push(trim(subBusName));
 	            }else{
 	            	row.style.display = 'none';
 	            }
@@ -912,7 +820,7 @@ function pause(numberMillis) {
             	var cells = row.getElementsByTagName('td');
 	            var fdr = cells[0];
 	            var spans = fdr.getElementsByTagName('span');
-	            var fdrName = new String (spans[0].innerHTML);
+	            var fdrName = new String (spans[1].innerHTML);
 	            feederNames.push(trim(fdrName));
        		}
        		applyCapBankFilter(feederNames);
@@ -922,7 +830,7 @@ function pause(numberMillis) {
 	            var cells = row.getElementsByTagName('td');
 	            var fdr = cells[0];
 	            var spans = fdr.getElementsByTagName('span');
-	            var fdrName = new String (spans[0].innerHTML);
+	            var fdrName = new String (spans[1].innerHTML);
 	            if (trim(fdrName) == trim (selectedFeeder)){
 	                row.setStyle({'display' : ''});
 	                feederNames.push(trim(fdrName));
@@ -940,16 +848,17 @@ function pause(numberMillis) {
         for (var i=0; i < rows.length; i++) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
-            var sub = cells[9];
+            var firstCell = cells[0];
+            var firstSpan = firstCell.getElementsByTagName('span')[0];
             
-            var subBusName = new String (sub.innerHTML);
+            var subBusName = new String (firstSpan.innerHTML);
             var index = subBusNames.indexOf(trim(subBusName));
 
 			if(index > -1){
 				row.setStyle({'display' : ''});
 				var fdr = cells[0];
 				var spans = fdr.getElementsByTagName('span');
-				var fdrName = spans[0].innerHTML;
+				var fdrName = spans[1].innerHTML;
 				feederNames.push(trim(fdrName));
 			}else{
 				row.setStyle({'display' : 'none'});
@@ -962,8 +871,10 @@ function pause(numberMillis) {
 	    var rows = $$('#capBankTable tr.altTableCell', '#capBankTable tr.tableCell');
     	for (var i=0; i < rows.length; i++) {
             var row = rows[i];
-            var spans = row.getElementsByTagName('span');
-	        var fdrName = new String (spans[12].innerHTML);
+            var cells = row.getElementsByTagName('td');
+            var firstCell = cells[0];
+            var feederSpan = firstCell.getElementsByTagName('span')[0].firstChild;
+	        var fdrName = new String (feederSpan.innerHTML);
     		var index = feederNames.indexOf(trim(fdrName));
     		if(index > -1){
 				row.setStyle({'display' : ''});

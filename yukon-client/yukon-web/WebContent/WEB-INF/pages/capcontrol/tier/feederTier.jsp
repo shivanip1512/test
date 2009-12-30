@@ -215,6 +215,7 @@
     			<tr class="${subBusRowClass}"  id="tr_sub_${thisSubBusId}">
     				
                     <td id="anc_${thisSubBusId}">
+                        <span style="display:none;">${viewableSubBus.subBus.ccName}</span>
                         <input type="hidden" id="paoId_${viewableSubBus.subBus.ccId}" value="${thisSubBusId}">
                         <input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}" class="tierCheckBox">
     					<input type="image" id="showSnap${thisSubBusId}" src="/capcontrol/images/nav-plus.gif" class="tierImg"
@@ -231,7 +232,7 @@
                        	<a title="Bank Locations" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&amp;specialArea=${isSpecialArea}" class="tierIconLink">
                             <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/find.gif">
                         </a>
-                        <a
+                        <a 
                             <c:if test="${!hideOneLine}">
     				            href="${onelineCBCServlet}?id=${thisSubBusId}&amp;redirectURL=${fullURL}" title="Click to view One-Line"
                             </c:if>
@@ -324,7 +325,7 @@
                     
     			</tr>
     			<tr class="tableCellSnapShot">
-    				<td colspan="9">
+    				<td colspan="8">
         				<table id="subSnapShot${thisSubBusId}">
         				
         			        <tr class="tableCellSnapShot" style="display: none;">
@@ -417,6 +418,7 @@
 	            <c:set var="feederRowCount" value="${feederRowCount + 1}"/>
 				<tr class="${feederRowClass}">
 					<td>
+                        <span style="display:none;">${viewfeeder.subBusName}</span>
                         <input type="hidden" id="paoId_${thisFeederId}" value="${thisFeederId}">
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}" class="tierCheckBox">
 						
@@ -498,7 +500,6 @@
 					<td>
                         <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS"/></a>
 					</td>
-					<td style="display: none;"> ${viewfeeder.subBusName}</td>
 				</tr>
 			</c:forEach>
 		</table>
@@ -541,6 +542,7 @@
                 <c:set var="bankRowCount" value="${bankRowCount + 1}"/>
     			<tr id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)" class="${bankRowClass}">
                     <td>
+                        <span style="display: none"><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/></span>
                         <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}">
                         <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}" class="tierCheckBox">
                     </td>
