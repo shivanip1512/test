@@ -261,6 +261,7 @@ public:
                                                         map< long, CtiCCAreaPtr > *paobject_area_map,
                                                         map< long, CtiCCSpecialPtr > *paobject_specialarea_map );
     void reloadAndAssignHolidayStrategysFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
+    void reloadStrategyParametersFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadLtcFromDatabase(long ltcId);
 
     void reCalculateOperationStatsFromDatabase( );

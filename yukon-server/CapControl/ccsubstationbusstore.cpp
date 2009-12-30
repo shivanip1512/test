@@ -3812,16 +3812,16 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                 << capControlStrategy["controlunits"]
                 << capControlStrategy["controldelaytime"]
                 << capControlStrategy["controlsendretries"]
-                << capControlStrategy["peaklag"]
-                << capControlStrategy["peaklead"]
-                << capControlStrategy["offpklag"]
-                << capControlStrategy["offpklead"]
-                << capControlStrategy["peakvarlag"]
-                << capControlStrategy["peakvarlead"]
-                << capControlStrategy["offpkvarlag"]
-                << capControlStrategy["offpkvarlead"]
-                << capControlStrategy["peakpfsetpoint"]
-                << capControlStrategy["offpkpfsetpoint"]
+//                    << capControlStrategy["peaklag"]
+//                    << capControlStrategy["peaklead"]
+//                    << capControlStrategy["offpklag"]
+//                    << capControlStrategy["offpklead"]
+//                    << capControlStrategy["peakvarlag"]
+//                    << capControlStrategy["peakvarlead"]
+//                    << capControlStrategy["offpkvarlag"]
+//                    << capControlStrategy["offpkvarlead"]
+//                    << capControlStrategy["peakpfsetpoint"]
+//                    << capControlStrategy["offpkpfsetpoint"]
                 << capControlStrategy["integrateflag"]
                 << capControlStrategy["integrateperiod"]
                 << capControlStrategy["likedayfallback"]
@@ -3851,6 +3851,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                     currentCCStrategy = CtiCCStrategyPtr(new CtiCCStrategy(rdr));
                     strategy_map->insert(make_pair(currentCCStrategy->getStrategyId(),currentCCStrategy));
                 }
+                reloadStrategyParametersFromDatabase(strategyId, strategy_map);
                 reloadTimeOfDayStrategyFromDatabase(strategyId, strategy_map);
 
                 if (strategyId > 0)
@@ -4115,6 +4116,214 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
+
+/*
+    reloadStrategyParametersFromDatabase
+
+    Reloads parameters for a single strategy or all strategies from strategy parameter table in the database.
+    StrategyId < 0 indicates a reload of all strategies from db.
+*/
+void CtiCCSubstationBusStore::reloadStrategyParametersFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    try
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+
+        RWDBConnection conn = getConnection();
+        {
+            if ( conn.isValid() )
+            {
+
+                RWDBDatabase db               = getDatabase();
+                RWDBTable    ccStrategyParams = db.table("ccstrategytargetsettings");
+                RWDBSelector selector         = db.selector();
+
+                selector
+                    << ccStrategyParams["strategyid"]
+                    << ccStrategyParams["name"]
+                    << ccStrategyParams["value"]
+                    << ccStrategyParams["type"]
+                        ;
+
+                selector.from(ccStrategyParams);
+                if (strategyId >= 0)
+                {    
+                    selector.where(ccStrategyParams["strategyid"] == strategyId);
+                }
+
+                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = selector.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                RWDBReader rdr = selector.reader(conn);
+
+                CtiCCStrategyPtr currentCCStrategy;
+
+                long stratId = 0;
+                string name;
+                string value;
+                string type;
+
+                while ( rdr() )
+                {
+                    rdr["strategyid"] >> stratId;
+                    rdr["name"]       >> name;
+                    rdr["value"]      >> value;
+                    rdr["type"]       >> type;
+
+                    currentCCStrategy =  strategy_map->find(stratId)->second;
+
+                    if (currentCCStrategy != NULL)
+                    {
+                        double newValue = atof( value.c_str() );
+
+                        string units = currentCCStrategy->getControlUnits();
+
+                        if (units == "Multi Volt/VAR" || units == "Multi Volt" || units == "VOLTS")
+                        {
+                            if (name == "Upper Volt Limit")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    currentCCStrategy->setPeakLead(newValue);
+                                }
+                                else
+                                {
+                                    currentCCStrategy->setOffPeakLead(newValue);
+                                }
+                            }
+                            else if (name == "Lower Volt Limit")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    currentCCStrategy->setPeakLag(newValue);
+                                }
+                                else
+                                {
+                                    currentCCStrategy->setOffPeakLag(newValue);
+                                }
+                            }
+                        }
+
+                        if (units == "Multi Volt/VAR")
+                        {
+                            if (name == "KVAR Leading")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    currentCCStrategy->setPeakVARLead(newValue);
+                                }
+                                else
+                                {
+                                    currentCCStrategy->setOffPeakVARLead(newValue);
+                                }
+                            }
+                            else if (name == "KVAR Lagging")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    currentCCStrategy->setPeakVARLag(newValue);
+                                }
+                                else
+                                {
+                                    currentCCStrategy->setOffPeakVARLag(newValue);
+                                }
+                            }
+                        }
+
+                        if (units == "kVAr")
+                        {
+                            if (name == "KVAR Leading")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    currentCCStrategy->setPeakLead(newValue);
+                                }
+                                else
+                                {
+                                    currentCCStrategy->setOffPeakLead(newValue);
+                                }
+                            }
+                            else if (name == "KVAR Lagging")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    currentCCStrategy->setPeakLag(newValue);
+                                }
+                                else
+                                {
+                                    currentCCStrategy->setOffPeakLag(newValue);
+                                }
+                            }
+                        }
+
+//                        if (units == "P-Factor kW/kVAr")
+                        if ( ! units.compare(0, 12, "P-Factor kW/", 12))     // == "P-Factor kW/kVAr" || "P-Factor kW/kQ"
+                        {
+                            if (name == "Target PF")
+                            {
+                                if (newValue > 100)
+                                {
+                                    newValue = -(200 - newValue);
+                                }
+
+                                if (type == "PEAK")
+                                {
+                                    currentCCStrategy->setPeakPFSetPoint(newValue);
+                                }
+                                else
+                                {
+                                    currentCCStrategy->setOffPeakPFSetPoint(newValue);
+                                }
+                            }
+                            else if (name == "Min. of Bank Open")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    newValue = -fabs(newValue);
+                                    currentCCStrategy->setPeakLead(newValue);
+                                }
+                                else
+                                {
+                                    newValue = -fabs(newValue);
+                                    currentCCStrategy->setOffPeakLead(newValue);
+                                }
+                            }
+                            else if (name == "Min. of Bank Close")
+                            {
+                                if (type == "PEAK")
+                                {
+                                    newValue = fabs(newValue);
+                                    currentCCStrategy->setPeakLag(newValue);
+                                }
+                                else
+                                {
+                                    newValue = fabs(newValue);
+                                    currentCCStrategy->setOffPeakLag(newValue);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
+
+
 /*---------------------------------------------------------------------------
     reloadStrategyFromDataBase
 

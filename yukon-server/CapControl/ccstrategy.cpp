@@ -41,7 +41,17 @@ CtiCCStrategy::CtiCCStrategy()
     //_todc.clear();
 }
 
-CtiCCStrategy::CtiCCStrategy(RWDBReader& rdr)
+CtiCCStrategy::CtiCCStrategy(RWDBReader& rdr) : 
+    _peaklag(0.0),
+    _peaklead(0.0),
+    _offpklag(0.0),
+    _offpklead(0.0),
+    _peakVARlag(0.0),
+    _peakVARlead(0.0),
+    _offpkVARlag(0.0),
+    _offpkVARlead(0.0),
+    _peakPFSetPoint(0.0),
+    _offpkPFSetPoint(0.0)
 {
     _todc.clear();
     restore(rdr);
@@ -237,6 +247,7 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["controlunits"] >> _controlunits;
     rdr["controldelaytime"] >> _controldelaytime;
     rdr["controlsendretries"] >> _controlsendretries;
+#if 0
     rdr["peaklag"] >> _peaklag;
     rdr["peaklead"] >> _peaklead;
     if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
@@ -268,6 +279,7 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     {
         _offpkPFSetPoint = -(200 - _offpkPFSetPoint);
     }
+#endif
     rdr["integrateflag"] >> tempBoolString;
     CtiToLower(tempBoolString);
     _integrateFlag = (tempBoolString=="y"?TRUE:FALSE);
