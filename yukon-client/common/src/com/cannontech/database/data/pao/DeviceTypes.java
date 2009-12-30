@@ -141,11 +141,9 @@ public interface DeviceTypes extends TypeBase
     
     public final static int LCR3102                 = DEVICE_OFFSET + 108;
     public final static int TNPP_TERMINAL    = DEVICE_OFFSET + 109;
-    public final static int LOAD_TAP_CHANGER    = DEVICE_OFFSET + 110;
-
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 110;
+	public final static int DEVICE_TYPES_COUNT = 109;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -263,6 +261,5 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_CBC_DNP  = {"CBC DNP"};
     public static final String[] STRING_NEUTRAL_MONITOR = { "Capacitor Bank Neutral Monitor" };
     public static final String[] STRING_FAULT_CI = { "Faulted Circuit Indicator" };
-    public static final String[] STRING_LTC = {"Load Tap Changer"};
     
 }

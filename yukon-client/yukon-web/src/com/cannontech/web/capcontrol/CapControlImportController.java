@@ -34,6 +34,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
@@ -215,8 +216,9 @@ public class CapControlImportController {
 	            		area.setDisabled(disabled);
 	            		area.setMapLocationId(mapLocationId);
 	            		
-	            		boolean ret = capControlCreationService.createArea(area);
-	            		if (!ret) {
+	            		try {
+	            		    capControlCreationService.createArea(area);
+	            		} catch (TransactionException e){
 	            			int id = getPaoIdByName(name);
             				if (id == -1) {
             					throw new UnsupportedOperationException(capcontrolType.name() + " failed insert and does not exist. " + name);
@@ -231,17 +233,18 @@ public class CapControlImportController {
 	            		substation.setDisabled(disabled);
 	            		substation.setMapLocationId(mapLocationId);
 	            		
-	            		boolean ret = capControlCreationService.createSubstation(substation);
-            			if (ret) {
-            				if (StringUtils.isNotBlank(parent)) {
-            					//Not blank, so attempt to assign.
-                				int parentId = getPaoIdByName(parent);
-                				if (parentId == -1) {
-                					throw new UnsupportedOperationException(capcontrolType.name() + " insert as orphan because Parent was not found. " + name + " to " + parent);
-                				}
-                				capControlCreationService.assignSubstation(substation.getId(), parentId);
-            				}
-            			} else {
+	            		try {
+	            		    capControlCreationService.createSubstation(substation);
+	            		    
+	            		    if (StringUtils.isNotBlank(parent)) {
+	                            //Not blank, so attempt to assign.
+	                            int parentId = getPaoIdByName(parent);
+	                            if (parentId == -1) {
+	                                throw new UnsupportedOperationException(capcontrolType.name() + " insert as orphan because Parent was not found. " + name + " to " + parent);
+	                            }
+	                            capControlCreationService.assignSubstation(substation.getId(), parentId);
+	                        }
+	            		} catch (TransactionException e){
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				
@@ -259,7 +262,7 @@ public class CapControlImportController {
             					capControlCreationService.assignSubstation(substation.getId(), parentId);
             				}
             			}
-            			
+	            		
 	            		break;
 	            	}
 	            	case SUBBUS: {
@@ -269,17 +272,18 @@ public class CapControlImportController {
 	            		subBus.setDisabled(disabled);
 	            		subBus.setMapLocationId(mapLocationId);
 	            		
-	            		boolean ret = capControlCreationService.createSubstationBus(subBus);
-	            		if (ret) {
-            				if (StringUtils.isNotBlank(parent)) {
-            					//Not blank, so attempt to assign.
-                				int parentId = getPaoIdByName(parent);
-                				if (parentId == -1) {
-                					throw new UnsupportedOperationException(capcontrolType.name() + " insert as orphan because Parent was not found. " + name + " to " + parent);
-                				}
-                				capControlCreationService.assignSubstationBus(subBus.getId(), parentId);
-            				}
-            			} else {
+	            		try {
+	            		    capControlCreationService.createSubstationBus(subBus);
+	            		    
+	            		    if (StringUtils.isNotBlank(parent)) {
+	                            //Not blank, so attempt to assign.
+	                            int parentId = getPaoIdByName(parent);
+	                            if (parentId == -1) {
+	                                throw new UnsupportedOperationException(capcontrolType.name() + " insert as orphan because Parent was not found. " + name + " to " + parent);
+	                            }
+	                            capControlCreationService.assignSubstationBus(subBus.getId(), parentId);
+	                        }
+	            		} catch (TransactionException e) {
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				if (id == -1) {
@@ -306,17 +310,18 @@ public class CapControlImportController {
 	            		feeder.setDisabled(disabled);
 	            		feeder.setMapLocationId(mapLocationId);
 	            		
-	            		boolean ret = capControlCreationService.createFeeder(feeder);
-	            		if (ret) {
-            				if (StringUtils.isNotBlank(parent)) {
-            					//Not blank, so attempt to assign.
-                				int parentId = getPaoIdByName(parent);
-                				if (parentId == -1) {
-                					throw new UnsupportedOperationException(capcontrolType.name() + " inserted as orphan because Parent was not found. " + name + " to " + parent);
-                				}
-                				capControlCreationService.assignFeeder(feeder.getId(), parentId);
-            				}
-            			} else {
+	            		try {
+	            		    capControlCreationService.createFeeder(feeder);
+	            		    
+	            		    if (StringUtils.isNotBlank(parent)) {
+                                //Not blank, so attempt to assign.
+                                int parentId = getPaoIdByName(parent);
+                                if (parentId == -1) {
+                                    throw new UnsupportedOperationException(capcontrolType.name() + " inserted as orphan because Parent was not found. " + name + " to " + parent);
+                                }
+                                capControlCreationService.assignFeeder(feeder.getId(), parentId);
+                            }
+	            		} catch (TransactionException e) {
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				if (id == -1) {
@@ -344,17 +349,18 @@ public class CapControlImportController {
 	            		bank.setDisabled(disabled);
 	            		bank.setMapLocationId(mapLocationId);
 	            		
-	            		boolean ret = capControlCreationService.createCapbank(bank);
-	            		if (ret) {
-            				if (StringUtils.isNotBlank(parent)) {
-            					//Not blank, so attempt to assign.
-                				int parentId = getPaoIdByName(parent);
-                				if (parentId == -1) {
-                					throw new UnsupportedOperationException(capcontrolType.name() + " inserted as orphan because Parent was not found. " + name + " to " + parent);
-                				}
-                				capControlCreationService.assignCapbank(bank.getId(), parentId);
-            				}
-            			} else {
+	            		try {
+	            		    capControlCreationService.createCapbank(bank);
+	            		    
+	            		    if (StringUtils.isNotBlank(parent)) {
+                                //Not blank, so attempt to assign.
+                                int parentId = getPaoIdByName(parent);
+                                if (parentId == -1) {
+                                    throw new UnsupportedOperationException(capcontrolType.name() + " inserted as orphan because Parent was not found. " + name + " to " + parent);
+                                }
+                                capControlCreationService.assignCapbank(bank.getId(), parentId);
+                            }
+	            		} catch (TransactionException e) {
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				if (id == -1) {

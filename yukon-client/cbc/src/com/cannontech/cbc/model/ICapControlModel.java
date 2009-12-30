@@ -18,8 +18,6 @@ public interface ICapControlModel {
 
     public abstract int getCurrentStrategyID();
 
-    public abstract EditorDataModel getCurrentStratModel();
-
     public abstract void initItem(int id, int type);
 
     public abstract void initWizard(int paoType);

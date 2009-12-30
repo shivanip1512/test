@@ -14,21 +14,30 @@
         <managed-bean-name>capControlForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.editor.CapControlForm</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
+        
         <managed-property>
             <property-name>seasonScheduleDao</property-name>
             <value>#{seasonScheduleDao}</value>
         </managed-property>
+        
         <managed-property>
             <property-name>holidayScheduleDao</property-name>
             <value>#{holidayScheduleDao}</value>
         </managed-property>
+        
         <managed-property>
             <property-name>capbankControllerDao</property-name>
             <value>#{capbankControllerDao}</value>
         </managed-property>
+        
         <managed-property>
             <property-name>capControlCreationService</property-name>
             <value>#{capControlCreationService}</value>
+        </managed-property>
+        
+        <managed-property>
+            <property-name>selectionLists</property-name>
+            <value>#{selLists}</value>
         </managed-property>
     </managed-bean>
     

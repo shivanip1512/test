@@ -3,6 +3,7 @@ package com.cannontech.web.wizard;
 
 import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -151,7 +152,7 @@ public class CBCWizardModel implements CapControlCreationModel{
 	}
 	
 	public boolean isLTC(){
-	    return getWizPaoType() == PAOGroups.LOAD_TAP_CHANGER;
+	    return getWizPaoType() == CapControlTypes.CAP_CONTROL_LTC;
 	}
 
 	/* (non-Javadoc)

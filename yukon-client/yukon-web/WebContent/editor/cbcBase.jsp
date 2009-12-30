@@ -60,7 +60,7 @@
             <x:htmlTag value="br"/>
             <x:outputText styleClass="editorHeader" value="#{capControlForm.editorTitle} Editor:" /> 
             <x:outputText rendered="#{!capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.paoName}"/>
-            <x:outputText rendered="#{capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].strategyName}"/>
+            <x:outputText rendered="#{capControlForm.editingAStrategy}" styleClass="bigFont" value="#{capControlForm.strategy.strategyName}"/>
             <f:verbatim><br/></f:verbatim>
             <x:messages id="messageList" showSummary="true" showDetail="true" styleClass="smallResults" errorClass="errorResults" layout="table"/>
             <x:panelGroup id="hdr_buttons" forceId="true">

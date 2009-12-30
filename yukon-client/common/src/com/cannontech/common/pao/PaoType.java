@@ -153,7 +153,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, "CCAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, "CCSPECIALAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, "CCSUBSTATION", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    LOAD_TAP_CHANGER(DeviceTypes.LOAD_TAP_CHANGER, "Load Tap Changer", PaoCategory.DEVICE, PaoClass.RTU)
+    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, "Load Tap Changer", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL)
     ;
     
     

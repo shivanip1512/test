@@ -14,15 +14,17 @@ public interface CapControlCreationService {
 	/**
 	 * Adds the area to the database.
 	 * @param area
+	 * @throws TransactionException 
 	 */
-	public boolean createArea(Area area);
+    public void createArea(Area area) throws TransactionException;
 	
 	/**
 	 * Adds a Substation to the database as an orphan.
 	 * 
 	 * @param substation
+	 * @throws TransactionException 
 	 */
-	public boolean createSubstation(Substation substation);
+    public void createSubstation(Substation substation) throws TransactionException;
 	
 	public boolean assignSubstation(int substationId, int areaId);
 	public boolean assignSubstation(int substationId, String areaName);
@@ -32,8 +34,9 @@ public interface CapControlCreationService {
 	 * Adds the Substation bus to the database as an orphan.
 	 * 
 	 * @param subBus
+	 * @throws TransactionException 
 	 */
-	public boolean createSubstationBus(SubstationBus subBus);
+	public void createSubstationBus(SubstationBus subBus) throws TransactionException;
 	
 	public boolean assignSubstationBus(int substationBusId, int substationId);
 	public boolean assignSubstationBus(int substationBusId, String substationName);
@@ -43,8 +46,9 @@ public interface CapControlCreationService {
 	 * Adds the Feeder to the database as an orphan. 
 	 * 
 	 * @param feeder
+	 * @throws TransactionException 
 	 */
-	public boolean createFeeder(Feeder feeder);
+	public void createFeeder(Feeder feeder) throws TransactionException;
 	
 	public boolean assignFeeder(int feederId, int subBusId);
 	public boolean assignFeeder(int feederId, String subBusName);
@@ -54,9 +58,10 @@ public interface CapControlCreationService {
 	 * Adds the CapBank to the database as an orphan. 
 	 * 
 	 * @param bank
+	 * @throws TransactionException 
 	 */
 	/* This might be handled in the Bulk Importer */
-	public boolean createCapbank(Capbank capbank);
+	public void createCapbank(Capbank capbank) throws TransactionException;
 	
 	public boolean assignCapbank(int capbankId, int feederId);
 	public boolean assignCapbank(int capbankId, String feederName);

@@ -125,16 +125,6 @@
 
 						</x:panelGroup>
                         
-                        <x:panelGroup rendered="#{capControlForm.visibleTabs['LTC']}">
-                            <x:htmlTag value="br"/>
-                            <x:outputLabel for="LTC_Comm_Channel"
-                                        value="Comm. Channel: "
-                                        title="The communication channel this LTC will use." />
-                                    <x:selectOneMenu id="LTC_Comm_Channel" value="#{capControlForm.wizData.portID}">
-                                        <f:selectItems value="#{selLists.commChannels}" />
-                                    </x:selectOneMenu>
-                        </x:panelGroup>
-
 						<f:facet name="footer">
 							<x:panelGroup>
 								<x:htmlTag value="br"/>

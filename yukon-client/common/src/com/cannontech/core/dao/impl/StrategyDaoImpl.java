@@ -10,9 +10,14 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.PeakTargetSetting;
+import com.cannontech.database.db.capcontrol.PeaksTargetType;
+import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 
@@ -42,24 +47,14 @@ public class StrategyDaoImpl implements StrategyDao{
         String controlUnits = CalcComponentTypes.LABEL_KVAR;
         Integer controlDelayTime = new Integer(0);
         Integer controlSendRetries = new Integer(0);
-        Double peakLag = new Double(0.0);
-        Double peakLead = new Double(0.0);
-        Double offPkLag = new Double(0.0);
-        Double offPkLead = new Double(0.0);
-        Double pkVarLag = new Double (0.0);
-        Double pkVarLead = new Double(0.0);
-        Double offpkVarLead = new Double(0.0);
-        Double offpkVarLag = new Double(0.0);
-        Double pkPFPoint = new Double (0.1);
-        Double offPkPFPoint = new Double (0.1);
         String integrateFlag = "N";
         Integer integratePeriod = new Integer (0);
         String likeDayFallBack = "N";
         String endDaySettings = CtiUtilities.STRING_NONE;
-        String sql = "INSERT INTO CapControlStrategy VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+        String sql = "INSERT INTO CapControlStrategy VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         simpleJdbcTemplate.update(sql, strategyId, name, controlMethod, maxDailyOperation, maxOperationDisableFlag, peakStartTime, peakStopTime,
-            controlInterval, minResponseTime, minConfirmPercent, failurePercent, daysOfWeek, controlUnits, controlDelayTime, controlSendRetries, peakLag, peakLead,
-            offPkLag, offPkLead, pkVarLag, pkVarLead, offpkVarLag, offpkVarLead, pkPFPoint, offPkPFPoint, integrateFlag, integratePeriod, likeDayFallBack, endDaySettings);
+            controlInterval, minResponseTime, minConfirmPercent, failurePercent, daysOfWeek, controlUnits, controlDelayTime, 
+            controlSendRetries, integrateFlag, integratePeriod, likeDayFallBack, endDaySettings);
         return strategyId;
     }
     
@@ -72,9 +67,7 @@ public class StrategyDaoImpl implements StrategyDao{
         "ControlInterval, MinResponseTime, MinConfirmPercent," +
         "FailurePercent, DaysOfWeek," +
         "ControlUnits, ControlDelayTime, ControlSendRetries," +
-        "PeakLag, PeakLead, OffPkLag, OffPkLead, " + 
-        "PeakVARLag, PeakVARLead , OffPkVARLag , OffPkVARLead," + 
-        "PeakPFSetPoint, OffPkPFSetPoint, IntegrateFlag, IntegratePeriod," +
+        "IntegrateFlag, IntegratePeriod," +
         "LikeDayFallBack, EndDaySettings" +
         " from CapControlStrategy  where StrategyId > 0 order by StrategyName";
         
@@ -108,16 +101,6 @@ public class StrategyDaoImpl implements StrategyDao{
             strategy.setControlUnits( rs.getString("ControlUnits") );
             strategy.setControlDelayTime( rs.getInt("ControlDelayTime") );
             strategy.setControlSendRetries( rs.getInt("ControlSendRetries") );
-            strategy.setPeakLag( rs.getDouble("PeakLag") );
-            strategy.setPeakLead( rs.getDouble("PeakLead") );
-            strategy.setOffPkLag( rs.getDouble("OffPkLag") );
-            strategy.setOffPkLead( rs.getDouble("OffPkLead") );
-            strategy.setPkVarLag(rs.getDouble("PeakVARLag") );
-            strategy.setPkVarLead(rs.getDouble("PeakVARLead") );
-            strategy.setOffpkVarLag(rs.getDouble("OffPkVARLag") );
-            strategy.setOffpkVarLead(rs.getDouble("OffPkVARLead") );
-            strategy.setPkPFPoint(rs.getDouble("PeakPFSetPoint"));
-            strategy.setOffPkPFPoint(rs.getDouble("OffPkPFSetPoint"));
             strategy.setIntegrateFlag(rs.getString("IntegrateFlag"));
             strategy.setIntegratePeriod(rs.getInt("IntegratePeriod"));
             strategy.setLikeDayFallBack(rs.getString("LikeDayFallBack"));
@@ -155,4 +138,60 @@ public class StrategyDaoImpl implements StrategyDao{
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
+
+    @Override
+    public void savePeakSettings(List<PeakTargetSetting> targetSettings, int strategyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete from CCStrategyTargetSettings where strategyId = ").appendArgument(strategyId);
+        simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        
+        for(PeakTargetSetting setting : targetSettings) {
+            sql = new SqlStatementBuilder("insert into CCStrategyTargetSettings values (");
+            sql.appendArgument(strategyId);
+            sql.append(", ").appendArgument(setting.getName());
+            sql.append(", ").appendArgument(setting.getPeakValue());
+            sql.append(", ").appendArgument(PeaksTargetType.PEAK).append(" ) ");
+            simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+            
+            sql = new SqlStatementBuilder("insert into CCStrategyTargetSettings values ( ");
+            sql.appendArgument(strategyId);
+            sql.append(", ").appendArgument(setting.getName());
+            sql.append(", ").appendArgument(setting.getOffPeakValue());
+            sql.append(", ").appendArgument(PeaksTargetType.OFFPEAK).append(" ) ");
+            simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        }
+    }
+
+    @Override
+    public List<PeakTargetSetting> getPeakSettings(CapControlStrategy strategy) {
+        SqlStatementBuilder sql = new SqlStatementBuilder("select peaks.name, peaks.value peakValue, offpeaks.value offPeakValue");
+        sql.append("from CCStrategyTargetSettings peaks, CCStrategyTargetSettings offpeaks");
+        sql.append("where peaks.name = offpeaks.name");
+        sql.append("and peaks.strategyid = offpeaks.strategyid");
+        sql.append("and peaks.type = ").appendArgument(PeaksTargetType.PEAK);
+        sql.append("and offpeaks.type = ").appendArgument(PeaksTargetType.OFFPEAK);
+        sql.append("and peaks.strategyid = ").appendArgument(strategy.getStrategyID());
+        
+        ParameterizedRowMapper<PeakTargetSetting> mapper = new ParameterizedRowMapper<PeakTargetSetting>() {
+            
+            public PeakTargetSetting mapRow(ResultSet rs, int rowNum) throws SQLException {
+                String name = rs.getString("name");
+                String peakValue = rs.getString("peakValue");
+                String offPeakValue = rs.getString("offPeakValue");
+                
+                PeakTargetSetting setting = new PeakTargetSetting(name, peakValue, offPeakValue, null);
+                
+                return setting;
+            }
+        };
+
+        List<PeakTargetSetting> settings = simpleJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+        if(settings.isEmpty() && strategy.getStrategyID() != 0) {
+            ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits());
+            settings = StrategyPeakSettingsHelper.getSettingDefaults(algorithm);
+        }
+        
+        return settings;
+    }
+    
 }

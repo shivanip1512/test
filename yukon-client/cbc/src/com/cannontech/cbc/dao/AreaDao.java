@@ -2,6 +2,7 @@ package com.cannontech.cbc.dao;
 
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.SpecialArea;
+import com.cannontech.database.TransactionException;
 
 public interface AreaDao {
     
@@ -10,8 +11,9 @@ public interface AreaDao {
 	 * 
 	 * @param area
 	 * @return
+	 * @throws TransactionException 
 	 */
-    public boolean add( Area area );
+    public void add( Area area ) throws TransactionException;
     
     /**
      * Removes Area from the database. Returns false if failed.

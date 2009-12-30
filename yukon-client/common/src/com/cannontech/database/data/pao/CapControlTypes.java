@@ -15,6 +15,7 @@ public interface CapControlTypes extends TypeBase
     public final static int CAP_CONTROL_SCHEDULE     = CAPCONTROL_OFFSET + 5;
     public final static int CAP_CONTROL_STRATEGY     = CAPCONTROL_OFFSET + 6;
     public final static int CAP_CONTROL_CAPBANK = DeviceTypes.CAPBANK;
+    public final static int CAP_CONTROL_LTC     = CAPCONTROL_OFFSET + 7;
 	
     public static final String STRING_CAPCONTROL_SUBSTATION = CapControlType.SUBSTATION.getDisplayValue();
 	public static final String STRING_CAPCONTROL_SUBBUS = CapControlType.SUBBUS.getDisplayValue();
@@ -24,5 +25,6 @@ public interface CapControlTypes extends TypeBase
     public static final String STRING_CAPCONTROL_CAPBANK = DeviceTypes.STRING_CAP_BANK[0];
     public static final String STRING_CAPCONTROL_STRATEGY = CapControlType.STRATEGY.getDisplayValue();
     public static final String STRING_CAPCONTROL_SCHEDULE = CapControlType.SCHEDULE.getDisplayValue();
+    public static final String STRING_CAPCONTROL_LTC = CapControlType.LTC.getDisplayValue();
 
 }

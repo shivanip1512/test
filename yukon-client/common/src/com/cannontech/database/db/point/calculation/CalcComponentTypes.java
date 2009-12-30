@@ -20,9 +20,7 @@ public class CalcComponentTypes
 	public static final String LABEL_VOLTS = ControlAlgorithm.VOLTS.getDisplayName();
 	public static final String LABEL_MULTI_VOLT = ControlAlgorithm.MULTIVOLT.getDisplayName();
     public static final String LABEL_MULTI_VOLT_VAR = ControlAlgorithm.MULTIVOLTVAR.getDisplayName();
-	
-
-	
+    public static final String LABEL_INTEGRATED_VOLT_VAR = ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName();
 	
 	/*** START OF CALC FUNCTIONS  ***/
 	/*

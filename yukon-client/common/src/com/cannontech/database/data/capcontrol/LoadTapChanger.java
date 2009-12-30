@@ -1,32 +1,65 @@
 package com.cannontech.database.data.capcontrol;
 
 import java.sql.SQLException;
+import java.util.List;
 
-import com.cannontech.database.data.device.DNPBase;
-import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.DBPersistent;
 
-public class LoadTapChanger extends DNPBase {
+public class LoadTapChanger extends CapControlYukonPAOBase {
 
     public LoadTapChanger() {
         super();
+        setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
+        setPAOClass( PAOGroups.STRING_CAT_CAPCONTROL );
     }
-    
-    public void delete() throws SQLException {
-        /* Unnassign it from a substation bus first. */
-        delete("CCSubstationBusToLTC", "ltcId", getPAObjectID());
+
+    public LoadTapChanger(Integer ltcId) {
+        this();
+        setCapControlPAOID( ltcId );
+    }
         
+    @Override
+    public void add() throws SQLException {
+        if (getPAObjectID() == null) {
+            PaoDao paoDao = DaoFactory.getPaoDao();   
+            setCapControlPAOID(paoDao.getNextPaoId());   
+        }
+
+        super.add();
+    }
+
+    @Override
+    public void delete() throws SQLException {
+        delete("CCSubstationBusToLTC", "LtcId", getCapControlPAOID() );
         super.delete();
     }
-    
-    public boolean isScanOne() {
-        return getDeviceScanRateMap().containsKey(DeviceScanRate.TYPE_INTEGRITY);
+
+    @Override
+    public void retrieve() throws SQLException {
+        super.retrieve();
+    }
+
+    @Override
+    public void setCapControlPAOID(Integer feedID) {
+        super.setPAObjectID( feedID );
     }
     
-    public void setScanOne(boolean b){}
-    
-    public boolean isScanTwo() {
-        return getDeviceScanRateMap().containsKey(DeviceScanRate.TYPE_EXCEPTION);
+    @Override
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection( conn );
     }
-    
-    public void setScanTwo(boolean b){}
+
+    @Override
+    public void update() throws java.sql.SQLException {
+        super.update();
+    }
+
+    @Override
+    public List<? extends DBPersistent> getChildList() {
+        return null;
+    }
+
 }

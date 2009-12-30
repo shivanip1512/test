@@ -14,6 +14,7 @@ import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.Feeder;
+import com.cannontech.cbc.model.LoadTapChanger;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
@@ -106,8 +107,12 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             case CapControlTypes.CAP_CONTROL_STRATEGY :
                 id = createStrategy(name);
                 break;
-            case PAOGroups.LOAD_TAP_CHANGER :
-                id = createLTC(name, disabled, portId);
+            case CapControlTypes.CAP_CONTROL_LTC:
+                LoadTapChanger ltc = new LoadTapChanger();
+                ltc.setName(name);
+                ltc.setDisabled(disabled);
+                createLTC(ltc);
+                id = ltc.getId();
                 break;
                 
             default : // must be a cbc
@@ -130,8 +135,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         return id;
     }
 	
-	private int createLTC(String name, boolean disable, int portId) throws TransactionException {
-	    int newLtcId = ltcDao.add(name, disable, portId);
+	private int createLTC(LoadTapChanger ltc) throws TransactionException {
+	    int newLtcId = ltcDao.add(ltc);
 
         String type = PaoType.LOAD_TAP_CHANGER.getDbString();
         sendDeviceDBChangeMessage(newLtcId, DBChangeMsg.CHANGE_TYPE_ADD, type);
@@ -140,15 +145,11 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 
     @Override
-	public boolean createArea(Area area) {
-		boolean success = areaDao.add(area);
+	public void createArea(Area area) throws TransactionException{
+		areaDao.add(area);
 		
-		if (success) {
-			//Send DB add message
-			sendCapcontrolDBChangeMessage(area.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.AREA);
-		}
-
-		return success;
+		//Send DB add message
+        sendCapcontrolDBChangeMessage(area.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.AREA);
 	}
 	
 	@Override
@@ -164,15 +165,11 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	@Override
-	public boolean createSubstation(Substation substation) {
-		boolean success = substationDao.add(substation);
+	public void createSubstation(Substation substation) throws TransactionException {
+		substationDao.add(substation);
 
-		if (success) {
-			//Send DB add message
-			sendCapcontrolDBChangeMessage(substation.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBSTATION);
-		}
-
-		return success;
+		//Send DB add message
+		sendCapcontrolDBChangeMessage(substation.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBSTATION);
 	}
 	
 	@Override
@@ -210,14 +207,10 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-	public boolean createCapbank(Capbank bank) {
-		boolean success = capbankDao.add(bank);
+	public void createCapbank(Capbank bank) throws TransactionException {
+		capbankDao.add(bank);
 		
-		if (success) {
-			sendCapcontrolDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.CAPBANK);
-		}
-		
-		return success;
+		sendCapcontrolDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.CAPBANK);
 	}
 	
 	@Override
@@ -247,14 +240,10 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 
 	@Override
-	public boolean createFeeder(Feeder feeder) {
-		boolean success = feederDao.add(feeder);
+	public void createFeeder(Feeder feeder) throws TransactionException {
+		feederDao.add(feeder);
 		
-		if (success) {
-			sendCapcontrolDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
-		}
-		
-		return success;
+		sendCapcontrolDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
 	}
 	
 	@Override
@@ -284,14 +273,10 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-	public boolean createSubstationBus(SubstationBus subBus) {
-		boolean success = substationBusDao.add(subBus);
+	public void createSubstationBus(SubstationBus subBus) throws TransactionException{
+		substationBusDao.add(subBus);
 		
-		if (success) {
-			sendCapcontrolDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBBUS);
-		}
-
-		return success;
+		sendCapcontrolDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBBUS);
 	}
 	
 	@Override

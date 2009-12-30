@@ -100,7 +100,6 @@ import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
-import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
 import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
 import com.cannontech.web.navigation.CtiNavObject;
@@ -110,6 +109,7 @@ import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFUtil;
 import com.cannontech.web.wizard.CBCWizardModel;
 import com.cannontech.yukon.cbc.SubStation;
+import com.google.common.collect.Lists;
 
 public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private int specialAreaTab = -1;
@@ -149,7 +149,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private Map<Integer, String> pointNameMap = null;
     private Map<Season, Integer> assignedStratMap = null;
     private EditorDataModel dataModel = null;
-    private EditorDataModel currentStratModel = null;
     private SeasonScheduleDao seasonScheduleDao;
     private HolidayScheduleDao holidayScheduleDao;
     private Integer scheduleId = -1000;
@@ -166,6 +165,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
     private static RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao",RolePropertyDao.class);
+    private CBCSelectionLists selectionLists = null;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
     
@@ -316,21 +316,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		return stratID;
 	}
     
-    public EditorDataModel getCurrentStratModel() {
-        if (currentStratModel == null){
-            CapControlStrategy strat = getCbcStrategiesMap().get(getCurrentStrategyID());
-            currentStratModel = new CapControlStrategyModel (strat);
-        }
-        ((CapControlStrategyModel) currentStratModel).updateModel();
-        return currentStratModel;
-    }
-    
     public String getCurrentStratName() {
-        return getCbcStrategiesMap().get(getCurrentStrategyID()).getStrategyName();
+        return getStrategy().getStrategyName();
     }
     
     public void newStrategySelected (ValueChangeEvent vce) {
-        resetCurrentStratModel();
     }
     
     public void newScheduleSelected (ValueChangeEvent vce) {
@@ -585,15 +575,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		resetDualBusEnabled();
         if (!(getDbPersistent() instanceof CapControlStrategy)) {
             editingCBCStrategy = false;
-		    resetCurrentStratModel();
         }
         initEditorPanels();
         getPointTreeForm().init(itemID);
 	}
-
-    private void resetCurrentStratModel() {
-        currentStratModel = null;
-    }
 
     //initiatiates data model for our specific object
 	private void initDataModel(DBPersistent dbPersistent) {
@@ -741,7 +726,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 getVisibleTabs().put("CBCStrategy", Boolean.TRUE);
                 break;
             
-            case PAOGroups.LOAD_TAP_CHANGER:
+            case CapControlTypes.CAP_CONTROL_LTC:
                 setEditorTitle("Load Tap Changer");
                 setPaoDescLabel("Description");
                 getVisibleTabs().put("LTC", Boolean.TRUE);
@@ -774,8 +759,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public boolean checkStrategy(CapControlStrategy strat) {
-        CapControlStrategyModel stratModel = (CapControlStrategyModel)getCurrentStratModel();
-        boolean integratedControl = stratModel.getIntegrateFlag();
+        boolean integratedControl = strat.getIntegrateFlag().equalsIgnoreCase("Y");
         if(integratedControl) {
             int integrationSeconds = strat.getIntegratePeriod();
             int analysisSeconds = strat.getControlInterval();
@@ -796,7 +780,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		try {
 			// update the CBCStrategy object if we are editing it
 			if (isEditingCBCStrategy() && (! (getDbPersistent() instanceof CapControlStrategy))) {
-                CapControlStrategy currentStrategy = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
+                CapControlStrategy currentStrategy = getStrategy();
                 boolean ok = checkStrategy(currentStrategy);
                 if(ok) {
                     updateDBObject(currentStrategy, facesMsg);
@@ -804,8 +788,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         getStrategyTimeOfDay().setStrategyId(currentStrategy.getStrategyID());
                         getStrategyTimeOfDay().add(connection);
                     }
-    				// clear out the memory of any list of Strategies
-    				resetCurrentStratModel();
     				cbcStrategies = null;
                     setEditingCBCStrategy(false);
                 }else {
@@ -876,7 +858,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             dbPers.setDbConnection(connection);
             
             if (dbPers instanceof CapControlStrategy) {
-                CapControlStrategy strategy = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
+                CapControlStrategy strategy = getStrategy();
                 boolean ok = checkStrategy(strategy);
                 if(ok) {
                     setEditingCBCStrategy(false);
@@ -1030,7 +1012,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             facesMsg.setDetail("Database add was SUCCESSFUL");
             JSFUtil.redirect("/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemID);
         }catch (Exception e) {
-            facesMsg.setDetail(e.getMessage());
+            facesMsg.setDetail(e.getCause().getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
             return "";
         } finally {
@@ -1044,19 +1026,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			return;
         }
 		Boolean isChecked = (Boolean) ev.getNewValue();
-		TwoWayDevice twoWayDev;
         if (isControllerCBC() && getCBControllerEditor().isTwoWay()) {
-            twoWayDev = (TwoWayDevice) getCBControllerEditor().getPaoCBC();
-        } else {
-            twoWayDev = (LoadTapChanger) getLtcBase();
+            TwoWayDevice twoWayDev = (TwoWayDevice) getCBControllerEditor().getPaoCBC();
+    		String type = ev.getComponent().getId().equalsIgnoreCase("scanIntegrityChk") ? DeviceScanRate.TYPE_INTEGRITY
+    			: (ev.getComponent().getId().equalsIgnoreCase("scanExceptionChk") ? DeviceScanRate.TYPE_EXCEPTION : "");
+    		if (isChecked.booleanValue()) {
+    			twoWayDev.getDeviceScanRateMap().put(type, new DeviceScanRate(twoWayDev.getPAObjectID(), type));
+    		} else {
+    			twoWayDev.getDeviceScanRateMap().remove(type);
+    		}
         }
-		String type = ev.getComponent().getId().equalsIgnoreCase("scanIntegrityChk") ? DeviceScanRate.TYPE_INTEGRITY
-			: (ev.getComponent().getId().equalsIgnoreCase("scanExceptionChk") ? DeviceScanRate.TYPE_EXCEPTION : "");
-		if (isChecked.booleanValue()) {
-			twoWayDev.getDeviceScanRateMap().put(type, new DeviceScanRate(twoWayDev.getPAObjectID(), type));
-		} else {
-			twoWayDev.getDeviceScanRateMap().remove(type);
-		}
 	}
     
 	public PointTreeForm getPointTreeForm() {
@@ -1099,7 +1078,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 
 	public void createStrategy() {
-        currentStratModel = null;
         CapControlStrategy ccStrat = CCYukonPAOFactory.createCapControlStrategy();
 		Integer newId = CapControlStrategy.getNextStrategyID();
 		ccStrat.setStrategyID(newId);
@@ -2010,7 +1988,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public boolean isTimeOfDay() {
-        String strat = getCbcStrategiesMap().get(getCurrentStrategyID()).getControlMethod();
+        String strat = getStrategy().getControlMethod();
         if( strat.equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)){
             return true;
         }
@@ -2034,6 +2012,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         subBusTab = -1;
         feederTab = -1;
         capbankTab = -1;
+    }
+    
+    public List<SelectItem> getControlAlgorithims(){
+        List<SelectItem> items = Lists.newArrayList(selectionLists.getCbcControlAlgorithim());
+        String currentMethod = getStrategy().getControlMethod();
+        if(currentMethod.equalsIgnoreCase(CapControlStrategy.CNTRL_SUBSTATION_BUS)) {
+            items.add(new SelectItem(CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR, CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR));
+        }
+        return items;
     }
     
     /**
@@ -2085,5 +2072,44 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	
 	public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
         this.capbankControllerDao = capbankControllerDao;
+    }
+
+    public void setSelectionLists(CBCSelectionLists selectionLists) {
+        this.selectionLists = selectionLists;
+    }
+
+    public CBCSelectionLists getSelectionLists() {
+        return selectionLists;
+    }
+    
+    public CapControlStrategy getStrategy() {
+        return getCbcStrategiesMap().get(getCurrentStrategyID());
+    }
+    
+    public Boolean getIntegrateFlag() {
+        return getStrategy().getIntegrateFlag().equalsIgnoreCase("Y");
+    }
+
+    public void setIntegrateFlag(Boolean integrateFlag) {
+        getStrategy().setIntegrateFlag((integrateFlag) ? "Y" : "N");
+    }
+
+    public Integer getIntegratePeriod() {
+        return getStrategy().getIntegratePeriod();
+    }
+
+    public void setIntegratePeriod(Integer integratePeriod) {
+        getStrategy().setIntegratePeriod(integratePeriod);
+    }
+    public Boolean getLikeDayFallBack() {
+        return getStrategy().getLikeDayFallBack().equalsIgnoreCase("Y");
+    }
+
+    public void setLikeDayFallBack(Boolean fallBackFlag) {
+        getStrategy().setLikeDayFallBack((fallBackFlag) ? "Y" : "N");
+    }
+    
+    public void controlUnitsChanged(ValueChangeEvent e){
+        getStrategy().controlUnitsChanged(e.getNewValue().toString());
     }
 }

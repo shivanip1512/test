@@ -80,7 +80,7 @@ public class SubstationDaoImpl implements SubstationDao {
 	}
 
 	@Override
-    public boolean add (Substation substation) {
+    public void add (Substation substation) throws TransactionException {
 		int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 		
 		YukonPAObject pao = new YukonPAObject();
@@ -92,25 +92,12 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setDescription(substation.getDescription());
 		pao.setDisableFlag(substation.getDisabled() ? 'Y' : 'N');
 
-		try {
-			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
-		} catch (TransactionException e) {
-			CTILogger.error("Insert of Substation, " + substation.getName() + ", in YukonPAObject table failed.");
-			return false;
-		}
+		Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
 		
 		substation.setId(pao.getPaObjectID());
 		int rowsAffected = simpleJdbcTemplate.update(insertSql, substation.getId(),
 				substation.getVoltReductionPointId(),
 				substation.getMapLocationId());
-		
-		boolean result = (rowsAffected == 1);
-		
-		if (result == false) {
-			CTILogger.debug("Insert of Substation, " + substation.getName() + ", in CAPCONTROLSUBSTATION table failed.");
-		}
-		
-		return result;
     }
     
     @Override

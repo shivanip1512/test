@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -43,20 +44,11 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
 	private Integer controlDelayTime = new Integer(0);
 	private Integer controlSendRetries = new Integer(0);
-	private Double peakLag = new Double(0.0);
-	private Double peakLead = new Double(0.0);
-	private Double offPkLag = new Double(0.0);
-	private Double offPkLead = new Double(0.0);
-	private Double pkVarLag = new Double (0.0);
-	private Double pkVarLead = new Double(0.0);
-	private Double offpkVarLead = new Double(0.0);
-	private Double offpkVarLag = new Double(0.0);
-	private Double pkPFPoint = new Double (0.1);
-	private Double offPkPFPoint = new Double (0.1);
     private String integrateFlag = "N";
     private Integer integratePeriod = new Integer (0);
     private String likeDayFallBack = "N";
     private String endDaySettings = CtiUtilities.STRING_NONE;
+    private List<PeakTargetSetting> targetSettings;
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
 	public static final String CNTRL_SUBSTATION_BUS = "SubstationBus";
 	public static final String CNTRL_BUSOPTIMIZED_FEEDER= "BusOptimizedFeeder";
@@ -69,15 +61,13 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		"ControlInterval", "MinResponseTime", "MinConfirmPercent",
 		"FailurePercent", "DaysOfWeek",
 		"ControlUnits", "ControlDelayTime", "ControlSendRetries",
-		"PeakLag", "PeakLead", "OffPkLag", "OffPkLead", 
-        "PeakVARLag", "PeakVARLead" , "OffPkVARLag", "OffPkVARLead",
-        "PeakPFSetPoint", "OffPkPFSetPoint", "IntegrateFlag", "IntegratePeriod",
+		"IntegrateFlag", "IntegratePeriod",
         "LikeDayFallBack", "EndDaySettings"
 	};
 	public static final String CONSTRAINT_COLUMNS[] = { "StrategyID" };
 	public static final String TABLE_NAME = "CapControlStrategy";
 	public static boolean todExists = false;
-
+	
 	/**
 	 * Default constructor.
 	 */
@@ -95,9 +85,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
 			getFailurePercent(), getDaysOfWeek(), getControlUnits(),
 			getControlDelayTime(), getControlSendRetries(),
-			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
-            getPkVarLag(), getPkVarLead(), getOffPkLag(), getOffPkLead(),
-            getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod(), 
+			getIntegrateFlag(), getIntegratePeriod(), 
             getLikeDayFallBack(), getEndDaySettings()
 		};
 		add( TABLE_NAME, addValues );
@@ -227,61 +215,11 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	}
 
 	public String getPeakSettingsString() {
-		String str = null;
-		
-		ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
-		
-		switch(algorithm) {
-		
-			case KVAR:
-				str = getPeakLag() + "<" + "kVar" + "<" + getPeakLead();
-				break;
-			case VOLTS:
-			case MULTIVOLT:
-				str = getPeakLag() + "<" + "V" + "<" + getPeakLead();
-				break;
-			case MULTIVOLTVAR:
-				str =  getPeakLag() + "<" + "Volt" + "<" + getPeakLead();
-				str += " : " + getPkVarLag() + "<" + "kVar" + "<" + getPkVarLead();
-				break;
-			case PFACTORKWKVAR:
-				str =  getPeakLag() + "<" + getPkPFPoint() + "<" + getPeakLead() ;
-				break;				
-			default:
-				str = "Unknown Algorithm";
-				break;
-		}
-		
-		return str;
+	    return StrategyPeakSettingsHelper.getPeakSettingsString(this);
 	}
 
 	public String getOffPeakSettingsString() {
-		String str = null;
-		
-		ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
-		
-		switch(algorithm) {
-		
-			case KVAR:
-				str = getOffPkLag() + "<" + "kVar" + "<" + getOffPkLead();
-				break;
-			case VOLTS:
-			case MULTIVOLT:
-				str = getOffPkLag() + "<" + "V" + "<" + getOffPkLead();
-				break;
-			case MULTIVOLTVAR:
-				str = getOffPkLag() + "<" + "Volt" + "<" + getOffPkLead();
-				str += " : " + getOffpkVarLag() + "<" + "kVar" + "<" + getOffpkVarLead();
-				break;
-			case PFACTORKWKVAR:
-				str =  getOffPkLag() + "<" + getOffPkPFPoint() + "<" + getOffPkLead() ;
-				break;				
-			default:
-				str = "Unknown Algorithm";
-				break;
-		}
-		
-		return str;
+	    return StrategyPeakSettingsHelper.getOffPeakSettingsString(this);
 	}
 	
 	/**
@@ -328,23 +266,14 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			setControlUnits( (String) results[11] );
 			setControlDelayTime( (Integer) results[12] );
 			setControlSendRetries( (Integer) results[13] );
-			setPeakLag( (Double) results[14] );
-			setPeakLead( (Double) results[15] );
-			setOffPkLag( (Double) results[16] );
-			setOffPkLead( (Double) results[17] );
-			setPkVarLag( (Double) results[18] );
-			setPkVarLead( (Double) results[19] );
-            setOffpkVarLag( (Double) results[20] );
-            setOffPkLead( (Double) results[21] );
-            setPkPFPoint((Double) results[22]);
-            setOffPkPFPoint((Double) results [23]);
-            setIntegrateFlag((String)results[24]);
-            setIntegratePeriod((Integer)results[25]);
-            setLikeDayFallBack((String)results[26]);
-            setEndDaySettings((String)results[27]);
+            setIntegrateFlag((String)results[14]);
+            setIntegratePeriod((Integer)results[15]);
+            setLikeDayFallBack((String)results[16]);
+            setEndDaySettings((String)results[17]);
         } else {
 			throw new IncorrectResultSizeDataAccessException(SETTER_COLUMNS.length, results.length);
 		}
+		retrieveTargetSettings(this);
 	}
 	
 	/**
@@ -458,13 +387,13 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
 			getFailurePercent(), getDaysOfWeek(), getControlUnits(),
 			getControlDelayTime(), getControlSendRetries(),
-			getPeakLag(), getPeakLead(), getOffPkLag(), getOffPkLead(),
-            getPkVarLag(), getPkVarLead(), getOffpkVarLag(), getOffpkVarLead(),
-            getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod(),
+			getIntegrateFlag(), getIntegratePeriod(),
             getLikeDayFallBack(), getEndDaySettings()
 		};
 		Object constraintValues[] = { getStrategyID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+		StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
+		strategyDao.savePeakSettings(targetSettings, strategyID);
 	}
 
 	/**
@@ -524,9 +453,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		   "ControlInterval, MinResponseTime, MinConfirmPercent," +
 		   "FailurePercent, DaysOfWeek," +
 		   "ControlUnits, ControlDelayTime, ControlSendRetries," +
-		   "PeakLag, PeakLead, OffPkLag, OffPkLead, " + 
-           "PeakVARLag, PeakVARLead , OffPkVARLag , OffPkVARLead," + 
-           "PeakPFSetPoint, OffPkPFSetPoint, IntegrateFlag, IntegratePeriod," +
+		   "IntegrateFlag, IntegratePeriod," +
            "LikeDayFallBack, EndDaySettings" +
 		   " from " + TABLE_NAME + " order by StrategyName";
 
@@ -541,36 +468,27 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	
 				while( rset.next() ) {
 					CapControlStrategy cbcStrat = new CapControlStrategy();
-					cbcStrat.setStrategyID( new Integer(rset.getInt(1)) );
-					cbcStrat.setStrategyName( rset.getString(2) );
-					cbcStrat.setControlMethod( rset.getString(3) );
-					cbcStrat.setMaxDailyOperation( new Integer(rset.getInt(4)) );
-					cbcStrat.setMaxOperationDisableFlag( new Character(rset.getString(5).charAt(0)) );		
-					cbcStrat.setPeakStartTime( new Integer(rset.getInt(6)) );
-					cbcStrat.setPeakStopTime( new Integer(rset.getInt(7)) );		
-					cbcStrat.setControlInterval( new Integer(rset.getInt(8)) );
-					cbcStrat.setMinResponseTime( new Integer(rset.getInt(9)) );
-					cbcStrat.setMinConfirmPercent( new Integer(rset.getInt(10)) );
-					cbcStrat.setFailurePercent( new Integer(rset.getInt(11)) );
-					cbcStrat.setDaysOfWeek( rset.getString(12) );
-					cbcStrat.setControlUnits( rset.getString(13) );
-					cbcStrat.setControlDelayTime( new Integer(rset.getInt(14)) );
-					cbcStrat.setControlSendRetries( new Integer(rset.getInt(15)) );
-					cbcStrat.setPeakLag( new Double(rset.getDouble(16)) );
-					cbcStrat.setPeakLead( new Double(rset.getDouble(17)) );
-					cbcStrat.setOffPkLag( new Double(rset.getDouble(18)) );
-					cbcStrat.setOffPkLead( new Double(rset.getDouble(19)) );
-                    cbcStrat.setPkVarLag(new Double (rset.getDouble(20)) );
-                    cbcStrat.setPkVarLead(new Double (rset.getDouble(21)) );
-                    cbcStrat.setOffpkVarLag(new Double (rset.getDouble(22)) );
-                    cbcStrat.setOffpkVarLead(new Double (rset.getDouble(23)) );
-                    cbcStrat.setPkPFPoint(new Double (rset.getDouble(24)));
-                    cbcStrat.setOffPkPFPoint(new Double (rset.getDouble(25)));
-                    cbcStrat.setIntegrateFlag(new String (rset.getString(26)));
-                    cbcStrat.setIntegratePeriod(new Integer (rset.getInt(27)));
-                    cbcStrat.setLikeDayFallBack(new String (rset.getString(28)));
-                    cbcStrat.setEndDaySettings(new String (rset.getString(29)));
-                    list.add( cbcStrat );				
+					cbcStrat.setStrategyID( new Integer(rset.getInt("StrategyId")) );
+					cbcStrat.setStrategyName( rset.getString("StrategyName") );
+					cbcStrat.setControlMethod( rset.getString("ControlMethod") );
+					cbcStrat.setMaxDailyOperation( new Integer(rset.getInt("MaxDailyOperation")) );
+					cbcStrat.setMaxOperationDisableFlag( new Character(rset.getString("MaxOperationDisableFlag").charAt(0)) );		
+					cbcStrat.setPeakStartTime( new Integer(rset.getInt("PeakStartTime")) );
+					cbcStrat.setPeakStopTime( new Integer(rset.getInt("PeakStopTime")) );		
+					cbcStrat.setControlInterval( new Integer(rset.getInt("ControlInterval")) );
+					cbcStrat.setMinResponseTime( new Integer(rset.getInt("MinResponseTime")) );
+					cbcStrat.setMinConfirmPercent( new Integer(rset.getInt("MinConfirmPercent")) );
+					cbcStrat.setFailurePercent( new Integer(rset.getInt("FailurePercent")) );
+					cbcStrat.setDaysOfWeek( rset.getString("DaysOfWeek") );
+					cbcStrat.setControlUnits( rset.getString("ControlUnits") );
+					cbcStrat.setControlDelayTime( new Integer(rset.getInt("ControlDelayTime")) );
+					cbcStrat.setControlSendRetries( new Integer(rset.getInt("ControlSendRetries")) );
+                    cbcStrat.setIntegrateFlag(new String (rset.getString("IntegrateFlag")));
+                    cbcStrat.setIntegratePeriod(new Integer (rset.getInt("IntegratePeriod")));
+                    cbcStrat.setLikeDayFallBack(new String (rset.getString("LikeDayFallBack")));
+                    cbcStrat.setEndDaySettings(new String (rset.getString("EndDaySettings")));
+                    cbcStrat.retrieveTargetSettings(cbcStrat);
+                    list.add( cbcStrat );
 				}
 
 			}		
@@ -582,6 +500,11 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			SqlUtils.close(rset, pstmt, conn );
 		}
 		return list;
+	}
+	
+	private void retrieveTargetSettings(CapControlStrategy strategy){
+	    StrategyDao strategyDao = YukonSpringHook.getBean("strategyDao", StrategyDao.class);
+	    targetSettings = strategyDao.getPeakSettings(strategy);
 	}
 
 	public static List<LiteCapControlStrategy> getAllLiteCapControlStrategy() {
@@ -753,110 +676,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		strategyName = string;
 	}
 
-	/**
-	 * @return
-	 */
-	public Double getOffPkLag() {
-		return offPkLag;
-	}
-
-	/**
-	 * @return
-	 */
-	public Double getOffPkLead() {
-		return offPkLead;
-	}
-
-	/**
-	 * @return
-	 */
-	public Double getPeakLag() {
-		return peakLag;
-	}
-
-	/**
-	 * @return
-	 */
-	public Double getPeakLead() {
-		return peakLead;
-	}
-
-	/**
-	 * @param double1
-	 */
-	public void setOffPkLag(Double double1) {
-		offPkLag = double1;
-	}
-
-	/**
-	 * @param double1
-	 */
-	public void setOffPkLead(Double double1) {
-		offPkLead = double1;
-	}
-
-	/**
-	 * @param double1
-	 */
-	public void setPeakLag(Double double1) {
-		peakLag = double1;
-	}
-
-	/**
-	 * @param double1
-	 */
-	public void setPeakLead(Double double1) {
-		peakLead = double1;
-	}
-
-    public Double getOffpkVarLag() {
-        return offpkVarLag;
-    }
-
-    public void setOffpkVarLag(Double d) {
-        offpkVarLag = d;
-    }
-
-    public Double getOffpkVarLead() {
-        return offpkVarLead;
-    }
-
-    public void setOffpkVarLead(Double d) {
-        offpkVarLead = d;
-    }
-
-    public Double getPkVarLag() {
-        return pkVarLag;
-    }
-
-    public void setPkVarLag(Double d) {
-        pkVarLag = d;
-    }
-
-    public Double getPkVarLead() {
-        return pkVarLead;
-    }
-
-    public void setPkVarLead(Double d) {
-        pkVarLead = d;
-    }
-
-    public Double getPkPFPoint() {
-        return pkPFPoint;
-    }
-
-    public Double getOffPkPFPoint() {
-        return offPkPFPoint;
-    }
-
-    public void setOffPkPFPoint(Double d) {
-        offPkPFPoint = d;
-    }
-
-    public void setPkPFPoint(Double d) {
-        pkPFPoint = d;
-    }
-
     public Integer getIntegratePeriod() {
         return integratePeriod;
     }
@@ -889,4 +708,36 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
         this.endDaySettings = endDaySettings;
     }
 
+    public List<PeakTargetSetting> getTargetSettings() {
+        return targetSettings;
+    }
+    
+    public void setTargetSettings(List<PeakTargetSetting> targetSettings) {
+        this.targetSettings = targetSettings;
+    }
+    
+    public boolean isKVarAlgorithm () {
+        return getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_KVAR);
+    }
+    
+    public boolean isPFAlgorithm () {
+        return getControlUnits().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION);
+    }
+    
+    public boolean isVoltVar () {
+        return getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT_VAR);
+    }
+    
+    public boolean isVoltStrat() {
+        if (getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT))
+            return true;
+        else if (getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_VOLTS))
+            return true;
+        else
+            return false;
+    }
+    
+    public void controlUnitsChanged(String newValue) {
+        targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.getControlAlgorithm(newValue));
+    }
 }

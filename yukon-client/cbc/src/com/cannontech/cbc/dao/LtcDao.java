@@ -3,6 +3,7 @@ package com.cannontech.cbc.dao;
 import java.util.List;
 
 import com.cannontech.cbc.model.LiteCapControlObject;
+import com.cannontech.cbc.model.LoadTapChanger;
 import com.cannontech.database.TransactionException;
 
 public interface LtcDao {
@@ -15,7 +16,7 @@ public interface LtcDao {
      * @return boolean
      * @throws TransactionException 
      */
-    public int add(String name, boolean disable, int portId) throws TransactionException;
+    public int add(LoadTapChanger ltc) throws TransactionException;
     
     /**
      * Deletes a LTC from the database.

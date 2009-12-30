@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -12,9 +12,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.cbc.dao.LtcDao;
 import com.cannontech.cbc.model.LiteCapControlObject;
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.cbc.model.LoadTapChanger;
+//import com.cannontech.clientutils.YukonLogManager;
+//import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
@@ -24,46 +24,46 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.LoadTapChanger;
-import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.database.data.multi.MultiDBPersistent;
+//import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class LtcDaoImpl implements LtcDao {
     
-    private Logger log = YukonLogManager.getLogger(LtcDao.class);
+//    private Logger log = YukonLogManager.getLogger(LtcDao.class);
     
-    private DeviceDefinitionService deviceDefinitionService;
+//    private DeviceDefinitionService deviceDefinitionService;
     private SimpleJdbcTemplate simpleJdbcTemplate;
 
     private NextValueHelper nextValueHelper;
 
     @Override
-    public int add(String name, boolean disable, int portId) throws TransactionException {
+    public int add(LoadTapChanger ltc) throws TransactionException {
         /* TODO Add the ltc and ltc points as one multidbpersistent so its all in one transaction? */
         int newId = nextValueHelper.getNextValue("YukonPaObject");
-        PaoType type = PaoType.LOAD_TAP_CHANGER;
         
-        LoadTapChanger persistentLCT = (LoadTapChanger) DeviceFactory.createDevice(type.getDeviceTypeId());
-        persistentLCT.setDisabled(disable);
-        persistentLCT.setPAOName(name);
-        persistentLCT.setDeviceID(newId);
-        persistentLCT.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
-        persistentLCT.getDeviceDirectCommSettings().setPortID(portId);
+        YukonPAObject persistentLtc = new YukonPAObject();
+        persistentLtc.setPaObjectID(newId);
+        persistentLtc.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
+        persistentLtc.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
+        persistentLtc.setPaoName(ltc.getName());
+        persistentLtc.setType(CapControlType.LTC.getDisplayValue());
+        persistentLtc.setDescription(ltc.getDescription());
+        persistentLtc.setDisableFlag(ltc.getDisabled()?'Y':'N');
 
-        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, persistentLCT).execute();
+        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, persistentLtc).execute();
+        ltc.setId(persistentLtc.getPaObjectID());
         
-        List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(persistentLCT.getPAObjectID(), PAOGroups.getDeviceType(persistentLCT.getPAOType())));
-        MultiDBPersistent pointMulti = new MultiDBPersistent();
-        pointMulti.getDBPersistentVector().addAll(points);
-        try {
-            PointUtil.insertIntoDB(pointMulti);
-        } catch (TransactionException e) {
-            log.error("Failed on Inserting Points for Load Tap Changer, " + name +".");
-        }
+//        List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(persistentLtc.getPAObjectID(), PAOGroups.getDeviceType(persistentLtc.getPAOType())));
+//        MultiDBPersistent pointMulti = new MultiDBPersistent();
+//        pointMulti.getDBPersistentVector().addAll(points);
+//        try {
+//            PointUtil.insertIntoDB(pointMulti);
+//        } catch (TransactionException e) {
+//            log.error("Failed on Inserting Points for Load Tap Changer, " + name +".");
+//        }
         
         return newId;
     }
@@ -124,8 +124,8 @@ public class LtcDaoImpl implements LtcDao {
     @Override
     public List<Integer> getUnassignedLtcIds() {
         SqlStatementBuilder sql = new SqlStatementBuilder("SELECT PAObjectID FROM YukonPAObject");
-        sql.append("where Category = ").appendArgument(PaoCategory.DEVICE);
-        sql.append("and PAOClass = ").appendArgument(PaoClass.RTU);
+        sql.append("where Category = ").appendArgument(PaoCategory.CAPCONTROL);
+        sql.append("and PAOClass = ").appendArgument(PaoClass.CAPCONTROL);
         sql.append("and type = ").appendArgument(PaoType.LOAD_TAP_CHANGER);
         sql.append("and PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC) ORDER BY PAOName");
     
@@ -174,10 +174,10 @@ public class LtcDaoImpl implements LtcDao {
         return unassignedLtcs;
     }
     
-    @Autowired
-    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
-    }
+//    @Autowired
+//    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
+//        this.deviceDefinitionService = deviceDefinitionService;
+//    }
     
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {

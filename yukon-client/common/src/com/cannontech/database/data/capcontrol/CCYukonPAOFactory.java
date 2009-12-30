@@ -40,6 +40,11 @@ public final static YukonPAObject createCapControlPAO( int type )
 			retBase = new CapControlFeeder();
 			((CapControlYukonPAOBase)retBase).setCapControlType( CapControlTypes.STRING_CAPCONTROL_FEEDER );			
 			break;
+			
+		case CapControlTypes.CAP_CONTROL_LTC:
+		    retBase = new LoadTapChanger();
+            ((CapControlYukonPAOBase)retBase).setCapControlType( CapControlTypes.STRING_CAPCONTROL_LTC );
+            break;
 
 		default:
 			retBase = DeviceFactory.createDevice( type );
