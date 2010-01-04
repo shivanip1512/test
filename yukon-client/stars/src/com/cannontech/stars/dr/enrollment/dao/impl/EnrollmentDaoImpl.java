@@ -83,35 +83,9 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		
 		return programList;
 	}
-
-	@Override
-	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId,
-			Date startTime, Date stopTime) {
-		
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
-		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation ");
-		sql.append("FROM LMProgramWebPublishing pwp");
-		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
-		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");
-		sql.append("	JOIN YukonListEntry yle ON yle.EntryID = pwp.ChanceOfControlID");
-		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.ProgramID = pwp.ProgramID");
-		sql.append("WHERE lmhcg.InventoryId = ? AND lmhcg.Type = ?");
-		sql.append("	AND lmhcg.GroupEnrollStart <= ?");
-		sql.append("	AND (lmhcg.GroupEnrollStop IS NULL OR lmhcg.GroupEnrollStop >= ?)");
-		
-		List<Program> programList = 
-			yukonJdbcTemplate.query(sql.toString(), new ProgramRowMapper(yukonJdbcTemplate), 
-					inventoryId,
-					LMHardwareControlGroup.ENROLLMENT_ENTRY,
-					stopTime,
-					startTime);
-		
-		return programList;
-	}
 	
 	@Override
-	public List<Program> getAllEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime) {
+	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
@@ -123,14 +97,28 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.ProgramID = pwp.ProgramID");
 		sql.append("WHERE lmhcg.InventoryId").eq(inventoryId);
 		sql.append("AND lmhcg.Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
-		if (startTime != null) {
-			sql.append("AND lmhcg.GroupEnrollStart").gte(startTime);
-		}
-		if (stopTime != null) {
-			sql.append("AND (lmhcg.GroupEnrollStop").lte(stopTime).append("OR lmhcg.GroupEnrollStop IS NULL)");
+		
+		if (startTime == null && stopTime == null) {
+			
+			Date now = new Date();
+			sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
+			sql.append("AND (lmhcg.GroupEnrollStop").gt(now).append("OR lmhcg.GroupEnrollStop IS NULL)");
+			
+		} else {
+			
+			if (startTime == null) {
+				startTime = new Date(0); //epoch
+			}
+			if (stopTime == null) {
+				stopTime = new Date(); // now
+			}
+			
+			sql.append("AND lmhcg.GroupEnrollStart").lte(stopTime);
+			sql.append("AND (lmhcg.GroupEnrollStop").gte(startTime).append("OR lmhcg.GroupEnrollStop IS NULL)");
 		}
 		
 		List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
+		
 		
 		return programList;
 	}

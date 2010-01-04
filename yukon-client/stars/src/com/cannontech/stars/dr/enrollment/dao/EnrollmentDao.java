@@ -46,9 +46,17 @@ public interface EnrollmentDao {
     		Program program, Date startDate, Date stopDate);
 
     /**
-     * Method to get a list of programs an inventory was enrolled in during a given time period
-     * NOTE: startTime and stopTime are required. 
-     * Use {@link EnrollmentDao#getAllEnrolledProgramIdsByInventory(Integer, Date, Date) getAllEnrolledProgramIdsByInventory} for optinal date range.
+     * Method to get a list of programs that were enrolled in during a given time period (or are currently enrolled in the case of null start AND stop).
+     * startTime and stopTime are optional (see notes below for usage). 
+     * 
+     * There are 4 possible combinations for supplying the datetimes. In the case of passing null for both the logic is slightly different, see below:
+     * 
+     * 1. startTime = null, stopTime = null: Get all currently enrolled programs. The program must have been started, and either the stop time is in the future, is set to null.
+     * 
+     * 2. startTime != null, stopTime != null: Get all programs that were enrolled at any point within the statTime-stopTime range, inclusive.
+     * 3. startTime != null, stopTime = null: Get all programs that were enrolled at any point within the statTime-NOW range, inclusive.
+     * 4. startTime = null, stopTime != null: Get all programs that were enrolled at any point within the EPOCH-stopTime range, inclusive.
+     * 
      * @param inventoryId - Inventory to get programs for
      * @param startTime - Start of time period (inclusive)
      * @param stopTime - End of time period (inclusive)
@@ -56,18 +64,6 @@ public interface EnrollmentDao {
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId,
 			Date startTime, Date stopTime);
 	
-	/**
-	 * Method to get a list of programs an inventory was enrolled in during a given time period
-	 * If only the start date is provided, then only those devices enrolled after the provided date up through the current date will be returned. 
-	 * If only the stop date is provided, then only those devices enrolled from the system origin date up to the provided stop date will be enrolled. 
-	 * If no dates are provided, then all currently enrolled devices will be returned. 
-	 * @param inventoryId
-	 * @param startTime
-	 * @param stopTime
-	 * @return
-	 */
-	public List<Program> getAllEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime);
-
 	/**
 	 * Method to get a map of all programIds and their count of all inventory that is actively enrolled 
 	 *  but is not opted out for the given time period

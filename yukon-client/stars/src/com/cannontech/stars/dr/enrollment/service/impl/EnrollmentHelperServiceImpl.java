@@ -322,7 +322,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 			
 			String serialNumber = lmHardware.getManufacturerSerialNumber();
 			
-			List<Program> programs = enrollmentDao.getAllEnrolledProgramsByInventoryId(lmHardware.getInventoryID(), startDate, stopDate);
+			List<Program> programs = enrollmentDao.getEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
 			MappingList<Program, String> programNames = new MappingList<Program, String>(programs, new ObjectMapper<Program, String>() {
 	            public String map(Program from) {
 	                return from.getProgramPaoName();
