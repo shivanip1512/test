@@ -157,7 +157,7 @@ public class OverrideHistoryRequestEndpoint {
             
             Element enrolledProgramList = new Element("enrolledProgramList", ns);
             for (Program program : overrideHistory.getPrograms()) {
-                enrolledProgramList.addContent(XmlUtils.createStringElement("programName", ns, program.getProgramName()));
+                enrolledProgramList.addContent(XmlUtils.createStringElement("programName", ns, program.getProgramPaoName()));
             }
             overrideHistoryElement.addContent(enrolledProgramList);
             
