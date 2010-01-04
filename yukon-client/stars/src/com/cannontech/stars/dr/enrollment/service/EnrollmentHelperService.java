@@ -15,6 +15,7 @@ public interface EnrollmentHelperService {
     
     /**
      * Return EnrolledDevicePrograms (serial number + list of program names) objects for a given account.
+     * Program names are the programs' PAO names.
      * startDate and stopDate are optional, if provided, only those devices enrolled in at least one program within the date range are included.
      * If only the start date is provided, then only those devices enrolled after the provided date up through the current date will be returned. 
      * If only the stop date is provided, then only those devices enrolled from the system origin date up to the provided stop date will be returned. 

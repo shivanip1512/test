@@ -38,6 +38,7 @@ public class ProgramRowMapper implements ParameterizedRowMapper<Program> {
         
         String programName = getProgramName(rs);
         program.setProgramName(programName);
+        program.setProgramPaoName(rs.getString("PAOName"));
 
         String applianceCategoryLogo = getApplianceCategoryLogo(rs);
         program.setApplianceCategoryLogo(applianceCategoryLogo);

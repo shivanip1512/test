@@ -9,6 +9,7 @@ public class Program {
     private static final String PROGAM_PREFIX = "yukon.dr.program.displayname";
     private int programId;
     private String programName;
+    private String programPaoName;
     private int programOrder;
     private String description;
     private String savingsDescriptionIcon;
@@ -32,13 +33,29 @@ public class Program {
         this.programId = programId;
     }
     
+    /**
+     * The program's STARS name ("AlternateDisplayName") is available, otherwise pao name.
+     * @return
+     */
     public String getProgramName() {
         return programName;
     }
     
+    /**
+     * The program's STARS name ("AlternateDisplayName") is available, otherwise pao name.
+     * @return
+     */
     public void setProgramName(String programName) {
         this.programName = programName;
     }
+    
+    public String getProgramPaoName() {
+		return programPaoName;
+	}
+    
+    public void setProgramPaoName(String programPaoName) {
+		this.programPaoName = programPaoName;
+	}
     
     public String getDescription() {
         return description;
