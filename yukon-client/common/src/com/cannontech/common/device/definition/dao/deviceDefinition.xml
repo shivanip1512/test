@@ -4312,6 +4312,11 @@
         <displayGroup>Virtual</displayGroup>
     </device>
     
+    <!-- SYSTEM RESERVED DEVICES -->
+    <device id="SYSTEM">
+        <displayName>SYSTEM</displayName>
+    </device>
+    
     <!-- GRID ADVISOR -->
     <device id="FAULT_CI">
         <displayName>Faulted Circuit Indicator</displayName>
@@ -4558,6 +4563,33 @@
     <device id="LM_GROUP_VERSACOM" inherits="LM_BASE">
         <displayName>VERSACOM GROUP</displayName>
     </device>
+    <device id="LM_GROUP_POINT">
+        <displayName>POINT GROUP</displayName>
+    </device>
+    <device id="LM_GROUP_RIPPLE">
+        <displayName>RIPPLE GROUP</displayName>
+    </device>
+    <device id="LM_GROUP_MCT">
+        <displayName>MCT GROUP</displayName>
+    </device>
+	<device id="LM_GROUP_SA305">
+        <displayName>SA-305 Group</displayName>
+    </device>
+    <device id="LM_GROUP_SA205">
+        <displayName>SA-205 Group</displayName>
+    </device>
+    <device id="LM_GROUP_SADIGITAL">
+        <displayName>SA-Digital Group</displayName>
+    </device>
+    <device id="LM_GROUP_GOLAY">
+        <displayName>Golay Group</displayName>
+    </device>
+    <device id="LM_GROUP_INTEGRATION">
+        <displayName>INTEGRATION GROUP</displayName>
+    </device>
+    <device id="MACRO_GROUP">
+        <displayName>MACRO GROUP</displayName>
+    </device>
     
     <!-- CBCs -->
     <device id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
@@ -4587,6 +4619,16 @@
     
     <device id="CBC_EXPRESSCOM" inherits="CBC_1WAY_BASE">
         <displayName>CBC Expresscom</displayName>
+        <changeGroup>cap</changeGroup>
+    </device>
+    
+    <device id="DNP_CBC_6510" inherits="CBC_DNP_BASE">
+        <displayName>CBC 6510</displayName>
+        <changeGroup>cap</changeGroup>
+    </device>
+    
+    <device id="CBC_FP_2800" inherits="CBC_1WAY_BASE">
+        <displayName>CBC FP-2800</displayName>
         <changeGroup>cap</changeGroup>
     </device>
     
