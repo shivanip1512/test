@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -252,6 +253,13 @@ public class ProgramController {
     public String startMultipleProgramsDetails(
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             ModelMap modelMap, YukonUserContext userContext) {
+        return startMultipleProgramsDetails(backingBean, modelMap, null, userContext);
+    }
+
+    public String startMultipleProgramsDetails(
+            @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
+            ModelMap modelMap, List<MessageSourceResolvable> errors,
+            YukonUserContext userContext) {
 
         UiFilter<DisplayablePao> filter = null;
 
@@ -300,8 +308,12 @@ public class ProgramController {
         }
         modelMap.addAttribute("programs", programs);
 
-        // TODO:  need to not do this if they came via the "back" button...
-        backingBean.initDefaults(userContext, programs, scenarioPrograms);
+        if (errors != null && errors.size() > 0) {
+            modelMap.addAttribute("errors", errors);
+        } else {
+            // TODO:  need to not do this if they came via the "back" button...
+            backingBean.initDefaults(userContext, programs, scenarioPrograms);
+        }
 
         addConstraintsInfoToModel(modelMap, userContext, backingBean);
         addGearsToModel(searchResult.getResultList(), modelMap);
@@ -473,7 +485,12 @@ public class ProgramController {
         if (numProgramsToStart == 0) {
             // nothing was selected to start...
             // TODO:  error to user that nothing was selected
-            return "dr/program/startMultipleProgramsDetails.jsp";
+            List<MessageSourceResolvable> errors = Lists.newArrayList();
+            MessageSourceResolvable error =
+                new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.noProgramsSelected");
+            errors.add(error);
+            return startMultipleProgramsDetails(backingBean, modelMap, errors,
+                                                userContext);
         }
 
         modelMap.addAttribute("numProgramsToStart", numProgramsToStart);

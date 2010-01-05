@@ -102,6 +102,8 @@ gearChanged = function() {
     </c:if>
 </h1>
 
+<tags:errorMessages/>
+
 <form:form id="startMultipleProgramsForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
@@ -142,6 +144,11 @@ gearChanged = function() {
         </tr>
     </table>
     <br>
+
+    <script type="text/javascript">
+        startNowChecked();
+        scheduleStopChecked();
+    </script>
 
     <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.startMultiplePrograms.programs"/>
     <tags:abstractContainer type="box" title="${boxTitle}">
