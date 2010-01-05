@@ -5,6 +5,25 @@
         <data name="CategoryId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
         <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" nullId="0" />
     </table>
+    
+    <table name="ECToGenericMapping">
+        <primaryKey name="EnergyCompanyId" tableRef="EnergyCompany" refType="MANY_TO_ONE"/>
+        <primaryKey name="ItemId" />
+        <primaryKey name="MappingCategory" />
+    </table>
+    
+    <table name="ECToApplianceCategoryMapping" table="ECToGenericMapping">
+    	<primaryKey name="EnergyCompanyId" tableRef="EnergyCompany" refType="MANY_TO_ONE"/>
+        <primaryKey name="ItemId" tableRef="ApplianceCategory" refType="MANY_TO_ONE"/>
+        <primaryKey name="MappingCategory" filterValue="ApplianceCategory"/>
+    </table>
+	
+    <table name="EnergyCompany">
+        <primaryKey name="EnergyCompanyID" />
+        <identifier name="Name" />
+        <data name="PrimaryContactID" />
+        <data name="UserID" />
+    </table>
 	
 	<table name="Device">
         <primaryKey name="DeviceID" tableRef="YukonPAObject" />

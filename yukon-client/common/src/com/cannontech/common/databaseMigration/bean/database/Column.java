@@ -7,6 +7,7 @@ public class Column{
     String tableRef;
     ReferenceTypeEnum refType;
     String nullId;
+    String filterValue;
     
     // Name
     public String getName() {
@@ -54,6 +55,14 @@ public class Column{
     }
     public void setNullId(String nullId) {
         this.nullId = nullId;
+    }
+    
+    // Filter Value
+    public String getFilterValue() {
+        return filterValue;
+    }
+    public void setFilterValue(String filterValue) {
+        this.filterValue = filterValue;
     }
     
     public String toString(){

@@ -29,9 +29,16 @@ public class DatabaseDefinition {
             // Build Database from JDOM Object
             List<Element> tables = databaseRoot.getChildren();
             for (Element tableElmenet : tables) {
-                String tableName = tableElmenet.getAttributeValue("name");
-                TableDefinition table = new TableDefinition(tableName, tableElmenet);
-                this.databaseMap.put(tableName, table);
+                String name = tableElmenet.getAttributeValue("name");
+
+                // If the table value is null then we just use the name
+                String table = tableElmenet.getAttributeValue("table");
+                if (table == null) {
+                    table = name;
+                }
+
+                TableDefinition tableDef = new TableDefinition(name, table, tableElmenet);
+                this.databaseMap.put(name, tableDef);
             }
         
         } catch (JDOMException e) {
@@ -48,7 +55,7 @@ public class DatabaseDefinition {
         return databaseMap;
     }
     public void addTable(TableDefinition table) {
-        this.databaseMap.put(table.getTableName(), table);
+        this.databaseMap.put(table.getName(), table);
     }
 
     public TableDefinition getTable(String dbTableName) {
@@ -58,7 +65,7 @@ public class DatabaseDefinition {
     public List<String> getConnectedTables(TableDefinition table) {
         List<String> connectedTables = new ArrayList<String>();
         if(table != null){
-            connectedTables.add(table.getTableName());
+            connectedTables.add(table.getName());
             
             List<Column> allColumns = table.getAllColumns();
             for (Column column : allColumns) {

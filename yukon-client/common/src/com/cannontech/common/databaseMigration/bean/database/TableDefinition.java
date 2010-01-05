@@ -12,15 +12,13 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
 public class TableDefinition {
-    String tableName;
+    String name;
+    String table;
     ListMultimap<String, Column> columns = ArrayListMultimap.create();
     
-    public TableDefinition(String tableName){
-        this.tableName = tableName;
-    }
-
-    public TableDefinition(String tableName, Element tableElement){
-        this.tableName = tableName;
+    public TableDefinition(String name, String table, Element tableElement){
+        this.name = name;
+        this.table = table;
         
         ColumnTypeEnum[] columnTypes = ColumnTypeEnum.values();
         for (ColumnTypeEnum columnType : columnTypes)
@@ -35,12 +33,16 @@ public class TableDefinition {
             column.setName(columnElement.getAttributeValue("name"));
             column.setTableRef(columnElement.getAttributeValue("tableRef"));
             column.setColumnType(columnType);
-            if(column.getTableRef() != null &&
-               !column.getColumnType().equals(ColumnTypeEnum.PRIMARY_KEY)){
-                column.setRefType(ReferenceTypeEnum.valueOf(columnElement.getAttributeValue("refType")));
+            if (column.getTableRef() != null) {
+                String refTypeStr = columnElement.getAttributeValue("refType"); 
+                if (refTypeStr != null) {
+                    column.setRefType(ReferenceTypeEnum.valueOf(refTypeStr));
+                } else {
+                    column.setRefType(ReferenceTypeEnum.ONE_TO_ONE);
+                }
             }
-            String nullId = columnElement.getAttributeValue("nullId");
-            column.setNullId(nullId);
+            column.setNullId(columnElement.getAttributeValue("nullId"));
+            column.setFilterValue(columnElement.getAttributeValue("filterValue"));
             this.columns.put(columnType.toString(), column);
         }
     }
@@ -94,8 +96,12 @@ public class TableDefinition {
         return columnNames;
     }
     
-    public String getTableName() {
-        return tableName;
+    public String getName() {
+        return name;
+    }
+    
+    public String getTable() {
+        return table;
     }
 
     public ListMultimap<String, Column> getColumns() {
@@ -103,6 +109,6 @@ public class TableDefinition {
     }
     
     public String toString(){
-        return this.tableName;
+        return this.name;
     }
 }

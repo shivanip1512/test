@@ -133,6 +133,28 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             throw new NotFoundException("The appliance category name supplied does not exist.");
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Integer> getEnergyCompaniesByApplianceCategoryId(int applianceCategoryId){
+
+        final SqlStatementBuilder ecIdFromAppCatQuery = new SqlStatementBuilder();
+        ecIdFromAppCatQuery.append("SELECT EnergyCompanyId");
+        ecIdFromAppCatQuery.append("FROM ECtoGenericMapping");
+        ecIdFromAppCatQuery.append("WHERE ItemId = ?");
+        ecIdFromAppCatQuery.append("AND MappingCategory = 'ApplianceCategory'");
+        
+        List<Integer> energyCompanyIds = 
+            simpleJdbcTemplate.query(ecIdFromAppCatQuery.toString(),
+                                     new IntegerRowMapper(),
+                                     applianceCategoryId);
+
+        if (energyCompanyIds.size() > 0) {
+            return energyCompanyIds;
+        } else {
+            throw new NotFoundException("The supplied appliance category is not attached to any energy companies.");
+        }
+    }
     
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {

@@ -181,11 +181,11 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
 
     public DataTableTemplate buildDataTableTemplate(ConfigurationTable configFileTableElement){
 
-        String tableName = configFileTableElement.getTableName();
+        TableDefinition tableDef = database.getTable(configFileTableElement.getTableName());
         
         CountHolder countHolder = new CountHolder(1);
         DataTableTemplate baseDataTable = 
-            new DataTableTemplate(ElementCategoryEnum.BASE, countHolder.getCount(), tableName);
+            new DataTableTemplate(ElementCategoryEnum.BASE, countHolder.getCount(), tableDef.getName(), tableDef.getTable());
         buildDataTableTemplate(baseDataTable, configFileTableElement, countHolder, null);
         
         return baseDataTable;
@@ -202,14 +202,14 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                         ConfigurationTable configFileTableElement, 
                                         CountHolder countHolder,
                                         TableDefinition finalTableInDrillDown){
-        TableDefinition table = database.getTable(dataTable.getTableName());
+        TableDefinition table = database.getTable(dataTable.getName());
         List<Column> allColumns = table.getAllColumns();
         for (Column column : allColumns) {
             if (column.getTableRef() != null){
 
                 // Checks to see if we have reached our desired reference.  If so we want to keep this entry blank.
                 if (finalTableInDrillDown != null &&
-                        column.getTableRef().equals(finalTableInDrillDown.getTableName())) {
+                    column.getTableRef().equals(finalTableInDrillDown.getName())) {
                     continue;
                 }
 
@@ -254,13 +254,12 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                     }
 
                 } else {
-                    throw new IllegalArgumentException("Incorrect reference type found in the database definition XML file. ("+table.getTableName()+"."+column.getName()+" => "+column.getRefType()+")");
+                    throw new IllegalArgumentException("Incorrect reference type found in the database definition XML file. ("+table.getName()+"."+column.getName()+" => "+column.getRefType()+")");
                 }
             } else {
                 DataValueTemplate dataValueTemplate = new DataValueTemplate();
-                if (column.getNullId() != null) {
-                    dataValueTemplate.setNullId(column.getNullId());
-                }
+                dataValueTemplate.setNullId(column.getNullId());
+                dataValueTemplate.setFilterValue(column.getFilterValue());
                 dataTable.putTableColumn(column.getName(), dataValueTemplate);
             }
         }
@@ -271,7 +270,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
             TableDefinition referencesTable = database.getTable(configurationTable.getTableName());
             List<Column> referencesTableColumns = referencesTable.getAllColumns();
             for (Column referencesTableColumn : referencesTableColumns) {
-                if (table.getTableName().equals(referencesTableColumn.getTableRef())){
+                if (table.getName().equals(referencesTableColumn.getTableRef())){
 
                     processReferencesDataTableTemplate(dataTable,
                                                configurationTable,
@@ -302,7 +301,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                                 TableDefinition tableRefTable,
                                                 TableDefinition finalTableInDrillDown) {
         DataTableTemplate inlineTable = 
-            new DataTableTemplate(null, 0, tableRefTable.getTableName());
+            new DataTableTemplate(null, 0, tableRefTable.getName(), tableRefTable.getTable());
         dataTable.putTableColumn(column.getName(), inlineTable);
         buildDataTableTemplate(inlineTable, 
                                configFileTableElement, 
@@ -330,8 +329,9 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
         countHolder.add();
         DataTableTemplate includeTable = 
             new DataTableTemplate(ElementCategoryEnum.INCLUDE, 
-                          countHolder.getCount(),
-                          tableRefTable.getTableName());
+                                  countHolder.getCount(),
+                                  tableRefTable.getName(),
+                                  tableRefTable.getTable());
         dataTable.putTableColumn(column.getName(), includeTable);
         
         buildDataTableTemplate(includeTable, 
@@ -359,7 +359,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                           TableDefinition finalTableInDrillDown) {
         countHolder.add();
         DataTableTemplate referenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.REFERENCE, countHolder.getCount(), tableRefTable.getTableName());
+            new DataTableTemplate(ElementCategoryEnum.REFERENCE, countHolder.getCount(), tableRefTable.getName(), tableRefTable.getTable());
         dataTable.putTableColumn(column.getName(), referenceTable);
         buildDatabaseMapReferenceTemplate(referenceTable, countHolder);
     }
@@ -382,7 +382,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                                     TableDefinition referencesTable) {
         countHolder.add();
         DataTableTemplate referenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.REFERENCES, countHolder.getCount(), referencesTable.getTableName());
+            new DataTableTemplate(ElementCategoryEnum.REFERENCES, countHolder.getCount(), referencesTable.getName(), referencesTable.getTable());
         dataTable.addTableReferences(referenceTable);
         buildDataTableTemplate(referenceTable, 
                                configFileTableElement,
@@ -409,7 +409,7 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     public void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable,
                                                   CountHolder countHolder){
-        TableDefinition table = database.getTable(referenceTable.getTableName());
+        TableDefinition table = database.getTable(referenceTable.getName());
         List<Column> identifierColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
         for (Column identifierColumn : identifierColumns) {
             if (identifierColumn.getTableRef() != null){
@@ -435,8 +435,9 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                                                             CountHolder countHolder) {
         countHolder.add();
 
+        TableDefinition referenceTableDef = database.getTable(identifierColumn.getTableRef());
         DataTableTemplate nextReferenceTable = 
-            new DataTableTemplate(ElementCategoryEnum.REFERENCE, countHolder.getCount(), identifierColumn.getTableRef());
+            new DataTableTemplate(ElementCategoryEnum.REFERENCE, countHolder.getCount(), referenceTableDef.getName(), referenceTableDef.getTable());
         referenceTable.putTableColumn(identifierColumn.getName(), nextReferenceTable);
         buildDatabaseMapReferenceTemplate(nextReferenceTable, 
                                           countHolder);

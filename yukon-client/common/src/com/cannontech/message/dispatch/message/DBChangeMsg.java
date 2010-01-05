@@ -58,6 +58,9 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB = 29;
 	public static final int CHANGE_WORK_ORDER_DB = 30;
     public static final int CHANGE_CBC_ADDINFO_DB = 31;
+    public static final int CHANGE_APPLIANCE_CATEGORY_DB = 32; 
+    public static final int CHANGE_WEB_CONFIG_DB = 33;
+    public static final int CHANGE_STARS_PUBLISHED_PROGRAM_DB = 34;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will
@@ -100,7 +103,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_SERVICE_COMPANY_DESIGNATION_CODE = "ServiceCompany";
 	public static final String CAT_WORK_ORDER = "WorkOrder";
     public static final String CAT_CBC_ADDINFO = "CB Additional Info";
-
+    public static final String CAT_WEB_CONFIG = "Web Configuration";
+    public static final String CAT_STARS_PUBLISHED_PROGRAM = "Stars Published Program";
 	
 	//THE FOLLOWING EXIST ONLY IN THE JAVA VERSION OF THIS MESSAGE!
 	//HEED THIS WARNING AND DO NOT MIX W/C++ - MAYBE TEMPORARY

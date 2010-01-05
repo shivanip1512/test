@@ -9,7 +9,8 @@ import com.google.common.collect.Maps;
 
 public class DataTable implements DataTableEntity {
     private ElementCategoryEnum elementCategory;
-    private String tableName; // could also be a reference to DataTableTemplate
+    private String name;
+    private String table;
     private Map<String, DataTableEntity> tableColumns = Maps.newLinkedHashMap();
     private List<DataTable> tableReferences = Lists.newArrayList();
     
@@ -20,11 +21,18 @@ public class DataTable implements DataTableEntity {
         this.elementCategory = elementCategory;
     }
     
-    public String getTableName() {
-        return tableName;
+    public String getName() {
+        return name;
     }
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getTable() {
+        return table;
+    }
+    public void setTable(String table) {
+        this.table = table;
     }
     
     public Map<String, DataTableEntity> getTableColumns() {
@@ -45,7 +53,8 @@ public class DataTable implements DataTableEntity {
         String results = "";
         
         results += "elementCategory = "+this.elementCategory+"\n";
-        results += "tableName = "+this.tableName+"\n";
+        results += "name = "+this.name+"\n";
+        results += "table = "+this.table+"\n";
 
         results += "tableColumns = {";
         for (String key : this.tableColumns.keySet()) {

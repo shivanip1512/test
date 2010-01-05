@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
@@ -18,14 +21,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
@@ -33,6 +38,7 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.database.db.stars.LMProgramWebPublishing;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
@@ -40,6 +46,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.ServletUtils;
@@ -65,7 +72,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	private List<LiteStarsEnergyCompany> energyCompanies = null;
     
 	// List of web configurations (LiteWebConfiguration)
-	private List<LiteWebConfiguration> webConfigList = null;
+	private ConcurrentMap<Integer,LiteWebConfiguration> webConfigList = null;
 	
 	// Map from user ID (Integer) to stars users (StarsYukonUser)
 	private Map<Integer,StarsYukonUser> starsYukonUsers = null;
@@ -75,6 +82,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	
     private AsyncDynamicDataSource dataSource;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private ApplianceCategoryDao applianceCategoryDao;
     
     public StarsDatabaseCache() {
         
@@ -88,8 +96,13 @@ public class StarsDatabaseCache implements DBChangeListener {
             StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
-    
-	public void init() {		
+
+    @Autowired
+    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
+        this.applianceCategoryDao = applianceCategoryDao;
+    }
+
+    public void init() {		
         dataSource.addDBChangeListener(this);
 	}
 	
@@ -130,14 +143,17 @@ public class StarsDatabaseCache implements DBChangeListener {
 		return energyCompanies;
 	}
 
-	public synchronized List<LiteWebConfiguration> getAllWebConfigurations() {
+	private synchronized Map<Integer,LiteWebConfiguration> getAllWebConfigurations() {
+	    
 		if (webConfigList == null) {
-			webConfigList = new ArrayList<LiteWebConfiguration>();
+			webConfigList = new ConcurrentHashMap<Integer,LiteWebConfiguration>();
 			
-			com.cannontech.database.db.web.YukonWebConfiguration[] webConfigs =
+			YukonWebConfiguration[] webConfigs =
 					YukonWebConfiguration.getAllCustomerWebConfigurations();
-			for (int i = 0; i < webConfigs.length; i++)
-				webConfigList.add( (LiteWebConfiguration) StarsLiteFactory.createLite(webConfigs[i]) );
+			for (int i = 0; i < webConfigs.length; i++) {
+                LiteWebConfiguration webConfiguration = (LiteWebConfiguration) StarsLiteFactory.createLite(webConfigs[i]);
+                webConfigList.put(webConfiguration.getConfigID(), webConfiguration );
+            }
 	    	
 	    	CTILogger.info( "All customer web configurations loaded" );
 		}
@@ -208,36 +224,20 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 
 	public LiteWebConfiguration getWebConfiguration(int configID) {
-        List<LiteWebConfiguration> webConfigList = getAllWebConfigurations();
-		synchronized (webConfigList) {
-			for (int i = 0; i < webConfigList.size(); i++) {
-				LiteWebConfiguration config = webConfigList.get(i);
-				if (config.getConfigID() == configID)
-					return config;
-			}
-		}
-		
-		return null;
+        Map<Integer, LiteWebConfiguration> configs = getAllWebConfigurations();
+        LiteWebConfiguration result = configs.get(configID);
+        return result;
 	}
 
 	public void addWebConfiguration(LiteWebConfiguration config) {
-        List<LiteWebConfiguration> webConfigList = getAllWebConfigurations();
-		synchronized (webConfigList) { webConfigList.add(config); }
+        Map<Integer, LiteWebConfiguration> configs = getAllWebConfigurations();
+        configs.put(config.getConfigID(), config);
 	}
 
 	public LiteWebConfiguration deleteWebConfiguration(int configID) {
-        List<LiteWebConfiguration> webConfigList = getAllWebConfigurations();
-		synchronized (webConfigList) {
-			for (int i = 0; i < webConfigList.size(); i++) {
-				LiteWebConfiguration config = webConfigList.get(i);
-				if (config.getConfigID() == configID) {
-					webConfigList.remove( i );
-					return config;
-				}
-			}
-		}
-		
-		return null;
+        Map<Integer, LiteWebConfiguration> configs = getAllWebConfigurations();
+        LiteWebConfiguration result = configs.remove(configID);
+        return result;
 	}
 	
 	public boolean isStarsUser(final LiteYukonUser yukonUser) {
@@ -367,9 +367,121 @@ public class StarsDatabaseCache implements DBChangeListener {
 						}
 				}
 			}
-		}
+		} else if (msg.getDatabase() == DBChangeMsg.CHANGE_APPLIANCE_CATEGORY_DB) {
+		    handleApplianceCategoryChange(msg);
+		} else if (msg.getDatabase() == DBChangeMsg.CHANGE_WEB_CONFIG_DB) {
+            handleWebConfigurationChange(msg);
+        } else if (msg.getDatabase() == DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB) {
+            handlePublishedProgramChange(msg);
+        }
+
 	}
+
+	private synchronized void handlePublishedProgramChange(DBChangeMsg msg) {
+	    LMProgramWebPublishing lmProgramWebPublishing = LMProgramWebPublishing.getLMProgramWebPublishing(msg.getId());
+	    int appCatId = lmProgramWebPublishing.getApplianceCategoryID();
+
+	    List<Integer> energyCompanyIds = applianceCategoryDao.getEnergyCompaniesByApplianceCategoryId(appCatId);
+	    for (Integer energyCompanyId : energyCompanyIds) {
+	        LiteStarsEnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
+
+	        switch( msg.getTypeOfChange() ) {
+	            case DBChangeMsg.CHANGE_TYPE_ADD:
+
+	                try {
+	                    // Create a lite appliance category from the supplied applianceCategoryId
+	                    com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+	                        new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+	                    appCat.setApplianceCategoryID(appCatId);
+	                    appCat = Transaction.createTransaction( Transaction.RETRIEVE, appCat ).execute();
+	                    LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
+	                    LiteLMProgramWebPublishing liteLMProgWebPub = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite( lmProgramWebPublishing );
+
+	                    // Add the lite appliance category to the supplied energy company
+	                    energyCompany.addProgram(liteLMProgWebPub, liteAppCat);
+	                } catch (TransactionException e) {
+	                    CTILogger.error( e.getMessage(), e );
+	                }
+	                break;
+
+	            case DBChangeMsg.CHANGE_TYPE_UPDATE:
+                    try {
+                        // Create a lite appliance category from the supplied applianceCategoryId
+                        com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+                            new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+                        appCat.setApplianceCategoryID(appCatId);
+                        appCat = Transaction.createTransaction( Transaction.RETRIEVE, appCat ).execute();
+                        LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
+                        LiteLMProgramWebPublishing liteLMProgWebPub = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite( lmProgramWebPublishing );
+
+                        // Add the lite appliance category to the supplied energy company
+                        energyCompany.updateProgram(liteLMProgWebPub, liteAppCat);
+                    } catch (TransactionException e) {
+                        CTILogger.error( e.getMessage(), e );
+                    }
+	                break;
+
+	            case DBChangeMsg.CHANGE_TYPE_DELETE:
+	                energyCompany.deleteProgram(lmProgramWebPublishing.getProgramID());
+	                break;
+	        }
+	    }
+
+	}
+
+    private synchronized void handleWebConfigurationChange(DBChangeMsg msg) {
+        webConfigList = null;
+    }
+
 	
+	private void handleApplianceCategoryChange(DBChangeMsg msg) {
+	    int applianceCategoryId = msg.getId();
+
+	    List<Integer> energyCompanyIds = applianceCategoryDao.getEnergyCompaniesByApplianceCategoryId(applianceCategoryId);
+	    for (Integer energyCompanyId : energyCompanyIds) {
+	        LiteStarsEnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
+
+	        switch( msg.getTypeOfChange() ) {
+	            case DBChangeMsg.CHANGE_TYPE_ADD:
+
+	                try {
+	                    // Create a lite appliance category from the supplied applianceCategoryId
+	                    com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+	                        new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+	                    appCat.setApplianceCategoryID(applianceCategoryId);
+	                    appCat = Transaction.createTransaction( Transaction.RETRIEVE, appCat ).execute();
+	                    LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
+
+	                    // Add the lite appliance category to the supplied energy company
+	                    energyCompany.addApplianceCategory(liteAppCat);
+	                } catch (TransactionException e) {
+	                    CTILogger.error( e.getMessage(), e );
+	                }
+	                break;
+
+	            case DBChangeMsg.CHANGE_TYPE_UPDATE:
+                    try {
+                        // Create a lite appliance category from the supplied applianceCategoryId
+                        com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+                            new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+                        appCat.setApplianceCategoryID(applianceCategoryId);
+                        appCat = Transaction.createTransaction( Transaction.RETRIEVE, appCat ).execute();
+                        LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
+
+                        // Update the lite appliance category to the supplied energy company
+                        energyCompany.updateApplianceCategory(liteAppCat);
+                    } catch (TransactionException e) {
+                        CTILogger.error( e.getMessage(), e );
+                    }
+	                break;
+
+	            case DBChangeMsg.CHANGE_TYPE_DELETE:
+	                energyCompany.deleteApplianceCategory(applianceCategoryId);
+	                break;
+	        }
+	    }
+	}
+
 	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
 		switch( msg.getTypeOfChange() )
 		{

@@ -2,6 +2,7 @@
     <configuration name="APP_CATEGORY"><!-- Appliance Categories And Related Programs -->
         <table name="ApplianceCategory">
             <references>
+                <table name="ECToApplianceCategoryMapping"/>
                 <table name="LMProgramWebPublishing" />
             </references>
         </table>

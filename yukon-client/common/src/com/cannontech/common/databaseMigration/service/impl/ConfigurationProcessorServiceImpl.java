@@ -114,8 +114,20 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
             sqlHolder.addSelectClause(columnName);
         }
 
-        String tableName = template.getTableName();
+        String tableName = template.getTable();
         sqlHolder.addFromClause(tableName);
+        
+        // Add filtering value where segment
+        List<Object> whereValues = Lists.newArrayList();
+        for (Entry<String, DataEntryTemplate> tableColumn : tableColumns.entrySet()) {
+            if (tableColumn.getValue() instanceof DataValueTemplate) {
+                DataValueTemplate dataValueTemplate = (DataValueTemplate)tableColumn.getValue();
+                if (dataValueTemplate.getFilterValue() != null) {
+                    sqlHolder.addWhereClause(tableColumn.getKey()+" = ? ");
+                    whereValues.add(dataValueTemplate.getFilterValue());
+                }
+            }
+        }
         
         SqlStatementBuilder selectSQL = sqlHolder.buildSelectSQL();
         
@@ -128,7 +140,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         
         // execute SQL
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql());
+        List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql(), whereValues.toArray());
 
         return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults, status);
     }
@@ -166,8 +178,21 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
             sqlHolder.addSelectClause(referencesColumnName);
         }
 
-        String tableName = template.getTableName();
+        String tableName = template.getTable();
         sqlHolder.getFromClauses().add(tableName);
+        
+        // Add filtering value where segment
+        List<Object> whereValues = Lists.newArrayList();
+        for (Entry<String, DataEntryTemplate> tableColumn : tableColumns.entrySet()) {
+            if (tableColumn.getValue() instanceof DataValueTemplate) {
+                DataValueTemplate dataValueTemplate = (DataValueTemplate)tableColumn.getValue();
+                if (dataValueTemplate.getFilterValue() != null) {
+                    sqlHolder.addWhereClause(tableColumn.getKey()+" = ? ");
+                    whereValues.add(dataValueTemplate.getFilterValue());
+                }
+            }
+        }
+        
         
         SqlStatementBuilder selectSQL = sqlHolder.buildSelectSQL();
         
@@ -179,7 +204,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         }
         
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql());
+        List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql(), whereValues.toArray());
         return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults, null);
     }
     
@@ -213,7 +238,8 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                                                Map<DataTableTemplate, Map<Integer, DataTable>> includedTables,
                                                Map<String, Object> sqlResult) {
         DataTable dataForTable = new DataTable();
-        dataForTable.setTableName(template.getTableName());
+        dataForTable.setName(template.getName());
+        dataForTable.setTable(template.getTable());
         dataForTable.setElementCategory(template.getElementCategory());
 
         Map<String, DataEntryTemplate> tableColumns = template.getTableColumns();
@@ -252,14 +278,14 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     
                     // Generating the reference portion of the include 
                     DataTableTemplate referenceTableTemplate = 
-                        new DataTableTemplate(ElementCategoryEnum.REFERENCE, 0, thisTemplate.getTableName());
+                        new DataTableTemplate(ElementCategoryEnum.REFERENCE, 0, thisTemplate.getName(), thisTemplate.getTable());
                     configurationParserService.buildDatabaseMapReferenceTemplate(referenceTableTemplate);
                     dataTableEntity = buildAndProcessSqlPrimaryKey(referenceTableTemplate, thisPrimaryKey, includedTables);
                     
                 }
             } else if (entry.getValue() instanceof DataValueTemplate) {
                 // Processing nullId case
-                TableDefinition table = database.getTable(template.getTableName());
+                TableDefinition table = database.getTable(template.getName());
                 List<Column> columns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
                 boolean nullIdFound = false;
                 for (Column column : columns) {
@@ -276,7 +302,9 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                 
                 // Adds a value of a column to the DataTable object
                 DataTableValue dataTableValue = new DataTableValue();
-                dataTableValue.setValue(value.toString());
+                if (value != null) {
+                    dataTableValue.setValue(value.toString());
+                }
                 dataTableEntity = dataTableValue;
             }
             if (dataTableEntity == null) {
@@ -286,7 +314,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         }
         
         // Create primayKey identifier for the references
-        TableDefinition table = database.getTable(template.getTableName());
+        TableDefinition table = database.getTable(template.getName());
         List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         String primaryKey = primaryKeyColumnNames.get(0);
         Integer primaryKeyValue = Integer.parseInt(sqlResult.get(primaryKey).toString());
@@ -313,11 +341,11 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         for (DataTableTemplate referencesDataTableTemplate : tableReferences) {
             
             // Build up the table object and figure out which table we are pointing to
-            TableDefinition referencesTable = database.getTable(referencesDataTableTemplate.getTableName());
+            TableDefinition referencesTable = database.getTable(referencesDataTableTemplate.getName());
             List<Column> allReferencesTableColumns = referencesTable.getAllColumns();
             for (Column column : allReferencesTableColumns) {
                 if (column.getTableRef() != null &&
-                    column.getTableRef().equals(dataForTable.getTableName())) {
+                    column.getTableRef().equals(dataForTable.getName())) {
                     String referencesColumnName = column.getName();
                                        
                     List<DataTable> result = 

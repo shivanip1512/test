@@ -1070,6 +1070,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
         appCategoryMap.put(appCat.getApplianceCategoryID(), appCat);
     }
     
+    public void updateApplianceCategory(LiteApplianceCategory appCat) {
+        Validate.notNull(appCat, "Appliance category cannot be null");
+        appCategoryMap.put(appCat.getApplianceCategoryID(), appCat);
+    }
+    
     public void deleteApplianceCategory(int applianceCategoryID) {
     	appCategoryMap.remove(applianceCategoryID);
     }
@@ -1164,6 +1169,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
         LiteApplianceCategory applianceCategory = 
         	appCategoryMap.get(liteAppCat.getApplianceCategoryID());
         applianceCategory.addProgram(liteProg);
+        
+        programIdToAppCatIdMap.put(liteProg.getProgramID(), liteAppCat.getApplianceCategoryID());
+    }
+    
+    public void updateProgram(LiteLMProgramWebPublishing liteProg, LiteApplianceCategory liteAppCat) {
+        LiteApplianceCategory applianceCategory = 
+            appCategoryMap.get(liteAppCat.getApplianceCategoryID());
+        applianceCategory.updateProgram(liteProg);
         
         programIdToAppCatIdMap.put(liteProg.getProgramID(), liteAppCat.getApplianceCategoryID());
     }

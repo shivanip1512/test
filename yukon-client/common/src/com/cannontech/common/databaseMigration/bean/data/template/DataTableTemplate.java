@@ -11,16 +11,19 @@ public class DataTableTemplate implements DataEntryTemplate {
 
     private ElementCategoryEnum elementCategory;
     private int elementMappingKey = 0;
-    private String tableName;
+    private String name;
+    private String table;
     private Map<String, DataEntryTemplate> tableColumns;
     private List<DataTableTemplate> tableReferences;
   
     public DataTableTemplate(ElementCategoryEnum elementCategory,
                      int elementMappingKey,
-                     String tableName){
+                     String name,
+                     String table){
         this.elementCategory = elementCategory;
         this.elementMappingKey = elementMappingKey;
-        this.tableName = tableName;
+        this.name = name;
+        this.table = table;
         this.tableColumns = new LinkedHashMap<String, DataEntryTemplate>();
         this.tableReferences = new ArrayList<DataTableTemplate>();
     }
@@ -39,13 +42,20 @@ public class DataTableTemplate implements DataEntryTemplate {
         this.elementMappingKey = elementMappingKey;
     }
     
-    public String getTableName() {
-        return tableName;
+    public String getName() {
+        return name;
     }
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setName(String name) {
+        this.name = name;
     }
     
+    public String getTable() {
+        return table;
+    }
+    public void setTable(String table) {
+        this.table = table;
+    }
+
     public void putTableColumn(String columnName, DataEntryTemplate dataEntry){
         this.tableColumns.put(columnName, dataEntry);
     }
@@ -71,7 +81,8 @@ public class DataTableTemplate implements DataEntryTemplate {
         
         results += "elementCategory = "+elementCategory+"\n";
         results += "elementMappingKey = "+elementMappingKey+"\n";
-        results += "tableName = "+tableName+"\n";
+        results += "name = "+name+"\n";
+        results += "table = "+table+"\n";
 
         results += "tableColumns = {";
         for (String key : this.tableColumns.keySet()) {

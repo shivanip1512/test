@@ -118,6 +118,12 @@ public class LiteApplianceCategory extends LiteBase {
 		this.publishedPrograms.put(liteProg.getProgramID(), liteProg);
 	}
 
+	public void updateProgram(LiteLMProgramWebPublishing liteProg) {
+	    Validate.notNull(liteProg, "Program cannot be null");
+        this.publishedPrograms.put(liteProg.getProgramID(), liteProg);
+    }
+
+	
 	public void removeProgram(int programID) {
 		this.publishedPrograms.remove(programID);
 	}

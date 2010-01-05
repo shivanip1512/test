@@ -12,6 +12,8 @@ public interface ApplianceCategoryDao {
     public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName, 
                                                               List<Integer> energyCompanyIds);
     
+    public List<Integer> getEnergyCompaniesByApplianceCategoryId(int applianceCategoryId);
+    
     public List<ApplianceCategory> getApplianceCategories(CustomerAccount customerAccount);
     
     public List<Integer> getApplianceCategoryIds(final CustomerAccount customerAccount);    

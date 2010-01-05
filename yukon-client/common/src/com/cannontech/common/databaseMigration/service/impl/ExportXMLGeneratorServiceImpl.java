@@ -13,6 +13,7 @@ import com.cannontech.common.databaseMigration.bean.data.DataTable;
 import com.cannontech.common.databaseMigration.bean.data.DataTableEntity;
 import com.cannontech.common.databaseMigration.bean.data.DataTableValue;
 import com.cannontech.common.databaseMigration.bean.data.ElementCategoryEnum;
+import com.cannontech.common.databaseMigration.bean.database.Column;
 import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
 import com.cannontech.common.databaseMigration.bean.database.DatabaseDefinition;
 import com.cannontech.common.databaseMigration.bean.database.TableDefinition;
@@ -48,7 +49,7 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
     private void buildXmlElement(Iterable<DataTable> data, Element element){
         for (DataTable dataTable : data) {
             log.debug("buildingXmlElement - "+dataTable.toString());
-            String tableName = dataTable.getTableName();
+            String tableName = dataTable.getName();
             Element itemElement = generateItemElementName(tableName);
             element.addContent(itemElement);
 
@@ -85,13 +86,23 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
             // Checks to see if the table is just a value 
             // or if it ties to another table of information
             if (columnEntry.getValue() instanceof DataTableValue) {
-                TableDefinition table = database.getTable(dataTable.getTableName());
+                TableDefinition table = database.getTable(dataTable.getName());
+                List<Column> primaryKeyColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
                 
                 // Checks to see if we should display primaryKeys in the XML file or not
-                List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
-                if (!showPrimaryKeys &&
-                    primaryKeyColumnNames.contains(columnName)){
-                    continue;
+                if (!showPrimaryKeys) { 
+                    boolean skipPrimaryKey = false;
+                    for (Column primaryKeyColumn : primaryKeyColumns) {
+                        if (primaryKeyColumn.getName().equals(columnName) &&
+                            primaryKeyColumn.getFilterValue() == null) {
+    
+                            skipPrimaryKey = true;
+                            break;
+                        }
+                    }
+                    if (skipPrimaryKey) {
+                        continue;
+                    }
                 }
                 
                 DataTableValue dataTableValue = (DataTableValue) columnEntry.getValue();
