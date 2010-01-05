@@ -769,6 +769,11 @@ public class ProgramController {
         // make sure the programs here are actually part of the control area
         // or scenario that we've checked permissions on.
 
+        if (backingBean.isStopNow()) {
+            // If we're starting a scenario, we need a common base "now" time
+            // for offsets.
+            stopDate = new Date();
+        }
         for (ProgramStopInfo programStopInfo : backingBean.getProgramStopInfo()) {
             if (!programStopInfo.isStopProgram()) {
                 continue;
