@@ -1476,7 +1476,13 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
         //Do nothing we don't care.
     }else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB ) {
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
-	}else {
+    }else if ( database == DBChangeMsg.CHANGE_APPLIANCE_CATEGORY_DB) {
+        //Do nothing we don't care.
+    }else if( database == DBChangeMsg.CHANGE_WEB_CONFIG_DB ) {
+        //Do nothing we don't care.
+    }else if ( database == DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB) {
+        //Do nothing we don't care.
+    }else {
 	    //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
 	    CTILogger.error(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
 	}
