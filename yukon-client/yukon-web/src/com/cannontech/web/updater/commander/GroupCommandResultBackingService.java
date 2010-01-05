@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.util.ResultResultExpiredException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
@@ -14,11 +15,13 @@ public class GroupCommandResultBackingService extends RecentResultUpdateBackingS
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {
 
-        GroupCommandResult groupCommandResult = groupCommandExecutor.getResult(resultId);
+        GroupCommandResult groupCommandResult = null;
+        try {
+        	groupCommandResult = groupCommandExecutor.getResult(resultId);
+        } catch (ResultResultExpiredException e) {
+        	return "";
+        }
        
-       if (groupCommandResult == null) {
-           return "";
-       }
        GroupCommandResultFieldEnum groupCommandResultFieldEnum = GroupCommandResultFieldEnum.valueOf(resultTypeStr);
        return groupCommandResultFieldEnum.getValue(groupCommandResult);
     }

@@ -317,15 +317,9 @@ public class GroupCommanderController implements InitializingBean {
     }
     
     @RequestMapping
-    public void resultDetail(String resultKey, ModelMap map) {
+    public void resultDetail(String resultKey, ModelMap map) throws ResultResultExpiredException {
         
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
-        
-        // friendly exception
-        if (result == null) {
-			throw new ResultResultExpiredException("Group Command Result No Longer Exists");
-		}
-        
         map.addAttribute("result", result);
     }
     
