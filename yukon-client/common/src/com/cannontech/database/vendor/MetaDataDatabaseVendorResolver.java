@@ -44,7 +44,7 @@ public class MetaDataDatabaseVendorResolver implements DatabaseVendorResolver {
                 }
             });
             this.databaseVendor = result;
-            logger.info("Your database version is: " + databaseVendor.getDescription());
+            logger.info("Your database version is: " + databaseVendor.toString());
             
         } catch (MetaDataAccessException e) {
             throw new RuntimeException("Unable to determine DB Vendor");

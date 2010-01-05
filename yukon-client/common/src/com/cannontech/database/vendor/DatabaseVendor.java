@@ -8,13 +8,7 @@ public enum DatabaseVendor {
     ORACLE9I  ("Oracle","Oracle9i Enterprise Edition Release"),
     ORACLE10G ("Oracle","Oracle Database 10g Release"),
     ORACLE11G ("Oracle","Oracle Database 11g Release"), 
-    UNKNOWN("", "") {
-        @Override
-        public String getDescription() {
-            return "Unkown";
-        }
-    }
-    ;
+    UNKNOWN("", "");
     
     private final String venderText;
     private final String productVersionPrefix;
@@ -25,10 +19,6 @@ public enum DatabaseVendor {
     }
     public String getVenderText() { return this.venderText; }
     public String getProductVersionPrefix() { return this.productVersionPrefix; }
-
-    public String getDescription() {
-        return getVenderText() + ", " + getProductVersionPrefix();
-    }
 
 }
 
