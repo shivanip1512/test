@@ -11,7 +11,7 @@
 </c:if>
 
 <div id="${id}" class="popUpDiv simplePopup ${pageScope.styleClass}" style="display:none;">
-<!--  fix for IE6 bug (see itemPicker.css for more info) -->
+<!--  fix for IE6 bug (see YukonGeneralStyles.css ".simplePopup iframe" for more info) -->
 <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
 <div class="titledContainer boxContainer ${pageScope.styleClass}">
 

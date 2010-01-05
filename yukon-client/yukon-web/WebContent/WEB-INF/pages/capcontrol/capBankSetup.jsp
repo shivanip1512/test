@@ -453,7 +453,7 @@
 	</x:panelGrid>
 	<f:verbatim>
         <div id="orphanedCBCContent" class="popUpDiv simplePopup" style="display: none;">
-            <!--  fix for IE6 bug (see itemPicker.css for more info) -->
+            <!--  fix for IE6 bug (see YukonGeneralStyles.css ".simplePopup iframe" for more info) -->
             <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
             <div class="titledContainer boxContainer">
 
