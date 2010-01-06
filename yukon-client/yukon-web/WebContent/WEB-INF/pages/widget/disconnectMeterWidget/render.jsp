@@ -50,7 +50,7 @@
   </c:if>
   </ct:nameValue>
 </ct:nameValueContainer>
-<BR>
+<br>
 <div style="text-align: right">
 	<ct:widgetActionRefresh hide="${!readable}" method="read" label="Read Status" labelBusy="Reading"/>
     
@@ -75,7 +75,7 @@
     </span>
     
 </div>
-<BR>
+<br>
 <c:if test="${configString != ''}">
 <div style="max-height: 240px; overflow: auto">
     <ct:hideReveal title="Disconnect Configuration Settings" showInitially="false">
