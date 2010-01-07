@@ -26,7 +26,6 @@ class IM_EX_CTIYUKONDB CtiTableLMProgramHistory : public CtiMemDBObject
 {
 private:
     long    _lmProgramHistID;
-    long    _lmGearHistID;
     long    _programID;
     long    _gearID;
     long    _action; // Stored in database as a string
@@ -41,6 +40,8 @@ private:
     void validateData();
 
     string getStrFromAction(long action);
+
+    static long getNextGearHistId();
 public:
 
     enum LMHistoryActions
@@ -50,7 +51,7 @@ public:
         Stop
     };
 
-    CtiTableLMProgramHistory(long progHistID, long gearHistID, long program, long gear, LMHistoryActions action,
+    CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
                              string programName, string reason, string user, string gearName,
                              CtiTime time);
     
@@ -59,7 +60,8 @@ public:
     CtiTableLMProgramHistory& operator=(const CtiTableLMProgramHistory &aRef);
 
     RWDBStatus Insert();
-    static RWDBStatus getPeakProgramAndGearId(unsigned int& programId, unsigned int& gearId);
+
+    static long getNextProgramHistId();
 };
 
 #endif

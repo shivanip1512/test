@@ -24,12 +24,13 @@
 
 using std::transform;
 
+long CurrentLMProgramHistoryId = 0;
+long CurrentLMGearHistoryId    = 0;
 
-CtiTableLMProgramHistory::CtiTableLMProgramHistory(long progHistID, long gearHistID, long program, long gear, LMHistoryActions action,
+CtiTableLMProgramHistory::CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
                                                    string programName, string reason, string user, string gearName,
                                                    CtiTime time) :
 _lmProgramHistID(progHistID),
-_lmGearHistID(gearHistID),
 _programID(program),
 _gearID(gear),
 _action(action),
@@ -51,7 +52,6 @@ CtiTableLMProgramHistory& CtiTableLMProgramHistory::operator=(const CtiTableLMPr
     if(this != &aRef)
     {
         _lmProgramHistID  = aRef._lmProgramHistID;
-        _lmGearHistID     = aRef._lmGearHistID;
         _programID        = aRef._programID;
         _gearID           = aRef._gearID;
         _action           = aRef._action;
@@ -83,14 +83,19 @@ RWDBStatus CtiTableLMProgramHistory::Insert()
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in LMProgramHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            //We had an error, force a reload
+            CurrentLMProgramHistoryId = 0;
+            CurrentLMGearHistoryId    = 0;
         }
     }
+
+    long gearHistId = getNextGearHistId();
 
     RWDBTable table = getDatabase().table( "LMProgramGearHistory" );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
-    _lmGearHistID <<
+    gearHistId <<
     _lmProgramHistID <<
     _time <<
     getStrFromAction(_action) <<
@@ -103,44 +108,80 @@ RWDBStatus CtiTableLMProgramHistory::Insert()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in LMProgramGearHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        //We had an error, force a reload
+        CurrentLMProgramHistoryId = 0;
+        CurrentLMGearHistoryId    = 0;
     }
 
     return inserter.status();
 }
 
-RWDBStatus CtiTableLMProgramHistory::getPeakProgramAndGearId(unsigned int& programId, unsigned int& gearId)
+// Get the next program id from local store or the database
+// Not thread safe.
+long CtiTableLMProgramHistory::getNextProgramHistId()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable gearTable = getDatabase().table( "LMProgramGearHistory" );
-    RWDBTable programTable = getDatabase().table( "LMProgramHistory" );
-    RWDBSelector selector = conn.database().selector();
-
-    selector << rwdbMax(programTable["LMProgramHistoryId"]);
-    selector.from(programTable);
-
-    RWDBReader rdr = selector.reader(conn);
-
-    if( rdr() )
+    if( CurrentLMProgramHistoryId != 0 )
     {
-        rdr >> programId;
+        CurrentLMProgramHistoryId++;
+        return CurrentLMProgramHistoryId;
     }
-
-    selector.clear();
-
-    selector << rwdbMax(gearTable["LMProgramGearHistoryId"]);
-    selector.from(gearTable);
-
-    rdr = selector.reader(conn);
-
-    if( rdr() )
+    else
     {
-        rdr >> gearId;
-    }
+        // Not yet initialized. Default to 1 and try to load from database.
+        CurrentLMProgramHistoryId = 1;
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
 
-    return rdr.status();
-        
+        RWDBTable programTable = getDatabase().table( "LMProgramHistory" );
+        RWDBSelector selector = conn.database().selector();
+
+        selector << rwdbMax(programTable["LMProgramHistoryId"]);
+        selector.from(programTable);
+
+        RWDBReader rdr = selector.reader(conn);
+
+        if( rdr() )
+        {
+            rdr >> CurrentLMProgramHistoryId;
+            CurrentLMProgramHistoryId++;
+        }
+        return CurrentLMProgramHistoryId;
+    }
+}
+
+// Get the next gear id from local store or the database
+// Not thread safe.
+long CtiTableLMProgramHistory::getNextGearHistId()
+{
+    if( CurrentLMGearHistoryId != 0 )
+    {
+        CurrentLMGearHistoryId++;
+        return CurrentLMGearHistoryId;
+    }
+    else
+    {
+        // Not yet initialized. Default to 1 and try to load from database.
+        CurrentLMGearHistoryId = 1;
+
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        RWDBTable gearTable = getDatabase().table( "LMProgramGearHistory" );
+        RWDBSelector selector = conn.database().selector();
+
+        selector << rwdbMax(gearTable["LMProgramGearHistoryId"]);
+        selector.from(gearTable);
+        RWDBReader rdr = selector.reader(conn);
+
+        if( rdr() )
+        {
+            rdr >> CurrentLMGearHistoryId;
+            CurrentLMGearHistoryId++;
+        }
+
+        return CurrentLMGearHistoryId;
+    }
 }
 
 // Note the action field is a varchar(50)

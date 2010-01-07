@@ -231,8 +231,8 @@ private:
     bool recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time);
     bool isAControlState(int state);
     bool isAStopState(int state);
-    unsigned long getCurrentLogID();
-    void setCurrentLogEventID(unsigned long logID);
+    unsigned long getCurrentHistLogId();
+    void setCurrentHistLogId(unsigned long logID);
     string getAndClearChangeReason();
     string getLastUser();
     

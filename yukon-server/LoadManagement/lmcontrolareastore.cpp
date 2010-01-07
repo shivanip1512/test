@@ -71,9 +71,6 @@ extern set<long> _CHANGED_GROUP_LIST;
 extern set<long> _CHANGED_CONTROL_AREA_LIST;
 extern set<long> _CHANGED_PROGRAM_LIST;
 
-extern unsigned int _HISTORY_PROGRAM_ID;
-extern unsigned int _HISTORY_GROUP_ID;
-
 struct id_hash
 {
     LONG operator()(LONG x) const { return x;}
@@ -2045,11 +2042,6 @@ void CtiLMControlAreaStore::reset()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Triggers is: " << trigTimer.elapsedTime() << endl;
                         trigTimer.reset();
-                    }
-
-                    if( _HISTORY_PROGRAM_ID == 0 || _HISTORY_GROUP_ID == 0 )
-                    {
-                        CtiTableLMProgramHistory::getPeakProgramAndGearId(_HISTORY_PROGRAM_ID, _HISTORY_GROUP_ID);
                     }
 
                     //Make sure holidays and season schedules are refreshed

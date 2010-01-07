@@ -5378,7 +5378,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 << dynamicLMProgramDirectTable["notifyinactivetime"].assign(toRWDBDT(getNotifyInactiveTime()))
                 << dynamicLMProgramDirectTable["constraintoverride"].assign( (getConstraintOverride() ? "Y":"N") )
                 << dynamicLMProgramDirectTable["additionalinfo"].assign(additionalInfo.c_str())
-                << dynamicLMProgramDirectTable["currentlogid"].assign(getCurrentLogID());
+                << dynamicLMProgramDirectTable["currentlogid"].assign(getCurrentHistLogId());
 
                 updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -5415,7 +5415,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 << getNotifyInactiveTime()
                 << string( ( getConstraintOverride() ? "Y": "N" ) )
                 << additionalInfo
-                << getCurrentLogID();
+                << getCurrentHistLogId();
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
@@ -5997,26 +5997,18 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
  */
 bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time)
 {
-    extern unsigned int _HISTORY_PROGRAM_ID;
-    extern unsigned int _HISTORY_GROUP_ID;
     bool retVal  = false;
-    unsigned long programLogID = getCurrentLogID();
 
     CtiLMProgramDirectGear* gear = getCurrentGearObject();
 
     if( action == CtiTableLMProgramHistory::Start )
     {
-        programLogID = ++_HISTORY_PROGRAM_ID; // SynchronizedIdGen("LMProgramHistoryID", 1);
-        setCurrentLogEventID(programLogID);
+        setCurrentHistLogId(CtiTableLMProgramHistory::getNextProgramHistId()); // SynchronizedIdGen("LMProgramHistoryID", 1);
     }
-    if( gear != NULL && programLogID != 0)
+    if( gear != NULL)
     {
-        unsigned long gearLogID = ++_HISTORY_GROUP_ID; // SynchronizedIdGen("LMGearHistoryID", 1);
-        if( gearLogID != 0 )
-        {
-            _PROGRAM_HISTORY_QUEUE.push(CtiTableLMProgramHistory(programLogID, gearLogID, getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(), getLastUser(), gear->getGearName(), time));
-            retVal = true;
-        }
+        _PROGRAM_HISTORY_QUEUE.push(CtiTableLMProgramHistory(getCurrentHistLogId(), getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(), getLastUser(), gear->getGearName(), time));
+        retVal = true;
     }
 
     return retVal;
@@ -6092,12 +6084,12 @@ bool CtiLMProgramDirect::isControlling()
     return isAControlState(getProgramState());
 }
 
-void CtiLMProgramDirect::setCurrentLogEventID(unsigned long logID)
+void CtiLMProgramDirect::setCurrentHistLogId(unsigned long logID)
 {
     _curLogID = logID;
 }
 
-unsigned long CtiLMProgramDirect::getCurrentLogID()
+unsigned long CtiLMProgramDirect::getCurrentHistLogId()
 {
     return _curLogID;
 }
