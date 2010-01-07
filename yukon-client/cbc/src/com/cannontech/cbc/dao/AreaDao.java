@@ -39,6 +39,7 @@ public interface AreaDao {
      * Adds SpecialArea to the database. Returns false if failed.
      * @param specialArea
      * @return
+     * @throws TransactionException 
      */
-    public boolean addSpecialArea(SpecialArea specialArea);
+    public void addSpecialArea(SpecialArea specialArea) throws TransactionException;
 }

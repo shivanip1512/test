@@ -93,7 +93,7 @@ public class AreaDaoImpl implements AreaDao {
 	}
 	
 	@Override
-    public boolean addSpecialArea(SpecialArea specialArea) {
+    public void addSpecialArea(SpecialArea specialArea) throws TransactionException {
         int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 
         YukonPAObject pao = new YukonPAObject();
@@ -105,12 +105,7 @@ public class AreaDaoImpl implements AreaDao {
         pao.setDescription(specialArea.getDescription());
         pao.setDisableFlag(specialArea.getDisabled() ? 'Y' : 'N');
                 
-        try {
-            Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
-        } catch (TransactionException e) {
-            CTILogger.error("Insert of SpecialArea, " + specialArea.getName() + ", in YukonPAObject table failed.");
-            return false;
-        }
+        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
         
         //Added to YukonPAObject table, now add to CAPCONTROLAREA
         specialArea.setId(pao.getPaObjectID());
@@ -120,13 +115,11 @@ public class AreaDaoImpl implements AreaDao {
         
         if (result == false) {
             CTILogger.debug("Insert of SpecialArea, " + specialArea.getName() + ", in CAPCONTROLSPECIALAREA table failed.");
-            return false;
+        } else {
+        
+            seasonScheduleDao.saveDefaultSeasonStrategyAssigment(specialArea.getId());
+            holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(specialArea.getId());
         }
-        
-        seasonScheduleDao.saveDefaultSeasonStrategyAssigment(specialArea.getId());
-        holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(specialArea.getId());
-        
-        return result;
     }
 
 	@Override

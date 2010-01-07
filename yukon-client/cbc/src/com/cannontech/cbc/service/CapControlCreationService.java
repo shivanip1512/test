@@ -69,9 +69,10 @@ public interface CapControlCreationService {
 	
 	/**
 	 * Adds the Controllers to the Database as an orphan.
+	 * @throws TransactionException 
 	 * 
 	 */
-	public boolean createController(CapbankController controller);
+	public void createController(CapbankController controller) throws TransactionException;
 	public boolean createControllerFromTemplate(String templateName, CapbankController controller);
 	
 	public boolean assignController(CapbankController controller, int capbankId);
@@ -79,7 +80,7 @@ public interface CapControlCreationService {
 	public boolean unassignController(int controllerId);
 	
 	public int create(int type, String name, boolean disabled, int portId) throws TransactionException;
-    public boolean createSpecialArea(SpecialArea specialArea);
+    public void createSpecialArea(SpecialArea specialArea) throws TransactionException;
     public int createPAOSchedule(String name, boolean disabled);
     public int createStrategy(String name);
 }

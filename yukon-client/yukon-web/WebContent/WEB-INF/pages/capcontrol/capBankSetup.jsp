@@ -16,7 +16,6 @@
 	String type = JSFParamUtil.getJSFReqParam("type");
 
 	if (itemid != null && type != null){
-    	capControlForm.initItem(Integer.parseInt(itemid), Integer.parseInt(type));
     	capBankEditorForm.init(capControlForm.getDbPersistent());
 	}
 %>

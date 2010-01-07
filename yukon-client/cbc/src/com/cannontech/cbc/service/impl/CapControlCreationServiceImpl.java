@@ -153,15 +153,11 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-    public boolean createSpecialArea(SpecialArea specialArea) {
-        boolean success = areaDao.addSpecialArea(specialArea);
+    public void createSpecialArea(SpecialArea specialArea) throws TransactionException{
+        areaDao.addSpecialArea(specialArea);
         
-        if (success) {
-            //Send DB add message
-            sendCapcontrolDBChangeMessage(specialArea.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SPECIAL_AREA);
-        }
-
-        return success;
+        //Send DB add message
+        sendCapcontrolDBChangeMessage(specialArea.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SPECIAL_AREA);
     }
 	
 	@Override
@@ -193,7 +189,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		return ret;
 	}
 	@Override
-	public boolean assignSubstation(int substationId, String areaName) {
+	public boolean assignSubstation(int substationId, String areaName) { 
 		int id = getPaoIdByName(areaName);
 		if (id == -1) {
 			return false;
@@ -307,15 +303,11 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-	public boolean createController(CapbankController controller) {
-		boolean success = capbankControllerDao.add(controller);
+	public void createController(CapbankController controller) throws TransactionException {
+		capbankControllerDao.add(controller);
 
-		if (success) {
-			String type = PaoType.getForId(controller.getType()).getDbString();
-			sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
-		}
-		
-		return success;
+		String type = PaoType.getForId(controller.getType()).getDbString();
+        sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
 	}
 	
 	@Override

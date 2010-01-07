@@ -2,15 +2,7 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <jsp:directive.page import="com.cannontech.web.editor.CapControlForm" />
 <jsp:directive.page import="com.cannontech.web.util.JSFParamUtil" />
-<%
-    CapControlForm capControlForm = (CapControlForm) JSFParamUtil.getJSFVar("capControlForm");
-    String itemid = JSFParamUtil.getJSFReqParam("itemid");
-    String type = JSFParamUtil.getJSFReqParam("type");
 
-    if (itemid != null && type != null) {
-        capControlForm.initItem(Integer.parseInt(itemid),Integer.parseInt(type));
-    }
-%>
 <f:subview id="cbcCapBankInfo" rendered="#{capControlForm.visibleTabs['CBAddInfo']}">
 	<x:panelGrid id="capbankBody" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell">
 		<x:column>

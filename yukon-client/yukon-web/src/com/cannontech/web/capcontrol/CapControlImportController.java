@@ -446,12 +446,15 @@ public class CapControlImportController {
 	    		controller.setIntervalRate(scanInterval);
 	    		controller.setAlternateRate(altInterval);
 	    		
-	    		boolean ret = capControlCreationService.createController(controller);
-	    		if (ret && StringUtils.isNotBlank(capBankName)) {
-	    			capControlCreationService.assignController(controller, capBankName);
-	    		} else if (!ret) {
-	    			errors.add("Error inserting " + cbcName + " into the database.");
-	    		}//else its an orphan
+	    		try {
+	    		    capControlCreationService.createController(controller);
+    	    		if (StringUtils.isNotBlank(capBankName)) {
+    	    			capControlCreationService.assignController(controller, capBankName);
+    	    		}
+	    		} catch (TransactionException e){
+	    		    // else its an orphan
+	    		    errors.add("Error inserting " + cbcName + " into the database.");
+	    		}
 	    		
 	    	} catch (UnsupportedOperationException e) {
 	    		CTILogger.error(e.getMessage());

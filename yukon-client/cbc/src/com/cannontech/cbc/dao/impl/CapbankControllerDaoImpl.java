@@ -108,12 +108,12 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
     
     @Override
-    public boolean add(CapbankController capbankController) {
-    	return this.add(capbankController,true);
+    public void add(CapbankController capbankController) throws TransactionException {
+    	add(capbankController,true);
     }
     
 	@Override
-	public boolean add(CapbankController capbankController, boolean addPoints) {
+	public void add(CapbankController capbankController, boolean addPoints) throws TransactionException {
 		
 		int newId = paoDao.getNextPaoId();
 		capbankController.setId(newId);
@@ -125,12 +125,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		controller.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
 		setTypeSpecificCbcFields(type,controller,capbankController);
 
-		try {
-			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, controller).execute();
-		} catch (TransactionException e) {
-			CTILogger.error("Insert of CapBankController, " + capbankController.getName() + ", failed.");
-			return false;
-		}
+		Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, controller).execute();
 		
 		capbankController.setId(controller.getPAObjectID());
 		
@@ -147,14 +142,8 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
 			MultiDBPersistent pointMulti = new MultiDBPersistent();
 	        pointMulti.getDBPersistentVector().addAll(points);
-			try {
-				PointUtil.insertIntoDB(pointMulti);
-			} catch (TransactionException e) {
-				CTILogger.error("Failed on Inserting Points for CapBankController, " + capbankController.getName() +".");
-				return false;
-			}
+			PointUtil.insertIntoDB(pointMulti);
 		}
-		return result;
 	}
 
 	@Override

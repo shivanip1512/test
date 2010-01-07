@@ -95,7 +95,7 @@ public class FeederDaoImpl implements FeederDao {
     }
 
     @Override
-    public boolean add(Feeder feeder) {
+    public boolean add(Feeder feeder) throws TransactionException {
     	int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
     	
 		YukonPAObject pao = new YukonPAObject();
@@ -107,12 +107,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setDescription(feeder.getDescription());
 		pao.setDisableFlag(feeder.getDisabled()?'Y':'N');
 		
-		try {
-			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
-		} catch (TransactionException e) {
-			CTILogger.error("Insert of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.");
-			return false;
-		}
+        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
 
 		//Added to YukonPAObject table, now add to CapControlFeeder
 		feeder.setId(pao.getPaObjectID());

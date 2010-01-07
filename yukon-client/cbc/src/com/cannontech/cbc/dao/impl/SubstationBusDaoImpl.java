@@ -102,7 +102,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 
     @Override
-    public boolean add(SubstationBus bus) {
+    public boolean add(SubstationBus bus) throws TransactionException {
     	int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 		
     	YukonPAObject pao = new YukonPAObject();
@@ -114,12 +114,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setDescription(bus.getDescription());
 		pao.setDisableFlag(bus.getDisabled() ? 'Y' : 'N');
 		
-		try {
-			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
-		} catch (TransactionException e) {
-			CTILogger.error("Insert of Subbus, " + bus.getName() + ", in YukonPAObject table failed.");
-			return false;
-		}
+        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATIONBUS
 		bus.setId(pao.getPaObjectID());

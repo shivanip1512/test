@@ -132,7 +132,7 @@ public class CapbankDaoImpl implements CapbankDao {
     }
 
     @Override
-    public boolean add(Capbank bank) {		
+    public void add(Capbank bank) throws TransactionException {
 		DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
 		
 		//Set what the factory didn't
@@ -149,12 +149,7 @@ public class CapbankDaoImpl implements CapbankDao {
 		List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(newId, PaoType.CAPBANK));
 		smartDB.addAllDBPersistent(points);
 		
-		try {
-			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartDB).execute();
-		} catch (TransactionException e) {
-			CTILogger.error("Insert of CapBank, " + bank.getName() + ", failed.");
-			return false;
-		}
+        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartDB).execute();
 		
 		//Added to YukonPAObject table, now add to CAPBANK
 		bank.setId(newId);
@@ -179,7 +174,6 @@ public class CapbankDaoImpl implements CapbankDao {
 			CTILogger.error("Update of bank information in CapBank table failed for bank with name: " + bank.getName());
 		}
 		
-        return result;
     }
 	
     @Override
