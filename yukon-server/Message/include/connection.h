@@ -140,7 +140,7 @@ public:
    UINT  valid() const;
    void  forceTermination();
    INT   verifyConnection();
-   INT   establishConnection(INT freq = 15);
+   INT   establishConnection();
    INT   checkCancellation(INT mssleep = 0);
    INT   waitForConnect();
 

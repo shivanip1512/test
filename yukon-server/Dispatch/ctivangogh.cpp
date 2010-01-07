@@ -635,7 +635,6 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
     UINT sanity = 0;
 
-    RWSocket           socket;
     CtiExchange       *XChg;
 
     {
@@ -646,10 +645,10 @@ void CtiVanGogh::VGConnectionHandlerThread()
     NetPort = RWInetPort(gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS));
     NetAddr = RWInetAddr(NetPort);
 
-    socket.listen(NetAddr);
+    _listenerSocket.listen(NetAddr);
 
     // This is here for looks, in reality it is rarely called.
-    if( !socket.valid() )
+    if( !_listenerSocket.valid() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Could not open socket " << NetAddr << " for listening" << endl;
@@ -665,7 +664,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
         try
         {
             // It seems necessary to make this copy. RW does this and now so do we.
-            RWSocket tempSocket = socket;
+            RWSocket tempSocket = _listenerSocket;
             RWSocket newSocket = tempSocket.accept();
             RWSocketPortal sock;
 
@@ -7844,6 +7843,15 @@ void CtiVanGogh::stopDispatch()
 {
     RWWaitStatus rwwait;
 
+    try
+    {
+        // This forces the listener thread to exit on shutdown.
+        _listenerSocket.close();
+    } 
+    catch(...)
+    {
+        // Dont really care, we are shutting down.
+    }
     shutdown();                   // Shutdown the server object.
 
     // Interrupt the CtiThread based threads.

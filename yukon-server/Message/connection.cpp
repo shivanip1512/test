@@ -282,7 +282,7 @@ void CtiConnection::InThread()
     {
         try
         {
-            establishConnection( 15 );    // blocks until connected, marked for dontReconnect, or canceled.  Connect attempts made every 15 seconds
+            establishConnection( );    // blocks until connected, marked for dontReconnect, or canceled.  Connect attempts made every 15 seconds
 
             if( _valid && !_dontReconnect && !_noLongerViable )
             {
@@ -1088,13 +1088,15 @@ INT CtiConnection::verifyConnection()
  *  2. or marked as a dontReconnect (=1),
  *  3. or until a cancellation request occurs
  *
- *  he tries to connect to the other side every freq seconds (def. arg. 15 sec)
+ *  tries to connect to the other side every 15 seconds
+ *  the first try is 15 seconds after this is called
  */
-INT CtiConnection::establishConnection(INT freq)
+INT CtiConnection::establishConnection()
 {
     INT status = NORMAL;
 
-    INT sleepCount = 0;
+    const int reconnect_frequency = 15;
+    INT sleepCount = -1 * reconnect_frequency + 1; // Wait reconnect_frequency seconds every time this is called
 
     while( !_dontReconnect && !_valid )
     {
@@ -1102,14 +1104,8 @@ INT CtiConnection::establishConnection(INT freq)
          *  OK, this guy lets us call ConnectPortal every % XX sexonds.
          *  Each loop iteration (and ServiceCancellation) should happen every second then
          */
-        if( !(sleepCount % freq) )
+        if( !(sleepCount % reconnect_frequency) )
         {
-            /*************************
-            * added because of turnaround time observed on Progress Energy's system
-            **************************
-            */
-            Sleep(2000);
-
             if(!ConnectPortal())
             {
                 break;         // the while.  because we connected correctly.
@@ -1118,7 +1114,7 @@ INT CtiConnection::establishConnection(INT freq)
 
         //Print on the first try, then every hour or so. Note that this loop really lasts
         // 1.13333 seconds due to the 2 second sleep every 15 seconds above, so 3176 is close to an hour.
-        if( !(sleepCount % 3176) )
+        if( !(sleepCount % 3600) )
         {
             string whoStr = who();
             {

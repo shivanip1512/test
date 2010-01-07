@@ -111,6 +111,8 @@ private:
     RWThreadFunction  _appMonitorThread;
     RWThreadFunction  _cacheHandlerThread1, _cacheHandlerThread2, _cacheHandlerThread3;
 
+    RWSocket _listenerSocket;
+
     CtiFIFOQueue< CtiSignalMsg > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgQueue;
