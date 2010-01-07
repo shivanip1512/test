@@ -157,14 +157,14 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         		for (PointTemplateWrapper pointTemplateWrapper : allPointTemplates) {
         			
         			// check each device of this type and see if it has the point or not
-                    boolean noneHavePoint = true;
-                    for (SimpleDevice device : devicesOfTypeList) {
-                        boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplateWrapper.getPointTemplate().getPointIdentifier());
-                        if (pointExistsForDevice) {
-                            noneHavePoint = false;
-                            break;
-                        }
-                    }
+        			boolean noneHavePoint = true;
+        			for (SimpleDevice device : devicesOfTypeList) {
+        				boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplateWrapper.getPointTemplate().getPointIdentifier());
+        				if (pointExistsForDevice) {
+        					noneHavePoint = false;
+        					break;
+        				}
+        			}
         			
         			// after looking at all the device of this type, did we find at least one that had it?
         			if (noneHavePoint) {
