@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
@@ -34,6 +35,7 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
 
     private ThermostatScheduleDao thermostatScheduleDao;
     private StarsDatabaseCache starsDatabaseCache;
+    private RolePropertyDao rolePropertyDao;    
 
     @RequestMapping(value = "/admin/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(String type, YukonUserContext yukonUserContext, ModelMap map) {
@@ -46,7 +48,7 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
         	thermostatScheduleDao.getEnergyCompanyDefaultSchedule(energyCompany, thermostatType);
 
         // Add the temperature unit to model
-        String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
+        String temperatureUnit = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, energyCompany.getUser());
         map.addAttribute("temperatureUnit", temperatureUnit);
 
         // Get json string for schedule and add schedule and string to model
@@ -105,4 +107,8 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
 		this.starsDatabaseCache = starsDatabaseCache;
 	}
     
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }
