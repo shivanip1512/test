@@ -24,8 +24,8 @@
 
 using std::transform;
 
-long CurrentLMProgramHistoryId = 0;
-long CurrentLMGearHistoryId    = 0;
+static long CurrentLMProgramHistoryId = 0;
+static long CurrentLMGearHistoryId    = 0;
 
 CtiTableLMProgramHistory::CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
                                                    string programName, string reason, string user, string gearName,
