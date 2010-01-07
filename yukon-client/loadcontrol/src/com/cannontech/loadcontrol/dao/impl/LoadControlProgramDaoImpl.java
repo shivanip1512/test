@@ -189,7 +189,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         	    	
         			// case for some crazy reason no Start exists for this stop, exclude record completely
         			try {
-	        			eventTime = yukonJdbcOperations.queryForObject(sql, new DateRowMapper());
+	        			eventTime = yukonJdbcOperations.queryForObject(eventTimeSql, new DateRowMapper());
 	        			currentProgramHistoryRecord.setStartDateTime(eventTime);
         			} catch (EmptyResultDataAccessException e) {
         				recordOk = false;
