@@ -2,6 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+    <!-- login.jsp -->
     <entry key="yukon.web.login.pageTitle">Energy Services Operations Center</entry>
     <entry key="yukon.web.login.formTopLogo">/WebConfig/yukon/CannonPlain.gif</entry>
     <entry key="yukon.web.login.formBottomLogo">/WebConfig/yukon/CooperTransparent.gif</entry>
@@ -24,5 +25,30 @@
     <entry key="yukon.web.login.error.INVALID_CREDENTIALS">&lt;i&gt;** Invalid Credentials&lt;/i&gt;</entry>
     <entry key="yukon.web.login.error.USER_EXISTS">&lt;i&gt;** Username already exists&lt;/i&gt;</entry>
     <entry key="yukon.web.login.error.PASSWORD_CHANGE_NOT_SUPPORTED">&lt;i&gt;** Password changes are not supported&lt;/i&gt;</entry>
+    
+    <!-- forgotPassword.jsp -->
+    <entry key="yukon.web.forgotPassword.pageTitle">Energy Services Operations Center</entry>
+    <entry key="yukon.web.forgotPassword.title">Energy Welcome to Customer Help Center</entry>
+    <entry key="yukon.web.forgotPassword.boxTitle">Account Information</entry>
+    <entry key="yukon.web.forgotPassword.success">Password request has been sent successfully</entry>
+    <entry key="yukon.web.forgotPassword.intro">Please enter any or all known information about your account.</entry>
+    <entry key="yukon.web.forgotPassword.username">Username:</entry>
+    <entry key="yukon.web.forgotPassword.email">Email:</entry>
+    <entry key="yukon.web.forgotPassword.firstName">First Name:</entry>
+    <entry key="yukon.web.forgotPassword.lastName">Last Name:</entry>
+    <entry key="yukon.web.forgotPassword.account">Account #:</entry>
+    <entry key="yukon.web.forgotPassword.provider">Energy Provider:</entry>
+    <entry key="yukon.web.forgotPassword.notes">Your Notes:</entry>
+    <entry key="yukon.web.forgotPassword.submit">Submit</entry>
+
+    <entry key="yukon.web.forgotPassword.NO_ACCOUNT">Account Number not found, try again</entry>
+    <entry key="yukon.web.forgotPassword.MULTIPLE_ACCOUNTS">More than one account number found, forwarding request onto the WebMaster</entry>
+    <entry key="yukon.web.forgotPassword.DOES_NOT_MATCH">The information you supplied does not match a known user.  Please verify that the information you have entered is correct.</entry>
+    <entry key="yukon.web.forgotPassword.MORE_INFO">More information needs to be entered</entry>
+    <entry key="yukon.web.forgotPassword.USER_NOT_FOUND">User Name not found, try again</entry>
+    <entry key="yukon.web.forgotPassword.EMAIL_NOT_FOUND">Contact for Email not found, try again</entry>
+    <entry key="yukon.web.forgotPassword.CONTACT_NOT_FOUND">Contact for User Name not found, try again</entry>
+    <entry key="yukon.web.forgotPassword.COMPANY_NOT_FOUND">No energy company OR customer found for the entered data</entry>
+    <entry key="yukon.web.forgotPassword.MULTIPLE_COMPANIES">More than one energy company found, forwarding request onto the WebMaster</entry>
     
 </properties>

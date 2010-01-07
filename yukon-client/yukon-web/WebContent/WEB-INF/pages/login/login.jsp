@@ -121,7 +121,7 @@
                         <cti:checkGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY">
 	                        <cti:isStarsExist>
 	                            <div class="loginHelp">
-	                                <a href="<cti:url value="/pwordreq.jsp"/>">
+	                                <a href="<cti:url value="/spring/login/forgotPassword"/>">
 				                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
 	                                </a>
 	                            </div>

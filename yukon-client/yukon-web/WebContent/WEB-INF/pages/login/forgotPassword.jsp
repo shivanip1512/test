@@ -7,14 +7,18 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
-        <title>Energy Services Operations Center</title>           
+        <title><cti:msg key="yukon.web.forgotPassword.pageTitle"/></title>           
 
+         <link rel="stylesheet" type="text/css"
+            href="/WebConfig/yukon/styles/StandardStyles.css">
+        <link rel="stylesheet" type="text/css"
+            href="/WebConfig/yukon/styles/YukonGeneralStyles.css">
+        <link rel="stylesheet"
+            href="/WebConfig/yukon/styles/loginStyles.css"
+            type="text/css">
         
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
-<link rel="stylesheet" href="WebConfig/yukon/styles/loginStyles.css" type="text/css" />
-<script type="text/javascript" src="/JavaScript/prototype.js" ></script>
-<script type="text/javascript" src="/JavaScript/CtiMenu.js" ></script>
+        <script type="text/javascript" src="/JavaScript/prototype.js"></script>
+        <script type="text/javascript" src="/JavaScript/CtiMenu.js"></script>
 
     </head>
 
@@ -62,21 +66,21 @@
 		<div class="loginMain">
 		
 			<div class="loginTopSection">
-				<div class="loginTitleIntroText">Welcome to</div>
-				<div class="loginTitleText">Customer Help Center</div>
+				<div class="loginTitleText"><cti:msg key="yukon.web.forgotPassword.pageTitle"/></div>
 			</div>
 	
 			<div class="loginMainSection">
-				<cti:titledContainer title="Account Information">		
+                <cti:msg var="boxTitle" key="yukon.web.forgotPassword.boxTitle"/>
+				<cti:titledContainer title="${boxTitle}">		
 					<c:if test="${!empty param.failedMsg}">
-						<div class="loginErrorMsg">* ${param.failedMsg}</div>
+						<div class="loginErrorMsg"><cti:msg key="yukon.web.forgotPassword.${param.failedMsg}"/></div>
 					</c:if>
 					<c:if test="${!empty param.success}">
-						<div class="loginSuccessMsg">Password request has been sent successfully</div>
+						<div class="loginSuccessMsg"><cti:msg key="yukon.web.forgotPassword.success"/></div>
 					</c:if>
 					
 					<div class="loginIntroText">
-						Please enter any or all known information about your account.
+                        <cti:msg key="yukon.web.forgotPassword.intro"/>
 					</div>
 					
 					<form name="form1" method="post" action=
@@ -93,25 +97,25 @@
 	%>
 	              		<table width="290" border="0" cellspacing="0" cellpadding="3" align="center">
 	                		<tr> 
-	                  			<td align="right">Username:</td>
+	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.username"/></td>
 	                  			<td align="left" valign="bottom"> 
 	                    			<input type="text" autocomplete="off" id="USERNAME" name="USERNAME" size="26">
 	                  			</td>
 	                		</tr>
 	                		<tr> 
-				                <td align="right">Email:</td>
+				                <td align="right"><cti:msg key="yukon.web.forgotPassword.email"/></td>
 				                <td align="left" valign="bottom"> 
 	                    			<input type="text" name="EMAIL" size="26">
 	                  		</td>
 	                		</tr>
 	                		<tr> 
-	                  			<td align="right">First Name:</td>
+	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.firstName"/></td>
 	                  			<td align="left" valign="bottom"> 
 	                    			<input type="text" name="FIRST_NAME" size="26">
 	                  			</td>
 	                		</tr>
 	                		<tr> 
-	                  			<td align="right">Last Name:</td>
+	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.lastName"/></td>
 	                  			<td align="left" valign="bottom"> 
 	                    			<input type="text" name="LAST_NAME" size="26">
 	                  			</td>
@@ -120,7 +124,7 @@
 		if( starsExists ) {
 	%>
 	                		<tr> 
-	                  			<td align="right">Account #:</td>
+	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.account"/></td>
 	                  			<td align="left" valign="bottom"> 
 	                    			<input type="text" name="ACCOUNT_NUM" size="26">
 	                  			</td>
@@ -130,20 +134,21 @@
 	%>
 	
 							<tr> 
-	                  			<td align="right">Energy Provider:</td>
+	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.provider"/></td>
 	                  			<td align="left" valign="middle"> 
 				                    <input type="text" name="ENERGY_COMPANY" size="26">
 	            		      	</td>
 	                		</tr>
 	                		<tr> 
-	                  			<td align="right">Your Notes:</td>
+	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.notes"/></td>
 	                  			<td align="left" valign="bottom">
 	                    			<textarea name="NOTES" cols="20" rows="5"></textarea>
 	                  			</td>
 	                		</tr>
 	                		<tr> 
 	                  			<td colspan="2" align="center"> 
-	                      			<input type="submit" name="Submit2" value="Submit">
+                                    <cti:msg var="submitText" key="yukon.web.forgotPassword.submit"/>
+	                      			<input type="submit" name="Submit2" value="${submitText}">
 	                  			</td>
 	                		</tr>
 	              		</table>

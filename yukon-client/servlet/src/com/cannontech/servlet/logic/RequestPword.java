@@ -92,7 +92,7 @@ public class RequestPword
             
             LiteContact lc = DaoFactory.getContactDao().getContactByEmailNotif( email );
             if( lc == null )
-                setState( RET_FAILED, "Contact for Email not found, try again" );
+                setState( RET_FAILED, "EMAIL_NOT_FOUND" );
             else
             {
                 foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
@@ -115,7 +115,7 @@ public class RequestPword
             
             LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser( userName );
             if( user == null )
-                setState( RET_FAILED, "User Name not found, try again" );
+                setState( RET_FAILED, "USER_NOT_FOUND" );
             else
             {
                 foundData.add( " User Name: " + user.getUsername() );                   
@@ -123,7 +123,7 @@ public class RequestPword
                 LiteContact lc = DaoFactory.getYukonUserDao().getLiteContact( user.getUserID() );
                 if( lc == null )
                 {
-                    setState( RET_FAILED, "Contact for User Name not found, try again" );
+                    setState( RET_FAILED, "CONTACT_NOT_FOUND" );
                 }
                 else
                 {
@@ -170,7 +170,7 @@ public class RequestPword
 		catch( Exception e )
 		{
 			//send this request with all its data to CTI
-			setState( RET_FAILED, "The information you supplied does not match a known user.  Please verify that the information you have entered is correct." );
+			setState( RET_FAILED, "DOES_NOT_MATCH" );
 			subject = "WebMaster: " + subject;
 
 			CTILogger.error( e.getMessage(), e );
@@ -215,7 +215,7 @@ public class RequestPword
 		if( comps_ == null || comps_.length <= 0 )
 		{
 			//do something here, dont know what for now
-			setState( RET_FAILED, "No energy company OR customer found for the entered data" );
+			setState( RET_FAILED, "COMPANY_NOT_FOUND" );
 		}			
 		else if( comps_.length == 1 )
 		{			
@@ -239,7 +239,7 @@ public class RequestPword
 		else //2 or more EnergyCompanies found
 		{
 			//do something here, dont know what for now
-			setState( RET_FAILED, "More than one energy company found, forwarding request onto the WebMaster" );
+			setState( RET_FAILED, "MULTIPLE_COMPANIES" );
 			subject = "WebMaster: " + subject;
 			foundData.add( " " + getResultString() );
 			foundData.add( " Number of Energy Companies for this Data: " + comps_.length );

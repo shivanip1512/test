@@ -91,10 +91,10 @@ public class StarsRequestPword extends RequestPword {
 					processEnergyCompanies( new LiteEnergyCompany[] { lEnrgy } );
 				}
 				else if( allCustAccts.size() < 1 ) {
-					setState( RET_FAILED, "Account Number not found, try again" );					
+					setState( RET_FAILED, "NO_ACCOUNT" );					
 				}
 				else {
-					setState( RET_FAILED, "More than one account number found, forwarding request onto the WebMaster" );
+					setState( RET_FAILED, "MULTIPLE_ACCOUNTS" );
 					subject = "WebMaster: " + subject;
 					foundData.add( " " + getResultString() );
 					foundData.add( " Number of Account Numbers for this Account: " + allCustAccts.size() );
@@ -118,7 +118,7 @@ public class StarsRequestPword extends RequestPword {
         //change the text of the error message.
 		catch( Exception e ) {
 			//send this request with all its data to CTI
-			setState( RET_FAILED, "The information you supplied does not match a known user.  Please verify that the information you have entered is correct." );
+			setState( RET_FAILED, "DOES_NOT_MATCH" );
 			subject = "WebMaster: " + subject;
 
 			CTILogger.error( e.getMessage(), e );

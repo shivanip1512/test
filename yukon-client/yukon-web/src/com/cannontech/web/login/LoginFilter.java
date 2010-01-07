@@ -50,6 +50,7 @@ public class LoginFilter implements Filter {
         excludedFilePaths = new String[] {
             LoginController.LOGIN_URL, // aka /login.jsp
             "/integrationLogin",
+            "/spring/login/forgotPassword",
             "/servlet/LoginController", 
             "/servlet/LoggingServlet",
             "/voice/login.jsp", 
@@ -57,7 +58,6 @@ public class LoginFilter implements Filter {
             "/soap/**", 
             "/servlet/PWordRequest",
             "/servlet/StarsPWordRequest",
-            "/pwordreq.jsp", 
             "/**/prototype.js", 
             "/**/CtiMenu.js",
             "/**/*.js",             

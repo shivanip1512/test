@@ -15,8 +15,8 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.util.ServletUtil;
 
 public class StarsPWordRequestController implements Controller {
-    private static final String INVALID_URI = "/pwordreq.jsp?failedMsg=";
-    private static final String SUCCESS_URI = "/pwordreq.jsp?success=true";
+    private static final String INVALID_URI = "/spring/login/forgotPassword?failedMsg=";
+    private static final String SUCCESS_URI = "/spring/login/forgotPassword?success=true";
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -45,7 +45,7 @@ public class StarsPWordRequestController implements Controller {
         else if( !reqPword.isValidParams() )
         {
             //not enough info, return error
-            returnURI = INVALID_URI + "More information needs to be entered";
+            returnURI = INVALID_URI + "MORE_INFO";
         }
         else
         {

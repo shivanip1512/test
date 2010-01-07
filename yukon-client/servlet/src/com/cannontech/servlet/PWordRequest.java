@@ -17,8 +17,8 @@ import com.cannontech.util.ServletUtil;
 
 public class PWordRequest extends javax.servlet.http.HttpServlet 
 {
-	private static final String INVALID_URI = "/pwordreq.jsp?failedMsg=";
-	private static final String SUCCESS_URI = "/pwordreq.jsp?success=true";
+	private static final String INVALID_URI = "/spring/login/forgotPassword?failedMsg=";
+	private static final String SUCCESS_URI = "/spring/login/forgotPassword?success=true";
 
 	
 	/**
@@ -56,7 +56,7 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 		else if( !reqPword.isValidParams() )
 		{
 			//not enough info, return error
-			returnURI = INVALID_URI + "More information needs to be entered";
+			returnURI = INVALID_URI + "MORE_INFO";
 		}
 		else
 		{
