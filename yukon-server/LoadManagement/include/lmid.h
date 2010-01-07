@@ -71,14 +71,8 @@
 #define LM_DEBUG_DIRECT_NOTIFY     0x00000080
 #define LM_DEBUG_IN_MESSAGES       0x00000100
 #define LM_DEBUG_OUT_MESSAGES      0x00000200
+#define LM_DEBUG_TIMING            0x00000400
 
-//#define LM_DEBUG_                  0x00000004
-//#define LM_DEBUG_                  0x00000004
-//#define LM_DEBUG_                  0x00000004
-//#define LM_DEBUG_                  0x00000004
-//#define LM_DEBUG_                  0x00000004
-//#define LM_DEBUG_                  0x00000004
-//#define LM_DEBUG_                  0x00000004
 #define LM_DEBUG_EXTENDED          0x10000000
 
 extern CtiTime gInvalidCtiTime;

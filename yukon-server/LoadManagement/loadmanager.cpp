@@ -47,6 +47,7 @@
 #include "clistener.h"
 #include <time.h>
 #include "utility.h"
+#include "debug_timer.h"
 
 #include <rw/thr/prodcons.h>
 
@@ -297,6 +298,7 @@ void CtiLoadManager::controlLoop()
 
                 BOOL examinedControlAreaForControlNeededFlag = FALSE;
 
+                CtiTime controlAreaStart;
                 for( LONG i=0;i<controlAreas.size();i++ )
                 {
                     CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
@@ -455,6 +457,14 @@ void CtiLoadManager::controlLoop()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
+                }
+                CtiTime controlAreaStop;
+
+                if( _LM_DEBUG & LM_DEBUG_TIMING && controlAreaStop.seconds() - controlAreaStart.seconds() > 2 )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Control area loop took: " 
+                         << controlAreaStop.seconds() - controlAreaStart.seconds() << " seconds " << endl;
                 }
 
                 try
@@ -1098,6 +1108,8 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
         {
             msgMulti = (CtiMultiMsg*)message;
             CtiMultiMsg_vec& temp = msgMulti->getData();
+            string timerOutput = " Multi loading " + CtiNumStr(temp.size()) + " messages";
+            Cti::DebugTimer debugTime(timerOutput, _LM_DEBUG & LM_DEBUG_TIMING, 2);
             for( i=0;i<temp.size( );i++ )
             {
                 parseMessage(temp[i], secondsFrom1901);

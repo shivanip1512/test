@@ -2099,7 +2099,7 @@ void CtiLMControlAreaStore::reset()
                 dout << CtiTime() << " - Control areas reset" << endl;
             }
 
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            if( _LM_DEBUG & LM_DEBUG_TIMING )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime() << endl;
