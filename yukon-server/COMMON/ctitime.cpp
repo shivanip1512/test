@@ -15,7 +15,6 @@ const int MINUTES_PER_HOUR = 60;
 const int HOURS_PER_DAY = 24;
 
 typedef boost::date_time::us_dst_rules<boost::gregorian::date, boost::posix_time::time_duration> us_dst_rules;
-boost::mutex ctime_mutex;
 
 struct thread_tm
 {
@@ -25,7 +24,6 @@ struct thread_tm
     thread_tm(type t, const time_t* tt)
     {
         ctm = new struct tm;
-        boost::mutex::scoped_lock lock(ctime_mutex);
         struct tm* _ctm;
         if(t == local){
             _ctm = ::localtime(tt);
@@ -181,7 +179,6 @@ CtiDate CtiTime::date() const
     CtiDate cd(CtiDate::not_a_date);
     if(!is_special()){
         struct tm ctm;
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
         ctm = *localtime(&_seconds);
         cd = CtiDate( ctm.tm_mday, ctm.tm_mon+1, ctm.tm_year+1900);
         //cd = CtiDate( this);
@@ -196,7 +193,6 @@ int CtiTime::day() const
 {
     if(!is_special()){
         struct tm ctm;
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
         ctm = *localtime(&_seconds);
         return ctm.tm_mday;
     }
@@ -208,7 +204,6 @@ int CtiTime::second()  const
 {
     if(!is_special()){
         struct tm ctm;
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
         ctm = *localtime(&_seconds);
         return ctm.tm_sec;
     }
@@ -220,7 +215,6 @@ int CtiTime::minute()  const
 {
     if(!is_special()){
         struct tm ctm;
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
         ctm = *localtime(&_seconds);
         return ctm.tm_min;
     }
@@ -230,7 +224,6 @@ int CtiTime::minuteGMT()  const
 {
     if(!is_special()){
         struct tm ctm;
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
         ctm = *gmtime(&_seconds);
         return ctm.tm_min;
     }
@@ -242,7 +235,6 @@ int CtiTime::hour()  const
 {
     if(!is_special()){
         struct tm ctm;
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
         ctm = *localtime(&_seconds);
         return ctm.tm_hour;
     }
@@ -253,7 +245,6 @@ int CtiTime::hourGMT()  const
 {
     if(!is_special()){
         struct tm ctm;
-        boost::mutex::scoped_lock scoped_lock(ctime_mutex);
         ctm = *gmtime(&_seconds);
         return ctm.tm_hour;
     }
@@ -342,7 +333,6 @@ bool CtiTime::is_pos_infinity() const
 bool CtiTime::isDST() const
 {
     struct tm ctm;
-    boost::mutex::scoped_lock scoped_lock(ctime_mutex);
     ctm = *localtime(&_seconds);
     return ctm.tm_isdst;
 }
@@ -350,8 +340,6 @@ bool CtiTime::isDST() const
 // tm is for local
 void CtiTime::extract(struct tm* ctm) const
 {
-    boost::mutex::scoped_lock scoped_lock(ctime_mutex);
-
     struct tm *extracted;
 
     if( isValid() && (extracted = localtime(&_seconds)) )
@@ -391,7 +379,6 @@ string CtiTime::asString()  const
     //  date format "mm/dd/yyyy HH:MM:SS" - 19 chars needed, plus null
     char time_str[20];
 
-    boost::mutex::scoped_lock scoped_lock(ctime_mutex);
     strftime(time_str, 20, "%m/%d/%Y %H:%M:%S", localtime(&_seconds));
     time_str[19] = 0;
 
