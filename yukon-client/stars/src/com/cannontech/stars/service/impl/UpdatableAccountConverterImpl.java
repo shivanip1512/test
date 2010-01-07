@@ -102,25 +102,24 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 		
 		// street address
 		Address streetAddress = acctDto.getStreetAddress();
-        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_CITY])) {
-            streetAddress.setCityName(custFields[ImportManagerUtil.IDX_CITY]);
-        }
-        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_COUNTY])) {
-            streetAddress.setCounty(custFields[ImportManagerUtil.IDX_COUNTY]);
-        }
-        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_STREET_ADDR1])) {
-            streetAddress.setLocationAddress1(custFields[ImportManagerUtil.IDX_STREET_ADDR1]);
-        }
-        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_STREET_ADDR2])) {
-            streetAddress.setLocationAddress2(custFields[ImportManagerUtil.IDX_STREET_ADDR2]);
-        }
-        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_STATE])) {
-            streetAddress.setStateCode(custFields[ImportManagerUtil.IDX_STATE]);
-        }
-        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_ZIP_CODE])) {
-            streetAddress.setZipCode(custFields[ImportManagerUtil.IDX_ZIP_CODE]);
-        }        
+		String cityName = custFields[ImportManagerUtil.IDX_CITY];
+		streetAddress.setCityName((cityName == null) ? "" : cityName);
+
+		String county = custFields[ImportManagerUtil.IDX_COUNTY];
+		streetAddress.setCounty((county == null) ? "" : county);
 		
+		String locationAddress1 = custFields[ImportManagerUtil.IDX_STREET_ADDR1];
+		streetAddress.setLocationAddress1((locationAddress1 == null) ? "" : locationAddress1);
+
+		String locationAddress2 = custFields[ImportManagerUtil.IDX_STREET_ADDR2];
+		streetAddress.setLocationAddress2((locationAddress2 == null) ? "" : locationAddress2);
+		
+		String stateCode = custFields[ImportManagerUtil.IDX_STATE];
+		streetAddress.setStateCode((stateCode == null) ? "" : stateCode);
+		
+		String zipCode = custFields[ImportManagerUtil.IDX_ZIP_CODE];
+		streetAddress.setZipCode((zipCode == null) ? "" : zipCode);
+ 		
 		// site
 		SiteInformation siteInfo = acctDto.getSiteInfo();
         if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_FEEDER])) {
