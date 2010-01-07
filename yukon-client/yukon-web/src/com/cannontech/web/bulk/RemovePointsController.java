@@ -3,7 +3,6 @@ package com.cannontech.web.bulk;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +29,8 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class RemovePointsController extends AddRemovePointsControllerBase {
 
@@ -74,6 +75,53 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         return mav;
     }
     
+    @Override
+    protected Map<String, List<PointTemplateWrapper>> createSharedPointsTypeMapWithPointsMap(Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap) {
+        
+        // complete set of all point templates
+        Set<PointTemplateWrapper> allPointTemplates = new HashSet<PointTemplateWrapper>();
+        
+        // list of sets of point templates, one for each device type
+        List<Set<PointTemplateWrapper>> devicePointTemplateSetsList = new ArrayList<Set<PointTemplateWrapper>>();
+        
+        for (int deviceType : pointsMap.keySet()) {
+            
+            Set<PointTemplateWrapper> deviceTypePointSet = new HashSet<PointTemplateWrapper>();
+            
+            for (String pointTypeName : pointsMap.get(deviceType).keySet()) {
+                
+                List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointTypeName);
+                deviceTypePointSet.addAll(pointTypePointList);
+
+                // Creates a set that handles the shared points and 
+                // also handles the masking for that set.
+                for (PointTemplateWrapper pointTemplateWrapper : pointTypePointList) {
+                    if (allPointTemplates.contains(pointTemplateWrapper)) {
+                        if (pointTemplateWrapper.isMasked() == false) {
+                            allPointTemplates.remove(pointTemplateWrapper);
+                            allPointTemplates.add(pointTemplateWrapper);
+                        }
+                    } else {
+                        allPointTemplates.add(pointTemplateWrapper);
+                    }
+                }
+            }
+            
+            devicePointTemplateSetsList.add(deviceTypePointSet);
+        }
+        
+        
+        // reduce the "all" set by retaining each device type point template set
+        for (Set<PointTemplateWrapper> deviceTypePointSet : devicePointTemplateSetsList) {
+            allPointTemplates.retainAll(deviceTypePointSet);
+        }
+        
+        List<PointTemplateWrapper> pointList = new ArrayList<PointTemplateWrapper>(allPointTemplates);
+        Collections.sort(pointList, pointTemplateOffsetCompartor);
+        
+        return createPointTypeMap(pointList);
+    }
+    
     // points map helper
     private Map<Integer, Map<String, List<PointTemplateWrapper>>> createRemovePointsMap(Set<Integer> deviceTypeSet, boolean maskMissingPoints, DeviceCollection deviceCollection) {
     	
@@ -84,7 +132,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     		mutableDeviceList = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
     	}
     	
-    	Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = new LinkedHashMap<Integer, Map<String, List<PointTemplateWrapper>>>();
+    	Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = Maps.newLinkedHashMap();
         for (int deviceType : deviceTypeSet) {
         	
         	// all defined point templates for device type, convert to wrappers that are all initially unmasked
@@ -94,7 +142,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         	// mask those device type points none of the devices of this type have the point
         	if (maskMissingPoints) {
         		
-        		Set<PointTemplateWrapper> maskedPointTemplates = new HashSet<PointTemplateWrapper>();
+        		Set<PointTemplateWrapper> maskedPointTemplates = Sets.newHashSet();
         		
         		// first pull out all the device from the collection that match this device type
         		List<SimpleDevice> devicesOfTypeList = new ArrayList<SimpleDevice>();
@@ -109,14 +157,14 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         		for (PointTemplateWrapper pointTemplateWrapper : allPointTemplates) {
         			
         			// check each device of this type and see if it has the point or not
-        			boolean noneHavePoint = true;
-        			for (SimpleDevice device : devicesOfTypeList) {
-        				boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplateWrapper.getPointTemplate().getPointIdentifier());
-        				if (pointExistsForDevice) {
-        					noneHavePoint = false;
-        					break;
-        				}
-        			}
+                    boolean noneHavePoint = true;
+                    for (SimpleDevice device : devicesOfTypeList) {
+                        boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplateWrapper.getPointTemplate().getPointIdentifier());
+                        if (pointExistsForDevice) {
+                            noneHavePoint = false;
+                            break;
+                        }
+                    }
         			
         			// after looking at all the device of this type, did we find at least one that had it?
         			if (noneHavePoint) {
