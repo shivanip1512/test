@@ -1096,7 +1096,9 @@ INT CtiConnection::establishConnection()
     INT status = NORMAL;
 
     const int reconnect_frequency = 15;
-    INT sleepCount = -1 * reconnect_frequency + 1; // Wait reconnect_frequency seconds every time this is called
+    // Initialize to negative to make first connect wait reconnect_frequency-1 seconds, and
+    // prevent "connection not valid" from printing until we have tried once
+    INT sleepCount = 1 - reconnect_frequency;
 
     while( !_dontReconnect && !_valid )
     {
@@ -1112,8 +1114,7 @@ INT CtiConnection::establishConnection()
             }
         }
 
-        //Print on the first try, then every hour or so. Note that this loop really lasts
-        // 1.13333 seconds due to the 2 second sleep every 15 seconds above, so 3176 is close to an hour.
+        //Print on the first connect failure, then every hour or so.
         if( !(sleepCount % 3600) )
         {
             string whoStr = who();
