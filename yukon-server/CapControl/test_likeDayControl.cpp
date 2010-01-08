@@ -62,12 +62,12 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     _LIKEDAY_OVERRIDE_TIMEOUT = 600;
 
-    CtiTime time  = CtiTime() - 700;//subtract a time period?
+    CtiTime timeNow  = CtiTime() - 700;//subtract a time period?
     feeder1->setLikeDayControlFlag(false);
     feeder1->setLikeDayFallBack(true);
-    feeder1->setLastVoltPointTime(time);
-    feeder1->setLastCurrentVarPointUpdateTime(time);
-    feeder1->setLastWattPointTime(time);
+    feeder1->setLastVoltPointTime(timeNow);
+    feeder1->setLastCurrentVarPointUpdateTime(timeNow);
+    feeder1->setLastWattPointTime(timeNow);
 
     //This should have the feeder check return false,
     //and since it has not changed from false the update flags should be false

@@ -20,12 +20,18 @@
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiPAOEvent::CtiPAOEvent()
+CtiPAOEvent::CtiPAOEvent() :
+_dirty(false),
+_eventId(0),
+_scheduleId(0),
+_paoId(0),
+_disableOvUvFlag(false)
 {
 }
 
 
-CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const string& command, BOOL disableOvUv)
+CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const string& command, BOOL disableOvUv) :
+_dirty(false)
 {
     _eventId = eventId;
     _scheduleId = schedId;

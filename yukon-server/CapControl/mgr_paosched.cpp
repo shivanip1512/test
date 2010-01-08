@@ -602,10 +602,10 @@ void CtiPAOScheduleManager::addEvent(long schedId, const CtiPAOEvent &event)
 bool CtiPAOScheduleManager::updateEvent(long eventId, const CtiPAOEvent &event)
 {
     bool retVal = false;
-    CtiPAOEvent updateEvent;
-    if (findEvent(eventId, updateEvent))
+    CtiPAOEvent currentUpdateEvent;
+    if (findEvent(eventId, currentUpdateEvent))
     {
-        updateEvent = event;
+        currentUpdateEvent = event;
         retVal = true;
     }
     return retVal;
@@ -613,10 +613,10 @@ bool CtiPAOScheduleManager::updateEvent(long eventId, const CtiPAOEvent &event)
 bool CtiPAOScheduleManager::deleteEvent(long eventId)
 {
     bool retVal = false;
-    CtiPAOEvent deleteEvent;
-    if (findEvent(eventId, deleteEvent))
+    CtiPAOEvent currentDeleteEvent;
+    if (findEvent(eventId, currentDeleteEvent))
     {
-        _events.remove(&deleteEvent);
+        _events.remove(&currentDeleteEvent);
         retVal = true;
     }
 

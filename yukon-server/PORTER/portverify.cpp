@@ -97,7 +97,7 @@ void CtiPorterVerification::verificationThread( void )
 {
     CtiVerificationBase   *base;
     CtiVerificationWork   *work;
-    CtiVerificationReport *report;
+    CtiVerificationReport *vReport;
 
     ptime::time_duration_type report_interval     = minutes(5);
     ptime::time_duration_type queue_read_interval = seconds(10);
@@ -106,8 +106,6 @@ void CtiPorterVerification::verificationThread( void )
 
     ptime last_prune  = second_clock::universal_time() - hours(48);  //  two days ago will force it to go right now
     ptime last_report = second_clock::universal_time();  //  we don't need to print right away
-
-    int sleep;
 
     set(RELOAD);
 
@@ -204,10 +202,10 @@ void CtiPorterVerification::verificationThread( void )
 
                         case CtiVerificationBase::Type_Report:
                         {
-                            report = static_cast<CtiVerificationReport *>(base);
+                            vReport = static_cast<CtiVerificationReport *>(base);
 
                             //  grab the work vector for this receiver
-                            receiver_itr r_itr = _receiver_work.find(report->getReceiverID());
+                            receiver_itr r_itr = _receiver_work.find(vReport->getReceiverID());
 
                             if( r_itr != _receiver_work.end() )
                             {
@@ -217,12 +215,12 @@ void CtiPorterVerification::verificationThread( void )
                                 for( pending_itr itr = p_q.begin(); itr != p_q.end(); itr++ )
                                 {
                                     //  if it's accepted
-                                    if( (*itr)->checkReceipt(*report) )
+                                    if( (*itr)->checkReceipt(*vReport) )
                                     {
                                         p_q.erase(itr);
 
-                                        delete report;
-                                        report = 0;
+                                        delete vReport;
+                                        vReport = 0;
 
                                         /*
                                         if( (*itr)->complete() )
@@ -235,18 +233,18 @@ void CtiPorterVerification::verificationThread( void )
                                     }
                                 }
 
-                                if( report )
+                                if( vReport )
                                 {
                                     if( isDebugLudicrous() )
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - record not found for code \"" << report->getCode() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << CtiTime() << " **** Checkpoint - record not found for code \"" << vReport->getCode() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     }
 
-                                    writeUnknown(*report);
+                                    writeUnknown(*vReport);
 
-                                    delete report;
-                                    report = 0;
+                                    delete vReport;
+                                    vReport = 0;
                                 }
                             }
                             else
@@ -254,13 +252,13 @@ void CtiPorterVerification::verificationThread( void )
                                 if( isDebugLudicrous() )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - entry received for unknown receiver \"" << report->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint - entry received for unknown receiver \"" << vReport->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
 
-                                writeUnknown(*report);
+                                writeUnknown(*vReport);
 
-                                delete report;
-                                report = 0;
+                                delete vReport;
+                                vReport = 0;
                             }
 
                             break;
@@ -546,7 +544,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
     //  note that this should be called from within a trasnaction
 
     RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbinserter = table.inserter();
     RWDBStatus::ErrorCode err;
 
     ptime now(second_clock::universal_time());
@@ -579,7 +577,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
         code_status = "(empty)";
     }
 
-    inserter << logIDGen()
+    dbinserter << logIDGen()
              << work.getSubmissionTime()
              << 0
              << transmitter_id
@@ -589,7 +587,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
              << "-"
              << CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Sent);
 
-    if( err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+    if( err = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -598,7 +596,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
 
     for( r_itr = receipts.begin(); (r_itr != receipts.end()) && dbstat.isValid() && conn.isValid(); r_itr++ )
     {
-        inserter << logIDGen()
+        dbinserter << logIDGen()
                  << r_itr->second
                  << r_itr->first
                  << transmitter_id
@@ -608,7 +606,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
                  << "Y"
                  << code_status;
 
-        if( err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+        if( err = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -618,7 +616,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
 
     for( e_itr = expectations.begin(); (e_itr != expectations.end()) && dbstat.isValid() && conn.isValid(); e_itr++ )
     {
-        inserter << logIDGen()
+        dbinserter << logIDGen()
                  << now
                  << *e_itr
                  << transmitter_id
@@ -628,7 +626,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
                  << "N"
                  << code_status;
 
-        if( err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+        if( err = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -638,25 +636,25 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
 }
 
 
-void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
+void CtiPorterVerification::writeUnknown(const CtiVerificationReport &vReport)
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
     RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBInserter inserter = table.inserter();
+    RWDBInserter dbinserter = table.inserter();
     RWDBStatus::ErrorCode e;
     const string &cs = CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Unexpected);
-    string code = report.getCode();
+    string code = vReport.getCode();
 
     if( code.empty() )
     {
         code = "(empty)";
     }
 
-    inserter << logIDGen()
-             << report.getReceiptTime()
-             << report.getReceiverID()
+    dbinserter << logIDGen()
+             << vReport.getReceiptTime()
+             << vReport.getReceiverID()
              << 0  //  unknown transmitter ID
              << "-"
              << code
@@ -666,7 +664,7 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
 
     if( isDebugLudicrous() )
     {
-        string loggedSQLstring = inserter.asString();
+        string loggedSQLstring = dbinserter.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -675,7 +673,7 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
     }
 
 
-    if( e = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+    if( e = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - error \"" << e << "\" while inserting in CtiPorterVerification::writeUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

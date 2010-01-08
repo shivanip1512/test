@@ -365,6 +365,7 @@ void CtiVanGogh::VGMainThread()
         for(;!bGCtrlC;)
         {
             QueryPerformanceCounter(&getQTime);
+            
             if((MsgPtr = DeferredQueue_.getQueue(0)) == NULL)
             {
                 MsgPtr = MainQueue_.getQueue( 1000 );
@@ -379,6 +380,8 @@ void CtiVanGogh::VGMainThread()
                 }
             }
 
+
+            QueryPerformanceCounter(&dequeueTime);
             if(MsgPtr != NULL)
             {
                 if(MsgPtr->isA() == MSG_SERVER_REQUEST)
@@ -393,8 +396,6 @@ void CtiVanGogh::VGMainThread()
                         sptrCM->setRequestId(pSvrReq->getID());  // Stow this, you'll need it for a response.
                     }
                 }
-
-                QueryPerformanceCounter(&dequeueTime);
 
                 msgCounts.inc( MsgPtr->isA() );
                 msgPrioritys.inc( MsgPtr->getMessagePriority() );
@@ -853,9 +854,6 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 {
     int status = NORMAL;
     int i;
-    int pid;
-
-    CtiPointSPtr       pPt;
 
     switch( Cmd->getOperation() )
     {
@@ -882,10 +880,10 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
             for(i = 1; i + 1 < Cmd->getOpArgList().size(); i += 2)
             {
-                pid = Cmd->getOpArgList()[i];
+                int pid = Cmd->getOpArgList()[i];
                 int alarmcondition = Cmd->getOpArgList()[i+1];
 
-                pPt = PointMgr.getPoint(pid);
+                CtiPointSPtr  pPt = PointMgr.getPoint(pid);
 
                 if(pPt )      // I know about the point...
                 {
@@ -1107,7 +1105,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             {
                                 bool devicedifferent;
 
-                                pPt = PointMgr.getPoint(id);
+                                CtiPointSPtr pPt = PointMgr.getPoint(id);
                                 ablementPoint(pPt, devicedifferent, setmask, tagmask, Cmd->getUser(), *pMulti);
 
                                 if(devicedifferent)     // The device became interesting because of this change.
@@ -4535,7 +4533,6 @@ int  CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
 
     if(removeMgr && Mgr)
     {
-        CtiServerExclusion guard(_server_exclusion);
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -5278,7 +5275,7 @@ CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
         if(pCNotif->isDirty())
         {
             {
-                CtiLockGuard<CtiLogger> guard(dout);
+                CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " Reloading ContactNotification " << pCNotif->getContactNotificationID() << endl;
             }
             pCNotif->Restore();
@@ -5538,7 +5535,7 @@ CtiVanGogh::CtiVanGogh() : _notificationConnection(NULL)
             _alarmToDestInfo[i].grpid = 0; // Zero is invalid!
         }
     }
-
+    ShutdownOnThreadTimeout = true;
     _tagManager.start();
 }
 
@@ -6672,7 +6669,7 @@ INT CtiVanGogh::getNumericLimitFromHighLow(INT numericAlarmOffset, INT alarm)
 
 void CtiVanGogh::checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig )
 {
-    UINT tags;
+    UINT tags = 0;
     if(pDyn)
     {
         tags = pDyn->getDispatch().getTags();
@@ -7062,7 +7059,7 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
     int resultAction = _tagManager.processTagMsg(tagMsg);
 
 
-    bool disable;
+    bool disable = false;
     LONG id       = tagMsg.getPointID();
     int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
     int  setmask  = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.

@@ -256,6 +256,7 @@ private:
         {
 //  TODO-P3: do we want statp for the individual ddddd algorithms?
 //        refer to Section 2 EMETCON Protocols.pdf, page 70 (4-39)
+            bool dummy;
         } statp;
 
     } _status;

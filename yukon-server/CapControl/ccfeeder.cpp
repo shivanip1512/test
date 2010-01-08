@@ -57,7 +57,98 @@ RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCFeeder::CtiCCFeeder()
+CtiCCFeeder::CtiCCFeeder() :
+_paoid(0),                       
+_disableflag(false),                      
+_parentId(0),                         
+_strategyId(0),                       
+_multiMonitorFlag(false),                      
+_maxdailyoperation(0),                    
+_maxoperationdisableflag(false),                     
+_peakstarttime(0),                         
+_peakstoptime(0),                     
+_currentvarloadpointid(0),                       
+_currentvarloadpointvalue(0),                    
+_currentwattloadpointid(0),                      
+_currentwattloadpointvalue(0),                  
+_currentvoltloadpointid(0),                      
+_currentvoltloadpointvalue(0),                   
+_controlinterval(0),                       
+_maxconfirmtime(0),                        
+_minconfirmpercent(0),                     
+_failurepercent(0),                       
+_controldelaytime(0),                     
+_controlsendretries(0),                          
+_peaklag(0),                     
+_offpklag(0),                         
+_peaklead(0),                         
+_offpklead(0),                        
+_peakVARlag(0),                       
+_offpkVARlag(0),                      
+_peakVARlead(0),                      
+_offpkVARlead(0),                     
+_peakpfsetpoint(0),                       
+_offpkpfsetpoint(0),                      
+_displayorder(0),                     
+_newpointdatareceivedflag(false),                    
+_estimatedvarloadpointid(0),                     
+_estimatedvarloadpointvalue(0),                  
+_dailyoperationsanalogpointid(0),                
+_powerfactorpointid(0),                          
+_estimatedpowerfactorpointid(0),                 
+_currentdailyoperations(0),                      
+_recentlycontrolledflag(false),                      
+_varvaluebeforecontrol(0),                       
+_lastcapbankcontrolleddeviceid(0),               
+_busoptimizedvarcategory(0),                     
+_busoptimizedvaroffset(0),                       
+_powerfactorvalue(0),                     
+_kvarsolution(0),                     
+_estimatedpowerfactorvalue(0),                   
+_currentvarpointquality(0),                      
+_currentwattpointquality(0),                     
+_currentvoltpointquality(0),                     
+_waivecontrolflag(false),                      
+_integrateflag(false),                        
+_integrateperiod(0),                      
+_likedayfallback(false),                       
+_decimalPlaces(0),                         
+_peakTimeFlag(false),                     
+_verificationFlag(false),                      
+_performingVerificationFlag(false),                  
+_verificationDoneFlag(false),                        
+_preOperationMonitorPointScanFlag(false),            
+_operationSentWaitFlag(false),                       
+_postOperationMonitorPointScanFlag(false),           
+_waitForReCloseDelayFlag(false),                     
+_maxDailyOpsHitFlag(false),                          
+_ovUvDisabledFlag(false),                     
+_correctionNeededNoBankAvailFlag(false),             
+_likeDayControlFlag(false),                          
+_lastVerificationMsgSentSuccessful(false),           
+_eventSeq(0),                        
+_currentVerificationCapBankId(0),                
+_currentCapBankToVerifyAssumedOrigState(0),      
+_targetvarvalue(0),                        
+_iVControlTot(0),                     
+_iVCount(0),                     
+_iWControlTot(0),                     
+_iWCount(0),                     
+_iVControl(0),                       
+_iWControl(0),                        
+_usePhaseData(0),                     
+_phaseBid(0),                         
+_phaseCid(0),                         
+_totalizedControlFlag(false),                        
+_phaseAvalue(0),                      
+_phaseBvalue(0),
+_phaseCvalue(0),
+_phaseAvalueBeforeControl(0),                    
+_phaseBvalueBeforeControl(0),                    
+_phaseCvalueBeforeControl(0),                    
+_retryIndex(0),                       
+_insertDynamicDataFlag(false),                       
+_dirty(false)
 {
     _porterRetFailFlag = false;
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -2124,8 +2215,8 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                     currentCapBank->setDisableFlag(TRUE);
                     CtiCCSubstationBusStore::getInstance()->UpdateCapBankDisableFlagInDB(currentCapBank);
 
-                    string text = string("CapBank Disabled");
-                    string additional = string("CapBank: ");
+                    text = string("CapBank Disabled");
+                    additional = string("CapBank: ");
                     additional += getPAOName();
                     if (_LOG_MAPID_INFO)
                     {
@@ -3356,7 +3447,6 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
 
     BOOL returnBoolean = TRUE;
     BOOL found = FALSE;
-    char tempchar[64] = "";
     DOUBLE change = 0;
     DOUBLE ratio = 0;
     double varValueBC = varValueBeforeControl;
@@ -3657,7 +3747,6 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 
     BOOL returnBoolean = TRUE;
     BOOL found = FALSE;
-    char tempchar[64] = "";
     DOUBLE change = 0;
     DOUBLE changeA = 0;
     DOUBLE changeB = 0;
@@ -3694,20 +3783,19 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 {
                     if( _RATE_OF_CHANGE && regressionA.depthMet() && regressionB.depthMet() && regressionC.depthMet() )
                     {
-                        CtiTime time;
+                        CtiTime timeNow;
                         //This will only be called if we intend to do rate of change and the regression depth is met.
-                        varValueAbc = regA.regression( time.seconds() );
-                        varValueBbc = regB.regression( time.seconds() );
-                        varValueCbc = regC.regression( time.seconds() );
+                        varValueAbc = regA.regression( timeNow.seconds() );
+                        varValueBbc = regB.regression( timeNow.seconds() );
+                        varValueCbc = regC.regression( timeNow.seconds() );
 
                         int size =  currentCapBank->getBankSize()/3;
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            CtiTime time;
-                            dout << time << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << time << "                   Phase B: " << varValueBbc << endl;
-                            dout << time << "                   Phase C: " << varValueCbc << endl;
+                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
+                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
+                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
                         }
                     }
                     changeA = varAValue - varValueAbc;
@@ -3717,10 +3805,10 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     if( _RATE_OF_CHANGE && (!regA.depthMet() || !regB.depthMet() || !regC.depthMet()) )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        CtiTime time;
-                        dout << time << " - Rate of Change Depth not met. Phase A: " << regA.getCurDepth() << " / " << regA.getRegDepth() << endl;
-                        dout << time << "                                 Phase B: " << regB.getCurDepth() << " / " << regB.getRegDepth() << endl;
-                        dout << time << "                                 Phase C: " << regC.getCurDepth() << " / " << regC.getRegDepth() << endl;
+                        CtiTime timeNow;
+                        dout << timeNow << " - Rate of Change Depth not met. Phase A: " << regA.getCurDepth() << " / " << regA.getRegDepth() << endl;
+                        dout << timeNow << "                                 Phase B: " << regB.getCurDepth() << " / " << regB.getRegDepth() << endl;
+                        dout << timeNow << "                                 Phase C: " << regC.getCurDepth() << " / " << regC.getRegDepth() << endl;
                     }
 
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
@@ -3799,21 +3887,20 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 {
                     if( _RATE_OF_CHANGE && regressionA.depthMet() && regressionB.depthMet() && regressionC.depthMet() )
                     {
-                        CtiTime time;
+                        CtiTime timeNow;
                         //This will only be called if we intend to do rate of change and the regression depth is met.
-                        varValueAbc = regA.regression( time.seconds() );
-                        varValueBbc = regB.regression( time.seconds() );
-                        varValueCbc = regC.regression( time.seconds() );
+                        varValueAbc = regA.regression( timeNow.seconds() );
+                        varValueBbc = regB.regression( timeNow.seconds() );
+                        varValueCbc = regC.regression( timeNow.seconds() );
 
                         int size =  currentCapBank->getBankSize()/3;
 
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            CtiTime time;
-                            dout << time << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << time << "                   Phase B: " << varValueBbc << endl;
-                            dout << time << "                   Phase C: " << varValueCbc << endl;
+                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
+                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
+                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
                         }
                     }
                     changeA = (varValueAbc) - varAValue;
@@ -3823,10 +3910,10 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     if( _RATE_OF_CHANGE && (!regA.depthMet() || !regB.depthMet() || !regC.depthMet()) )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        CtiTime time;
-                        dout << time << " - Rate of Change Depth not met. Phase A: " << regA.getCurDepth() << " / " << regA.getRegDepth() << endl;
-                        dout << time << "                                 Phase B: " << regB.getCurDepth() << " / " << regB.getRegDepth() << endl;
-                        dout << time << "                                 Phase C: " << regC.getCurDepth() << " / " << regC.getRegDepth() << endl;
+                        CtiTime timeNow;
+                        dout << timeNow << " - Rate of Change Depth not met. Phase A: " << regA.getCurDepth() << " / " << regA.getRegDepth() << endl;
+                        dout << timeNow << "                                 Phase B: " << regB.getCurDepth() << " / " << regB.getRegDepth() << endl;
+                        dout << timeNow << "                                 Phase C: " << regC.getCurDepth() << " / " << regC.getRegDepth() << endl;
                     }
 
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
@@ -3962,7 +4049,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
     BOOL returnBoolean = FALSE;
     BOOL foundCap = FALSE;
-    char tempchar[64] = "";
     DOUBLE change = 0;
     DOUBLE ratio = 0;
     string text = "";
@@ -4008,8 +4094,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         if( _RATE_OF_CHANGE && !regression.depthMet() )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            CtiTime time;
-                            dout << time << " - Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth() << endl;
+                            dout << CtiTime() << " - Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth() << endl;
                         }
                         if( change < 0 )
                         {
@@ -4128,8 +4213,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         if( _RATE_OF_CHANGE && !regression.depthMet() )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            CtiTime time;
-                            dout << time << " - Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth() << endl;
+                            dout << CtiTime() << " - Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth() << endl;
                         }
                         if( change < 0 )
                         {
@@ -4307,7 +4391,6 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 
     BOOL returnBoolean = FALSE;
     BOOL foundCap = FALSE;
-    char tempchar[64] = "";
     DOUBLE change = 0;
     DOUBLE ratio = 0;
     string text = "";
@@ -4324,7 +4407,6 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
     double varValueAbc = getPhaseAValueBeforeControl();
     double varValueBbc = getPhaseBValueBeforeControl();
     double varValueCbc = getPhaseCValueBeforeControl();
-    CtiTime time;
 
     BOOL assumedWrongFlag = FALSE;
 
@@ -4346,17 +4428,18 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                     if( _RATE_OF_CHANGE && regressionA.depthMet() &&
                         regressionB.depthMet() && regressionC.depthMet() )
                     {
-                        varValueAbc = getRegressionA().regression( time.seconds() );
-                        varValueBbc = getRegressionB().regression( time.seconds() );
-                        varValueCbc = getRegressionC().regression( time.seconds() );
+
+                        CtiTime timeNow;
+                        varValueAbc = getRegressionA().regression( timeNow.seconds() );
+                        varValueBbc = getRegressionB().regression( timeNow.seconds() );
+                        varValueCbc = getRegressionC().regression( timeNow.seconds() );
                         int size =  currentCapBank->getBankSize()/3;
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            CtiTime time;
-                            dout << time << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << time << "                   Phase B: " << varValueBbc << endl;
-                            dout << time << "                   Phase C: " << varValueCbc << endl;
+                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
+                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
+                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
                         }
                     }
                     changeA = varAValue - varValueAbc;
@@ -4481,17 +4564,18 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                     if( _RATE_OF_CHANGE && regressionA.depthMet() &&
                         regressionB.depthMet() && regressionC.depthMet() )
                     {
-                        varValueAbc = getRegressionA().regression( time.seconds() );
-                        varValueBbc = getRegressionB().regression( time.seconds() );
-                        varValueCbc = getRegressionC().regression( time.seconds() );
+
+                        CtiTime timeNow;
+                        varValueAbc = getRegressionA().regression( timeNow.seconds() );
+                        varValueBbc = getRegressionB().regression( timeNow.seconds() );
+                        varValueCbc = getRegressionC().regression( timeNow.seconds() );
                         int size =  currentCapBank->getBankSize()/3;
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            CtiTime time;
-                            dout << time << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << time << "                   Phase B: " << varValueBbc << endl;
-                            dout << time << "                   Phase C: " << varValueCbc << endl;
+                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
+                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
+                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
                         }
                     }
                     changeA = varValueAbc - varAValue;
@@ -4960,7 +5044,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
 {
     BOOL returnBoolean = FALSE;
     BOOL found = FALSE;
-    double time = CtiTime().seconds();
+    double timeSeconds = CtiTime().seconds();
     if( _IGNORE_NOT_NORMAL_FLAG && currentVarPointQuality != NormalQuality )
     {
         return false;
@@ -4993,9 +5077,9 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
 
                 if( checkForRateOfChange(reg,regA,regB,regC) )
                 {
-                    ratioA = fabs((varAValue - (regA.regression(time))) / banksize);
-                    ratioB = fabs((varBValue - (regB.regression(time))) / banksize);
-                    ratioC = fabs((varCValue - (regC.regression(time))) / banksize);
+                    ratioA = fabs((varAValue - (regA.regression(timeSeconds))) / banksize);
+                    ratioB = fabs((varBValue - (regB.regression(timeSeconds))) / banksize);
+                    ratioC = fabs((varCValue - (regC.regression(timeSeconds))) / banksize);
                 }
                 else
                 {
@@ -5020,9 +5104,9 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
                     if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Regression Value: " << reg.regression(time) << endl;
+                        dout << CtiTime() << " Regression Value: " << reg.regression(timeSeconds) << endl;
                     }
-                    change = fabs(reg.regression(time) - newVarValue);
+                    change = fabs(reg.regression(timeSeconds) - newVarValue);
                 }
                 else
                 {
@@ -5074,9 +5158,9 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
 
                 if( checkForRateOfChange(reg,regA,regB,regC) )
                 {
-                    ratioA = fabs((varAValue - (regA.regression(time))) / banksize);
-                    ratioB = fabs((varBValue - (regB.regression(time))) / banksize);
-                    ratioC = fabs((varCValue - (regC.regression(time))) / banksize);
+                    ratioA = fabs((varAValue - (regA.regression(timeSeconds))) / banksize);
+                    ratioB = fabs((varBValue - (regB.regression(timeSeconds))) / banksize);
+                    ratioC = fabs((varCValue - (regC.regression(timeSeconds))) / banksize);
                 }
                 else
                 {
@@ -5108,18 +5192,18 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " Regression Value: " << reg.regression(time) << endl;
+                            dout << CtiTime() << " Regression Value: " << reg.regression(timeSeconds) << endl;
                         }
-                        change = fabs(newVarValue - reg.regression(time));
+                        change = fabs(newVarValue - reg.regression(timeSeconds));
                     }
                     else
                     {
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " Regression Value: " << reg.regression(time) << endl;
+                            dout << CtiTime() << " Regression Value: " << reg.regression(timeSeconds) << endl;
                         }
-                        change = fabs(newVarValue - reg.regression(time));
+                        change = fabs(newVarValue - reg.regression(timeSeconds));
                     }
                 }
                 else
@@ -5261,7 +5345,7 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
             {
                 for(LONG i=0;i<_cccapbanks.size();i++)
                 {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                    currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                     if (currentCapBank->isPendingStatus() && currentCapBank->getVCtrlIndex() > 0)
                     {
                         if ( usePhaseData && !useTotalizedControl )
@@ -6555,11 +6639,8 @@ BOOL CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 ULONG CtiCCFeeder::getMonitorPointScanTime()
 {
 
-    CtiTime time;
-    time.now();
-
-
-    return time.seconds();
+    CtiTime timeNow;
+    return timeNow.seconds();
 
 }
 

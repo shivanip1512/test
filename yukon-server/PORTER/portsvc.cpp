@@ -126,6 +126,9 @@ void CtiPorterService::ParseArgs(DWORD argc, LPTSTR* argv)
 
 //CtiPorterService::CtiPorterService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType);
 
-CtiPorterService::~CtiPorterService() {}
+CtiPorterService::~CtiPorterService() 
+{
+    _myargv = NULL;
+}
 
 

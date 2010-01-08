@@ -47,7 +47,7 @@ public:
     virtual bool read(byte_appender &destination, unsigned expected);
     virtual bool peek(byte_appender &destination, unsigned expected);
 
-    virtual bool available(unsigned count);
+    virtual bool available(unsigned aCount);
 
     virtual bool write(const bytes &buf);
 
@@ -66,7 +66,7 @@ public:
     virtual bool read(byte_appender &destination, unsigned expected);
     virtual bool peek(byte_appender &destination, unsigned expected);
 
-    virtual bool available(unsigned count);
+    virtual bool available(unsigned aCount);
 };
 
 class BufferCommsOut : public CommsOut

@@ -563,11 +563,7 @@ void notifEmailExecute( int argc, char **argv )
 
 void tagExecute(int argc, char **argv)
 {
-    int Op, k;
-
-    //ts//unsigned    timeCnt = 0;
-    unsigned    pt = 1;
-    CtiMessage  *pMsg;
+    
 
     CtiPointManager PointMgr;
 
@@ -1065,11 +1061,6 @@ int tagProcessInbounds(CtiMessage *&pMsg, int clientId)
 
 void seasonExecute(int argc, char **argv)
 {
-    int Op, k;
-
-    //ts//unsigned    timeCnt = 0;
-    unsigned    pt = 1;
-    CtiMessage  *pMsg;
 
     CtiPointManager PointMgr;
 
@@ -1312,11 +1303,6 @@ void lmExecute(int argc, char **argv)
 
 void  dbchangeExecute(int argc, char **argv)
 {
-    int Op, k;
-
-    //ts//unsigned    timeCnt = 0;
-    unsigned    pt = 1;
-    CtiMessage  *pMsg;
 
     CtiPointManager PointMgr;
 
@@ -1588,11 +1574,6 @@ void shutdown(int argc, char **argv)
 
 void multiExecute(int argc, char **argv)
 {
-    int Op, k;
-
-    //ts//unsigned    timeCnt = 0;
-    unsigned    pt = 1;
-    CtiMessage  *pMsg;
 
     CtiPointManager PointMgr;
 
@@ -1703,11 +1684,6 @@ void multiHelp()
 
 void historyExecute(int argc, char **argv)
 {
-    int Op, k;
-
-    //ts//unsigned    timeCnt = 0;
-    unsigned    pt = 1;
-
     try
     {
         int Op, k;
@@ -1865,12 +1841,6 @@ void dbtimeHelp()
 
 void pilExecute(int argc, char **argv)
 {
-    int Op, k;
-
-    unsigned    timeCnt = 0;
-    unsigned    pt = 1;
-    CtiMessage  *pMsg;
-
     CtiPointManager PointMgr;
 
     try
@@ -2012,12 +1982,6 @@ void pilHelp()
 
 void pointReqExecute(int argc, char **argv)
 {
-    int Op, k;
-
-    unsigned    timeCnt = 0;
-    unsigned    pt = 1;
-    CtiMessage  *pMsg;
-
     CtiPointManager PointMgr;
 
     try

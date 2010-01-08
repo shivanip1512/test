@@ -254,7 +254,7 @@ bool CtiTagManager::dirty() const
     return _dirty;
 }
 
-void CtiTagManager::setDirty(bool set)
+void CtiTagManager::setDirty(bool flag)
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
@@ -266,7 +266,7 @@ void CtiTagManager::setDirty(bool set)
         tlg.tryAcquire(5000);
     }
 
-    _dirty = set;
+    _dirty = flag;
     return;
 }
 
@@ -952,8 +952,8 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
 
                 if(tagitr != _staticTagTableMap.end())
                 {
-                    TagTblMap_t::value_type vt = *tagitr;
-                    CtiTableTag Tag = vt.second;
+                    TagTblMap_t::value_type tVt = *tagitr;
+                    CtiTableTag Tag = tVt.second;
 
                     if( Tag.getInhibit() )
                     {

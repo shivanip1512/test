@@ -283,66 +283,66 @@ CtiStatistics *getStatisticsRecord(long paoid)
 
 void processEvent(statistics_event_t &tup)
 {
-    CtiStatistics *stat;
+    CtiStatistics *eStat;
 
     switch( tup.action )
     {
         case statistics_event_t::Request:
         {
-            if( stat = getStatisticsRecord(tup.paoportid) )
+            if( eStat = getStatisticsRecord(tup.paoportid) )
             {
-                stat->incrementRequest(tup.time);
+                eStat->incrementRequest(tup.time);
             }
 
-            if( stat = getStatisticsRecord(tup.devicepaoid) )
+            if( eStat = getStatisticsRecord(tup.devicepaoid) )
             {
-                stat->incrementRequest(tup.time);
+                eStat->incrementRequest(tup.time);
             }
 
             if( targetIDValid(tup.devicepaoid, tup.targetpaoid) &&
-                (stat = getStatisticsRecord(tup.targetpaoid)) )
+                (eStat = getStatisticsRecord(tup.targetpaoid)) )
             {
-                stat->incrementRequest(tup.time);
+                eStat->incrementRequest(tup.time);
             }
 
             break;
         }
         case statistics_event_t::Attempt:
         {
-            if( stat = getStatisticsRecord(tup.paoportid) )
+            if( eStat = getStatisticsRecord(tup.paoportid) )
             {
-                stat->incrementAttempts(tup.time, tup.result);
+                eStat->incrementAttempts(tup.time, tup.result);
             }
 
-            if( stat = getStatisticsRecord(tup.devicepaoid) )
+            if( eStat = getStatisticsRecord(tup.devicepaoid) )
             {
-                stat->incrementAttempts(tup.time, tup.result);
+                eStat->incrementAttempts(tup.time, tup.result);
             }
 
             if( targetIDValid(tup.devicepaoid, tup.targetpaoid) &&
-                (stat = getStatisticsRecord(tup.targetpaoid)) )
+                (eStat = getStatisticsRecord(tup.targetpaoid)) )
             {
-                stat->incrementAttempts(tup.time, tup.result);
+                eStat->incrementAttempts(tup.time, tup.result);
             }
 
             break;
         }
         case statistics_event_t::Completion:
         {
-            if( stat = getStatisticsRecord(tup.paoportid) )
+            if( eStat = getStatisticsRecord(tup.paoportid) )
             {
-                stat->incrementCompletion(tup.time, tup.result);
+                eStat->incrementCompletion(tup.time, tup.result);
             }
 
-            if( stat = getStatisticsRecord(tup.devicepaoid) )
+            if( eStat = getStatisticsRecord(tup.devicepaoid) )
             {
-                stat->incrementCompletion(tup.time, tup.result);
+                eStat->incrementCompletion(tup.time, tup.result);
             }
 
             if( targetIDValid(tup.devicepaoid, tup.targetpaoid) &&
-                (stat = getStatisticsRecord(tup.targetpaoid)) )
+                (eStat = getStatisticsRecord(tup.targetpaoid)) )
             {
-                stat->incrementCompletion(tup.time, tup.result);
+                eStat->incrementCompletion(tup.time, tup.result);
             }
 
             break;
@@ -389,7 +389,7 @@ void statisticsRecord()
                 //  unused - should we handle errors here?
                 RWDBStatus dbstat;
 
-                int count = 0, total = dirty_stats.size();
+                int sCount = 0, total = dirty_stats.size();
 
                 vector< CtiStatistics * >::iterator dirty_itr;
 
@@ -398,43 +398,43 @@ void statisticsRecord()
                 {
                     dbstat = (*dirty_itr)->Record(conn);
 
-                    if( !(++count % 1000) )
+                    if( !(++sCount % 1000) )
                     {
                         ticklePerfThreadMonitor();
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " statisticsRecord() : committed " << count << " / " << total << " statistics records." << endl;
+                        dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
                     }
                 }
                 conn.commitTransaction();
 
-                if( count % 1000 )
+                if( sCount % 1000 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " statisticsRecord() : committed " << count << " / " << total << " statistics records." << endl;
+                    dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
                 }
 
                 if( gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS", 120, 10) > 0 )
                 {
-                    count = 0;
+                    sCount = 0;
 
                     conn.beginTransaction();
                     for(dirty_itr = dirty_stats.begin(); dirty_itr != dirty_stats.end(); dirty_itr++)
                     {
                         dbstat = (*dirty_itr)->InsertDaily(conn);
 
-                        if( !(++count % 1000) )
+                        if( !(++sCount % 1000) )
                         {
                             ticklePerfThreadMonitor();
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << count << " / " << total << " statistics records." << endl;
+                            dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
                         }
                     }
                     conn.commitTransaction();
 
-                    if( count % 1000 )
+                    if( sCount % 1000 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << count << " / " << total << " statistics records." << endl;
+                        dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
                     }
 
                     conn.beginTransaction();
@@ -443,7 +443,7 @@ void statisticsRecord()
                     }
                     conn.commitTransaction();
 
-                    if( count % 1000 )
+                    if( sCount % 1000 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " statisticsRecord() : PruneDaily : complete." << endl;
@@ -558,7 +558,7 @@ void initStatisticsRecords(const set<long> &ids)
             }
         }
 
-        CtiStatistics *stat;
+        CtiStatistics *statRec;
 
         set<long> loaded_ids, new_ids;
 
@@ -586,9 +586,9 @@ void initStatisticsRecords(const set<long> &ids)
 
             for( ; new_id_itr != new_id_end; ++new_id_itr )
             {
-                stat = new CtiStatistics(*new_id_itr);
+                statRec = new CtiStatistics(*new_id_itr);
 
-                statistics.insert(make_pair(*new_id_itr, stat));
+                statistics.insert(make_pair(*new_id_itr, statRec));
             }
         }
 
@@ -669,7 +669,7 @@ void processCollectedStats(bool force)
 
     initStatisticsRecords(ids_to_load);
 
-    int count = 0, total = inactive_event_queue.size();
+    int sCount = 0, total = inactive_event_queue.size();
 
     new_events |= !inactive_event_queue.empty();
 
@@ -680,10 +680,10 @@ void processCollectedStats(bool force)
 
         inactive_event_queue.pop_front();
 
-        if( !(++count % 1000) && (getDebugLevel() & DEBUGLEVEL_STATISTICS) )
+        if( !(++sCount % 1000) && (getDebugLevel() & DEBUGLEVEL_STATISTICS) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " processCollectedStats() : processed " << count << " / " << total << " statistics events." << endl;
+            dout << CtiTime() << " processCollectedStats() : processed " << sCount << " / " << total << " statistics events." << endl;
         }
     }
 
@@ -696,10 +696,10 @@ void processCollectedStats(bool force)
 
     }
 
-    if( count > 1000 && (getDebugLevel() & DEBUGLEVEL_STATISTICS) )
+    if( sCount > 1000 && (getDebugLevel() & DEBUGLEVEL_STATISTICS) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " processCollectedStats() : complete, processed " << count << " / " << total << " statistics events." << endl;
+        dout << CtiTime() << " processCollectedStats() : complete, processed " << sCount << " / " << total << " statistics events." << endl;
     }
 }
 

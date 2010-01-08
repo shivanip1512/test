@@ -32,7 +32,65 @@ RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCCapBank::CtiCCCapBank()
+CtiCCCapBank::CtiCCCapBank() :
+_paoid(0),                    
+_disableflag(false),                        
+_parentId(0),                      
+_alarminhibitflag(false),                         
+_controlinhibitflag(false),                       
+_maxdailyops(0),                        
+_currentdailyoperations(0),                   
+_maxopsdisableflag(false),                        
+_controldeviceid(0),                    
+_controlpointid(0),                     
+_banksize(0),                      
+_reclosedelay(0),                       
+_controlorder(0),                       
+_triporder(0),                     
+_closeorder(0),                    
+_statuspointid(0),                      
+_controlstatus(0),                      
+_operationanalogpointid(0),                   
+_totaloperations(0),                    
+_tagscontrolstatus(0),                        
+_originalfeederid(0),                         
+_originalswitchingorder(0),                   
+_originalcloseorder(0),                       
+_originaltriporder(0),                        
+_verificationControlStatus(0),                
+_vCtrlIndex(0),                    
+_retryFlag(false),                     
+_prevVerificationControlStatus(0),            
+_assumedOrigCapBankPos(0),                    
+_verificationFlag(false),                         
+_performingVerificationFlag(false),               
+_verificationDoneFlag(false),                     
+_retryOpenFailedFlag(false),                      
+_retryCloseFailedFlag(false),                     
+_ovUvDisabledFlag(false),                         
+_maxDailyOpsHitFlag(false),                       
+_controlStatusPartialFlag(false),                 
+_controlStatusSignificantFlag(false),             
+_controlStatusAbnQualityFlag(false),              
+_controlStatusFailFlag(false),                    
+_controlStatusCommFailFlag(false),                
+_controlStatusNoControlFlag(false),               
+_controlStatusUnSolicitedFlag(false),             
+_reEnableOvUvFlag(false),                          
+_localControlFlag(false),                          
+_controlRecentlySentFlag(false),                   
+_porterRetFailFlag(false),                        
+_unsolicitedPendingFlag(false),                    
+_udpPortNumber(0),                       
+_reportedCBCLastControlReason(0),              
+_reportedCBCState(0),                          
+_ignoreFlag(false),                     
+_ignoreReason(0),                        
+_controlStatusQuality(false),                      
+_sendAllCommandFlag(false),                        
+_actionId(0),                       
+_insertDynamicDataFlag(false),                     
+_dirty(false)                     
 {
     _twoWayPoints = NULL;
     _ovuvSituationFlag = false;
@@ -2229,92 +2287,92 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
+CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 {
-    if( this != &right )
+    if( this != &rightObj )
     {
-        _paoid = right._paoid;
-        _paocategory = right._paocategory;
-        _paoclass = right._paoclass;
-        _paoname = right._paoname;
-        _paotype = right._paotype;
-        _paodescription = right._paodescription;
-        _disableflag = right._disableflag;
-        _parentId = right._parentId;
-        _alarminhibitflag = right._alarminhibitflag;
-        _controlinhibitflag = right._controlinhibitflag;
-        _maxdailyops = right._maxdailyops;
-        _currentdailyoperations = right._currentdailyoperations;
-        _maxopsdisableflag = right._maxopsdisableflag;
-        _operationalstate = right._operationalstate;
-        _controllertype = right._controllertype;
-        _controldeviceid = right._controldeviceid;
-        _controlpointid = right._controlpointid;
-        _controlDeviceType = right._controlDeviceType;
-        _banksize = right._banksize;
-        _typeofswitch = right._typeofswitch;
-        _switchmanufacture = right._switchmanufacture;
-        _maplocationid = right._maplocationid;
-        _reclosedelay = right._reclosedelay;
-        _controlorder = right._controlorder;
-        _triporder = right._triporder;
-        _closeorder = right._closeorder;
-        _statuspointid = right._statuspointid;
-        _controlstatus = right._controlstatus;
-        _operationanalogpointid = right._operationanalogpointid;
-        _totaloperations = right._totaloperations;
-        _laststatuschangetime = right._laststatuschangetime;
-        _tagscontrolstatus = right._tagscontrolstatus;
-        _assumedOrigCapBankPos = right._assumedOrigCapBankPos;
-        _prevVerificationControlStatus = right._prevVerificationControlStatus;
-        _vCtrlIndex = right._vCtrlIndex;
-        _additionalFlags = right._additionalFlags;
-        _verificationFlag = right._verificationFlag;
-        _performingVerificationFlag = right._performingVerificationFlag;
-        _verificationDoneFlag = right._verificationDoneFlag;
-        _retryOpenFailedFlag = right._retryOpenFailedFlag;
-        _retryCloseFailedFlag = right._retryCloseFailedFlag;
-        _ovUvDisabledFlag = right._ovUvDisabledFlag;
-        _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
-        _controlStatusPartialFlag =     right._controlStatusPartialFlag;
-        _controlStatusSignificantFlag = right._controlStatusSignificantFlag;
-        _controlStatusAbnQualityFlag = right._controlStatusAbnQualityFlag;
-        _controlStatusFailFlag = right._controlStatusFailFlag;
-        _controlStatusCommFailFlag = right._controlStatusCommFailFlag;
-        _controlStatusNoControlFlag = right._controlStatusNoControlFlag;
-        _controlStatusUnSolicitedFlag = right._controlStatusUnSolicitedFlag;
-        _controlStatusQuality = right._controlStatusQuality;
-        _reEnableOvUvFlag = right._reEnableOvUvFlag;
-        _localControlFlag = right._localControlFlag;
-        _controlRecentlySentFlag = right._controlRecentlySentFlag;
-        _porterRetFailFlag = right._porterRetFailFlag;
-        _unsolicitedPendingFlag = right._unsolicitedPendingFlag;
+        _paoid = rightObj._paoid;
+        _paocategory = rightObj._paocategory;
+        _paoclass = rightObj._paoclass;
+        _paoname = rightObj._paoname;
+        _paotype = rightObj._paotype;
+        _paodescription = rightObj._paodescription;
+        _disableflag = rightObj._disableflag;
+        _parentId = rightObj._parentId;
+        _alarminhibitflag = rightObj._alarminhibitflag;
+        _controlinhibitflag = rightObj._controlinhibitflag;
+        _maxdailyops = rightObj._maxdailyops;
+        _currentdailyoperations = rightObj._currentdailyoperations;
+        _maxopsdisableflag = rightObj._maxopsdisableflag;
+        _operationalstate = rightObj._operationalstate;
+        _controllertype = rightObj._controllertype;
+        _controldeviceid = rightObj._controldeviceid;
+        _controlpointid = rightObj._controlpointid;
+        _controlDeviceType = rightObj._controlDeviceType;
+        _banksize = rightObj._banksize;
+        _typeofswitch = rightObj._typeofswitch;
+        _switchmanufacture = rightObj._switchmanufacture;
+        _maplocationid = rightObj._maplocationid;
+        _reclosedelay = rightObj._reclosedelay;
+        _controlorder = rightObj._controlorder;
+        _triporder = rightObj._triporder;
+        _closeorder = rightObj._closeorder;
+        _statuspointid = rightObj._statuspointid;
+        _controlstatus = rightObj._controlstatus;
+        _operationanalogpointid = rightObj._operationanalogpointid;
+        _totaloperations = rightObj._totaloperations;
+        _laststatuschangetime = rightObj._laststatuschangetime;
+        _tagscontrolstatus = rightObj._tagscontrolstatus;
+        _assumedOrigCapBankPos = rightObj._assumedOrigCapBankPos;
+        _prevVerificationControlStatus = rightObj._prevVerificationControlStatus;
+        _vCtrlIndex = rightObj._vCtrlIndex;
+        _additionalFlags = rightObj._additionalFlags;
+        _verificationFlag = rightObj._verificationFlag;          
+        _performingVerificationFlag = rightObj._performingVerificationFlag;
+        _verificationDoneFlag = rightObj._verificationDoneFlag;      
+        _retryOpenFailedFlag = rightObj._retryOpenFailedFlag;
+        _retryCloseFailedFlag = rightObj._retryCloseFailedFlag;           
+        _ovUvDisabledFlag = rightObj._ovUvDisabledFlag;
+        _maxDailyOpsHitFlag = rightObj._maxDailyOpsHitFlag;
+        _controlStatusPartialFlag =     rightObj._controlStatusPartialFlag;   
+        _controlStatusSignificantFlag = rightObj._controlStatusSignificantFlag;
+        _controlStatusAbnQualityFlag = rightObj._controlStatusAbnQualityFlag;
+        _controlStatusFailFlag = rightObj._controlStatusFailFlag;
+        _controlStatusCommFailFlag = rightObj._controlStatusCommFailFlag;
+        _controlStatusNoControlFlag = rightObj._controlStatusNoControlFlag;
+        _controlStatusUnSolicitedFlag = rightObj._controlStatusUnSolicitedFlag;
+        _controlStatusQuality = rightObj._controlStatusQuality;
+        _reEnableOvUvFlag = rightObj._reEnableOvUvFlag;
+        _localControlFlag = rightObj._localControlFlag;
+        _controlRecentlySentFlag = rightObj._controlRecentlySentFlag;
+        _porterRetFailFlag = rightObj._porterRetFailFlag;
+        _unsolicitedPendingFlag = rightObj._unsolicitedPendingFlag;
 
-        _sendAllCommandFlag = right._sendAllCommandFlag;
-        _ignoreReasonTimeUpdated = right._ignoreReasonTimeUpdated;
-        _ignoreIndicatorTimeUpdated = right._ignoreIndicatorTimeUpdated;
-        _unsolicitedChangeTimeUpdated = right._unsolicitedChangeTimeUpdated;
+        _sendAllCommandFlag = rightObj._sendAllCommandFlag;
+        _ignoreReasonTimeUpdated = rightObj._ignoreReasonTimeUpdated;
+        _ignoreIndicatorTimeUpdated = rightObj._ignoreIndicatorTimeUpdated;
+        _unsolicitedChangeTimeUpdated = rightObj._unsolicitedChangeTimeUpdated;
 
-        _ipAddress = right._ipAddress;
-        _udpPortNumber = right._udpPortNumber;
-        _reportedCBCLastControlReason = right._reportedCBCLastControlReason;
-        _reportedCBCState = right._reportedCBCState;
-        _reportedCBCStateTime = right._reportedCBCStateTime;
-        _partialPhaseInfo = right._partialPhaseInfo;
+        _ipAddress = rightObj._ipAddress;
+        _udpPortNumber = rightObj._udpPortNumber;
+        _reportedCBCLastControlReason = rightObj._reportedCBCLastControlReason;
+        _reportedCBCState = rightObj._reportedCBCState;
+        _reportedCBCStateTime = rightObj._reportedCBCStateTime;
+        _partialPhaseInfo = rightObj._partialPhaseInfo;
 
-        _ignoreFlag = right._ignoreFlag;
-        _ignoreReason = right._ignoreReason;
-        _sAfterVars = right._sAfterVars;
-        _sBeforeVars = right._sBeforeVars;
-        _sPercentChange = right._sPercentChange;
-        _ovuvSituationFlag = right._ovuvSituationFlag;
+        _ignoreFlag = rightObj._ignoreFlag;
+        _ignoreReason = rightObj._ignoreReason;
+        _sAfterVars = rightObj._sAfterVars;
+        _sBeforeVars = rightObj._sBeforeVars;
+        _sPercentChange = rightObj._sPercentChange;
+        _ovuvSituationFlag = rightObj._ovuvSituationFlag;
 
-        _originalParent = right._originalParent;
+        _originalParent = rightObj._originalParent;
 
-        _operationStats = right._operationStats;
-        if (right._twoWayPoints != NULL)
+        _operationStats = rightObj._operationStats;
+        if (rightObj._twoWayPoints != NULL)
         {
-            _twoWayPoints = new CtiCCTwoWayPoints(*right._twoWayPoints);
+            _twoWayPoints = new CtiCCTwoWayPoints(*rightObj._twoWayPoints);
 
         }
         else
@@ -2327,17 +2385,17 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
 /*---------------------------------------------------------------------------
     operator==
 ---------------------------------------------------------------------------*/
-int CtiCCCapBank::operator==(const CtiCCCapBank& right) const
+int CtiCCCapBank::operator==(const CtiCCCapBank& rightObj) const
 {
-    return getPAOId() == right.getPAOId();
+    return getPAOId() == rightObj.getPAOId();
 }
 
 /*---------------------------------------------------------------------------
     operator!=
 ---------------------------------------------------------------------------*/
-int CtiCCCapBank::operator!=(const CtiCCCapBank& right) const
+int CtiCCCapBank::operator!=(const CtiCCCapBank& rightObj) const
 {
-    return getPAOId() != right.getPAOId();
+    return getPAOId() != rightObj.getPAOId();
 }
 
 
@@ -2527,9 +2585,9 @@ CtiCCCapBank* CtiCCCapBank::replicate() const
 
     Used for ordering cap banks within a feeder by control order.
 ---------------------------------------------------------------------------*/
-int CtiCCCapBank::compareTo(const RWCollectable* right) const
+int CtiCCCapBank::compareTo(const RWCollectable* rightObj) const
 {
-    return _controlorder == ((CtiCCCapBank*)right)->getControlOrder() ? 0 : (_controlorder > ((CtiCCCapBank*)right)->getControlOrder() ? 1 : -1);
+    return _controlorder == ((CtiCCCapBank*)rightObj)->getControlOrder() ? 0 : (_controlorder > ((CtiCCCapBank*)rightObj)->getControlOrder() ? 1 : -1);
 }
 
 /*---------------------------------------------------------------------------
@@ -2660,9 +2718,9 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
-            RWDBInserter inserter = dynamicCCCapBankTable.inserter();
+            RWDBInserter dbInserter = dynamicCCCapBankTable.inserter();
 
-            inserter << _paoid
+            dbInserter << _paoid
             << _controlstatus
             << _totaloperations
             << _laststatuschangetime
@@ -2683,16 +2741,16 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
+                string loggedSQLstring = dbInserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            inserter.execute( conn );
+            dbInserter.execute( conn );
 
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
@@ -2701,7 +2759,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             {
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
+                    string loggedSQLstring = dbInserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

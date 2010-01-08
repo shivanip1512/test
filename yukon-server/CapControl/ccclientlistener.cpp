@@ -43,7 +43,7 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
         strcpy(var, "CAP_CONTROL_PORT");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            LONG capcontrolclientsport = atoi(str.c_str());
+            capcontrolclientsport = atoi(str.c_str());
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -81,6 +81,7 @@ CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::~CtiCCClientListener()
 {
+    _socketListener = NULL;
     if( _instance != NULL )
     {
         delete _instance;

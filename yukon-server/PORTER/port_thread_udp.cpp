@@ -67,6 +67,7 @@ UdpPortHandler::UdpPortHandler( Ports::UdpPortSPtr &port, CtiDeviceManager &devi
     _udp_port(port)
 {
     _encodingFilter = EncodingFilterFactory::getEncodingFilter(port);
+    _udp_socket = INVALID_SOCKET;
 }
 
 

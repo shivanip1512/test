@@ -84,8 +84,8 @@ void main(int argc, char **argv)
       exit(-1);
    }
 
-   INT min = atoi(argv[2]);
-   INT max = atoi(argv[3]);
+   INT minErr = atoi(argv[2]);
+   INT maxErr = atoi(argv[3]);
    INT unack = atoi(argv[4]);
    int loops = atoi(argv[5]);
 
@@ -123,7 +123,7 @@ void main(int argc, char **argv)
       {
          pMulti = CTIDBG_new CtiMultiMsg;
 
-         for(k = min; !bQuit && k <= max; k++)
+         for(k = minErr; !bQuit && k <= maxErr; k++)
          {
             if(pMulti != NULL)
             {

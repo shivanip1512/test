@@ -194,7 +194,6 @@ struct timeSyncCCU710
 
         try
         {
-            OUTMESS         *OutMessage;
             CtiRouteSPtr    RouteRecord;
 
             CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
@@ -1057,7 +1056,7 @@ INT ILEXHeader (PBYTE Header,          /* Pointer to message */
 /* Routine to load up time for an ilex rtu */
 INT LoadILEXTimeMessage (BYTE *Message, USHORT MilliSecsSkew)
 {
-    ULONG MilliTime;
+    ULONG aMilliTime;
     struct timeb TimeB;
     struct tm TimeSt;
 
@@ -1077,13 +1076,13 @@ INT LoadILEXTimeMessage (BYTE *Message, USHORT MilliSecsSkew)
                  &TimeSt);
 
     /* Calculate the milliseconds */
-    MilliTime = ((TimeSt.tm_hour * 60L + TimeSt.tm_min) * 60L + TimeSt.tm_sec) * 1000L + TimeB.millitm;
+    aMilliTime = ((TimeSt.tm_hour * 60L + TimeSt.tm_min) * 60L + TimeSt.tm_sec) * 1000L + TimeB.millitm;
 
     /* Move it into the message */
-    Message[2] |= (HIBYTE (HIUSHORT(MilliTime)) << 5) & 0xE0;
-    Message[3] = LOBYTE (HIUSHORT (MilliTime));
-    Message[4] = HIBYTE (LOUSHORT (MilliTime));
-    Message[5] = LOBYTE (LOUSHORT (MilliTime));
+    Message[2] |= (HIBYTE (HIUSHORT(aMilliTime)) << 5) & 0xE0;
+    Message[3] = LOBYTE (HIUSHORT (aMilliTime));
+    Message[4] = HIBYTE (LOUSHORT (aMilliTime));
+    Message[5] = LOBYTE (LOUSHORT (aMilliTime));
 
     /* Load up the Day of week and day of month */
     Message[6] = LOBYTE ((TimeSt.tm_wday + 1) << 5 | TimeSt.tm_mday);

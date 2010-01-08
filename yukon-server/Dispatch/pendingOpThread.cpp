@@ -1124,7 +1124,7 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
     if( (doit || ppc.getLastHistoryPost() <= now) && !ppc.getExcludeFromHistory() )
     {
         CtiPointNumericSPtr pPoint;
-        double ctltime;
+        double ctltime = 0;
 
         for(poff = DAILYCONTROLHISTOFFSET; poff <= ANNUALCONTROLHISTOFFSET; poff++ )
         {
@@ -1178,7 +1178,7 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
 // This method is not threadsafe.  Do not call after startup!
 bool CtiPendingOpThread::isPointInPendingControl(LONG pointid)
 {
-    bool stat = false;
+    bool pendingStat = false;
 
     UINT sleepcnt = 0;
 
@@ -1188,10 +1188,10 @@ bool CtiPendingOpThread::isPointInPendingControl(LONG pointid)
     if(!_pendingControls.empty())
     {
         CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
-        stat = it != _pendingControls.end();
+        pendingStat = it != _pendingControls.end();
     }
 
-    return(stat);
+    return(pendingStat);
 }
 
 // Returns an invalid time if there is no pending control for pointid

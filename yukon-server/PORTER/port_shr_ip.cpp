@@ -58,7 +58,7 @@ CtiPortShareIP::CtiPortShareIP(CtiPortSPtr myPort, INT listenPort) :
 
 CtiPortShareIP::~CtiPortShareIP()
 {
-    interrupt(SHUTDOWN);    // Make sure we don't go back into waitOnSCADAClient if that is what we are doing.
+    interrupt(CtiThread::SHUTDOWN);    // Make sure we don't go back into waitOnSCADAClient if that is what we are doing.
     shutDown();
 
     for( int i = 0; i<25; i++ )
@@ -623,7 +623,7 @@ void CtiPortShareIP::outThread()
             }
             catch(RWCancellation& rwx)
             {
-                interrupt(SHUTDOWN);    // Close it out.
+                interrupt(CtiThread::SHUTDOWN);    // Close it out.
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getIDString() << " - Port Share IP OutThread cancellation - " << rwx.why() << endl;

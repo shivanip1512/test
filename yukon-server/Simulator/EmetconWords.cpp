@@ -310,15 +310,15 @@ const EmetconWord *EmetconWordC::restore(const bytes &buf)
     }
 
     unsigned data_start_bit = 4;
-    bytes    data;
+    bytes    myData;
 
     while( bytes_used-- )
     {
-        data.push_back(extract_bits(buf, data_start_bit, 8));
+        myData.push_back(extract_bits(buf, data_start_bit, 8));
         data_start_bit += 8;
     }
 
-    return new EmetconWordC(data,
+    return new EmetconWordC(myData,
                             extract_bits(buf, 44, 1),  // flag
                             extract_bits(buf, 46, BitLength_Bch));
 }

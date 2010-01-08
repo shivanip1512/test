@@ -52,7 +52,6 @@ public:
 
 private:
     
-    BOOL _isValid;
     BOOL _dirty;
 
     long         _eventId;

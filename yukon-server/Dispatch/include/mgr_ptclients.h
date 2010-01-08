@@ -109,7 +109,7 @@ public:
    CtiPointManager::ptr_type   getControlOffsetEqual(LONG pao, INT offset);
 
    void DumpList(void);
-   virtual void DeleteList(void);
+   void DeleteList(void);
    virtual void expire (long pid);
    virtual void erase  (long pid);
    //virtual void refresh(long pid);

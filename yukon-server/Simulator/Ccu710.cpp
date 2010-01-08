@@ -113,8 +113,8 @@ error_t Ccu710::extractAddress(const bytes &address_buf, unsigned &address)
 
 bool Ccu710::handleRequest(Comms &comms, PortLogger &logger)
 {
-    request ccu_request;
-    reply   ccu_reply;
+    request_t ccu_request;
+    reply_t   ccu_reply;
 
     error_t error;
 
@@ -153,7 +153,7 @@ bool Ccu710::handleRequest(Comms &comms, PortLogger &logger)
 
 error_t Ccu710::readRequest(CommsIn &comms_in, request_holder &external_request_holder) const
 {
-    request new_request;
+    request_t new_request;
 
     error_t error = readRequest(comms_in, new_request);
 
@@ -163,7 +163,7 @@ error_t Ccu710::readRequest(CommsIn &comms_in, request_holder &external_request_
 }
 
 
-error_t Ccu710::readRequest(CommsIn &comms_in, request &request) const
+error_t Ccu710::readRequest(CommsIn &comms_in, request_t &request) const
 {
     byte_appender request_data_oitr = byte_appender(request.message);
 
@@ -267,7 +267,7 @@ error_t Ccu710::extractFeederOperation(const bytes &feeder_op_buf, feeder_operat
 }
 
 
-string Ccu710::describeRequest(const request &request) const
+string Ccu710::describeRequest(const request_t &request) const
 {
     ostringstream request_description;
 
@@ -349,14 +349,14 @@ string Ccu710::describeRequest(const request &request) const
                             bytes::const_iterator data_itr = c_word.data.begin();
                             bytes::const_iterator data_end = c_word.data.end();
 
-                            int fill = request_description.fill('0');
+                            int dFill = request_description.fill('0');
 
                             while( data_itr != data_end )
                             {
                                 request_description << setw(2) << static_cast<int>(*data_itr++) << " ";
                             }
 
-                            request_description.fill(fill);
+                            request_description.fill(dFill);
 
                             request_description << dec;
                         }
@@ -395,7 +395,7 @@ string Ccu710::describeRequest(const request &request) const
 
 error_t Ccu710::processRequest(const request_holder &external_request_holder, reply_holder &external_reply_holder)
 {
-    reply new_reply;
+    reply_t new_reply;
 
     error_t error = processRequest(*external_request_holder, new_reply);
 
@@ -405,7 +405,7 @@ error_t Ccu710::processRequest(const request_holder &external_request_holder, re
 }
 
 
-error_t Ccu710::processRequest(const request &request, reply &reply)
+error_t Ccu710::processRequest(const request_t &request, reply_t &reply)
 {
     byte_appender reply_oitr(reply.message);
 
@@ -613,7 +613,7 @@ error_t Ccu710::validateFeederOperation(const feeder_operation_t &feeder_operati
 }
 
 
-string Ccu710::describeReply(const reply &reply) const
+string Ccu710::describeReply(const reply_t &reply) const
 {
 //  TODO-P2: add CCU-710 reply description
     return "CCU710 reply";
@@ -631,7 +631,7 @@ error_t Ccu710::sendReply(CommsOut &comms_out, const reply_holder &external_repl
 }
 
 
-error_t Ccu710::sendReply(CommsOut &comms_out, const reply &reply) const
+error_t Ccu710::sendReply(CommsOut &comms_out, const reply_t &reply) const
 {
     if( !comms_out.write(reply.message) )
     {

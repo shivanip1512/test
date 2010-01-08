@@ -578,13 +578,13 @@ bool TcpPortHandler::collectInbounds( void )
             }
             else if( ready_count > 0 )
             {
-                for each( connection_const_itr itr in candidate_sockets )
+                for each( connection_const_itr csitr in candidate_sockets )
                 {
-                    const connection &c = itr->second;
+                    const connection &c = csitr->second;
 
                     if( FD_ISSET(c.socket, &readable_sockets) )
                     {
-                        readInput(itr->first);
+                        readInput(csitr->first);
                     }
                 }
             }

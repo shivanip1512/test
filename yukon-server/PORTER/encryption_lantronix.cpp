@@ -13,6 +13,9 @@ using namespace std;
 LantronixEncryptionImpl::LantronixEncryptionImpl()
 {
     _staticIv = false;
+    uint.ul = 0;
+    memcpy(_iv,0,16);
+    memcpy(_key,0,16);
 }
 /**
  * Decode a cipher text. The IV for the decryption is in the

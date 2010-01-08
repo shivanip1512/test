@@ -1407,7 +1407,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
     USHORT Offset;
     USHORT SETLPos, QueTabEnt;
     BYTE Priority = 7;
-    USHORT QueueEntrySequence;
+    USHORT QueueEntrySequence = 0;
 
     CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Dev->getTrxInfo();
 

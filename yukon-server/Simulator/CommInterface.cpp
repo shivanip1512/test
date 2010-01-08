@@ -15,10 +15,10 @@ SocketComms::SocketComms(CTINEXUS &nexus, unsigned baud) :
     _baud = std::max(baud / 1200, 1U) * 1200;
 }
 
-void SocketComms::commDelay(unsigned bytes)
+void SocketComms::commDelay(unsigned myBytes)
 {
     //  assume 10 comm bits per byte (1 start, 8 data, 1 stop)
-    unsigned bits = bytes * 10;
+    unsigned bits = myBytes * 10;
 
     //  calc millis to sleep (bits / bits/sec)
     Sleep(bits * 1000 / _baud);
@@ -57,15 +57,15 @@ bool SocketComms::peek(byte_appender &destination, unsigned expected)
     return true;
 }
 
-bool SocketComms::available(unsigned count)
+bool SocketComms::available(unsigned aCount)
 {
-    boost::scoped_array<unsigned char> temp(new unsigned char[count]);
+    boost::scoped_array<unsigned char> temp(new unsigned char[aCount]);
 
     unsigned long bytes_read = 0;
 
-    _nexus.CTINexusPeek(temp.get(), count, &bytes_read);
+    _nexus.CTINexusPeek(temp.get(), aCount, &bytes_read);
 
-    return bytes_read == count;
+    return bytes_read == aCount;
 }
 
 bool SocketComms::write(const bytes &buf)
@@ -138,9 +138,9 @@ bool BufferCommsIn::peek(byte_appender &destination, unsigned expected)
     return true;
 }
 
-bool BufferCommsIn::available(unsigned count)
+bool BufferCommsIn::available(unsigned aCount)
 {
-    return distance(_itr, _end) >= count;
+    return distance(_itr, _end) >= aCount;
 }
 
 bool BufferCommsOut::write(const bytes &buf)

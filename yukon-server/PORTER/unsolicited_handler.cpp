@@ -507,69 +507,69 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
 
 void UnsolicitedHandler::traceOutbound( const device_record &dr, int status )
 {
-    CtiTraceMsg trace;
+    CtiTraceMsg mTrace;
     string msg;
 
     //  set bright yellow for the time message
-    trace.setBrightYellow();
-    trace.setTrace( CtiTime().asString() );
-    trace.setEnd(false);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setBrightYellow();
+    mTrace.setTrace( CtiTime().asString() );
+    mTrace.setEnd(false);
+    _traceList.push_back(mTrace.replicateMessage());
 
     //  set bright cyan for the info message
-    trace.setBrightCyan();
+    mTrace.setBrightCyan();
     msg  = "  P: " + CtiNumStr(_port->getPortID()).spad(3) + " / " + describePort();
 
-    trace.setTrace(msg);
-    trace.setEnd(false);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setTrace(msg);
+    mTrace.setEnd(false);
+    _traceList.push_back(mTrace.replicateMessage());
 
-    trace.setBrightCyan();
+    mTrace.setBrightCyan();
     msg = "  D: " + CtiNumStr(dr.device->getID()).spad(3) + " / " + describeDevice(dr);
-    trace.setTrace(msg);
-    trace.setEnd(false);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setTrace(msg);
+    mTrace.setEnd(false);
+    _traceList.push_back(mTrace.replicateMessage());
 
     if( status )
     {
-        trace.setBrightRed();
+        mTrace.setBrightRed();
         msg = " OUT: " + CtiNumStr(status).spad(3);
     }
     else
     {
-        trace.setBrightWhite();
+        mTrace.setBrightWhite();
         msg = " OUT:";
     }
-    trace.setTrace(msg);
-    trace.setEnd(true);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setTrace(msg);
+    mTrace.setEnd(true);
+    _traceList.push_back(mTrace.replicateMessage());
 
     //  then print the formatted hex trace
-    trace.setBrightGreen();
-    CtiPort::traceBytes(dr.work.xfer.getOutBuffer(), dr.work.xfer.getOutCount(), trace, _traceList);
+    mTrace.setBrightGreen();
+    CtiPort::traceBytes(dr.work.xfer.getOutBuffer(), dr.work.xfer.getOutCount(), mTrace, _traceList);
 }
 
 
-void UnsolicitedHandler::traceInbound( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, const device_record *dr )
+void UnsolicitedHandler::traceInbound( unsigned long ip, unsigned short port, int status, const unsigned char *message, int mCount, const device_record *dr )
 {
-    CtiTraceMsg trace;
+    CtiTraceMsg mTrace;
     string msg;
 
     //  set bright yellow for the time message
-    trace.setBrightYellow();
-    trace.setTrace( CtiTime().asString() );
-    trace.setEnd(false);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setBrightYellow();
+    mTrace.setTrace( CtiTime().asString() );
+    mTrace.setEnd(false);
+    _traceList.push_back(mTrace.replicateMessage());
 
     //  set bright cyan for the info message
-    trace.setBrightCyan();
+    mTrace.setBrightCyan();
     msg  = "  P: " + CtiNumStr(_port->getPortID()).spad(3) + " / " + describePort();
 
-    trace.setTrace(msg);
-    trace.setEnd(false);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setTrace(msg);
+    mTrace.setEnd(false);
+    _traceList.push_back(mTrace.replicateMessage());
 
-    trace.setBrightCyan();
+    mTrace.setBrightCyan();
     if( dr && dr->device )
     {
         msg = "  D: " + CtiNumStr(dr->device->getID()).spad(3) + " / " + describeDevice(*dr);
@@ -578,47 +578,47 @@ void UnsolicitedHandler::traceInbound( unsigned long ip, unsigned short port, in
     {
         msg = " (" + ip_to_string(ip) + ":" + CtiNumStr(port) + ")";
     }
-    trace.setTrace(msg);
-    trace.setEnd(false);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setTrace(msg);
+    mTrace.setEnd(false);
+    _traceList.push_back(mTrace.replicateMessage());
 
     if( status )
     {
         if( status == ErrPortSimulated )
         {
-            trace.setBrightWhite();
+            mTrace.setBrightWhite();
             msg = " IN: (simulated, no bytes returned)";
         }
         else
         {
-            trace.setBrightRed();
+            mTrace.setBrightRed();
             msg = " IN: " + CtiNumStr(status).spad(3);
         }
     }
     else
     {
-        trace.setBrightWhite();
+        mTrace.setBrightWhite();
         msg = " IN:";
     }
-    trace.setTrace(msg);
-    trace.setEnd(true);
-    _traceList.push_back(trace.replicateMessage());
+    mTrace.setTrace(msg);
+    mTrace.setEnd(true);
+    _traceList.push_back(mTrace.replicateMessage());
 
 
     //  then print the formatted hex trace
-    if( count > 0 )
+    if( mCount > 0 )
     {
-        trace.setBrightMagenta();
-        CtiPort::traceBytes(message, count, trace, _traceList);
+        mTrace.setBrightMagenta();
+        CtiPort::traceBytes(message, mCount, mTrace, _traceList);
     }
 
     if( status && status != ErrPortSimulated )
     {
-        trace.setBrightRed();
-        trace.setTrace( FormatError(status) );
-        trace.setEnd(true);
-        _traceList.push_back(trace.replicateMessage());
-        trace.setNormal();
+        mTrace.setBrightRed();
+        mTrace.setTrace( FormatError(status) );
+        mTrace.setEnd(true);
+        _traceList.push_back(mTrace.replicateMessage());
+        mTrace.setNormal();
     }
 }
 

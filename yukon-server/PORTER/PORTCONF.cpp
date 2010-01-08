@@ -696,12 +696,12 @@ INT VSend (VSTRUCT *VSt,
             /* Now do the routes */
             for(rte_itr = RouteManager.begin() ; rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )
             {
-               CtiRouteSPtr RouteRecord = rte_itr->second;
+               CtiRouteSPtr aRouteRecord = rte_itr->second;
 
                // A timed route is the original nomenclature fro a default route. 072099 CGP
-               if(RouteRecord->isValid() && (RouteRecord->isDefaultRoute() || !CheckTimed))
+               if(aRouteRecord->isValid() && (aRouteRecord->isDefaultRoute() || !CheckTimed))
                {
-                  VSend2 (VSt, RouteRecord);
+                  VSend2 (VSt, aRouteRecord);
                }
             }
          }

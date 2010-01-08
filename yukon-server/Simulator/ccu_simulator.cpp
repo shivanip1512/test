@@ -28,7 +28,7 @@ PlcInfrastructure Grid;
 
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
-void startRequestHandler(CTINEXUS &socket, int strategy, PortLogger &logger);
+void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
 template<class CcuType>
 void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger);
 
@@ -151,8 +151,8 @@ void CcuPortMaintainer(int portNumber, int strategy)
 {
     while( !gQuit )
     {
-        thread thread(bind(CcuPort, portNumber, strategy));
-        thread.join();
+        thread portThread(bind(CcuPort, portNumber, strategy));
+        portThread.join();
     }
 }
 
@@ -205,9 +205,9 @@ void CcuPort(int portNumber, int strategy)
 }
 
 
-void startRequestHandler(CTINEXUS &socket, int strategy, PortLogger &logger)
+void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
 {
-    SocketComms socket_interface(socket, 1200);
+    SocketComms socket_interface(mySocket, 1200);
 
     //  both the CCU-710 and CCU-711 have their address info in the first two bytes
     bytes peek_buf;

@@ -115,10 +115,17 @@ SystemMsgThread::SystemMsgThread(CtiFIFOQueue< CtiMessage > *inputQueue)
 {
     _input = inputQueue;
     QueryPerformanceFrequency(&perfFrequency);
+    _pDevManager = NULL;
+    _pPortManager = NULL;
+    _pPilToPorter = NULL;
 }
 
 SystemMsgThread::~SystemMsgThread()
 {
+    _input = NULL;
+    _pDevManager = NULL;
+    _pPortManager = NULL;
+    _pPilToPorter = NULL;
 }
 
 void SystemMsgThread::setDeviceManager(CtiDeviceManager *devMgr)
@@ -249,7 +256,6 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
     unsigned int entries = 0;
     string resultString;
     CtiConnection  *Conn = NULL;
-    CtiPortSPtr port;
     vector <CtiPortManager::ptr_type> portList;
     ULONG portID = msg->GroupMessageId();
     CtiQueueDataMsg *response = NULL;
@@ -296,7 +302,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
     unsigned int entries = 0;
     string resultString;
     ULONG requestID = msg->GroupMessageId();
-    ULONG count, priority;
+    ULONG rCount, priority;
     CtiDeviceSPtr tempDev;
     CtiPortSPtr port;
     vector <long> queuedDevices;
@@ -332,8 +338,8 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
 
                             if( queueInterface != NULL )
                             {
-                                queueInterface->getQueueRequestInfo(requestID, count, priority);
-                                entries += count;
+                                queueInterface->getQueueRequestInfo(requestID, rCount, priority);
+                                entries += rCount;
                             }
                         }
                     }
@@ -375,7 +381,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
     unsigned int entries = 0;
     string resultString;
     ULONG requestID = msg->GroupMessageId();
-    ULONG count, priority;
+    ULONG priority;
     CtiDeviceSPtr tempDev;
     CtiPortSPtr port;
     Cti::DeviceQueueInterface *queueInterface;

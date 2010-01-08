@@ -101,7 +101,8 @@ RWDEFINE_COLLECTABLE( CtiCCCommand, CTICCCOMMAND_ID )
 ---------------------------------------------------------------------------*/
 CtiCCCommand::CtiCCCommand(LONG command) :
     CtiCCMessage( string("" + command) ),
-    _command(command)
+    _command(command),
+    _id(0)
 {
 }
 

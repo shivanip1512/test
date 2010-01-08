@@ -62,14 +62,14 @@ void PortLogger::log(const string &str, int i)
     _logger << str << " (" << i << ")" << endl;
 }
 
-void PortLogger::log(const string &str, const bytes &bytes)
+void PortLogger::log(const string &str, const bytes &l_bytes)
 {
     CtiLockGuard<CtiLogger> guard(_logger);
 
     prefix();
 
     _logger << str << endl;
-    _logger << formatIOBytes(bytes) << endl;
+    _logger << formatIOBytes(l_bytes) << endl;
 }
 
 std::string PortLogger::formatIOBytes(const bytes &buf)

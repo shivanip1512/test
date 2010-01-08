@@ -2555,10 +2555,10 @@ void CtiCCSubstationBusStore::doAMFMThr()
     if( !stringCompareIgnoreCase(amfm_interface,m3iAMFMInterfaceString) )
     {
         int refreshrate = 3600;
-        string dbDll = "none";
-        string dbName = "none";
-        string dbUser = "none";
-        string dbPassword = "none";
+        string amFmDbDll = "none";
+        string amFmDbName = "none";
+        string amFmDbUser = "none";
+        string amFmDbPassword = "none";
 
         std::strcpy(var, "CAP_CONTROL_AMFM_RELOAD_RATE");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
@@ -2583,24 +2583,24 @@ void CtiCCSubstationBusStore::doAMFMThr()
             if(str == "oracle")
             {
                 #ifdef _DEBUG
-                dbDll = "ora15d.dll";
+                amFmDbDll = "ora15d.dll";
                 #else
-                dbDll = "ora12d.dll";
+                amFmDbDll = "ora12d.dll";
                 #endif
             }
             else if(str == "mssql")
             {
                 #ifdef _DEBUG
-                dbDll = "msq15d.dll";
+                amFmDbDll = "msq15d.dll";
                 #else
-                dbDll = "msq12d.dll";
+                amFmDbDll = "msq12d.dll";
                 #endif
             }
 
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << dbDll << endl;
+                dout << CtiTime() << " - " << var << ":  " << amFmDbDll << endl;
             }
         }
         else
@@ -2612,11 +2612,11 @@ void CtiCCSubstationBusStore::doAMFMThr()
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_SQLSERVER");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            dbName = str.c_str();
+            amFmDbName = str.c_str();
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << dbName << endl;
+                dout << CtiTime() << " - " << var << ":  " << amFmDbName << endl;
             }
         }
         else
@@ -2628,11 +2628,11 @@ void CtiCCSubstationBusStore::doAMFMThr()
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_USERNAME");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            dbUser = str.c_str();
+            amFmDbUser = str.c_str();
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << dbUser << endl;
+                dout << CtiTime() << " - " << var << ":  " << amFmDbUser << endl;
             }
         }
         else
@@ -2644,11 +2644,11 @@ void CtiCCSubstationBusStore::doAMFMThr()
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_PASSWORD");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            dbPassword = str.c_str();
+            amFmDbPassword = str.c_str();
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << dbPassword << endl;
+                dout << CtiTime() << " - " << var << ":  " << amFmDbPassword << endl;
             }
         }
         else
@@ -2658,13 +2658,13 @@ void CtiCCSubstationBusStore::doAMFMThr()
         }
 
 
-        if( dbDll != "none" && dbName != "none" && dbUser != "none" && dbPassword != "none" )
+        if( amFmDbDll != "none" && amFmDbName != "none" && amFmDbUser != "none" && amFmDbPassword != "none" )
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Obtaining connection to the AMFM database..." << endl;
             }
-            setDatabaseParams(1,dbDll,dbName,dbUser,dbPassword);
+            setDatabaseParams(1,amFmDbDll,amFmDbName,amFmDbUser,amFmDbPassword);
 
             time_t start = ::time(NULL);
 
@@ -2721,12 +2721,12 @@ CtiCCSubstationBusStore* CtiCCSubstationBusStore::_instance = NULL;
 
     Returns a pointer to the singleton instance of CtiCCSubstationBusStore
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance(bool startThreads)
+CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance(bool startCCThreads)
 {
     if ( _instance == NULL )
     {
         _instance = new CtiCCSubstationBusStore();
-        if (startThreads)
+        if (startCCThreads)
         {
             _instance->startThreads();
         }
@@ -3578,20 +3578,20 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
             deleter.execute( conn );
 
 
-            RWDBInserter inserter = ccFeederBankListTable.inserter();
+            RWDBInserter dbInserter = ccFeederBankListTable.inserter();
 
             CtiCCCapBank_SVector& ccCapBanks = feeder->getCCCapBanks();
             for(LONG i=0;i<ccCapBanks.size();i++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[i];
 
-                inserter << feeder->getPAOId()
+                dbInserter << feeder->getPAOId()
                          << currentCapBank->getPAOId()
                          << currentCapBank->getControlOrder()
                          << currentCapBank->getCloseOrder()
                          << currentCapBank->getTripOrder();
 
-                inserter.execute( conn );
+                dbInserter.execute( conn );
             }
 
             CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(feeder->getPAOId(), ChangePAODb,
@@ -3601,7 +3601,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
 
-            return inserter.status().isValid();
+            return dbInserter.status().isValid();
         }
     }
     return false;
@@ -3634,7 +3634,7 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
             deleter.execute( conn );
 
 
-            RWDBInserter inserter = ccFeederSubAssignmentTable.inserter();
+            RWDBInserter dbInserter = ccFeederSubAssignmentTable.inserter();
 
             CtiFeeder_vec& ccFeeders = bus->getCCFeeders();
             for(LONG i=0;i<ccFeeders.size();i++)
@@ -3643,11 +3643,11 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
 
                 currentFeeder->dumpDynamicData(conn, currentDateTime);
 
-                inserter << bus->getPAOId()
+                dbInserter << bus->getPAOId()
                          << currentFeeder->getPAOId()
                          << currentFeeder->getDisplayOrder();
 
-                inserter.execute( conn );
+                dbInserter.execute( conn );
             }
 
             CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPAOId(), ChangePAODb,
@@ -3657,7 +3657,7 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
 
-            return inserter.status().isValid();
+            return dbInserter.status().isValid();
         }
 
     }
@@ -3683,8 +3683,8 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
         {
 
             RWDBTable ccEventLogTable = getDatabase().table("cceventlog");
-            RWDBInserter inserter = ccEventLogTable.inserter();
-            inserter << logId
+            RWDBInserter dbInserter = ccEventLogTable.inserter();
+            dbInserter << logId
                          << msg->getPointId()
                          << CtiTime(msg->getTimeStamp())
                          << msg->getSubId()
@@ -3709,16 +3709,16 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
+                string loggedSQLstring = dbInserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            inserter.execute( conn );
+            dbInserter.execute( conn );
 
-            if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
+            if(dbInserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
             {
                 if( _CC_DEBUG & CC_DEBUG_DATABASE )
                 {
@@ -3727,7 +3727,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
                 }
             }
 
-            return inserter.status().isValid();
+            return dbInserter.status().isValid();
         }
     }
     return false;
@@ -3843,13 +3843,13 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                 }
                 RWDBReader rdr = selector.reader(conn);
 
-                CtiCCStrategyPtr currentCCStrategy;
+                CtiCCStrategyPtr newStrategy;
 
 
                 while ( rdr() )
                 {
-                    currentCCStrategy = CtiCCStrategyPtr(new CtiCCStrategy(rdr));
-                    strategy_map->insert(make_pair(currentCCStrategy->getStrategyId(),currentCCStrategy));
+                    newStrategy = CtiCCStrategyPtr(new CtiCCStrategy(rdr));
+                    strategy_map->insert(make_pair(newStrategy->getStrategyId(),newStrategy));
                 }
                 reloadStrategyParametersFromDatabase(strategyId, strategy_map);
                 reloadTimeOfDayStrategyFromDatabase(strategyId, strategy_map);
@@ -3898,8 +3898,8 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                         }
                         if ( paObjectColumn.isValid() )
                         {
-                        RWDBSelector selector = db.selector();
-                        selector <<  ccScheduleStrat["paobjectid"]
+                            selector = db.selector();
+                            selector <<  ccScheduleStrat["paobjectid"]
                                               <<  ccScheduleStrat["seasonscheduleid"]
                                               <<  ccScheduleStrat["seasonname"]
                                               <<  ccScheduleStrat["strategyid"]
@@ -3925,7 +3925,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                                      dout << CtiTime() << " - " << loggedSQLstring << endl;
                                  }
                              }
-                             RWDBReader rdr = selector.reader(conn);
+                             rdr = selector.reader(conn);
                              while ( rdr() )
                              {
                                  int startMon, startDay, endMon, endDay;
@@ -4678,17 +4678,17 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                 }
                 RWDBReader rdr = selector.reader(conn);
 
-                CtiCCStrategyPtr currentCCStrategy;
+                CtiCCStrategyPtr timeStrategy;
 
-                long stratId = 0;
 
                 while ( rdr() )
                 {
+                    long stratId = 0;
                     rdr["strategyid"] >> stratId;
-                    currentCCStrategy =  strategy_map->find(stratId)->second;
-                    if (currentCCStrategy != NULL)
+                    timeStrategy =  strategy_map->find(stratId)->second;
+                    if (timeStrategy != NULL)
                     {
-                        currentCCStrategy->setTimeAndCloseValues(rdr);
+                        timeStrategy->setTimeAndCloseValues(rdr);
                     }
                 }
 
@@ -4735,7 +4735,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                         }
                         if ( paObjectColumn.isValid() )
                         {
-                           RWDBSelector selector = db.selector();
+                           selector = db.selector();
                                        selector <<  ccScheduleStrat["paobjectid"]
                                                 <<  ccScheduleStrat["seasonscheduleid"]
                                                 <<  ccScheduleStrat["seasonname"]
@@ -4762,7 +4762,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
                                }
                            }
-                           RWDBReader rdr = selector.reader(conn);
+                           rdr = selector.reader(conn);
                            while ( rdr() )
                            {
                                int startMon, startDay, endMon, endDay;
@@ -5552,16 +5552,16 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                              if (today == CtiDate(holDay, holMon, tempYear) )
                              {
-                                 long areaId, stratId;
-                                 rdr["paobjectid"] >> areaId;
+                                 long currAreaId, stratId;
+                                 rdr["paobjectid"] >> currAreaId;
                                  rdr["strategyid"] >> stratId;
 
                                  CtiCCAreaPtr currentArea = NULL;
 
-                                 if (areaId > 0)
-                                      currentArea = findAreaByPAObjectID(areaId);
+                                 if (currAreaId > 0)
+                                      currentArea = findAreaByPAObjectID(currAreaId);
                                  else
-                                     currentArea = paobject_area_map->find(areaId)->second;
+                                     currentArea = paobject_area_map->find(currAreaId)->second;
 
                                  if (currentArea != NULL)
                                  {
@@ -6556,7 +6556,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         {
                             RWDBTable busToLtc = db.table("CCSubstationBusToLTC");
 
-                            RWDBSelector selector = db.selector();
+                            selector = db.selector();
 
                             selector << busToLtc["substationbusid"]
                                      << busToLtc["ltcId"] ;
@@ -6626,9 +6626,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                                 }
                             }
-                            RWDBReader rdr = selector.reader(conn);
+                            rdr = selector.reader(conn);
 
-                            CtiCCSubstationBusPtr currentCCSubstationBus;
                             RWDBNullIndicator isNull;
                             while ( rdr() )
                             {
@@ -6679,7 +6678,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             }
                         }
                         {
-                            RWDBSelector selector = db.selector();
+                            selector = db.selector();
                                          selector <<  ccScheduleStrat["paobjectid"]
                                                   <<  ccScheduleStrat["seasonscheduleid"]
                                                   <<  ccScheduleStrat["seasonname"]
@@ -6704,7 +6703,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                  selector.where(ccScheduleStrat["paobjectid"]==capControlSubstationBusTable["substationbusid"]  &&
                                                ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
                                                ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"]);
-                             RWDBReader rdr = selector.reader(conn);
+                             rdr = selector.reader(conn);
                              while ( rdr() )
                              {
                                  int startMon, startDay, endMon, endDay;
@@ -6722,7 +6721,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                      rdr["paobjectid"] >> busId;
                                      rdr["strategyid"] >> stratId;
 
-                                     CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
+                                     currentCCSubstationBus = NULL;
 
                                      if (subBusId > 0)
                                          currentCCSubstationBus = findSubBusByPAObjectID(busId);
@@ -6785,7 +6784,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         CtiHolidayManager::getInstance().refresh();
                         if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                         {
-                            RWDBSelector selector = db.selector();
+                              selector = db.selector();
                                            selector <<  ccHolidayStratTable["paobjectid"]
                                                     <<  ccHolidayStratTable["holidayscheduleid"]
                                                     <<  ccHolidayStratTable["strategyid"]
@@ -6818,7 +6817,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                      dout << CtiTime() << " - " << loggedSQLstring << endl;
                                  }
                              }
-                             RWDBReader rdr = selector.reader(conn);
+                             rdr = selector.reader(conn);
                              while ( rdr() )
                              {
                                  int holMon, holDay, holYear, tempYear;
@@ -6844,7 +6843,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                      rdr["paobjectid"] >> busId;
                                      rdr["strategyid"] >> stratId;
 
-                                     CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
+                                     currentCCSubstationBus = NULL;
 
                                      if (subBusId > 0)
                                          currentCCSubstationBus = findSubBusByPAObjectID(busId);
@@ -8048,7 +8047,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     }
 
                     RWDBReader rdr = selector.reader(conn);
-                    CtiCCCapBankPtr currentCCCapBank;
                     RWDBNullIndicator isNull;
                     while ( rdr() )
                     {
@@ -8139,20 +8137,20 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     RWDBNullIndicator isNull;
                     while ( rdr() )
                     {
-                        long capBankId;
+                        long currentCapBankId;
                         long controlDeviceId;
                         string controlDeviceType;
 
-                        rdr["deviceid"] >> capBankId;
+                        rdr["deviceid"] >> currentCapBankId;
                         rdr["controldeviceid"] >> controlDeviceId;
                         rdr["type"] >> controlDeviceType;
-                        CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(capBankId)->second;
+                        CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
 
                         if (currentCCCapBank->getControlDeviceId() == controlDeviceId)
                         {
                             currentCCCapBank->setControlDeviceType(controlDeviceType);
 
-                            cbc_capbank_map->insert(make_pair(controlDeviceId,capBankId));
+                            cbc_capbank_map->insert(make_pair(controlDeviceId,currentCapBankId));
                         }
                     }
                 }
@@ -8636,26 +8634,26 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(RWDBConnection& c
                     RWDBNullIndicator isNull;
                     while ( rdr() )
                     {
-                        LONG paoId;
-                        rdr["paobjectid"] >> paoId;
-                        if (paobject_capbank_map->find(paoId) != paobject_capbank_map->end())
-                            currentCCCapBank = paobject_capbank_map->find(paoId)->second;
+                        LONG currentPaoId;
+                        rdr["paobjectid"] >> currentPaoId;
+                        if (paobject_capbank_map->find(currentPaoId) != paobject_capbank_map->end())
+                            currentCCCapBank = paobject_capbank_map->find(currentPaoId)->second;
                         else
                             currentCCCapBank = NULL;
 
-                        if (paobject_feeder_map->find(paoId) != paobject_feeder_map->end())
-                            currentFeeder = paobject_feeder_map->find(paoId)->second;
+                        if (paobject_feeder_map->find(currentPaoId) != paobject_feeder_map->end())
+                            currentFeeder = paobject_feeder_map->find(currentPaoId)->second;
                         else
                             currentFeeder = NULL;
 
-                        if (paobject_subbus_map->find(paoId) != paobject_subbus_map->end())
-                            currentSubBus = paobject_subbus_map->find(paoId)->second;
+                        if (paobject_subbus_map->find(currentPaoId) != paobject_subbus_map->end())
+                            currentSubBus = paobject_subbus_map->find(currentPaoId)->second;
                         else
                             currentSubBus = NULL;
 
-                        currentStation = findSubstationByPAObjectID(paoId);
-                        currentArea = findAreaByPAObjectID(paoId);
-                        currentSpArea = findSpecialAreaByPAObjectID(paoId);
+                        currentStation = findSubstationByPAObjectID(currentPaoId);
+                        currentArea = findAreaByPAObjectID(currentPaoId);
+                        currentSpArea = findSpecialAreaByPAObjectID(currentPaoId);
                         if (currentCCCapBank != NULL)
                         {
                             currentCCCapBank->getOperationStats().setDynamicData(rdr);
@@ -11400,8 +11398,8 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                 list <LONG>::const_iterator iter = spArea->getSubstationIds()->begin();
                 while (iter != spArea->getSubstationIds()->end())
                 {
-                    LONG stationId = *iter;
-                    CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
+                    stationId = *iter;
+                    station = findSubstationByPAObjectID(stationId);
                     if (station != NULL)
                     {
                          pf += station->getPFactor();

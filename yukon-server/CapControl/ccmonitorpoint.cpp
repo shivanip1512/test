@@ -30,7 +30,18 @@ RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint::CtiCCMonitorPoint()
+CtiCCMonitorPoint::CtiCCMonitorPoint() :
+_pointId(0),              
+_bankId(0),               
+_displayOrder(0),         
+_scannable(false),            
+_nInAvg(0),               
+_upperBW(0),              
+_lowerBW(0),              
+_value(0),          
+_scanInProgress(false),       
+_insertDynamicDataFlag(false),
+_dirty(false)
 {
 }
 
@@ -346,24 +357,24 @@ void CtiCCMonitorPoint::saveGuts(RWvostream& ostrm ) const
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& right)
+CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& rght)
 {
-    if( this != &right )
+    if( this != &rght )
     {
-        _pointId = right._pointId;
-        _bankId = right._bankId;
-        _displayOrder = right._displayOrder;
-        _scannable = right._scannable;
-        _nInAvg = right._nInAvg;
-        _upperBW = right._upperBW;
-        _lowerBW = right._lowerBW;
-        _value = right._value;
+        _pointId = rght._pointId;
+        _bankId = rght._bankId;
+        _displayOrder = rght._displayOrder;
+        _scannable = rght._scannable;
+        _nInAvg = rght._nInAvg;
+        _upperBW = rght._upperBW;
+        _lowerBW = rght._lowerBW;
+        _value = rght._value;
 
-        _timeStamp = right._timeStamp;
-        _scanInProgress = right._scanInProgress;
+        _timeStamp = rght._timeStamp;
+        _scanInProgress = rght._scanInProgress;
 
-        _dirty = right._dirty;
-        _insertDynamicDataFlag = right._insertDynamicDataFlag;
+        _dirty = rght._dirty;
+        _insertDynamicDataFlag = rght._insertDynamicDataFlag;
     }
     return *this;
 }
@@ -371,19 +382,19 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& right)
 /*---------------------------------------------------------------------------
     operator==
 ---------------------------------------------------------------------------*/
-int CtiCCMonitorPoint::operator==(const CtiCCMonitorPoint& right) const
+int CtiCCMonitorPoint::operator==(const CtiCCMonitorPoint& rght) const
 {
-    return (getPointId() == right.getPointId() &&
-            getBankId() == right.getBankId());
+    return (getPointId() == rght.getPointId() &&
+            getBankId() == rght.getBankId());
 }
 
 /*---------------------------------------------------------------------------
     operator!=
 ---------------------------------------------------------------------------*/
-int CtiCCMonitorPoint::operator!=(const CtiCCMonitorPoint& right) const
+int CtiCCMonitorPoint::operator!=(const CtiCCMonitorPoint& rght) const
 {
-    return (getPointId() != right.getPointId() ||
-            getBankId() != right.getBankId());
+    return (getPointId() != rght.getPointId() ||
+            getBankId() != rght.getBankId());
 }
 
 
@@ -454,9 +465,9 @@ CtiCCMonitorPoint* CtiCCMonitorPoint::replicate() const
 
     Used for ordering cap banks within a feeder by control order.
 ---------------------------------------------------------------------------*/
-int CtiCCMonitorPoint::compareTo(const RWCollectable* right) const
+int CtiCCMonitorPoint::compareTo(const RWCollectable* rght) const
 {
-    return 1;// _controlorder == ((CtiCCMonitorPoint*)right)->getDisplayOrder() ? 0 : (_controlorder > ((CtiCCMonitorPoint*)right)->getControlOrder() ? 1 : -1);
+    return 1;// _controlorder == ((CtiCCMonitorPoint*)rght)->getDisplayOrder() ? 0 : (_controlorder > ((CtiCCMonitorPoint*)rght)->getControlOrder() ? 1 : -1);
 }
 
 /*---------------------------------------------------------------------------
@@ -537,10 +548,10 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted Monitor Point into dynamicCCMonitorBankHistoryTable: " << endl;
             }
-            RWDBInserter inserter = dynamicCCMonitorBankHistoryTable.inserter();
+            RWDBInserter dbInserter = dynamicCCMonitorBankHistoryTable.inserter();
             //LONG tempTime = toRWDBDT((CtiTime)_timeStamp);
 
-            inserter << _bankId
+            dbInserter << _bankId
             <<  _pointId
             << _value
             << toRWDBDT((CtiTime)_timeStamp)
@@ -548,16 +559,16 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
+                string loggedSQLstring = dbInserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            inserter.execute( conn );
+            dbInserter.execute( conn );
 
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
@@ -570,7 +581,7 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
+                    string loggedSQLstring = dbInserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

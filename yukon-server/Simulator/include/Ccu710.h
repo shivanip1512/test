@@ -14,8 +14,8 @@ class Ccu710 : public PlcTransmitter
 {
 private:
 
-    struct request;
-    struct reply;
+    struct request_t;
+    struct reply_t;
 
 public:
 
@@ -39,8 +39,8 @@ public:
         const T *operator->() const { return &_held; };
     };
 
-    typedef holder<request> request_holder;
-    typedef holder<reply>   reply_holder;
+    typedef holder<request_t> request_holder;
+    typedef holder<reply_t>   reply_holder;
 
     error_t readRequest(CommsIn &comms, request_holder &external_request_holder) const;
     error_t processRequest(const request_holder &request, reply_holder &external_reply_holder);
@@ -105,7 +105,7 @@ private:
         words_t words;
     };
 
-    struct request
+    struct request_t
     {
         bytes message;
 
@@ -120,7 +120,7 @@ private:
         string description;
     };
 
-    struct reply
+    struct reply_t
     {
         bytes message;
 
@@ -159,17 +159,17 @@ private:
     static bool isExtendedAddress(unsigned char address_byte);
     static unsigned char makeReplyControl(unsigned address, ReplyControls reply_control);
 
-    error_t readRequest(CommsIn &comms, request &request) const;
+    error_t readRequest(CommsIn &comms, request_t &request) const;
     error_t extractFeederOperation(const bytes &feeder_op_buf, feeder_operation_t &feeder_operation) const;
 
-    std::string describeRequest(const request &request) const;
+    std::string describeRequest(const request_t &request) const;
 
-    error_t processRequest(const request &request, reply &reply);
+    error_t processRequest(const request_t &request, reply_t &reply);
     error_t validateFeederOperation(const feeder_operation_t &feeder_operation, unsigned &words_expected) const;
 
-    std::string describeReply(const reply &reply) const;
+    std::string describeReply(const reply_t &reply) const;
 
-    error_t sendReply(CommsOut &comms, const reply &reply) const;
+    error_t sendReply(CommsOut &comms, const reply_t &reply) const;
 };
 
 }

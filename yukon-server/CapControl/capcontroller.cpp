@@ -126,6 +126,9 @@ CtiCapController::CtiCapController() : control_loop_delay(500), control_loop_inm
 ---------------------------------------------------------------------------*/
 CtiCapController::~CtiCapController()
 {
+
+    _dispatchConnection = NULL;
+    _pilConnection = NULL;
     if( _instance != NULL )
     {
         delete _instance;
@@ -2477,7 +2480,6 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                 {
                     currentSubstationBus->setDisableFlag(TRUE);
                     currentSubstationBus->setReEnableBusFlag(TRUE);
-                    LONG stationId, areaId, spAreaId;
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                     getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
                     string text = currentSubstationBus->getPAOName();
@@ -2491,7 +2493,6 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
             else
             {
                 currentSubstationBus->setDisableFlag(FALSE);
-                LONG stationId, areaId, spAreaId;
                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                 getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
                 string text = currentSubstationBus->getPAOName();
@@ -3538,7 +3539,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
         {
             currentCapBank = capIter->second;
             currentSubstationBus = NULL;
-            CtiCCFeeder* currentFeeder = NULL;
+            currentFeeder = NULL;
             if (currentCapBank != NULL)
             {
                 long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPAOId());

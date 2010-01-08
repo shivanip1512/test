@@ -22,7 +22,11 @@
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiPAOSchedule::CtiPAOSchedule()
+CtiPAOSchedule::CtiPAOSchedule() :
+_dirty(false),    
+_scheduleId(0), 
+_intervalRate(0),     
+_disabledFlag(false)
 {
 }
 
@@ -37,7 +41,6 @@ CtiPAOSchedule::CtiPAOSchedule(RWDBReader& rdr)
     rdr["intervalrate"] >> _intervalRate;
     rdr["disabled"] >> tempBoolString;
     _disabledFlag = (((tempBoolString=="y") || (tempBoolString=="Y"))?TRUE:FALSE);
-
 
     _dirty = false;
 

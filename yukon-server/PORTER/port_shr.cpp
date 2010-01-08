@@ -33,6 +33,8 @@ CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
 {
    _returnNexus.NexusState = CTINEXUS_STATE_NULL;
    _returnNexus.sockt = INVALID_SOCKET;
+   _requestCount = 0;
+   
 }
 
 

@@ -37,7 +37,23 @@ RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSubstation::CtiCCSubstation()
+CtiCCSubstation::CtiCCSubstation() :
+_paoid(0),           
+_disableflag(false),           
+_parentId(0),        
+_displayOrder(0),          
+_ovUvDisabledFlag(false),      
+_voltReductionFlag(false),     
+_recentlyControlledFlag(false),
+_stationUpdatedFlag(false),    
+_childVoltReductionFlag(false),
+_pfactor(0),        
+_estPfactor(0),            
+_saEnabledFlag(false),         
+_saEnabledId(0),           
+_voltReductionControlId(0),
+_insertDynamicDataFlag(false),
+_dirty(false)        
 {
 }
 

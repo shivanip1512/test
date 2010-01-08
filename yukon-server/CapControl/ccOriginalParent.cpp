@@ -26,6 +26,8 @@ CtiCCOriginalParent::CtiCCOriginalParent()
     _originalSwitchingOrder = 0;
     _originalCloseOrder     = 0;
     _originalTripOrder      = 0;
+    _dirty = false;
+    _insertDynamicDataFlag = false;
 };
 
 

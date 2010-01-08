@@ -38,13 +38,13 @@ Mct410Sim::Mct410Sim(int address)
 }
 
 
-Mct410Sim::function_reads_t Mct410Sim::makeFunctionReadRange(unsigned min, unsigned max, boost::function2<bytes, Mct410Sim *, unsigned> fn)
+Mct410Sim::function_reads_t Mct410Sim::makeFunctionReadRange(unsigned readMin, unsigned readMax, boost::function2<bytes, Mct410Sim *, unsigned> fn)
 {
     function_reads_t range;
 
-    for( unsigned offset = 0; offset <= (max - min); ++offset )
+    for( unsigned offset = 0; offset <= (readMax - readMin); ++offset )
     {
-        range[min + offset] = boost::bind(fn, _1, offset);
+        range[readMin + offset] = boost::bind(fn, _1, offset);
     }
 
     return range;
@@ -334,12 +334,12 @@ bytes Mct410Sim::getAllRecentDemandReadings()
 }
 
 //  The consumption value is constructed using the current time and meter address.
-double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &time, const unsigned duration)
+double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &c_time, const unsigned duration)
 {
     if( duration == 0 )  return 0;
 
-    const unsigned begin_seconds = time.seconds();
-    const unsigned end_seconds   = time.seconds() + duration;
+    const unsigned begin_seconds = c_time.seconds();
+    const unsigned end_seconds   = c_time.seconds() + duration;
 
     const double year_period = 2.0 * Pi / static_cast<double>(SecondsPerYear);
     const double day_period  = 2.0 * Pi / static_cast<double>(SecondsPerDay);
@@ -356,7 +356,7 @@ double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &t
 }
 
 //  Generate output using two cosine waves - 1 year period and 1 day period.
-double Mct410Sim::makeValue_instantaneousDemand(const unsigned address, const CtiTime &time)
+double Mct410Sim::makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time)
 {
     //  demand is modeled by:
     //
@@ -364,8 +364,8 @@ double Mct410Sim::makeValue_instantaneousDemand(const unsigned address, const Ct
     //    +
     //    year_amplitude * (1 + cos(2 * pi * year_fraction))
 
-    const double day_curve  = 1 + cos(2 * Pi * time.seconds() / static_cast<double>(SecondsPerDay));
-    const double year_curve = 1 + cos(2 * Pi * time.seconds() / static_cast<double>(SecondsPerYear));
+    const double day_curve  = 1 + cos(2 * Pi * c_time.seconds() / static_cast<double>(SecondsPerDay));
+    const double year_curve = 1 + cos(2 * Pi * c_time.seconds() / static_cast<double>(SecondsPerYear));
 
     const double amp_day  =  500.0;
     const double amp_year = 1000.0;

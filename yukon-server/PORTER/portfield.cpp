@@ -116,16 +116,16 @@ VOID PortThread(void *pid)
     ULONG          i;
     INMESS         InMessage;
     OUTMESS        *OutMessage = 0;
-    ULONG          QueEntries;
+    ULONG          QueEntries = 0;
 
 
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
     bool           profiling = (portid == gConfigParms.getValueAsULong("PORTER_PORT_PROFILING"));
     LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 0);
-    DWORD          ticks;
+    DWORD          ticks = 0;
 
-    CtiDeviceSPtr  Device;
+    CtiDeviceSPtr  pDevice;
     CtiDeviceSPtr  LastExclusionDevice;
 
     CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
@@ -192,7 +192,7 @@ VOID PortThread(void *pid)
                 break;
             }
 
-            if( CONTINUE_LOOP == (status = ResetChannel(Port, Device)) )
+            if( CONTINUE_LOOP == (status = ResetChannel(Port, pDevice)) )
             {
                 //  we're busted - don't make anyone else wait on our priorities
                 DeviceManager.setDevicePrioritiesForPort(portid, CtiDeviceManager::device_priorities_t());
@@ -202,11 +202,11 @@ VOID PortThread(void *pid)
                 continue;
             }
 
-            Device = DeviceManager.chooseExclusionDevice( Port->getPortID() );
+            pDevice = DeviceManager.chooseExclusionDevice( Port->getPortID() );
 
-            if(Device)
+            if(pDevice)
             {
-                Device->getOutMessage(OutMessage);
+                pDevice->getOutMessage(OutMessage);
             }
 
             if(profiling)
@@ -271,15 +271,15 @@ VOID PortThread(void *pid)
 
             if(Port->getConnectedDevice() != OutMessage->DeviceID)
             {
-                if(Device && Device->hasExclusions())
-                    DeviceManager.removeInfiniteExclusion(Device);
+                if(pDevice && pDevice->hasExclusions())
+                    DeviceManager.removeInfiniteExclusion(pDevice);
             }
 
             /*
              *  This is the call which establishes the OutMessage's DeviceID as the Device we are operating upon.
              *  Upon successful return, the Device pointer is set to nonNull.
              */
-            if( CONTINUE_LOOP == IdentifyDeviceFromOutMessage(Port, OutMessage, Device) )
+            if( CONTINUE_LOOP == IdentifyDeviceFromOutMessage(Port, OutMessage, pDevice) )
             {
                 continue;
             }
@@ -293,7 +293,7 @@ VOID PortThread(void *pid)
             // Copy a good portion of the OutMessage to the to-be-formed InMessage
             OutEchoToIN(OutMessage, &InMessage);
 
-            if((status = CheckInhibitedState(Port, &InMessage, OutMessage, Device)) != NORMAL)
+            if((status = CheckInhibitedState(Port, &InMessage, OutMessage, pDevice)) != NORMAL)
             {
                 SendError(OutMessage, status);
                 continue;
@@ -301,7 +301,7 @@ VOID PortThread(void *pid)
 
             /* Check if this is an analog loopback */
     #if 0
-            if((status = VTUPrep(&Port, &InMessage, OutMessage, Device)) != NORMAL)
+            if((status = VTUPrep(&Port, &InMessage, OutMessage, pDevice)) != NORMAL)
             {
                 SendError (OutMessage, status);
                 continue;
@@ -309,21 +309,21 @@ VOID PortThread(void *pid)
     #endif
 
             /* Make sure everything is A-OK with this device */
-            if((status = ValidateDevice(Port, Device, OutMessage)) != NORMAL)
+            if((status = ValidateDevice(Port, pDevice, OutMessage)) != NORMAL)
             {
                 RequeueReportError(status, OutMessage);
                 continue;
             }
 
             //  See if there is a reason to proceed...  Note that this is where OMs can be queued onto devices
-            if((status = DevicePreprocessing(Port, OutMessage, Device)) != NORMAL)   /* do any preprocessing according to type */
+            if((status = DevicePreprocessing(Port, OutMessage, pDevice)) != NORMAL)   /* do any preprocessing according to type */
             {
                 RequeueReportError(status, OutMessage);
                 continue;
             }
 
             /* Check if this port is dial up and initiate connection. */
-            if((status = EstablishConnection(Port, &InMessage, OutMessage, Device)) != NORMAL)
+            if((status = EstablishConnection(Port, &InMessage, OutMessage, pDevice)) != NORMAL)
             {
                 if(status != RETRY_SUBMITTED)
                 {
@@ -340,7 +340,7 @@ VOID PortThread(void *pid)
             try
             {
                 /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
-                i = CommunicateDevice(Port, &InMessage, OutMessage, Device);
+                i = CommunicateDevice(Port, &InMessage, OutMessage, pDevice);
             }
             catch(...)
             {
@@ -350,7 +350,7 @@ VOID PortThread(void *pid)
                 }
             }
 
-            Port->addDeviceQueuedWork( Device->getID(), Device->queuedWorkCount() );
+            Port->addDeviceQueuedWork( pDevice->getID(), pDevice->queuedWorkCount() );
 
             ticks = GetTickCount() - ticks;
             if( profiling )
@@ -358,26 +358,26 @@ VOID PortThread(void *pid)
                 if( ticks > 1000 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << pDevice->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
             Port->setPortCommunicating(false, ticks);
 
             //  if the device needs to schedule more work
-            if( Device->hasPreloadWork() )
+            if( pDevice->hasPreloadWork() )
             {
-                Port->setDevicePreload(Device->getID());
+                Port->setDevicePreload(pDevice->getID());
 
                 processPreloads(Port);
 
-                DeviceManager.addPortExclusion(Device->getID());
+                DeviceManager.addPortExclusion(pDevice->getID());
             }
 
             /* Non wrap protcol specific communications stuff */
             if(!i)      // No error yet.
             {
-                i = NonWrapDecode(&InMessage, Device);
+                i = NonWrapDecode(&InMessage, pDevice);
             }
 
             /*
@@ -388,13 +388,13 @@ VOID PortThread(void *pid)
             LONG tid = OutMessage->TargetID;
             bool rgtz = OutMessage->Retry > 0;
 
-            if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, Device) == RETRY_SUBMITTED)
+            if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, pDevice) == RETRY_SUBMITTED)
             {
                 continue;  // It has been re-queued!
             }
             else   /* we are either successful or retried out */
             {
-                if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
+                if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, pDevice)) != NORMAL)
                 {
                     RequeueReportError(status, OutMessage);
                     continue;
@@ -422,25 +422,25 @@ VOID PortThread(void *pid)
 }
 
 /* Routine to initialize a remote based on it's type */
-bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
+bool RemoteReset(CtiDeviceSPtr &pDevice, CtiPortSPtr Port)
 {
     bool didareset = false;
     extern INT LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
-    if(Port->getPortID() == Device->getPortID() && !Device->isInhibited() )
+    if(Port->getPortID() == pDevice->getPortID() && !pDevice->isInhibited() )
     {
-        if( Device->getAddress() >= 0      &&
-            Device->getAddress() < MAXIDLC &&
-            Device->hasTrxInfo() )
+        if( pDevice->getAddress() >= 0      &&
+            pDevice->getAddress() < MAXIDLC &&
+            pDevice->hasTrxInfo() )
         {
-            CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+            CtiTransmitterInfo *pInfo = pDevice->getTrxInfo();
 
             if(pInfo)
             {
-                if( GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC &&
-                    Device->getAddress() != RTUGLOBAL &&
-                    Device->getAddress() != CCUGLOBAL &&
-                    Device->getType()    == TYPE_CCU711 )
+                if( GetPreferredProtocolWrap(Port, pDevice) == ProtocolWrapIDLC &&
+                    pDevice->getAddress() != RTUGLOBAL &&
+                    pDevice->getAddress() != CCUGLOBAL &&
+                    pDevice->getType()    == TYPE_CCU711 )
                 {
                     didareset = true;
 
@@ -449,7 +449,7 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
                     if(!Port->isDialup())
                     {
                         ULONG j = 0;
-                        while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 1);
+                        while((eRet = IDLCInit(Port, pDevice, &pInfo->RemoteSequence)) && j++ < 1);
                     }
 
                     if(!eRet)
@@ -457,24 +457,24 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
                         if(ResetAll711s)
                         {
                             /* Reset the whole thing */
-                            IDLCFunction (Device, 0, DEST_BASE, COLD);
+                            IDLCFunction (pDevice, 0, DEST_BASE, COLD);
                         }
                         else
                         {
                             /* Download the delay sets */
-                            IDLCSetDelaySets (Device);
+                            IDLCSetDelaySets (pDevice);
 
                             /* flush the queue's */
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << endl;
+                                dout << CtiTime() << " Reset CCU: " << pDevice->getName() << "'s queueing control" << endl;
                             }
-                            IDLCFunction (Device, 0, DEST_QUEUE, CLRDY);
+                            IDLCFunction (pDevice, 0, DEST_QUEUE, CLRDY);
 
                             /* Check if we need to load the routes */
                             if(LoadRoutes)
                             {
-                                LoadRemoteRoutes(Device);
+                                LoadRemoteRoutes(pDevice);
                             }
                         }
                     }
@@ -482,11 +482,11 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
                 pInfo->clearStatus(NEEDSRESET);
             }
         }
-        else if( Device->getType() == TYPE_CCU721 )
+        else if( pDevice->getType() == TYPE_CCU721 )
         {
             didareset = true;
 
-            LoadRemoteRoutes(Device);
+            LoadRemoteRoutes(pDevice);
         }
     }
 
@@ -502,7 +502,7 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
  * It returns the next queue slot which matches the connected device's UID
  * or zero if no such queue entry exists.
  *----------------------------------------------------------------------------*/
-INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
+INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &pDevice)
 {
     INT    i = 0;
     INT    slot = 0;
@@ -510,15 +510,15 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 
     bool    bDisconnect = false;
 
-    if(Port->connected() && (Port->shouldDisconnect() || !Device))
+    if(Port->connected() && (Port->shouldDisconnect() || !pDevice))
     {
-        Port->disconnect(Device, TraceFlag);
+        Port->disconnect(pDevice, TraceFlag);
     }
 
-    if(Port->connected() && Device)
+    if(Port->connected() && pDevice)
     {
-        ULONG stayConnectedMin = Device->getMinConnectTime();
-        ULONG stayConnectedMax = Device->getMaxConnectTime();
+        ULONG stayConnectedMin = pDevice->getMinConnectTime();
+        ULONG stayConnectedMax = pDevice->getMaxConnectTime();
 
         CtiTime current;
 
@@ -528,10 +528,10 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
         // We always look once.
         if((slot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
         {
-            if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device)
+            if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && pDevice)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Additional queue entry found for " << Device->getName() << endl;
+                dout << CtiTime() << " Additional queue entry found for " << pDevice->getName() << endl;
             }
         }
         else
@@ -588,13 +588,13 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
         {
             /* Hang Up */
 
-            if(gConfigParms.isTrue("DEBUG_TAP") && Device)
+            if(gConfigParms.isTrue("DEBUG_TAP") && pDevice)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Port: " << Port->getName() << " Dev: " << Device->getName() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Port: " << Port->getName() << " Dev: " << pDevice->getName() << endl;
             }
 
-            Port->disconnect(Device, TraceFlag);
+            Port->disconnect(pDevice, TraceFlag);
         }
     }
 
@@ -620,7 +620,7 @@ struct primeTRXInfo
  * variable is used by the portqueue to decide which queue entry to pop from its
  * internal queue
  *----------------------------------------------------------------------------*/
-INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
+INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &pDevice)
 {
     INT status = NORMAL;
 
@@ -643,7 +643,7 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
              *  If the port has not been intialized at all, do it NOW!
              */
 
-            pair< bool, INT > portpair = Port->verifyPortStatus(Device);
+            pair< bool, INT > portpair = Port->verifyPortStatus(pDevice);
             status = portpair.second;
 
             if( portpair.first == true && portpair.second == NORMAL)    // Indicates that it was (re)opened successfully on this pass.
@@ -663,7 +663,7 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
                 // CGP 062304 // make all ports close
                 if(Port->isDialup() || release_idle_ports)
                 {
-                    Port->setQueueSlot( PostCommQueuePeek(Port, Device) );
+                    Port->setQueueSlot( PostCommQueuePeek(Port, pDevice) );
                 }
             }
         }
@@ -677,12 +677,12 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
     return status;
 }
 
-INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &pDevice)
 {
     INT      status = NORMAL;
 
 
-    if(!Device) /* Non-existant or inhibited device so do as needed with message */
+    if(!pDevice) /* Non-existant or inhibited device so do as needed with message */
     {
         status = BADCCU;
     }
@@ -690,13 +690,13 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     {
         status = PORTINHIBITED;
 
-        switch(Device->getType())
+        switch(pDevice->getType())
         {
         case TYPE_CCU711:
             {
-                QueueFlush(Device);
+                QueueFlush(pDevice);
 
-                CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Device->getTrxInfo();
+                CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)pDevice->getTrxInfo();
 
                 if(p711Info != NULL)
                 {
@@ -711,19 +711,19 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
             }
         }
     }
-    else if(Device->isInhibited())
+    else if(pDevice->isInhibited())
     {
         status =  REMOTEINHIBITED;
 
-        switch(Device->getType())
+        switch(pDevice->getType())
         {
         case TYPE_CCU711:
             {
-                CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Device->getTrxInfo();
+                CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)pDevice->getTrxInfo();
 
                 if(p711Info != NULL)
                 {
-                    QueueFlush(Device);
+                    QueueFlush(pDevice);
 
                     if(OutMessage->Command == CMND_LGRPQ)
                     {
@@ -742,7 +742,7 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     if(status != NORMAL)
     {
         /* if this is a dial up port make sure that we hang up if needed */
-        Port->disconnect(Device, TraceFlag);
+        Port->disconnect(pDevice, TraceFlag);
     }
 
     return status;
@@ -754,7 +754,7 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
  * connected to the correct phone number/crc and keeps the connection
  * otherwise it makes the correct connection.
  *-------------------------------------------------------------------*/
-INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &pDevice)
 {
     INT status = NORMAL;
     LONG LastConnectedDevice = 0L;
@@ -763,10 +763,10 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
 
     ULONG oldConnUID = Port->getConnectedDeviceUID();
 
-    status = Port->connectToDevice(Device, LastConnectedDevice, TraceFlag);
+    status = Port->connectToDevice(pDevice, LastConnectedDevice, TraceFlag);
 
     // This check tries to correct the status of the "LastConnectedDevice" so that log happens if needed.
-    if(oldConnUID > 0 && oldConnUID != Device->getUniqueIdentifier())
+    if(oldConnUID > 0 && oldConnUID != pDevice->getUniqueIdentifier())
     {
         CtiDeviceManager::coll_type::reader_lock_guard_t dev_guard(DeviceManager.getLock());       // Protect our iteration!
         CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getDeviceByID(LastConnectedDevice);
@@ -780,10 +780,10 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     LONG tid = OutMessage->TargetID;
     bool rgtz = OutMessage->Retry > 0;
 
-    if(status != NORMAL || !Port->connectedTo(Device->getUniqueIdentifier()) )
+    if(status != NORMAL || !Port->connectedTo(pDevice->getUniqueIdentifier()) )
     {
         /* Must call CheckAndRetry to make the re-queue happen if needed */
-        if((status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device)) == RETRY_SUBMITTED)         // This call may free OutMessages
+        if((status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, pDevice)) == RETRY_SUBMITTED)         // This call may free OutMessages
         {
             //processCommResult(status,did,tid,rgtz, Device); This is now called by check and retry.
         }
@@ -814,16 +814,16 @@ struct TAPLoggedOn
     }
 };
 
-INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
+INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &pDevice)
 {
     INT status = NORMAL;
     struct timeb   TimeB;
     ULONG          QueueCount;
     CtiOutMessage *om = 0;
 
-    if( Device->getType() == TYPE_TAPTERM )
+    if( pDevice->getType() == TYPE_TAPTERM )
     {
-        CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)Device.get();
+        CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)pDevice.get();
         if(pTap->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
             // Put it back & slow it down!
@@ -847,14 +847,14 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
 
             for_each(devices.begin(), devices.end(), TAPNeedsLogon());
 
-            Port->disconnect(Device, FALSE);
+            Port->disconnect(pDevice, FALSE);
 
             return RETRY_SUBMITTED;
         }
     }
-    else if( Device->getType() == TYPE_WCTP )
+    else if( pDevice->getType() == TYPE_WCTP )
     {
-        CtiDeviceWctpTerminal *pWctp = (CtiDeviceWctpTerminal *)Device.get();
+        CtiDeviceWctpTerminal *pWctp = (CtiDeviceWctpTerminal *)pDevice.get();
         if(pWctp->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
             // Put it back & slow it down!
@@ -875,7 +875,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             return RETRY_SUBMITTED;
         }
     }
-    else if( Device->getType() == TYPE_LCU415LG && OutMessage && (OutMessage->EventCode & RIPPLE) ) // A Control message to a LG Ripple group.
+    else if( pDevice->getType() == TYPE_LCU415LG && OutMessage && (OutMessage->EventCode & RIPPLE) ) // A Control message to a LG Ripple group.
     {
         // This is where we pause and reflect upon bit mashing.
 
@@ -903,7 +903,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                     pGroup[byt] |= pMatch[byt];
                 }
 
-                ((CtiDeviceLCU*)Device.get())->pushControlledGroupInfo(om->DeviceIDofLMGroup, om->TrxID); // Record the groups, TrxIDs in qustion here.
+                ((CtiDeviceLCU*)pDevice.get())->pushControlledGroupInfo(om->DeviceIDofLMGroup, om->TrxID); // Record the groups, TrxIDs in qustion here.
 
                 delete om;
                 om = 0;
@@ -928,59 +928,59 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     UINT dqcnt = 0;
 
     //if( (MSGFLG_APPLY_EXCLUSION_LOGIC & OutMessage->MessageFlags) && QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
-    if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
+    if( QUEUED_TO_DEVICE == (status = pDevice->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     {
-        Port->setDeviceQueued(Device->getID());
+        Port->setDeviceQueued(pDevice->getID());
 
-        if( Device->hasPreloadWork() )
+        if( pDevice->hasPreloadWork() )
         {
-            Port->setDevicePreload(Device->getID());
+            Port->setDevicePreload(pDevice->getID());
 
             processPreloads(Port);
 
-            DeviceManager.addPortExclusion(Device->getID());
+            DeviceManager.addPortExclusion(pDevice->getID());
         }
 
         if( dqcnt )
         {
-            Port->addDeviceQueuedWork( Device->getID(), dqcnt );
+            Port->addDeviceQueuedWork( pDevice->getID(), dqcnt );
         }
 
         if( gConfigParms.getValueAsULong("YUKON_SIMULATOR_DEBUGLEVEL", 0) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << CtiTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << Device->getExclusion().getExecutionGrant() << endl;
+            slog << CtiTime() << " " << pDevice->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << pDevice->getExclusion().getExecutionGrant() << endl;
         }
     }
 
     if( status == NORMAL )
     {
-        status = ProcessExclusionLogic(Port, OutMessage, Device);
+        status = ProcessExclusionLogic(Port, OutMessage, pDevice);
     }
 
     if(status == NORMAL)
     {
         if( Port->isDialup() )
         {
-            if(((CtiDeviceRemote *)Device.get())->isDialup())     // Make sure the dialup pointer is NOT null!
+            if(((CtiDeviceRemote *)pDevice.get())->isDialup())     // Make sure the dialup pointer is NOT null!
             {
                 //  init the port to the device's baud rate
-                Port->setBaudRate(((CtiDeviceRemote *)Device.get())->getDialup()->getBaudRate());
+                Port->setBaudRate(((CtiDeviceRemote *)pDevice.get())->getDialup()->getBaudRate());
             }
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** WARNING **** " << Device->getName() << " is on a dialup port, but has no devicedialupsettings entry" << endl;
+                dout << CtiTime() << " **** WARNING **** " << pDevice->getName() << " is on a dialup port, but has no devicedialupsettings entry" << endl;
 
                 status = BADPARAM;
             }
         }
 
-        switch(Device->getType())
+        switch(pDevice->getType())
         {
         case TYPE_CCU711:
             {
-                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)pDevice->getTrxInfo();
 
                 /* check if we need to load the time into a time sync */
                 if(OutMessage->EventCode & TSYNC)
@@ -996,7 +996,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 }
 
                 /* Broadcasts do not need CCU preprocessing */
-                if(Device->getAddress() == CCUGLOBAL)
+                if(pDevice->getAddress() == CCUGLOBAL)
                     break;
 
                 pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
@@ -1032,7 +1032,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         case TYPE_LCU415:
         case TYPE_LCUT3026:
             {
-                if(LCUPreSend (OutMessage, Device))  // Requeued if non-zero returned
+                if(LCUPreSend (OutMessage, pDevice))  // Requeued if non-zero returned
                 {
                     return RETRY_SUBMITTED;
                 }
@@ -1085,7 +1085,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             {
                 if((OutMessage->EventCode & VERSACOM) && VCUWait)
                 {
-                    CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                    CtiTransmitterInfo *pInfo = pDevice->getTrxInfo();
 
                     /* Check see if we need to wait for a message to complete */
                     UCTFTime (&TimeB);
@@ -1255,7 +1255,7 @@ struct statistics_handler
 };
 
 
-INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &pDevice)
 {
     INT            status = NORMAL;
     ULONG          reject_status, ReadLength;
@@ -1279,16 +1279,16 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
         }
         else
         {
-            Port->setDelay(POST_REMOTE_DELAY, Device->getPostDelay());
+            Port->setDelay(POST_REMOTE_DELAY, pDevice->getPostDelay());
         }
 
         trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
 
-        switch(  GetPreferredProtocolWrap(Port, Device) ) // 031003 CGP // Port->getProtocolWrap())
+        switch(  GetPreferredProtocolWrap(Port, pDevice) ) // 031003 CGP // Port->getProtocolWrap())
         {
         case ProtocolWrapNone:
             {
-                switch(Device->getType())
+                switch(pDevice->getType())
                 {
                     case TYPE_ILEXRTU:
                     case TYPE_SES92RTU:
@@ -1296,7 +1296,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     {
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                         trx.setOutCount(OutMessage->OutLength);
-                        status = Port->outMess(trx, Device, traceList);
+                        status = Port->outMess(trx, pDevice, traceList);
                         break;
                     }
 
@@ -1311,7 +1311,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                         trx.setOutCount(OutMessage->OutLength + 2);
-                        status = Port->outMess(trx, Device, traceList);
+                        status = Port->outMess(trx, pDevice, traceList);
                         break;
                     }
                     case TYPE_ION7330:
@@ -1332,22 +1332,22 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_FMU:
                     case TYPE_CCU721:
                     {
-                        CtiDeviceSingleSPtr ds = boost::static_pointer_cast<CtiDeviceSingle>(Device);
+                        CtiDeviceSingleSPtr ds = boost::static_pointer_cast<CtiDeviceSingle>(pDevice);
                         int comm_status = NoError;
 
-                        if( !Device->isSingle() )
+                        if( !pDevice->isSingle() )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - device \'" << pDevice->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         else if( status = ds->recvCommRequest(OutMessage) )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << pDevice->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         else
                         {
-                            if(Device->getType() == TYPE_SNPP)
+                            if(pDevice->getType() == TYPE_SNPP)
                             {
                                 Port->close(0);  //  Close the port so it re-opens every time!
                             }
@@ -1356,7 +1356,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 if( !(status = ds->generate(trx)) )
                                 {
-                                    comm_status = Port->outInMess(trx, Device, traceList);
+                                    comm_status = Port->outInMess(trx, pDevice, traceList);
 
                                     status = ds->decode(trx, comm_status);
                                 }
@@ -1364,13 +1364,13 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 //  don't record boring outbounds - they don't indicate failure
                                 if( status || trx.getInCountExpected() )
                                 {
-                                    processCommStatus(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
+                                    processCommStatus(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, pDevice);
                                 }
 
                                 // Prepare for tracing
                                 if(trx.doTrace(comm_status))
                                 {
-                                    Port->traceXfer(trx, traceList, Device, comm_status);
+                                    Port->traceXfer(trx, traceList, pDevice, comm_status);
                                 }
 
                                 DisplayTraceList(Port, traceList, true);
@@ -1412,7 +1412,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         BYTE  outBuffer[300];
                         ULONG bytesReceived = 0;
 
-                        CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device.get();
+                        CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)pDevice.get();
                         CtiProtocolANSI &ansi   = kv2dev->getKV2Protocol();
 
 
@@ -1434,7 +1434,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 //jump in, check for login, build packets, send messages, etc...
                                 ansi.generate( trx );
-                                status = Port->outInMess( trx, Device, traceList );
+                                status = Port->outInMess( trx, pDevice, traceList );
                                 if( status != NORMAL )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1442,12 +1442,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 ansi.decode( trx, status );
 
-                                processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+                                processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, pDevice);
 
                                 // Prepare for tracing
                                 if( trx.doTrace( status ))
                                 {
-                                    Port->traceXfer( trx, traceList, Device, status );
+                                    Port->traceXfer( trx, traceList, pDevice, status );
                                 }
                                 DisplayTraceList( Port, traceList, true );
                             }
@@ -1502,7 +1502,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         BYTE  outBuffer[300];
                         ULONG bytesReceived = 0;
 
-                        CtiDeviceSentinel *sentinelDev    = ( CtiDeviceSentinel *)Device.get();
+                        CtiDeviceSentinel *sentinelDev    = ( CtiDeviceSentinel *)pDevice.get();
                         CtiProtocolANSI_sentinel &ansi   = sentinelDev->getSentinelProtocol();
 
                         ansi.setAnsiDeviceName(sentinelDev->getName());
@@ -1524,7 +1524,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                 //jump in, check for login, build packets, send messages, etc...
                                 ansi.generate( trx );
-                                status = Port->outInMess( trx, Device, traceList );
+                                status = Port->outInMess( trx, pDevice, traceList );
                                 if( status != NORMAL )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1532,12 +1532,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 ansi.decode( trx, status );
 
-                                processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+                                processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, pDevice);
 
                                 // Prepare for tracing
                                 if( trx.doTrace( status ))
                                 {
-                                    Port->traceXfer( trx, traceList, Device, status );
+                                    Port->traceXfer( trx, traceList, pDevice, status );
                                 }
                                 DisplayTraceList( Port, traceList, true );
                             }
@@ -1589,7 +1589,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ULONG  bytesReceived = 0;
                         int    error = 1;
 
-                        CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device.get();
+                        CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)pDevice.get();
                         CtiProtocolTransdata  &transdata = markv->getTransdataProtocol();
 
                         transdata.recvOutbound( OutMessage );
@@ -1611,7 +1611,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             transdata.generate( trx );
 
-                            status = Port->outInMess( trx, Device, traceList );
+                            status = Port->outInMess( trx, pDevice, traceList );
 
                             if( status != NORMAL )
                             {
@@ -1621,11 +1621,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             error = transdata.decode( trx, status );
 
-                            processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+                            processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, pDevice);
 
                             if( trx.doTrace( status ))
                             {
-                                Port->traceXfer( trx, traceList, Device, status );
+                                Port->traceXfer( trx, traceList, pDevice, status );
                             }
 
                             DisplayTraceList( Port, traceList, true );
@@ -1674,7 +1674,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                     case TYPE_SIXNET:
                     {
-                        CtiDeviceIED         *IED= (CtiDeviceIED*)Device.get();
+                        CtiDeviceIED         *IED= (CtiDeviceIED*)pDevice.get();
                         // Copy the request into the InMessage side....
                         ::memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
 
@@ -1682,12 +1682,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         IED->setLogOnNeeded(TRUE);
                         IED->setInitialState(0);
 
-                        if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
+                        if( (status = InitializeHandshake (Port, pDevice, traceList)) == NORMAL )
                         {
                             int dcstat;
 
-                            status = PerformRequestedCmd (Port, Device, InMessage, OutMessage, traceList);
-                            dcstat = TerminateHandshake (Port, Device, traceList);
+                            status = PerformRequestedCmd (Port, pDevice, InMessage, OutMessage, traceList);
+                            dcstat = TerminateHandshake (Port, pDevice, traceList);
 
                             if(status == NORMAL)
                                 status = dcstat;
@@ -1708,13 +1708,13 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             Port->setTAP( TRUE );
 
-                            CtiDeviceIED *IED = (CtiDeviceIED*)Device.get();
+                            CtiDeviceIED *IED = (CtiDeviceIED*)pDevice.get();
 
                             IED->setLogOnNeeded(FALSE);
                             IED->setInitialState(0);
                             IED->allocateDataBins(OutMessage);
 
-                            status = PerformRequestedCmd(Port, Device, InMessage, OutMessage, traceList);
+                            status = PerformRequestedCmd(Port, pDevice, InMessage, OutMessage, traceList);
 
                             IED->freeDataBins();
 
@@ -1726,7 +1726,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             IED->getVerificationObjects(verification_queue);
                             PorterVerificationThread.push(verification_queue);
 
-                            VanGoghConnection.WriteConnQue(Device->rsvpToDispatch());
+                            VanGoghConnection.WriteConnQue(pDevice->rsvpToDispatch());
                         }
                         catch(...)
                         {
@@ -1738,14 +1738,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
                     case TYPE_TAPTERM:
                     {
-                        CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
+                        CtiDeviceIED *IED= (CtiDeviceIED*)pDevice.get();
 
                         Port->setTAP( TRUE );
 
                         IED->allocateDataBins(OutMessage);
                         IED->setInitialState(0);
 
-                        if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
+                        if( (status = InitializeHandshake (Port, pDevice, traceList)) == NORMAL )
                         {
                             IED->resetHandshakesRemaining();
                             if(!Port->isDialup())
@@ -1760,7 +1760,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             Port->setConnectedDevice( IED->getID() );
                             Port->setConnectedDeviceUID( IED->getUniqueIdentifier() );
 
-                            status = PerformRequestedCmd (Port, Device, NULL, NULL, traceList);
+                            status = PerformRequestedCmd (Port, pDevice, NULL, NULL, traceList);
 
                             //  Do verification!
                             queue< CtiVerificationBase * > verification_queue;
@@ -1789,7 +1789,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                             }
 
-                            INT dcstat = TerminateHandshake (Port, Device, traceList);
+                            INT dcstat = TerminateHandshake (Port, pDevice, traceList);
 
                             if(status == NORMAL)
                                 status = dcstat;
@@ -1817,7 +1817,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         IED->freeDataBins();
                         Port->setTAP( FALSE );
 
-                        VanGoghConnection.WriteConnQue(Device->rsvpToDispatch());
+                        VanGoghConnection.WriteConnQue(pDevice->rsvpToDispatch());
 
                         break;
                     }
@@ -1832,7 +1832,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             ::memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
 
                             // initialize the ied
-                            CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
+                            CtiDeviceIED *IED= (CtiDeviceIED*)pDevice.get();
 
                             /***********************
                             *
@@ -1843,14 +1843,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             */
 
                             IED->allocateDataBins(OutMessage);
-                            status = InitializeHandshake (Port,Device, traceList);
+                            status = InitializeHandshake (Port,pDevice, traceList);
 
-                            processCommStatus(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
+                            processCommStatus(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, pDevice);
 
                             if(!status)
                             {
                                 // this will do the initial command requested
-                                if(!(status=PerformRequestedCmd (Port, Device, InMessage, OutMessage, traceList)))
+                                if(!(status=PerformRequestedCmd (Port, pDevice, InMessage, OutMessage, traceList)))
                                 {
                                     /*********************************************
                                     * Use the byte 2 of the command message to keep the
@@ -1868,7 +1868,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                         // note, current command must be reset to scan data before returning
                                         // or the decode response routine will not work correctly
-                                        PerformRequestedCmd ( Port, Device, InMessage, OutMessage , traceList);
+                                        PerformRequestedCmd ( Port, pDevice, InMessage, OutMessage , traceList);
 
                                         // reset to scan data once completed
                                         IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
@@ -1912,7 +1912,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ::memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
 
                         // initialize the ied
-                        CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
+                        CtiDeviceIED *IED= (CtiDeviceIED*)pDevice.get();
 
                         /***********************
                         *
@@ -1932,12 +1932,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         *************************
                         */
 
-                        status = LogonToDevice (Port,Device,InMessage,OutMessage, traceList);
+                        status = LogonToDevice (Port,pDevice,InMessage,OutMessage, traceList);
 
                         if(!status)
                         {
                             // this will do the initial command requested
-                            if(!(status=PerformRequestedCmd (Port, Device, InMessage, OutMessage, traceList)))
+                            if(!(status=PerformRequestedCmd (Port, pDevice, InMessage, OutMessage, traceList)))
                             {
                                 /*********************************************
                                 * Use the byte 2 of the command message to keep the
@@ -1955,7 +1955,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                     // note, current command must be reset to scan data before returning
                                     // or the decode response routine will not work correctly
-                                    PerformRequestedCmd ( Port, Device, InMessage, OutMessage , traceList);
+                                    PerformRequestedCmd ( Port, pDevice, InMessage, OutMessage , traceList);
 
                                     // reset to scan data once completed
                                     IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
@@ -1999,7 +1999,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         /* output the message to the remote */
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                         trx.setOutCount(OutMessage->OutLength - 3);
-                        status = Port->outMess(trx, Device, traceList);
+                        status = Port->outMess(trx, pDevice, traceList);
                         break;
                     }
                     case TYPE_RTC:
@@ -2008,7 +2008,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         OutMessage->InLength = 0;
 
-                        CtiDeviceRTC *rtc = (CtiDeviceRTC *)Device.get();
+                        CtiDeviceRTC *rtc = (CtiDeviceRTC *)pDevice.get();
 
                         rtc->prepareOutMessageForComms(OutMessage);
 
@@ -2019,7 +2019,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         /* output the message to the remote */
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage);
                         trx.setOutCount(OutMessage->OutLength);
-                        status = Port->outMess(trx, Device, traceList);
+                        status = Port->outMess(trx, pDevice, traceList);
                         break;
                     }
                     default:
@@ -2027,7 +2027,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                            dout << "  Device Type " << desolveDeviceType( pDevice->getType() ) << " Not specifically accounted for." << endl;
                         }
 
                         status = BADID;
@@ -2044,7 +2044,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 /* !status is a successful return... This is a "post" successful send switch */
                 if(!status)
                 {
-                    switch(Device->getType())
+                    switch(pDevice->getType())
                     {
                     case TYPE_CCU700:
                     case TYPE_CCU710:
@@ -2058,12 +2058,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             trx.setMessageStart();                          // This is the first "in" of this message
                             trx.setMessageComplete();                       // This is the last "in" of this message
 
-                            status = Port->inMess(trx, Device, traceList);
+                            status = Port->inMess(trx, pDevice, traceList);
 
                             // Prepare for tracing
                             if(trx.doTrace(status))
                             {
-                                Port->traceXfer(trx, traceList, Device, status);
+                                Port->traceXfer(trx, traceList, pDevice, status);
                             }
 
                             break;
@@ -2091,12 +2091,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             trx.setMessageStart();                          // This is the first "in" of this message
                             trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
 
-                            status = Port->inMess(trx, Device, traceList);
+                            status = Port->inMess(trx, pDevice, traceList);
 
                             if(!status)
                             {
                                 /* check out the message... How much follows */
-                                status = PostMaster (InMessage->Buffer.InMessage, Device->getAddress(), &ReadLength);
+                                status = PostMaster (InMessage->Buffer.InMessage, pDevice->getAddress(), &ReadLength);
                             }
 
                             if(!status)
@@ -2109,7 +2109,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
                                 trx.setMessageComplete();                       // This is the last "in" of this message
 
-                                status = Port->inMess(trx, Device, traceList);
+                                status = Port->inMess(trx, pDevice, traceList);
                             }
 
                             InMessage->InLength += ReadLength;
@@ -2127,7 +2127,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             if(trx.doTrace(status))
                             {
-                                Port->traceXfer(trx, traceList, Device, status);
+                                Port->traceXfer(trx, traceList, pDevice, status);
                             }
 
                             if(!status)
@@ -2144,7 +2144,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << Device->getName() << " results pending." << endl;
+                                    dout << CtiTime() << " " << pDevice->getName() << " results pending." << endl;
                                 }
 
                                 trx.setInBuffer(InMessage->Buffer.InMessage);
@@ -2154,12 +2154,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 trx.setMessageStart();                          // This is the first "in" of this message
                                 trx.setMessageComplete();                       // This is the last "in" of this message
 
-                                status = Port->inMess(trx, Device, traceList);
+                                status = Port->inMess(trx, pDevice, traceList);
 
                                 // Prepare for tracing
                                 if(trx.doTrace(status))
                                 {
-                                    Port->traceXfer(trx, traceList, Device, status);
+                                    Port->traceXfer(trx, traceList, pDevice, status);
                                 }
                             }
 
@@ -2199,7 +2199,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 }
                 else
                 {
-                    switch(Device->getType())
+                    switch(pDevice->getType())
                     {
                     // none of these use the transfer struct defined in this function so it blows the thread
                     case TYPE_SIXNET:
@@ -2238,7 +2238,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             // There was an outbound error, the Xfer was not traced...
                             if(trx.doTrace(status))
                             {
-                                Port->traceXfer(trx, traceList, Device, status);
+                                Port->traceXfer(trx, traceList, pDevice, status);
                             }
                             break;
                         }
@@ -2247,7 +2247,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                                dout << "  Device Type " << desolveDeviceType( pDevice->getType() ) << " Not specifically accounted for." << endl;
                             }
                         }
                     }
@@ -2258,7 +2258,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
         case ProtocolWrapIDLC:
             {
                 /* Check for broadcast type message */
-                if(OutMessage->Remote == CCUGLOBAL && Device->getType() == TYPE_CCU711)
+                if(OutMessage->Remote == CCUGLOBAL && pDevice->getType() == TYPE_CCU711)
                 {
                     /* form the CCU IDLC preamble */
                     PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, CCUGLOBAL, 0, 1, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
@@ -2266,11 +2266,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 else if(OutMessage->Remote == RTUGLOBAL)
                 {
                     /* form the RTU IDLC preamble */
-                    PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Port, RTUGLOBAL, Device);
+                    PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Port, RTUGLOBAL, pDevice);
                 }
                 else
                 {
-                    switch(Device->getType())
+                    switch(pDevice->getType())
                     {
                     case TYPE_ILEXRTU:
                     case TYPE_WELCORTU:
@@ -2283,7 +2283,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_TCU5000:
                     case TYPE_TCU5500:
                         {
-                            PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength,  Device->getPortID(),Device->getAddress(), Device);
+                            PreUnSequenced (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, pDevice->getPortID(), pDevice->getAddress(), pDevice);
                             break;
                         }
                     case TYPE_CCU700:
@@ -2312,7 +2312,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             }
                             else
                             {
-                                CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                                CtiTransmitterInfo *pInfo = pDevice->getTrxInfo();
                                 PreIDLC(OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
                             }
 
@@ -2323,14 +2323,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                                dout << "  Device Type " << desolveDeviceType( pDevice->getType() ) << " Not specifically accounted for." << endl;
                             }
                         }
                     }
                 }
 
                 /* calculate the crc and output the message */
-                switch(Device->getType())
+                switch(pDevice->getType())
                 {
                 case TYPE_ILEXRTU:
                 case TYPE_WELCORTU:
@@ -2351,7 +2351,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage);
                         trx.setOutCount(OutMessage->OutLength + PREIDL + 3);
 
-                        status = Port->outMess(trx, Device, traceList);
+                        status = Port->outMess(trx, pDevice, traceList);
 
                         break;
                     }
@@ -2376,7 +2376,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             trx.setOutCount(OutMessage->OutLength + PREIDL);
                         }
 
-                        status = Port->outMess(trx, Device, traceList);
+                        status = Port->outMess(trx, pDevice, traceList);
 
                         if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
                         {
@@ -2392,7 +2392,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                            dout << "  Device Type " << desolveDeviceType( pDevice->getType() ) << " Not specifically accounted for." << endl;
                         }
                     }
                 }
@@ -2427,7 +2427,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
                     else
                     {
-                        switch(Device->getType())
+                        switch(pDevice->getType())
                         {
                         case TYPE_ILEXRTU:
                         case TYPE_WELCORTU:
@@ -2452,12 +2452,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 trx.setMessageStart();                          // This is the first "in" of this message
                                 trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
 
-                                status = Port->inMess(trx, Device, traceList);
+                                status = Port->inMess(trx, pDevice, traceList);
 
                                 if(!status)
                                 {
                                     /* check out the message... How much follows */
-                                    status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+                                    status = RTUReplyHeader (pDevice->getType(), pDevice->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
 
                                     if(!status && ReadLength)
                                     {
@@ -2469,7 +2469,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                         trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
                                         trx.setMessageComplete();                       // This is the last "in" of this message
 
-                                        status = Port->inMess(trx, Device, traceList);
+                                        status = Port->inMess(trx, pDevice, traceList);
                                     }
                                 }
 
@@ -2485,7 +2485,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     trx.setInBuffer(InMessage->IDLCStat + 11);
                                     trx.setInCountActual(&InMessage->InLength);
-                                    Port->traceXfer(trx, traceList, Device, status);
+                                    Port->traceXfer(trx, traceList, pDevice, status);
                                 }
 
                                 break;
@@ -2504,12 +2504,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 trx.setMessageStart();                          // This is the first "in" of this message
                                 trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
 
-                                status = Port->inMess(trx, Device, traceList);
+                                status = Port->inMess(trx, pDevice, traceList);
 
                                 if(!status)
                                 {
                                     /* check out the message... How much follows */
-                                    status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+                                    status = RTUReplyHeader (pDevice->getType(), pDevice->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
 
                                     if(!status && ReadLength)
                                     {
@@ -2521,7 +2521,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                         trx.setMessageStart(0);                          // This is _NOT_ the first "in" of this message
                                         trx.setMessageComplete();                        // This is the last "in" of this message
 
-                                        status = Port->inMess(trx, Device, traceList);
+                                        status = Port->inMess(trx, pDevice, traceList);
                                     }
                                 }
                                 InMessage->InLength += ReadLength;
@@ -2536,7 +2536,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     trx.setInBuffer(InMessage->IDLCStat + 11);
                                     trx.setInCountActual(&InMessage->InLength);
-                                    Port->traceXfer(trx, traceList, Device, status);
+                                    Port->traceXfer(trx, traceList, pDevice, status);
                                 }
 
 
@@ -2555,7 +2555,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         case TYPE_CCU711:
                             {
                                 // CtiTransmitterInfo *pInfo = Device->getTrxInfo();
-                                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+                                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)pDevice->getTrxInfo();
 
                                 /* get the first 5 bytes in the return message */
                                 trx.setInBuffer( InMessage->IDLCStat );
@@ -2575,12 +2575,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 trx.setMessageComplete(0);                       // This is NOT the last "in" of this message
                                 trx.setCRCFlag(0);
 
-                                status = Port->inMess(trx, Device, traceList);
+                                status = Port->inMess(trx, pDevice, traceList);
 
                                 if(!status)
                                 {
                                     /* Oh wow, I got me five bytes of datum! */
-                                    if( (InMessage->IDLCStat[1] >> 1) != Device->getAddress() )
+                                    if( (InMessage->IDLCStat[1] >> 1) != pDevice->getAddress() )
                                     {
                                         status = ADDRESSERROR;
                                     }
@@ -2608,14 +2608,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                                 {
                                                     {
                                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                        dout << CtiTime() << " *** Supervisory (Inbound) Message 0x" << hex << (int)InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
+                                                        dout << CtiTime() << " *** Supervisory (Inbound) Message 0x" << hex << (int)InMessage->IDLCStat[2] << " from CCU: " << pDevice->getName() << endl;
                                                     }
 
                                                     if(trx.doTrace(status))
                                                     {
                                                         trx.setInBuffer(InMessage->IDLCStat);
                                                         trx.setInCountActual(&InMessage->InLength);
-                                                        Port->traceXfer(trx, traceList, Device, status);
+                                                        Port->traceXfer(trx, traceList, pDevice, status);
                                                     }
                                                 }
 
@@ -2637,7 +2637,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                         trx.setMessageStart(FALSE);                           // This is the first "in" of this message
                                         trx.setMessageComplete(TRUE);                   // This is NOT the last "in" of this message
 
-                                        status = Port->inMess(trx, Device, traceList);
+                                        status = Port->inMess(trx, pDevice, traceList);
 
                                         InMessage->InLength += ReadLength;
 
@@ -2647,7 +2647,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                              *  This is the guy who does some rudimentary checking on the CCU message
                                              *  He will return REQACK in that case...
                                              */
-                                            status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress(), OutMessage->Command);
+                                            status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, pDevice->getAddress(), OutMessage->Command);
                                         }
                                     }
                                 }
@@ -2693,7 +2693,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     trx.setInBuffer(InMessage->IDLCStat);
                                     trx.setInCountActual(&InMessage->InLength);
-                                    Port->traceXfer(trx, traceList, Device, status);
+                                    Port->traceXfer(trx, traceList, pDevice, status);
                                 }
 
                                 if(!status && !(OutMessage->MessageFlags & MessageFlag_PortSharing))
@@ -2715,7 +2715,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                                    dout << "  Device Type " << desolveDeviceType( pDevice->getType() ) << " Not specifically accounted for." << endl;
                                 }
                             }
                         }
@@ -2726,7 +2726,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     // There was an outbound error, the Xfer was not traced...
                     if(trx.doTrace(status))
                     {
-                        Port->traceXfer(trx, traceList, Device, status);
+                        Port->traceXfer(trx, traceList, pDevice, status);
                     }
                 }
 
@@ -2755,18 +2755,18 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION PROCESSING COMMS TO " << Device->getName() << " **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " **** EXCEPTION PROCESSING COMMS TO " << pDevice->getName() << " **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
         }
     }
 
     return status;
 }
 
-INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device)
+INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &pDevice)
 {
     INT status = NORMAL;
 
-    switch(Device->getType())
+    switch(pDevice->getType())
     {
     case TYPE_DAVIS:
         {
@@ -2794,7 +2794,7 @@ INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device)
 }
 
 
-INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
+INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &pDevice)
 {
     INT            status = CommResult;
     ULONG          j;
@@ -2805,10 +2805,10 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     INT msgFlags = OutMessage->MessageFlags;
 
     if( (CommResult != NORMAL && CommResult != ErrPortSimulated) ||
-        (  (GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
+        (  (GetPreferredProtocolWrap(Port, pDevice) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
            (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) ))
     {
-        switch( Device->getType() )
+        switch( pDevice->getType() )
         {
         case TYPE_LCU415:
         case TYPE_LCU415LG:
@@ -2819,11 +2819,11 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                 {
                     break;
                 }
-                else if((status = LCUResultDecode(OutMessage, InMessage, Device, CommResult, false)) == RETRY_SUBMITTED)
+                else if((status = LCUResultDecode(OutMessage, InMessage, pDevice, CommResult, false)) == RETRY_SUBMITTED)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << Device->getName() << " RETRY SUBMITTED " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " " << pDevice->getName() << " RETRY SUBMITTED " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break; // **** DO NOT FALL THROUGH ****
                 }
@@ -2849,7 +2849,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                     /* decrement the retry counter */
                     --OutMessage->Retry;
 
-                    ShuffleVTUMessage( Port, Device, OutMessage );
+                    ShuffleVTUMessage( Port, pDevice, OutMessage );
 
                     /* Put it on the queue for this port */
                     if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
@@ -2873,11 +2873,11 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                         /* Update the CCUInfo if neccessary */
                         if(omRemote != 0)
                         {
-                            switch(Device->getType())
+                            switch(pDevice->getType())
                             {
                             case TYPE_CCU711:
                                 {
-                                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+                                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)pDevice->getTrxInfo();
 
                                     pInfo->PortQueueEnts++;
 
@@ -2892,11 +2892,11 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                 }
                 else
                 {
-                    switch(Device->getType())
+                    switch(pDevice->getType())
                     {
                     case TYPE_CCU711:                // Remove this queue entry.
                         {
-                            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+                            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)pDevice->getTrxInfo();
 
                             pInfo->reduceEntsConts(omEventCode & RCONT);
                         }
@@ -2924,11 +2924,11 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         bool reportablechange = false;
         if(OutMessage)
         {
-            reportablechange = processCommStatus(CommResult, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
+            reportablechange = processCommStatus(CommResult, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, pDevice);
         }
         else if(InMessage)
         {
-            reportablechange = processCommStatus(CommResult, InMessage->DeviceID, InMessage->TargetID, false, Device);
+            reportablechange = processCommStatus(CommResult, InMessage->DeviceID, InMessage->TargetID, false, pDevice);
         }
         else
         {
@@ -2941,7 +2941,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Port " << Port->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Port->isQuestionable() ? "QUESTIONABLE" : "GOOD") << endl;
-                dout << CtiTime() << " Device " << Device->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Device->isCommFailed() ? "FAILED" : "GOOD") << endl;
+                dout << CtiTime() << " Device " << pDevice->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (pDevice->isCommFailed() ? "FAILED" : "GOOD") << endl;
             }
         }
 
@@ -2999,10 +2999,10 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
 
 
-INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &pDevice)
 {
     extern void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus);
-    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
+    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr pDevice, CtiConnect *&Nexus);
 
     INT            status = NORMAL;
     ULONG          j, QueueCount;
@@ -3013,7 +3013,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     {
         InMessage->EventCode = (USHORT)CommResult;
 
-        switch(Device->getType())
+        switch(pDevice->getType())
         {
         case TYPE_CCU721:
             {
@@ -3058,7 +3058,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 }
                 else
                 {
-                    CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)Device->getTrxInfo();
+                    CtiTransmitter711Info *p711info = (CtiTransmitter711Info *)pDevice->getTrxInfo();
 
                     if(OutMessage->Remote == CCUGLOBAL)
                     {
@@ -3081,13 +3081,13 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
                     if(OutMessage->EventCode & RCONT)
                     {
-                        status = CCUResponseDecode (InMessage, Device, OutMessage);
+                        status = CCUResponseDecode (InMessage, pDevice, OutMessage);
                     }
                     else
                     {
                         j = InMessage->InLength;
                         InMessage->InLength = 0;
-                        status = CCUResponseDecode (InMessage, Device, OutMessage);
+                        status = CCUResponseDecode (InMessage, pDevice, OutMessage);
                         InMessage->InLength = j;
                     }
 
@@ -3098,7 +3098,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         blitzNexusFromQueue( Port->getPortQueueHandle(), OutMessage->ReturnNexus);
-                        blitzNexusFromCCUQueue( Device, OutMessage->ReturnNexus);
+                        blitzNexusFromCCUQueue( pDevice, OutMessage->ReturnNexus);
                     }
 
                     //  only break if this is _not_ DTRAN
@@ -3151,7 +3151,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - NACK received in CCU header from device \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - NACK received in CCU header from device \"" << pDevice->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     else if( !status && nack2 )
@@ -3209,7 +3209,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
         case TYPE_LCU415ER:
         case TYPE_LCUT3026:
             {
-                LCUResultDecode(OutMessage, InMessage, Device, CommResult, true);
+                LCUResultDecode(OutMessage, InMessage, pDevice, CommResult, true);
                 break;
             }
         case TYPE_TCU5500:
@@ -3218,7 +3218,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 {
                     if(VCUWait)
                     {
-                        CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                        CtiTransmitterInfo *pInfo = pDevice->getTrxInfo();
 
                         /* The assumption (for now) is overlapping coverage of VCU's on the
                                same comm port (VCU's on another comm port better damn well not
@@ -3247,7 +3247,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         {
                             if(CCUInfo[ThreadPortNumber][j] != NULL && CCUInfo[ThreadPortNumber][j]->Type == TYPE_TCU5500)
                             {
-                                CCUInfo[ThreadPortNumber][j]->setNextCommandTime(CCUInfo[ThreadPortNumber][Device->getAddress()]->getNextCommandTime());
+                                CCUInfo[ThreadPortNumber][j]->setNextCommandTime(CCUInfo[ThreadPortNumber][pDevice->getAddress()]->getNextCommandTime());
                             }
                         }
     #else
@@ -3291,7 +3291,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         if(PorterDebugLevel & PORTER_DEBUG_VERSACOM)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << Device->getName() << " queue full.  Will resubmit." << endl;
+                            dout << CtiTime() << " " << pDevice->getName() << " queue full.  Will resubmit." << endl;
                         }
 
                         /* we need to reque this one  */
@@ -3316,7 +3316,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 /* Handle the Sequencing */
                 if(!(CommResult))
                 {
-                    CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+                    CtiTransmitterInfo *pInfo = pDevice->getTrxInfo();
                     pInfo->RemoteSequence.Reply = !pInfo->RemoteSequence.Reply;
                 }
 
@@ -3451,26 +3451,25 @@ INT RequeueReportError(INT status, OUTMESS *OutMessage)
 }
 
 
-INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &pDevice)
 {
     INT status = NORMAL;
 
     if(
-      Device->getType() != TYPE_TDMARKV &&
-      Device->getType() != TYPE_TAPTERM &&
-      Device->getType() != TYPE_WCTP &&
-      Device->getType() != TYPE_ALPHA_PPLUS &&
-      Device->getType() != TYPE_FULCRUM &&
-      Device->getType() != TYPE_VECTRON &&
-      Device->getType() != TYPE_QUANTUM &&
-      Device->getType() != TYPE_LGS4 &&
-      Device->getType() != TYPE_DR87 &&
-      Device->getType() != TYPE_KV2 &&
-      Device->getType() != TYPE_ALPHA_A3 &&
-      Device->getType() != TYPE_SENTINEL &&
-      Device->getType() != TYPE_ALPHA_A1 &&
-      Device->getType() != TYPE_TDMARKV &&
-      Device->getType() != TYPE_SNPP
+      pDevice->getType() != TYPE_TDMARKV &&
+      pDevice->getType() != TYPE_TAPTERM &&
+      pDevice->getType() != TYPE_ALPHA_PPLUS &&
+      pDevice->getType() != TYPE_FULCRUM &&
+      pDevice->getType() != TYPE_VECTRON &&
+      pDevice->getType() != TYPE_QUANTUM &&
+      pDevice->getType() != TYPE_LGS4 &&
+      pDevice->getType() != TYPE_DR87 &&
+      pDevice->getType() != TYPE_KV2 &&
+      pDevice->getType() != TYPE_ALPHA_A3 &&
+      pDevice->getType() != TYPE_SENTINEL &&
+      pDevice->getType() != TYPE_ALPHA_A1 &&
+      pDevice->getType() != TYPE_TDMARKV &&
+      pDevice->getType() != TYPE_SNPP
       )
     {
         /* Check if this device is on a VTU and if so get it's record */
@@ -3483,7 +3482,7 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceS
             if(!(RoutegetEqual (&VTURouteRecord)))
             {
                 /* Go ahead and get the VTU Remote record */
-                ::memcpy (Device.RemoteName, VTURouteRecord.RemoteName, STANDNAMLEN);
+                ::memcpy (pDevice.RemoteName, VTURouteRecord.RemoteName, STANDNAMLEN);
                 if(RemotegetEqual (&Device))
                 {
                     SendError (OutMessage, BADCCU);
@@ -3503,21 +3502,21 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceS
 }
 
 
-INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage)
+INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &pDevice, OUTMESS *&OutMessage)
 {
     INT status = NORMAL;
 
-    if(!isForeignCcuPort(Device->getPortID()) && Device->getAddress() != 0xffff && !Device->isInhibited())
+    if(!isForeignCcuPort(pDevice->getPortID()) && pDevice->getAddress() != 0xffff && !pDevice->isInhibited())
     {
-        if( Device->hasTrxInfo() ) // Does this device type support TrxInfo?
+        if( pDevice->hasTrxInfo() ) // Does this device type support TrxInfo?
         {
-            CtiTransmitterInfo *pInfo = Device->getTrxInfo();
+            CtiTransmitterInfo *pInfo = pDevice->getTrxInfo();
 
             /* Before we do anything else make damn sure we are not a protection violation */
             if(pInfo != NULL && pInfo->getStatus(NEEDSRESET))
             {
                 /* Go Ahead an start this one up */
-                if( RemoteReset(Device, Port) )
+                if( RemoteReset(pDevice, Port) )
                 {
                     // This device probably sourced some OMs.  We should requeue the OM which got us here!
                     OutMessage->Priority = MAXPRIORITY - 1;     // Get this message out next (after the reset messages).
@@ -3539,11 +3538,11 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
                 }
             }
         }
-        else if( Device->getType() == TYPE_CCU721 )
+        else if( pDevice->getType() == TYPE_CCU721 )
         {
             /* Go Ahead an start this one up */
-            if( boost::static_pointer_cast<Cti::Device::CCU721>(Device)->needsReset()
-                && RemoteReset(Device, Port) )
+            if( boost::static_pointer_cast<Cti::Device::CCU721>(pDevice)->needsReset()
+                && RemoteReset(pDevice, Port) )
             {
                 // This device probably sourced some OMs.  We should requeue the OM which got us here!
                 OutMessage->Priority = MAXPRIORITY - 1;     // Get this message out next (after the reset messages).
@@ -3910,12 +3909,12 @@ bool deviceCanSurviveThisStatus(INT status)
 
 
 
-void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage )
+void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &pDevice, CtiOutMessage *OutMessage )
 {
     /* If this was a VTU message we need to slide things back over */
-    if(GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC)  // 031003 CGP // Port->getProtocolWrap() == ProtocolWrapIDLC)
+    if(GetPreferredProtocolWrap(Port, pDevice) == ProtocolWrapIDLC)  // 031003 CGP // Port->getProtocolWrap() == ProtocolWrapIDLC)
     {
-        switch(Device->getType())
+        switch(pDevice->getType())
         {
         case TYPE_CCU700:
         case TYPE_CCU710:
@@ -3927,13 +3926,13 @@ void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage 
     }
 }
 
-INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device )
+INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &pDevice )
 {
     INT protocol = Port->getProtocolWrap();
 
-    if(Device)
+    if(pDevice)
     {
-        protocol = Device->getProtocolWrap();
+        protocol = pDevice->getProtocolWrap();
     }
 
     return protocol;
@@ -4048,16 +4047,16 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         if(OutMessage &&
            !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )     // Indicates an excludable message!
         {
-            CtiDeviceSPtr Device = DeviceManager.getDeviceByID( OutMessage->DeviceID );
+            CtiDeviceSPtr pDevice = DeviceManager.getDeviceByID( OutMessage->DeviceID );
 
-            if(Device)
+            if(pDevice)
             {
                 CtiTablePaoExclusion exclusion;
 
-                if( DeviceManager.mayDeviceExecuteExclusionFree(Device, OutMessage->Priority, exclusion) )
+                if( DeviceManager.mayDeviceExecuteExclusionFree(pDevice, OutMessage->Priority, exclusion) )
                 {
                     bStatus = TRUE;     // This device is locked in as executable!!!
-                    Device->setExecuting();
+                    pDevice->setExecuting();
                 }
                 else if( excluded_device_priorities )  //  are we tracking priorities?
                 {
@@ -4118,7 +4117,7 @@ INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
     return nRet;
 }
 
-INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device)
+INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr pDevice)
 {
     INT status = NORMAL;
     static const string PORTER_EXCLUSION_TEST("PORTER_EXCLUSION_TEST");
@@ -4137,19 +4136,19 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
         {
             CtiTablePaoExclusion exclusion;
 
-            if( !DeviceManager.mayDeviceExecuteExclusionFree(Device, OutMessage->Priority, exclusion) )
+            if( !DeviceManager.mayDeviceExecuteExclusionFree(pDevice, OutMessage->Priority, exclusion) )
             {
                 // There is an exclusion conflict for this device.  It cannot execute this OM.
-                DeviceManager.removeInfiniteExclusion(Device);  // Remove any infinite time exclusions caused by Device from any other device in the list.
+                DeviceManager.removeInfiniteExclusion(pDevice);  // Remove any infinite time exclusions caused by Device from any other device in the list.
 
                 if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Device->getName() << " may not execute this request.  Requeue and scan for another." << endl;
+                    dout << CtiTime() << " " << pDevice->getName() << " may not execute this request.  Requeue and scan for another." << endl;
                 }
 
                 // Decide how to requeue the failed OM.
-                status = OutMessageRequeueOnExclusionFail(Port, OutMessage, Device, exclusion);
+                status = OutMessageRequeueOnExclusionFail(Port, OutMessage, pDevice, exclusion);
             }
         }
     }
@@ -4214,11 +4213,11 @@ struct commFailDevice
  *  It is responsible for opening, or reopening the comm channel or IP channel.
  *  It is responsible for resetting, or verifying any established connection from the last loop.
  */
-INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
+INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &pDevice)
 {
     INT status = NORMAL;
 
-    if( NORMAL != (status = ResetCommsChannel(Port, Device)) )
+    if( NORMAL != (status = ResetCommsChannel(Port, pDevice)) )
     {
         if(!Port->isInhibited())
         {
@@ -4240,9 +4239,9 @@ INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
             dout << CtiTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << endl;
         }
 
-        if( Device && Device->hasExclusions() )
+        if( pDevice && pDevice->hasExclusions() )
         {
-            DeviceManager.removeInfiniteExclusion(Device);
+            DeviceManager.removeInfiniteExclusion(pDevice);
         }
 
         if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 15000L) )
@@ -4257,9 +4256,9 @@ INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
         ProcessPortPooling(Port);
 
         // We need to see if the next Q entry is for this Device... If it is, we should not release our exclusion
-        if( Device && Device->hasExclusions() && !Device->hasQueuedWork() )
+        if( pDevice && pDevice->hasExclusions() && !pDevice->hasQueuedWork() )
         {
-            DeviceManager.removeInfiniteExclusion(Device);
+            DeviceManager.removeInfiniteExclusion(pDevice);
         }
     }
 
@@ -4271,7 +4270,7 @@ INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
  *  Successful return is NORMAL if a device is found. In this case, the Device pointer will be a valid device.
  *  Unsuccessful return is CONTINUE_LOOP.  In this case, the Device pointer is set to 0;
  */
-INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
+INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &pDevice)
 {
     INT status = NORMAL;
 
@@ -4285,16 +4284,16 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                 dout << CtiTime() << " looking for new deviceID..." << endl;
             }
 
-            Device = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
+            pDevice = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
 
-            if( Device )
+            if( pDevice )
             {
-                OutMessage->DeviceID = Device->getID();
+                OutMessage->DeviceID = pDevice->getID();
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " assigned new deviceID = " << Device->getID() << endl;
+                    dout << CtiTime() << " assigned new deviceID = " << pDevice->getID() << endl;
                 }
             }
             else
@@ -4309,12 +4308,12 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                 status = CONTINUE_LOOP;
             }
         }
-        else if( !Device || Device->getID() != OutMessage->DeviceID )
+        else if( !pDevice || pDevice->getID() != OutMessage->DeviceID )
         {
             /* get the device record for this id */
-            Device = DeviceManager.getDeviceByID(OutMessage->DeviceID);
+            pDevice = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
-            if(!Device)
+            if(!pDevice)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4343,7 +4342,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
     }
     else
     {
-        Device.reset();
+        pDevice.reset();
 
         status = CONTINUE_LOOP;
     }
@@ -4419,7 +4418,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
 }
 
 
-INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion)
+INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &pDevice, CtiTablePaoExclusion &exclusion)
 {
     INT status = NORMAL;
 
@@ -4427,7 +4426,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
     {
     case (CtiTablePaoExclusion::RequeueNextExecutableOM):
         {
-            if( ShuffleQueue( Port, OutMessage, Device ) )
+            if( ShuffleQueue( Port, OutMessage, pDevice ) )
             {
                 // Queue has been shuffled!  OutMessage is no longer ours to touch..
                 if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
@@ -4547,19 +4546,19 @@ BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
     return( match );
 }
 
-bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device)
+bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &pDevice)
 {
     bool status = false;
 
     bool iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
 
-    if(Device->adjustCommCounts( iscommfailed, RetryGTZero ))
+    if(pDevice->adjustCommCounts( iscommfailed, RetryGTZero ))
     {
-        commFail(Device);
+        commFail(pDevice);
         status = true;
     }
 
-    USHORT deviceType = Device->getType();
+    USHORT deviceType = pDevice->getType();
     if(TargetID != 0 && TargetID != DeviceID &&
        deviceType != TYPE_CCU700 && deviceType != TYPE_CCU710 && deviceType != TYPE_CCU711 && deviceType != TYPE_CCU721 )
     {

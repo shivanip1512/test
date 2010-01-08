@@ -54,7 +54,11 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 }
 
 
-CtiDispatchService::~CtiDispatchService() {}
+CtiDispatchService::~CtiDispatchService() 
+{
+    if (_myargv != NULL)
+        delete _myargv;
+}
 
 IMPLEMENT_SERVICE(CtiDispatchService, Dispatch)
 

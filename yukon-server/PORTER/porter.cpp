@@ -1434,7 +1434,6 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
                 if( pDev->isGroup() ) //Doing this call here saves us a tiny bit of time! yay!
                 {
-                    CtiDeviceManager::coll_type::writer_lock_guard_t guard(DeviceManager.getLock());
                     DeviceManager.refreshGroupHierarchy(chgid);
                 }
 
@@ -2329,8 +2328,8 @@ void reportOnWorkObjects()
 {
     CtiPointDataMsg *pData = NULL;
     extern CtiConnection VanGoghConnection;
-    ULONG count = 0;
-    PortManager.apply( applyPortWorkReport, &count );
+    ULONG workCount = 0;
+    PortManager.apply( applyPortWorkReport, &workCount );
 
     if( !WorkCountPointOffset )
     {
@@ -2339,7 +2338,7 @@ void reportOnWorkObjects()
 
     if( WorkCountPointOffset )
     {
-        pData = CTIDBG_new CtiPointDataMsg(WorkCountPointOffset, count, NormalQuality, AnalogPointType);
+        pData = CTIDBG_new CtiPointDataMsg(WorkCountPointOffset, workCount, NormalQuality, AnalogPointType);
     }
 
     if(pData != NULL)

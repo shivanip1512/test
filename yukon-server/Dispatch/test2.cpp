@@ -60,7 +60,10 @@ int inspectMessage( CtiMessage *message )
             break;
 
         default:
+          {
+             retval = -1;
             cout << __FILE__ << " (" << __LINE__ << ") I don't know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
+    }
     }
     return retval;
 }

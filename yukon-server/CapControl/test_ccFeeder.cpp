@@ -165,11 +165,11 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
     capBank1->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
 
-    CtiTime time;
+    CtiTime timeNow;
     //test Ignore Flag && LastStatus < current time.
-    time -= 60;
+    timeNow -= 60;
     capBank1->setIgnoreFlag(true);
-    capBank1->setLastStatusChangeTime(time);
+    capBank1->setLastStatusChangeTime(timeNow);
     bank = feeder->findCapBankToChangeVars(-550,pointChanges,-500,500,600);
     BOOST_CHECK_EQUAL(pointChanges.size(),0);
     delete_container(pointChanges);
@@ -180,9 +180,9 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank1->setIgnoreFlag(false);
 
     //test Ignore Flag && LastStatus > current time.
-    time += 120;
+    timeNow += 120;
     capBank1->setIgnoreFlag(true);
-    capBank1->setLastStatusChangeTime(time);
+    capBank1->setLastStatusChangeTime(timeNow);
     bank = feeder->findCapBankToChangeVars(-550,pointChanges,-500,500,600);
     BOOST_CHECK_EQUAL(pointChanges.size(),0);
     delete_container(pointChanges);
@@ -281,11 +281,11 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
     capBank4->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
 
-    time = CtiTime();
+    timeNow = CtiTime();
     //test Ignore Flag && LastStatus < current time.
-    time -= 60;
+    timeNow -= 60;
     capBank4->setIgnoreFlag(true);
-    capBank4->setLastStatusChangeTime(time);
+    capBank4->setLastStatusChangeTime(timeNow);
     bank = feeder->findCapBankToChangeVars(550,pointChanges,-500,500,-600);
     BOOST_CHECK_EQUAL(pointChanges.size(),0);
     delete_container(pointChanges);
@@ -296,9 +296,9 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setIgnoreFlag(false);
 
     //test Ignore Flag && LastStatus > current time.
-    time += 120;
+    timeNow += 120;
     capBank4->setIgnoreFlag(true);
-    capBank4->setLastStatusChangeTime(time);
+    capBank4->setLastStatusChangeTime(timeNow);
     bank = feeder->findCapBankToChangeVars(550,pointChanges,-500,500,-600);
     BOOST_CHECK_EQUAL(pointChanges.size(),0);
     delete_container(pointChanges);

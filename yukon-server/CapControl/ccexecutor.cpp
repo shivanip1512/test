@@ -7999,11 +7999,11 @@ void CtiCCPointDataMsgExecutor::Execute()
 void CtiCCMultiMsgExecutor::Execute()
 {
     CtiCCExecutorFactory f;
-    CtiMultiMsg_vec& messages = _multiMsg->getData();
-    while(messages.size( )>0)
+    CtiMultiMsg_vec& msgs = _multiMsg->getData();
+    while(msgs.size( )>0)
     {
-        CtiMessage* message = (CtiMessage*)(messages.back());
-        messages.pop_back();
+        CtiMessage* message = (CtiMessage*)(msgs.back());
+        msgs.pop_back();
         if( message != NULL )
         {
             CtiCCExecutor* executor = f.createExecutor(message);

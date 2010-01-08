@@ -27,6 +27,8 @@ RWDEFINE_COLLECTABLE( CtiCCState, CTICCSTATE_ID )
 CtiCCState::CtiCCState()
 {   
     _text = "";
+    _foregroundcolor = 0;
+    _backgroundcolor = 0;
 }
 
 CtiCCState::CtiCCState(RWDBReader& rdr)

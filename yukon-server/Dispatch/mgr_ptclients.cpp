@@ -511,9 +511,9 @@ void CtiPointClientManager::DumpList(void)
         coll_type::reader_lock_guard_t guard(getLock());
 
         spiterator itr = Inherited::begin();
-        spiterator end = Inherited::end();
+        spiterator listEnd = Inherited::end();
 
-        for( ;itr != end; itr++)
+        for( ;itr != listEnd; itr++)
         {
             p = itr->second;
 
@@ -692,9 +692,9 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
         vector<long> points;
         getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
         vector<long>::iterator itr = points.begin();
-        vector<long>::iterator end = points.end();
+        vector<long>::iterator ptsEnd = points.end();
 
-        for( ;itr != end; itr++)
+        for( ;itr != ptsEnd; itr++)
         {
             CtiPointSPtr pPt = getPoint(*itr);
 
@@ -724,9 +724,9 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
         vector<long> points;
         getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
         vector<long>::iterator itr = points.begin();
-        vector<long>::iterator end = points.end();
+        vector<long>::iterator ptsEnd = points.end();
 
-        for( ;itr != end; itr++)
+        for( ;itr != ptsEnd; itr++)
         {
             CtiPointSPtr pPt = getPoint(*itr);
 
@@ -785,9 +785,9 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &upda
     ptr_type pPt;
     coll_type::writer_lock_guard_t guard(getLock());
     DynamicPointDispatchIterator itr = _dynamic.begin();
-    DynamicPointDispatchIterator end = _dynamic.end();
+    DynamicPointDispatchIterator listEnd = _dynamic.end();
 
-    for( ;itr != end; itr++)
+    for( ;itr != listEnd; itr++)
     {
         try
         {
@@ -819,7 +819,7 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &upda
 
 void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &updateList)
 {
-    int count = 0;
+    int listCount = 0;
     string dyndisp("dyndisp");
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -836,7 +836,7 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
 
     for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
     {
-        count ++;
+        listCount ++;
         if(!updateListIter->getUpdatedFlag())
         {
             updateListIter->Insert(conn);
@@ -846,10 +846,10 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
             updateListIter->Update(conn);
         }
 
-        if(count % 1000 == 0)
+        if(listCount % 1000 == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << count << " of " << total << " records written. " << endl;
+            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written. " << endl;
         }
     }
     updateList.clear();
@@ -859,19 +859,19 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
 
 void CtiPointClientManager::removeOldDynamicData()
 {
-    int count = 0;
+    int recordCount = 0;
     coll_type::writer_lock_guard_t guard(getLock());
     DynamicPointDispatchIterator itr = _dynamic.begin();
-    DynamicPointDispatchIterator end = _dynamic.end();
+    DynamicPointDispatchIterator ptsEnd = _dynamic.end();
 
-    for( ;itr != end;)
+    for( ;itr != ptsEnd;)
     {
         try
         {
             if(!isPointLoaded(itr->first))
             {
                 itr = _dynamic.erase(itr);
-                count ++;
+                recordCount ++;
             }
             else
             {
@@ -890,27 +890,27 @@ void CtiPointClientManager::removeOldDynamicData()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PURGED " << count << " records from memory." << endl;
+        dout << CtiTime() << " PURGED " << recordCount << " records from memory." << endl;
     }
 }
 
 void CtiPointClientManager::storeDirtyRecords()
 {
-    int count = 0;
+    int recordCount = 0;
     list<CtiTablePointDispatch> updateList;
 
     getDirtyRecordList(updateList);
 
-    count = updateList.size();
+    recordCount = updateList.size();
 
     writeRecordsToDB(updateList);
 
     removeOldDynamicData();
 
-    if(count > 0 && gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
+    if(recordCount > 0 && gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Updated " << count << " dynamic dispatch records. " << endl;
+        dout << CtiTime() << " **** Updated " << recordCount << " dynamic dispatch records. " << endl;
     }
 
     return;

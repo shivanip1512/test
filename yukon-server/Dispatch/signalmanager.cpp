@@ -716,7 +716,7 @@ bool CtiSignalManager::dirty() const
 
 //This is still a "global" dirty flag, there is no individual resetting of dirty.
 //You should never ever call setDirty(false, <anything but 0>)
-void CtiSignalManager::setDirty(bool set, long paoID)
+void CtiSignalManager::setDirty(bool flag, long paoID)
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
@@ -728,7 +728,7 @@ void CtiSignalManager::setDirty(bool set, long paoID)
         tlg.tryAcquire(5000);
     }
 
-    if( set == true )
+    if( flag == true )
     {
         _dirtySignals.insert(paoID);
     }
@@ -737,7 +737,7 @@ void CtiSignalManager::setDirty(bool set, long paoID)
         _dirtySignals.clear();
     }
 
-    _dirty = set;
+    _dirty = flag;
     return;
 }
 

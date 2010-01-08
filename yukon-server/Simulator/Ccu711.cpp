@@ -337,7 +337,7 @@ error_t Ccu711::extractRequestInfo_LGrpQ(const bytes &command_data, request_info
 
     while( setl = command_data[index] )
     {
-        queue_entry queue_entry;
+        queue_entry a_queue_entry;
 
         if( index + setl >= command_data.size() )
         {
@@ -346,12 +346,12 @@ error_t Ccu711::extractRequestInfo_LGrpQ(const bytes &command_data, request_info
 
         error_t error;
 
-        if( error = extractQueueEntry(command_data, index, setl, queue_entry) )
+        if( error = extractQueueEntry(command_data, index, setl, a_queue_entry) )
         {
             return "Broken queue entry in LGrpQ decode" + error;
         }
 
-        info.lgrpq.request_group.push_back(queue_entry);
+        info.lgrpq.request_group.push_back(a_queue_entry);
 
         index += setl;
     }
@@ -360,7 +360,7 @@ error_t Ccu711::extractRequestInfo_LGrpQ(const bytes &command_data, request_info
 }
 
 
-error_t Ccu711::extractQueueEntry(const bytes &command_data, int index, int setl, queue_entry &queue_entry) const
+error_t Ccu711::extractQueueEntry(const bytes &command_data, int index, int setl, queue_entry &a_queue_entry) const
 {
     if( setl < 17 )
     {
@@ -371,15 +371,15 @@ error_t Ccu711::extractQueueEntry(const bytes &command_data, int index, int setl
         return "Short form requests not supported in LGrpQ";
     }
 
-    queue_entry.entry_id  = command_data[index + 1] << 24;
-    queue_entry.entry_id |= command_data[index + 2] << 16;
-    queue_entry.entry_id |= command_data[index + 3] <<  8;
-    queue_entry.entry_id |= command_data[index + 4];
+    a_queue_entry.entry_id  = command_data[index + 1] << 24;
+    a_queue_entry.entry_id |= command_data[index + 2] << 16;
+    a_queue_entry.entry_id |= command_data[index + 3] <<  8;
+    a_queue_entry.entry_id |= command_data[index + 4];
 
-    queue_entry.priority  = command_data[index + 5];
+    a_queue_entry.priority  = command_data[index + 5];
 
     {
-        queue_entry::request_info &request = queue_entry.request;
+        queue_entry::request_info &request = a_queue_entry.request;
 
         request.address   = command_data[index + 6] << 16;
         request.address  |= command_data[index + 7] <<  8;
@@ -618,14 +618,14 @@ string Ccu711::describeGeneralRequest(const request_info &info) const
                             bytes::const_iterator request_itr = request.data.begin();
                             bytes::const_iterator request_end = request.data.end();
 
-                            int fill = info_description.fill('0');
+                            int dFill = info_description.fill('0');
 
                             while( request_itr != request_end )
                             {
                                 info_description << setw(2) << static_cast<int>(*request_itr++) << " ";
                             }
 
-                            info_description.fill(fill);
+                            info_description.fill(dFill);
 
                             info_description << dec;
                         }
@@ -1111,14 +1111,14 @@ string Ccu711::describeGeneralReply(const reply_info &info) const
 
             info_description << endl << hex;
 
-            int fill = info_description.fill('0');
+            int dFill = info_description.fill('0');
 
             while( message_itr != message_end )
             {
                 info_description<< setw(2) << static_cast<int>(*message_itr++) << " ";
             }
 
-            info_description.fill(fill);
+            info_description.fill(dFill);
 
             info_description << dec << endl << info.dtran.reply->description;
 
@@ -1133,7 +1133,7 @@ string Ccu711::describeGeneralReply(const reply_info &info) const
 
             for( ; completed_itr != completed_end; ++completed_itr )
             {
-                int fill = info_description.fill('0');
+                int dFill = info_description.fill('0');
 
 //  TODO-P2:  Change completion_status to output text instead of an integer
                 info_description << setw(9) << completed_itr->entry_id << " ";
@@ -1155,7 +1155,7 @@ string Ccu711::describeGeneralReply(const reply_info &info) const
                     info_description << dec;
                 }
 
-                info_description.fill(fill);
+                info_description.fill(dFill);
             }
 
             break;
@@ -1366,6 +1366,9 @@ Ccu711::status_info::status_info()
     statd.readyn = 0;
     statd.ncsets = 0;
     statd.ncocts = 0;
+
+    statp.dummy = false;
+
 }
 
 

@@ -26,7 +26,7 @@ private:
 
     static const function_reads_t  _function_reads;
     static       function_reads_t  initFunctionReads();
-    static       function_reads_t  makeFunctionReadRange(unsigned min, unsigned max, boost::function2<bytes, Mct410Sim *, unsigned> fn);
+    static       function_reads_t  makeFunctionReadRange(unsigned readMin, unsigned readMax, boost::function2<bytes, Mct410Sim *, unsigned> fn);
 
     static const function_writes_t _function_writes;
     static       function_writes_t initFunctionWrites();
@@ -46,9 +46,9 @@ private:
 
     static const double Pi;
 
-    static double makeValue_consumption        (const unsigned address, const CtiTime &time, const unsigned duration);
-    static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &time);
-    static double makeValue_averageDemand      (const unsigned address, const CtiTime &time, const unsigned duration);
+    static double makeValue_consumption        (const unsigned address, const CtiTime &c_time, const unsigned duration);
+    static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time);
+    static double makeValue_averageDemand      (const unsigned address, const CtiTime &begin_time, const unsigned duration);
 
     bytes getZeroes();
 

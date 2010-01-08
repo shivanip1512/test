@@ -293,32 +293,32 @@ bool CtiPendingPointOperations::operator<(const CtiPendingPointOperations& y) co
     CtiTime xt = getTime();
     CtiTime yt = y.getTime();
 
-    bool less = false;
+    bool isLess = false;
 
     if(getPointID() < y.getPointID())
     {
-        less = true;
+        isLess = true;
     }
     else if(getPointID() == y.getPointID() && getType() < y.getType())
     {
-        less = true;
+        isLess = true;
     }
     else if(getPointID() == y.getPointID() && getType() == y.getType())
     {
 #if 1
-        less = false;
+        isLess = false;
 #else
         if(getType() == CtiPendingPointOperations::pendingLimit)
         {
             CtiTime maxTime(YUKONEOT);
             xt = getTime() + getLimitDuration();
             yt = y.getTime() + y.getLimitDuration();
-            less = xt < yt;
+            isLess = xt < yt;
         }
         else if( (getType() == CtiPendingPointOperations::pendingControl) ||
                  (getType() == CtiPendingPointOperations::pendingPointData) )
         {
-            less = false;
+            isLess = false;
         }
 #endif
     }
@@ -331,7 +331,7 @@ bool CtiPendingPointOperations::operator<(const CtiPendingPointOperations& y) co
         dout << " YPID " << y.getPointID() << " Type " << y.getType() << " Time " << yt << endl;
     }
 */
-    return( less );
+    return( isLess );
 }
 
 const CtiTableLMControlHistory& CtiPendingPointOperations::getControl() const
