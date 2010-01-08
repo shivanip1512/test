@@ -4827,7 +4827,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         }
         else
         {
-            if(!(temp = CmdStr.match(" fan (on|off|auto)")).empty())
+            if(!(temp = CmdStr.match(" fan (on|off|auto|circulate)")).empty())
             {
                 if(temp.contains("on"))
                 {
@@ -4837,8 +4837,9 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 {
                     _cmd["xcfanstate"] = CtiParseValue( 0x02 );
                 }
-                else if(temp.contains("off"))
+                else if(temp.contains("off") || temp.contains("circulate"))
                 {
+                    // new devices have repurposed this to be circulate instead of off
                     _cmd["xcfanstate"] = CtiParseValue( 0x01 );
                 }
             }
