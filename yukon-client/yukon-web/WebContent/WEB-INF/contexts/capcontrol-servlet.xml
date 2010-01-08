@@ -84,7 +84,7 @@
 	</bean>
 	
 	<bean id="ccEditorController" class="com.cannontech.web.capcontrol.CCEditorController">
-	   <property name="CBCDao" ref="cbcDao"/>
+	   <property name="capControlDao" ref="capControlDao"/>
 	</bean>
 
 	<bean id="onelineBookmarkController"
@@ -129,7 +129,7 @@
         <property name="capControlCache" ref="capControlCache"/>
         <property name="capControlCommentService" ref="capControlCommentService"/>
         <property name="paoDao" ref="paoDao"/>
-        <property name="cbcDao" ref="cbcDao" />
+        <property name="capControlDao" ref="capControlDao" />
         <property name="dataSource" ref="yukonDataSource"/>
     </bean>
     

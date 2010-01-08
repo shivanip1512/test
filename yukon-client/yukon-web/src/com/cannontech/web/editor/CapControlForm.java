@@ -1553,7 +1553,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     public LiteYukonPAObject[] getSubBusList() {
 		if (subBusList == null) {
-			subBusList = DaoFactory.getCBCDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
+			subBusList = DaoFactory.getCapControlDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
 		}
 		return subBusList.toArray(new LiteYukonPAObject[subBusList.size()]);
 	}

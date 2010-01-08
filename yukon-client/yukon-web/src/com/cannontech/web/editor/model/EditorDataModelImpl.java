@@ -39,7 +39,7 @@ public class EditorDataModelImpl implements EditorDataModel {
     }
     
     public List <LitePoint> getPaoPoints () {
-        return DaoFactory.getCBCDao().getPaoPoints(((YukonPAObject)dbObj) );
+        return DaoFactory.getCapControlDao().getPaoPoints(((YukonPAObject)dbObj) );
     }
 
 

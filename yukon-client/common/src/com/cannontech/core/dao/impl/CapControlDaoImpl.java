@@ -18,7 +18,8 @@ import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -32,9 +33,9 @@ public class CapControlDaoImpl  implements CapControlDao{
 
     private PointDao pointDao;
     private PaoDao paoDao;
-    private AuthDao authDao;
     private JdbcTemplate jdbcOps;
     List<OrphanCBC> cbcList;
+    private PaoAuthorizationService paoAuthorizationService;
     
     private static MapQueue<CBCPointGroup, String> pointGroupConfig = new MapQueue<CBCPointGroup, String>();
     
@@ -199,9 +200,6 @@ public class CapControlDaoImpl  implements CapControlDao{
         return sb.toString();
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.cbc.daoimpl.CBCDao#getAllSubsForUser(com.cannontech.database.data.lite.LiteYukonUser)
-     */
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {
         List<LiteYukonPAObject> subList = new ArrayList<LiteYukonPAObject>(10);
         
@@ -209,15 +207,11 @@ public class CapControlDaoImpl  implements CapControlDao{
         for (Iterator<LiteYukonPAObject> iter = temp.iterator(); iter.hasNext();) {
             LiteYukonPAObject element = iter.next();
             
-            if (authDao.userHasAccessPAO(user, element.getLiteID())) {
+            if(paoAuthorizationService.isAuthorized(user, Permission.PAO_VISIBLE, element )){
                 subList.add(element);
             }
         }
         return subList;
-    }
-
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
     }
 
     public void setPaoDao(PaoDao paoDao) {
@@ -329,5 +323,9 @@ public class CapControlDaoImpl  implements CapControlDao{
     	}
     	return capbanks;
     }
-}
 
+    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
+        this.paoAuthorizationService = paoAuthorizationService;
+    }
+
+}

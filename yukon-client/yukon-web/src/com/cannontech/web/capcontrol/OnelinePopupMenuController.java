@@ -47,7 +47,7 @@ public class OnelinePopupMenuController extends MultiActionController {
     private CapControlCommentService capControlCommentService;
     private DataSource dataSource;
     private PaoDao paoDao;
-    private CapControlDao cbcDao = null;
+    private CapControlDao capControlDao = null;
     
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
@@ -431,7 +431,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         String paoName = cbc.getPaoName();
         mav.addObject("paoName", paoName);
         
-        Map<String, List<LitePoint>> pointTimestamps = cbcDao.getSortedCBCPointTimeStamps(cbcId);
+        Map<String, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
         mav.addObject("pointMap", pointTimestamps);
         
         List<LitePoint> pointList = new ArrayList<LitePoint>();
@@ -643,8 +643,8 @@ public class OnelinePopupMenuController extends MultiActionController {
         this.dataSource = dataSource;
     }
     
-    public void setCbcDao(CapControlDao cbcDao) {
-        this.cbcDao = cbcDao;
+    public void setCapControlDao(CapControlDao capControlDao) {
+        this.capControlDao = capControlDao;
     }
 
 	@Autowired

@@ -15,20 +15,20 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CCEditorController implements Controller {
-    private CapControlDao cbcDao;
+    private CapControlDao capControlDao;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         
-        List<OrphanCBC> orphans = cbcDao.getOrphanedCBCs();
+        List<OrphanCBC> orphans = capControlDao.getOrphanedCBCs();
         mav.addObject("orphans", orphans);
         
         mav.setViewName("tier/popupmenu/orphanedCBCPopup.jsp");
         return mav;
     }
 
-    public void setCBCDao(CapControlDao cbcDao) {
-        this.cbcDao = cbcDao;
+    public void setCapControlDao(CapControlDao capControlDao) {
+        this.capControlDao = capControlDao;
     }
     
 }
