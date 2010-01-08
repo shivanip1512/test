@@ -112,10 +112,6 @@ public class DaoFactory {
         return (YukonGroupDao) YukonSpringHook.getBean("yukonGroupDao");
     }
     
-    public static CapControlDao getCBCDao () {
-        return  (CapControlDao) YukonSpringHook.getBean("cbcDao");
-    }
-    
     public static CapControlDao getCapControlDao () {
         return  (CapControlDao) YukonSpringHook.getBean("capControlDao");
     }
