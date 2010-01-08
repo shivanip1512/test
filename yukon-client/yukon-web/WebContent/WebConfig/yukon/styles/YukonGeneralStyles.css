@@ -49,7 +49,7 @@ div.simplePopup {
   border: 12px solid #666;
   background-color: white;
   left: 75px;
-  top: 150px;
+  top: 15%;
 }
 
 div.thinBorder {
@@ -507,7 +507,7 @@ div.widgetPopup {
 }
 
 .popUpDiv {
-    position: absolute;
+    position: fixed;
     z-index: 100;
     overflow: hidden;
 }
