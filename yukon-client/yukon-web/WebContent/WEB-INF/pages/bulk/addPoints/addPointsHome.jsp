@@ -168,8 +168,16 @@
             <cti:msg var="addButtonLabel" key="yukon.common.device.bulk.addPointsHome.addButton"/>
             <tags:slowInput myFormId="executeAddPointsForm" labelBusy="${addButtonLabel}" label="${addButtonLabel}" />
             
+            <cti:msg var="cancelButtonLabel" key="yukon.common.device.bulk.addPointsHome.cancelButton"/>
+            <tags:slowInput myFormId="cancelForm" label="${cancelButtonLabel}"/>
+            
         </form>
-    
+        
+        <form id="cancelForm" action="/spring/bulk/collectionActions" method="post">
+            <%-- DEVICE COLLECTION --%>
+            <cti:deviceCollection deviceCollection="${deviceCollection}" />
+        </form>
+
     </tags:bulkActionContainer>
                     
 </cti:standardPage>

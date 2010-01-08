@@ -395,7 +395,9 @@
     
     <!-- misc -->
     <entry key="yukon.common.device.bulk.addPointsHome.addButton">Add Points</entry>
+    <entry key="yukon.common.device.bulk.addPointsHome.cancelButton">Cancel</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.noPointsSelectedError">No points selected.</entry>
+    <entry key="yukon.common.device.bulk.addPointsHome.noPointsSuppliedMsg">Error: Select at least one point to add.</entry>
     
     <!-- addRemovePointsResults.jsp -->
     <entry key="yukon.common.device.bulk.addPointsResults.pageTitle">Add Points Results</entry>
@@ -445,7 +447,13 @@
     
     <!-- misc -->
     <entry key="yukon.common.device.bulk.updatePointsHome.updateButton">Update</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.cancelButton">Cancel</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noPointsSelectedError">No points selected.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg">Error: Select at least one point to update.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.validDecimalNumberMsg">Error: Value must be a valid decimal number.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.numberGreaterThanZeroMsg">Error: Value must be a number greater than zero.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.validIntegerNumberMsg">Error: Value must be a valid integer number.</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.unsupportedUpdateTypeMsg">Error: Unsupported update type: {0}</entry>
     
     <!-- updatePointsResults.jsp -->
     <entry key="yukon.common.device.bulk.updatePointsResults.pageTitle">Update Points Results</entry>
@@ -494,7 +502,9 @@
     
     <!-- misc -->
     <entry key="yukon.common.device.bulk.removePointsHome.removeButton">Remove Points</entry>
+    <entry key="yukon.common.device.bulk.removePointsHome.cancelButton">Cancel</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.noPointsSelectedError">No points selected.</entry>
+    <entry key="yukon.common.device.bulk.removePointsHome.noPointsSuppliedMsg">Error: Select at least one point to remove.</entry>
     
     <!-- addRemovePointsResults.jsp -->
     <entry key="yukon.common.device.bulk.removePointsResults.pageTitle">Remove Points Results</entry>

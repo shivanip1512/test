@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +19,7 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.Transaction;
@@ -26,6 +28,8 @@ import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 public class AddPointsController extends AddRemovePointsControllerBase {
 	
@@ -47,6 +51,11 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         mav.addObject("sharedPoints", sharedPoints);
         mav.addObject("updatePoints", updatePoints);
         mav.addObject("maskExistingPoints", maskExistingPoints);
+        
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
+        if(StringUtils.isNotBlank(errorMsg)){
+            mav.addObject("errorMsg", errorMsg);
+        }
         
         // device types set
         Set<Integer> deviceTypeSet = getDeviceTypesSet(deviceCollection);
@@ -76,6 +85,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
     	
     	ModelAndView mav = new ModelAndView("redirect:addPointsResults");
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
     	// device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -98,9 +108,16 @@ public class AddPointsController extends AddRemovePointsControllerBase {
             return mav;
     	}
     	
-    	// create processor
+    	// Check to see if points were supplied and create processor
     	Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
     	SingleProcessor<YukonDevice> addPointsProcessor = getAddPointsProcessor(pointTemplatesMap, updatePoints);
+
+    	if (pointTemplatesMap.isEmpty()) {
+    	    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String noPointsSuppliedMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg");
+            ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
+            return home;
+    	}
     	
     	// start processor
     	String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS);

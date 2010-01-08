@@ -17,8 +17,11 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.UpdatePointsFieldType;
 import com.google.common.collect.Lists;
 
@@ -38,9 +41,10 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", false);
-        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         mav.addObject("sharedPoints", sharedPoints);
         mav.addObject("maskExistingPoints", maskExistingPoints);
+
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
             mav.addObject("errorMsg", errorMsg);
         }
@@ -76,6 +80,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
         
         ModelAndView mav = new ModelAndView("redirect:updatePointsResults");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -103,10 +108,12 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
         
         if(pointTemplatesMap.isEmpty()){
-            ModelAndView home = redirectWithError("Error: Select at least one point to update.", deviceCollection);
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String noPointsSuppliedMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg");
+            ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
             return home;
         } else {
-            String errorMsg = validateInput(updateField, setValue);
+            String errorMsg = validateInput(updateField, setValue, userContext);
             if(StringUtils.isNotBlank(errorMsg)){
                 ModelAndView home = redirectWithError(errorMsg, deviceCollection);
                 return home;
@@ -134,15 +141,16 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         return mav;
     }
     
-    private String validateInput(UpdatePointsFieldType updateField, String setValue) {
+    private String validateInput(UpdatePointsFieldType updateField, String setValue, YukonUserContext userContext) {
         String errorMsg = null;
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         switch (updateField) {
         case EXPLICIT_MULTIPLIER :
         case ADJUSTED_MULTIPLIER :
             try {
                 Double.parseDouble(setValue);
             } catch (NumberFormatException e){
-                errorMsg = "Error: Value must be a valid decimal number.";
+                errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.validDecimalNumberMsg");
             }
             break;
             
@@ -150,25 +158,18 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
             try {
                 int intValue = Integer.parseInt(setValue);
                 if(intValue < 0){
-                    errorMsg = "Error: Value must be a number greater than zero.";
+                    errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.numberGreaterThanZeroMsg");
                 }
             } catch (NumberFormatException e) {
-                errorMsg = "Error: Value must be a valid integer number.";
+                errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.validIntegerNumberMsg");
             }
             break;
         default:
-            errorMsg = "Error: Unsupported update type: " + updateField.name();
+            errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.unsupportedUpdateTypeMsg", new Object[]{updateField.name()});
             break;
         } 
         
         return errorMsg;
-    }
-
-    private ModelAndView redirectWithError(String errorMsg, DeviceCollection deviceCollection) {
-        ModelAndView mav = new ModelAndView("redirect:home");
-        mav.addAllObjects(deviceCollection.getCollectionParameters());
-        mav.addObject("errorMsg", errorMsg);
-        return mav;
     }
 
     // VIEW RESULTS

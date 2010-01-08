@@ -53,6 +53,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
@@ -68,6 +69,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     protected DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     protected DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     protected RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private Logger log = YukonLogManager.getLogger(AddRemovePointsControllerBase.class);
     protected static Comparator<PointTemplateWrapper> pointTemplateOffsetCompartor;
@@ -84,6 +86,12 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     public abstract ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException;
     public abstract ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception;
     
+    protected ModelAndView redirectWithError(String errorMsg, DeviceCollection deviceCollection) {
+        ModelAndView mav = new ModelAndView("redirect:home");
+        mav.addAllObjects(deviceCollection.getCollectionParameters());
+        mav.addObject("errorMsg", errorMsg);
+        return mav;
+    }
     
     // START BULK PROCESSOR
     public String startBulkProcessor(DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) throws ServletException, Exception {
@@ -435,6 +443,10 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
 		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
 	}
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
     @Resource(name="recentResultsCache")
     public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
