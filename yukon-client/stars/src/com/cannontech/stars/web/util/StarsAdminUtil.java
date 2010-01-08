@@ -20,6 +20,8 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -157,7 +159,10 @@ public class StarsAdminUtil {
                 }
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                pService.addPermission(energyCompany.getUser(), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.DEFAULT_ROUTE, true);
+                String paoTypeString = grpSerial.getPAOType();
+                PaoType paoType = PaoType.getForDbString(paoTypeString);
+                PaoIdentifier pao = new PaoIdentifier(grpSerial.getPAObjectID(), paoType);
+				pService.addPermission(energyCompany.getUser(), pao, Permission.DEFAULT_ROUTE, true);
 			}
 			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
 				if (routeID < 0) routeID = 0;

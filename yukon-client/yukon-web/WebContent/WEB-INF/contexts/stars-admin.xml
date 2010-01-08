@@ -61,6 +61,7 @@
 	<bean id="adminNewEnergyCompany" class="com.cannontech.web.stars.action.admin.NewEnergyCompanyController" 
           parent="starsAdminActionController">
           <property name="transactionManager" ref="transactionManager"/>
+          <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>      
 	
 	<bean id="adminDeleteEnergyCompany" class="com.cannontech.web.stars.action.admin.DeleteEnergyCompanyController" 

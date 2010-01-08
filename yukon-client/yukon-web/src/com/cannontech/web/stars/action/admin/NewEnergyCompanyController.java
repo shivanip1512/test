@@ -13,10 +13,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -192,30 +192,31 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                         StarsAdminUtil.addMember( energyCompany, newCompany, liteUser.getUserID() );
                     
                     session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
-                }
-                catch (WebClientException e) {
-                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+                } catch (WebClientException e) {
+                	// This type of exception is something the user can do something about - 
+                	// redirect them back to the creation page with an error msg and rollback
+                	// the transaction
+                	
+                	session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
                     try { 
                         String location = ServletUtil.createSafeRedirectUrl(request, "/operator/Admin/NewEnergyCompany.jsp");
                         response.sendRedirect(location); 
                     } catch (IOException ioe) { 
                         throw new RuntimeException(ioe); 
                     };
+
+                    // Manually rollback this transaction - can't throw an exception here as that
+                    // causes the redirect above to not work
+                    status.setRollbackOnly();
                     return null;
-                }
-                catch (Exception e) {
-                    CTILogger.error( e.getMessage(), e );
-                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the energy company");
-                    try {
-                        String location = ServletUtil.createSafeRedirectUrl(request, "/operator/Admin/NewEnergyCompany.jsp");
-                        response.sendRedirect(location);
-                    } catch (IOException ioe) {
-                        throw new RuntimeException(ioe);
-                    }
-                    return null;
+                } catch (Exception e) {
+                    // Unknown issue in this case - show error page to user and throw the 
+                	// exception so the transaction rolls back
+                    throw new RuntimeException(e);
                 }
                 
-                boolean hasMemberManagementAccess = authDao.checkRoleProperty(user.getUserID(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+                boolean hasMemberManagementAccess = 
+                	rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user.getYukonUser());
                 boolean memberManagementRedirect = isAddMember && hasMemberManagementAccess;
                 
                 try {
@@ -231,6 +232,8 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                 return null;
             }
         });
+        
+        
         
     }
     
