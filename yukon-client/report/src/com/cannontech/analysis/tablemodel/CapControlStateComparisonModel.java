@@ -2,7 +2,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +13,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.database.data.point.PointType;
 
 public class CapControlStateComparisonModel extends BareReportModelBase<CapControlStateComparisonModel.ModelRow> implements CapControlFilterable  {
 
@@ -61,10 +62,10 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     }
 
     public void doLoadData() {
-        StringBuffer sql = buildSQLStatement();
+        SqlStatementBuilder sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         
-        jdbcOps.query(sql.toString(), new RowCallbackHandler() {
+        jdbcOps.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 CapControlStateComparisonModel.ModelRow row = new CapControlStateComparisonModel.ModelRow();
                     row.region = rs.getString("region");
@@ -85,56 +86,56 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
     
-    public StringBuffer buildSQLStatement() {
-        StringBuffer sql = new StringBuffer ("");
+    public SqlStatementBuilder buildSQLStatement() {
+        SqlStatementBuilder sql = new SqlStatementBuilder ("");
         if(!useMisMatch) {
             sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
             sql.append("yp.paoName cbcName, s.text capBankStatus, isNull(elf.capbankstateinfo, '---') capBankState, s1.text cbcStatus,  ");
             sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
             sql.append("from  (select * from yukonpaobject where type like 'CBC 702%') yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
-            sql.append("join POINT p on p.PAObjectID = cb.deviceid and p.POINTOFFSET = 1 and p.POINTTYPE = 'Status' ");
+            sql.append("join POINT p on p.PAObjectID = cb.deviceid and p.POINTOFFSET = 1 and p.POINTTYPE = ").appendArgument(PointType.Status.getPointTypeString());
             sql.append("left join (select pointid, capbankstateinfo from CCEventLog el, ");
             sql.append("(select MAX(logid) as el2Logid, pointid as el2PointId from CCEventLog where text like 'Var:%' group by pointid) el2 ");
             sql.append("where el.logID = el2.el2Logid ) elf ");
             sql.append("on ELF.pointid = p.pointid ");
-            sql.append("join (select * from yukonpaobject where type like 'CAP BANK') yp1 on yp1.paobjectid = cb.deviceid ");
+            sql.append("join (select * from yukonpaobject where type = ").appendArgument(CapControlType.CAPBANK.getDisplayValue()).append(") yp1 on yp1.paobjectid = cb.deviceid ");
             sql.append("left outer join ccfeederbanklist fb on fb.deviceid = cb.deviceid ");
-            sql.append("left outer join (select * from yukonpaobject where type like 'CCFEEDER') yp2 on yp2.paobjectid = fb.feederid ");
+            sql.append("left outer join (select * from yukonpaobject where type like ").appendArgument(CapControlType.FEEDER.getDisplayValue()).append(") yp2 on yp2.paobjectid = fb.feederid ");
             sql.append("left outer join ccfeedersubassignment sf on fb.feederid = sf.feederid ");
-            sql.append("left outer join (select * from yukonpaobject where type like 'CCSUBBUS') yp3 on yp3.paobjectid = sf.substationbusid ");
+            sql.append("left outer join (select * from yukonpaobject where type like ").appendArgument(CapControlType.SUBBUS.getDisplayValue()).append(") yp3 on yp3.paobjectid = sf.substationbusid ");
             sql.append("left outer join ccsubstationsubbuslist ss on sf.substationbusid = ss.substationbusid ");
-            sql.append("left outer join (select * from yukonpaobject where type like 'CCSUBSTATION') yp4 on yp4.paobjectid = ss.substationid ");
+            sql.append("left outer join (select * from yukonpaobject where type like ").appendArgument(CapControlType.SUBSTATION.getDisplayValue()).append(") yp4 on yp4.paobjectid = ss.substationid "); 
             sql.append("join dynamiccccapbank dcb on dcb.capbankid = cb.deviceid ");
             sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
             sql.append("left outer join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate ");
             sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
             sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
-            sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
+            sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type = ").appendArgument(CapControlType.AREA.getDisplayValue()).append(") ca on ca.paobjectid = saa.areaid ");
         } else {
             sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
             sql.append("yp.paoName cbcName, s.text capBankStatus, isNull(elf.capbankstateinfo, '---') capBankState, s1.text cbcStatus, ");
             sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
             sql.append("from (select * from yukonpaobject where type like 'CBC 702%') yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
-            sql.append("join POINT p on p.PAObjectID = cb.deviceid and p.POINTOFFSET = 1 and p.POINTTYPE = 'Status' ");
+            sql.append("join POINT p on p.PAObjectID = cb.deviceid and p.POINTOFFSET = 1 and p.POINTTYPE = ").appendArgument(PointType.Status.getPointTypeString());
             sql.append("left join (select pointid, capbankstateinfo from CCEventLog el, ");
             sql.append("(select MAX(logid) as el2Logid, pointid as el2PointId from CCEventLog where text like 'Var:%' group by pointid) el2 ");
             sql.append("where el.logID = el2.el2Logid ) elf ");
             sql.append("on ELF.pointid = p.pointid ");
-            sql.append("join (select * from yukonpaobject where type like 'CAP BANK') yp1 on yp1.paobjectid = cb.deviceid ");
+            sql.append("join (select * from yukonpaobject where type like ").appendArgument(CapControlType.CAPBANK.getDisplayValue()).append(") yp1 on yp1.paobjectid = cb.deviceid ");
             sql.append("left outer join ccfeederbanklist fb on fb.deviceid = cb.deviceid ");
-            sql.append("left outer join (select * from yukonpaobject where type like 'CCFEEDER') yp2 on yp2.paobjectid = fb.feederid ");
+            sql.append("left outer join (select * from yukonpaobject where type like ").appendArgument(CapControlType.FEEDER.getDisplayValue()).append(") yp2 on yp2.paobjectid = fb.feederid ");
             sql.append("left outer join ccfeedersubassignment sf on fb.feederid = sf.feederid ");
-            sql.append("left outer join (select * from yukonpaobject where type like 'CCSUBBUS') yp3 on yp3.paobjectid = sf.substationbusid ");
+            sql.append("left outer join (select * from yukonpaobject where type like ").appendArgument(CapControlType.SUBBUS.getDisplayValue()).append(") yp3 on yp3.paobjectid = sf.substationbusid ");
             sql.append("left outer join ccsubstationsubbuslist ss on sf.substationbusid = ss.substationbusid ");
-            sql.append("left outer join (select * from yukonpaobject where type like 'CCSUBSTATION') yp4 on yp4.paobjectid = ss.substationid ");
+            sql.append("left outer join (select * from yukonpaobject where type like ").appendArgument(CapControlType.SUBSTATION.getDisplayValue()).append(") yp4 on yp4.paobjectid = ss.substationid "); 
             sql.append("join dynamiccccapbank dcb on dcb.capbankid = cb.deviceid ");
             sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
             sql.append("join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate and s1.rawstate != s.rawstate ");
             sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
             sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
-            sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
+            sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type = ").appendArgument(CapControlType.AREA.getDisplayValue()).append(") ca on ca.paobjectid = saa.areaid ");
         }
         
         String result = null;
