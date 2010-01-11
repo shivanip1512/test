@@ -717,10 +717,23 @@ LONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::getCurrentVarLoadPointValue() const
 {
-    if (_dualBusEnable && _switchOverStatus && !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
+    if ((_dualBusEnable && _switchOverStatus) &&
+        !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
     {
         return _altSubControlValue;
     }
+    if(getPrimaryBusFlag() &&
+       !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
+       !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits))
+    {
+        return _altSubVarVal;
+    }
+    
+    return _currentvarloadpointvalue;
+}
+
+DOUBLE CtiCCSubstationBus::getRawCurrentVarLoadPointValue() const
+{
     return _currentvarloadpointvalue;
 }
 
@@ -740,6 +753,20 @@ LONG CtiCCSubstationBus::getCurrentWattLoadPointId() const
     Returns the current watt load point value of the substation
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::getCurrentWattLoadPointValue() const
+{
+    if ((_dualBusEnable && _switchOverStatus) || getPrimaryBusFlag())
+    {
+        if(!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
+        !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits))
+        {
+            return _altSubWattVal;
+        }
+    }
+
+    return _currentwattloadpointvalue;
+}
+
+DOUBLE CtiCCSubstationBus::getRawCurrentWattLoadPointValue() const
 {
     return _currentwattloadpointvalue;
 }
@@ -761,9 +788,12 @@ LONG CtiCCSubstationBus::getCurrentVoltLoadPointId() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::getCurrentVoltLoadPointValue() const
 {
-    if (_dualBusEnable && _switchOverStatus && !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
+    if (_dualBusEnable && _switchOverStatus)
     {
-        return _altSubControlValue;
+        if(!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
+        {
+            return _altSubControlValue;
+        }
     }
     return _currentvoltloadpointvalue;
 }
@@ -2671,9 +2701,21 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
     }
     _varvaluebeforecontrol = oldvarval;
 
+    if (getPrimaryBusFlag() && 
+       (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
+       !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ))
+    {
+        setPhaseAValueBeforeControl(oldvarval / 3 );
+        setPhaseBValueBeforeControl(oldvarval / 3 );
+        setPhaseCValueBeforeControl(oldvarval / 3 );
+    }
+    else
+    {
     setPhaseAValueBeforeControl(getPhaseAValue());
     setPhaseBValueBeforeControl(getPhaseBValue());
     setPhaseCValueBeforeControl(getPhaseCValue());
+    }
+
 
     return *this;
 }
@@ -4408,7 +4450,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                     sendRetries = currentFeeder->getControlSendRetries();
                     failPercent = currentFeeder->getFailurePercent();
                 }
-                if (getUsePhaseData() && !getTotalizedControlFlag())
+                if (getUsePhaseData() && !getTotalizedControlFlag() && !getPrimaryBusFlag())
                 {
                     currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                        failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),

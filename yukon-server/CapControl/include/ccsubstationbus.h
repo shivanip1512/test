@@ -100,8 +100,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
+    DOUBLE getRawCurrentVarLoadPointValue() const;
     LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
+    DOUBLE getRawCurrentWattLoadPointValue() const;
     LONG getCurrentVoltLoadPointId() const;
     DOUBLE getCurrentVoltLoadPointValue() const;
     LONG getControlInterval() const;

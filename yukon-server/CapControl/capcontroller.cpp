@@ -2418,7 +2418,7 @@ void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstatio
         }
         else
         {
-            currentBus->setAltSubControlValue(currentBus->getCurrentVarLoadPointValue());
+            currentBus->setAltSubControlValue(currentBus->getRawCurrentVarLoadPointValue());
         }
         currentBus->setBusUpdatedFlag(TRUE);
     }
@@ -2432,8 +2432,9 @@ void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstatio
             if (primarySub->getPrimaryBusFlag())
             {
                 primarySub->setAllAltSubValues((primarySub->getCurrentVoltLoadPointValue() + currentBus->getCurrentVoltLoadPointValue()) / 2,
-                                       primarySub->getCurrentVarLoadPointValue() + currentBus->getCurrentVarLoadPointValue(),
-                                       primarySub->getCurrentWattLoadPointValue() + currentBus->getCurrentWattLoadPointValue());
+                                       primarySub->getRawCurrentVarLoadPointValue() + currentBus->getRawCurrentVarLoadPointValue(),
+                                       primarySub->getRawCurrentWattLoadPointValue() + currentBus->getRawCurrentWattLoadPointValue());
+                primarySub->setNewPointDataReceivedFlag(TRUE);
             }
 
             currentBus->setAllAltSubValues(currentBus->getCurrentVoltLoadPointValue(),
@@ -2552,8 +2553,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 altSub->setPrimaryBusFlag(TRUE);
 
                                 altSub->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2,
-                                                       altSub->getCurrentVarLoadPointValue() + currentSubstationBus->getCurrentVarLoadPointValue(),
-                                                       altSub->getCurrentWattLoadPointValue() + currentSubstationBus->getCurrentWattLoadPointValue());
+                                                       altSub->getRawCurrentVarLoadPointValue() + currentSubstationBus->getRawCurrentVarLoadPointValue(),
+                                                       altSub->getRawCurrentWattLoadPointValue() + currentSubstationBus->getRawCurrentWattLoadPointValue());
                                 CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
                                 int j = ccFeeders.size();
                                 while (j > 0)
@@ -2997,7 +2998,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         if (!currentSubstationBus->getUsePhaseData())
                         {
 
-                            if (currentSubstationBus->getCurrentVarLoadPointValue() != value)
+                            if (currentSubstationBus->getRawCurrentVarLoadPointValue() != value)
                             {
                                 currentSubstationBus->setCurrentVarLoadPointValue(value,timestamp);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -3213,8 +3214,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             if (currentSubstationBus->getPrimaryBusFlag())
                             {
                                 currentSubstationBus->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2,
-                                                           altSub->getCurrentVarLoadPointValue() + currentSubstationBus->getCurrentVarLoadPointValue(),
-                                                           altSub->getCurrentWattLoadPointValue() + currentSubstationBus->getCurrentWattLoadPointValue());
+                                                           altSub->getRawCurrentVarLoadPointValue() + currentSubstationBus->getRawCurrentVarLoadPointValue(),
+                                                           altSub->getRawCurrentWattLoadPointValue() + currentSubstationBus->getRawCurrentWattLoadPointValue());
                             }
                         }
                         else
