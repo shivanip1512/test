@@ -1,7 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<cti:url var="updateUrl" value='/logging/tail/update?file=/${file}' />
+<cti:url var="updateUrl" value='/spring/support/logging/tail/update?file=/${file}' />
 
 
 <cti:standardPage module="support">
@@ -29,23 +29,20 @@ initiateCannonLogUpdate("${updateUrl}" ,2);
 </tags:nameValueContainer>
 </div>
 
-<br />
+<br>
 
 <form id="newLinesForm">
-<input type="hidden" id="file" name="file" value="${file}" size=5 />
-<span id="numTail" name="numTail">number of lines tailed = <input onchange="$('newLinesForm').action = 'tail?file=${file}'; submit();" id="numLines" name="numLines" value=${numLines} size=5 /></span>
+<input type="hidden" id="file" name="file" value="${file}" size=5>
+<span id="numTail">number of lines tailed = <input onchange="$('newLinesForm').action = 'tail?file=${file}'; submit();" id="numLines" name="numLines" value=${numLines} size=5 ></span>
 &nbsp&nbsp<button id="submitLines" onclick="$('newLinesForm').action = 'tail?file=${file}'; submit();">Change</button>
 &nbsp&nbsp<button id="pauseButton" onclick="startOrPauseUpdate();" type="button">Pause</button>
-&nbsp&nbsp<button id="viewButton"" onclick="$('newLinesForm').action = 'view?file=${file}'; submit();" type="button">View</button>
-&nbsp&nbsp<button id="downloadButton"" onclick="$('newLinesForm').action = 'download?file=${file}'; submit();" type="button">Download</button>
+&nbsp&nbsp<button id="viewButton" onclick="$('newLinesForm').action = 'view?file=${file}'; submit();" type="button">View</button>
+&nbsp&nbsp<button id="downloadButton" onclick="$('newLinesForm').action = 'download?file=${file}'; submit();" type="button">Download</button>
 </form>
 
 
-<div id="cannonUpdaterErrorDiv" style="display: none; position: fixed; bottom: 0; left: 0; width: auto; background: red; color: white; font-weight: bold">
-Connection to server has been lost
-</div>
-
 <div id="logContents">
-<pre id="logOutput"><c:forEach var="line" items="${logContents}"><div>${line}</div></c:forEach></pre>
+<pre id="logOutput"><c:forEach var="line" items="${logContents}"><span>${line}
+</span></c:forEach></pre>
 </div>
 </cti:standardPage>

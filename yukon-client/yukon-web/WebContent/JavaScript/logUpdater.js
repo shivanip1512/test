@@ -3,9 +3,6 @@ function initiateCannonLogUpdate(url, periodSecs) {
 	var fileLength = 0;
     var processResponseCallback = function(transport) {
     
-    	// hide the error page
-        $('cannonUpdaterErrorDiv').hide();
-        
         // retrieves the callback information and sets them
     	// to local instance variables
         var content = transport.responseText;
@@ -34,22 +31,27 @@ function initiateCannonLogUpdate(url, periodSecs) {
 			 * on the screen
 			 */
 			logContentsJSON.each(function(newLogLine) {
-				var logLineDiv = document.createElement('div');
-				var textNode = document.createTextNode(newLogLine);
-				logLineDiv.appendChild(textNode);
-				$$('#logOutput div').shift().remove();
-				$('logOutput').appendChild(logLineDiv);
+				appendLogEntry(newLogLine);
 			});
         }
         setTimeout(doUpdate, periodSecs * 1000);   
 	};
     
     var failureCallback = function(transport) {
-        // something bad happened, show user that updates are off
-        $('cannonUpdaterErrorDiv').show();
+    	// stick error in the log
+    	appendLogEntry("Unknown error while downloading log data...");
         // schedule another update incase the server comes back, but slow it down a bit
         setTimeout(doUpdate, periodSecs * 1000 * 5);
     };
+    
+    var appendLogEntry = function(text) {
+		var logLineSpan = document.createElement('span');
+		var textNode = document.createTextNode(text + "\n");
+		logLineSpan.appendChild(textNode);
+		$$('#logOutput span').shift().remove();
+		$('logOutput').appendChild(logLineSpan);
+    };
+    
     var doUpdate = function() {
     	if(updatePaused){
     		setTimeout(doUpdate, periodSecs * 1000);
@@ -61,7 +63,7 @@ function initiateCannonLogUpdate(url, periodSecs) {
 	        var requestData = $H();
 	        requestData.fileLength = fileLength;
 	        requestData.numLines = $('numLines').value;
-	        requestData.file = $('file').innerHTML;
+	        requestData.file = $('file').value;
          
         	var requestJson = requestData.toJSON();
 	        
@@ -69,7 +71,8 @@ function initiateCannonLogUpdate(url, periodSecs) {
    	         	method: 'post',
             	postBody: requestJson,
             	contentType: 'application/json',
-            	onSuccess: processResponseCallback,
+            	on200: processResponseCallback,
+            	onSuccess: failureCallback,
             	onFailure: failureCallback,
             	onException: failureCallback
         	});
