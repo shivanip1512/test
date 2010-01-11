@@ -1869,8 +1869,6 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
         		}
 	        }
 	    });
-	} else {
-		CTILogger.info("DBChange Message received that originated from ourself, doing nothing.");
 	}
 }
 
