@@ -132,7 +132,6 @@ void ConnectionHandlerThread(int portNumber)
             // It seems necessary to make this copy. RW does this and now so do we.
             RWSocket tempSocket = sock;
             RWSocket newSocket = tempSocket.accept();
-            RWSocketPortal sock;
 
             if( !newSocket.valid() )
             {
@@ -141,8 +140,7 @@ void ConnectionHandlerThread(int portNumber)
             }
             else
             {
-                sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
-                //sock = (*Listener)();
+                RWSocketPortal portal = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -150,7 +148,7 @@ void ConnectionHandlerThread(int portNumber)
                 }
 
                 {
-                    XChg                                = CTIDBG_new CtiExchange(sock);
+                    XChg                      = CTIDBG_new CtiExchange(portal);
                     CtiConnection *connection = CTIDBG_new CtiConnection(XChg, &MainQueue_);
 
                     connection->ThreadInitiate();     // Kick off the connection's communication threads.
