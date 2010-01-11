@@ -3625,6 +3625,17 @@ INT CtiDeviceMCT470::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &Time
 }
 
 
+void CtiDeviceMCT470::reportPointData(const CtiPointType_t pointType, const int pointOffset, CtiReturnMsg &ReturnMsg, INMESS &InMessage, const point_info &pi, const string pointName)
+{
+    insertPointDataReport(pointType, pointOffset, &ReturnMsg, pi, pointName);
+
+    if( pi.quality == InvalidQuality )
+    {
+        insertPointFail(&InMessage, &ReturnMsg, ScanRateGeneral, pointOffset, pointType);
+    }
+}
+
+
 INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int        status = NORMAL,
@@ -3794,6 +3805,42 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
         }
         else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
         {
+            bool has_volts = true;
+
+            if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+            {
+                switch( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4 )
+                {
+                    case IED_Type_LG_S4:
+                    case IED_Type_Alpha_A3:
+                    case IED_Type_GE_kV:
+                    case IED_Type_GE_kV2:
+                    case IED_Type_GE_kV2c:
+                    case IED_Type_Sentinel:
+                    {
+                        has_volts = true;
+                        break;
+                    }
+
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << ") for getvalue ied demand **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    case IED_Type_Alpha_PP:
+                    {
+                        has_volts = false;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                has_volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseA, AnalogPointType) ||
+                            getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseB, AnalogPointType) ||
+                            getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseC, AnalogPointType);
+            }
+
             if( dataInvalid )
             {
                 //  If we are here, we believe the data is incorrect!
@@ -3802,114 +3849,52 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
                 insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
+
+                if( has_volts )
+                {
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
+                }
+                else
+                {
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
+                }
             }
             else
             {
-                bool send_outages = true;
-
                 //  get demand
                 pi = getData(DSt->Message, 3, ValueType_IED);
 
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKW,
-                                      ReturnMsg, pi, "current kW");
-
-                if( pi.quality == InvalidQuality )
-                {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW, AnalogPointType);
-                }
+                reportPointData(AnalogPointType, PointOffset_TotalKW, *ReturnMsg, *InMessage, pi, "current kW");
 
                 //  get selectable metric (kM, kVAR, etc)
                 pi = getData(DSt->Message + 3, 3, ValueType_IED);
 
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKM,
-                                      ReturnMsg, pi, "current kM");
+                reportPointData(AnalogPointType, PointOffset_TotalKM, *ReturnMsg, *InMessage, pi, "current kM");
 
-                if( pi.quality == InvalidQuality )
+                if( has_volts )
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM, AnalogPointType);
-                }
-
-                //  S4-specific - get voltage
-                pi = getData(DSt->Message + 6, 2, ValueType_IED);
-
-                if( getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseA, AnalogPointType) )
-                {
-                    send_outages = false;
-
+                    pi = getData(DSt->Message + 6, 2, ValueType_IED);
                     pi.value /= 100.0;
-                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseA,
-                                          ReturnMsg, pi);
 
-                    if( pi.quality == InvalidQuality )
-                    {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
-                    }
-                }
-                //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
-                //    both happen (until we have the configs to tell us which one to use)
-                /*else
-                {
-                    resultString += getName() + " / Phase A Volts = " + CtiNumStr(pi.value) + "\n";
-                }*/
+                    reportPointData(AnalogPointType, PointOffset_VoltsPhaseA, *ReturnMsg, *InMessage, pi, "Phase A Volts");
 
-                pi = getData(DSt->Message + 8, 2, ValueType_IED);
-
-                if( getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseB, AnalogPointType) )
-                {
-                    send_outages = false;
-
+                    pi = getData(DSt->Message + 8, 2, ValueType_IED);
                     pi.value /= 100.0;
-                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseB,
-                                          ReturnMsg, pi);
 
-                    if( pi.quality == InvalidQuality )
-                    {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
-                    }
-                }
-                //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
-                //    both happen (until we have the configs to tell us which one to use)
-                /*else
-                {
-                    resultString += getName() + " / Phase B Volts = " + CtiNumStr(pi.value) + "\n";
-                }*/
+                    reportPointData(AnalogPointType, PointOffset_VoltsPhaseB, *ReturnMsg, *InMessage, pi, "Phase B Volts");
 
-                pi = getData(DSt->Message + 10, 2, ValueType_IED);
-
-                if( getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseC, AnalogPointType))
-                {
-                    send_outages = false;
-
+                    pi = getData(DSt->Message + 10, 2, ValueType_IED);
                     pi.value /= 100.0;
-                    insertPointDataReport(AnalogPointType, PointOffset_VoltsPhaseC,
-                                          ReturnMsg, pi);
 
-                    if( pi.quality == InvalidQuality )
-                    {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
-                    }
+                    reportPointData(AnalogPointType, PointOffset_VoltsPhaseC, *ReturnMsg, *InMessage, pi, "Phase C Volts");
                 }
-                //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
-                //    both happen (until we have the configs to tell us which one to use)
-                /*else
-                {
-                    resultString += getName() + " / current KM = " + CtiNumStr(pi.value) + "\n";
-                }*/
-
-                if( send_outages )
+                else
                 {
                     pi = getData(DSt->Message + 6, 2, ValueType_IED);
 
-                    insertPointDataReport(AnalogPointType, PointOffset_OutageCount,
-                                          ReturnMsg, pi, "Outage Count");
-
-                    if( pi.quality == InvalidQuality )
-                    {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
-                    }
+                    reportPointData(AnalogPointType, PointOffset_OutageCount, *ReturnMsg, *InMessage, pi, "Outage Count");
                 }
             }
         }
