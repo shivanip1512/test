@@ -46,6 +46,9 @@ public class MessageScopeHelper {
         }
 
         public void pushScope(String keyPart, boolean sticky) {
+            if (StringUtils.isBlank(keyPart)) {
+                return;
+            }
             ScopeHolder scopeHolder = new ScopeHolder(keyPart, sticky);
             scopeStack.push(scopeHolder);
         }

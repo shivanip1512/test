@@ -12,6 +12,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 
 
@@ -59,9 +61,12 @@ public class StandardPageTag extends BodyTagSupport {
         
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         MessageScope messageScope = MessageScopeHelper.forRequest(request);
-        // don't forget to pop what gets pushed
+        
         messageScope.pushScope("yukon.web.modules." + model.getModuleName(), false);
-        messageScope.pushScope(model.getPageName(), false);
+        if (StringUtils.isNotBlank(model.getPageName())) {
+            messageScope.pushScope(model.getPageName(), false);
+        }
+        // the above scopes won't be popped so that they're available for the layout
         
         return EVAL_BODY_BUFFERED;
     }
@@ -74,11 +79,6 @@ public class StandardPageTag extends BodyTagSupport {
     @Override
     public int doEndTag() throws JspException {
         try {
-            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-            MessageScope messageScope = MessageScopeHelper.forRequest(request);
-            messageScope.popScope();
-            messageScope.popScope();
-            
             if (skipPage) {
                 return SKIP_PAGE;
             }

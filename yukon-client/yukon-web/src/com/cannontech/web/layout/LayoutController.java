@@ -28,8 +28,6 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.MessageCodeGenerator;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -92,28 +90,19 @@ public class LayoutController {
         if (pageInfo != null) {
             pageDetail = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
         } else {
-            // create dummy page detail
-            MessageSourceResolvable pageTitle = MessageScopeHelper.forRequest(request).generateResolvable("pageTitle");
+            // create dummy page detail for pre-2010 pages
             pageDetail = new PageDetail();
             pageDetail.setBreadCrumbText("");
-            pageDetail.setPageTitle(messageSourceAccessor.getMessage(pageTitle));
+            if (StringUtils.isNotBlank(tagInfo.getTitle())) {
+                pageDetail.setPageTitle(tagInfo.getTitle());
+            } else {
+                MessageSourceResolvable pageTitle = MessageScopeHelper.forRequest(request).generateResolvable(".pageTitle");
+                pageDetail.setPageTitle(messageSourceAccessor.getMessage(pageTitle));
+                
+            }
         }
         
-        // determine title and page key
-        String title = null;
-        if (StringUtils.isNotBlank(tagInfo.getTitle())) {
-            // this is what all of the pages created before 2010 look like
-            // generate page name from title
-            String pageKey = MessageCodeGenerator.generateCode(tagInfo.getModuleName(), tagInfo.getTitle());
-            String titleKey = "yukon.web.modules." + pageKey + ".pageTitle";
-            MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(titleKey, tagInfo.getTitle());
-            title = messageSourceAccessor.getMessage(messageSourceResolvable);
-        } else {
-            // this is how new pages will get their title (2010 and on)
-            title = pageDetail.getPageTitle();
-        }
-        
-        map.addAttribute("title", title);
+        map.addAttribute("title", pageDetail.getPageTitle());
         map.addAttribute("heading", pageDetail.getPageHeading());
         
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
