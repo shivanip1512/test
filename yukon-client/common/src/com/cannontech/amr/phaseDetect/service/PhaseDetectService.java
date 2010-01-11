@@ -31,7 +31,7 @@ public interface PhaseDetectService {
 
     public void cancelReadPhaseDetect(LiteYukonUser user);
 
-    public void cancelTest();
+    public void cancelTest(LiteYukonUser user);
 
     public String cacheResults();
 

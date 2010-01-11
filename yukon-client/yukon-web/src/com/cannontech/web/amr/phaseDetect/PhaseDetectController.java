@@ -143,10 +143,10 @@ public class PhaseDetectController {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public String saveBroadcastRoutes(ModelMap model, HttpServletRequest request) throws ServletException {
+    public String saveBroadcastRoutes(ModelMap model, HttpServletRequest request, LiteYukonUser user) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
-            phaseDetectService.cancelTest();
+            phaseDetectService.cancelTest(user);
             return "redirect:home";
         }
         List<Route> routes = phaseDetectService.getPhaseDetectData().getReadRoutes();
@@ -172,7 +172,7 @@ public class PhaseDetectController {
     public String clear(LiteYukonUser user, ModelMap model, HttpServletRequest request) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
-            phaseDetectService.cancelTest();
+            phaseDetectService.cancelTest(user);
             return "redirect:home";
         }
         
@@ -193,10 +193,10 @@ public class PhaseDetectController {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public String saveTestSettings(int intervalLength, int deltaVoltage, int numIntervals, ModelMap model, HttpServletRequest request) throws ServletException {
+    public String saveTestSettings(int intervalLength, int deltaVoltage, int numIntervals, ModelMap model, HttpServletRequest request, LiteYukonUser user) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
-            phaseDetectService.cancelTest();
+            phaseDetectService.cancelTest(user);
             return "redirect:home";
         }
         if(intervalLength < 15 || intervalLength > 60) intervalLength = 30;
@@ -325,8 +325,8 @@ public class PhaseDetectController {
     }
     
     @RequestMapping
-    public String cancelTest(ModelMap model){
-        phaseDetectService.cancelTest();
+    public String cancelTest(ModelMap model, LiteYukonUser user){
+        phaseDetectService.cancelTest(user);
         return "redirect:home";
     }
     
@@ -351,7 +351,7 @@ public class PhaseDetectController {
     public String phaseDetectResults(ModelMap model, LiteYukonUser user, HttpServletRequest request) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
-            phaseDetectService.cancelTest();
+            phaseDetectService.cancelTest(user);
             return "redirect:home";
         }
         if(phaseDetectService.getPhaseDetectResult() != null){

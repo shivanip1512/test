@@ -370,7 +370,8 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     }
     
     @Override
-    public void cancelTest(){
+    public void cancelTest(LiteYukonUser user){
+        cancelReadPhaseDetect(user);
         phaseDetectData = null;
         phaseDetectResult = null;
         phaseDetectState = null;
