@@ -1,7 +1,12 @@
 package com.cannontech.web.menu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Represents the logical base of the menu for a given module. The main components are
@@ -16,9 +21,10 @@ public class ModuleBase {
     private String searchFieldName;
     private String searchMethod;
     private MenuBase portalLinks;
+    private Map<String, PageInfo> pageInfos = Maps.newHashMap();
     private List<String> cssFiles = new ArrayList<String>(2);
     private List<String> scriptFiles = new ArrayList<String>(2);
-    private String skin;
+    private LayoutSkinEnum skin;
     private MenuBase menuBase;
     
     public ModuleBase(String moduleName) {
@@ -57,11 +63,11 @@ public class ModuleBase {
         this.menuBase = menuBase;
     }
 
-    public String getSkin() {
+    public LayoutSkinEnum getSkin() {
         return skin;
     }
 
-    public void setSkin(String skin) {
+    public void setSkin(LayoutSkinEnum skin) {
         this.skin = skin;
     }
 
@@ -79,6 +85,20 @@ public class ModuleBase {
 
     public void setSearchMethod(String searchMethod) {
         this.searchMethod = searchMethod;
+    }
+
+    public PageInfo getPageInfo(String pageName) {
+        return pageInfos.get(pageName);
+    }
+
+    public void addPageInfo(PageInfo breadCrumb) {
+        pageInfos.put(breadCrumb.getName(), breadCrumb);
+    }
+    
+    public List<PageInfo> getAllPageInfos() {
+        ArrayList<PageInfo> result = Lists.newArrayList(pageInfos.values());
+        Collections.sort(result);
+        return Collections.unmodifiableList(result);
     }
 
     public List<String> getCssFiles() {

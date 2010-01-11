@@ -35,10 +35,13 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.CommonModuleBuilder;
+import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.ModuleBase;
+import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
 import com.cannontech.web.menu.renderer.MenuRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
+import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.Writable;
@@ -48,6 +51,7 @@ public class LayoutController {
     private RolePropertyDao rolePropertyDao;
     private CommonModuleBuilder moduleBuilder;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private PageDetailProducer pageDetailProducer;
 
     private List<String> layoutScriptFiles = new ArrayList<String>(3);
     
@@ -73,47 +77,50 @@ public class LayoutController {
             }
         });
         
-        StandardPageInfo info = StandardPageTag.getStandardPageInfo(request);
-        map.addAttribute("info", info);
+        StandardPageInfo tagInfo = StandardPageTag.getStandardPageInfo(request);
+        map.addAttribute("info", tagInfo);
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
+        ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
+        map.addAttribute("module", moduleBase);
+        
+        PageInfo pageInfo = moduleBase.getPageInfo(tagInfo.getPageName());
+
+        PageDetail pageDetail;
+        if (pageInfo != null) {
+            pageDetail = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
+        } else {
+            // create dummy page detail
+            MessageSourceResolvable pageTitle = MessageScopeHelper.forRequest(request).generateResolvable("pageTitle");
+            pageDetail = new PageDetail();
+            pageDetail.setBreadCrumbText("");
+            pageDetail.setPageTitle(messageSourceAccessor.getMessage(pageTitle));
+        }
+        
         // determine title and page key
         String title = null;
-        String pageKey = null;
-        if (StringUtils.isNotBlank(info.getTitle()) && StringUtils.isBlank(info.getPageName())) {
-            // this is what all of the pages created before today look like
+        if (StringUtils.isNotBlank(tagInfo.getTitle())) {
+            // this is what all of the pages created before 2010 look like
             // generate page name from title
-            pageKey = MessageCodeGenerator.generateCode(info.getModuleName(), info.getTitle());
+            String pageKey = MessageCodeGenerator.generateCode(tagInfo.getModuleName(), tagInfo.getTitle());
             String titleKey = "yukon.web.modules." + pageKey + ".pageTitle";
-            MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(titleKey, info.getTitle());
+            MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(titleKey, tagInfo.getTitle());
             title = messageSourceAccessor.getMessage(messageSourceResolvable);
-        } else if (StringUtils.isNotBlank(info.getTitle()) && StringUtils.isNotBlank(info.getPageName())) {
-            // specifying both is a special case, but may be required for generated titles
-            pageKey = info.getModuleName() + "." + info.getPageName();
-            title = info.getTitle();
         } else {
-            // this will be a common pairing for new pages
-            pageKey = info.getModuleName() + "." + info.getPageName();
-            String titleKey = "yukon.web.modules." + pageKey + ".pageTitle";
-            String defaultModuleTitle = "yukon.web.modules." + info.getModuleName() + ".pageTitle";
-            String defaultTitle = "yukon.web.defaults.pageTitle";
-            MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createMultipleCodes(titleKey, defaultModuleTitle, defaultTitle);
-            title = messageSourceAccessor.getMessage(messageSourceResolvable);
+            // this is how new pages will get their title (2010 and on)
+            title = pageDetail.getPageTitle();
         }
         
         map.addAttribute("title", title);
-        map.addAttribute("pageKey", pageKey);
-        
-        ModuleBase moduleBase = getModuleBase(info.getModuleName());
-        map.addAttribute("module", moduleBase);
+        map.addAttribute("heading", pageDetail.getPageHeading());
         
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);
         map.addAttribute("moduleConfigCss", moduleConfigCssList);
         
-        List<String> innerContentCssList = new ArrayList<String>(info.getCssFiles());
+        List<String> innerContentCssList = new ArrayList<String>(tagInfo.getCssFiles());
         removeDuplicates(innerContentCssList);
         map.addAttribute("innerContentCss", innerContentCssList);
         
@@ -131,23 +138,48 @@ public class LayoutController {
 
         // get script files declared in the module
         finalScriptList.addAll(moduleBase.getScriptFiles());
-        finalScriptList.addAll(info.getScriptFiles());
+        finalScriptList.addAll(tagInfo.getScriptFiles());
         map.addAttribute("javaScriptFiles", finalScriptList);
         
-        String skin = moduleBase.getSkin();
-        if (info.isShowMenu()) {
+        LayoutSkinEnum skin = moduleBase.getSkin();
+        
+        // handle new and old methods for specifying menu (but not both)
+        boolean showNewMenu = false;
+        if (pageInfo != null) {
+            showNewMenu = pageInfo.isRenderMenu();
+        }
+        boolean showOldMenu = tagInfo.isShowMenu();
+        boolean showMenu = false;
+        if (showOldMenu && showNewMenu) {
+            throw new IllegalStateException("Menu cannot be specified on JSP and in module_config.xml");
+        }
+        
+        String menuSelection = null;
+        if (showOldMenu) {
+            menuSelection = tagInfo.getMenuSelection();
+            showMenu = true;
+        } else if (showNewMenu) {
+            menuSelection = pageInfo.getMenuSelection();
+            showMenu = true;
+        }
+        
+        if (showMenu) {
             // setup menu
-            
             final MenuRenderer menuRenderer;
-            if("leftSideMenu".equals(skin)) {
+            if(skin.isLeftSideMenu()) {
                 menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
             } else {
                 menuRenderer = new StandardMenuRenderer(request, moduleBase, messageSourceResolver);
             }
-            menuRenderer.setMenuSelection(info.getMenuSelection());
-            menuRenderer.setBreadCrumb(info.getBreadCrumbs());
-            String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-            menuRenderer.setHomeUrl(homeUrl);
+            menuRenderer.setMenuSelection(menuSelection);
+            // if bread crumbs were specified within the JSP, use them (old style)
+            String breadCrumbs = tagInfo.getBreadCrumbs();
+            if (breadCrumbs == null) {
+                // otherwise get the from the PageDetail object (new style)
+                breadCrumbs = pageDetail.getBreadCrumbText();
+            }
+            menuRenderer.setBreadCrumb(breadCrumbs);
+            menuRenderer.setHomeUrl("/home");
             map.addAttribute("menuRenderer", new Writable() {
                 public void write(Writer out) throws IOException {
                     menuRenderer.renderMenu(out);
@@ -160,9 +192,9 @@ public class LayoutController {
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-store");                                                                                                
 
-        return skin;
+        return skin.getViewName();
     }
-
+    
     @ModelAttribute("yukonVersion")
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();
@@ -203,6 +235,11 @@ public class LayoutController {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setPageDetailProducer(PageDetailProducer pageDetailProducer) {
+        this.pageDetailProducer = pageDetailProducer;
     }
 
 }

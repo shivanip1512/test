@@ -19,7 +19,7 @@ public class ParamTag extends SimpleTagSupport {
     public void doTag() throws JspException, IOException {
         JspTag t = findAncestorWithClass(this, ParamParent.class);
         if (t == null) {
-            throw new JspTagException("MapParamTag must be used within a tag that implements ParamParent.class");
+            throw new JspTagException("ParamTag must be used within a tag that implements ParamParent.class");
         }
         ParamParent parent = (ParamParent) t;
 

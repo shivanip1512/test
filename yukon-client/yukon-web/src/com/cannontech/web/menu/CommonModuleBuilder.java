@@ -1,6 +1,7 @@
 package com.cannontech.web.menu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import com.cannontech.web.menu.option.producer.DynamicMenuOptionProducer;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 import com.cannontech.web.menu.option.producer.MenuOptionProducerFactory;
 import com.cannontech.web.menu.option.producer.StaticMenuOptionProducer;
+import com.google.common.collect.Lists;
 
 /**
  * The purpose of this class is to parse the module_config.xml file (although
@@ -38,7 +40,6 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
     private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
     private MenuBase portalLinksBase = null;
-    private List<String> portalJavaScriptIncludes = new ArrayList<String>(3);
     private MenuOptionProducerFactory menuOptionProducerFactory;
     private final Resource moduleConfigFile;
     private final String menuKeyPrefix = "yukon.web.menu.portal";
@@ -83,9 +84,6 @@ public class CommonModuleBuilder implements ModuleBuilder {
         ModuleBase moduleBase = new ModuleBase(moduleName);
         // quickPortalList should have been built by now
         moduleBase.setPortalLinks(portalLinksBase);
-        for (String jsFile : portalJavaScriptIncludes) {
-            moduleBase.addScriptFiles(jsFile);
-        }
         
         Element topLinks = moduleElement.getChild("links");
         List<MenuOptionProducer> topLevelOptions = processLinksElement(topLinks, menuKeyModPrefix + moduleName);
@@ -100,7 +98,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
         }
         Element skinElement = moduleElement.getChild("skin");
         if (skinElement != null) {
-            moduleBase.setSkin(skinElement.getAttributeValue("name"));
+            String skinName = skinElement.getAttributeValue("name");
+            LayoutSkinEnum skin = LayoutSkinEnum.valueOf(skinName);
+            moduleBase.setSkin(skin);
         }
         List<?> cssElements = moduleElement.getChildren("css");
         for (Iterator<?> iter = cssElements.iterator(); iter.hasNext();) {
@@ -113,7 +113,57 @@ public class CommonModuleBuilder implements ModuleBuilder {
             moduleBase.addScriptFiles(scriptElement.getAttributeValue("file"));
         }
         
+        Element crumbs = moduleElement.getChild("pages");
+        Iterable<PageInfo> pageInfos = processPages(crumbs, moduleName, null);
+        for (PageInfo pageInfo : pageInfos) {
+            moduleBase.addPageInfo(pageInfo);
+        }
+
         moduleMap.put(moduleBase.getModuleName(), moduleBase);
+    }
+
+    private List<PageInfo> processPages(Element parentOfPages, String moduleName, PageInfo parent) {
+        if (parentOfPages == null) return Collections.emptyList();
+        List<?> children = parentOfPages.getChildren("page");
+        List<PageInfo> result = Lists.newArrayList();
+        for (Iterator<?> iterator = children.iterator(); iterator.hasNext();) {
+            Element element = (Element) iterator.next();
+            PageInfo pageInfo = new PageInfo();
+            pageInfo.setModuleName(moduleName);
+            pageInfo.setParent(parent);
+            
+            String idValue = element.getAttributeValue("name");
+            pageInfo.setName(idValue);
+            
+            String typeString = element.getAttributeValue("type");
+            PageTypeEnum pageType;
+            if (typeString == null) {
+                pageType = PageTypeEnum.BASIC;
+            } else {
+                pageType = PageTypeEnum.valueOf(typeString);
+            }
+            pageInfo.setPageType(pageType);
+            
+            String menuSelection = element.getChildTextTrim("menu");
+            pageInfo.setRenderMenu(menuSelection != null);
+            pageInfo.setMenuSelection(menuSelection);
+            
+            String linkText = element.getChildTextTrim("link");
+            pageInfo.setLinkExpression(linkText);
+            
+            List<?> argumentElements = element.getChildren("labelArgument");
+            for (Iterator<?> argumentIterator = argumentElements.iterator(); argumentIterator.hasNext();) {
+                Element argumentElement = (Element) argumentIterator.next();
+                String argumentText = argumentElement.getTextTrim();
+                pageInfo.addLabelArgumentExpression(argumentText);
+            }
+            result.add(pageInfo);
+            
+            // now add the children of the element
+            List<PageInfo> childCrumbs = processPages(element, moduleName, pageInfo);
+            result.addAll(childCrumbs);
+        }
+        return result;
     }
 
     private List<MenuOptionProducer> processLinksElement(Element linksElement, String prefix)
@@ -220,15 +270,25 @@ public class CommonModuleBuilder implements ModuleBuilder {
     
     public ModuleBase getModuleBase(String moduleName) {
         
+        refreshModules();
+        
+        ModuleBase moduleBase = moduleMap.get(moduleName);
+        Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check module_config.xml).");
+        return moduleBase;
+    }
+
+    private void refreshModules() {
         boolean devMode = configurationSource.getBoolean("DEVELOPMENT_MODE", false);
         if(devMode) {
             // refresh the cached module configuration on each call if we're in development mode
             this.processConfigFile();
         }
+    }
+    
+    public List<ModuleBase> getAllModules() {
+        refreshModules();
         
-        ModuleBase moduleBase = moduleMap.get(moduleName);
-        Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check module_config.xml).");
-        return moduleBase;
+        return Lists.newArrayList(moduleMap.values());
     }
 
     public void setMenuOptionProducerFactory(

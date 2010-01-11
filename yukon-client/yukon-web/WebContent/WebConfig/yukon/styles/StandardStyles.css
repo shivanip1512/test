@@ -56,6 +56,9 @@ body {
   font-size: .95em;
 }
   
+#Content h2.standardPageHeading {
+    margin-bottom: 1em;
+}
 
 #Menu #topMenu {
     border-top: 1px solid #0066CC;

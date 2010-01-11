@@ -1,10 +1,12 @@
 package com.cannontech.i18n;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.ObjectArrays;
 
 /**
  * Yukon extension of DefaultMessageSourceResolvable with convenience
@@ -13,36 +15,93 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable {
     private static final long serialVersionUID = 3775006143046764578L;
 
+    public YukonMessageSourceResolvable(MessageSourceResolvable resolvable) {
+        super(resolvable);
+    }
+
+    public YukonMessageSourceResolvable(String code) {
+        super(code);
+    }
+
+    public YukonMessageSourceResolvable(String[] codes, Object[] arguments, String defaultMessage) {
+        super(codes, arguments, defaultMessage);
+    }
+
+    public YukonMessageSourceResolvable(String[] codes, Object[] arguments) {
+        super(codes, arguments);
+    }
+
+    public YukonMessageSourceResolvable(String[] codes, String defaultMessage) {
+        super(codes, defaultMessage);
+    }
+
+    public YukonMessageSourceResolvable(String[] codes) {
+        super(codes);
+    }
+    
     public YukonMessageSourceResolvable(String code, Object... args) {
         super(new String[] { code }, args);
     }
 
-    public static MessageSourceResolvable createWithCollection(String code, Collection<String> args) {
-        return new DefaultMessageSourceResolvable(new String[] { code }, args.toArray(new String[args.size()]));
+    public static MessageSourceResolvable createSingleCodeWithArgumentList(String code, Iterable<? extends Object> args) {
+        return new YukonMessageSourceResolvable(new String[] { code }, toArray(args, Object.class));
     }
 
-    public static MessageSourceResolvable createDefault(String code, String defaultMessage) {
-        return new DefaultMessageSourceResolvable(new String[] { code }, new Object[]{}, defaultMessage);
+    public static MessageSourceResolvable createSingleCodeWithArgumentListWithDefault(String code, Iterable<? extends Object> args, String defaultMessage) {
+        return new YukonMessageSourceResolvable(new String[] { code }, toArray(args, Object.class), defaultMessage);
     }
+    
+    public static MessageSourceResolvable createDefault(String code, String defaultMessage) {
+        return new YukonMessageSourceResolvable(new String[] { code }, new Object[]{}, defaultMessage);
+    }
+
+
 
     public static MessageSourceResolvable createDefaultWithoutCode(String defaultMessage) {
-        return new DefaultMessageSourceResolvable(null, new Object[]{}, defaultMessage);
+        return new YukonMessageSourceResolvable(null, new Object[]{}, defaultMessage);
     }
     
     public static MessageSourceResolvable createMultipleCodes(String... codes) {
-        return new DefaultMessageSourceResolvable(codes, new Object[]{});
+        return new YukonMessageSourceResolvable(codes, new Object[]{});
     }
 
-    public static MessageSourceResolvable createMultipleCodes(List<String> asList) {
-        return new DefaultMessageSourceResolvable(asList.toArray(new String[asList.size()]));
+    public static MessageSourceResolvable createMultipleCodes(Iterable<String> asList) {
+        return new YukonMessageSourceResolvable(toArray(asList, String.class));
     }
     
-    public static MessageSourceResolvable createMultipleCodes(List<String> asList, String defaultMessage) {
-        return new DefaultMessageSourceResolvable(asList.toArray(new String[asList.size()]), defaultMessage);
+    public static MessageSourceResolvable createMultipleCodesWithDefault(Iterable<String> asList, String defaultMessage) {
+        return new YukonMessageSourceResolvable(toArray(asList, String.class), defaultMessage);
     }
 
     public static MessageSourceResolvable createDefaultWithArguments(String code, String defaultMessage, Object... arguments) {
-        return new DefaultMessageSourceResolvable(new String[] { code }, arguments, defaultMessage);
+        return new YukonMessageSourceResolvable(new String[] { code }, arguments, defaultMessage);
+    }
+
+    public static MessageSourceResolvable createMultipleCodesWithArguments(Iterable<String> codes, Object... arguments) {
+        return new YukonMessageSourceResolvable(toArray(codes, String.class), arguments);
     }
     
+    public static MessageSourceResolvable createMultipleCodesWithArgumentList(Iterable<String> codes, Iterable<? extends Object> arguments) {
+        return new YukonMessageSourceResolvable(toArray(codes, String.class), toArray(arguments, Object.class));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T[] toArray(Iterable<? extends T> iterable, Class<T> type) {
+        Collection<? extends T> collection = (iterable instanceof Collection)
+        ? (Collection<? extends T>) iterable
+                : Lists.newArrayList(iterable);
+        T[] array = ObjectArrays.newArray(type, collection.size());
+        return collection.toArray(array);
+    }
+    
+    @Override
+    public String toString() {
+        if (getCodes().length == 0) {
+            return getDefaultMessage() + "*";
+        }
+        if (getCodes().length == 1) {
+            return getCodes()[0] +"!";
+        }
+        return getCodes()[0] + "+";
+    }
 }

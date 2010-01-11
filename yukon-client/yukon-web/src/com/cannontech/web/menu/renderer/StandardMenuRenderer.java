@@ -62,7 +62,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     
     /**
      * Create a new menu renderer for a given ServletRequest and ModuleMenuBase.
-     * The ServletRequest is required so that absolute URLs can be adjusted`
+     * The ServletRequest is required so that absolute URLs can be adjusted
      * for the context path.
      * @param request the current request object
      * @param moduleBase the menu base of the current module
@@ -413,7 +413,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     }
 
     public void setMenuSelection(String menuSelection) {
-        if(menuSelection != null){
+        if (menuSelection != null){
             selections = menuSelection.split("\\|");
         }
     }

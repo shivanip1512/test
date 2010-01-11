@@ -270,7 +270,7 @@
 
   <!--  Modules -->
   <module name="amr">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
    	<links>
    		<option id="meters">
    		   <link>/spring/meter/start</link>	
@@ -324,12 +324,13 @@
           </links>
 	    </option>
   	</links>  
-    <search action="/spring/meter/search" method="post" fieldname="Quick Search"/>
+    <search action="/spring/meter/search" method="get" fieldname="Quick Search"/>
+    
   </module>
   
   <module name="monitors">
-    <skin name="standard"/>
-   <links>
+    <skin name="STANDARD"/>
+    <links>
       <option id="validation">
         <links>
 	      <option id="review">
@@ -340,11 +341,11 @@
 	      </option>
         </links>
       </option>
-   </links>
+    </links>
   </module>
 
   <module name="dr">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     <links>
       <option id="home">
         <link>/spring/dr/home</link>
@@ -371,14 +372,15 @@
       <dynamicOptions bean="drOptOutMenuOption"/>
     </links>
     <search action="/spring/dr/search" method="get" fieldname="name"/>
+    
   </module>
 
   <module name="internal">
-    <skin name="inner"/>
+    <skin name="INNER"/>
   </module>
 
   <module name="consumer">
-    <skin name="leftSideMenu"/>
+    <skin name="LEFT_SIDE_MENU"/>
    	<links>
    		<option id="account">
    		   <links>
@@ -551,14 +553,14 @@
       </option>
     </links>
     <search action="/spring/capcontrol/search/searchResults" method="get" fieldname="cbc_lastSearch"/>
-    <skin name="standard"/>
-    <css file="/css/base.css"/> <!-- normally this should be an absolute path -->
+    <skin name="STANDARD"/>
+    <css file="/css/base.css"/> 
     <css file="/WebConfig/yukon/styles/capcontrollogos.css"/>
   </module> 
   
   <module name="capcontrol_internal">
     <!-- The module is used for the inner frames that are used on the cap control pages. -->
-    <skin name="inner"/>
+    <skin name="INNER"/>
     <css file="css/base.css"/> <!-- normally this should be an absolute path -->
   </module>
   
@@ -583,7 +585,7 @@
     </links>
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
   </module>
   
   <module name="commercialcurtailment_user">
@@ -600,7 +602,7 @@
     </links>
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
   </module>
   
   <module name="reporting">
@@ -646,23 +648,23 @@
         </links>
       </option>
     </links>
-  	<skin name="standard"/>
+  	<skin name="STANDARD"/>
   	<css file="/WebConfig/yukon/Base.css"/>
     <css file="/WebConfig/yukon/styles/reportinglogos.css"/>
     <script file="/JavaScript/change_monitor.js"/>
   </module>
   
   <module name="esub">
-  	<skin name="standard"/>
+  	<skin name="STANDARD"/>
   	<css file="esub.css"/>
   </module>
   
   <module name="stars">
-    <skin name="purple"/>
+    <skin name="PURPLE"/>
   </module>
 
   <module name="multispeak">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     <css file="setupStyle.css"/>
     
     <links>
@@ -697,7 +699,7 @@
   </module>
         
   <module name="debug">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     
     <links>
       <option id="loadControlService">
@@ -725,7 +727,7 @@
   </module>
 
     <module name="support">
-        <skin name="standard" />
+        <skin name="STANDARD" />
 
         <links>
             <option id="information">
@@ -780,26 +782,29 @@
                     <option id="events">
                         <link>/spring/common/eventLog/view</link>
                     </option>
+                    <option id="moduleInfo">
+                        <link>/spring/support/moduleInformation/view</link>
+                    </option>
                 </links>
             </option>
         </links>
     </module>
         
    <module name="blank">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
   </module>
 
   <module name="dr_user">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
   </module>
   
   <module name="operations">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
   </module>
   
   <module name="userlm">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     <css file="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
   </module>
 
@@ -809,13 +814,13 @@
         <link>/apps/SelectDevice.jsp</link>
       </option>
     </links>
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     <css file="/WebConfig/yukon/Base.css"/>
   </module>
 
    <module name="commanderSelect">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     
     <links>
@@ -873,7 +878,7 @@
   </module>
   
   <module name="visualDisplays">
-    <skin name="standard"/>
+    <skin name="STANDARD"/>
     <css file="/WebConfig/yukon/Base.css"/>
 
     <links>

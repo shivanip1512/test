@@ -1257,7 +1257,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @return
      * @throws UnsupportedEncodingException
      */
-    public static String buildSafeQueryStringFromMap(Map<String,String> propertiesMap, Boolean htmlOutput) {
+    public static String buildSafeQueryStringFromMap(Map<String,String> propertiesMap, boolean htmlOutput) {
         try {
             final String urlEncoding = "UTF-8"; 
             List<String> parameterPairs = new ArrayList<String>(propertiesMap.size()); 

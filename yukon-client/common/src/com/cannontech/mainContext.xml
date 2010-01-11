@@ -153,6 +153,7 @@
                <value>classpath:com/cannontech/yukon/common/device/groupMeterRead</value>
                <value>classpath:com/cannontech/yukon/common/device/scheduledGroupRequestExecution</value>
                <value>classpath:com/cannontech/yukon/common/vee</value>
+               <value>classpath:com/cannontech/yukon/web/modules/amr/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateHome</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateResults</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateSettings</value>
@@ -197,6 +198,8 @@
     <bean id="yukonUserContextMessageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverImpl">
         <property name="themeSource" ref="mainThemeSource"/>
     </bean>
+    
+    <bean class="com.cannontech.common.i18n.ObjectFormattingServiceImpl"/>
     
     
     <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">

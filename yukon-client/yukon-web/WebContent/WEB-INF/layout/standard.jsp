@@ -2,11 +2,11 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
         <title><c:out value="${title}"/></title>           
-<!-- Page key: ${pageKey} -->
         <!-- Layout CSS files -->
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/reset.css"/>" >
@@ -42,6 +42,10 @@
 <cti:outputContent writable="${menuRenderer}"/>
 
 <div id="Content">
+<c:if test="${not empty heading}">
+    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${heading}</h2>
+</c:if>
+    
 <cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->
 
@@ -62,6 +66,7 @@
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
 <div id="CopyRight">
+<cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">module=${info.moduleName}, page=${info.pageName} |</cti:checkGlobalRolesAndProperties>
 <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/> | 
 <cti:msg key="yukon.web.layout.standard.copyright"/> | 
 Generated at <cti:formatDate type="FULL" value="${currentTime}"/>

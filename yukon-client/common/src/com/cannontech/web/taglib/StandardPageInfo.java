@@ -1,6 +1,9 @@
 package com.cannontech.web.taglib;
 
 import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 public class StandardPageInfo {
 
@@ -13,6 +16,7 @@ public class StandardPageInfo {
     private boolean showMenu;
     private String title;
     private String pageName;
+    private Map<String, String> layoutParts = Maps.newHashMap();
 
     public String getBreadCrumbs() {
         return breadCrumbs;
@@ -84,5 +88,13 @@ public class StandardPageInfo {
 
     public void setPageName(String pageName) {
         this.pageName = pageName;
+    }
+    
+    public Map<String, String> getLayoutParts() {
+        return layoutParts;
+    }
+    
+    public void addLayoutPart(String name, String contents) {
+        layoutParts.put(name, contents);
     }
 }

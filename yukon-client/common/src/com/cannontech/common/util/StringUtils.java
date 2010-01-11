@@ -167,4 +167,19 @@ public final class StringUtils {
         return resultString.substring(0,1).toLowerCase() + resultString.substring(1);
     }
     
+    public static String elideCenter(String input, int maxSize) {
+        String ellipsis = "\u2026";
+        if (input.length() <= maxSize) {
+            return input;
+        }
+        
+        int charactersToRemove = input.length() - maxSize + ellipsis.length();
+        int startPoint = (input.length() - charactersToRemove + 1) / 2; // if uneven, extra character should be on left side
+        StringBuilder result = new StringBuilder(maxSize);
+        result.append(input.substring(0, startPoint));
+        result.append(ellipsis);
+        result.append(input.substring(startPoint + charactersToRemove, input.length()));
+        return result.toString();
+    }
+    
 }

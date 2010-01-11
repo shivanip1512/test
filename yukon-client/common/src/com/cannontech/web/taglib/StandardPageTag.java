@@ -5,11 +5,15 @@ import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
+
 
 /**
  * This is the tag that should wrap all pages created for Cannon. It handles
@@ -27,10 +31,11 @@ public class StandardPageTag extends BodyTagSupport {
     private List<String> scriptFiles;
     private String module = "";
     private String page = "";
-    private String breadCrumbData = "";
+    private String breadCrumbData = null;
     private boolean showMenu = false;
     private String menuSelection = null;
     private boolean skipPage;
+    private StandardPageInfo model;
     
     @Override
     public int doStartTag() throws JspException {
@@ -38,8 +43,25 @@ public class StandardPageTag extends BodyTagSupport {
 
         cssFiles = new ArrayList<String>();
         scriptFiles = new ArrayList<String>();
+        model = new StandardPageInfo();
+        
+        model.setTitle(getTitle());
+        model.setCssFiles(cssFiles);
+        model.setScriptFiles(scriptFiles);
+        model.setHtmlLevel(getHtmlLevel());
+        model.setModuleName(getModule());
+        model.setPageName(getPage());
+        
+        pageContext.setAttribute(STANDARD_PAGE_INFO_ATTR, model, PageContext.REQUEST_SCOPE);
+        
         
         pageContext.setAttribute(STANDARD_PAGE_INSTANCE_ATTR, this, PageContext.REQUEST_SCOPE);
+        
+        HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+        MessageScope messageScope = MessageScopeHelper.forRequest(request);
+        // don't forget to pop what gets pushed
+        messageScope.pushScope("yukon.web.modules." + model.getModuleName(), false);
+        messageScope.pushScope(model.getPageName(), false);
         
         return EVAL_BODY_BUFFERED;
     }
@@ -52,27 +74,20 @@ public class StandardPageTag extends BodyTagSupport {
     @Override
     public int doEndTag() throws JspException {
         try {
+            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+            MessageScope messageScope = MessageScopeHelper.forRequest(request);
+            messageScope.popScope();
+            messageScope.popScope();
+            
             if (skipPage) {
                 return SKIP_PAGE;
             }
-            // get ModuleBase for this page
-
             
-            // the following could really be a field and replace all the other fields...
-            StandardPageInfo model = new StandardPageInfo();
-            
-            model.setTitle(getTitle());
-            model.setCssFiles(cssFiles);
-            model.setScriptFiles(scriptFiles);
-            model.setHtmlLevel(getHtmlLevel());
-            model.setModuleName(getModule());
-            model.setPageName(getPage());
-            model.setBreadCrumbs(getBreadCrumb());
             model.setShowMenu(isShowMenu());
             model.setMenuSelection(menuSelection);
+            model.setBreadCrumbs(getBreadCrumb());
             
-            pageContext.setAttribute(STANDARD_PAGE_INFO_ATTR, model, PageContext.REQUEST_SCOPE);
-            
+            // the following could really be a field and replace all the other fields...
             pageContext.setAttribute(MAIN_CONTENT_ATTR, getBodyContent(), PageContext.REQUEST_SCOPE);
 
             try {
@@ -116,7 +131,7 @@ public class StandardPageTag extends BodyTagSupport {
         title = "";
         htmlLevel = HtmlLevel.transitional;
         module = "";
-        breadCrumbData = "";
+        breadCrumbData = null;
         showMenu = false;
     }
 
