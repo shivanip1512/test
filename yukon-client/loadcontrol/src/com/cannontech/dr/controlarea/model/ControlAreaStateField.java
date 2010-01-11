@@ -39,10 +39,10 @@ public class ControlAreaStateField extends ControlAreaBackingFieldBase {
                     return -1;
                 }
 
-                return new CompareToBuilder().append(controlArea1.getDisableFlag(),
+                return new CompareToBuilder().append(controlArea2.getControlAreaState(),
+                                                     controlArea1.getControlAreaState())
+                                             .append(controlArea1.getDisableFlag(),
                                                      controlArea2.getDisableFlag())
-                                             .append(controlArea1.getControlAreaState(),
-                                                     controlArea2.getControlAreaState())
                                              .toComparison();
             }};
     }

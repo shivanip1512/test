@@ -51,8 +51,8 @@ public class DemandResponseServiceImpl implements DemandResponseService {
 
         @Override
         public int compareTo(PaoStateInfo other) {
-            return new CompareToBuilder().append(enabled, other.enabled)
-                                         .append(state, other.state)
+            return new CompareToBuilder().append(state, other.state)
+                                         .append(other.enabled, enabled)
                                          .toComparison();
         }
     }

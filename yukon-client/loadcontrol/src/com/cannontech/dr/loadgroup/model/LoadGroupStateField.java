@@ -39,10 +39,10 @@ public class LoadGroupStateField extends LoadGroupBackingFieldBase {
                     return -1;
                 }
 
-                return new CompareToBuilder().append(loadGroup1.getDisableFlag(),
+                return new CompareToBuilder().append(loadGroup2.getGroupControlState(),
+                                                     loadGroup1.getGroupControlState())
+                                             .append(loadGroup1.getDisableFlag(),
                                                      loadGroup2.getDisableFlag())
-                                             .append(loadGroup1.getGroupControlState(),
-                                                     loadGroup2.getGroupControlState())
                                              .toComparison();
             }};
     }

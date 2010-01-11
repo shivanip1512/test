@@ -39,10 +39,10 @@ public class ProgramStateField extends ProgramBackingFieldBase {
                     return -1;
                 }
 
-                return new CompareToBuilder().append(program1.getDisableFlag(),
+                return new CompareToBuilder().append(program2.getProgramStatus(),
+                                                     program1.getProgramStatus())
+                                             .append(program1.getDisableFlag(),
                                                      program2.getDisableFlag())
-                                             .append(program1.getProgramStatus(),
-                                                     program2.getProgramStatus())
                                              .toComparison();
             }};
     }
