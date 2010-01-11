@@ -20,6 +20,7 @@ import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.UpdatePointsFieldType;
@@ -66,11 +67,11 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         mav.addObject("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
 
         // device type points map
-        Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = createExistsPointsMap(deviceTypeSet, maskExistingPoints, false, deviceCollection);
+        Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap = createExistsPointsMap(deviceTypeSet, maskExistingPoints, false, deviceCollection);
         mav.addObject("pointsMap", pointsMap);
         
         // shared points map
-        Map<String, List<PointTemplateWrapper>> sharedPointsTypeMap = createSharedPointsTypeMapWithPointsMap(pointsMap);
+        Map<PointType, List<PointTemplateWrapper>> sharedPointsTypeMap = createSharedPointsTypeMapWithPointsMap(pointsMap);
         mav.addObject("sharedPointsTypeMap", sharedPointsTypeMap);
         
         return mav;

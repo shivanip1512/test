@@ -31,6 +31,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Maps;
@@ -74,18 +75,18 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         mav.addObject("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
         
         // device type points map
-        Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = createRemovePointsMap(deviceTypeSet, maskMissingPoints, deviceCollection);
+        Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap = createRemovePointsMap(deviceTypeSet, maskMissingPoints, deviceCollection);
         mav.addObject("pointsMap", pointsMap);
         
         // shared points map
-        Map<String, List<PointTemplateWrapper>> sharedPointsTypeMap = createSharedPointsTypeMapWithPointsMap(pointsMap);
+        Map<PointType, List<PointTemplateWrapper>> sharedPointsTypeMap = createSharedPointsTypeMapWithPointsMap(pointsMap);
         mav.addObject("sharedPointsTypeMap", sharedPointsTypeMap);
         
         return mav;
     }
     
     @Override
-    protected Map<String, List<PointTemplateWrapper>> createSharedPointsTypeMapWithPointsMap(Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap) {
+    protected Map<PointType, List<PointTemplateWrapper>> createSharedPointsTypeMapWithPointsMap(Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap) {
         
         // complete set of all point templates
         Set<PointTemplateWrapper> allPointTemplates = new HashSet<PointTemplateWrapper>();
@@ -97,9 +98,9 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
             
             Set<PointTemplateWrapper> deviceTypePointSet = new HashSet<PointTemplateWrapper>();
             
-            for (String pointTypeName : pointsMap.get(deviceType).keySet()) {
+            for (PointType pointType : pointsMap.get(deviceType).keySet()) {
                 
-                List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointTypeName);
+                List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointType);
                 deviceTypePointSet.addAll(pointTypePointList);
 
                 // Creates a set that handles the shared points and 
@@ -132,7 +133,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     }
     
     // points map helper
-    private Map<Integer, Map<String, List<PointTemplateWrapper>>> createRemovePointsMap(Set<Integer> deviceTypeSet, boolean maskMissingPoints, DeviceCollection deviceCollection) {
+    private Map<Integer, Map<PointType, List<PointTemplateWrapper>>> createRemovePointsMap(Set<Integer> deviceTypeSet, boolean maskMissingPoints, DeviceCollection deviceCollection) {
     	
     	/// make a copy of device list if we'll be doing maskExistingPoints
     	// being able to remove devices from the list as we process each device type will speed up the next iteration building of the devicesOfTypeList
@@ -141,7 +142,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     		mutableDeviceList = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
     	}
     	
-    	Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = Maps.newLinkedHashMap();
+    	Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap = Maps.newLinkedHashMap();
         for (int deviceType : deviceTypeSet) {
         	
         	// all defined point templates for device type, convert to wrappers that are all initially unmasked
@@ -191,7 +192,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         	Collections.sort(pointList, pointTemplateOffsetCompartor);
         	
         	// make point type map of points list
-        	Map<String, List<PointTemplateWrapper>> pointTypeMap = createPointTypeMap(pointList);
+        	Map<PointType, List<PointTemplateWrapper>> pointTypeMap = createPointTypeMap(pointList);
         	
         	// add to master device type map
         	pointsMap.put(deviceType, pointTypeMap);

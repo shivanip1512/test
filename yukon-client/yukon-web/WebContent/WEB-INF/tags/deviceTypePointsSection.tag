@@ -42,7 +42,7 @@
 			
 			<c:set var="pointTypeName" value="${pointTypesMapEntry.key}"/>
 		
-			<span class="smallBoldLabel">${pointTypeName}</span>
+			<span class="smallBoldLabel"><cti:msg key="${pointTypesMapEntry.key.formatKey}"/></span>
 			<br>
 			<tags:pointsCheckboxTable deviceType="${deviceType}" pointTemplates="${pointTypesMap[pointTypeName]}" columnCount="${columnCount}"></tags:pointsCheckboxTable>
 		

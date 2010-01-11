@@ -52,10 +52,11 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @CheckRoleProperty(YukonRoleProperty.ADD_REMOVE_POINTS)
 public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
@@ -198,7 +199,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     	return wrapperSet;
     }
     
-    protected Map<String, List<PointTemplateWrapper>> createSharedPointsTypeMapWithPointsMap(Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap) {
+    protected Map<PointType, List<PointTemplateWrapper>> createSharedPointsTypeMapWithPointsMap(Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap) {
     	
     	// complete set of all point templates
     	Set<PointTemplateWrapper> allPointTemplates = new HashSet<PointTemplateWrapper>();
@@ -210,9 +211,9 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     		
     		Set<PointTemplateWrapper> deviceTypePointSet = new HashSet<PointTemplateWrapper>();
     		
-    		for (String pointTypeName : pointsMap.get(deviceType).keySet()) {
+    		for (PointType pointType : pointsMap.get(deviceType).keySet()) {
     			
-    			List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointTypeName);
+    			List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointType);
     			deviceTypePointSet.addAll(pointTypePointList);
     			allPointTemplates.addAll(pointTypePointList);
     		}
@@ -231,18 +232,17 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     	return createPointTypeMap(pointList);
     }
     
-    protected Map<String, List<PointTemplateWrapper>> createPointTypeMap(List<PointTemplateWrapper> pointTemplates) {
+    protected Map<PointType, List<PointTemplateWrapper>> createPointTypeMap(List<PointTemplateWrapper> pointTemplates) {
     	
-    	Map<String, List<PointTemplateWrapper>> pointTypeMap = new LinkedHashMap<String, List<PointTemplateWrapper>>();
+    	Map<PointType, List<PointTemplateWrapper>> pointTypeMap = Maps.newLinkedHashMap();
     	for (PointTemplateWrapper pointTemplateWrapper : pointTemplates) {
+
+    	    PointType pointType = pointTemplateWrapper.getPointTemplate().getPointIdentifier().getPointType();
     		
-    		int pointType = pointTemplateWrapper.getPointTemplate().getType();
-    		String pointTypeName = PointTypes.getType(pointType);
-    		
-    		if (!pointTypeMap.containsKey(pointTypeName)) {
-    			pointTypeMap.put(pointTypeName, new ArrayList<PointTemplateWrapper>());
+    		if (!pointTypeMap.containsKey(pointType)) {
+    			pointTypeMap.put(pointType, new ArrayList<PointTemplateWrapper>());
     		}
-    		pointTypeMap.get(pointTypeName).add(pointTemplateWrapper);
+    		pointTypeMap.get(pointType).add(pointTemplateWrapper);
     	}
     	
     	return pointTypeMap;
@@ -304,7 +304,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     }
     
  // points map helper
-    protected Map<Integer, Map<String, List<PointTemplateWrapper>>> createExistsPointsMap(Set<Integer> deviceTypeSet, boolean maskExistingPoints, boolean maskIfExistOnAllDevices, DeviceCollection deviceCollection) {
+    protected Map<Integer, Map<PointType, List<PointTemplateWrapper>>> createExistsPointsMap(Set<Integer> deviceTypeSet, boolean maskExistingPoints, boolean maskIfExistOnAllDevices, DeviceCollection deviceCollection) {
         
         /// make a copy of device list if we'll be doing maskExistingPoints
         // being able to remove devices from the list as we process each device type will speed up the next iteration building of the devicesOfTypeList
@@ -313,7 +313,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
             mutableDeviceList = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
         }
         
-        Map<Integer, Map<String, List<PointTemplateWrapper>>> pointsMap = new LinkedHashMap<Integer, Map<String, List<PointTemplateWrapper>>>();
+        Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap = Maps.newLinkedHashMap();
         for (int deviceType : deviceTypeSet) {
             
             // all defined point templates for device type, convert to wrappers that are all initially unmasked
@@ -370,7 +370,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
             Collections.sort(pointList, pointTemplateOffsetCompartor);
             
             // make point type map of points list
-            Map<String, List<PointTemplateWrapper>> pointTypeMap = createPointTypeMap(pointList);
+            Map<PointType, List<PointTemplateWrapper>> pointTypeMap = createPointTypeMap(pointList);
             
             // add to master device type map
             pointsMap.put(deviceType, pointTypeMap);
