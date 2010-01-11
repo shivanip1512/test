@@ -71,6 +71,9 @@
    		       bootclasspath="${yukon.javac.bootclasspath}"
 		       debug="${yukon.javac.debug}">
 			<classpath>
+		        <fileset dir="${yukon.build}/lib">
+		            <include name="*.jar"/>
+		        </fileset>   
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar" />
 				</fileset>
