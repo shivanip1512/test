@@ -4202,12 +4202,12 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* curren
         " waiting for VAR change." << endl;                         
 
     string text = string("CBC Unsolicited Event!");
-    string text1 = string("Unexpected CBC State Change. ");
-    string beforeVarsString = string("CBC Unsolicited ");
+    string text1 = string("CBC State Change. ");
+    string beforeVarsString = string("CBC Unsolicited-Unexpected ");
     beforeVarsString += (twoWayPts->getCapacitorBankState() == 0 ? "Open" : "Close");
 
     text1 += beforeVarsString;
-    text1 += "-"+ twoWayPts->getLastControlText() + "! Mismatch Likely.";
+    text1 += ", "+ twoWayPts->getLastControlText() + "! Mismatch Likely.";
 
     currentCapBank->setBeforeVarsString(beforeVarsString);
     currentCapBank->setAfterVarsString(twoWayPts->getLastControlText());

@@ -2802,6 +2802,19 @@ const string& CtiCCCapBank::convertOperationalState( int num )
     }
 }
 
+bool CtiCCCapBank::isControlDeviceTwoWay()
+{
+    if (stringContainsIgnoreCase( getControlDeviceType(),"CBC 702") ||
+        stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 /* Public Static members */
 const string CtiCCCapBank::SwitchedOperationalState = "Switched";
 const string CtiCCCapBank::FixedOperationalState = "Fixed";

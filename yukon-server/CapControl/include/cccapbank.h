@@ -260,6 +260,7 @@ public:
     BOOL isFailedStatus();
     BOOL isQuestionableStatus();
     BOOL isFailedOrQuestionableStatus();
+    bool isControlDeviceTwoWay();
 
     CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
 

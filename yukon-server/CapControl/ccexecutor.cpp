@@ -1024,8 +1024,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates()
                                          << " and controller with id: " << controllerId << endl;
         return;
     }
-    if ( !(stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702") ||
-           stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC DNP")) )
+    if ( !capBank->isControlDeviceTwoWay() )
     {
         return;
     }
