@@ -13,11 +13,3 @@ function doToggleShowSharedPoints(on) {
 		$('allPointsDiv').show();
 	}
 }
-
-function doToggleUpdatePoints(on) {
-	if (on) {
-		$('updatePointsSelectEl').enable();
-	} else {
-		$('updatePointsSelectEl').disable();
-	}
-}

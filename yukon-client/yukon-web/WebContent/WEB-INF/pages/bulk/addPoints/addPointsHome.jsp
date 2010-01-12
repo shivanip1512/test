@@ -39,8 +39,6 @@
 				var sharedPoints = ${sharedPoints};
 				doToggleShowSharedPoints(sharedPoints);
 
-				var maskExistingPoints = ${maskExistingPoints};
-				doToggleUpdatePoints(!maskExistingPoints);
 			}
     	);
 		
@@ -92,7 +90,7 @@
 					<cti:msg var="updatePointsOptionDescription" key="yukon.common.device.bulk.addPointsHome.updatePointsOptionDescription"/>
            			<c:set var="updatePointsFalseSelected" value="${updatePoints ? '' : 'selected'}"/>
 		   			<c:set var="updatePointsTrueSelected" value="${updatePoints ? 'selected' : ''}"/>
-	            	<tags:nameValue name="${updatePointsOptionLabel}" id="updatePointsSelectTr">
+	             	<tags:nameValue name="${updatePointsOptionLabel}" id="updatePointsSelectTr">
 			            <select id="updatePointsSelectEl" name="updatePoints" style="width:${selectInputWidth};">
 			            	<option value="false" title="${updatePointsFalseOptionTooltip}" ${updatePointsFalseSelected}>${updatePointsFalseOptionText}</option>
 			            	<option value="true" title="${updatePointsTrueOptionTooltip}" ${updatePointsTrueSelected}>${updatePointsTrueOptionText}</option>
@@ -112,7 +110,7 @@
 				            	<input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsFalseOptionText}" title="${maskExistingPointsFalseOptionTooltip}" style="width:${selectInputWidth};"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
 			           		</c:when>
 				           	<c:otherwise>
-					            	<input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsTrueOptionText}" title="${maskExistingPointsTrueOptionTooltip}" style="width:${selectInputWidth};"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
+					            <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsTrueOptionText}" title="${maskExistingPointsTrueOptionTooltip}" style="width:${selectInputWidth};"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
 				           	</c:otherwise>
 	            		</c:choose>
 	            	</tags:nameValue>
