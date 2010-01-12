@@ -1,7 +1,8 @@
 package com.cannontech.database.data.pao;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum CapControlType {
+public enum CapControlType implements DatabaseRepresentationSource {
     AREA("CCAREA"),
     SPECIAL_AREA("CCSPECIALAREA"),
     SUBSTATION("CCSUBSTATION"),
@@ -31,4 +32,9 @@ public enum CapControlType {
 		}
 		throw new IllegalArgumentException();
 	}
+
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getDisplayValue();
+    }
 }

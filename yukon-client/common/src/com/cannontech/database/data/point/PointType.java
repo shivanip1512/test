@@ -1,12 +1,12 @@
 package com.cannontech.database.data.point;
 
 import org.apache.commons.lang.Validate;
-
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum PointType implements DisplayableEnum {
+public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
 	Status(PointTypes.STATUS_POINT),
 	Analog(PointTypes.ANALOG_POINT),
 	PulseAccumulator(PointTypes.PULSE_ACCUMULATOR_POINT),
@@ -58,5 +58,10 @@ public enum PointType implements DisplayableEnum {
     @Override
     public String getFormatKey() {
         return "yukon.common.device.pointType." + this.name();
+    }
+
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getPointTypeString();
     }
 }
