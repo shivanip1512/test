@@ -304,6 +304,7 @@ void CtiCapController::messageSender()
                     checkPIL(secondsFrom1901);
                     store->checkUnsolicitedList();
                     store->checkRejectedList();
+                    store->checkUnexpectedUnsolicitedList();
                 }
                 catch(...)
                 {
@@ -3663,15 +3664,21 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     currentCapBank->setReportedCBCStateTime(timestamp);
 
+                                    if ( (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending &&
+                                          value == 1 ) ||
+                                         (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending &&
+                                          value == 0 ) )
+                                    {
+                                        currentCapBank->setUnsolicitedChangeTimeUpdated(timestamp);
+                                        store->insertUnexpectedUnsolicitedList(currentCapBank);
+                                        currentCapBank->setUnsolicitedPendingFlag(TRUE);
+                                    }
+
                                     if ( currentCapBank->getControlStatus() != value &&
-                                        (//!currentFeeder->getRecentlyControlledFlag() &&
                                          !currentCapBank->getControlRecentlySentFlag() &&
-                                         !currentCapBank->getVerificationFlag() &&
-                                         !currentCapBank->getInsertDynamicDataFlag() ) &&
-                                        ( currentCapBank->getControlStatus() != CtiCCCapBank::OpenQuestionable &&
-                                          currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail &&
-                                          currentCapBank->getControlStatus() != CtiCCCapBank::CloseQuestionable &&
-                                          currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail) )
+                                          !currentCapBank->getVerificationFlag() &&
+                                          !currentCapBank->getInsertDynamicDataFlag()  &&
+                                          !currentCapBank->isFailedOrQuestionableStatus() )
                                     {
                                         currentCapBank->setControlStatus(value);
                                         currentCapBank->setLastStatusChangeTime(CtiTime());
@@ -4180,6 +4187,53 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, 
 
 
 
+void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
+                                                  CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
+    CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+
+    currentSubstationBus->setBusUpdatedFlag(TRUE);
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts->getCapacitorBankState() <<" CAPBANK: "<<
+        currentCapBank->getPAOName() << " is "<< currentCapBank->getControlStatusText() <<
+        " waiting for VAR change." << endl;                         
+
+    string text = string("CBC Unsolicited Event!");
+    string text1 = string("Unexpected CBC State Change. ");
+    string beforeVarsString = string("CBC Unsolicited ");
+    beforeVarsString += (twoWayPts->getCapacitorBankState() == 0 ? "Open" : "Close");
+
+    text1 += beforeVarsString;
+    text1 += "-"+ twoWayPts->getLastControlText() + "! Mismatch Likely.";
+
+    currentCapBank->setBeforeVarsString(beforeVarsString);
+    currentCapBank->setAfterVarsString(twoWayPts->getLastControlText());
+    currentCapBank->setPercentChangeString(" --- ");
+
+
+    //send the cceventmsg.
+    LONG stationId, areaId, spAreaId;
+    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlUnexpectedCBCStateReported, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+    if (ccEvents.size() > 0)
+    {
+        getCCEventMsgQueueHandle().write(multiCCEventMsg);
+        multiCCEventMsg = NULL;
+    }
+    else
+    {
+        //This should never happen.
+        delete multiCCEventMsg;
+        multiCCEventMsg = NULL;
+    }
+
+    currentCapBank->setUnsolicitedPendingFlag(FALSE);
+    currentCapBank->setIgnoreFlag(FALSE);
+
+}
 
 
 

@@ -11021,6 +11021,84 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
     clearUnsolicitedCapBankList();
 }
 
+
+void CtiCCSubstationBusStore::insertUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    if (!list_contains(_unexpectedUnsolicited, x))
+    {
+        _unexpectedUnsolicited.push_back(x);
+    }
+}
+
+void CtiCCSubstationBusStore::removeFromUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    _unexpectedUnsolicited.remove(x);
+}
+
+void CtiCCSubstationBusStore::clearUnexpectedUnsolicitedList()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    if (!_unexpectedUnsolicited.empty())
+    {
+        list <CtiCCCapBankPtr>::iterator listIter = _unexpectedUnsolicited.begin();
+        while (listIter != _unexpectedUnsolicited.end())
+        {
+            CtiCCCapBankPtr currentCapBank = *listIter;
+            listIter++;
+            if (!currentCapBank->getUnsolicitedPendingFlag())
+            {
+                removeFromUnexpectedUnsolicitedList(currentCapBank);
+            }
+        }   
+    }
+
+}
+
+
+void CtiCCSubstationBusStore::checkUnexpectedUnsolicitedList()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    for (list <CtiCCCapBankPtr>::iterator listIter = _unexpectedUnsolicited.begin(); listIter != _unexpectedUnsolicited.end(); listIter++)
+    {
+        CtiCCCapBankPtr currentCapBank = *listIter;
+
+        if (currentCapBank->getUnsolicitedChangeTimeUpdated().seconds() <= CtiTime().seconds() - 2)
+        {
+            CtiCCFeederPtr currentFeeder = findFeederByPAObjectID(currentCapBank->getParentId());
+            if (currentFeeder == NULL)
+            {
+                continue;
+            }
+            CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(currentFeeder->getParentId());
+            if (currentSubstationBus == NULL)
+            {
+                continue;
+            }
+
+            CtiCapController::getInstance()->handleUnexpectedUnsolicitedMessaging(currentCapBank, currentFeeder, currentSubstationBus, currentCapBank->getTwoWayPoints());
+        }
+        else
+        {
+            if (_CC_DEBUG & CC_DEBUG_UNSOLICITED)
+            {
+
+                // print out something about it not processing the thing....
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " UNSOLICTED MSG for: "<< currentCapBank->getPAOName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated() << endl;
+            }
+        }
+    }
+
+    clearUnexpectedUnsolicitedList();
+}
+
+
 void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());

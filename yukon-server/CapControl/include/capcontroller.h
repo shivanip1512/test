@@ -64,6 +64,8 @@ public:
     void refreshCParmGlobals(bool force);
     void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
                                     CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+    void handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
+                                    CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
     void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
                                     CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
 
