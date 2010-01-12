@@ -19,7 +19,7 @@
     <entry key="yukon.web.modules.dr.optOut.disableOptOuts">Prohibit Opt Outs</entry>
 
     <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.title">Cancel Current Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelAllOptOutsButton">Reactivate Opted Out devices</entry>
+    <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelAllOptOutsButton">Reactivate Opted Out Devices</entry>
     <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelOptOutsWarning"><![CDATA[<span class="errorRed">WARNING:</span> This action will broadcast commands to devices in the field.]]></entry>
     <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction">Only Cancel Opt Outs For A Single Program</entry>
     
