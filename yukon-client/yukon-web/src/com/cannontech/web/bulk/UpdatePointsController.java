@@ -166,8 +166,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
             }
             break;
         default:
-            errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.unsupportedUpdateTypeMsg", new Object[]{updateField.name()});
-            break;
+            throw new IllegalArgumentException("The field type "+updateField+" is not supported.");
         } 
         
         return errorMsg;
