@@ -57,7 +57,7 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
 
     @Override
     public String getFormatKey() {
-        return "yukon.common.device.pointType." + this.name();
+        return "yukon.common.point.pointType." + this.name();
     }
 
     @Override

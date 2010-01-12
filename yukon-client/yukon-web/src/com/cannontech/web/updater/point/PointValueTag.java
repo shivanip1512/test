@@ -32,7 +32,7 @@ public class PointValueTag extends YukonTagSupport {
         	if (getUnavailableValue() != null) {
         		outputText = getUnavailableValue();
         	} else {
-        		outputText = getMessageSource().getMessage("yukon.common.pointFormatting.unavailablePlaceholder");
+        		outputText = getMessageSource().getMessage("yukon.common.point.pointFormatting.unavailablePlaceholder");
         	}
         } else {
         	outputText = value.getValue();

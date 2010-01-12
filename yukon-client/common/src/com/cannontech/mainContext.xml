@@ -125,7 +125,7 @@
                <value>classpath:com/cannontech/yukon/common/general</value>
                <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
                <value>classpath:com/cannontech/yukon/common/durationFormatting</value>
-               <value>classpath:com/cannontech/yukon/common/pointFormatting</value>
+               <value>classpath:com/cannontech/yukon/common/point</value>
                <value>classpath:com/cannontech/yukon/common/phoneNumberFormatting</value>
                <value>classpath:com/cannontech/yukon/common/alerts</value>
                <value>classpath:com/cannontech/yukon/common/calendarControl</value>
@@ -151,7 +151,6 @@
                <value>classpath:com/cannontech/yukon/common/device/commander</value>
                <value>classpath:com/cannontech/yukon/common/device/group</value>
                <value>classpath:com/cannontech/yukon/common/device/groupMeterRead</value>
-               <value>classpath:com/cannontech/yukon/common/device/pointType</value>
                <value>classpath:com/cannontech/yukon/common/device/scheduledGroupRequestExecution</value>
                <value>classpath:com/cannontech/yukon/common/vee</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/root</value>

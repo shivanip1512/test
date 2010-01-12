@@ -40,11 +40,11 @@
         
 		<c:forEach var="pointTypesMapEntry" items="${pointTypesMap}">
 			
-			<c:set var="pointTypeName" value="${pointTypesMapEntry.key}"/>
+			<c:set var="pointType" value="${pointTypesMapEntry.key}"/>
 		
-			<span class="smallBoldLabel"><cti:msg key="${pointTypesMapEntry.key.formatKey}"/></span>
+			<span class="smallBoldLabel"><cti:msg key="${pointType}"/></span>
 			<br>
-			<tags:pointsCheckboxTable deviceType="${deviceType}" pointTemplates="${pointTypesMap[pointTypeName]}" columnCount="${columnCount}"></tags:pointsCheckboxTable>
+			<tags:pointsCheckboxTable deviceType="${deviceType}" pointTemplates="${pointTypesMap[pointType]}" columnCount="${columnCount}"></tags:pointsCheckboxTable>
 		
 		
 		</c:forEach>

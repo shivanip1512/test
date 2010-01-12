@@ -26,7 +26,7 @@ public interface PointFormattingService {
         VALUE,
         QUALITY;
         
-        private final static String keyPrefix = "yukon.common.pointFormatting.formats.";
+        private final static String keyPrefix = "yukon.common.point.pointFormatting.formats.";
 
         public String getFormatKey() {
             return keyPrefix + name();

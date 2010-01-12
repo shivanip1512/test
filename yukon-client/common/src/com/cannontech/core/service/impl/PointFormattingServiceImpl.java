@@ -188,7 +188,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     
     private String getDisplayStringForQuality(PointQuality quality, YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String key = "yukon.common.pointFormatting.shortQuality." + quality.name();
+        String key = "yukon.common.point.pointFormatting.shortQuality." + quality.name();
         String message = messageSourceAccessor.getMessageWithDefault(key, quality.getAbbreviation());
         
         return message;
