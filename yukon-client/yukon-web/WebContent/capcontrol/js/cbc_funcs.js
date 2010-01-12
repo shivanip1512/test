@@ -57,7 +57,7 @@ function getCapBankMenu(id, event) {
 
 function getLtcMenu(id, event) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=ltcMenu&id=' + id;
-    getMenuFromURLLeft(url, event); 
+    getMenuFromUrlLeft(url, event); 
 }
 
 function getLocalControlMenu(id, capBankType, objectType, event) {
@@ -103,7 +103,7 @@ function getMenuFromURL(url, event) {
     });
 }
 
-function getMenuFromURLLeft(url, event) {
+function getMenuFromUrlLeft(url, event) {
 	/*
 	 *  In IE the event does not pass through the ajax request
 	 *  so the attributes of the event need to be set and passed
