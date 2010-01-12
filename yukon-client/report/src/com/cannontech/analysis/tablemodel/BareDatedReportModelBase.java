@@ -21,6 +21,14 @@ public abstract class BareDatedReportModelBase<T> extends BareReportModelBase<T>
     public void setStopDate(Date stopDate) {
         this.stopDate = stopDate;
     }
+    
+    @Override
+    public boolean useStartDate(){
+        return true;
+    }
 
-
+    @Override
+    public boolean useStopDate(){
+        return true;
+    }
 }

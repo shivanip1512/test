@@ -9,4 +9,6 @@ public interface DatedModelAttributes  {
     public Date getStartDate();
     public Date getStopDate();
     
+    public boolean useStartDate();
+    public boolean useStopDate();
 }

@@ -48,6 +48,8 @@ public class DeviceRequestDetailModel extends BareDatedReportModelBase<DeviceReq
         public String route;
         public Integer requests;
         public String success;
+        public Integer numberOfSuccesses;
+        public String successPercent;
     }
     
     @Override
@@ -142,7 +144,8 @@ public class DeviceRequestDetailModel extends BareDatedReportModelBase<DeviceReq
                 row.deviceName = rs.getString("deviceName");
                 row.type = rs.getString("type");
                 row.route = rs.getString("route");
-                row.requests = rs.getInt("requests");
+                int requests = rs.getInt("requests");
+                row.requests = requests;
                 int completions = rs.getInt("completions");
                 if(completions > 0){
                     int attempts = rs.getInt("attempts");
@@ -153,6 +156,11 @@ public class DeviceRequestDetailModel extends BareDatedReportModelBase<DeviceReq
                 } else {
                     row.success = "---";
                 }
+                row.numberOfSuccesses = completions;
+                double successPercent = completions / requests;
+                successPercent = successPercent * 100.0;
+                DecimalFormat df = new DecimalFormat("###.##");
+                row.successPercent = df.format(successPercent) + "%";
                 
                 return row;
             }

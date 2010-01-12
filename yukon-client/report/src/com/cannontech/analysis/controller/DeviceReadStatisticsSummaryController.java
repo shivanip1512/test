@@ -1,7 +1,6 @@
 package com.cannontech.analysis.controller;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -70,18 +69,21 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         TimeZone timeZone = yukonUserContext.getTimeZone();
         DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
-        DateTime now = new DateTime(new Date(), dateTimeZone);
-        DateTime lastMonth = now.minusDays(31);
+        DateTime stopDate = new DateTime(deviceReadSummaryModel.getStopDate(), dateTimeZone);
+        DateTime lastMonth = stopDate.minusDays(31);
         deviceReadSummaryModel.setLastMonthDate(lastMonth);
+        deviceReadSummaryModel.setStartDate(lastMonth.toDate());
     }
     
     public String getHTMLOptionsTable() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("<table style='padding: 10px;' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("<div class='TitleHeader' style='padding-bottom: 10px;'>* Statistics will be retrieved for the 31 days previous to the stop date chosen above.</div>");
+        sb.append("<table style='padding: 5px;' class='TableCell'>" + LINE_SEPARATOR);
+        
         sb.append("    <tr>" + LINE_SEPARATOR);
         
         sb.append("        <td class='TitleHeader' style='padding-right: 5px;'>Data Attribute: </td>");
-        sb.append("        <td class='main'>" + LINE_SEPARATOR);
+        sb.append("        <td class='main' style='padding-right: 5px;'>" + LINE_SEPARATOR);
         sb.append("            <select id=\"dataAttribute\" name=\"dataAttribute\">" + LINE_SEPARATOR);
         int i = 0;
         for(BuiltInAttribute attribute : BuiltInAttribute.values()){
@@ -92,7 +94,7 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
         }
         sb.append("            </select>" + LINE_SEPARATOR);
         sb.append("        </td>" + LINE_SEPARATOR);
-
+        
         sb.append("    </tr>" + LINE_SEPARATOR);
         sb.append("</table>" + LINE_SEPARATOR);
         

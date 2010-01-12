@@ -31,7 +31,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
-public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<DeviceReadStatisticsSummaryModel.ModelRow> {
+public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<DeviceReadStatisticsSummaryModel.ModelRow> {
 
     private Logger log = YukonLogManager.getLogger(DeviceReadStatisticsSummaryModel.class);
 
@@ -40,7 +40,7 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
     private AttributeService attributeService;
     
     // member variables
-    private String title = "Device Read Statistics Summary Report";
+    private String title = "Device Read Statistics Summary Report (31 day)";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Attribute attribute;
     private List<String> groupNames;
@@ -166,7 +166,7 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
         }
         return groupResultRows;
     }
-
+    
     public void setLastMonthDate(DateTime lastMonth) {
         this.lastMonth = lastMonth;
     }
@@ -196,5 +196,10 @@ public class DeviceReadStatisticsSummaryModel extends BareReportModelBase<Device
     @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
+    }
+
+    @Override
+    public boolean useStartDate(){
+        return false;
     }
 }

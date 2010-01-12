@@ -26,7 +26,7 @@ public class DeviceReadStatisticsSummaryReport extends SimpleYukonReportBase {
             new ColumnLayoutData("Group Name", "groupName", 300),
             new ColumnLayoutData("Device Count", "deviceCount", 100),
             new ColumnLayoutData("Devices With Reads", "devicesWithReads", 100),
-            new ColumnLayoutData("Successful Read Percentage", "readPercent", 125, "###.##%"),
+            new ColumnLayoutData("Percentage with Readings", "readPercent", 125, "###.##%"),
         };
         return Arrays.asList(bodyColumns);
     }

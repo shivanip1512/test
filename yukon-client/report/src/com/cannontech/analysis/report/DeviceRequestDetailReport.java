@@ -23,11 +23,13 @@ public class DeviceRequestDetailReport extends SimpleYukonReportBase {
     @Override
     protected List<ColumnLayoutData> getBodyColumns() {
         ColumnLayoutData[] bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Device Name", "deviceName", 150),
+            new ColumnLayoutData("Device Name", "deviceName", 125),
             new ColumnLayoutData("Device Type", "type", 100),
-            new ColumnLayoutData("Route", "route", 150),
-            new ColumnLayoutData(deviceRequestDetailModel.isLifetime() ? "Lifetime Requests" : "Requests", "requests", 150),
-            new ColumnLayoutData(deviceRequestDetailModel.isLifetime() ? "Lifetime Attempts Per Success" : "Attempts Per Success", "success", 150),
+            new ColumnLayoutData("Route", "route", 125),
+            new ColumnLayoutData(deviceRequestDetailModel.isLifetime() ? "Lifetime Requests" : "Requests", "requests", 100),
+            new ColumnLayoutData(deviceRequestDetailModel.isLifetime() ? "Lifetime Attempts Per Success" : "Attempts Per Success", "success", 100),
+            new ColumnLayoutData("Num. of Successes", "numberOfSuccesses", 100),
+            new ColumnLayoutData("Success %", "successPercent", 100),
         };
         return Arrays.asList(bodyColumns);
     }
