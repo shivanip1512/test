@@ -250,12 +250,12 @@ public class ThermostatOperatorScheduleController
 
     	    Integer coolTemperature = entry.getCoolTemperature();
     	    Integer heatTemperature = entry.getHeatTemperature();
-    	    String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
-    	    coolTemperature = (int) CtiUtilities.convertTemperature(coolTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
-    	    heatTemperature = (int) CtiUtilities.convertTemperature(heatTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
 
     	    // Temperatures are only -1 if this is a 2 time temp thermostat type - ignore if -1
     	    if(coolTemperature != -1 && heatTemperature != -1) {
+    	        String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
+    	        coolTemperature = (int) CtiUtilities.convertTemperature(coolTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+    	        heatTemperature = (int) CtiUtilities.convertTemperature(heatTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
     	        argumentList.add(startDateString);
     	        argumentList.add(coolTemperature);
     	        argumentList.add(heatTemperature);
