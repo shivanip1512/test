@@ -57,6 +57,7 @@ public class ScheduleController {
 	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 	    mav.addAttribute("hasEditingRole", hasEditingRole);
         List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
+        Collections.sort(schedList);
         mav.addAttribute("scheduleList",schedList);
         
         long startOfTime = CtiUtilities.get1990GregCalendar().getTime().getTime();

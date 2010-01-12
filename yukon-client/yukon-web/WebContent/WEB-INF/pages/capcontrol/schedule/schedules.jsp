@@ -54,8 +54,8 @@
 		<thead>
 			<tr id="header">
 				<th>Schedule</th>
-				<th>Next Run Time</th>
 				<th>Last Run Time</th>
+				<th>Next Run Time</th>
 				<th>Interval</th>
 				<th>Disabled</th>
 				<th></th>
@@ -68,16 +68,6 @@
 					<td><c:out value="${item.scheduleName}" /></td>
 					<td>
                         <c:choose>
-                            <c:when test="${item.nextRunTime.time <= startOfTime}">
-                                ---
-                            </c:when>
-                            <c:otherwise>
-                                <cti:formatDate value="${item.nextRunTime}" type="DATEHM" />
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-					<td>
-                        <c:choose>
                             <c:when test="${item.lastRunTime.time <= startOfTime}">
                                 ---
                             </c:when>
@@ -86,6 +76,16 @@
                             </c:otherwise>
                         </c:choose>
 					</td>
+					<td>
+                        <c:choose>
+                            <c:when test="${item.nextRunTime.time <= startOfTime}">
+                                ---
+                            </c:when>
+                            <c:otherwise>
+                                <cti:formatDate value="${item.nextRunTime}" type="DATEHM" />
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
 					<td><c:out value="${item.intervalRateString}" /></td>
 					<td>
                         <c:choose>

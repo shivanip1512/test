@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableMap;
 /**
  * DB object for the table PAOSchedule
  */
-public class PAOSchedule extends DBPersistent implements CTIDbChange
+public class PAOSchedule extends DBPersistent implements CTIDbChange, Comparable<PAOSchedule>
 {
 	private Integer scheduleID = null;
 	//Set the time to now - 4 hours
@@ -370,5 +370,10 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 	public void setDisabled(boolean b) {
 		disabled = b;
 	}
+
+    @Override
+    public int compareTo(PAOSchedule o) {
+        return this.getScheduleName().compareToIgnoreCase(o.getScheduleName());
+    }
 
 }

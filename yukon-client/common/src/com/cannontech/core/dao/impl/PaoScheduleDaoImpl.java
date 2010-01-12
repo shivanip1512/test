@@ -40,7 +40,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 	    
 	    updateAssignment = "UPDATE PAOScheduleAssignment SET ScheduleId = ?, PaoId = ?, Command = ?, disableOvUv = ? where EventId = ?";
 	    
-		selectAllPaoSchedule = "SELECT ScheduleID,ScheduleName From PaoSchedule";
+		selectAllPaoSchedule = "SELECT ScheduleID, NextRunTime, LastRunTime, IntervalRate, ScheduleName, Disabled From PaoSchedule";
 		
 		selectAllAssignments = "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv " +
 				               "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
@@ -82,7 +82,11 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 			{
 				PAOSchedule sched = new PAOSchedule();
 				sched.setScheduleID(rs.getInt("ScheduleID"));
+				sched.setNextRunTime(rs.getTimestamp("NextRunTime"));
+				sched.setLastRunTime(rs.getTimestamp("LastRunTime"));
+				sched.setIntervalRate(rs.getInt("IntervalRate"));
 				sched.setScheduleName(rs.getString("ScheduleName"));
+				sched.setDisabled(rs.getString("Disabled").equalsIgnoreCase("Y") ? true : false);
 				return sched;
 			}
 		};
