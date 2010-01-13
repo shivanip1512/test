@@ -391,7 +391,6 @@
     <entry key="yukon.common.device.bulk.addPointsHome.updatePointsFalseOptionTooltip">If the point already exists on the device, then no change will be made.</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.updatePointsTrueOptionText">Update Existing Points</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.updatePointsTrueOptionTooltip">If the point already exists on the device, then its multiplier, unit of measure, and state group will be reset to the standard definition for that point.</entry>
-    <entry key="yukon.common.device.bulk.addPointsHome.updatePointsOptionDescription">* If Existing Points are masked (Mask Points Already Created option), then Point Update option is disabled.</entry>
     
     <!-- misc -->
     <entry key="yukon.common.device.bulk.addPointsHome.addButton">Add Points</entry>

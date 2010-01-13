@@ -87,7 +87,6 @@
            			<cti:msg var="updatePointsFalseOptionTooltip" key="yukon.common.device.bulk.addPointsHome.updatePointsFalseOptionTooltip"/>
            			<cti:msg var="updatePointsTrueOptionText" key="yukon.common.device.bulk.addPointsHome.updatePointsTrueOptionText"/>
            			<cti:msg var="updatePointsTrueOptionTooltip" key="yukon.common.device.bulk.addPointsHome.updatePointsTrueOptionTooltip"/>
-					<cti:msg var="updatePointsOptionDescription" key="yukon.common.device.bulk.addPointsHome.updatePointsOptionDescription"/>
            			<c:set var="updatePointsFalseSelected" value="${updatePoints ? '' : 'selected'}"/>
 		   			<c:set var="updatePointsTrueSelected" value="${updatePoints ? 'selected' : ''}"/>
 	             	<tags:nameValue name="${updatePointsOptionLabel}" id="updatePointsSelectTr">
@@ -132,7 +131,6 @@
 			     	<tags:nameValue name="${updatePointsFalseOptionText}">${updatePointsFalseOptionTooltip}<br><br></tags:nameValue>
 			     	<tags:nameValue name="${updatePointsTrueOptionText}">${updatePointsTrueOptionTooltip}</tags:nameValue>
 			     </tags:nameValueContainer><br>
-				 <div class="errorRed">${updatePointsOptionDescription}</div>
 			</tags:simplePopup>
 			
 			<tags:simplePopup id="maskExistingPointsOptionInfoPopup" title="${maskExistingPointsOptionLabel}">
