@@ -14,8 +14,6 @@ import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.TagUtils;
 
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.taglib.MessageScopeHelper;
@@ -32,7 +30,7 @@ public class Msg2Tag extends YukonTagSupport {
     private Object key;
     private boolean javaScriptEscape = false;
     private boolean htmlEscape = true;
-    private boolean gracefulFallback = true;
+    private boolean fallback = false;
     private boolean debug = false;
     
     @Override
@@ -64,7 +62,7 @@ public class Msg2Tag extends YukonTagSupport {
                 message = getMessageSource().getMessage(resolvable);
             }
         } catch (NoSuchMessageException e) {
-            if (gracefulFallback) {
+            if (fallback) {
                 message = resolvable.toString();
             } else {
                 throw e;
@@ -175,7 +173,7 @@ public class Msg2Tag extends YukonTagSupport {
         this.debug = debug;
     }
     
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        gracefulFallback = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE.name(), false);
+    public void setFallback(boolean fallback) {
+        this.fallback = fallback;
     }
 }
