@@ -91,9 +91,7 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_ccsubstationbus.obj:	ccsubstationbus.h ccfeeder.h \
-		ccmonitorpoint.h cccapbank.h ccpointresponse.h \
-		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		ccstrategy.h
+test_lantronixencryption.obj:	yukon.h precompiled.h ctidbgmem.h \
+		encryption_lantronix.h EncodingFilter.h numstr.h dlldefs.h
 #ENDUPDATE#
 
