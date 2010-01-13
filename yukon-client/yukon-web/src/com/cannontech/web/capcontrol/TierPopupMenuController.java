@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -111,8 +112,6 @@ public class TierPopupMenuController extends MultiActionController {
 
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
-        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
-
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.SUBSTATION);
@@ -154,8 +153,6 @@ public class TierPopupMenuController extends MultiActionController {
 
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
-        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
-
         
         if (!isVerify) {
             list.add(CommandHolder.VERIFY_ALL_BANKS);
@@ -236,8 +233,6 @@ public class TierPopupMenuController extends MultiActionController {
         
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
-        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
-
         mav.addObject("list", list);
         
         mav.addObject("controlType", CapControlType.FEEDER);
@@ -280,7 +275,6 @@ public class TierPopupMenuController extends MultiActionController {
 
         if (isTwoWay) {
             list.add(CommandHolder.CBC_SCAN_2WAY);
-            list.add(CommandHolder.SYNC_CAPBANK_STATE);
         }
         
         list.add(CommandHolder.CBC_TIMESYNC);
@@ -308,8 +302,10 @@ public class TierPopupMenuController extends MultiActionController {
         final int id = ServletRequestUtils.getRequiredIntParameter(request,"id");
         final boolean capBankType = ServletRequestUtils.getBooleanParameter(request,"capBankType",false);
         final String controlType = ServletRequestUtils.getRequiredStringParameter(request, "controlType");
+         
+        final StreamableCapObject capObject = capControlCache.getCapControlPAO(id);
         
-        final StreamableCapObject capObject = capControlCache.getStreamableCapObjectById(id);
+        Validate.notNull(capObject);
         
         mav.addObject("paoId", id);
         
@@ -500,8 +496,6 @@ public class TierPopupMenuController extends MultiActionController {
         
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
-        list.add(CommandHolder.SYNC_ALL_CAPBANK_STATE);
-
         mav.addObject("list", list);
         
         mav.addObject("controlType", controlType);

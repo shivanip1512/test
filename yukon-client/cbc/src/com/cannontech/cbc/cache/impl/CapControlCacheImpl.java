@@ -955,28 +955,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     	return deviceList;
     }
     
-    public StreamableCapObject getStreamableCapObjectById(int objectId) throws NotFoundException {
-        StreamableCapObject object = null;
-        
-        if (isArea(objectId)) {
-            object = getArea(objectId);
-        } else if (isSubstation(objectId)) {
-            object = getSubstation(objectId);
-        } else if (isSubBus(objectId)) {
-            object = getSubBus(objectId);
-        } else if (isFeeder(objectId)) {
-            object = getFeeder(objectId);
-        } else if (isCapBank(objectId)) {
-            object = getCapBankDevice(objectId);
-        }
-        
-        if (object == null) {
-            throw new NotFoundException("Could not find an object with id " + objectId);
-        }
-        
-        return object;
-    }
-    
     private void clearCacheMap(final Map<Integer,?> map) {
         Set<Integer> keySet = map.keySet();
         getUpdatedObjMap().remove(keySet);
