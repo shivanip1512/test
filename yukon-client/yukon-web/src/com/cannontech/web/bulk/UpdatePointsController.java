@@ -17,7 +17,6 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.point.PointType;
@@ -47,7 +46,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
-            mav.addObject("errorMsg", errorMsg);
+            mav.addObject("errors", errorMsg);
         }
         
         List<UpdatePointsFieldType> pointFields = Lists.newArrayList(UpdatePointsFieldType.values());
@@ -109,8 +108,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
         
         if(pointTemplatesMap.isEmpty()){
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String noPointsSuppliedMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg");
+            String noPointsSuppliedMsg = "yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg";
             ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
             return home;
         } else {
@@ -144,14 +142,13 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     
     private String validateInput(UpdatePointsFieldType updateField, String setValue, YukonUserContext userContext) {
         String errorMsg = null;
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         switch (updateField) {
         case EXPLICIT_MULTIPLIER :
         case ADJUSTED_MULTIPLIER :
             try {
                 Double.parseDouble(setValue);
             } catch (NumberFormatException e){
-                errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.validDecimalNumberMsg");
+                errorMsg = "yukon.common.device.bulk.updatePointsHome.validDecimalNumberMsg";
             }
             break;
             
@@ -159,10 +156,10 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
             try {
                 int intValue = Integer.parseInt(setValue);
                 if(intValue < 0){
-                    errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.numberGreaterThanZeroMsg");
+                    errorMsg = "yukon.common.device.bulk.updatePointsHome.numberGreaterThanZeroMsg";
                 }
             } catch (NumberFormatException e) {
-                errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.validIntegerNumberMsg");
+                errorMsg = "yukon.common.device.bulk.updatePointsHome.validIntegerNumberMsg";
             }
             break;
         default:

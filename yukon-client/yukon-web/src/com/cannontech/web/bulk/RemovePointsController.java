@@ -24,7 +24,6 @@ import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.Transaction;
@@ -58,7 +57,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
-            mav.addObject("errorMsg", errorMsg);
+            mav.addObject("errors", errorMsg);
         }
         
         // device types set
@@ -231,8 +230,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     	SingleProcessor<YukonDevice> addPointsProcessor = getRemovePointsProcessor(pointTemplatesMap);
     	
     	if(pointTemplatesMap.isEmpty()){
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String noPointsSuppliedMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg");
+            String noPointsSuppliedMsg = "yukon.common.device.bulk.removePointsHome.noPointsSuppliedMsg";
             ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
             return home;
         }

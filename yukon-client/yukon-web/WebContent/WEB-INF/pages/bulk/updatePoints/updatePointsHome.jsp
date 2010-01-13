@@ -52,8 +52,8 @@
     <tags:bulkActionContainer key="yukon.common.device.bulk.updatePointsHome" deviceCollection="${deviceCollection}">
         
         <%-- ERROR MSG --%>
-        <c:if test="${not empty errorMsg}">
-            <div class="formErrorSummary">${errorMsg}</div><br>
+        <c:if test="${not empty errors}">
+            <div class="formErrorSummary"><tags:errorMessages/></div><br>
         </c:if>
         
         <form id="executeUpdatePointsForm" action="<cti:url value="/spring/bulk/updatePoints/execute" />">
