@@ -8,10 +8,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
-import com.cannontech.database.TransactionException;
 
 public interface CapbankDao {
-    public void add( Capbank bank ) throws TransactionException;
+    public void add( Capbank bank );
     
     public boolean remove( Capbank bank );
     

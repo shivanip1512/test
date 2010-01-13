@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -95,7 +96,7 @@ public class FeederDaoImpl implements FeederDao {
     }
 
     @Override
-    public boolean add(Feeder feeder) throws TransactionException {
+    public void add(Feeder feeder) {
     	int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
     	
 		YukonPAObject pao = new YukonPAObject();
@@ -106,8 +107,11 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setType(CapControlType.FEEDER.getDisplayValue());
 		pao.setDescription(feeder.getDescription());
 		pao.setDisableFlag(feeder.getDisabled()?'Y':'N');
-		
-        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		try {
+		    Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e ) { 
+		    throw new DataIntegrityViolationException("Insert of Feeder, " + feeder.getName() + ", in YukonPAObject table failed.", e);
+		}
 
 		//Added to YukonPAObject table, now add to CapControlFeeder
 		feeder.setId(pao.getPaObjectID());
@@ -125,7 +129,6 @@ public class FeederDaoImpl implements FeederDao {
         
 		if (result == false) {
 			CTILogger.debug("Insert of Feeder, " + feeder.getName() + ", in CapControlFeeder table failed.");
-			return false;
 		}
 		
 		SmartMultiDBPersistent smartMulti = CBCPointFactory.createPointsForPAO(pao.getPaObjectID(),pao.getDbConnection());
@@ -134,13 +137,10 @@ public class FeederDaoImpl implements FeederDao {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartMulti).execute();
 		} catch (TransactionException e) {
 			CTILogger.error("Inserting Points for Feeder, " + feeder.getName() + " failed.");
-			return false;
 		}
 		
 		seasonScheduleDao.saveDefaultSeasonStrategyAssigment(feeder.getId());
 		holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(feeder.getId());
-		
-        return result;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

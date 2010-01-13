@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -108,12 +109,12 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
     
     @Override
-    public void add(CapbankController capbankController) throws TransactionException {
+    public void add(CapbankController capbankController) {
     	add(capbankController,true);
     }
     
 	@Override
-	public void add(CapbankController capbankController, boolean addPoints) throws TransactionException {
+	public void add(CapbankController capbankController, boolean addPoints) {
 		
 		int newId = paoDao.getNextPaoId();
 		capbankController.setId(newId);
@@ -124,8 +125,11 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		controller.setDeviceID(newId);
 		controller.setPAOCategory(PAOGroups.STRING_CAT_DEVICE);
 		setTypeSpecificCbcFields(type,controller,capbankController);
-
-		Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, controller).execute();
+		try {
+		    Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, controller).execute();
+		} catch (TransactionException e ) {
+		    throw new DataIntegrityViolationException("Insert of CapBankController, " + capbankController.getName() + ", failed.", e);
+		}
 		
 		capbankController.setId(controller.getPAObjectID());
 		
@@ -142,7 +146,11 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
 			MultiDBPersistent pointMulti = new MultiDBPersistent();
 	        pointMulti.getDBPersistentVector().addAll(points);
-			PointUtil.insertIntoDB(pointMulti);
+	        try {
+	            PointUtil.insertIntoDB(pointMulti);
+	        } catch (TransactionException e ) {
+	            CTILogger.error("Failed on Inserting Points for CapBankController, " + capbankController.getName() +".");
+	        }
 		}
 	}
 

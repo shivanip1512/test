@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -80,7 +81,7 @@ public class SubstationDaoImpl implements SubstationDao {
 	}
 
 	@Override
-    public void add (Substation substation) throws TransactionException {
+    public void add (Substation substation) {
 		int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 		
 		YukonPAObject pao = new YukonPAObject();
@@ -91,13 +92,15 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setType(CapControlType.SUBSTATION.getDisplayValue());
 		pao.setDescription(substation.getDescription());
 		pao.setDisableFlag(substation.getDisabled() ? 'Y' : 'N');
-
-		Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		
+		try {
+		    Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e ) {
+		    throw new DataIntegrityViolationException("Insert of Substation, " + substation.getName() + ", in YukonPAObject table failed.", e);
+		}
 		
 		substation.setId(pao.getPaObjectID());
-		int rowsAffected = simpleJdbcTemplate.update(insertSql, substation.getId(),
-				substation.getVoltReductionPointId(),
-				substation.getMapLocationId());
+		simpleJdbcTemplate.update(insertSql, substation.getId(), substation.getVoltReductionPointId(), substation.getMapLocationId());
     }
     
     @Override

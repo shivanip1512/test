@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-//import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -13,8 +13,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.cbc.dao.LtcDao;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.LoadTapChanger;
-//import com.cannontech.clientutils.YukonLogManager;
-//import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
@@ -24,7 +22,6 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-//import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -40,7 +37,7 @@ public class LtcDaoImpl implements LtcDao {
     private NextValueHelper nextValueHelper;
 
     @Override
-    public int add(LoadTapChanger ltc) throws TransactionException {
+    public int add(LoadTapChanger ltc) {
         /* TODO Add the ltc and ltc points as one multidbpersistent so its all in one transaction? */
         int newId = nextValueHelper.getNextValue("YukonPaObject");
         
@@ -52,9 +49,13 @@ public class LtcDaoImpl implements LtcDao {
         persistentLtc.setType(CapControlType.LTC.getDisplayValue());
         persistentLtc.setDescription(ltc.getDescription());
         persistentLtc.setDisableFlag(ltc.getDisabled()?'Y':'N');
-
-        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, persistentLtc).execute();
-        ltc.setId(persistentLtc.getPaObjectID());
+        
+        try {
+            Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, persistentLtc).execute();
+            ltc.setId(persistentLtc.getPaObjectID());
+        } catch (TransactionException e) {
+            throw new DataIntegrityViolationException("Insert of LTC, " + ltc.getName() + ", failed.", e);
+        }
         
 //        List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(persistentLtc.getPAObjectID(), PAOGroups.getDeviceType(persistentLtc.getPAOType())));
 //        MultiDBPersistent pointMulti = new MultiDBPersistent();
@@ -64,7 +65,6 @@ public class LtcDaoImpl implements LtcDao {
 //        } catch (TransactionException e) {
 //            log.error("Failed on Inserting Points for Load Tap Changer, " + name +".");
 //        }
-        
         return newId;
     }
 

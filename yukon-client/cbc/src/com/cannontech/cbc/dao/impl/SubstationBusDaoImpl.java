@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -102,7 +103,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 
     @Override
-    public boolean add(SubstationBus bus) throws TransactionException {
+    public void add(SubstationBus bus) {
     	int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 		
     	YukonPAObject pao = new YukonPAObject();
@@ -114,7 +115,11 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setDescription(bus.getDescription());
 		pao.setDisableFlag(bus.getDisabled() ? 'Y' : 'N');
 		
-        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		try {
+		    Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e ) { 
+		    throw new DataIntegrityViolationException("Insert of Subbus, " + bus.getName() + ", in YukonPAObject table failed.", e);
+		}
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLSUBSTATIONBUS
 		bus.setId(pao.getPaObjectID());
@@ -136,7 +141,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         
 		if (result == false) {
 			CTILogger.debug("Insert of Subbus, " + bus.getName() + ", in CAPCONTROLSUBSTATIONBUS table failed.");
-			return false;
 		}
 
 		SmartMultiDBPersistent smartMulti = CBCPointFactory.createPointsForPAO(pao.getPaObjectID(), pao.getDbConnection());
@@ -145,13 +149,10 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 			Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartMulti).execute();
 		} catch (TransactionException e) {
 			CTILogger.error("Inserting Points for Subbus, " + bus.getName() + " failed.");
-			return false;
 		}
 		
 		seasonScheduleDao.saveDefaultSeasonStrategyAssigment(bus.getId());
 		holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(bus.getId());
-		
-        return result;
     }
 
     @Override

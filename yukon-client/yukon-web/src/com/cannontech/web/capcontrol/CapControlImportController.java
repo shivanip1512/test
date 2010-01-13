@@ -34,7 +34,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
@@ -218,7 +217,7 @@ public class CapControlImportController {
 	            		
 	            		try {
 	            		    capControlCreationService.createArea(area);
-	            		} catch (TransactionException e){
+	            		} catch (DataIntegrityViolationException e){
 	            			int id = getPaoIdByName(name);
             				if (id == -1) {
             					throw new UnsupportedOperationException(capcontrolType.name() + " failed insert and does not exist. " + name);
@@ -244,7 +243,7 @@ public class CapControlImportController {
 	                            }
 	                            capControlCreationService.assignSubstation(substation.getId(), parentId);
 	                        }
-	            		} catch (TransactionException e){
+	            		} catch (DataIntegrityViolationException e){
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				
@@ -283,7 +282,7 @@ public class CapControlImportController {
 	                            }
 	                            capControlCreationService.assignSubstationBus(subBus.getId(), parentId);
 	                        }
-	            		} catch (TransactionException e) {
+	            		} catch (DataIntegrityViolationException e) {
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				if (id == -1) {
@@ -321,7 +320,7 @@ public class CapControlImportController {
                                 }
                                 capControlCreationService.assignFeeder(feeder.getId(), parentId);
                             }
-	            		} catch (TransactionException e) {
+	            		} catch (DataIntegrityViolationException e) {
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				if (id == -1) {
@@ -360,7 +359,7 @@ public class CapControlImportController {
                                 }
                                 capControlCreationService.assignCapbank(bank.getId(), parentId);
                             }
-	            		} catch (TransactionException e) {
+	            		} catch (DataIntegrityViolationException e) {
             				//If creation failed, check if it already exists to update assignment.
             				int id = getPaoIdByName(name);
             				if (id == -1) {
@@ -451,7 +450,7 @@ public class CapControlImportController {
     	    		if (StringUtils.isNotBlank(capBankName)) {
     	    			capControlCreationService.assignController(controller, capBankName);
     	    		}
-	    		} catch (TransactionException e){
+	    		} catch (DataIntegrityViolationException e){
 	    		    // else its an orphan
 	    		    errors.add("Error inserting " + cbcName + " into the database.");
 	    		}

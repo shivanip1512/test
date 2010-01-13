@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -132,7 +133,7 @@ public class CapbankDaoImpl implements CapbankDao {
     }
 
     @Override
-    public void add(Capbank bank) throws TransactionException {
+    public void add(Capbank bank) {
 		DeviceBase device = DeviceFactory.createDevice(PAOGroups.CAPBANK);
 		
 		//Set what the factory didn't
@@ -148,8 +149,11 @@ public class CapbankDaoImpl implements CapbankDao {
 		smartDB.addOwnerDBPersistent(device);
 		List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(newId, PaoType.CAPBANK));
 		smartDB.addAllDBPersistent(points);
-		
-        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartDB).execute();
+		try { 
+		    Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartDB).execute();
+		} catch (TransactionException e ) { 
+		    throw new DataIntegrityViolationException("Insert of CapBank, " + bank.getName() + ", failed.", e);
+		}
 		
 		//Added to YukonPAObject table, now add to CAPBANK
 		bank.setId(newId);

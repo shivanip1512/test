@@ -47,7 +47,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     private LtcDao ltcDao;
 	
 	@Override
-	public int create(int type, String name, boolean disabled, int portId) throws TransactionException {
+	public int create(int type, String name, boolean disabled, int portId) {
         int id = -1;
         switch(type) {
 
@@ -135,7 +135,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         return id;
     }
 	
-	private int createLTC(LoadTapChanger ltc) throws TransactionException {
+	private int createLTC(LoadTapChanger ltc) {
 	    int newLtcId = ltcDao.add(ltc);
 
         String type = PaoType.LOAD_TAP_CHANGER.getDbString();
@@ -145,7 +145,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 
     @Override
-	public void createArea(Area area) throws TransactionException{
+	public void createArea(Area area) {
 		areaDao.add(area);
 		
 		//Send DB add message
@@ -153,7 +153,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-    public void createSpecialArea(SpecialArea specialArea) throws TransactionException{
+    public void createSpecialArea(SpecialArea specialArea) {
         areaDao.addSpecialArea(specialArea);
         
         //Send DB add message
@@ -161,7 +161,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	@Override
-	public void createSubstation(Substation substation) throws TransactionException {
+	public void createSubstation(Substation substation) {
 		substationDao.add(substation);
 
 		//Send DB add message
@@ -203,7 +203,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-	public void createCapbank(Capbank bank) throws TransactionException {
+	public void createCapbank(Capbank bank) {
 		capbankDao.add(bank);
 		
 		sendCapcontrolDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.CAPBANK);
@@ -236,7 +236,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 
 	@Override
-	public void createFeeder(Feeder feeder) throws TransactionException {
+	public void createFeeder(Feeder feeder) {
 		feederDao.add(feeder);
 		
 		sendCapcontrolDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
@@ -269,7 +269,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-	public void createSubstationBus(SubstationBus subBus) throws TransactionException{
+	public void createSubstationBus(SubstationBus subBus) {
 		substationBusDao.add(subBus);
 		
 		sendCapcontrolDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBBUS);
@@ -303,7 +303,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	@Override
-	public void createController(CapbankController controller) throws TransactionException {
+	public void createController(CapbankController controller) {
 		capbankControllerDao.add(controller);
 
 		String type = PaoType.getForId(controller.getType()).getDbString();

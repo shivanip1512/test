@@ -5,14 +5,13 @@ import java.util.List;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
-import com.cannontech.database.TransactionException;
 
 public interface SubstationBusDao {
-    public boolean add( SubstationBus feeder ) throws TransactionException;
+    public void add( SubstationBus substationBus );
     
-    public boolean remove( SubstationBus feeder );
+    public boolean remove( SubstationBus substationBus );
     
-    public boolean update( SubstationBus feeder );
+    public boolean update( SubstationBus substationBus );
     
     public SubstationBus getById( int id );
     

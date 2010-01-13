@@ -7,11 +7,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.SubstationBus;
-import com.cannontech.database.TransactionException;
 
 public interface FeederDao {
 
-    public boolean add( Feeder feeder ) throws TransactionException;
+    public void add( Feeder feeder );
     
     public boolean remove( Feeder feeder );
     

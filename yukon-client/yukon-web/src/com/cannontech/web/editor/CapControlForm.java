@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1011,6 +1012,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }
             facesMsg.setDetail("Database add was SUCCESSFUL");
             JSFUtil.redirect("/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemID);
+        }catch (DataIntegrityViolationException e) { //TODO do something smarter with this
+            facesMsg.setDetail(e.getMessage());
+            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            return "";
         }catch (Exception e) {
             facesMsg.setDetail(e.getCause().getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);

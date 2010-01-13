@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -70,7 +71,7 @@ public class AreaDaoImpl implements AreaDao {
     }
 
 	@Override
-	public void add(Area area) throws TransactionException {
+	public void add(Area area) {
 		int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 
 		YukonPAObject pao = new YukonPAObject();
@@ -81,8 +82,11 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setType(CapControlType.AREA.getDisplayValue());
 		pao.setDescription(area.getDescription());
 		pao.setDisableFlag(area.getDisabled() ? 'Y' : 'N');
-				
-		Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		try {
+		    Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+		} catch (TransactionException e ){
+		    throw new DataIntegrityViolationException("Insert of Area, " + area.getName() + ", in YukonPAObject table failed.", e);
+		}
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLAREA
 		area.setId(pao.getPaObjectID());
@@ -93,7 +97,7 @@ public class AreaDaoImpl implements AreaDao {
 	}
 	
 	@Override
-    public void addSpecialArea(SpecialArea specialArea) throws TransactionException {
+    public void addSpecialArea(SpecialArea specialArea) {
         int newPaoId = nextValueHelper.getNextValue("YukonPaObject");
 
         YukonPAObject pao = new YukonPAObject();
@@ -104,8 +108,11 @@ public class AreaDaoImpl implements AreaDao {
         pao.setType(CapControlType.SPECIAL_AREA.getDisplayValue());
         pao.setDescription(specialArea.getDescription());
         pao.setDisableFlag(specialArea.getDisabled() ? 'Y' : 'N');
-                
-        Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+        try {
+            Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, pao).execute();
+        } catch (TransactionException e) {
+            throw new DataIntegrityViolationException("Insert of SpecialArea, " + specialArea.getName() + ", in YukonPAObject table failed.", e);
+        }
         
         //Added to YukonPAObject table, now add to CAPCONTROLAREA
         specialArea.setId(pao.getPaObjectID());

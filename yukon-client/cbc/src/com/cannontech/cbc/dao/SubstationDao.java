@@ -7,11 +7,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
-import com.cannontech.database.TransactionException;
 
 public interface SubstationDao {
 	
-    public void add( Substation substation ) throws TransactionException;
+    public void add( Substation substation );
     
     public boolean remove( Substation substation );
     

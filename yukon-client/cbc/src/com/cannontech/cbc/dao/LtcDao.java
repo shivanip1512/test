@@ -16,7 +16,7 @@ public interface LtcDao {
      * @return boolean
      * @throws TransactionException 
      */
-    public int add(LoadTapChanger ltc) throws TransactionException;
+    public int add(LoadTapChanger ltc);
     
     /**
      * Deletes a LTC from the database.
