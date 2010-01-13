@@ -288,6 +288,15 @@ table.compactResultsTable th {
 	padding: 3px;
 }
 
+table.compactResultsTableNoFontSize th {
+	border-bottom: 1px solid #CCCCCC;
+	color: 	#000000;
+	font-weight: 600;
+	text-align:left;
+	vertical-align:bottom;
+	padding: 3px;
+}
+
 table.compactResultsTable .padded {
 	padding-top: 7px;
 }
@@ -335,6 +344,10 @@ table.nameValueTable td.name {
 	vertical-align: top;
 	font-weight: bold;
 	padding-right:10px;
+}
+
+table.nameValueTable tr {
+	text-align: left;
 }
 
 table.nameValueTable tr.indent1 td.name {

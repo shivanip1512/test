@@ -18,21 +18,7 @@
 
 <cti:msg key="yukon.web.modules.widgets.disconnectMeterWidget.disconnectNote" var="disconnectNote" />
 
-<style>
-table.compactResultsTable tr.vertical-middle td,
-table.compactResultsTable tr.vertical-middle td.name {
-	vertical-align: middle;
-	
-}
-table.nameValueTable tr.indent1 td.name {
-	font-size: 1.0em;
-}
-table.nameValueTable tr.indent1 td.value {
-	font-size: 0.9em;
-}
-</style>
-
-<table class="compactResultsTable">
+<table class="compactResultsTableNoFontSize">
 	<tr>
         <th colspan="2">${statusMessages}</th>
     </tr>
@@ -96,9 +82,9 @@ table.nameValueTable tr.indent1 td.value {
 			</ct:nameValueContainer>
 		</td>
 	</tr>
-	<tr>
+	<tr align="left">
 		<td>
-			${disconnectNote}
+			<span style="font-size: .8em">${disconnectNote}</span>
 		</td>
 	</tr>
 </table>
