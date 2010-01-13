@@ -46,18 +46,6 @@ private:
 
     coll_type      _smartMap;
 
-    struct lru_data_t
-    {
-        long   pointid;
-        time_t access_time;
-
-        lru_data_t(long pointid_, time_t access_time_=time(0)) :
-            pointid(pointid_)
-        { };
-
-        bool operator<(const lru_data_t &rhs) const  {  return access_time < rhs.access_time;  };
-    };
-
     typedef std::map<time_t, set<long>, std::greater<time_t> > lru_timeslice_map;  //  the make sure the map is sorted as newest-first (largest timestamps)
     typedef std::map<long, lru_timeslice_map::iterator>      lru_point_lookup_map;
     typedef CtiLockGuard<CtiCriticalSection>                 lru_guard_t;
@@ -71,6 +59,9 @@ private:
     void updateAccess(long pointid, time_t time_now=time(0));
 
     void addPoint(CtiPointBase *point);  //  also used by the unit test
+
+    //ONLY used by unit test.
+    void setAllPointsLoaded(bool isLoaded) { _all_paoids_loaded = isLoaded; }
 
     struct pao_offset_t
     {
@@ -139,6 +130,11 @@ public:
 class Test_CtiPointManager : public CtiPointManager
 {
 public:
+    Test_CtiPointManager()
+    {
+        setAllPointsLoaded(true);
+    }
+
     void addPoint(CtiPointBase *point)  {  ((CtiPointManager *)this)->addPoint(point);  }
 };
 
