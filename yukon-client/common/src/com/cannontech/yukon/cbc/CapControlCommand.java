@@ -40,24 +40,15 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int SYSTEM_STATUS = 28;
     public static final int SEND_ALL_OPEN = 29;
     public static final int SEND_ALL_CLOSE = 30;
+    
+    public static final int CMD_MANUAL_ENTRY = 30;
+    public static final int CMD_BANK_TEMP_MOVE  = 31;
+    
     public static final int SEND_ALL_ENABLE_OVUV = 31;
     public static final int SEND_ALL_DISABLE_OVUV = 32;
     public static final int SEND_ALL_SCAN_2WAY = 33;
     public static final int SEND_TIMESYNC = 34;
     public static final int OPERATIONAL_STATECHANGE = 35;
-    
-	public static final int VERIFY_OFFSET = 60;
-	public static final int CMD_ALL_BANKS = VERIFY_OFFSET + 0;
-	public static final int CMD_FQ_BANKS = VERIFY_OFFSET + 1;
-	public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
-	public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
-	public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
-    public static final int CMD_STANDALONE_VERIFY = VERIFY_OFFSET + 6;
-    public static final int CONFIRM_SUBSTATION = VERIFY_OFFSET + 7;
-    
-    public static final int CMD_MANUAL_ENTRY = 30;
-    public static final int CMD_BANK_TEMP_MOVE  = 31;
-    
     public static final int SEND_ALL_ENABLE_TEMPCONTROL = 40;
     public static final int SEND_ALL_DISABLE_TEMPCONTROL = 41;
     public static final int SEND_ALL_ENABLE_VARCONTROL = 42;
@@ -75,11 +66,20 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int SYNC_CBC_CAPBANK_STATE = 52;
     public static final int SYNC_ALL_CAPBANK_STATES = 53;
     
-    public static final int LTC_SCAN_INTEGRITY = 60;
-    public static final int LTC_REMOTE_ENABLE = 61;
-    public static final int LTC_REMOTE_DISABLE = 62;
-    public static final int LTC_TAP_POSITION_RAISE = 63;
-    public static final int LTC_TAP_POSITION_LOWER = 64;
+    public static final int VERIFY_OFFSET = 60;
+    public static final int CMD_ALL_BANKS = VERIFY_OFFSET + 0;
+    public static final int CMD_FQ_BANKS = VERIFY_OFFSET + 1;
+    public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
+    public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
+    public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
+    public static final int CMD_STANDALONE_VERIFY = VERIFY_OFFSET + 6;
+    public static final int CONFIRM_SUBSTATION = VERIFY_OFFSET + 7;
+    
+    public static final int LTC_SCAN_INTEGRITY = 70;
+    public static final int LTC_REMOTE_ENABLE = 71;
+    public static final int LTC_REMOTE_DISABLE = 72;
+    public static final int LTC_TAP_POSITION_RAISE = 73;
+    public static final int LTC_TAP_POSITION_LOWER = 74;
     
 	public static final String[] COMMAND_STRINGS = {
 		"Enable Substation Bus",
@@ -123,18 +123,18 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 		"",
 		"",
 		"",
-		"Verify All Banks", //40 
-		"Verify Failed And Questionable Banks",
-		"Verify Failed Banks",
-		"Verify Questionable Banks", //43
-		"Verify Disabled Banks", //44
-        "",
-        "VerifyStandaloneBanks",
-        "Confirm Substation",
-        "",
-        "",
-        "",//50
-        "",
+		"Enable Temp Control", //40
+        "Disable Temp Control",
+        "Enable Var Control",
+        "Disable Var Control",
+        "Enable Time Control",
+        "Disable Time Control", //45
+        "Enable Temp Control", 
+        "Disable Temp Control",
+        "Enable Var Control",
+        "Disable Var Control",
+        "Enable Time Control", //50
+        "Disable Time Control",
         "Sync CapBank State",
         "Sync Mismatched CapBank State",
         "",
@@ -143,15 +143,22 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
         "",
         "",
         "",
-        "Scan Ltc Integrity",//60
+        "Verify All Banks", //60
+        "Verify Failed And Questionable Banks",
+        "Verify Failed Banks",
+        "Verify Questionable Banks", //63
+        "Verify Disabled Banks", //64
+        "",
+        "VerifyStandaloneBanks",
+        "Confirm Substation",
+        "",
+        "",
+        "Scan Ltc Integrity", //70
         "Enable Remote Control",
         "Disable Remote Control",
         "Raise Tap Position",
         "Lower Tap Position",
-        };
-
-	
-
+    };
 
 	private int command;
 	private int deviceID;
