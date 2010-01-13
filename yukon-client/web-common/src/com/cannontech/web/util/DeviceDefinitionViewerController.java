@@ -32,7 +32,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 
 public class DeviceDefinitionViewerController extends AbstractController {
 
@@ -263,14 +263,14 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	public class PointTemplateWrapper {
 		
 		private PointTemplate pointTemplate;
-		private String typeString;
+		private PointType pointType;
 		private String uomString;
 		private String stateGroup;
 		
 		public PointTemplateWrapper(PointTemplate pointTemplate) {
 			
 			this.pointTemplate = pointTemplate;
-			this.typeString = PointTypes.getType(pointTemplate.getPointIdentifier().getType());
+			this.pointType = pointTemplate.getPointIdentifier().getPointType();
 			this.uomString = "";
 			this.stateGroup = "";
 			int uom = pointTemplate.getUnitOfMeasure();
@@ -286,8 +286,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public PointTemplate getPointTemplate() {
 			return pointTemplate;
 		}
-		public String getTypeString() {
-			return typeString;
+		public PointType getPointType() {
+			return pointType;
 		}
 		public String getUomString() {
 			return uomString;

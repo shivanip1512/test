@@ -181,7 +181,7 @@
 							<c:forEach var="point" items="${deviceInfo.points}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
 									<td>${point.pointTemplate.name}</td>
-									<td>${point.typeString}</td>
+									<td><cti:msg key="${point.pointType}"/></td>
 									<td>${point.pointTemplate.pointIdentifier.offset}</td>
 									<td>${point.pointTemplate.multiplier}</td>
 									<td>${point.uomString}</td>
