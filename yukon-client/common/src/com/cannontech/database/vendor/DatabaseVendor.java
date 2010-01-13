@@ -74,7 +74,7 @@ public enum DatabaseVendor {
                 databaseVendor.getDatabaseMajorVersion() == -1 &&
                 databaseVendor.getDatabaseMajorVersion() == -1){
 
-                logger.warn("Your database verion is not currently supported by Yukon: " + 
+                logger.warn("Your database version is not currently supported by Yukon: " + 
                             vendorName + " ("+majorVersion+"."+minorVersion+") ");
                 return databaseVendor;
             }
