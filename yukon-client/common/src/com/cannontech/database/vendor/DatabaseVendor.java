@@ -1,24 +1,87 @@
 package com.cannontech.database.vendor;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
+
 
 public enum DatabaseVendor {
-    MS2000    ("Microsoft SQL Server","08."),
-    MS2005    ("Microsoft SQL Server","09."),
-    MS2008    ("Microsoft SQL Server","10."),
-    ORACLE9I  ("Oracle","Oracle9i Enterprise Edition Release"),
-    ORACLE10G ("Oracle","Oracle Database 10g Release"),
-    ORACLE11G ("Oracle","Oracle Database 11g Release"), 
-    UNKNOWN("", "");
     
-    private final String venderText;
-    private final String productVersionPrefix;
+    MS        ("Microsoft SQL Server"),
+    MS2000    ("Microsoft SQL Server",8),
+    MS2005    ("Microsoft SQL Server",9),
+    MS2008    ("Microsoft SQL Server",10),
+    ORACLE    ("Oracle"),
+    ORACLE9I  ("Oracle",9),
+    ORACLE10G ("Oracle",10),
+    ORACLE11G ("Oracle",11),
+    UNKNOWN("");
     
-    DatabaseVendor(String venderText, String productVersionPrefix) {
-        this.venderText = venderText;
-        this.productVersionPrefix = productVersionPrefix;
-    }
-    public String getVenderText() { return this.venderText; }
-    public String getProductVersionPrefix() { return this.productVersionPrefix; }
+    private static Logger logger = YukonLogManager.getLogger(DatabaseVendor.class);
+    
+    private final String vendorName;
+    private final int databaseMajorVersion;
+    private final int databaseMinorVersion;
 
+    DatabaseVendor(String vendorName) {
+        this.vendorName = vendorName;
+        this.databaseMajorVersion = -1;
+        this.databaseMinorVersion = -1;
+    }
+    
+    DatabaseVendor(String vendorName, int databaseMajorVersion) {
+        this.vendorName = vendorName;
+        this.databaseMajorVersion = databaseMajorVersion;
+        this.databaseMinorVersion = -1;
+    }
+
+    DatabaseVendor(String vendorName, int databaseMajorVersion, int databaseMinorVersion) {
+        this.vendorName = vendorName;
+        this.databaseMajorVersion = databaseMajorVersion;
+        this.databaseMinorVersion = databaseMinorVersion;
+    }
+
+    public String getVendorName() { return this.vendorName; }
+    public int getDatabaseMajorVersion() { return this.databaseMajorVersion; }
+    public int getDatabaseMinorVersion() { return this.databaseMinorVersion; }
+    
+    public static DatabaseVendor getDatabaseVendor(String vendorName, int majorVersion) {
+        return getDatabaseVendor(vendorName, majorVersion, -1);
+    }
+    
+    public static DatabaseVendor getDatabaseVendor(String vendorName, int majorVersion, int minorVersion) {
+        // Try to match the full version
+        for (DatabaseVendor databaseVendor : values()){
+            if (databaseVendor.getVendorName().equalsIgnoreCase(vendorName) &&
+                databaseVendor.getDatabaseMajorVersion() == majorVersion &&
+                databaseVendor.getDatabaseMinorVersion() == minorVersion){
+                return databaseVendor;
+            }
+        }
+        
+        // Try to match without the minor version
+        for (DatabaseVendor databaseVendor : values()){
+            if (databaseVendor.getVendorName().equalsIgnoreCase(vendorName) &&
+                databaseVendor.getDatabaseMajorVersion() == majorVersion &&
+                databaseVendor.getDatabaseMajorVersion() == -1){
+                return databaseVendor;
+            }
+        }
+        
+        // Try to match without the major or minor version
+        for (DatabaseVendor databaseVendor : values()){
+            if (databaseVendor.getVendorName().equalsIgnoreCase(vendorName) &&
+                databaseVendor.getDatabaseMajorVersion() == -1 &&
+                databaseVendor.getDatabaseMajorVersion() == -1){
+
+                logger.warn("Your database verion is not currently supported by Yukon: " + 
+                            vendorName + " ("+majorVersion+"."+minorVersion+") ");
+                return databaseVendor;
+            }
+        }
+        
+        logger.warn("Your database is not officially supported by Yukon: " + vendorName );
+        return DatabaseVendor.UNKNOWN;
+    }
 }
 

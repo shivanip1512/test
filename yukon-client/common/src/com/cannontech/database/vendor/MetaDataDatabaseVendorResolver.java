@@ -28,19 +28,14 @@ public class MetaDataDatabaseVendorResolver implements DatabaseVendorResolver {
             DatabaseVendor result = (DatabaseVendor) JdbcUtils.extractDatabaseMetaData(dataSource, new DatabaseMetaDataCallback() {
                 @Override
                 public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
-                    String vendorText = dbmd.getDatabaseProductName();
-                    String productVersion = dbmd.getDatabaseProductVersion();
+                    String vendorName = dbmd.getDatabaseProductName();
+                    int databaseMajorVersion = dbmd.getDatabaseMajorVersion();
+                    int databaseMinorVersion = dbmd.getDatabaseMinorVersion();
                     
-                    for(DatabaseVendor databaseVendor: DatabaseVendor.values())
-                        if ((vendorText.equals(databaseVendor.getVenderText())) &&
-                            (productVersion.startsWith(databaseVendor.getProductVersionPrefix()))) {
-                            return databaseVendor;
-                        }
-                    
-                    logger.warn("Your database is not officially supported by Yukon: " + 
-                                vendorText + ", " + productVersion);
-                    return DatabaseVendor.UNKNOWN; 
-                    
+                    return DatabaseVendor.getDatabaseVendor(vendorName, 
+                                                            databaseMajorVersion,
+                                                            databaseMinorVersion);
+
                 }
             });
             this.databaseVendor = result;
