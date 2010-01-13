@@ -72,7 +72,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	private List<LiteStarsEnergyCompany> energyCompanies = null;
     
 	// List of web configurations (LiteWebConfiguration)
-	private ConcurrentMap<Integer,LiteWebConfiguration> webConfigList = null;
+	private ConcurrentMap<Integer,LiteWebConfiguration> webConfigMap = null;
 	
 	// Map from user ID (Integer) to stars users (StarsYukonUser)
 	private Map<Integer,StarsYukonUser> starsYukonUsers = null;
@@ -145,20 +145,20 @@ public class StarsDatabaseCache implements DBChangeListener {
 
 	private synchronized Map<Integer,LiteWebConfiguration> getAllWebConfigurations() {
 	    
-		if (webConfigList == null) {
-			webConfigList = new ConcurrentHashMap<Integer,LiteWebConfiguration>();
+		if (webConfigMap == null) {
+			webConfigMap = new ConcurrentHashMap<Integer,LiteWebConfiguration>();
 			
 			YukonWebConfiguration[] webConfigs =
 					YukonWebConfiguration.getAllCustomerWebConfigurations();
 			for (int i = 0; i < webConfigs.length; i++) {
                 LiteWebConfiguration webConfiguration = (LiteWebConfiguration) StarsLiteFactory.createLite(webConfigs[i]);
-                webConfigList.put(webConfiguration.getConfigID(), webConfiguration );
+                webConfigMap.put(webConfiguration.getConfigID(), webConfiguration );
             }
 	    	
 	    	CTILogger.info( "All customer web configurations loaded" );
 		}
 		
-		return webConfigList;
+		return webConfigMap;
 	}
 
 	public synchronized Map<Integer,StarsYukonUser> getAllStarsYukonUsers() {
@@ -430,7 +430,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 
     private synchronized void handleWebConfigurationChange(DBChangeMsg msg) {
-        webConfigList = null;
+        webConfigMap = null;
     }
 
 	
