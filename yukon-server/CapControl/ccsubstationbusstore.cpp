@@ -6556,37 +6556,37 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         {
                             RWDBTable busToLtc = db.table("CCSubstationBusToLTC");
 
-                            selector = db.selector();
+                            RWDBSelector dbSelector = db.selector();
 
-                            selector << busToLtc["substationbusid"]
+                            dbSelector << busToLtc["substationbusid"]
                                      << busToLtc["ltcId"] ;
 
-                            selector.from(busToLtc);
+                            dbSelector.from(busToLtc);
 
                             if (subBusId > 0)
                             {
-                                selector.where( subBusId == busToLtc["substationbusid"] );
+                                dbSelector.where( subBusId == busToLtc["substationbusid"] );
                             }
 
                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                             {
-                                string loggedSQLstring = selector.asString();
+                                string loggedSQLstring = dbSelector.asString();
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                                 }
                             }
-                            RWDBReader rdr = selector.reader(conn);
+                            RWDBReader dbRdr = dbSelector.reader(conn);
 
                             CtiCCSubstationBusPtr currentBus = NULL;
 
-                            while(rdr())
+                            while(dbRdr())
                             {
                                 int ltcId;
                                 int busId;
 
-                                rdr["substationbusid"] >> busId;
-                                rdr["ltcId"] >> ltcId;
+                                dbRdr["substationbusid"] >> busId;
+                                dbRdr["ltcId"] >> ltcId;
 
                                 currentBus = findSubBusByPAObjectID(busId);
                                 if (currentBus != NULL)
@@ -6604,9 +6604,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         }
 
                         {
-                            RWDBSelector selector = db.selector();
+                            RWDBSelector dbSelector = db.selector();
 
-                            selector << ccSubstationSubBusListTable["substationid"]
+                            dbSelector << ccSubstationSubBusListTable["substationid"]
                                      << ccSubstationSubBusListTable["substationbusid"]
                                      << ccSubstationSubBusListTable["displayorder"] ;
 
