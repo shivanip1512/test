@@ -590,7 +590,7 @@ bool UnsolicitedHandler::generateOutbounds( void )
                 {
                     //  there is no outmessage, so we don't call recvCommRequest -
                     //    we have to call the Cti::Device::DNP-specific initUnsolicited
-                    shared_ptr<Devices::DNP> dnp_device = boost::static_pointer_cast<Device::DNP>(dr->device);
+                    shared_ptr<Devices::DNP> dnp_device = boost::static_pointer_cast<Devices::DNP>(dr->device);
 
                     dnp_device->initUnsolicited();
 
