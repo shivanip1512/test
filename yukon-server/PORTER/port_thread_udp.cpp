@@ -25,7 +25,6 @@
 
 using namespace std;
 
-extern CtiConnection VanGoghConnection;
 extern CtiDeviceManager DeviceManager;
 
 namespace Cti    {
@@ -224,6 +223,12 @@ UdpPortHandler::gpuff_type_serial_pair UdpPortHandler::makeGpuffTypeSerialPair(c
 }
 
 
+void UdpPortHandler::updatePortProperties( void )
+{
+    //  if port changed, close and reopen socket on the new port
+}
+
+
 void UdpPortHandler::teardownPort()
 {
     closesocket(_udp_socket);
@@ -320,6 +325,8 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_l
 
     if( !vgMsg->PointData().empty() )
     {
+        extern CtiConnection VanGoghConnection;
+
         VanGoghConnection.WriteConnQue(vgMsg.release());
     }
 }
@@ -481,6 +488,33 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
 }
 
 
+bool UdpPortHandler::validatePacket(packet *&p) const
+{
+    if( Protocol::DNP::Datalink::isPacketValid(p->data, p->len) )
+    {
+        p->protocol = packet::ProtocolTypeDnp;
+    }
+    else if( GpuffProtocol::isPacketValid(p->data, p->len) )
+    {
+        p->protocol = packet::ProtocolTypeGpuff;
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::validatePacket() - incoming packet from " << ip_to_string(p->ip) <<  ":" << p->port << " is invalid";
+        }
+
+        delete p->data;
+        delete p;
+
+        p = 0;
+    }
+
+    return p;
+}
+
+
 void UdpPortHandler::distributePacket(packet *p)
 {
     if( !p )  return;
@@ -530,7 +564,7 @@ void UdpPortHandler::handleDnpPacket(packet *&p)
     {
         updateDeviceIpAndPort(*dr, *p);
 
-        dr->work.inbound.push(p);
+        addInboundWork(dr, p);
 
         p = 0;
     }
@@ -573,7 +607,7 @@ void UdpPortHandler::handleGpuffPacket(packet *&p)
         {
             updateDeviceIpAndPort(*dr, *p);
 
-            dr->work.inbound.push(p);
+            addInboundWork(dr, p);
 
             traceInbound(p->ip, p->port, 0, p->data, p->len);
 
@@ -633,6 +667,13 @@ UdpPortHandler::device_record *UdpPortHandler::getDeviceRecordByGpuffDeviceTypeS
     }
 
     return getDeviceRecordById(itr->second);
+}
+
+
+bool UdpPortHandler::isDeviceDisconnected( const long device_id ) const
+{
+    //  connectionless, so it's never connected or disconnected
+    return false;
 }
 
 

@@ -26,6 +26,7 @@
 #include "pointtypes.h"
 
 #include "prot_base.h"
+#include "packet_finder.h"
 
 #include "dnp_application.h"
 #include "dnp_objects.h"
@@ -200,10 +201,10 @@ public:
 
 
 
-class IM_EX_PROT DNPSlaveInterface : public DNPInterface, boost::noncopyable 
+class IM_EX_PROT DNPSlaveInterface : public DNPInterface, boost::noncopyable
 {
     struct input_point;
-    
+
 private:
 
     vector<input_point> _input_point_list;
@@ -215,12 +216,12 @@ protected:
 public:
 
     DNPSlaveInterface();
-    
+
     virtual ~DNPSlaveInterface();
 
     bool setSlaveCommand( Command command );
     bool setSlaveCommand( Command command, input_point &point );
-    
+
     int slaveGenerate( CtiXfer &xfer );
     void slaveTransactionComplete();
 
@@ -266,8 +267,23 @@ public:
         bool includeTime;
         CtiTime timestamp;
     };
-   
+
 };
+
+
+namespace DNP {
+
+struct DnpPacketFinder : public Protocols::PacketFinder
+{
+public:
+
+    DnpPacketFinder() :
+        PacketFinder(0x05, 0x64, Datalink::isPacketValid)
+    { };
+};
+
+}
+
 
 }
 }

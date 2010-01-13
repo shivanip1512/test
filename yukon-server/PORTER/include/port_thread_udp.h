@@ -48,6 +48,9 @@ private:
     bool bindSocket( void );
 
     packet *recvPacket( unsigned char * const recv_buf, unsigned max_len );
+
+    bool validatePacket(packet *&p) const;
+
     void distributePacket(packet *p);
 
     void handleDnpPacket  (packet *&p);
@@ -80,6 +83,10 @@ protected:
     virtual void addDeviceProperties   (const CtiDeviceSingle &device);
     virtual void updateDeviceProperties(const CtiDeviceSingle &device);
     virtual void deleteDeviceProperties(const CtiDeviceSingle &device);
+
+    virtual void updatePortProperties( void );
+
+    virtual bool isDeviceDisconnected( const long device_id ) const;
 
     virtual u_long  getDeviceIp  ( const long device_id ) const;
     virtual u_short getDevicePort( const long device_id ) const;

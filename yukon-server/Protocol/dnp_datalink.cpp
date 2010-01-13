@@ -1194,7 +1194,7 @@ void Datalink::putPacketPayload( const Datalink::packet_t &packet, unsigned char
 }
 
 
-IM_EX_PROT bool Datalink::isPacketValid( const unsigned char *buf, const int len )
+IM_EX_PROT bool Datalink::isPacketValid( const unsigned char *buf, const size_t len )
 {
     if( len < DatalinkPacket::HeaderLength )
     {
@@ -1220,25 +1220,6 @@ IM_EX_PROT bool Datalink::isPacketValid( const unsigned char *buf, const int len
     }
 
     return true;
-}
-
-
-bool Datalink::findPacket(unsigned char *&itr, unsigned char *&end)
-{
-    //  just find the first framing byte and let isPacketValid() do the rest
-    for( ; (itr = std::find(itr, end, 0x05)) != end; ++itr )
-    {
-        if( isPacketValid(itr, std::distance(itr, end)) )
-        {
-            const packet_t *p = reinterpret_cast<const packet_t *>(&*itr);
-
-            end = itr + calcPacketLength(p->header.fmt.len);
-
-            return true;
-        }
-    }
-
-    return false;
 }
 
 

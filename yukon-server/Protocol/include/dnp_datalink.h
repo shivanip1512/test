@@ -1,25 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_datalink
-*
-* Namespace: CtiDNP
-* Class:     Datalink
-* Date:   5/6/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/02/15 21:10:25 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_DATALINK_H__
-#define __DNP_DATALINK_H__
-#pragma warning( disable : 4786)
+#pragma once
 
-#include "dsm2.h"
 #include "xfer.h"
 
 #include "dnp_datalink_packet.h"
@@ -176,8 +156,7 @@ public:
     bool getInPayload( unsigned char *buf );
     int  getInPayloadLength( void );
 
-    IM_EX_PROT static bool isPacketValid(const unsigned char  *buf, const int  len);
-    IM_EX_PROT static bool findPacket(unsigned char *&itr, unsigned char *&end);
+    IM_EX_PROT static bool isPacketValid(const unsigned char *buf, const size_t len);
 
     IM_EX_PROT static unsigned short crc(const unsigned char *buf, const int len);
 
@@ -194,8 +173,8 @@ public:
     void setIoStateComplete();
 };
 
+
 }
 }
 }
 
-#endif // #ifndef __DNP_DATALINK_H__

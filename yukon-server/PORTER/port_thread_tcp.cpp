@@ -18,12 +18,9 @@
 #include "mgr_device.h"
 
 #include "boostutil.h"
-#include <boost/scoped_array.hpp>
 
 using namespace std;
 
-// Some Global Manager types to allow us some RTDB stuff.
-extern CtiConnection VanGoghConnection;
 extern CtiDeviceManager DeviceManager;
 
 namespace Cti    {
@@ -81,139 +78,27 @@ bool TcpPortHandler::setupPort()
 
 bool TcpPortHandler::manageConnections( void )
 {
-    bool active = false;
-
-    vector<connection_itr> in_progress;
-
-    const CtiTime Now;
-
-    for( connection_itr itr = _connections.begin(); itr != _connections.end(); ++itr )
+    if( _tcp_port->isInhibited() )
     {
-        const long device_id = itr->first;
-        connection &c        = itr->second;
-
-        switch( c.state )
-        {
-            case connection::Disconnected:
-            {
-                //  only try to connect every connect_timeout seconds at max
-                if( c.connect_timeout < Now )
-                {
-                    connectToDevice(device_id, c);
-
-                    active = true;
-                }
-
-                break;
-            }
-            case connection::Connecting:
-            {
-                in_progress.push_back(itr);
-
-                break;
-            }
-        }
+        return false;
     }
 
-    checkPendingConnections(in_progress);
+    TcpConnectionManager::id_set connected, failed;
 
-    return active;
+    _connectionManager.checkPendingConnections(connected, failed);
+
+    for each( const long device_id in connected )
+    {
+        updateDeviceCommStatus(device_id, NoError);
+    }
+
+    for each( const long device_id in failed )
+    {
+        updateDeviceCommStatus(device_id, ErrorDeviceNotConnected);
+    }
+
+    return !connected.empty() && !failed.empty();
 }
-
-
-void TcpPortHandler::checkPendingConnections(vector<connection_itr> &in_progress)
-{
-    vector<connection_itr>::iterator itr = in_progress.begin();
-
-    while( itr != in_progress.end() )
-    {
-        fd_set writeable_sockets;
-
-        vector<connection_itr> candidate_connections;
-
-        FD_ZERO(&writeable_sockets);
-
-        int socket_count = 0;
-
-        //  check in blocks of up to FD_SETSIZE
-        for( ; itr != in_progress.end() && socket_count < FD_SETSIZE; ++itr, ++socket_count )
-        {
-            const connection &c = (*itr)->second;
-
-            candidate_connections.push_back(*itr);
-
-            FD_SET(c.socket, &writeable_sockets);
-        }
-
-        checkPendingConnectionBlock(socket_count, writeable_sockets, candidate_connections);
-    }
-}
-
-
-void TcpPortHandler::checkPendingConnectionBlock(const int socket_count, fd_set &writeable_sockets, vector<connection_itr> &candidate_connections)
-{
-    timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
-    const CtiTime Now;
-
-    //  check to see if any of the sockets are writable - a writable socket means the connection has completed
-    int ready_count = select(socket_count, NULL, &writeable_sockets, NULL, &tv);
-
-    if( ready_count == SOCKET_ERROR )
-    {
-        reportSocketError("select", 0, __FUNCTION__, __FILE__, __LINE__);
-
-        ready_count = 0;
-    }
-
-    for each( connection_itr conn_itr in candidate_connections )
-    {
-        const long device_id = conn_itr->first;
-        connection &c        = conn_itr->second;
-
-        if( ready_count && FD_ISSET(c.socket, &writeable_sockets) )
-        {
-            setConnectionOptions(device_id, c);
-
-            c.state = connection::Connected;
-
-            updateDeviceCommStatus(device_id, NoError);
-        }
-        else if( c.connect_timeout > Now )
-        {
-            disconnectFromDevice(device_id, c);
-
-            updateDeviceCommStatus(device_id, ErrorDeviceNotConnected);
-        }
-    }
-}
-
-
-void TcpPortHandler::setConnectionOptions(const long device_id, connection &c)
-{
-    //  none of these are fatal errors, so we'll just log and continue
-
-    //  Make sure we time out on our writes after 5 seconds
-    int socket_write_timeout = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
-    if( setsockopt(c.socket, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char *>(&socket_write_timeout), sizeof(socket_write_timeout)) )
-    {
-        reportSocketError("setsockopt", device_id, __FUNCTION__, __FILE__, __LINE__);
-    }
-
-    //  Turn on the keepalive timer
-    int keepalive_timer = 1;
-    if( setsockopt(c.socket, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char *>(&keepalive_timer), sizeof(keepalive_timer)) )
-    {
-        reportSocketError("setsockopt", device_id, __FUNCTION__, __FILE__, __LINE__);
-    }
-
-    //  enable a hard close - erases all pending outbound data, sends a reset to the other side
-    linger l = {1, 0};
-    if( setsockopt(c.socket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&l), sizeof(l)) )
-    {
-        reportSocketError("setsockopt", device_id, __FUNCTION__, __FILE__, __LINE__);
-    }
-}
-
 
 
 void TcpPortHandler::updateDeviceCommStatus(const long device_id, int status)
@@ -229,13 +114,14 @@ void TcpPortHandler::updateDeviceCommStatus(const long device_id, int status)
 
 void TcpPortHandler::loadDeviceProperties(const set<long> &device_ids)
 {
-    for each(long device_id in device_ids)
-    {
-        _connections[device_id];  //  initialize the connection
-    }
-
     loadDeviceTcpProperties(device_ids);
+
+    for each( long device_id in device_ids )
+    {
+        _connectionManager.connect(device_id, getDeviceIp(device_id), getDevicePort(device_id));
+    }
 }
+
 
 void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
 {
@@ -327,137 +213,52 @@ void TcpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
     loadDeviceProperties(paoids);
 }
 
-template<class Map, class Key>
-void erase_from_map(Map &m, const Key &k)
-{
-    Map::iterator itr = m.find(k);
-
-    if( itr != m.end() )
-    {
-        m.erase(itr);
-    }
-}
-
 void TcpPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
 {
     const long device_id = device.getID();
 
-    erase_from_map(_ip_addresses, device_id);
-    erase_from_map(_ports,        device_id);
-}
+    _ip_addresses.erase(device_id);
+    _ports.erase(device_id);
 
+    _connectionManager.disconnect(device_id);
+}
 
 void TcpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 {
     const long device_id = device.getID();
 
-    u_long  old_ip   = getDeviceIp  (device_id);
-    u_short old_port = getDevicePort(device_id);
+    //  This is a little wrong - if the properties are removed, this won't detect it
+    //    We don't really handle nonexistent IPs or ports anyway - we should do that, too
+    addDeviceProperties(device);
 
-    deleteDeviceProperties(device);
-    addDeviceProperties   (device);
-
-    if( old_ip   != getDeviceIp  (device_id) ||
-        old_port != getDevicePort(device_id) )
+    if( device.isInhibited() )
     {
-        connection &c = _connections[device_id];
-
-        disconnectFromDevice(device_id, c);
-        connectToDevice     (device_id, c);
+        _connectionManager.disconnect(device_id);
+    }
+    else
+    {
+        _connectionManager.connect(device_id, getDeviceIp(device_id), getDevicePort(device_id));
     }
 }
 
 
-void TcpPortHandler::reportSocketError(const string winsock_function_name, const long device_id, const char *method_name, const char *file, const int line)
+void TcpPortHandler::updatePortProperties( void )
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** Checkpoint - " << winsock_function_name << "() returned (" << WSAGetLastError() << ") for device_id (" << device_id << ") in " << method_name << "() **** " << file << " (" << line << ")" << endl;
+    if( _tcp_port->isInhibited() )
+    {
+        _connectionManager.disable();
+    }
+    else
+    {
+        _connectionManager.enable();
+    }
 }
 
 
-bool TcpPortHandler::connectToDevice(const long device_id, connection &c)
-{
-    SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
-
-    if( s == INVALID_SOCKET)
-    {
-        reportSocketError("socket", device_id, __FUNCTION__, __FILE__, __LINE__);
-
-        return false;
-    }
-
-    unsigned long nonblocking = 1;
-    if( ioctlsocket(s, FIONBIO, &nonblocking) )
-    {
-        reportSocketError("ioctlsocket", device_id, __FUNCTION__, __FILE__, __LINE__);
-
-        closesocket(s);
-
-        return false;
-    }
-
-    const u_short port = getDevicePort(device_id);
-    const u_long  ip   = getDeviceIp  (device_id);
-
-    sockaddr_in device_address = { AF_INET, htons(port), *(in_addr*)&ip, 0 };
-
-    if( connect(s, reinterpret_cast<sockaddr *>(&device_address), sizeof(device_address)) == SOCKET_ERROR)
-    {
-        if( WSAGetLastError() != WSAEWOULDBLOCK )
-        {
-            reportSocketError("connect", device_id, __FUNCTION__, __FILE__, __LINE__);
-
-            closesocket(s);
-
-            return false;
-        }
-    }
-
-    c.state  = connection::Connecting;
-    c.socket = s;
-    c.connect_timeout = CtiTime::now() + gConfigParms.getValueAsULong("PORTER_TCP_CONNECT_TIMEOUT", 15);
-
-    return true;
-}
-
-
-void TcpPortHandler::disconnectFromDevice(const long device_id, connection &c)
-{
-    if( c.state == connection::Disconnected )
-    {
-        return;
-    }
-
-    if( c.state == connection::Connected )
-    {
-        if( shutdown(c.socket, SD_BOTH) )
-        {
-            reportSocketError("shutdown", device_id, __FUNCTION__, __FILE__, __LINE__);
-        }
-    }
-
-    if( closesocket(c.socket) )
-    {
-        reportSocketError("close", device_id, __FUNCTION__, __FILE__, __LINE__);
-    }
-
-    c.socket = INVALID_SOCKET;
-    c.state  = connection::Disconnected;
-}
-
-
-void TcpPortHandler::teardownPort()
+void TcpPortHandler::teardownPort( void )
 {
     //  close all open sockets
-    for( connection_itr itr = _connections.begin(); itr != _connections.end(); ++itr )
-    {
-        const long device_id = itr->first;
-        connection &c        = itr->second;
-
-        disconnectFromDevice(device_id, c);
-    }
-
-    _connections.clear();
+    _connectionManager.disconnectAll();
 }
 
 
@@ -469,19 +270,7 @@ void TcpPortHandler::sendOutbound( device_record &dr )
         return;
     }
 
-    connection_itr itr = _connections.find(dr.id);
-
-    if( itr == _connections.end() )
-    {
-        //  we don't know this ID?
-        dr.work.status = IDNF;
-
-        return;
-    }
-
-    connection &c = itr->second;
-
-    if( c.state != connection::Connected )
+    if( !_connectionManager.isConnected(dr.id) )
     {
         dr.work.status = ErrorDeviceNotConnected;
 
@@ -492,7 +281,7 @@ void TcpPortHandler::sendOutbound( device_record &dr )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::TcpPortHandler::sendOutbound() - sending packet to "
-                          << getDeviceIp(dr.id) << ":" << getDevicePort(dr.id) << " "
+                          << ip_to_string(getDeviceIp(dr.id)) << ":" << getDevicePort(dr.id) << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         for( int xx = 0; xx < dr.work.xfer.getOutCount(); xx++ )
@@ -503,18 +292,21 @@ void TcpPortHandler::sendOutbound( device_record &dr )
         dout << endl;
     }
 
-    int bytes_sent = send(c.socket, (char *)dr.work.xfer.getOutBuffer(),
-                                            dr.work.xfer.getOutCount(), 0);
+    TcpConnectionManager::bytes buf;
+
+    buf.reserve(dr.work.xfer.getOutCount());
+
+    copy(dr.work.xfer.getOutBuffer(),
+         dr.work.xfer.getOutBuffer() + dr.work.xfer.getOutCount(),
+         back_inserter(buf));
+
+    int bytes_sent = _connectionManager.send(dr.id, buf);
 
     if( bytes_sent == SOCKET_ERROR )
     {
-        reportSocketError("send", dr.id, __FUNCTION__, __FILE__, __LINE__);
-
-        disconnectFromDevice(dr.id, c);
-
         updateDeviceCommStatus(dr.id, TCPWRITEERROR);
 
-        traceOutbound(dr, WSAGetLastError());
+        traceOutbound(dr, TCPWRITEERROR);
     }
     else
     {
@@ -541,173 +333,72 @@ bool TcpPortHandler::collectInbounds( void )
 {
     bool data_received = false;
 
-    connection_const_itr itr = _connections.begin();
+    TcpConnectionManager::id_set ready_devices, error_devices;
 
-    while( itr != _connections.end() )
+    _connectionManager.recv(ready_devices, error_devices);
+
+    for each( long device_id in ready_devices )
     {
-        int sockets;
-        fd_set readable_sockets;
-        vector<connection_const_itr> candidate_sockets;
+        device_record *dr = getDeviceRecordById(device_id);
 
-        FD_ZERO(&readable_sockets);
-
-        //  check in blocks of up to FD_SETSIZE
-        for( sockets = 0; itr != _connections.end() && sockets < FD_SETSIZE; ++itr )
+        if( !dr )
         {
-            const connection &c = itr->second;
-
-            if( c.state == connection::Connected )
-            {
-                candidate_sockets.push_back(itr);
-
-                FD_SET(c.socket, &readable_sockets);
-
-                sockets++;
-            }
+            continue;
         }
 
-        if( sockets > 0 )
+        packet *p = 0;
+
+        if( isDnpDevice(*dr->device) )
         {
-            timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
-
-            int ready_count = select(sockets, &readable_sockets, NULL, NULL, &tv);
-
-            if( ready_count == SOCKET_ERROR )
+            while( p = findPacket(device_id, Protocol::DNP::DnpPacketFinder()) )
             {
-                reportSocketError("select", 0, __FUNCTION__, __FILE__, __LINE__);
+                p->protocol = packet::ProtocolTypeDnp;
+
+                addInboundWork(dr, p);
             }
-            else if( ready_count > 0 )
+        }
+        else if( isGpuffDevice(*dr->device) )
+        {
+            while( p = findPacket(device_id, GpuffProtocol::GpuffPacketFinder()) )
             {
-                for each( connection_const_itr csitr in candidate_sockets )
-                {
-                    const connection &c = csitr->second;
+                p->protocol = packet::ProtocolTypeGpuff;
 
-                    if( FD_ISSET(c.socket, &readable_sockets) )
-                    {
-                        readInput(csitr->first);
-                    }
-                }
+                addInboundWork(dr, p);
             }
         }
     }
 
-    return data_received;
+    for each( long device_id in error_devices )
+    {
+        updateDeviceCommStatus(device_id, TCPREADERROR);
+    }
+
+    return !ready_devices.empty() || !error_devices.empty();
 }
 
 
-void TcpPortHandler::readInput(const long device_id)
+UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Protocols::PacketFinder &pf )
 {
-    device_record *dr = getDeviceRecordById(device_id);
-
-    if( !dr || !dr->device )
+    if( !_connectionManager.searchStream(device_id, pf) )
     {
-        return;
+        return 0;
     }
 
-    connection_itr itr = _connections.find(device_id);
+    packet *p = new packet;
 
-    if( itr == _connections.end() )
-    {
-        return;
-    }
+    p->protocol = packet::ProtocolTypeInvalid;  // should be set by whoever calls findPacket()
 
-    connection &c = itr->second;
+    p->ip   = getDeviceIp  (device_id);
+    p->port = getDevicePort(device_id);
 
-    u_long bytes_available;
+    p->data = new unsigned char[pf.size()];
+    p->len  = pf.size();
 
-    if( ioctlsocket(c.socket, FIONREAD, &bytes_available) )
-    {
-        reportSocketError("ioctlsocket", device_id, __FUNCTION__, __FILE__, __LINE__);
-        bytes_available = 0;
-    }
+    p->used = 0;
 
-    //  we got in here because the socket reported it was readable - if we get 0 bytes, the connection must be closed
-    if( !bytes_available )
-    {
-        disconnectFromDevice(device_id, c);
+    copy(pf.begin(), pf.end(), p->data);
 
-        updateDeviceCommStatus(device_id, TCPREADERROR);
-
-        return;
-    }
-
-    boost::scoped_array<char> recv_buf(new char[bytes_available]);
-
-    int bytes_read = recv(c.socket, recv_buf.get(), bytes_available, 0);
-
-    //  we got in here because the socket reported it was readable - if we get 0 bytes, the connection must be closed
-    if( !bytes_read )
-    {
-        disconnectFromDevice(device_id, c);
-
-        updateDeviceCommStatus(device_id, TCPREADERROR);
-
-        return;
-    }
-
-    copy(recv_buf.get(),
-         recv_buf.get() + bytes_read,
-         back_inserter(c.stream));
-
-    //  this didn't come together how I'd hoped - the iterator syntax almost works for unsigned char * access into the
-    //    stream object, but it's a little dodgy.  I'd like to abstract that away - the translations are gross right now.
-
-    if( isDnpDevice(*dr->device) )
-    {
-        unsigned char *packet_begin = &c.stream.front();
-        unsigned char *packet_end   = packet_begin + c.stream.size();
-
-        if( Protocol::DNP::Datalink::findPacket(packet_begin, packet_end) )
-        {
-            const int packet_size = distance(packet_begin, packet_end);
-
-            packet *p = new packet;
-
-            p->protocol = packet::ProtocolTypeDnp;
-
-            p->ip   = getDeviceIp  (device_id);
-            p->port = getDevicePort(device_id);
-
-            p->data = new unsigned char[packet_size];
-            p->len  = packet_size;
-
-            p->used = 0;
-
-            copy(packet_begin, packet_end, p->data);
-
-            dr->work.inbound.push(p);
-
-            c.stream.erase(c.stream.begin(), c.stream.begin() + (packet_end - &c.stream.front()));
-        }
-    }
-    else if( isGpuffDevice(*dr->device) )
-    {
-        unsigned char *packet_begin = &c.stream.front();
-        unsigned char *packet_end   = packet_begin + c.stream.size();
-
-        if( GpuffProtocol::findPacket(packet_begin, packet_end) )
-        {
-            const int packet_size = distance(packet_begin, packet_end);
-
-            packet *p = new packet;
-
-            p->protocol = packet::ProtocolTypeGpuff;
-
-            p->ip   = getDeviceIp  (device_id);
-            p->port = getDevicePort(device_id);
-
-            p->data = new unsigned char[packet_size];
-            p->len  = packet_size;
-
-            p->used = 0;
-
-            copy(packet_begin, packet_end, p->data);
-
-            dr->work.inbound.push(p);
-
-            c.stream.erase(c.stream.begin(), c.stream.begin() + (packet_end - &c.stream.front()));
-        }
-    }
+    return p;
 }
 
 
@@ -733,6 +424,12 @@ u_long TcpPortHandler::getDeviceIp( const long device_id ) const
 u_short TcpPortHandler::getDevicePort( const long device_id ) const
 {
     return find_or_return_numeric_limits_max(_ports, device_id);
+}
+
+
+bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
+{
+    return !_connectionManager.isConnected(device_id);
 }
 
 

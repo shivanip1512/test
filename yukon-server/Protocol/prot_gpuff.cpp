@@ -2555,7 +2555,7 @@ void GpuffProtocol::add_to_csv_summary( string &keys, string &values, string key
 }
 
 
-bool GpuffProtocol::isPacketValid(const unsigned char *buf, const int len)
+bool GpuffProtocol::isPacketValid(const unsigned char *buf, const size_t len)
 {
     if( len < HeaderLength )
     {
@@ -2591,24 +2591,6 @@ bool GpuffProtocol::isPacketValid(const unsigned char *buf, const int len)
     }
 
     return true;
-}
-
-
-bool GpuffProtocol::findPacket(unsigned char *&itr, unsigned char *&end)
-{
-    for( ; (itr = std::find(itr, end, 0xa5)) != end; ++itr )
-    {
-        if( isPacketValid(itr, distance(itr, end)) )
-        {
-            unsigned packet_length = ((itr[2] & 0x03) << 8) | itr[3];
-
-            end = itr + packet_length;
-
-            return true;
-        }
-    }
-
-    return false;
 }
 
 

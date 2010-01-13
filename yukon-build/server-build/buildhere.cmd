@@ -37,8 +37,8 @@ set _ERRORLEVEL=1
 rem Process the command line arguments.  It will accept the following:
 rem     --exit
 rem             exits the script after completion and returns the build.exe return value.
-rem     --release
-rem             build in release mode.  debug mode is the default.
+rem     --debug
+rem             build in debug mode.  Release mode is the default.
 rem     --basedir directory    
 rem             sets the base directory to the supplied directory
 rem     --labels build-version build-version-details

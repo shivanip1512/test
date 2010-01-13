@@ -277,9 +277,10 @@ dnp_application.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		thread.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h prot_dnp.h pointtypes.h prot_base.h \
 		msg_pdata.h pointdefs.h message.h collectable.h rwutil.h \
-		boost_time.h boostutil.h xfer.h dnp_application.h \
-		dnp_objects.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_object_binaryoutput.h
+		boost_time.h boostutil.h xfer.h packet_finder.h \
+		dnp_application.h dnp_objects.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_object_binaryoutput.h
 dnp_datalink.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h logger.h \
@@ -287,8 +288,8 @@ dnp_datalink.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		sorted_vector.h porter.h dsm2err.h devicetypes.h prot_dnp.h \
 		pointtypes.h prot_base.h msg_pdata.h pointdefs.h message.h \
 		collectable.h rwutil.h boost_time.h boostutil.h xfer.h \
-		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h \
+		packet_finder.h dnp_application.h dnp_objects.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
 		dnp_object_binaryoutput.h
 dnp_objects.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
@@ -605,10 +606,10 @@ prot_dnp.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		types.h sorted_vector.h prot_dnp.h pointtypes.h prot_base.h \
 		msg_pdata.h pointdefs.h message.h collectable.h rwutil.h \
 		boost_time.h boostutil.h xfer.h dsm2.h cticonnect.h \
-		netports.h dnp_application.h dnp_objects.h dllbase.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h dnp_object_class.h \
-		dnp_object_binaryinput.h dnp_object_time.h \
+		netports.h packet_finder.h dnp_application.h dnp_objects.h \
+		dllbase.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_object_binaryoutput.h \
+		dnp_object_class.h dnp_object_binaryinput.h dnp_object_time.h \
 		dnp_object_analoginput.h dnp_object_analogoutput.h \
 		dnp_object_counter.h
 prot_emetcon.obj:	yukon.h precompiled.h ctidbgmem.h prot_emetcon.h \
@@ -627,10 +628,10 @@ prot_gpuff.obj:	yukon.h precompiled.h ctidbgmem.h prot_gpuff.h \
 		dlldefs.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		collectable.h rwutil.h ctitime.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h pt_base.h dbmemobject.h resolvers.h \
-		db_entry_defines.h pt_dyn_base.h tbl_pt_base.h dllbase.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		dbaccess.h sema.h desolvers.h tbl_pt_property.h \
+		sorted_vector.h packet_finder.h pt_base.h dbmemobject.h \
+		resolvers.h db_entry_defines.h pt_dyn_base.h tbl_pt_base.h \
+		dllbase.h dsm2.h mutex.h guard.h clrdump.h cticonnect.h \
+		netports.h dbaccess.h sema.h desolvers.h tbl_pt_property.h \
 		tbl_pt_trigger.h cparms.h configkey.h configval.h logger.h \
 		thread.h CtiPCPtrQueue.h
 prot_idlc.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \

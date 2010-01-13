@@ -235,6 +235,8 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorCommandAlreadyInProgress,"Command already in progress",                  ERRTYPESYSTEM   },
 
+    { ErrorDeviceNotConnected,      "Device is not connected",                      ERRTYPESYSTEM   },
+
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 
 };

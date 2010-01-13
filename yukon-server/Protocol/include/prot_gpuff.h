@@ -1,8 +1,10 @@
 #pragma once
-#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
+
 #include "msg_pdata.h"
+#include "packet_finder.h"
+
 #include <string>
 
 namespace Cti       {
@@ -109,8 +111,16 @@ public:
     //int generate( CtiXfer &xfer );
     static unsigned decode( const unsigned char *p_data, unsigned last_seq, const std::string device_name, pointlist_t &point_list );
 
-    static bool isPacketValid( const unsigned char *buf, const int len );
-    static bool findPacket(unsigned char *&itr, unsigned char *&end);
+    static bool isPacketValid( const unsigned char *buf, const size_t len );
+
+    struct GpuffPacketFinder : public PacketFinder
+    {
+    public:
+
+        GpuffPacketFinder() :
+            PacketFinder(0xa5, 0x96, isPacketValid)
+        { };
+    };
 
     //bool isTransactionComplete( void ) const;
 };
