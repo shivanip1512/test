@@ -45,6 +45,7 @@ public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock
         populateBlock(meter, loadBlock, BuiltInAttribute.LOAD_PROFILE);
         populateBlock(meter, loadBlock, BuiltInAttribute.KVAR);
         populateBlock(meter, loadBlock, BuiltInAttribute.VOLTAGE);
+        populateBlock(meter, loadBlock, BuiltInAttribute.VOLTAGE_PROFILE);
 
         return loadBlock;
     }

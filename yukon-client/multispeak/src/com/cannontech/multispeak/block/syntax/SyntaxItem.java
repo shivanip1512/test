@@ -24,7 +24,9 @@ public enum SyntaxItem {
         MIN_VOLTAGE_DATETIME("minVoltageDateTime", MspUom.DateTime),
         MAX_VOLTAGE("maxVoltage", MspUom.Volts),
         MAX_VOLTAGE_DATETIME("maxVoltageDateTime", MspUom.DateTime),
-        MULTIPLIER("multiplier", null);
+        MULTIPLIER("multiplier", null),
+        VOLTAGE_PROFILE("voltageProfile", MspUom.Volts),
+        VOLTAGE_PROFILE_DATETIME("voltageProfileDateTime", MspUom.DateTime);
     
     private String mspFieldName;
     private Uom mspUom;

@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.block.data.load;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +15,9 @@ public class LoadValList extends FormattedBlockBase{
             SyntaxItem.KVAR,
             SyntaxItem.KVAR_DATETIME,
             SyntaxItem.VOLTAGE,
-            SyntaxItem.VOLTAGE_DATETIME
+            SyntaxItem.VOLTAGE_DATETIME,
+            SyntaxItem.VOLTAGE_PROFILE,
+            SyntaxItem.VOLTAGE_PROFILE_DATETIME
     };
 
     public LoadValList(List<LoadBlock> block) {

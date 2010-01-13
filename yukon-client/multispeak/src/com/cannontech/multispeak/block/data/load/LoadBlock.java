@@ -24,15 +24,18 @@ public class LoadBlock extends BlockBase{
     public Date kVArDateTime;
     public Double voltage;
     public Date voltageDateTime;
+    public Double voltageProfile;
+    public Date voltageProfileDateTime;
     
-    private static int FIELD_COUNT = 7;
+    private static int FIELD_COUNT = 9;
     
     public LoadBlock() {
         super();
     }
     
     public LoadBlock(String meterNumber, double loadProfileDemand, Date loadProfileDemandDateTime,
-            double kVAr, Date kVArDateTime, double voltage, Date voltageDateTime) {
+            double kVAr, Date kVArDateTime, double voltage, Date voltageDateTime, double voltageProfile,
+            Date voltageProfileDateTime) {
         super();
         this.meterNumber = meterNumber;
         this.loadProfileDemand = loadProfileDemand;
@@ -41,16 +44,17 @@ public class LoadBlock extends BlockBase{
         this.kVArDateTime = kVArDateTime;
         this.voltage = voltage;
         this.voltageDateTime = voltageDateTime;
+        this.voltageProfile = voltageProfile;
+        this.voltageProfileDateTime = voltageProfileDateTime;
         hasData = true;
     }
 
     @Override
     public String getField(SyntaxItem syntaxItem) {
     	
-        if( syntaxItem.equals(SyntaxItem.METER_NUMBER))
+        if( syntaxItem.equals(SyntaxItem.METER_NUMBER)) {
             return meterNumber;
-        
-        else if (syntaxItem.equals(SyntaxItem.LOAD_PROFILE_DEMAND)){
+        } else if (syntaxItem.equals(SyntaxItem.LOAD_PROFILE_DEMAND)){
             if( loadProfileDemand != null)
                 return String.valueOf(loadProfileDemand);
         } else if (syntaxItem.equals(SyntaxItem.LOAD_PROFILE_DEMAND_DATETIME)){
@@ -70,6 +74,13 @@ public class LoadBlock extends BlockBase{
         } else if (syntaxItem.equals(SyntaxItem.VOLTAGE_DATETIME)){
             if( voltageDateTime != null) {
             	return Iso8601DateUtil.formatIso8601Date(voltageDateTime);
+            }
+        } else if (syntaxItem.equals(SyntaxItem.VOLTAGE_PROFILE)){
+            if( voltageProfile != null)
+                return String.valueOf(voltageProfile);
+        } else if (syntaxItem.equals(SyntaxItem.VOLTAGE_PROFILE_DATETIME)){
+            if ( voltageProfileDateTime != null){
+                return Iso8601DateUtil.formatIso8601Date(voltageProfileDateTime);
             }
         } else {
             CTILogger.error("SyntaxItem: " + syntaxItem + " - Not Valid for LoadBlock");
@@ -100,6 +111,7 @@ public class LoadBlock extends BlockBase{
 		populateByPointValue(meter, pointValue, BuiltInAttribute.LOAD_PROFILE);
 		populateByPointValue(meter, pointValue, BuiltInAttribute.KVAR);
 		populateByPointValue(meter, pointValue, BuiltInAttribute.VOLTAGE);
+		populateByPointValue(meter, pointValue, BuiltInAttribute.VOLTAGE_PROFILE);
 	}
 
 	/**
@@ -115,15 +127,16 @@ public class LoadBlock extends BlockBase{
 		if (!hasValidPointValue(pointValue)) {
 			return;
 		}
+		
 		if (attribute.equals(BuiltInAttribute.LOAD_PROFILE)) {
 			setLoadProfileDemand(meter, pointValue);
-		}
-		else if (attribute.equals(BuiltInAttribute.KVAR)) {
+		} else if (attribute.equals(BuiltInAttribute.KVAR)) {
 			setKVar(meter, pointValue);
-		}
-		else if (attribute.equals(BuiltInAttribute.VOLTAGE)) {
+		} else if (attribute.equals(BuiltInAttribute.VOLTAGE)) {
 			setVoltage(meter, pointValue);
-		} else {
+		} else if (attribute.equals(BuiltInAttribute.VOLTAGE_PROFILE)) {
+            setVoltageProfile(meter, pointValue);
+        } else {
 			throw new IllegalArgumentException("Attribute " + attribute.toString() + " is not supported by LoadBlock.");
 		}
 		hasData = true;
@@ -144,6 +157,8 @@ public class LoadBlock extends BlockBase{
 	    		kVArDateTime = StringUtils.isBlank(values[4]) ? null : Iso8601DateUtil.parseIso8601Date(values[4]);
 	    		voltage = StringUtils.isBlank(values[5]) ? null : Double.valueOf(values[5]);
 	    		voltageDateTime = StringUtils.isBlank(values[6]) ? null : Iso8601DateUtil.parseIso8601Date(values[6]);
+                voltageProfile = StringUtils.isBlank(values[7]) ? null : Double.valueOf(values[1]);
+                voltageProfileDateTime = StringUtils.isBlank(values[8]) ? null : Iso8601DateUtil.parseIso8601Date(values[2]);
 	    	}else {
 	    		CTILogger.error("LoadBlock could not be parsed (" + stringReader.toString() + ").  Incorrect number of expected fields.");
 	    	}
@@ -183,7 +198,17 @@ public class LoadBlock extends BlockBase{
         voltage = pointValue.getValue();
         voltageDateTime = pointValue.getPointDataTimeStamp();
 	}
-	
+
+	   /**
+     * Helper method to set the voltageProfile fields
+     * @param meter
+     * @param pointValue
+     */
+    private void setVoltageProfile(Meter meter, PointValueHolder pointValue) {
+        voltageProfile = pointValue.getValue();
+        voltageProfileDateTime = pointValue.getPointDataTimeStamp();
+    }
+
     @Override
     public String getObjectId() {
     	return meterNumber;

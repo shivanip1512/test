@@ -351,7 +351,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
                 String lpCommandStr = "getvalue lp channel 1 " + format.format(new Date());
                 returnMessages++;
-                
+                String voltageProfileCommandStr = "getvalue lp channel 4 " + format.format(new Date());
+                returnMessages++;
                 
                 String commandStr = null;
                 if( DeviceTypesFuncs.isMCT410(meter.getType())) {
@@ -369,6 +370,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 getEventsMap().put(new Long(id), event);
 
                 writePilRequest(meter, lpCommandStr, id, 13);
+                writePilRequest(meter, voltageProfileCommandStr, id, 13);
                 if( commandStr != null)
                     writePilRequest(meter, commandStr, id, 13);
             }
