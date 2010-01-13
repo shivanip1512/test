@@ -548,7 +548,7 @@ void CtiCapController::controlLoop()
                             BOOL peakFlag = currentSubstationBus->isPeakTime(currentDateTime);
                             for(LONG j=0;j<ccFeeders.size();j++)
                             {
-                                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j];
                                 if (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod)  &&
                                     stringCompareIgnoreCase(currentFeeder->getStrategyName(), "(none)") &&
                                     (currentFeeder->getPeakStartTime() > 0 && currentFeeder->getPeakStopTime() > 0 ))
@@ -590,7 +590,7 @@ void CtiCapController::controlLoop()
                             break;
 
                         CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
-                        CtiCCArea* currentArea = NULL;
+                        CtiCCAreaPtr currentArea = NULL;
                         CtiCCSubstation* currentStation = NULL;
 
                         currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
@@ -914,7 +914,7 @@ void CtiCapController::controlLoop()
     }
 }
 
-void CtiCapController::checkBusForNeededControl(CtiCCArea* currentArea,  CtiCCSubstation* currentStation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstation* currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
 
@@ -1102,7 +1102,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
       }
 }
 
-void CtiCapController::analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
                             CtiMultiMsg_vec& capMessages)
 {
@@ -1721,7 +1721,7 @@ void CtiCapController::updateAllPointQualities(long quality, ULONG secondsFrom19
 
         for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders[j]);
+            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)(ccFeeders[j]);
 
             if( currentFeeder->getCurrentVarLoadPointId() > 0 )
             {
@@ -1780,7 +1780,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             std::map<long, CtiCCAreaPtr>::iterator areaIter = store->getPAOAreaMap()->begin();
             for ( ; areaIter != store->getPAOAreaMap()->end() ; areaIter++)
             {
-                CtiCCArea* currentArea = areaIter->second;
+                CtiCCAreaPtr currentArea = areaIter->second;
 
                 if( currentArea->getVoltReductionControlPointId() > 0 )
                 {
@@ -1811,7 +1811,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             std::map<long, CtiCCSpecialPtr>::iterator spAreaIter = store->getPAOSpecialAreaMap()->begin();
             for ( ; spAreaIter != store->getPAOSpecialAreaMap()->end() ; spAreaIter++)
             {
-                CtiCCSpecial* currentSpArea = spAreaIter->second;
+                CtiCCSpecialPtr currentSpArea = spAreaIter->second;
                 if( currentSpArea->getVoltReductionControlPointId() > 0 )
                 {
                     registrationIds.push_back(currentSpArea->getVoltReductionControlPointId());
@@ -1874,7 +1874,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             std::map<long, CtiCCSubstationBusPtr>::iterator busIter = store->getPAOSubMap()->begin();
             for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
             {
-                CtiCCSubstationBus* currentSubstationBus = busIter->second;
+                CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
 
                 if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                 {
@@ -1957,7 +1957,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                 for(LONG j=0; j < ccFeeders.size(); j++)
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                    CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)(ccFeeders.at(j));
 
                     if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                     {
@@ -2030,7 +2030,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                     for(LONG k=0;k<ccCapBanks.size();k++)
                     {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+                        CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)(ccCapBanks[k]);
 
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
@@ -2529,7 +2529,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
             string text = currentSubstationBus->getPAOName();
             if (currentSubstationBus->getAltDualSubId() != currentSubstationBus->getPAOId())
             {
-                CtiCCSubstationBus* altSub = NULL;
+                CtiCCSubstationBusPtr altSub = NULL;
                 altSub = store->findSubBusByPAObjectID(currentSubstationBus->getAltDualSubId());
                 if (altSub != NULL)
                 {
@@ -2577,7 +2577,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 int j = ccFeeders.size();
                                 while (j > 0)
                                 {
-                                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
+                                    CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j-1];
 
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), altSub->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
@@ -2624,7 +2624,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 int j = ccFeeders.size();
                                 while (j > 0)
                                 {
-                                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
+                                    CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j-1];
                                     if (currentFeeder->getOriginalParent().getOriginalParentId() == currentSubstationBus->getPAOId())
                                     {
 
@@ -2753,7 +2753,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                         CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
                         for(LONG i=0;i<ccAreas.size();i++)
                         {
-                            CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
+                            CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
                             if (currentArea != NULL)
                             {
                                 CtiCCExecutorFactory f;
@@ -2770,7 +2770,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                         CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
                         for(LONG i=0;i<ccAreas.size();i++)
                         {
-                            CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
+                            CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
                             if (currentArea != NULL)
                             {
                                 CtiCCExecutorFactory f;
@@ -2803,7 +2803,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 
 
 
-    CtiCCArea* currentArea = NULL;
+    CtiCCAreaPtr currentArea = NULL;
     std::multimap< long, CtiCCAreaPtr >::iterator areaIter, end;
     store->findAreaByPointID(pointID, areaIter, end);
 
@@ -2860,7 +2860,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
-    CtiCCSpecial* currentSpArea = NULL;
+    CtiCCSpecialPtr currentSpArea = NULL;
     std::multimap< long, CtiCCSpecialPtr >::iterator saIter, end;
     store->findSpecialAreaByPointID(pointID, saIter, end);
 
@@ -2918,7 +2918,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
 
 
     CtiCCSubstation* currentStation = NULL;
-    CtiCCArea* currentArea = NULL;
+    CtiCCAreaPtr currentArea = NULL;
     std::multimap< long, CtiCCSubstationPtr >::iterator stationIter, end;
     store->findSubstationByPointID(pointID, stationIter, end);
 
@@ -2992,9 +2992,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
-    CtiCCSubstationBus* currentSubstationBus = NULL;
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCSubstation* currentStation = NULL;
-    CtiCCArea* currentArea = NULL;
+    CtiCCAreaPtr currentArea = NULL;
 
     std::multimap< long, CtiCCSubstationBusPtr >::iterator subIter, end;
     store->findSubBusByPointID(pointID, subIter, end);
@@ -3310,7 +3310,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
-    CtiCCSubstationBus* currentSubstationBus = NULL;
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
     std::multimap< long, CtiCCFeederPtr >::iterator feedIter, end;
     store->findFeederByPointID(pointID, feedIter, end);
@@ -3546,8 +3546,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiCCSubstationBus* currentSubstationBus = NULL;
-    CtiCCFeeder* currentFeeder = NULL;
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
+    CtiCCFeederPtr currentFeeder = NULL;
     CtiCCCapBankPtr currentCapBank = NULL;
     std::multimap< long, CtiCCCapBankPtr >::iterator capIter, end;
     store->findCapBankByPointID(pointID, capIter, end);
@@ -3905,13 +3905,13 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
     int bankid = store->findCapBankIDbyCbcID(deviceId);
     if ( bankid == NULL )
         return;
-    CtiCCCapBank* currentCapBank = store->findCapBankByPAObjectID(bankid);
+    CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(bankid);
     if( currentCapBank == NULL )
         return;
-    CtiCCFeeder* currentFeeder = store->findFeederByPAObjectID(currentCapBank->getParentId());
+    CtiCCFeederPtr currentFeeder = store->findFeederByPAObjectID(currentCapBank->getParentId());
     if( currentFeeder == NULL )
         return;
-    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
+    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
     if (currentSubstationBus == NULL)
         return;
 
@@ -4050,8 +4050,8 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
 
 
 
-void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                                CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
+                                                CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -4146,8 +4146,8 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
     currentCapBank->setLastStatusChangeTime(CtiTime());
     currentCapBank->setControlRecentlySentFlag(FALSE);
 }
-void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                                  CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
+                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -4204,8 +4204,8 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, 
 
 
 
-void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                                  CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
+                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -4213,10 +4213,12 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* curren
     CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
     currentSubstationBus->setBusUpdatedFlag(TRUE);
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts->getCapacitorBankState() <<" CAPBANK: "<<
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts->getCapacitorBankState() <<" CAPBANK: "<<
         currentCapBank->getPAOName() << " is "<< currentCapBank->getControlStatusText() <<
         " waiting for VAR change." << endl;                         
+    }
 
     string text = string("CBC Unsolicited Event!");
     string text1 = string("CBC State Change. ");
