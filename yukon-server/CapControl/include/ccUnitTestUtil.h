@@ -8,6 +8,7 @@ class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
         virtual bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank){return true;};
 };
 
+
 template <class T>
 T *create_object(long objectid, string name)
 {

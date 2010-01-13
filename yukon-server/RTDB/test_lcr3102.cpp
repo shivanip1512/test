@@ -1,6 +1,6 @@
 
 /*
- * test Cti::Device::LCR3102
+ * test Cti::Devices::LCR3102
  *
  */
 
@@ -13,7 +13,7 @@
 using boost::unit_test_framework::test_suite;
 
 namespace Cti {
-namespace Device {
+namespace Devices {
 
 class test_LCR3102 : public LCR3102
 {
@@ -131,15 +131,15 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     Watts for second relay (16 bit value) (optional)
     
     Relay Numbers And Multiplier:
-    "	M2 M2 M1 M1R4R3R2R1
-    "	M2M2 = is the multiplier for CT2
-    "	M1M1= is the multiplier for CT1
-    "	The Multipliers are set as:
-    o	00 = KW
-    o	01 = 1/10 KW
-    o	10 = 1/100 kw
-    o	11 = 1/1000 kw
-    "	R4R3R2R1 is a bit field showing which Relays the CT is attached to. The highest bit is Relay 4, least bit is Relay 1. No more than 2 relays exist on a device so no more than 2 of these bits can ever be set.
+    "   M2 M2 M1 M1R4R3R2R1
+    "   M2M2 = is the multiplier for CT2
+    "   M1M1= is the multiplier for CT1
+    "   The Multipliers are set as:
+    o   00 = KW
+    o   01 = 1/10 KW
+    o   10 = 1/100 kw
+    o   11 = 1/1000 kw
+    "   R4R3R2R1 is a bit field showing which Relays the CT is attached to. The highest bit is Relay 4, least bit is Relay 1. No more than 2 relays exist on a device so no more than 2 of these bits can ever be set.
     Watts:  0xFFFF means invalid data.
     */
 

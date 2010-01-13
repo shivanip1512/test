@@ -9,7 +9,7 @@
 
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 class IM_EX_DEVDB LCR3102 : public CtiDeviceCarrier
 {
@@ -86,7 +86,7 @@ public:
 
 };
 
-}       // namespace Device
+}       // namespace Devices
 }       // namespace Cti
 
 #endif // #ifndef __DEV_LCR3102_H__

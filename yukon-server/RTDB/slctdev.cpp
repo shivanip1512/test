@@ -145,7 +145,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_DARTRTU:
         case TYPECBCDNP:
-        case TYPE_DNPRTU:       NewDevice = CTIDBG_new Device::DNP;         break;
+        case TYPE_DNPRTU:       NewDevice = CTIDBG_new Devices::DNP;         break;
 
         case TYPE_SERIESVRTU:   NewDevice = CTIDBG_new CtiDeviceSeriesV;    break;
 
@@ -160,7 +160,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_CCU711:       NewDevice = CTIDBG_new CtiDeviceCCU;        break;
 
-        case TYPE_CCU721:       NewDevice = CTIDBG_new Device::CCU721;      break;
+        case TYPE_CCU721:       NewDevice = CTIDBG_new Devices::CCU721;      break;
 
         case TYPE_CCU710:
         case TYPE_CCU700:       NewDevice = CTIDBG_new CtiDeviceCCU710;     break;
@@ -203,7 +203,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT430:
         case TYPEMCT470:        NewDevice = CTIDBG_new CtiDeviceMCT470;     break;
 
-        case TYPE_MODBUS:       NewDevice = CTIDBG_new Device::Modbus;      break;
+        case TYPE_MODBUS:       NewDevice = CTIDBG_new Devices::Modbus;      break;
 
         case TYPE_REPEATER800:  NewDevice = CTIDBG_new CtiDeviceRepeater800; break;
 
@@ -274,7 +274,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPECBC6510:               NewDevice = CTIDBG_new CtiDeviceCBC6510;    break;
 
-        case TYPECBC7020:               NewDevice = CTIDBG_new Device::CBC7020;     break;
+        case TYPECBC7020:               NewDevice = CTIDBG_new Devices::CBC7020;     break;
 
         case TYPECBC7010:
         case TYPEFISHERPCBC:
@@ -286,7 +286,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_LCU415ER:
         case TYPE_LCUT3026:             NewDevice = CTIDBG_new CtiDeviceLCU(type);      break;
 
-        case TYPELCR3102:               NewDevice = CTIDBG_new Cti::Device::LCR3102;    break;
+        case TYPELCR3102:               NewDevice = CTIDBG_new Cti::Devices::LCR3102;    break;
 
         case TYPEMCTBCAST:              NewDevice = CTIDBG_new CtiDeviceMCTBroadcast;   break;
 

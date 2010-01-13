@@ -107,6 +107,20 @@ CtiCapController* CtiCapController::getInstance()
 }
 
 /*---------------------------------------------------------------------------
+    deleteInstance
+
+    Deletes the singleton instance of CtiCCSubstationBusStore
+---------------------------------------------------------------------------*/
+void CtiCapController::deleteInstance()
+{
+    if( _instance != NULL )
+    {
+        delete _instance;
+        _instance = NULL;
+    }
+}
+
+/*---------------------------------------------------------------------------
     Constructor
 
     Private to ensure that only one CtiCapController is available through the
@@ -651,7 +665,7 @@ void CtiCapController::controlLoop()
                                     }
                                     else if (currentSubstationBus->getVerificationFlag()) //verification Flag set!!!
                                     {
-                                        analyzeVerificationBus(currentSubstationBus, currentDateTime, pointChanges, ccEvents, pilMessages, capMessages, multiCCEventMsg);
+                                        analyzeVerificationBus(currentSubstationBus, currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
                                     }
                                     else if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
                                     {//not recently controlled and var check needed
@@ -1090,7 +1104,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
 
 void CtiCapController::analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
-                            CtiMultiMsg_vec& capMessages, CtiMultiMsg* multiCCEventMsg)
+                            CtiMultiMsg_vec& capMessages)
 {
     try
     {
@@ -1170,9 +1184,11 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBus* currentSubstat
                         {
                             if( ccEvents.size() > 0)
                             {
-                                _ccEventMsgQueue.write(multiCCEventMsg);
+
+                                CtiMultiMsg *ccEventMsg;
+                                ccEventMsg->setData(ccEvents);
+                                _ccEventMsgQueue.write(ccEventMsg);
                                 processCCEventMsgs();
-                                multiCCEventMsg = new CtiMultiMsg();
                             }
 
                             //reset VerificationFlag
@@ -1250,9 +1266,10 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBus* currentSubstat
                     {
                         if( ccEvents.size() > 0)
                         {
-                            _ccEventMsgQueue.write(multiCCEventMsg);
+                            CtiMultiMsg *ccEventMsg;
+                            ccEventMsg->setData(ccEvents);
+                            _ccEventMsgQueue.write(ccEventMsg);
                             processCCEventMsgs();
-                            multiCCEventMsg = new CtiMultiMsg();
                         }
                     }
                     catch(...)

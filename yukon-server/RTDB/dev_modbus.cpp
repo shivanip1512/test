@@ -46,7 +46,7 @@
 #include "cparms.h"
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 Modbus::Modbus(void)
 {

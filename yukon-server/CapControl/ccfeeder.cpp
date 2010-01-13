@@ -6639,8 +6639,7 @@ BOOL CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 ULONG CtiCCFeeder::getMonitorPointScanTime()
 {
 
-    CtiTime timeNow;
-    return timeNow.seconds();
+    return CtiTime().seconds();
 
 }
 

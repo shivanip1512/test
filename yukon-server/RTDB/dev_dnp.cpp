@@ -44,7 +44,7 @@
 using namespace std;
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 DNP::DNP()
 {

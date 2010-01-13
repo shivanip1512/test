@@ -770,7 +770,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
 
                         //  prevent the LMI from being loaded twice
-                        rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Device::DNP(),          "RTU-LMI", false);
+                        rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DNP(),          "RTU-LMI", false);
                         rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
                         rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceRTM(),         "RTM");
 
@@ -779,7 +779,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
 
                         //  exclude the CCU 721
                         rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
-                        rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Device::CCU721());
+                        rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Devices::CCU721());
 
                         rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  CtiDeviceMCTBroadcast());
 

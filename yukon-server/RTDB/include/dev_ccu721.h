@@ -25,7 +25,7 @@
 #include "prot_klondike.h"
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 class IM_EX_DEVDB CCU721 : public CtiDeviceRemote
 {

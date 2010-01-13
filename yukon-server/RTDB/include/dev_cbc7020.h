@@ -24,7 +24,7 @@
 #include "config_device.h"
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 class IM_EX_DEVDB CBC7020 : public DNP
 {

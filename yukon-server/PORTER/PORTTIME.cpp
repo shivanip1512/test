@@ -535,7 +535,7 @@ struct timeSyncCCU721
             return;
         }
 
-        using Cti::Device::CCU721;
+        using Cti::Devices::CCU721;
         boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(RemoteRecord);
 
         ccu->buildCommand(OutMessage, CCU721::Command_Timesync);
@@ -578,7 +578,7 @@ struct timeSyncDNPDevices
             return;
         }
 
-        using Cti::Device::DNP;
+        using Cti::Devices::DNP;
         boost::shared_ptr<DNP> dnp_device = boost::static_pointer_cast<DNP>(RemoteRecord);
 
         CtiRequestMsg request(RemoteRecord->getID(), "putconfig timesync");

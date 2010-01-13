@@ -113,8 +113,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
         /* CCU-721 is handled seperately from the 711 */
         if( Dev->getType() == TYPE_CCU721 )
         {
-            using Cti::Device::CCU721;
-            Cti::Device::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(Dev);
+            using Cti::Devices::CCU721;
+            Cti::Devices::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(Dev);
 
             if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
             {

@@ -20,10 +20,10 @@ using boost::unit_test_framework::test_suite;
 
 using namespace std;
 
-class Test_CCU721 : public Cti::Device::CCU721
+class Test_CCU721 : public Cti::Devices::CCU721
 {
 private:
-    typedef Cti::Device::CCU721 Inherited;
+    typedef Cti::Devices::CCU721 Inherited;
 public:
     typedef Inherited::byte_buffer_t byte_buffer_t;
 

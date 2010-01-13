@@ -72,7 +72,7 @@ std::vector<CtiCCClientConnection*>& CtiCCClientListener::getClientConnectionLis
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE), _socketListener(NULL)
+CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE)
 {
 }
 
@@ -81,7 +81,6 @@ CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::~CtiCCClientListener()
 {
-    _socketListener = NULL;
     if( _instance != NULL )
     {
         delete _instance;
@@ -116,11 +115,7 @@ void CtiCCClientListener::stop()
     try
     {
         _doquit = TRUE;
-        if ( _socketListener != NULL )
         {
-            delete _socketListener;
-            _socketListener = NULL;
-
             _listenerthr.join();
             _checkthr.join();
         }
@@ -224,14 +219,14 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::_listen()
 {
-    _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
+    RWSocketListener* socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
 
     do
     {
         try
         {
             {
-                RWPortal portal = (*_socketListener)();
+                RWPortal portal = (*socketListener)();
 
                 CtiCCClientConnection* conn = new CtiCCClientConnection(portal);
 

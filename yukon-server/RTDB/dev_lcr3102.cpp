@@ -7,7 +7,7 @@
 
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 
 using Protocol::Emetcon;
@@ -984,6 +984,6 @@ LONG LCR3102::getAddress() const
 }
 
 
-}       // namespace Device
+}       // namespace Devices
 }       // namespace Cti
 

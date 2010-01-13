@@ -50,6 +50,7 @@ public:
 
     static CtiCapController* getInstance();
 
+   
     void start();
     void stop();
 
@@ -71,7 +72,7 @@ public:
 
     void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
-                            CtiMultiMsg_vec& capMessages,  CtiMultiMsg* multiCCEventMsg);
+                            CtiMultiMsg_vec& capMessages);
 
     void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
                                    CtiCCArea_vec& areaChanges, long broadCastMask);
@@ -85,6 +86,7 @@ private:
     CtiCapController();
     virtual ~CtiCapController();
 
+    void deleteInstance();
     void controlLoop();
     void messageSender();
     void outClientMsgs();

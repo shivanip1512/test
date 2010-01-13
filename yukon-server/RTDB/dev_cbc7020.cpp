@@ -21,7 +21,7 @@
 #include "dev_cbc7020.h"
 
 using namespace std;
-using namespace Cti::Device;
+using namespace Cti::Devices;
 using namespace Cti::Config;
 
 const char *CBC7020::PutConfigPart_all             = "all";

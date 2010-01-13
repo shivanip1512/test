@@ -23,11 +23,11 @@
 #include "dev_dnp.h"
 #include "tbl_dv_idlcremote.h"
 
-class IM_EX_DEVDB CtiDeviceCBC6510 : public Cti::Device::DNP
+class IM_EX_DEVDB CtiDeviceCBC6510 : public Cti::Devices::DNP
 {
 private:
 
-    typedef Cti::Device::DNP Inherited;
+    typedef Cti::Devices::DNP Inherited;
 
     enum
     {

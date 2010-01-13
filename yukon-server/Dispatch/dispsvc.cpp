@@ -56,8 +56,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 
 CtiDispatchService::~CtiDispatchService() 
 {
-    if (_myargv != NULL)
-        delete _myargv;
+  //intentionally ignore PCLint warning about _myargv cleanup
 }
 
 IMPLEMENT_SERVICE(CtiDispatchService, Dispatch)

@@ -29,7 +29,7 @@ using namespace std;
 
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 CCU721::CCU721() :
     _initialized(false),
@@ -500,7 +500,7 @@ int CCU721::sendCommResult(INMESS *InMessage)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Error writing to nexus. Cti::Device::CCU721::sendCommResult() on device \"" << getName() << "\".  "
+                                dout << CtiTime() << " Error writing to nexus. Cti::Devices::CCU721::sendCommResult() on device \"" << getName() << "\".  "
                                      << "Wrote " << bytes_written << "/" << sizeof(INMESS) << " bytes" << endl;
                             }
 
@@ -676,7 +676,7 @@ int CCU721::decodeDWords(const unsigned char *input, unsigned input_length, unsi
     if( input_length % DWORDLEN )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Cti::Device::CCU721::decodeDWords() : input_length % DWORDLEN > 0 : " << input_length << " : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Cti::Devices::CCU721::decodeDWords() : input_length % DWORDLEN > 0 : " << input_length << " : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     byte_buffer_t input_buffer(input, input + input_length);

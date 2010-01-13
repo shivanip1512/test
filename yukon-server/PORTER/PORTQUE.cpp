@@ -164,7 +164,7 @@ struct buildLGRPQ
 
                 case TYPE_CCU721:
                 {
-                    using Cti::Device::CCU721;
+                    using Cti::Devices::CCU721;
                     boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(ccu_device);
 
                     OUTMESS *OutMessage = CTIDBG_new OUTMESS;
@@ -1208,8 +1208,8 @@ struct kick
     {
         if( ccu_device->getType() == TYPE_CCU721 )
         {
-            using Cti::Device::CCU721;
-            Cti::Device::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(ccu_device);
+            using Cti::Devices::CCU721;
+            Cti::Devices::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(ccu_device);
 
             OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 

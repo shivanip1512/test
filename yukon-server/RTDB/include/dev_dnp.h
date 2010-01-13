@@ -27,7 +27,7 @@
 #include <string>
 
 namespace Cti       {
-namespace Device    {
+namespace Devices    {
 
 class IM_EX_DEVDB DNP : public CtiDeviceRemote
 {

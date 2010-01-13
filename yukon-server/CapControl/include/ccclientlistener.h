@@ -42,7 +42,6 @@ public:
 protected:
 
 private:
-    RWSocketListener* _socketListener;
 
     LONG _port;   
     RWThread _listenerthr;

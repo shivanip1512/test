@@ -3898,8 +3898,8 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                         }
                         if ( paObjectColumn.isValid() )
                         {
-                            selector = db.selector();
-                            selector <<  ccScheduleStrat["paobjectid"]
+                            RWDBSelector dbSelector = db.selector();
+                            dbSelector <<  ccScheduleStrat["paobjectid"]
                                               <<  ccScheduleStrat["seasonscheduleid"]
                                               <<  ccScheduleStrat["seasonname"]
                                               <<  ccScheduleStrat["strategyid"]
@@ -3908,31 +3908,31 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                                               <<  dateOfSeason["seasonstartday"]
                                               <<  dateOfSeason["seasonendday"];
 
-                             selector.from(capControlObjectTable);
-                             selector.from(ccScheduleStrat);
-                             selector.from(dateOfSeason);
+                             dbSelector.from(capControlObjectTable);
+                             dbSelector.from(ccScheduleStrat);
+                             dbSelector.from(dateOfSeason);
 
-                             selector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
+                             dbSelector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
                                             ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
                                             ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] &&
                                             ccScheduleStrat["strategyid"] == strategyId );
 
                              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                              {
-                                 string loggedSQLstring = selector.asString();
+                                 string loggedSQLstring = dbSelector.asString();
                                  {
                                      CtiLockGuard<CtiLogger> logger_guard(dout);
                                      dout << CtiTime() << " - " << loggedSQLstring << endl;
                                  }
                              }
-                             rdr = selector.reader(conn);
-                             while ( rdr() )
+                             RWDBReader dbRdr = dbSelector.reader(conn);
+                             while ( dbRdr() )
                              {
                                  int startMon, startDay, endMon, endDay;
-                                 rdr["seasonstartmonth"] >> startMon;
-                                 rdr["seasonendmonth"] >> endMon;
-                                 rdr["seasonstartday"] >> startDay;
-                                 rdr["seasonendday"] >> endDay;
+                                 dbRdr["seasonstartmonth"] >> startMon;
+                                 dbRdr["seasonendmonth"] >> endMon;
+                                 dbRdr["seasonstartday"] >> startDay;
+                                 dbRdr["seasonendday"] >> endDay;
 
                                  CtiDate today = CtiDate();
 
@@ -3940,8 +3940,8 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                                      today <= CtiDate(endDay, endMon, today.year())  )
                                  {
                                      long objectId, stratId;
-                                     rdr["paobjectid"] >> objectId;
-                                     rdr["strategyid"] >> stratId;
+                                     dbRdr["paobjectid"] >> objectId;
+                                     dbRdr["strategyid"] >> stratId;
 
                                      switch (objectType)
                                      {
@@ -4735,8 +4735,8 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                         }
                         if ( paObjectColumn.isValid() )
                         {
-                           selector = db.selector();
-                                       selector <<  ccScheduleStrat["paobjectid"]
+                           RWDBSelector dbSelector = db.selector();
+                                       dbSelector <<  ccScheduleStrat["paobjectid"]
                                                 <<  ccScheduleStrat["seasonscheduleid"]
                                                 <<  ccScheduleStrat["seasonname"]
                                                 <<  ccScheduleStrat["strategyid"]
@@ -4745,31 +4745,31 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                                 <<  dateOfSeason["seasonstartday"]
                                                 <<  dateOfSeason["seasonendday"];
 
-                           selector.from(capControlObjectTable);
-                           selector.from(ccScheduleStrat);
-                           selector.from(dateOfSeason);
+                           dbSelector.from(capControlObjectTable);
+                           dbSelector.from(ccScheduleStrat);
+                           dbSelector.from(dateOfSeason);
 
-                           selector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
+                           dbSelector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
                                           ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
                                           ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] &&
                                           ccScheduleStrat["strategyid"] == strategyId );
 
                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                            {
-                               string loggedSQLstring = selector.asString();
+                               string loggedSQLstring = dbSelector.asString();
                                {
                                    CtiLockGuard<CtiLogger> logger_guard(dout);
                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
                                }
                            }
-                           rdr = selector.reader(conn);
-                           while ( rdr() )
+                           RWDBReader dbRdr = dbSelector.reader(conn);
+                           while ( dbRdr() )
                            {
                                int startMon, startDay, endMon, endDay;
-                               rdr["seasonstartmonth"] >> startMon;
-                               rdr["seasonendmonth"] >> endMon;
-                               rdr["seasonstartday"] >> startDay;
-                               rdr["seasonendday"] >> endDay;
+                               dbRdr["seasonstartmonth"] >> startMon;
+                               dbRdr["seasonendmonth"] >> endMon;
+                               dbRdr["seasonstartday"] >> startDay;
+                               dbRdr["seasonendday"] >> endDay;
 
                                CtiDate today = CtiDate();
 
@@ -4777,8 +4777,8 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                    today <= CtiDate(endDay, endMon, today.year())  )
                                {
                                    long objectId, stratId;
-                                   rdr["paobjectid"] >> objectId;
-                                   rdr["strategyid"] >> stratId;
+                                   dbRdr["paobjectid"] >> objectId;
+                                   dbRdr["strategyid"] >> stratId;
 
 
                                    switch (objectType)
@@ -6610,33 +6610,33 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                      << ccSubstationSubBusListTable["substationbusid"]
                                      << ccSubstationSubBusListTable["displayorder"] ;
 
-                            selector.from(ccSubstationSubBusListTable);
+                            dbSelector.from(ccSubstationSubBusListTable);
 
                             if (subBusId > 0)
                             {
-                                selector.where( subBusId==ccSubstationSubBusListTable["substationbusid"] );
+                                dbSelector.where( subBusId==ccSubstationSubBusListTable["substationbusid"] );
 
                             }
 
                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                             {
-                                string loggedSQLstring = selector.asString();
+                                string loggedSQLstring = dbSelector.asString();
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                                 }
                             }
-                            rdr = selector.reader(conn);
+                            RWDBReader dbRdr = dbSelector.reader(conn);
 
                             RWDBNullIndicator isNull;
-                            while ( rdr() )
+                            while ( dbRdr() )
                             {
                                 long currentSubstationId;
                                 long currentSubBusId;
                                 long displayOrder;
-                                rdr["substationid"] >> currentSubstationId;
-                                rdr["substationbusid"] >> currentSubBusId;
-                                rdr["displayorder"] >>displayOrder;
+                                dbRdr["substationid"] >> currentSubstationId;
+                                dbRdr["substationbusid"] >> currentSubBusId;
+                                dbRdr["displayorder"] >>displayOrder;
                                 currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
                                 if (currentCCSubstationBus != NULL)
                                 {
@@ -6678,8 +6678,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             }
                         }
                         {
-                            selector = db.selector();
-                                         selector <<  ccScheduleStrat["paobjectid"]
+                            RWDBSelector dbSelector = db.selector();
+                                         dbSelector <<  ccScheduleStrat["paobjectid"]
                                                   <<  ccScheduleStrat["seasonscheduleid"]
                                                   <<  ccScheduleStrat["seasonname"]
                                                   <<  ccScheduleStrat["strategyid"]
@@ -6688,29 +6688,29 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                                   <<  dateOfSeason["seasonstartday"]
                                                   <<  dateOfSeason["seasonendday"];
 
-                             selector.from(capControlSubstationBusTable);
-                             selector.from(ccScheduleStrat);
-                             selector.from(dateOfSeason);
+                             dbSelector.from(capControlSubstationBusTable);
+                             dbSelector.from(ccScheduleStrat);
+                             dbSelector.from(dateOfSeason);
 
                              if (subBusId > 0)
                              {
-                                 selector.where(ccScheduleStrat["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
+                                 dbSelector.where(ccScheduleStrat["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
                                                ccScheduleStrat["paobjectid"] == subBusId &&
                                                ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
                                                ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] );
                              }
                              else
-                                 selector.where(ccScheduleStrat["paobjectid"]==capControlSubstationBusTable["substationbusid"]  &&
+                                 dbSelector.where(ccScheduleStrat["paobjectid"]==capControlSubstationBusTable["substationbusid"]  &&
                                                ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
                                                ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"]);
-                             rdr = selector.reader(conn);
-                             while ( rdr() )
+                             RWDBReader dbRdr = dbSelector.reader(conn);
+                             while ( dbRdr() )
                              {
                                  int startMon, startDay, endMon, endDay;
-                                 rdr["seasonstartmonth"] >> startMon;
-                                 rdr["seasonendmonth"] >> endMon;
-                                 rdr["seasonstartday"] >> startDay;
-                                 rdr["seasonendday"] >> endDay;
+                                 dbRdr["seasonstartmonth"] >> startMon;
+                                 dbRdr["seasonendmonth"] >> endMon;
+                                 dbRdr["seasonstartday"] >> startDay;
+                                 dbRdr["seasonendday"] >> endDay;
 
                                  CtiDate today = CtiDate();
 
@@ -6718,8 +6718,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                       today <= CtiDate(endDay, endMon, today.year())  )
                                  {
                                      long busId, stratId;
-                                     rdr["paobjectid"] >> busId;
-                                     rdr["strategyid"] >> stratId;
+                                     dbRdr["paobjectid"] >> busId;
+                                     dbRdr["strategyid"] >> stratId;
 
                                      currentCCSubstationBus = NULL;
 
@@ -6784,8 +6784,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         CtiHolidayManager::getInstance().refresh();
                         if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                         {
-                              selector = db.selector();
-                                           selector <<  ccHolidayStratTable["paobjectid"]
+                              RWDBSelector dbSelector = db.selector();
+                                           dbSelector <<  ccHolidayStratTable["paobjectid"]
                                                     <<  ccHolidayStratTable["holidayscheduleid"]
                                                     <<  ccHolidayStratTable["strategyid"]
                                                     <<  dateOfHoliday["holidayname"]
@@ -6793,37 +6793,37 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                                     <<  dateOfHoliday["holidayday"]
                                                     <<  dateOfHoliday["holidayyear"];
 
-                              selector.from(capControlSubstationBusTable);
-                              selector.from(ccHolidayStratTable);
-                              selector.from(dateOfHoliday);
+                              dbSelector.from(capControlSubstationBusTable);
+                              dbSelector.from(ccHolidayStratTable);
+                              dbSelector.from(dateOfHoliday);
 
                               if (subBusId > 0)
                               {
-                                  selector.where( ccHolidayStratTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
+                                  dbSelector.where( ccHolidayStratTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
                                               ccHolidayStratTable["paobjectid"] == subBusId &&
                                              ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
                               }
                               else
                               {
-                                  selector.where( ccHolidayStratTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
+                                  dbSelector.where( ccHolidayStratTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
                                                   ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
                               }
 
                              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                              {
-                                 string loggedSQLstring = selector.asString();
+                                 string loggedSQLstring = dbSelector.asString();
                                  {
                                      CtiLockGuard<CtiLogger> logger_guard(dout);
                                      dout << CtiTime() << " - " << loggedSQLstring << endl;
                                  }
                              }
-                             rdr = selector.reader(conn);
-                             while ( rdr() )
+                             RWDBReader dbRdr = dbSelector.reader(conn);
+                             while ( dbRdr() )
                              {
                                  int holMon, holDay, holYear, tempYear;
-                                 rdr["holidaymonth"] >> holMon;
-                                 rdr["holidayday"] >> holDay;
-                                 rdr["holidayyear"] >> holYear;
+                                 dbRdr["holidaymonth"] >> holMon;
+                                 dbRdr["holidayday"] >> holDay;
+                                 dbRdr["holidayyear"] >> holYear;
 
                                  CtiDate today = CtiDate();
                                  if (holYear == -1)
@@ -6840,8 +6840,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                          dout << CtiTime() << " TODAY is: " << today << " HOLIDAY is: "<<CtiDate(holDay, holMon, tempYear)  << endl;
                                      }
                                      long busId, stratId;
-                                     rdr["paobjectid"] >> busId;
-                                     rdr["strategyid"] >> stratId;
+                                     dbRdr["paobjectid"] >> busId;
+                                     dbRdr["strategyid"] >> stratId;
 
                                      currentCCSubstationBus = NULL;
 
@@ -8967,114 +8967,119 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                     RWDBTable fdrTranslationTable = db.table("fdrtranslation");
 
 
-                    RWDBSelector selector = db.selector();
-                    selector << stateTable["text"]
-                    << stateTable["foregroundcolor"]
-                    << stateTable["backgroundcolor"];
-
-                    selector.from(stateTable);
-
-                    selector.where(stateTable["stategroupid"]==3 && stateTable["rawstate"]>=0);
-
-                    selector.orderBy(stateTable["rawstate"]);
-
-                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
-                        string loggedSQLstring = selector.asString();
+                        RWDBSelector selector = db.selector();
+                        selector << stateTable["text"]
+                        << stateTable["foregroundcolor"]
+                        << stateTable["backgroundcolor"];
+                        
+                        selector.from(stateTable);
+                        
+                        selector.where(stateTable["stategroupid"]==3 && stateTable["rawstate"]>=0);
+                        
+                        selector.orderBy(stateTable["rawstate"]);
+                        
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << loggedSQLstring << endl;
-                        }
-                    }
-
-                    RWDBReader rdr = selector.reader(conn);
-
-                    while ( rdr() )
-                    {
-                        CtiCCState* ccState = new CtiCCState(rdr);
-                        _ccCapBankStates->push_back( ccState );
-                    }
-
-                    selector = db.selector();
-                    selector << alarmTable["alarmcategoryid"]
-                    << alarmTable["categoryname"];
-
-                    selector.from(alarmTable);
-
-
-                    selector.where(alarmTable["categoryname"].like(RWDBExpr(_MAXOPS_ALARM_CAT.c_str())) );
-
-                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                    {
-                        string loggedSQLstring = selector.asString();
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << loggedSQLstring << endl;
-                        }
-                    }
-
-                    rdr = selector.reader(conn);
-                    while ( rdr() )
-                    {
-                        rdr["alarmcategoryid"] >> _MAXOPS_ALARM_CATID;
-                    }
-
-                    selector = db.selector();
-                    selector << fdrTranslationTable["pointid"]
-                    << fdrTranslationTable["directiontype"]
-                    << fdrTranslationTable["interfacetype"]
-                    << fdrTranslationTable["destination"]
-                    << fdrTranslationTable["translation"];
-
-                    selector.from(fdrTranslationTable);
-
-                    selector.where(fdrTranslationTable["directiontype"]=="Link Status" &&
-                                   fdrTranslationTable["interfacetype"]=="SYSTEM" );
-
-
-                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                    {
-                        string loggedSQLstring = selector.asString();
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << loggedSQLstring << endl;
-                        }
-                    }
-
-                    rdr = selector.reader(conn);
-                    CtiString str;
-                    char var[128];
-                    std::strcpy(var, "FDR_INTERFACES");
-                    if( (str = gConfigParms.getValueAsString(var)).empty() )
-                    {
-                        str = "none";
-                    }
-
-                    while ( rdr() )
-                    {
-                        long pointID;
-                        string translation;
-                        rdr["pointid"] >> pointID;
-                        rdr["translation"] >> translation;
-
-                        if (stringContainsIgnoreCase(str, "fdr"))
-                        {
-                            str = str.strip(CtiString::leading, 'f');
-                            str = str.strip(CtiString::leading, 'd');
-                            str = str.strip(CtiString::leading, 'r');
-                        }
-                        if (stringContainsIgnoreCase(translation, str))
-                        {
+                            string loggedSQLstring = selector.asString();
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " FDR Link Status POINT FOUND: "<<pointID << endl;
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
                             }
-                            _linkStatusPointId = pointID;
-                            _linkStatusFlag = OPENED;
-                            break;
                         }
-
-
+                        
+                        RWDBReader rdr = selector.reader(conn);
+                        
+                        while ( rdr() )
+                        {
+                            CtiCCState* ccState = new CtiCCState(rdr);
+                            _ccCapBankStates->push_back( ccState );
+                        }
+                    }
+                    {
+                        RWDBSelector selector = db.selector();
+                        selector << alarmTable["alarmcategoryid"]
+                        << alarmTable["categoryname"];
+                        
+                        selector.from(alarmTable);
+                        
+                        
+                        selector.where(alarmTable["categoryname"].like(RWDBExpr(_MAXOPS_ALARM_CAT.c_str())) );
+                        
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
+                        }
+                        
+                        RWDBReader rdr = selector.reader(conn);
+                        while ( rdr() )
+                        {
+                            rdr["alarmcategoryid"] >> _MAXOPS_ALARM_CATID;
+                        }
+                    }
+                    {
+                    
+                        RWDBSelector selector = db.selector();
+                        selector << fdrTranslationTable["pointid"]
+                        << fdrTranslationTable["directiontype"]
+                        << fdrTranslationTable["interfacetype"]
+                        << fdrTranslationTable["destination"]
+                        << fdrTranslationTable["translation"];
+                        
+                        selector.from(fdrTranslationTable);
+                        
+                        selector.where(fdrTranslationTable["directiontype"]=="Link Status" &&
+                                       fdrTranslationTable["interfacetype"]=="SYSTEM" );
+                        
+                        
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            string loggedSQLstring = selector.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
+                        }
+                        
+                        RWDBReader rdr = selector.reader(conn);
+                        CtiString str;
+                        char var[128];
+                        std::strcpy(var, "FDR_INTERFACES");
+                        if( (str = gConfigParms.getValueAsString(var)).empty() )
+                        {
+                            str = "none";
+                        }
+                        
+                        while ( rdr() )
+                        {
+                            long pointID;
+                            string translation;
+                            rdr["pointid"] >> pointID;
+                            rdr["translation"] >> translation;
+                        
+                            if (stringContainsIgnoreCase(str, "fdr"))
+                            {
+                                str = str.strip(CtiString::leading, 'f');
+                                str = str.strip(CtiString::leading, 'd');
+                                str = str.strip(CtiString::leading, 'r');
+                            }
+                            if (stringContainsIgnoreCase(translation, str))
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " FDR Link Status POINT FOUND: "<<pointID << endl;
+                                }
+                                _linkStatusPointId = pointID;
+                                _linkStatusFlag = OPENED;
+                                break;
+                            }
+                        
+                        
+                        }
                     }
                 }
             }
