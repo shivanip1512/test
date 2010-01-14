@@ -54,7 +54,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
-            mav.addObject("errors", errorMsg);
+            mav.addObject("errors", "yukon.common.device.bulk.removePointsHome."+ errorMsg);
         }
         
         // device types set
@@ -197,7 +197,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     	SingleProcessor<YukonDevice> addPointsProcessor = getRemovePointsProcessor(pointTemplatesMap);
     	
     	if(pointTemplatesMap.isEmpty()){
-            String noPointsSuppliedMsg = "yukon.common.device.bulk.removePointsHome.noPointsSuppliedMsg";
+            String noPointsSuppliedMsg = "noPointsSuppliedMsg";
             ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
             return home;
         }

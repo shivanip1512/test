@@ -46,7 +46,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
-            mav.addObject("errors", errorMsg);
+            mav.addObject("errors", "yukon.common.device.bulk.updatePointsHome."+errorMsg);
         }
         
         List<UpdatePointsFieldType> pointFields = Lists.newArrayList(UpdatePointsFieldType.values());
@@ -108,7 +108,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
         
         if(pointTemplatesMap.isEmpty()){
-            String noPointsSuppliedMsg = "yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg";
+            String noPointsSuppliedMsg = "noPointsSuppliedMsg";
             ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
             return home;
         } else {
@@ -148,7 +148,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
             try {
                 Double.parseDouble(setValue);
             } catch (NumberFormatException e){
-                errorMsg = "yukon.common.device.bulk.updatePointsHome.validDecimalNumberMsg";
+                errorMsg = "validDecimalNumberMsg";
             }
             break;
             
@@ -156,10 +156,10 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
             try {
                 int intValue = Integer.parseInt(setValue);
                 if(intValue < 0){
-                    errorMsg = "yukon.common.device.bulk.updatePointsHome.numberGreaterThanZeroMsg";
+                    errorMsg = "numberGreaterThanZeroMsg";
                 }
             } catch (NumberFormatException e) {
-                errorMsg = "yukon.common.device.bulk.updatePointsHome.validIntegerNumberMsg";
+                errorMsg = "validIntegerNumberMsg";
             }
             break;
         default:
