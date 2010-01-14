@@ -21,49 +21,30 @@ public enum DatabaseVendor {
     
     private final String vendorName;
     private final int databaseMajorVersion;
-    private final int databaseMinorVersion;
 
     DatabaseVendor(String vendorName) {
         this.vendorName = vendorName;
         this.databaseMajorVersion = -1;
-        this.databaseMinorVersion = -1;
     }
     
     DatabaseVendor(String vendorName, int databaseMajorVersion) {
         this.vendorName = vendorName;
         this.databaseMajorVersion = databaseMajorVersion;
-        this.databaseMinorVersion = -1;
-    }
-
-    DatabaseVendor(String vendorName, int databaseMajorVersion, int databaseMinorVersion) {
-        this.vendorName = vendorName;
-        this.databaseMajorVersion = databaseMajorVersion;
-        this.databaseMinorVersion = databaseMinorVersion;
     }
 
     public String getVendorName() { return this.vendorName; }
     public int getDatabaseMajorVersion() { return this.databaseMajorVersion; }
-    public int getDatabaseMinorVersion() { return this.databaseMinorVersion; }
     
     public static DatabaseVendor getDatabaseVendor(String vendorName, int majorVersion) {
         return getDatabaseVendor(vendorName, majorVersion, -1);
     }
     
     public static DatabaseVendor getDatabaseVendor(String vendorName, int majorVersion, int minorVersion) {
-        // Try to match the full version
-        for (DatabaseVendor databaseVendor : values()){
-            if (databaseVendor.getVendorName().equalsIgnoreCase(vendorName) &&
-                databaseVendor.getDatabaseMajorVersion() == majorVersion &&
-                databaseVendor.getDatabaseMinorVersion() == minorVersion){
-                return databaseVendor;
-            }
-        }
         
         // Try to match without the minor version
         for (DatabaseVendor databaseVendor : values()){
             if (databaseVendor.getVendorName().equalsIgnoreCase(vendorName) &&
-                databaseVendor.getDatabaseMajorVersion() == majorVersion &&
-                databaseVendor.getDatabaseMajorVersion() == -1){
+                databaseVendor.getDatabaseMajorVersion() == majorVersion) {
                 return databaseVendor;
             }
         }
@@ -71,8 +52,7 @@ public enum DatabaseVendor {
         // Try to match without the major or minor version
         for (DatabaseVendor databaseVendor : values()){
             if (databaseVendor.getVendorName().equalsIgnoreCase(vendorName) &&
-                databaseVendor.getDatabaseMajorVersion() == -1 &&
-                databaseVendor.getDatabaseMajorVersion() == -1){
+                databaseVendor.getDatabaseMajorVersion() == -1) {
 
                 logger.warn("Your database version is not currently supported by Yukon: " + 
                             vendorName + " ("+majorVersion+"."+minorVersion+") ");
