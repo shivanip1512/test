@@ -215,7 +215,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     			
     			List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointType);
     			deviceTypePointSet.addAll(pointTypePointList);
-    			allPointTemplates.addAll(pointTypePointList);
+    			addPointListToAllPointTemplates(allPointTemplates, pointTypePointList);
     		}
     		
     		devicePointTemplateSetsList.add(deviceTypePointSet);
@@ -230,6 +230,10 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     	Collections.sort(pointList, pointTemplateOffsetCompartor);
     	
     	return createPointTypeMap(pointList);
+    }
+    
+    protected void addPointListToAllPointTemplates(Set<PointTemplateWrapper> allPointTemplates, List<PointTemplateWrapper> pointTypePointList){
+        allPointTemplates.addAll(pointTypePointList);
     }
     
     protected Map<PointType, List<PointTemplateWrapper>> createPointTypeMap(List<PointTemplateWrapper> pointTemplates) {

@@ -2,7 +2,6 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,8 +30,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -85,50 +82,21 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     }
     
     @Override
-    protected Map<PointType, List<PointTemplateWrapper>> createSharedPointsTypeMapWithPointsMap(Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap) {
-        
-        // complete set of all point templates
-        Set<PointTemplateWrapper> allPointTemplates = new HashSet<PointTemplateWrapper>();
-        
-        // list of sets of point templates, one for each device type
-        List<Set<PointTemplateWrapper>> devicePointTemplateSetsList = new ArrayList<Set<PointTemplateWrapper>>();
-        
-        for (int deviceType : pointsMap.keySet()) {
-            
-            Set<PointTemplateWrapper> deviceTypePointSet = new HashSet<PointTemplateWrapper>();
-            
-            for (PointType pointType : pointsMap.get(deviceType).keySet()) {
-                
-                List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointType);
-                deviceTypePointSet.addAll(pointTypePointList);
-
-                // Creates a set that handles the shared points and 
-                // also handles the masking for that set.
-                for (PointTemplateWrapper pointTemplateWrapper : pointTypePointList) {
-                    if (allPointTemplates.contains(pointTemplateWrapper)) {
-                        if (pointTemplateWrapper.isMasked() == false) {
-                            allPointTemplates.remove(pointTemplateWrapper);
-                            allPointTemplates.add(pointTemplateWrapper);
-                        }
-                    } else {
-                        allPointTemplates.add(pointTemplateWrapper);
-                    }
+    /**
+     *  Creates a set that handles the shared points and 
+     *  also handles the masking for that remove points set.
+     */
+    protected void addPointListToAllPointTemplates(Set<PointTemplateWrapper> allPointTemplates, List<PointTemplateWrapper> pointTypePointList){
+        for (PointTemplateWrapper pointTemplateWrapper : pointTypePointList) {
+            if (allPointTemplates.contains(pointTemplateWrapper)) {
+                if (pointTemplateWrapper.isMasked() == false) {
+                    allPointTemplates.remove(pointTemplateWrapper);
+                    allPointTemplates.add(pointTemplateWrapper);
                 }
+            } else {
+                allPointTemplates.add(pointTemplateWrapper);
             }
-            
-            devicePointTemplateSetsList.add(deviceTypePointSet);
         }
-        
-        
-        // reduce the "all" set by retaining each device type point template set
-        for (Set<PointTemplateWrapper> deviceTypePointSet : devicePointTemplateSetsList) {
-            allPointTemplates.retainAll(deviceTypePointSet);
-        }
-        
-        List<PointTemplateWrapper> pointList = new ArrayList<PointTemplateWrapper>(allPointTemplates);
-        Collections.sort(pointList, pointTemplateOffsetCompartor);
-        
-        return createPointTypeMap(pointList);
     }
     
     // points map helper
@@ -204,7 +172,6 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
     	
     	ModelAndView mav = new ModelAndView("redirect:removePointsResults");
-    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
     	// device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
