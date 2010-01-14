@@ -34,7 +34,7 @@
 #include "ccmessage.h"
 #include "ccstatsobject.h"
 #include "LoadTapChanger.h"
-#include "PointDataHandler.h"
+#include "CapControlPointDataHandler.h"
 #include "PointDataListener.h"
 #include "ccutil.h"
 
@@ -435,6 +435,8 @@ public:
     map <long, CtiCCAreaPtr>* getPAOAreaMap();
     map <long, CtiCCSubstationPtr>* getPAOStationMap();
     map <long, CtiCCSpecialPtr>* getPAOSpecialAreaMap();
+    map <long, LoadTapChangerPtr>* getLtcMap();
+
      static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
     static void sendUserQuit(void *who);
@@ -475,7 +477,7 @@ public:
     std::vector<CtiCCCapBankPtr> getCapBanksByPaoIdAndType(int paoId, CapControlType type);
     CapControlType determineTypeById(int paoId);
 
-    PointDataHandler& getPointDataHandler();
+    CapControlPointDataHandler& getPointDataHandler();
     virtual bool handlePointDataByPaoId(int paoId, CtiPointDataMsg* message);
 private:
 
@@ -536,7 +538,7 @@ private:
     BOOL _voltReductionSystemDisabled;
     int  _voltDisabledCount;
 
-    PointDataHandler _pointDataHandler;
+    CapControlPointDataHandler _pointDataHandler;
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;

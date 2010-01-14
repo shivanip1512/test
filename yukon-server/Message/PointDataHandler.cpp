@@ -5,9 +5,14 @@
 
 using std::set;
 
-PointDataHandler::PointDataHandler(PointDataListener* pointDataListener)
+PointDataHandler::PointDataHandler()
 {
-    _pointDataListener = pointDataListener;
+}
+
+void PointDataHandler::clear()
+{
+    _pointIdMap.clear();
+    _paoIdMap.clear();
 }
 
 bool PointDataHandler::addPoint(int pointId, int paoId)
@@ -19,6 +24,9 @@ bool PointDataHandler::addPoint(int pointId, int paoId)
         newSet.insert(paoId);
 
         _pointIdMap[pointId] = newSet;
+
+        //First Time: Register for the point.
+        registerForPoint(pointId);
     }
     else
     {
@@ -50,6 +58,13 @@ bool PointDataHandler::removePointOnPao(int pointId, int paoId)
     if (pointItr != _pointIdMap.end())
     {
         pointItr->second.erase(paoId);
+
+        //Check if the set is empty.
+        if (pointItr->second.size() == 0)
+        {
+            _pointIdMap.erase(pointId);
+            unRegisterForPoint(pointId);
+        }
     }
 
     //Remove point from pao set
@@ -66,6 +81,8 @@ bool PointDataHandler::removeAllPointsForPao(int paoId)
 {
     //Find all the points this pao is registered for
     PaoIdMapItr paoItr = _paoIdMap.find(paoId);
+    std::list<int> removeSets;
+
     if (paoItr != _paoIdMap.end())
     {
         //Remove the reference to this pao for each point.
@@ -75,10 +92,22 @@ bool PointDataHandler::removeAllPointsForPao(int paoId)
             if (pointItr != _pointIdMap.end())
             {
                 pointItr->second.erase(paoId);
+
+                //Check if the set is empty.
+                if (pointItr->second.size() == 0)
+                {
+                    removeSets.push_back(pointId);
+                }
             }
         }
         //Remove this pao
         _paoIdMap.erase(paoId);
+    }
+
+    for each (int i in removeSets)
+    {
+        _pointIdMap.erase(i);
+        unRegisterForPoint(i);
     }
 
     return true;
@@ -100,6 +129,7 @@ bool PointDataHandler::removePointId(int pointId)
             }
         }
         _pointIdMap.erase(pointId);
+        unRegisterForPoint(pointId);
     }
 
     return true;

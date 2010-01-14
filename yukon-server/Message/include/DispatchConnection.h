@@ -2,6 +2,7 @@
 #pragma once
 
 #include "connection.h"
+#include "message.h"
 
 #include <list>
 #include <string>
@@ -24,15 +25,18 @@ class IM_EX_MSG DispatchConnection : public CtiConnection
 
         mutable CtiMutex _regListMux;
 
-    public:
+        //Hidden
         DispatchConnection();
-        DispatchConnection( const int &port, const string &host, Que_t *inQ = NULL, int tt = 3);
+    public:
 
-        void addRegistrationForPoints(const std::list<int>& pointIds);
-        void addRegistrationForPoint(int pointId);
+        typedef CtiConnection Inherited;
 
-        void removeRegistrationForPoints(const std::list<int>& pointIds);
-        void removeRegistrationForPoint(int pointId);
+        DispatchConnection( const string &connectionName, const int &port, const string &host, Que_t *inQ = NULL, int tt = 3);
+
+        void registerForPoints(const std::list<int>& pointIds);
+        void registerForPoint(int pointId);
+        void unRegisterForPoints(const std::list<int>& pointIds);
+        void unRegisterForPoint(int pointId);
 
         virtual void preWork();
 };

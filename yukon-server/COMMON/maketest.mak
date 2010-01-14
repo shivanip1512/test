@@ -117,6 +117,12 @@ amq_connection.obj:	yukon.h precompiled.h ctidbgmem.h utility.h \
 		numstr.h sorted_vector.h connectionfactory.h amq_connection.h \
 		thread.h mutex.h guard.h clrdump.h critical_section.h \
 		activemqcpp.h connection.h
+attributeservice.obj:	yukon.h precompiled.h ctidbgmem.h \
+		AttributeService.h LitePoint.h dlldefs.h pointtypes.h \
+		resolvers.h types.h db_entry_defines.h numstr.h dbaccess.h \
+		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
+		clrdump.h cticonnect.h netports.h sema.h rwutil.h ctitime.h \
+		boost_time.h boostutil.h utility.h queues.h sorted_vector.h
 bfexec.obj:	yukon.h precompiled.h ctidbgmem.h bfexec.h
 cmdparse.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h \
 		ctitokenizer.h dlldefs.h parsevalue.h cparms.h rwutil.h \
@@ -217,6 +223,8 @@ hash_functions.obj:	yukon.h precompiled.h ctidbgmem.h hash_functions.h \
 id_ctibase.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h id_ctibase.h id_vinfo.h
+litepoint.obj:	yukon.h precompiled.h ctidbgmem.h LitePoint.h dlldefs.h \
+		pointtypes.h
 logger.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h cparms.h rwutil.h boost_time.h boostutil.h \

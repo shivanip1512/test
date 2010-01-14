@@ -1506,8 +1506,7 @@ DispatchConnection* CtiCapController::getDispatchConnection()
             if( _dispatchConnection == NULL )
             {
                 //Connect to Dispatch
-                _dispatchConnection = new DispatchConnection( dispatch_port, dispatch_host );
-                _dispatchConnection->setName("CC to Dispatch");
+                _dispatchConnection = new DispatchConnection( "CC to Dispatch", dispatch_port, dispatch_host );
 
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
@@ -2080,6 +2079,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     }
                 }
             }
+
             if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0)
             {
                 registrationIds.push_back(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
@@ -2096,7 +2096,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
         /***************************************************************************************************************************/
         //Add the handler points here!
 
-        store->getPointDataHandler().getAllPointIds(registrationIds);
+        //store->getPointDataHandler().getAllPointIds(registrationIds);
 
         /***************************************************************************************************************************/
         {
@@ -2104,11 +2104,9 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             dout << CtiTime() << " - End Registering for point changes." << endl;
         }
 
-
         try
         {
-            getDispatchConnection()->addRegistrationForPoints(registrationIds);
-            //getDispatchConnection()->WriteConnQue(regMsg);
+            getDispatchConnection()->registerForPoints(registrationIds);
         }
         catch(...)
         {
@@ -2220,11 +2218,6 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         }
                         else if (dbChange->getDatabase() == ChangePointDb)
                         {
-                            int subCount = 0;
-                            int feedCount = 0;
-                            int capCount = 0;
-                            int areaCount = 0;
-                            int saCount = 0;
                             multimap< long, CtiCCSubstationBusPtr >::iterator subBusBegin,  subBusEnd;
                             multimap< long, CtiCCFeederPtr >::iterator        feederBegin,  feederEnd;
                             multimap< long, CtiCCCapBankPtr >::iterator       capBankBegin, capBankEnd;
@@ -2715,7 +2708,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
 
     try
     {
-        PointDataHandler pointHandler = store->getPointDataHandler();
+        CapControlPointDataHandler pointHandler = store->getPointDataHandler();
         bool handled = pointHandler.processIncomingPointData(message);
 
         if (!handled)

@@ -31,8 +31,8 @@ INCLPATHS+= \
 
 OBJS=\
 connection.obj \
-DispatchConnection.obj \
 PointDataHandler.obj \
+DispatchConnection.obj \
 dll_msg.obj \
 message.obj \
 msg_cmd.obj \

@@ -20,6 +20,7 @@
 #include <rw/thr/thrfunc.h>
 //#include <rw/collstr.h>
 
+#include "AttributeService.h"
 #include "ccsubstationbusstore.h"
 #include "ControlStrategies.h"
 #include "ccsubstationbus.h"
@@ -71,7 +72,6 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
                                                     _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
                                                     _wassubbusdeletedflag(FALSE),
                                                     _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
-                                                    _pointDataHandler(this),
                                                     _strategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
@@ -114,6 +114,8 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
 
     _voltReductionSystemDisabled = FALSE;
     _voltDisabledCount = 0;
+
+    _pointDataHandler.setPointDataListener(this);
 
 }
 
@@ -857,7 +859,7 @@ CapControlType CtiCCSubstationBusStore::determineTypeById(int paoId)
     return Undefined;
 }
 
-PointDataHandler& CtiCCSubstationBusStore::getPointDataHandler()
+CapControlPointDataHandler& CtiCCSubstationBusStore::getPointDataHandler()
 {
     return _pointDataHandler;
 }
@@ -866,19 +868,24 @@ bool CtiCCSubstationBusStore::handlePointDataByPaoId(int paoId, CtiPointDataMsg*
 {
     //Currently only LTC does this. The idea will be all types do it
     // and this can be accomplished once all objects inherit off CapControlPao
-    CapControlType type = determineTypeById(paoId);
 
-    switch (type)
+    bool handled = false;
+
+    if (message->isA() == MSG_POINTDATA)
     {
-        case Ltc:
-            ((UpdatablePao*) findLtcById(paoId))->handlePointData(message);
-            break;
-        default:
-            return false;
-            break;
+        CapControlType type = determineTypeById(paoId);
+        switch (type)
+        {
+            case Ltc:
+                ((UpdatablePao*) findLtcById(paoId))->handlePointData(message);
+                handled = true;
+                break;
+            default:
+                break;
+        }
     }
 
-    return true;
+    return handled;
 }
 
 
@@ -1179,8 +1186,6 @@ BOOL CtiCCSubstationBusStore::deleteCapControlMaps()
         _capbank_feeder_map.clear();
         _altsub_sub_idmap.clear();
         _cbc_capbank_map.clear();
-
-
     }
     catch( ... )
     {
@@ -3899,7 +3904,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                                                          {
                                                              CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                              if (spArea != NULL)
-                                                             {    
+                                                             {
                                                                  currentCCStrategy = spArea->getStrategy();
                                                              }
                                                          }
@@ -3940,7 +3945,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                                                          currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
                                                          if (currentStation != NULL)
                                                          {
-  
+
                                                              if (currentStation->getSaEnabledFlag())
                                                              {
                                                                  CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
@@ -4172,7 +4177,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                                                          {
                                                              CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                              if (spArea != NULL)
-                                                             {    
+                                                             {
                                                                  currentCCStrategy = spArea->getStrategy();
                                                              }
                                                          }
@@ -4217,7 +4222,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                                                              {
                                                                  CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                                  if (spArea != NULL)
-                                                                 {   
+                                                                 {
                                                                      strategyID =  spArea->getStrategy()->getStrategyId();
                                                                  }
                                                              }
@@ -4415,7 +4420,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                                        {
                                                            CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                            if (spArea != NULL)
-                                                           {    
+                                                           {
                                                                currentCCStrategy = spArea->getStrategy();
                                                            }
                                                        }
@@ -4457,7 +4462,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                                            {
                                                                CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                                if (spArea != NULL)
-                                                               {    
+                                                               {
                                                                    strategyID = spArea->getStrategy()->getStrategyId();
                                                                }
                                                            }
@@ -5742,15 +5747,31 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
 void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
 {
     LoadTapChangerPtr ltcPtr = NULL;
-    //Clear out existing
+
     if (ltcId > 0)
     {
+        //Clear out the ltc we are about to reload.
         ltcPtr = findLtcById(ltcId);
         if (ltcPtr != NULL)
         {
             deleteLtcById(ltcId);
-            _pointDataHandler.removeAllPointsForPao(ltcId);
         }
+    }
+    else
+    {
+        //Clear all Ltcs
+        for each(const std::pair<const long, LoadTapChangerPtr >& p in _paobject_ltc_map)
+        {
+            if (p.second != NULL)
+            {
+                _pointDataHandler.removeAllPointsForPao(p.second->getPaoId());
+                delete p.second;
+            }
+        }
+        _paobject_ltc_map.clear();
+        _ltc_subbus_map.clear();
+
+
     }
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -5761,6 +5782,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         CtiTime currentDateTime;
         RWDBDatabase db = getDatabase();
 
+        //Load From Database
         {
             RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
 
@@ -5802,73 +5824,67 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
             }
         }
 
-        //Load Points
+        // Load and Register for points
+        std::list<LoadTapChangerPtr> ltcList;
+        if (ltcId > 0)
         {
-            RWDBTable yukonPointTable = db.table("point");
-            RWDBTable yukonPaoTable = db.table("YukonPAObject");
-
-            RWDBSelector selector = db.selector();
-            selector << yukonPointTable["POINTID"]
-                     << yukonPointTable["POINTTYPE"]
-                     << yukonPointTable["POINTNAME"]
-                     << yukonPointTable["PAObjectID"]
-                     << yukonPointTable["POINTOFFSET"];
-
-            selector.from(yukonPointTable);
-            selector.from(yukonPaoTable);
-
-            if (ltcId > 0)
+            LoadTapChangerPtr ltcPtr = findLtcById(ltcId);
+            if (ltcPtr != NULL)
             {
-                //Only Points on ltcId
-                selector.where(yukonPaoTable["Type"] == string2RWCString(desolveDeviceType(TYPELTC)) &&
-                               yukonPaoTable["PAObjectID"] == yukonPointTable["PAObjectID"] &&
-                               yukonPointTable["PAObjectID"] == ltcId);
+                ltcList.push_back(ltcPtr);
             }
-            else
+        }
+        else
+        {
+            for each(const std::pair<const long, LoadTapChangerPtr >& p in _paobject_ltc_map)
             {
-                //All LTC Points.
-                selector.where(yukonPaoTable["Type"] == string2RWCString(desolveDeviceType(TYPELTC)) &&
-                               yukonPaoTable["PAObjectID"] == yukonPointTable["PAObjectID"]);
+                ltcList.push_back(p.second);
+            }
+        }
+
+        for each(LoadTapChangerPtr ltc in ltcList)
+        {
+            int ltcId = ltc->getPaoId();
+            LitePoint point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::LtcVoltageStr);
+            if (point.getPointType() != InvalidPointType)
+            {
+                ltc->setLtcVoltagePoint(point);
+                _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::LowerTapStr);
+            if (point.getPointType() != InvalidPointType)
             {
-                string loggedSQLstring = selector.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                ltc->setLowerTapPoint(point);
+                _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            RWDBReader rdr = selector.reader(conn);
-            RWDBNullIndicator isNull;
-            while ( rdr() )
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::RaiseTapStr);
+            if (point.getPointType() != InvalidPointType)
             {
-                int paoId = 0;
-                rdr["PAObjectID"] >> paoId;
+                ltc->setRaiseTapPoint(point);
+                _pointDataHandler.addPoint(point.getPointId(),ltcId);
+            }
 
-                LoadTapChangerPtr ltc = findLtcById(paoId);
-                if (ltc != NULL)
-                {
-                    string temp;
-                    int pointId = 0;
-                    CtiPointType_t pointType = InvalidPointType;
-                    string pointName;
-                    int pointOffset = 0;
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::LowerVoltStr);
+            if (point.getPointType() != InvalidPointType)
+            {
+                ltc->setLowerVoltPoint(point);
+                _pointDataHandler.addPoint(point.getPointId(),ltcId);
+            }
 
-                    rdr["POINTID"] >> pointId;
-                    rdr["POINTTYPE"] >> temp;
-                    pointType = resolvePointType(temp);
-                    rdr["POINTNAME"] >> pointName;
-                    rdr["POINTOFFSET"] >> pointOffset;
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::UpperVoltStr);
+            if (point.getPointType() != InvalidPointType)
+            {
+                ltc->setUpperVoltPoint(point);
+                _pointDataHandler.addPoint(point.getPointId(),ltcId);
+            }
 
-                    ltc->getPointValueHolder().addPointOffset(pointName,pointOffset,pointType,pointId,0);
-                    _pointDataHandler.addPoint(pointId,paoId);
-                }
-                else
-                {
-                    //Error it should have been in the map. Points assigned to a non existant ltc
-                }
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::AutoRemoteStr);
+            if (point.getPointType() != InvalidPointType)
+            {
+                ltc->setAutoRemotePoint(point);
+                _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
         }
 
@@ -6267,7 +6283,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                               {
                                                   CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                   if (spArea != NULL)
-                                                  {    
+                                                  {
                                                       currentCCStrategy = spArea->getStrategy();
                                                   }
                                               }
@@ -6377,7 +6393,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                              {
                                                  CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                  if (spArea != NULL)
-                                                 {    
+                                                 {
                                                      currentCCStrategy = spArea->getStrategy();
                                                  }
                                              }
@@ -7013,7 +7029,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                      long strategyID = 0;
 
                                      if (paobject_subbus_map->find(currentCCFeeder->getParentId()) != paobject_subbus_map->end())
-                                     {    
+                                     {
                                          currentSubBus = paobject_subbus_map->find(currentCCFeeder->getParentId())->second;
                                      }
 
@@ -7026,7 +7042,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                              {
                                                  CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                   if (spArea != NULL)
-                                                  {    
+                                                  {
                                                       strategyID = spArea->getStrategy()->getStrategyId();
                                                   }
                                              }
@@ -7123,12 +7139,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                                  CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                  if (spArea != NULL)
                                                  {
-                                                     strategyID = spArea->getStrategy()->getStrategyId();    
+                                                     strategyID = spArea->getStrategy()->getStrategyId();
                                                  }
                                              }
                                              else
                                              {
-                                                 strategyID = stratId;    
+                                                 strategyID = stratId;
                                              }
                                          }
                                      }
@@ -8457,13 +8473,13 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                         selector << stateTable["text"]
                         << stateTable["foregroundcolor"]
                         << stateTable["backgroundcolor"];
-                        
+
                         selector.from(stateTable);
-                        
+
                         selector.where(stateTable["stategroupid"]==3 && stateTable["rawstate"]>=0);
-                        
+
                         selector.orderBy(stateTable["rawstate"]);
-                        
+
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             string loggedSQLstring = selector.asString();
@@ -8472,9 +8488,9 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
                             }
                         }
-                        
+
                         RWDBReader rdr = selector.reader(conn);
-                        
+
                         while ( rdr() )
                         {
                             CtiCCState* ccState = new CtiCCState(rdr);
@@ -8485,12 +8501,12 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                         RWDBSelector selector = db.selector();
                         selector << alarmTable["alarmcategoryid"]
                         << alarmTable["categoryname"];
-                        
+
                         selector.from(alarmTable);
-                        
-                        
+
+
                         selector.where(alarmTable["categoryname"].like(RWDBExpr(_MAXOPS_ALARM_CAT.c_str())) );
-                        
+
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             string loggedSQLstring = selector.asString();
@@ -8499,7 +8515,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
                             }
                         }
-                        
+
                         RWDBReader rdr = selector.reader(conn);
                         while ( rdr() )
                         {
@@ -8507,20 +8523,20 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                         }
                     }
                     {
-                    
+
                         RWDBSelector selector = db.selector();
                         selector << fdrTranslationTable["pointid"]
                         << fdrTranslationTable["directiontype"]
                         << fdrTranslationTable["interfacetype"]
                         << fdrTranslationTable["destination"]
                         << fdrTranslationTable["translation"];
-                        
+
                         selector.from(fdrTranslationTable);
-                        
+
                         selector.where(fdrTranslationTable["directiontype"]=="Link Status" &&
                                        fdrTranslationTable["interfacetype"]=="SYSTEM" );
-                        
-                        
+
+
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             string loggedSQLstring = selector.asString();
@@ -8529,7 +8545,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
                             }
                         }
-                        
+
                         RWDBReader rdr = selector.reader(conn);
                         CtiString str;
                         char var[128];
@@ -8538,14 +8554,14 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                         {
                             str = "none";
                         }
-                        
+
                         while ( rdr() )
                         {
                             long pointID;
                             string translation;
                             rdr["pointid"] >> pointID;
                             rdr["translation"] >> translation;
-                        
+
                             if (stringContainsIgnoreCase(str, "fdr"))
                             {
                                 str = str.strip(CtiString::leading, 'f');
@@ -8562,8 +8578,8 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                                 _linkStatusFlag = OPENED;
                                 break;
                             }
-                        
-                        
+
+
                         }
                     }
                 }
@@ -9129,9 +9145,11 @@ void CtiCCSubstationBusStore::deleteLtcById(long ltcId)
     }
 
     //Cleanup Point Registration maps/listeners
+    _pointDataHandler.removeAllPointsForPao(ltcId);
 
-
-    //Remove from ltc Map
+    //delete and remove from ltc Map
+    delete ltcptr;
+    ltcptr = NULL;
     _paobject_ltc_map.erase(ltcId);
 }
 
@@ -10010,7 +10028,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(CtiMultiMsg_set &modif
 
        getPointDataHandler().getAllPointIds(pointList);
 
-       CtiCapController::getInstance()->getDispatchConnection()->addRegistrationForPoints(pointList);
+       CtiCapController::getInstance()->getDispatchConnection()->registerForPoints(pointList);
        //CtiCapController::getInstance()->sendMessageToDispatch(pointAddMsg);
    }
    catch(...)
@@ -10526,7 +10544,7 @@ void CtiCCSubstationBusStore::clearUnexpectedUnsolicitedList()
             {
                 removeFromUnexpectedUnsolicitedList(currentCapBank);
             }
-        }   
+        }
     }
 
 }
@@ -10792,6 +10810,12 @@ map <long, CtiCCSubstationBusPtr>* CtiCCSubstationBusStore::getPAOSubMap()
 {
     return &_paobject_subbus_map;
 }
+
+map <long, LoadTapChangerPtr>* CtiCCSubstationBusStore::getLtcMap()
+{
+    return &_paobject_ltc_map;
+}
+
 map <long, CtiCCAreaPtr>* CtiCCSubstationBusStore::getPAOAreaMap()
 {
     return &_paobject_area_map;
@@ -11959,7 +11983,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
         CtiCCArea* area = findAreaByPAObjectID(areaId);
         if (area != NULL && area->getStrategy()->getStrategyId() > 0)
         {
-            StrategyPtr currentCCStrategy = area->getStrategy();   
+            StrategyPtr currentCCStrategy = area->getStrategy();
 
             list <LONG>::const_iterator iter = area->getSubStationList()->begin();
             for ( ; iter != area->getSubStationList()->end(); ++iter)

@@ -2,30 +2,29 @@
 
 #include "DispatchConnection.h"
 #include "msg_ptreg.h"
+#include "collectable.h"
 
-#pragma optimize( "", off ) // Be careful with this, be sure ON is at the bottom of the file
-                            // and that all header files are before this!
 
 DispatchConnection::DispatchConnection() : _registered(false)
 {
 
 }
 
-DispatchConnection::DispatchConnection( const int &port, const string &host, Que_t *inQ, int tt) :
+DispatchConnection::DispatchConnection( const string& connectionName, const int &port, const string &host, Que_t *inQ, int tt) :
     CtiConnection(port,host,inQ,tt),
     _registered(false)
 {
-
+    Inherited::setName(connectionName);
 }
 
-void DispatchConnection::addRegistrationForPoint(int pointId)
+void DispatchConnection::registerForPoint(int pointId)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
     _addList.push_back(pointId);
 }
 
-void DispatchConnection::addRegistrationForPoints(const std::list<int>& pointIds)
+void DispatchConnection::registerForPoints(const std::list<int>& pointIds)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -36,14 +35,14 @@ void DispatchConnection::addRegistrationForPoints(const std::list<int>& pointIds
     return;
 }
 
-void DispatchConnection::removeRegistrationForPoint(int pointId)
+void DispatchConnection::unRegisterForPoint(int pointId)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
     _removeList.push_back(pointId);
 }
 
-void DispatchConnection::removeRegistrationForPoints(const std::list<int>& pointIds)
+void DispatchConnection::unRegisterForPoints(const std::list<int>& pointIds)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -51,6 +50,8 @@ void DispatchConnection::removeRegistrationForPoints(const std::list<int>& point
     {
         _removeList.push_back(pointId);
     }
+
+    return;
 }
 
 /**
@@ -78,6 +79,7 @@ void DispatchConnection::preWork()
         }
         _addList.clear();
 
+        //If REG_ADD_POINTS follow up with point request message
         WriteConnQue(msg);
     }
 
@@ -93,5 +95,3 @@ void DispatchConnection::preWork()
         WriteConnQue(msg);
     }
 }
-
-#pragma optimize( "", on )

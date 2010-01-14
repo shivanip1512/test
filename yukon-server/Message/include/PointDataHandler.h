@@ -11,7 +11,9 @@
 class IM_EX_MSG PointDataHandler
 {
     public:
-        PointDataHandler(PointDataListener* pointDataListener);
+        PointDataHandler();
+
+        void clear();
 
         bool addPoint(int pointId, int paoId);
         bool removePointOnPao(int pointId, int paoId);
@@ -24,7 +26,11 @@ class IM_EX_MSG PointDataHandler
         void getAllPointIds(std::list<int>& pointIds);
 
         void setPointDataListener(PointDataListener* pointDataListener);
+
     private:
+        virtual void registerForPoint(int pointId) = 0;
+        virtual void unRegisterForPoint(int pointId) = 0;
+
         //To find all paos that are connected to a point. Main map.
         typedef std::map<int,std::set<int> > PointIdMap;
         typedef std::map<int,std::set<int> >::iterator PointIdMapItr;
