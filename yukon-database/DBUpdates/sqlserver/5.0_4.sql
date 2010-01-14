@@ -61,3 +61,4 @@ WHERE ValidationMonitorName = 'Default All Meters';
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.0', 'Matt K', '13-JAN-2010', 'Latest Update', 4);
