@@ -41,6 +41,7 @@ $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib
 
 CAPCTRLTESTOBJS= \
+test_ControlStrategies.obj \
 test_ccsubstationbus.obj \
 test_ccFeeder.obj \
 test_likeDayControl.obj \
@@ -61,7 +62,18 @@ $(OBJ)\ccsubstationbusstore.obj \
 $(OBJ)\pao_schedule.obj \
 $(OBJ)\pao_event.obj \
 $(OBJ)\mgr_paosched.obj \
-$(OBJ)\ccstrategy.obj \
+$(OBJ)\ControlStrategies.obj \
+$(OBJ)\IVVCStrategy.obj \
+$(OBJ)\KVarStrategy.obj \
+$(OBJ)\MultiVoltStrategy.obj \
+$(OBJ)\MultiVoltVarStrategy.obj \
+$(OBJ)\NoStrategy.obj \
+$(OBJ)\PFactorKWKVarStrategy.obj \
+$(OBJ)\PFactorKWKQStrategy.obj \
+$(OBJ)\TimeOfDayStrategy.obj \
+$(OBJ)\VoltStrategy.obj \
+$(OBJ)\StrategyLoader.obj \
+$(OBJ)\StrategyManager.obj \
 $(OBJ)\ccmonitorpoint.obj \
 $(OBJ)\ccpointresponse.obj \
 $(OBJ)\cctwowaycbcpoints.obj \
@@ -133,12 +145,16 @@ test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		configval.h observe.h ccmonitorpoint.h msg_cmd.h ctidate.h \
 		ccoriginalparent.h cccapbank.h ccpointresponse.h \
 		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		msg_pcrequest.h ccstrategy.h regression.h ccsubstationbus.h \
-		ccsubstationbusstore.h ccarea.h ccsparea.h ccid.h ccstate.h \
-		ccmessage.h ccsubstation.h ccstatsobject.h LoadTapChanger.h \
+		msg_pcrequest.h ControlStrategies.h regression.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccsubstationbusstore.h \
+		ccarea.h ccsparea.h ccid.h ccstate.h ccmessage.h \
+		ccsubstation.h ccstatsobject.h LoadTapChanger.h \
 		LtcPointHolder.h PointOffsetValueHolder.h CapControlPao.h \
 		UpdatablePao.h PointDataHandler.h PointDataListener.h \
-		ccutil.h devicetypes.h ccUnitTestUtil.h
+		ccutil.h devicetypes.h StrategyManager.h StrategyLoader.h \
+		IVVCStrategy.h KVarStrategy.h MultiVoltStrategy.h \
+		MultiVoltVarStrategy.h NoStrategy.h PFactorKWKVarStrategy.h \
+		PFactorKWKQStrategy.h VoltStrategy.h ccUnitTestUtil.h
 test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -150,14 +166,19 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		configval.h observe.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h ccoriginalparent.h cccapbank.h ccpointresponse.h \
 		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		msg_pcrequest.h ccstrategy.h regression.h ccsubstation.h \
-		ccarea.h ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
+		msg_pcrequest.h ControlStrategies.h regression.h \
+		TimeOfDayStrategy.h ccsubstation.h ccarea.h \
+		ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
 		ccmessage.h ccstatsobject.h LoadTapChanger.h LtcPointHolder.h \
 		PointOffsetValueHolder.h CapControlPao.h UpdatablePao.h \
 		PointDataHandler.h PointDataListener.h ccutil.h devicetypes.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h mgr_paosched.h \
-		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
-		ccUnitTestUtil.h
+		StrategyManager.h StrategyLoader.h IVVCStrategy.h \
+		KVarStrategy.h MultiVoltStrategy.h MultiVoltVarStrategy.h \
+		NoStrategy.h PFactorKWKVarStrategy.h PFactorKWKQStrategy.h \
+		VoltStrategy.h ccexecutor.h msg_signal.h ctdpcptrq.h \
+		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
+		pao_event.h dbmemobject.h ccUnitTestUtil.h
+test_controlstrategies.obj:	ControlStrategies.h NoStrategy.h
 test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -169,12 +190,16 @@ test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		configval.h observe.h ccmonitorpoint.h msg_cmd.h ctidate.h \
 		ccoriginalparent.h cccapbank.h ccpointresponse.h \
 		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		msg_pcrequest.h ccstrategy.h regression.h ccsubstationbus.h \
-		ccUnitTestUtil.h ccsubstationbusstore.h ccarea.h ccsparea.h \
-		ccid.h ccstate.h ccmessage.h ccsubstation.h ccstatsobject.h \
-		LoadTapChanger.h LtcPointHolder.h PointOffsetValueHolder.h \
-		CapControlPao.h UpdatablePao.h PointDataHandler.h \
-		PointDataListener.h ccutil.h devicetypes.h
+		msg_pcrequest.h ControlStrategies.h regression.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccUnitTestUtil.h \
+		ccsubstationbusstore.h ccarea.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h ccsubstation.h ccstatsobject.h LoadTapChanger.h \
+		LtcPointHolder.h PointOffsetValueHolder.h CapControlPao.h \
+		UpdatablePao.h PointDataHandler.h PointDataListener.h \
+		ccutil.h devicetypes.h StrategyManager.h StrategyLoader.h \
+		IVVCStrategy.h KVarStrategy.h MultiVoltStrategy.h \
+		MultiVoltVarStrategy.h NoStrategy.h PFactorKWKVarStrategy.h \
+		PFactorKWKQStrategy.h VoltStrategy.h
 test_pointholder.obj:	yukon.h precompiled.h ctidbgmem.h \
 		PointOffsetValueHolder.h pointtypes.h msg_pdata.h dlldefs.h \
 		pointdefs.h message.h collectable.h rwutil.h ctitime.h \

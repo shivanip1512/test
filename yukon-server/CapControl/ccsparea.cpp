@@ -41,31 +41,8 @@ RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 CtiCCSpecial::CtiCCSpecial() :
 _paoid(0),              
 _disableflag(true),             
-_strategyId(0),               
 _voltReductionControlPointId(0),         
 _voltReductionControlValue(0),           
-_maxdailyoperation(0),                   
-_maxoperationdisableflag(false),            
-_peakstarttime(0),                 
-_peakstoptime(0),                 
-_controlinterval(0),              
-_maxconfirmtime(0),                
-_minconfirmpercent(0),                  
-_failurepercent(0),               
-_controldelaytime(0),             
-_controlsendretries(0),                  
-_peaklag(0),                  
-_offpklag(0),                 
-_peaklead(0),                
-_offpklead(0),            
-_peakVARlag(0),               
-_offpkVARlag(0),             
-_peakVARlead(0),              
-_offpkVARlead(0),              
-_peakPFSetPoint(0),               
-_offpkPFSetPoint(0),             
-_integrateflag(false),               
-_integrateperiod(0),            
 _pfactor(0),                 
 _estPfactor(0),             
 _ovUvDisabledFlag(false),            
@@ -195,36 +172,10 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
         _pfactor = right._pfactor;
         _estPfactor = right._estPfactor;
 
-        _strategyName            = right._strategyName;                       
-        _controlmethod           = right._controlmethod;                     
-        _maxdailyoperation       = right._maxdailyoperation;             
-        _maxoperationdisableflag = right._maxoperationdisableflag;
-        _peaklag                 = right._peaklag;                       
-        _offpklag                = right._offpklag;                   
-        _peaklead                = right._peaklead;
-        _offpklead               = right._offpklead;                   
-        _peakVARlag              = right._peakVARlag;                       
-        _offpkVARlag             = right._offpkVARlag;                   
-        _peakVARlead             = right._peakVARlead;                       
-        _offpkVARlead            = right._offpkVARlead;                   
-        _peakstarttime           = right._peakstarttime;                     
-        _peakstoptime            = right._peakstoptime;                       
-        _controlinterval         = right._controlinterval;                 
-        _maxconfirmtime          = right._maxconfirmtime;                   
-        _minconfirmpercent       = right._minconfirmpercent;             
-        _failurepercent          = right._failurepercent;                   
-        _daysofweek              = right._daysofweek;                           
-        _controlunits            = right._controlunits;                      
-        _controldelaytime        = right._controldelaytime;               
-        _controlsendretries      = right._controlsendretries;     
-        _integrateflag           = right._integrateflag;         
-        _integrateperiod         = right._integrateperiod;  
+        _strategy = right._strategy;
 
         _voltReductionControlPointId = right._voltReductionControlPointId;
         _voltReductionControlValue = right._voltReductionControlValue;
-
-
-
 
         _substationIds.clear();
         _substationIds.assign(right._substationIds.begin(), right._substationIds.end());
@@ -291,35 +242,6 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
         setVoltReductionControlValue(FALSE);
     }
 
-    setStrategyId(0);
-    setStrategyName("(none)");
-    setControlMethod("SubstationBus");
-    setMaxDailyOperation(0);
-    setMaxOperationDisableFlag(FALSE);
-    setPeakLag(0);
-    setOffPeakLag(0);
-    setPeakLead(0);
-    setOffPeakLead(0);
-    setPeakVARLag(0);
-    setOffPeakVARLag(0);
-    setPeakVARLead(0);
-    setOffPeakVARLead(0);
-    setPeakStartTime(0);
-    setPeakStopTime(0);
-    setControlInterval(0);
-    setMaxConfirmTime(0);
-    setMinConfirmPercent(0);
-    setFailurePercent(0);
-    setDaysOfWeek("NYYYYYNN");
-    setControlUnits("KVAR");
-    setControlDelayTime(0);
-    setControlSendRetries(0);
-
-    setPeakPFSetPoint(100);
-    setOffPeakPFSetPoint(100);
-    setIntegrateFlag(FALSE);
-    setIntegratePeriod(0);
-
     setPFactor(-1);
     setEstPFactor(-1);
 
@@ -328,6 +250,8 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
     _dirty = TRUE;
     _insertDynamicDataFlag = TRUE;
 
+    // NOTE: we are not restoring the strategy settings here.  this must be done on reload
+    // from the database.
 }
 
 
@@ -565,134 +489,6 @@ BOOL CtiCCSpecial::isDirty() const
     return _dirty;
 }
 
-const string& CtiCCSpecial::getStrategyName() const
-{
-    return _strategyName;
-}
-const string& CtiCCSpecial::getControlMethod() const
-{
-    return _controlmethod;
-}
-
-LONG CtiCCSpecial::getMaxDailyOperation() const
-{
-    return _maxdailyoperation;
-}
-
-BOOL CtiCCSpecial::getMaxOperationDisableFlag() const
-{
-    return _maxoperationdisableflag;
-}
-
-DOUBLE CtiCCSpecial::getPeakLag() const
-{
-    return _peaklag;
-}
-
-DOUBLE CtiCCSpecial::getOffPeakLag() const
-{
-    return _offpklag;
-}
-
-DOUBLE CtiCCSpecial::getPeakLead() const
-{
-    return _peaklead;
-}
-
-DOUBLE CtiCCSpecial::getOffPeakLead() const
-{
-    return _offpklead;
-}
-
-DOUBLE CtiCCSpecial::getPeakVARLag() const
-{
-    return _peakVARlag;
-}
-
-DOUBLE CtiCCSpecial::getOffPeakVARLag() const
-{
-    return _offpkVARlag;
-}
-
-DOUBLE CtiCCSpecial::getPeakVARLead() const
-{
-    return _peakVARlead;
-}
-
-DOUBLE CtiCCSpecial::getOffPeakVARLead() const
-{
-    return _offpkVARlead;
-}
-
-DOUBLE CtiCCSpecial::getPeakPFSetPoint() const
-{
-    return _peakPFSetPoint;
-}
-
-DOUBLE CtiCCSpecial::getOffPeakPFSetPoint() const
-{
-    return _offpkPFSetPoint;
-}
-
-LONG CtiCCSpecial::getPeakStartTime() const
-{
-    return _peakstarttime;
-}
-
-LONG CtiCCSpecial::getPeakStopTime() const
-{
-    return _peakstoptime;
-}
-
-LONG CtiCCSpecial::getControlInterval() const
-{
-    return _controlinterval;
-}
-
-LONG CtiCCSpecial::getMaxConfirmTime() const
-{
-    return _maxconfirmtime;
-}
-
-LONG CtiCCSpecial::getMinConfirmPercent() const
-{
-    return _minconfirmpercent;
-}
-
-LONG CtiCCSpecial::getFailurePercent() const
-{
-    return _failurepercent;
-}
-
-const string& CtiCCSpecial::getDaysOfWeek() const
-{
-    return _daysofweek;
-}
-
-const string& CtiCCSpecial::getControlUnits() const
-{
-    return _controlunits;
-}
-
-LONG CtiCCSpecial::getControlDelayTime() const
-{
-    return _controldelaytime;
-}
-
-LONG CtiCCSpecial::getControlSendRetries() const
-{
-    return _controlsendretries;
-}
-
-BOOL CtiCCSpecial::getIntegrateFlag() const
-{
-    return _integrateflag;
-}
-
-LONG CtiCCSpecial::getIntegratePeriod() const
-{
-    return _integrateperiod;
-}
 /*---------------------------------------------------------------------------
     getOvUvDisabledFlag
 
@@ -720,50 +516,6 @@ DOUBLE CtiCCSpecial::getPFactor() const
 DOUBLE CtiCCSpecial::getEstPFactor() const
 {
     return _estPfactor;
-}
-
-
-
-/*---------------------------------------------------------------------------
-    getStrategyId
-
-    Returns the strategy id of the area
----------------------------------------------------------------------------*/
-LONG CtiCCSpecial::getStrategyId() const
-{
-    return _strategyId;
-}
-
-
-void CtiCCSpecial::setStrategyValues(CtiCCStrategyPtr strategy)
-{
-    string tempBoolString;
-
-    _strategyName = strategy->getStrategyName();                      
-    _controlmethod = strategy->getControlMethod();                    
-    _maxdailyoperation = strategy->getMaxDailyOperation();            
-    _maxoperationdisableflag = strategy->getMaxOperationDisableFlag();
-    _peaklag = strategy->getPeakLag();                      
-    _offpklag = strategy->getOffPeakLag();                
-    _peaklead = strategy->getPeakLead();                      
-    _offpklead = strategy->getOffPeakLead();                
-    _peakVARlag = strategy->getPeakVARLag();                      
-    _offpkVARlag = strategy->getOffPeakVARLag();                
-    _peakVARlead = strategy->getPeakVARLead();                      
-    _offpkVARlead = strategy->getOffPeakVARLead();                
-    _peakstarttime = strategy->getPeakStartTime();                    
-    _peakstoptime = strategy->getPeakStopTime();                      
-    _controlinterval = strategy->getControlInterval();                
-    _maxconfirmtime = strategy->getMaxConfirmTime();                  
-    _minconfirmpercent = strategy->getMinConfirmPercent();            
-    _failurepercent = strategy->getFailurePercent();                  
-    _daysofweek = strategy->getDaysOfWeek();                          
-    _controlunits = strategy->getControlUnits();                      
-    _controldelaytime = strategy->getControlDelayTime();              
-    _controlsendretries = strategy->getControlSendRetries();  
-    _integrateflag = strategy->getIntegrateFlag();
-    _integrateperiod = strategy->getIntegratePeriod();
-
 }
 
 
@@ -905,162 +657,14 @@ CtiCCSpecial& CtiCCSpecial::setEstPFactor(DOUBLE estpfactor)
 }
 
 
-CtiCCSpecial& CtiCCSpecial::setStrategyId(LONG strategyId)
+void CtiCCSpecial::setStrategy(StrategyPtr strategy)
 {
-    _strategyId = strategyId;
-    return *this;
+    _strategy = strategy;
 }
 
-CtiCCSpecial& CtiCCSpecial::setStrategyName(const string& strategyName)
-{
-    _strategyName = strategyName;
-    return *this;
-}
 
-CtiCCSpecial& CtiCCSpecial::setControlMethod(const string& method)
+StrategyPtr CtiCCSpecial::getStrategy() const
 {
-    _controlmethod = method;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setMaxDailyOperation(LONG max)
-{
-    _maxdailyoperation = max;
-    return *this;
-
-}
-
-CtiCCSpecial& CtiCCSpecial::setMaxOperationDisableFlag(BOOL maxopdisable)
-{
-    _maxoperationdisableflag = maxopdisable;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setPeakLag(DOUBLE peak)
-{
-    _peaklag = peak;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setOffPeakLag(DOUBLE offpeak)
-{
-    _offpklag = offpeak;
-    return *this;
-}
-CtiCCSpecial& CtiCCSpecial::setPeakLead(DOUBLE peak)
-{
-    _peaklead = peak;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setOffPeakLead(DOUBLE offpeak)
-{
-    _offpklead = offpeak;
-    return *this;
-}
-CtiCCSpecial& CtiCCSpecial::setPeakVARLag(DOUBLE peak)
-{
-    _peakVARlag = peak;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setOffPeakVARLag(DOUBLE offpeak)
-{
-    _offpkVARlag = offpeak;
-    return *this;
-}
-CtiCCSpecial& CtiCCSpecial::setPeakVARLead(DOUBLE peak)
-{
-    _peakVARlead = peak;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setOffPeakVARLead(DOUBLE offpeak)
-{
-    _offpkVARlead = offpeak;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setPeakPFSetPoint(DOUBLE peak)
-{
-    _peakPFSetPoint = peak;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setOffPeakPFSetPoint(DOUBLE offpeak)
-{
-    _offpkPFSetPoint = offpeak;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setPeakStartTime(LONG starttime)
-{
-    _peakstarttime = starttime;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setPeakStopTime(LONG stoptime)
-{
-    _peakstoptime = stoptime;
-    return *this;
-}
-CtiCCSpecial& CtiCCSpecial::setControlInterval(LONG interval)
-{
-    _controlinterval = interval;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setMaxConfirmTime(LONG confirm)
-{   
-    _maxconfirmtime = confirm;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setMinConfirmPercent(LONG confirm)
-{
-    _minconfirmpercent = confirm;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setFailurePercent(LONG failure)
-{
-    _failurepercent = failure;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setDaysOfWeek(const string& days)
-{
-    _daysofweek = days;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setControlUnits(const string& contunit)
-{
-    _controlunits = contunit;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setControlDelayTime(LONG delay)
-{
-    _controldelaytime = delay;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setControlSendRetries(LONG retries)
-{
-    _controlsendretries = retries;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setIntegrateFlag(BOOL flag)
-{
-    _integrateflag = flag;
-    return *this;
-}
-
-CtiCCSpecial& CtiCCSpecial::setIntegratePeriod(LONG period)
-{
-    _integrateperiod = period;
-    return *this;
+    return _strategy;
 }
 

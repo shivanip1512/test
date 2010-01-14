@@ -35,7 +35,8 @@ using boost::shared_ptr;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ccstrategy.h"
+#include "ControlStrategies.h"
+#include "TimeOfDayStrategy.h"
 #include "ccmonitorpoint.h"
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
@@ -68,7 +69,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     CtiCCSubstationBus();
-    CtiCCSubstationBus(RWDBReader& rdr);
+    CtiCCSubstationBus(RWDBReader& rdr, StrategyPtr strategy);
     CtiCCSubstationBus(const CtiCCSubstationBus& bus);
 
     virtual ~CtiCCSubstationBus();
@@ -81,23 +82,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getParentId() const;
-    LONG getStrategyId() const;
-    const string& getControlMethod() const;
-    const string& getStrategyName() const;
-    LONG getMaxDailyOperation() const;
-    BOOL getMaxOperationDisableFlag() const;
-    DOUBLE getPeakLag() const;
-    DOUBLE getOffPeakLag() const;
-    DOUBLE getPeakLead() const;
-    DOUBLE getOffPeakLead() const;
-    DOUBLE getPeakVARLag() const;
-    DOUBLE getOffPeakVARLag() const;
-    DOUBLE getPeakVARLead() const;
-    DOUBLE getOffPeakVARLead() const;
-    DOUBLE getPeakPFSetPoint() const;
-    DOUBLE getOffPeakPFSetPoint() const;
-    LONG getPeakStartTime() const;
-    LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     DOUBLE getRawCurrentVarLoadPointValue() const;
@@ -106,15 +90,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getRawCurrentWattLoadPointValue() const;
     LONG getCurrentVoltLoadPointId() const;
     DOUBLE getCurrentVoltLoadPointValue() const;
-    LONG getControlInterval() const;
-    LONG getMaxConfirmTime() const;
-    LONG getMinConfirmPercent() const;
-    LONG getFailurePercent() const;
-    const string& getDaysOfWeek() const;
     const string& getMapLocationId() const;
-    const string& getControlUnits() const;
-    LONG getControlDelayTime() const;
-    LONG getControlSendRetries() const;
     LONG getDecimalPlaces() const;
     const CtiTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
@@ -175,10 +151,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const string& getParentControlUnits() const;
     const string& getParentName() const;
     LONG getDisplayOrder() const;
-    BOOL getIntegrateFlag() const;
-    LONG getIntegratePeriod() const;
-    BOOL getLikeDayFallBack() const;
-    const string& getEndDaySettings() const;
     DOUBLE getIVControlTot() const;
     LONG getIVCount() const;
     DOUBLE getIWControlTot() const;
@@ -204,7 +176,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const CtiRegression& getRegressionC();
 
     CtiFeeder_vec& getCCFeeders();
-    CtiTODC_SVector& CtiCCSubstationBus::getTODControls();
     void deleteCCFeeder(long feederId);
 
     CtiCCSubstationBus& setPAOId(LONG id);
@@ -215,38 +186,18 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPAODescription(const string& description);
     CtiCCSubstationBus& setDisableFlag(BOOL disable);
     CtiCCSubstationBus& setParentId(LONG parentId);
-    CtiCCSubstationBus& setStrategyId(LONG strategyId);
-    CtiCCSubstationBus& setStrategyName(const string& strategyName);
-    CtiCCSubstationBus& setControlMethod(const string& method);
-    CtiCCSubstationBus& setMaxDailyOperation(LONG max);
-    CtiCCSubstationBus& setMaxOperationDisableFlag(BOOL maxopdisable);
-    CtiCCSubstationBus& setPeakLag(DOUBLE peak);
-    CtiCCSubstationBus& setOffPeakLag(DOUBLE offpeak);
-    CtiCCSubstationBus& setPeakLead(DOUBLE peak);
-    CtiCCSubstationBus& setOffPeakLead(DOUBLE offpeak);
-    CtiCCSubstationBus& setPeakVARLag(DOUBLE peak);
-    CtiCCSubstationBus& setOffPeakVARLag(DOUBLE offpeak);
-    CtiCCSubstationBus& setPeakVARLead(DOUBLE peak);
-    CtiCCSubstationBus& setOffPeakVARLead(DOUBLE offpeak);
-    CtiCCSubstationBus& setPeakPFSetPoint(DOUBLE peak);
-    CtiCCSubstationBus& setOffPeakPFSetPoint(DOUBLE offpeak);
-    CtiCCSubstationBus& setPeakStartTime(LONG starttime);
-    CtiCCSubstationBus& setPeakStopTime(LONG stoptime);
+
+// OK!
+    LONG getControlSendRetries() const;
+
+
     CtiCCSubstationBus& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCSubstationBus& setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiTime timestamp);
     CtiCCSubstationBus& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCSubstationBus& setCurrentWattLoadPointValue(DOUBLE currentwattval);
     CtiCCSubstationBus& setCurrentVoltLoadPointId(LONG currentvoltid);
     CtiCCSubstationBus& setCurrentVoltLoadPointValue(DOUBLE currentvoltval);
-    CtiCCSubstationBus& setControlInterval(LONG interval);
-    CtiCCSubstationBus& setMaxConfirmTime(LONG confirm);
-    CtiCCSubstationBus& setMinConfirmPercent(LONG confirm);
-    CtiCCSubstationBus& setFailurePercent(LONG failure);
-    CtiCCSubstationBus& setDaysOfWeek(const string& days);
     CtiCCSubstationBus& setMapLocationId(const string& maplocation);
-    CtiCCSubstationBus& setControlUnits(const string& contunit);
-    CtiCCSubstationBus& setControlDelayTime(LONG delay);
-    CtiCCSubstationBus& setControlSendRetries(LONG retries);
     CtiCCSubstationBus& setDecimalPlaces(LONG places);
     CtiCCSubstationBus& figureNextCheckTime();
     CtiCCSubstationBus& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
@@ -303,10 +254,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setParentControlUnits(const string& parentControlUnits);
     CtiCCSubstationBus& setParentName(const string& parentName);
     CtiCCSubstationBus& setDisplayOrder(LONG displayOrder);
-    CtiCCSubstationBus& setIntegrateFlag(BOOL flag);
-    CtiCCSubstationBus& setIntegratePeriod(LONG period);
-    CtiCCSubstationBus& setLikeDayFallBack(BOOL flag);
-    CtiCCSubstationBus& setEndDaySettings(const string& settings);
     CtiCCSubstationBus& setIVControlTot(DOUBLE value);
     CtiCCSubstationBus& setIVCount(LONG value);
     CtiCCSubstationBus& setIWControlTot(DOUBLE value);
@@ -430,8 +377,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(RWDBReader& rdr);
-    void setStrategyValues(CtiCCStrategyPtr strategy);
-    void setTODControls(CtiCCStrategyPtr strategy);
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
@@ -464,11 +409,22 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static const string MultiVoltVarControlUnits;
     static const string PF_BY_KVARControlUnits;
     static const string PF_BY_KQControlUnits;
+    static const string TOD_ControlUnits;
+    static const string IVVC_ControlUnits;
     //static int PeakState;
     //static int OffPeakState;
 
 
-    private:
+    void setStrategy(StrategyPtr strategy);
+    StrategyPtr getStrategy() const;
+
+    bool isParentOverride() const;
+    void setParentOverride(const bool flag);
+
+private:
+
+    StrategyPtr     _strategy;
+    bool            _parentOverride;
 
     LONG _paoid;
     string _paocategory;
@@ -478,13 +434,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     string _paodescription;
     BOOL _disableflag;
     LONG _parentId;
-      LONG _strategyId;
-      string _strategyName;
-      string _controlmethod;
-      LONG _maxdailyoperation;
-      BOOL _maxoperationdisableflag;
-      LONG _peakstarttime;
-      LONG _peakstoptime;
     LONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;
     LONG _currentwattloadpointid;
@@ -499,26 +448,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL   _dualBusEnable;
     LONG   _eventSeq;
     BOOL   _multiMonitorFlag;
-
-      LONG _controlinterval;
-      LONG _maxconfirmtime;
-      LONG _minconfirmpercent;
-      LONG _failurepercent;
-      string _daysofweek;
-      string _maplocationid;
-      string _controlunits;
-      LONG _controldelaytime;
-      LONG _controlsendretries;
-      DOUBLE _peaklag;
-      DOUBLE _offpklag;
-      DOUBLE _peaklead;
-      DOUBLE _offpklead;
-      DOUBLE _peakVARlag;
-      DOUBLE _offpkVARlag;
-      DOUBLE _peakVARlead;
-      DOUBLE _offpkVARlead;
-      DOUBLE _peakpfsetpoint;
-      DOUBLE _offpkpfsetpoint;
+    string _maplocationid;
 
     LONG _decimalplaces;
     CtiTime _nextchecktime;
@@ -544,18 +474,14 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _currentwattpointquality;
     LONG _currentvoltpointquality;
     BOOL _waivecontrolflag;
-    BOOL _integrateflag;
-    LONG _integrateperiod;
-    BOOL _likedayfallback;
-    string _enddaysettings;
 
     string _additionalFlags;
     LONG _currentVerificationCapBankId;
     LONG _currentVerificationFeederId;
     std::vector <CtiCCFeeder*> _ccfeeders;
-    CtiTODC_SVector _todControls;
-    int _percentToClose;
 
+    int _percentToClose;
+    BOOL _likeDayControlFlag;
 
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
@@ -570,7 +496,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _maxDailyOpsHitFlag;
     BOOL _ovUvDisabledFlag;
     BOOL _correctionNeededNoBankAvailFlag;
-    BOOL _likeDayControlFlag;
     BOOL _voltReductionFlag;
     BOOL _sendMoreTimeControlledCommandsFlag;
 

@@ -33,7 +33,7 @@ using std::list;
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ccstrategy.h"
+#include "ControlStrategies.h"
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
               
@@ -60,34 +60,6 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     LONG getVoltReductionControlPointId() const;
     BOOL getVoltReductionControlValue() const;
 
-    LONG getStrategyId() const;
-    const string& getStrategyName() const;
-    const string& getControlMethod() const;
-    LONG getMaxDailyOperation() const;
-    BOOL getMaxOperationDisableFlag() const;
-    DOUBLE getPeakLag() const;
-    DOUBLE getOffPeakLag() const;
-    DOUBLE getPeakLead() const;
-    DOUBLE getOffPeakLead() const;
-    DOUBLE getPeakVARLag() const;
-    DOUBLE getOffPeakVARLag() const;
-    DOUBLE getPeakVARLead() const;
-    DOUBLE getOffPeakVARLead() const;
-    DOUBLE getPeakPFSetPoint() const;
-    DOUBLE getOffPeakPFSetPoint() const;
-    LONG getPeakStartTime() const;
-    LONG getPeakStopTime() const;
-    LONG getControlInterval() const;
-    LONG getMaxConfirmTime() const;
-    LONG getMinConfirmPercent() const;
-    LONG getFailurePercent() const;
-    const string& getDaysOfWeek() const;
-    const string& getControlUnits() const;
-    LONG getControlDelayTime() const;
-    LONG getControlSendRetries() const;
-    BOOL getIntegrateFlag() const;
-    LONG getIntegratePeriod() const;
-
     BOOL getOvUvDisabledFlag() const;
     DOUBLE getPFactor() const;
     DOUBLE getEstPFactor() const;
@@ -101,37 +73,10 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     CtiCCSpecial& setDisableFlag(BOOL disable);
     CtiCCSpecial& setVoltReductionControlPointId(LONG pointId);
     CtiCCSpecial& setVoltReductionControlValue(BOOL flag);
-    CtiCCSpecial& setStrategyId(LONG strategyId);
-    CtiCCSpecial& setStrategyName(const string& strategyname);
-    CtiCCSpecial& setControlMethod(const string& method);
-    CtiCCSpecial& setMaxDailyOperation(LONG max);
-    CtiCCSpecial& setMaxOperationDisableFlag(BOOL maxopdisable);
-    CtiCCSpecial& setPeakLag(DOUBLE peak);
-    CtiCCSpecial& setOffPeakLag(DOUBLE offpeak);
-    CtiCCSpecial& setPeakLead(DOUBLE peak);
-    CtiCCSpecial& setOffPeakLead(DOUBLE offpeak);
-    CtiCCSpecial& setPeakVARLag(DOUBLE peak);
-    CtiCCSpecial& setOffPeakVARLag(DOUBLE offpeak);
-    CtiCCSpecial& setPeakVARLead(DOUBLE peak);
-    CtiCCSpecial& setOffPeakVARLead(DOUBLE offpeak);
-    CtiCCSpecial& setPeakPFSetPoint(DOUBLE peak);
-    CtiCCSpecial& setOffPeakPFSetPoint(DOUBLE offpeak);
-    CtiCCSpecial& setPeakStartTime(LONG starttime);
-    CtiCCSpecial& setPeakStopTime(LONG stoptime);
-    CtiCCSpecial& setControlInterval(LONG interval);
-    CtiCCSpecial& setMaxConfirmTime(LONG confirm);
-    CtiCCSpecial& setMinConfirmPercent(LONG confirm);
-    CtiCCSpecial& setFailurePercent(LONG failure);
-    CtiCCSpecial& setDaysOfWeek(const string& days);
-    CtiCCSpecial& setControlUnits(const string& contunit);
-    CtiCCSpecial& setControlDelayTime(LONG delay);
-    CtiCCSpecial& setControlSendRetries(LONG retries);
-    CtiCCSpecial& setIntegrateFlag(BOOL flag);
-    CtiCCSpecial& setIntegratePeriod(LONG period);
+
     CtiCCSpecial& setOvUvDisabledFlag(BOOL flag);
     CtiCCSpecial& setPFactor(DOUBLE pfactor);
     CtiCCSpecial& setEstPFactor(DOUBLE estpfactor);
-    void setStrategyValues(CtiCCStrategyPtr strategy);
 
     list <LONG>* getSubstationIds() {return &_substationIds;};
     list <LONG>* getPointIds() {return &_pointIds;};
@@ -154,8 +99,12 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     CtiCCSpecial* replicate() const;
 
-    
-    private:
+    void setStrategy(StrategyPtr strategy);
+    StrategyPtr getStrategy() const;
+            
+private:
+
+    StrategyPtr    _strategy;
 
     LONG _paoid;
     string _paocategory;
@@ -164,35 +113,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     string _paotype;
     string _paodescription;
     BOOL _disableflag;
-    LONG _strategyId;
     LONG _voltReductionControlPointId;
     BOOL _voltReductionControlValue;
-    string _strategyName;
-    string _controlmethod;
-    LONG _maxdailyoperation;
-    BOOL _maxoperationdisableflag;
-    LONG _peakstarttime;
-    LONG _peakstoptime;
-    LONG _controlinterval;
-    LONG _maxconfirmtime;
-    LONG _minconfirmpercent;
-    LONG _failurepercent;
-    string _daysofweek;
-    string _controlunits;
-    LONG _controldelaytime;
-    LONG _controlsendretries;
-    DOUBLE _peaklag;
-    DOUBLE _offpklag;
-    DOUBLE _peaklead;
-    DOUBLE _offpklead;
-    DOUBLE _peakVARlag;
-    DOUBLE _offpkVARlag;
-    DOUBLE _peakVARlead;
-    DOUBLE _offpkVARlead;
-    DOUBLE _peakPFSetPoint;
-    DOUBLE _offpkPFSetPoint;
-    BOOL _integrateflag;
-    LONG _integrateperiod;
 
     DOUBLE _pfactor;
     DOUBLE _estPfactor;

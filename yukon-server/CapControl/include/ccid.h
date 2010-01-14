@@ -31,7 +31,7 @@ class CtiTime;
 #define CTICCCAPBANKMOVEMSG_ID      513
 #define CTICCSUBVERIFICATIONMSG_ID  514
 #define CTIPAOSCHEDULEMSG_ID        515
-#define CTICCSTRATEGY_ID            516
+//#define CTICCSTRATEGY_ID            516
 #define CTICCEVENTLOG_ID            517
 #define CTICCMONITORPOINT_ID        518
 #define CTICCPOINTRESPONSE_ID       519

@@ -36,7 +36,7 @@ using std::list;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ccstrategy.h"
+#include "ControlStrategies.h"
 #include "ccmonitorpoint.h"
 
 typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
@@ -62,38 +62,11 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     const string& getPAOType() const;
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
-    LONG getStrategyId() const;
     LONG getVoltReductionControlPointId() const;
     BOOL getVoltReductionControlValue() const;
     BOOL getOvUvDisabledFlag() const;
     BOOL getReEnableAreaFlag() const;
 
-    const string& getStrategyName() const;
-    const string& getControlMethod() const;
-    LONG getMaxDailyOperation() const;
-    BOOL getMaxOperationDisableFlag() const;
-    DOUBLE getPeakLag() const;
-    DOUBLE getOffPeakLag() const;
-    DOUBLE getPeakLead() const;
-    DOUBLE getOffPeakLead() const;
-    DOUBLE getPeakVARLag() const;
-    DOUBLE getOffPeakVARLag() const;
-    DOUBLE getPeakVARLead() const;
-    DOUBLE getOffPeakVARLead() const;
-    DOUBLE getPeakPFSetPoint() const;
-    DOUBLE getOffPeakPFSetPoint() const;
-    LONG getPeakStartTime() const;
-    LONG getPeakStopTime() const;
-    LONG getControlInterval() const;
-    LONG getMaxConfirmTime() const;
-    LONG getMinConfirmPercent() const;
-    LONG getFailurePercent() const;
-    const string& getDaysOfWeek() const;
-    const string& getControlUnits() const;
-    LONG getControlDelayTime() const;
-    LONG getControlSendRetries() const;
-    BOOL getIntegrateFlag() const;
-    LONG getIntegratePeriod() const;
     DOUBLE getPFactor() const;
     DOUBLE getEstPFactor() const;
     BOOL getChildVoltReductionFlag() const;
@@ -112,44 +85,16 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setPAOType(const string& type);
     CtiCCArea& setPAODescription(const string& description);
     CtiCCArea& setDisableFlag(BOOL disable);
-    CtiCCArea& setStrategyId(LONG strategyId);
     CtiCCArea& setVoltReductionControlPointId(LONG pointId);
     CtiCCArea& setVoltReductionControlValue(BOOL flag);
     CtiCCArea& setOvUvDisabledFlag(BOOL flag);
     CtiCCArea& setReEnableAreaFlag(BOOL flag);
 
-    CtiCCArea& setStrategyName(const string& strategyname);
-    CtiCCArea& setControlMethod(const string& method);
-    CtiCCArea& setMaxDailyOperation(LONG max);
-    CtiCCArea& setMaxOperationDisableFlag(BOOL maxopdisable);
-    CtiCCArea& setPeakLag(DOUBLE peak);
-    CtiCCArea& setOffPeakLag(DOUBLE offpeak);
-    CtiCCArea& setPeakLead(DOUBLE peak);
-    CtiCCArea& setOffPeakLead(DOUBLE offpeak);
-    CtiCCArea& setPeakVARLag(DOUBLE peak);
-    CtiCCArea& setOffPeakVARLag(DOUBLE offpeak);
-    CtiCCArea& setPeakVARLead(DOUBLE peak);
-    CtiCCArea& setOffPeakVARLead(DOUBLE offpeak);
-    CtiCCArea& setPeakPFSetPoint(DOUBLE peak);
-    CtiCCArea& setOffPeakPFSetPoint(DOUBLE offpeak);
-    CtiCCArea& setPeakStartTime(LONG starttime);
-    CtiCCArea& setPeakStopTime(LONG stoptime);
-    CtiCCArea& setControlInterval(LONG interval);
-    CtiCCArea& setMaxConfirmTime(LONG confirm);
-    CtiCCArea& setMinConfirmPercent(LONG confirm);
-    CtiCCArea& setFailurePercent(LONG failure);
-    CtiCCArea& setDaysOfWeek(const string& days);
-    CtiCCArea& setControlUnits(const string& contunit);
-    CtiCCArea& setControlDelayTime(LONG delay);
-    CtiCCArea& setControlSendRetries(LONG retries);
-    CtiCCArea& setIntegrateFlag(BOOL flag);
-    CtiCCArea& setIntegratePeriod(LONG period);
     CtiCCArea& setPFactor(DOUBLE pfactor);
     CtiCCArea& setEstPFactor(DOUBLE estPfactor);
     CtiCCArea& setChildVoltReductionFlag(BOOL flag);
     CtiCCArea& setAreaUpdatedFlag(BOOL flag);
 
-    void setStrategyValues(CtiCCStrategyPtr strategy);
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     CtiCCArea& checkAndUpdateChildVoltReductionFlags();
 
@@ -169,8 +114,12 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     CtiCCArea* replicate() const;
 
-    
-    private:
+    void setStrategy(StrategyPtr strategy);
+    StrategyPtr getStrategy() const;
+
+private:
+
+    StrategyPtr    _strategy;
 
     LONG _paoid;
     string _paocategory;
@@ -179,37 +128,9 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     string _paotype;
     string _paodescription;
     BOOL _disableflag;
-    LONG _strategyId;
 
     LONG _voltReductionControlPointId;
     BOOL _voltReductionControlValue;
-
-    string _strategyName;
-    string _controlmethod;
-    LONG _maxdailyoperation;
-    BOOL _maxoperationdisableflag;
-    LONG _peakstarttime;
-    LONG _peakstoptime;
-    LONG _controlinterval;
-    LONG _maxconfirmtime;
-    LONG _minconfirmpercent;
-    LONG _failurepercent;
-    string _daysofweek;
-    string _controlunits;
-    LONG _controldelaytime;
-    LONG _controlsendretries;
-    DOUBLE _peaklag;
-    DOUBLE _offpklag;
-    DOUBLE _peaklead;
-    DOUBLE _offpklead;
-    DOUBLE _peakVARlag;
-    DOUBLE _offpkVARlag;
-    DOUBLE _peakVARlead;
-    DOUBLE _offpkVARlead;
-    DOUBLE _peakPFSetPoint;
-    DOUBLE _offpkPFSetPoint;
-    BOOL _integrateflag;
-    LONG _integrateperiod;
 
     DOUBLE _pfactor;
     DOUBLE _estPfactor;

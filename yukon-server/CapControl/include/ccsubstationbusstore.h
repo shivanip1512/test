@@ -38,6 +38,9 @@
 #include "PointDataListener.h"
 #include "ccutil.h"
 
+#include "StrategyManager.h"
+
+
 
 using std::multimap;
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
@@ -183,7 +186,6 @@ public:
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
-    CtiCCStrategyPtr findStrategyByStrategyID(long strategy_id);
     LoadTapChangerPtr findLtcById(long ltcId);
 
     long findAreaIDbySubstationID(long substationId);
@@ -206,7 +208,6 @@ public:
     void deleteSubstation(long substationId);
     void deleteArea(long areaId);
     void deleteSpecialArea(long areaId);
-    void deleteStrategy(long strategyId);
     void deleteLtcById(long ltcId);
 
     void reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
@@ -221,12 +222,12 @@ public:
                                    map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                    map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                    multimap< long, CtiCCCapBankPtr > *pointid_capbank_map);
-    void reloadFeederFromDatabase(long feederId, map< long, CtiCCStrategyPtr > *strategy_map,
+    void reloadFeederFromDatabase(long feederId,
                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                   multimap< long, CtiCCFeederPtr > *pointid_feeder_map,
                                   map< long, long> *feeder_subbus_map);
-    void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map,
+    void reloadSubBusFromDatabase(long subBusId,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                   map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                   multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map,
@@ -240,16 +241,16 @@ public:
                                       map< long, long> *substation_area_map,
                                       map< long, long> *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
-    void reloadAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map,
+    void reloadAreaFromDatabase(long areaId,
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
                                   multimap< long, CtiCCAreaPtr > *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas);
-    void reloadSpecialAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map,
+    void reloadSpecialAreaFromDatabase(long areaId,
                                   map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
                                   multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
-    void reloadTimeOfDayStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
-    void reloadStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
+    void reloadTimeOfDayStrategyFromDatabase(long strategyId);
+    void reloadStrategyFromDatabase(long strategyId);
     void reloadMiscFromDatabase();
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,
                                       map< long, long> *controlid_action_map,
@@ -260,8 +261,8 @@ public:
                                                         map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                                         map< long, CtiCCAreaPtr > *paobject_area_map,
                                                         map< long, CtiCCSpecialPtr > *paobject_specialarea_map );
-    void reloadAndAssignHolidayStrategysFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
-    void reloadStrategyParametersFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
+    void reloadAndAssignHolidayStrategysFromDatabase(long strategyId);
+    void reloadStrategyParametersFromDatabase(long strategyId);
     void reloadLtcFromDatabase(long ltcId);
 
     void reCalculateOperationStatsFromDatabase( );
@@ -573,7 +574,7 @@ private:
     multimap< long, CtiCCFeederPtr > _pointid_feeder_map;
     multimap< long, CtiCCCapBankPtr > _pointid_capbank_map;
 
-    map< long, CtiCCStrategyPtr > _strategyid_strategy_map;
+    StrategyManager _strategyManager;
 
     map< long, long > _substation_specialarea_map;
     map< long, long > _substation_area_map;

@@ -33,7 +33,7 @@
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ccstrategy.h"
+#include "ControlStrategies.h"
 #include "sorted_vector.h"
 #include "regression.h"
 
@@ -104,41 +104,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getParentId() const;
-    LONG getStrategyId() const;
-    const string& getStrategyName() const;
-    const string& getControlMethod() const;
-    LONG getMaxDailyOperation() const;
-    BOOL getMaxOperationDisableFlag() const;
-    DOUBLE getPeakLag() const;
-    DOUBLE getOffPeakLag() const;
-    DOUBLE getPeakLead() const;
-    DOUBLE getOffPeakLead() const;
 
-    DOUBLE getPeakVARLag() const;
-    DOUBLE getOffPeakVARLag() const;
-    DOUBLE getPeakVARLead() const;
-    DOUBLE getOffPeakVARLead() const;
-    DOUBLE getPeakPFSetPoint() const;
-    DOUBLE getOffPeakPFSetPoint() const;
-
-
-    LONG getPeakStartTime() const;
-    LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
     LONG getCurrentVoltLoadPointId() const;
     DOUBLE getCurrentVoltLoadPointValue() const;
-    LONG getControlInterval() const;
-    LONG getMaxConfirmTime() const;
-    LONG getMinConfirmPercent() const;
-    LONG getFailurePercent() const;
-    const string& getDaysOfWeek() const;
     const string& getMapLocationId() const;
-    const string& getControlUnits() const;
-    LONG getControlDelayTime() const;
-    LONG getControlSendRetries() const;
     float getDisplayOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
     const CtiTime& getLastCurrentVarPointUpdateTime() const;
@@ -184,10 +157,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getCurrentVerificationCapBankOrigState() const;
     DOUBLE getTargetVarValue() const;
     const string& getSolution() const;
-    BOOL getIntegrateFlag() const;
-    LONG getIntegratePeriod() const;
-    BOOL getLikeDayFallBack() const;
-    const string& getEndDaySettings() const;
     DOUBLE getIVControlTot() const;
     LONG getIVCount() const;
     DOUBLE getIWControlTot() const;
@@ -225,40 +194,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPAODescription(const string& description);
     CtiCCFeeder& setDisableFlag(BOOL disable);
     CtiCCFeeder& setParentId(LONG parentId);
-    CtiCCFeeder& setStrategyId(LONG strategyId);
-    CtiCCFeeder& setStrategyName(const string& strategyName);
-    CtiCCFeeder& setControlMethod(const string& method);
-    CtiCCFeeder& setMaxDailyOperation(LONG max);
-    CtiCCFeeder& setMaxOperationDisableFlag(BOOL maxopdisable);
-    CtiCCFeeder& setPeakLag(DOUBLE peak);
-    CtiCCFeeder& setOffPeakLag(DOUBLE offpeak);
-    CtiCCFeeder& setPeakLead(DOUBLE peak);
-    CtiCCFeeder& setOffPeakLead(DOUBLE offpeak);
-
-    CtiCCFeeder& setPeakVARLag(DOUBLE peak);
-    CtiCCFeeder& setOffPeakVARLag(DOUBLE offpeak);
-    CtiCCFeeder& setPeakVARLead(DOUBLE peak);
-    CtiCCFeeder& setOffPeakVARLead(DOUBLE offpeak);
-    CtiCCFeeder& setPeakPFSetPoint(DOUBLE peak);
-    CtiCCFeeder& setOffPeakPFSetPoint(DOUBLE offpeak);
-
-    CtiCCFeeder& setPeakStartTime(LONG starttime);
-    CtiCCFeeder& setPeakStopTime(LONG stoptime);
     CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiTime timestamp);
     CtiCCFeeder& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
     CtiCCFeeder& setCurrentVoltLoadPointId(LONG currentvoltid);
     CtiCCFeeder& setCurrentVoltLoadPointValue(DOUBLE currentvoltval);
-    CtiCCFeeder& setControlInterval(LONG interval);
-    CtiCCFeeder& setMaxConfirmTime(LONG confirm);
-    CtiCCFeeder& setMinConfirmPercent(LONG confirm);
-    CtiCCFeeder& setFailurePercent(LONG failure);
-    CtiCCFeeder& setDaysOfWeek(const string& days);
     CtiCCFeeder& setMapLocationId(const string& maplocation);
-    CtiCCFeeder& setControlUnits(const string& contunit);
-    CtiCCFeeder& setControlDelayTime(LONG delay);
-    CtiCCFeeder& setControlSendRetries(LONG retries);
     CtiCCFeeder& setDisplayOrder(float order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
@@ -306,10 +248,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setTargetVarValue(DOUBLE value);
     CtiCCFeeder& setSolution(const string& text);
-    CtiCCFeeder& setIntegrateFlag(BOOL flag);
-    CtiCCFeeder& setIntegratePeriod(LONG period);
-    CtiCCFeeder& setLikeDayFallBack(BOOL flag);
-    CtiCCFeeder& setEndDaySettings(const string& settings);
     CtiCCFeeder& setIVControlTot(DOUBLE value);
     CtiCCFeeder& setIVCount(LONG value);
     CtiCCFeeder& setIWControlTot(DOUBLE value);
@@ -446,9 +384,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCFeeder* replicate() const;
 
-
     void setDynamicData(RWDBReader& rdr);
-    void setStrategyValues(CtiCCStrategyPtr strategy);
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
@@ -463,7 +399,12 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     string getQuestionablePhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
     string getFailedPhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
 
+    void setStrategy(StrategyPtr strategy);
+    StrategyPtr getStrategy() const;
+
 private:
+
+    StrategyPtr    _strategy;
 
     LONG _paoid;
     string _paocategory;
@@ -473,41 +414,15 @@ private:
     string _paodescription;
     BOOL _disableflag;
     LONG _parentId; //subBusId
-    LONG _strategyId;
     BOOL _multiMonitorFlag;
 
-    string _strategyName;
-    string _controlmethod;
-    LONG _maxdailyoperation;
-    BOOL _maxoperationdisableflag;
-    LONG _peakstarttime;
-    LONG _peakstoptime;
+    string _maplocationid;
     LONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;
     LONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
     LONG _currentvoltloadpointid;
     DOUBLE _currentvoltloadpointvalue;
-    LONG _controlinterval;
-    LONG _maxconfirmtime;
-    LONG _minconfirmpercent;
-    LONG _failurepercent;
-    string _daysofweek;
-    string _maplocationid;
-    string _controlunits;
-    LONG _controldelaytime;
-    LONG _controlsendretries;
-    DOUBLE _peaklag;
-    DOUBLE _offpklag;
-    DOUBLE _peaklead;
-    DOUBLE _offpklead;
-
-    DOUBLE _peakVARlag;
-    DOUBLE _offpkVARlag;
-    DOUBLE _peakVARlead;
-    DOUBLE _offpkVARlead;
-    DOUBLE _peakpfsetpoint;
-    DOUBLE _offpkpfsetpoint;
 
     float _displayorder;
 
@@ -532,10 +447,6 @@ private:
     LONG _currentwattpointquality;
     LONG _currentvoltpointquality;
     BOOL _waivecontrolflag;
-    BOOL _integrateflag;
-    LONG _integrateperiod;
-    BOOL _likedayfallback;
-    string _enddaysettings;
 
     string _parentControlUnits;
     string _parentName;

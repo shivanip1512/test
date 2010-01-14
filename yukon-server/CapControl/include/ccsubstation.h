@@ -36,7 +36,7 @@ using std::list;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ccstrategy.h"
+#include "ControlStrategies.h"
 #include "ccmonitorpoint.h"
 #include "ccsubstationbus.h"
 

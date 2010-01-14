@@ -648,7 +648,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Sub: "<<((CtiCCSubstationBus*)buses[h])->getPAOName()<<" "<<((CtiCCSubstationBus*)buses[h])->getCurrentVarLoadPointValue()<<" "<<((CtiCCSubstationBus*)buses[h])->getEstimatedVarLoadPointValue() <<" "<<
-                    ((CtiCCSubstationBus*)buses[h])->getPeakLead()<<" "<<((CtiCCSubstationBus*)buses[h])->getPeakLag()<< endl;
+                    ((CtiCCSubstationBus*)buses[h])->getStrategy()->getPeakLead()<<" "<<((CtiCCSubstationBus*)buses[h])->getStrategy()->getPeakLag()<< endl;
             }
             CtiFeeder_vec& feeds =   ((CtiCCSubstationBus*)buses[h])->getCCFeeders();
             for (int hh = 0; hh < feeds.size(); hh++)
@@ -656,7 +656,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " -    Feed: "<<((CtiCCFeeder*)feeds[hh])->getPAOName()<<" "<<((CtiCCFeeder*)feeds[hh])->getCurrentVarLoadPointValue()<<" "<<((CtiCCFeeder*)feeds[hh])->getEstimatedVarLoadPointValue() <<" " <<
-                        ((CtiCCFeeder*)feeds[hh])->getPeakLead()<<" "<<((CtiCCFeeder*)feeds[hh])->getPeakLag()<< endl;
+                        ((CtiCCFeeder*)feeds[hh])->getStrategy()->getPeakLead()<<" "<<((CtiCCFeeder*)feeds[hh])->getStrategy()->getPeakLag()<< endl;
                 }
 
                 CtiCCCapBank_SVector& caps =   ((CtiCCFeeder*)feeds[hh])->getCCCapBanks();

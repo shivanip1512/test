@@ -17,6 +17,11 @@
 
 #include "ccUnitTestUtil.h"
 
+#include "KVarStrategy.h"
+#include "PFactorKWKVarStrategy.h"
+#include "VoltStrategy.h"
+
+
 extern unsigned long _LIKEDAY_OVERRIDE_TIMEOUT;
 
 using boost::unit_test_framework::test_suite;
@@ -24,25 +29,30 @@ using namespace std;
 
 void initialize_feeder(CtiCCFeeder * feeder)
 {
-    feeder->setDisableFlag(false);
-    feeder->setControlMethod(CtiCCSubstationBus::IndividualFeederControlMethod);
-    feeder->setLikeDayControlFlag(false);
+    feeder->setDisableFlag(FALSE);
+    feeder->setLikeDayControlFlag(FALSE);
     feeder->setCurrentVarLoadPointId(1);
     feeder->setCurrentWattLoadPointId(1);
     feeder->setCurrentVoltLoadPointId(1);
-    feeder->setControlUnits(CtiCCSubstationBus::PF_BY_KVARControlUnits);
+
+    StrategyPtr strategy( new PFactorKWKVarStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+
+    feeder->setStrategy(strategy);
 }
 
 void initialize_subbus(CtiCCSubstationBus * subBus)
 {
-    subBus->setDisableFlag(false);
-    subBus->setBusUpdatedFlag(false);
-    subBus->setControlMethod(CtiCCSubstationBus::IndividualFeederControlMethod);
-    subBus->setLikeDayControlFlag(false);
+    subBus->setDisableFlag(FALSE);
+    subBus->setBusUpdatedFlag(FALSE);
+    subBus->setLikeDayControlFlag(FALSE);
     subBus->setCurrentVarLoadPointId(1);
     subBus->setCurrentWattLoadPointId(1);
     subBus->setCurrentVoltLoadPointId(1);
-    subBus->setControlUnits(CtiCCSubstationBus::PF_BY_KVARControlUnits);
+
+    StrategyPtr strategy( new PFactorKWKVarStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+    subBus->setStrategy(strategy);
 }
 
 BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
@@ -63,73 +73,102 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
     _LIKEDAY_OVERRIDE_TIMEOUT = 600;
 
     CtiTime timeNow  = CtiTime() - 700;//subtract a time period?
-    feeder1->setLikeDayControlFlag(false);
-    feeder1->setLikeDayFallBack(true);
+    feeder1->setLikeDayControlFlag(FALSE);
+    feeder1->getStrategy()->setLikeDayFallBack(true);
     feeder1->setLastVoltPointTime(timeNow);
     feeder1->setLastCurrentVarPointUpdateTime(timeNow);
     feeder1->setLastWattPointTime(timeNow);
 
+    // Subbus should be Volt strategy with IndividualFeeder control method.
+    StrategyPtr strategy( new VoltStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+    subbus->setStrategy(strategy);
+
     //This should have the feeder check return false,
     //and since it has not changed from false the update flags should be false
-    subbus->setControlUnits(CtiCCSubstationBus::VoltControlUnits);
-    feeder1->setStrategyName("(none)");
-    feeder1->setControlUnits(CtiCCSubstationBus::KVARControlUnits);
+    strategy.reset( new KVarStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+    strategy->setStrategyName("(none)");
+    strategy->setLikeDayFallBack(true);
+    feeder1->setStrategy(strategy);
+
     feeder1->setCurrentVoltLoadPointId(0);
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK_EQUAL(false,subbus->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(false,feeder1->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(false,subbus->getBusUpdatedFlag());
+    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(FALSE == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(FALSE == subbus->getBusUpdatedFlag());
 
-    feeder1->setStrategyName("(something)");//Makes the feeder controlunits be used
-    subbus->performDataOldAndFallBackNecessaryCheck();
-
-    BOOST_CHECK_EQUAL(false,subbus->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(true,feeder1->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(true,subbus->getBusUpdatedFlag());
-
-    subbus->setLikeDayControlFlag(false);
-    feeder1->setLikeDayControlFlag(false);
-    subbus->setBusUpdatedFlag(false);
-
-    feeder1->setControlUnits(CtiCCSubstationBus::VoltControlUnits);
+    feeder1->getStrategy()->setStrategyName("(something)");//Makes the feeder controlunits be used
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK_EQUAL(false,subbus->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(false,feeder1->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(false,subbus->getBusUpdatedFlag());
+    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
 
-    feeder1->setControlUnits(CtiCCSubstationBus::PF_BY_KVARControlUnits);
+    subbus->setLikeDayControlFlag(FALSE);
+    feeder1->setLikeDayControlFlag(FALSE);
+    subbus->setBusUpdatedFlag(FALSE);
+
+    strategy.reset( new VoltStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+    strategy->setStrategyName("(something)");
+    strategy->setLikeDayFallBack(true);
+    feeder1->setStrategy(strategy);
+
+    subbus->performDataOldAndFallBackNecessaryCheck();
+
+    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(FALSE == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(FALSE == subbus->getBusUpdatedFlag());
+
+    strategy.reset( new PFactorKWKVarStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+    strategy->setStrategyName("(something)");
+    strategy->setLikeDayFallBack(true);
+    feeder1->setStrategy(strategy);
+
     feeder1->setCurrentWattLoadPointId(0);
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK_EQUAL(false,subbus->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(false,feeder1->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(false,subbus->getBusUpdatedFlag());
+    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(FALSE == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(FALSE == subbus->getBusUpdatedFlag());
+
+    strategy.reset( new VoltStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+    strategy->setStrategyName("(something)");
+    strategy->setLikeDayFallBack(true);
+    feeder1->setStrategy(strategy);
 
     feeder1->setCurrentVoltLoadPointId(1);
-    feeder1->setControlUnits(CtiCCSubstationBus::VoltControlUnits);
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK_EQUAL(false,subbus->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(true,feeder1->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(true,subbus->getBusUpdatedFlag());
+    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
 
-    subbus->setBusUpdatedFlag(false);
-    subbus->setLikeDayControlFlag(false);
-    feeder1->setLikeDayControlFlag(false);
-    feeder1->setControlUnits(CtiCCSubstationBus::PF_BY_KVARControlUnits);
+    subbus->setBusUpdatedFlag(FALSE);
+    subbus->setLikeDayControlFlag(FALSE);
+    feeder1->setLikeDayControlFlag(FALSE);
+
+    strategy.reset( new PFactorKWKVarStrategy );
+    strategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+    strategy->setStrategyName("(something)");
+    strategy->setLikeDayFallBack(true);
+    feeder1->setStrategy(strategy);
+
     feeder1->setCurrentWattLoadPointId(1);
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK_EQUAL(false,subbus->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(true,feeder1->getLikeDayControlFlag());
-    BOOST_CHECK_EQUAL(true,subbus->getBusUpdatedFlag());
+    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
 
     delete subbus;
     subbus = NULL;
@@ -137,3 +176,4 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 }
 
 //Add tests for the other control methods
+

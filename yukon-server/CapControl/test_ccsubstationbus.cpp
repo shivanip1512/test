@@ -36,6 +36,8 @@
 #include "ccoriginalparent.h"
 #include "ccUnitTestUtil.h"
 
+#include "PFactorKWKVarStrategy.h"
+
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
@@ -76,6 +78,8 @@ void initialize_bus(CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, Cti
 }
 void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
 {
+    StrategyPtr noStrategy( new NoStrategy ); 
+
     long feederId = feed->getPAOId();
     long busId = parentBus->getPAOId();
     feed->setParentId(busId);
@@ -87,8 +91,9 @@ void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCS
     feed->setVerificationFlag(FALSE);
     feed->setPerformingVerificationFlag(FALSE);
     feed->setVerificationDoneFlag(FALSE);
-    feed->setStrategyName("(none)");
-    feed->setStrategyId(0);
+
+    feed->setStrategy(noStrategy);
+
     feed->setCurrentVarPointQuality(NormalQuality);
     feed->setWaitForReCloseDelayFlag(false);
 
@@ -120,6 +125,10 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     CtiCCSubstation *station = new CtiCCSubstation();
     CtiCCArea *area = new CtiCCArea();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(false);
+
+    StrategyPtr strategy( new NoStrategy );
+    bus->setStrategy( strategy );
+
     area->setPAOId(3);
     station->setPAOId(2);
     bus->setPAOId(1);
@@ -253,23 +262,22 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
 
-    CtiCCStrategy* strat = new CtiCCStrategy();
+    StrategyPtr strat( new PFactorKWKVarStrategy ); 
+
     strat->setStrategyId(100);
     strat->setStrategyName("StrategyIndvlFdr");
     strat->setControlInterval(0);
-    strat->setControlMethod(CtiCCSubstationBus::IndividualFeederControlMethod);
-    strat->setControlUnits (CtiCCSubstationBus::PF_BY_KVARControlUnits);
+    strat->setControlMethod(ControlStrategy::IndividualFeederControlMethod);
+    strat->setMaxConfirmTime(60);
+    strat->setMinConfirmPercent(75);
+    strat->setFailurePercent(25);
+    strat->setControlSendRetries(0);
     strat->setPeakLag(80);
     strat->setPeakLead(80);
     strat->setOffPeakLag(80);
     strat->setOffPeakLead(80);
     strat->setPeakPFSetPoint(100);
     strat->setOffPeakPFSetPoint(100);
-    strat->setMaxConfirmTime(60);
-    strat->setMinConfirmPercent(75);
-    strat->setFailurePercent(25);
-    strat->setControlSendRetries(0);
-    
 
     CtiCCSubstationBus *bus1 = create_object<CtiCCSubstationBus>(3, "SubBus-A1");
     CtiCCFeeder *feed11 = create_object<CtiCCFeeder>(11, "Feeder11");
@@ -300,8 +308,8 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     cap11b->setControlStatus(CtiCCCapBank::OpenQuestionable); 
     cap11c->setControlStatus(CtiCCCapBank::OpenFail); 
    
-    bus1->setStrategyId(strat->getStrategyId());
-    bus1->setStrategyValues(strat);
+    bus1->setStrategy(strat);
+
     feed11->setCurrentVarLoadPointId(1);
     feed11->setCurrentWattLoadPointId(1);
     feed11->setCurrentVarLoadPointValue(700, currentDateTime);
