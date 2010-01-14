@@ -29,12 +29,12 @@ public class MetaDataDatabaseVendorResolver implements DatabaseVendorResolver {
                 @Override
                 public Object processMetaData(DatabaseMetaData dbmd) throws SQLException, MetaDataAccessException {
                     String vendorName = dbmd.getDatabaseProductName();
+                    String productVersion = dbmd.getDatabaseProductVersion();
                     int databaseMajorVersion = dbmd.getDatabaseMajorVersion();
-                    int databaseMinorVersion = dbmd.getDatabaseMinorVersion();
                     
-                    return DatabaseVendor.getDatabaseVendor(vendorName, 
-                                                            databaseMajorVersion,
-                                                            databaseMinorVersion);
+                    return DatabaseVendor.getDatabaseVendor(vendorName,
+                                                            productVersion,
+                                                            databaseMajorVersion);
 
                 }
             });
