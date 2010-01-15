@@ -139,7 +139,7 @@
     
             <x:htmlTag value="br"/>
     
-            <x:htmlTag value="fieldset" styleClass="fieldSet">
+            <x:htmlTag value="fieldset" styleClass="fieldSet"  rendered="#{!capControlForm.timeOfDay}">
                 <x:htmlTag value="legend">
                     <x:outputText value="Strategy Operations" />
                 </x:htmlTag>

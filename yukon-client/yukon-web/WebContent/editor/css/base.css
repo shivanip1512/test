@@ -114,18 +114,22 @@ legend, .legendLikeLabel{
 	color: green;
 }
 
-.scrollerTable, .fullTable {
-    padding: 2px;
-    border: 1px solid gray;
-    width: 300px;
-}
-
 .fieldSet {
     padding: 2px;
     border: 1px solid #ccc;
 }
 
+.scrollerDiv {
+    float: left;
+}
+
+.scrollerPagingTable {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .dataCell {
+	border-collapse: collapse;
     vertical-align: top;
     width: 100%; /*  For FF and IE7  */
     width: expression(this.scrollHeight > 400 ? "94%" : "100%"); /*  For IE6  */
@@ -143,11 +147,34 @@ legend, .legendLikeLabel{
 	width: 100%;
 }
 
+.scrollerTable, .fullTable {
+    padding: 2px;
+    border: 1px solid gray;
+    width: 300px;
+}
+
 .bigScrollerTable {
 	padding: 2px;
-    border-style: solid;
-    border-width: 1px;
+    border: 1px solid gray;
+    border-collapse: collapse;
 	width: 100%;	
+}
+
+.scrollerTable td {
+    padding: 2px;
+}
+
+.bigScrollerTable td {
+    padding: 2px;
+}
+
+.dataCell td {
+    padding: 2px;
+}
+
+.scrollerButtons {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .scrollerCentered {
@@ -159,7 +186,6 @@ legend, .legendLikeLabel{
 }
 
 .scrollerTableHeader {
-    background-color: #E7EFF7;
     padding: 3px;
     text-align: center;
     border: none;
@@ -179,7 +205,11 @@ legend, .legendLikeLabel{
 }
 
 .altTableRow {
-	background-color: #eeeeee;
+    background-color: #ffffff;
+}
+
+.tableRow {
+    background-color: #eeeeee;
 }
 
 .gridColumn, .gridCell, .gridCellSmall, .gridCellMedium, .gridCellLarge {

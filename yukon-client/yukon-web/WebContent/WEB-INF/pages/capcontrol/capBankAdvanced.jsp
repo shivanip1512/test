@@ -14,97 +14,96 @@
         }
     </script>
 </f:verbatim>
-<f:subview id="paoCapBank"
-	rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
+
+<f:subview id="paoCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
 
 	<x:htmlTag value="fieldset" styleClass="fieldSet">
 		<x:htmlTag value="legend">
 			<x:outputText value="Point Assignment" />
 		</x:htmlTag>
-		<h:panelGrid id="cbBody" columns="2" styleClass="gridLayout"
-			rowClasses="gridCell" columnClasses="gridCell">
+        
+		<h:panelGrid id="cbBody" columns="2" styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell">
+        
 			<x:panelGroup>
-				<h:dataTable id="pointAvailData" var="point"
-					styleClass="scrollerTable" headerClass="scrollerTableHeader"
-					footerClass="scrollerTableHeader" rowClasses="tableRow,altTableRow"
-					value="#{capBankEditor.unassignedPoints}"
-					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered"
-					rows="25">
-					<h:column>
-						<f:facet name="header">
-						</f:facet>
-						<h:outputText value="#{point.pointId}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header">
-							<x:outputText value="Available Points" />
-						</f:facet>
-						<x:outputText value="#{point.pointName}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header">
-						</f:facet>
-						<x:commandLink value="Add >>"
-							action="#{capBankEditor.treeSwapAddAction}"
-							rendered="#{not empty capBankEditor.unassignedPoints && capControlForm.editingAuthorized}">
-							<f:param name="swapType" value="CapBankPoint" />
-							<f:param name="id" value="#{point.pointId}" />
-						</x:commandLink>
-					</h:column>
-
-				</h:dataTable>
-
-				<h:panelGrid columns="1" columnClasses="scrollerCentered">
-					<x:dataScroller id="scrollButtons" for="pointAvailData"
-						fastStep="25" pageCountVar="pageCount" pageIndexVar="pageIndex"
-						styleClass="scroller" paginator="true" paginatorMaxPages="9"
-						paginatorTableClass="paginator"
-						paginatorActiveColumnStyle="font-weight:bold;">
-						<f:facet name="first">
-							<x:graphicImage url="/WebContent/WebConfig/yukon/Icons/arrow_first.gif" border="1"
-								title="First page" />
-						</f:facet>
-						<f:facet name="last">
-							<x:graphicImage url="/WebContent/WebConfig/yukon/Icons/arrow_last.gif" border="1"
-								title="Last page" />
-						</f:facet>
-						<f:facet name="previous">
-							<x:graphicImage url="/WebContent/WebConfig/yukon/Icons/resultset_previous.gif"
-								border="1" title="Previous page" />
-						</f:facet>
-						<f:facet name="next">
-							<x:graphicImage url="/WebContent/WebConfig/yukon/Icons/resultset_next.gif" border="1"
-								title="Next page" />
-						</f:facet>
-						<f:facet name="fastforward">
-							<x:graphicImage url="/WebContent/WebConfig/yukon/Icons/arrow_fastforward.gif" border="1"
-								title="Next set of pages" />
-						</f:facet>
-						<f:facet name="fastrewind">
-							<x:graphicImage url="/WebContent/WebConfig/yukon/Icons/arrow_rewind.gif" border="1"
-								title="Previous set of pages" />
-						</f:facet>
-					</x:dataScroller>
-
-					<x:dataScroller id="scrollDisplay" for="pointAvailData"
-						rowsCountVar="rowsCount" styleClass="scroller"
-						displayedRowsCountVar="displayedRowsCountVar"
-						firstRowIndexVar="firstRowIndex" lastRowIndexVar="lastRowIndex"
-						pageCountVar="pageCount" pageIndexVar="pageIndex">
-						<h:outputFormat value="{0} points found">
-							<f:param value="#{rowsCount}" />
-						</h:outputFormat>
-						
-						<x:htmlTag value="br"/>
-						
-						<h:outputFormat value="Page {0} / {1}">
-							<f:param value="#{pageIndex}" />
-							<f:param value="#{pageCount}" />
-						</h:outputFormat>
-					</x:dataScroller>
-				</h:panelGrid>
+                <x:div styleClass="scrollerDiv">
+            		<h:dataTable id="pointAvailData" var="point" styleClass="scrollerTable" headerClass="scrollerTableHeader"
+    					footerClass="scrollerTableHeader" rowClasses="tableRow,altTableRow"
+    					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered"
+    					value="#{capBankEditor.unassignedPoints}" rows="25">
+    		
+            			<h:column>
+    						<f:facet name="header">
+    						</f:facet>
+    						<h:outputText value="#{point.pointId}" />
+    					</h:column>
+    
+    					<h:column>
+    						<f:facet name="header">
+    							<x:outputText value="Available Points" />
+    						</f:facet>
+    						<x:outputText value="#{point.pointName}" />
+    					</h:column>
+    
+    					<h:column>
+    						<f:facet name="header">
+    						</f:facet>
+    						<x:commandLink value="Add >>"
+    							action="#{capBankEditor.treeSwapAddAction}"
+    							rendered="#{not empty capBankEditor.unassignedPoints && capControlForm.editingAuthorized}">
+    							<f:param name="swapType" value="CapBankPoint" />
+    							<f:param name="id" value="#{point.pointId}" />
+    						</x:commandLink>
+    					</h:column>
+    
+    				</h:dataTable>
+    
+    				<h:panelGrid columns="1" columnClasses="scrollerCentered" styleClass="scrollerPagingTable">
+                    
+    					<x:dataScroller id="scrollButtons" for="pointAvailData"
+    						fastStep="25" pageCountVar="pageCount" pageIndexVar="pageIndex"
+    						styleClass="scrollerCentered" paginator="true" paginatorMaxPages="9"
+    						paginatorTableClass="paginator"
+    						paginatorActiveColumnStyle="font-weight:bold;">
+                            
+    						<f:facet name="first">
+    							<x:graphicImage url="/WebConfig/yukon/Icons/arrow_first.gif" title="First page" />
+    						</f:facet>
+    						<f:facet name="last">
+    							<x:graphicImage url="/WebConfig/yukon/Icons/arrow_last.gif" title="Last page" />
+    						</f:facet>
+    						<f:facet name="previous">
+    							<x:graphicImage url="/WebConfig/yukon/Icons/resultset_previous.gif" title="Previous page" />
+    						</f:facet>
+    						<f:facet name="next">
+    							<x:graphicImage url="/WebConfig/yukon/Icons/resultset_next.gif" title="Next page" />
+    						</f:facet>
+    						<f:facet name="fastforward">
+    							<x:graphicImage url="/WebConfig/yukon/Icons/arrow_fastforward.gif" title="Next set of pages" />
+    						</f:facet>
+    						<f:facet name="fastrewind">
+    							<x:graphicImage url="/WebConfig/yukon/Icons/arrow_rewind.gif" title="Previous set of pages" />
+    						</f:facet>
+                            
+    					</x:dataScroller>
+    
+    					<x:dataScroller id="scrollDisplay" for="pointAvailData"
+    						rowsCountVar="rowsCount" styleClass="scroller"
+    						displayedRowsCountVar="displayedRowsCountVar"
+    						firstRowIndexVar="firstRowIndex" lastRowIndexVar="lastRowIndex"
+    						pageCountVar="pageCount" pageIndexVar="pageIndex">
+    						<h:outputFormat value="{0} points found">
+    							<f:param value="#{rowsCount}" />
+    						</h:outputFormat>
+    						
+    						<x:htmlTag value="br"/>
+    						
+    						<h:outputFormat value="Page {0} / {1}">
+    							<f:param value="#{pageIndex}" />
+    							<f:param value="#{pageCount}" />
+    						</h:outputFormat>
+    					</x:dataScroller>
+    				</h:panelGrid>
+                </x:div>
 			</x:panelGroup>
 
 			<x:panelGroup>

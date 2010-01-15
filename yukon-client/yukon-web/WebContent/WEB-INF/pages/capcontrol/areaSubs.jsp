@@ -14,6 +14,7 @@
 	                    headerClass="scrollerTableHeader"
 	                    footerClass="scrollerTableHeader"
 	                    rowClasses="tableRow,altTableRow"
+                        columnClasses="scrollerLeft,scrollerLeft,scrollerCentered"
 	                    value="#{capControlForm.dataModel.unassigned}">
 	                
 	                    <h:column>
