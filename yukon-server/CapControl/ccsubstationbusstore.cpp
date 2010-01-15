@@ -4414,7 +4414,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                                    currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
                                                    if (currentStation != NULL)
                                                    {
-                                                       StrategyPtr currentCCStrategy;
+                                                       StrategyPtr currentCCStrategy = _strategyManager.get(0);
 
                                                        if (currentStation->getSaEnabledFlag())
                                                        {
@@ -6277,7 +6277,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                           currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
                                           if (currentStation != NULL)
                                           {
-                                              StrategyPtr currentCCStrategy;
+                                              StrategyPtr currentCCStrategy = _strategyManager.get(0);
 
                                               if (currentStation->getSaEnabledFlag())
                                               {
@@ -6387,7 +6387,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                          currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
                                          if (currentStation != NULL)
                                          {
-                                             StrategyPtr currentCCStrategy;
+                                             StrategyPtr currentCCStrategy = _strategyManager.get(0);
 
                                              if (currentStation->getSaEnabledFlag())
                                              {
