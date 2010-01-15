@@ -1187,7 +1187,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                             if( ccEvents.size() > 0)
                             {
 
-                                CtiMultiMsg *ccEventMsg;
+                                CtiMultiMsg *ccEventMsg = new CtiMultiMsg();
                                 ccEventMsg->setData(ccEvents);
                                 _ccEventMsgQueue.write(ccEventMsg);
                                 processCCEventMsgs();
@@ -1268,7 +1268,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                     {
                         if( ccEvents.size() > 0)
                         {
-                            CtiMultiMsg *ccEventMsg;
+                            CtiMultiMsg *ccEventMsg = new CtiMultiMsg();
                             ccEventMsg->setData(ccEvents);
                             _ccEventMsgQueue.write(ccEventMsg);
                             processCCEventMsgs();
