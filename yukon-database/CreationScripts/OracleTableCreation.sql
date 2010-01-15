@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/20/2009 9:38:56 PM                        */
+/* Created on:     1/15/2010 4:36:06 PM                         */
 /*==============================================================*/
 
 
@@ -9532,16 +9532,17 @@ INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','
 INSERT INTO YukonRoleProperty VALUES(-20899,-201,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
 
 /* Operator Hardware Inventory Role Properties */
-insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
-insert into YukonRoleProperty values(-20901,-209,'Add SN Range','true','Controls whether to allow adding hardware by serial number range');
-insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Controls whether to allow updating hardware by serial number range');
-insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardware by serial number range');
-insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardware by serial number range');
-insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
-insert into YukonRoleProperty values(-20906,-209,'Expresscom Restore First','false','Controls whether an opt out command should also contain a restore');
-insert into YukonRoleProperty values(-20907,-209,'Allow Designation Codes','false','Toggles on or off the ability utilize service company zip codes.');
-insert into YukonRoleProperty values(-20908,-209,'Multiple Warehouses','false','Allows for inventory to be assigned to multiple user-created warehouses instead of a single generic warehouse.');
-insert into YukonRoleProperty values(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.'); 
+INSERT INTO YukonRoleProperty VALUES(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
+INSERT INTO YukonRoleProperty VALUES(-20901,-209,'Add SN Range','true','Controls whether to allow adding hardware by serial number range');
+INSERT INTO YukonRoleProperty VALUES(-20902,-209,'Update SN Range','true','Controls whether to allow updating hardware by serial number range');
+INSERT INTO YukonRoleProperty VALUES(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardware by serial number range');
+INSERT INTO YukonRoleProperty VALUES(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardware by serial number range');
+INSERT INTO YukonRoleProperty VALUES(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
+INSERT INTO YukonRoleProperty VALUES(-20906,-209,'Expresscom Restore First','false','Controls whether an opt out command should also contain a restore');
+INSERT INTO YukonRoleProperty VALUES(-20907,-209,'Allow Designation Codes','false','Toggles on or off the ability utilize service company zip codes.');
+INSERT INTO YukonRoleProperty VALUES(-20908,-209,'Multiple Warehouses','false','Allows for inventory to be assigned to multiple user-created warehouses instead of a single generic warehouse.');
+INSERT INTO YukonRoleProperty VALUES(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.'); 
+INSERT INTO YukonRoleProperty VALUES(-20910,-209,'Device Reconfiguration','false','Access to Device Reconfiguration Tool'); 
 
 /* operator work order management role properties */
 insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
