@@ -233,7 +233,6 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
 
                         /***** FALL THROUGH ** FALL THROUGH *****/
                     }
-                case TYPE_CCU721:
                 case TYPE_CCU711:
                     {
                         /* check if queing is allowed */
@@ -277,6 +276,29 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
                             /* Load up the B word stuff */
                             NewOutMessage->Buffer.BSt = BSt;
                         }
+
+                        break;
+                    }
+                case TYPE_CCU721:
+                    {
+                        /* check if queing is allowed */
+                        if(NoQueingVersacom)
+                        {
+                            NewOutMessage->EventCode &= ~QUEUED;
+                            NewOutMessage->EventCode |= (DTRAN | BWORD);
+                        }
+                        else
+                        {
+                            NewOutMessage->EventCode |= BWORD;
+                        }
+
+                        /* Load up the B word stuff */
+                        NewOutMessage->Buffer.BSt = BSt;
+
+                        //  retries are handled internally by the CCU-721
+                        NewOutMessage->Retry = 0;
+
+                        //  message gets built up inside the CCU code directly instead of here in the route
 
                         break;
                     }
@@ -611,7 +633,6 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
 
                         /***** FALL THROUGH ** FALL THROUGH *****/
                     }
-                case TYPE_CCU721:
                 case TYPE_CCU711:
                     {
                         /* check if queing is allowed */
@@ -655,6 +676,29 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                             /* Load up the B word stuff */
                             NewOutMessage->Buffer.BSt = BSt;
                         }
+
+                        break;
+                    }
+                case TYPE_CCU721:
+                    {
+                        /* check if queing is allowed */
+                        if(NoQueingExpresscom)
+                        {
+                            NewOutMessage->EventCode &= ~QUEUED;
+                            NewOutMessage->EventCode |= (DTRAN | BWORD);
+                        }
+                        else
+                        {
+                            NewOutMessage->EventCode |= BWORD;
+                        }
+
+                        /* Load up the B word stuff */
+                        NewOutMessage->Buffer.BSt = BSt;
+
+                        //  retries are handled internally by the CCU-721
+                        NewOutMessage->Retry = 0;
+
+                        //  message gets built up inside the CCU code directly instead of here in the route
 
                         break;
                     }
@@ -731,7 +775,6 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
 
                             /***** FALL THROUGH ** FALL THROUGH *****/
                         }
-                    case TYPE_CCU721:
                     case TYPE_CCU711:
                         {
                             /* check if queing is allowed */
@@ -775,6 +818,29 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                                 /* Load up the B word stuff */
                                 NewOutMessage->Buffer.BSt = BSt;
                             }
+
+                            break;
+                        }
+                    case TYPE_CCU721:
+                        {
+                            /* check if queing is allowed */
+                            if(NoQueingExpresscom)
+                            {
+                                NewOutMessage->EventCode &= ~QUEUED;
+                                NewOutMessage->EventCode |= (DTRAN | BWORD);
+                            }
+                            else
+                            {
+                                NewOutMessage->EventCode |= BWORD;
+                            }
+
+                            /* Load up the B word stuff */
+                            NewOutMessage->Buffer.BSt = BSt;
+
+                            //  retries are handled internally by the CCU-721
+                            NewOutMessage->Retry = 0;
+
+                            //  message gets built up inside the CCU code directly instead of here in the route
 
                             break;
                         }
