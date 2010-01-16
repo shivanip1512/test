@@ -52,7 +52,8 @@ _dirty(false)
 {
 }
 
-CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr)
+CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr, StrategyPtr strategy)
+    :_strategy(strategy)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
@@ -249,9 +250,6 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
 
     _dirty = TRUE;
     _insertDynamicDataFlag = TRUE;
-
-    // NOTE: we are not restoring the strategy settings here.  this must be done on reload
-    // from the database.
 }
 
 

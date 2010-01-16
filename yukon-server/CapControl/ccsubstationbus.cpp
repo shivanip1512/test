@@ -480,13 +480,13 @@ LONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
 DOUBLE CtiCCSubstationBus::getCurrentVarLoadPointValue() const
 {
     if ((_dualBusEnable && _switchOverStatus) &&
-        !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+        !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) )
     {
         return _altSubControlValue;
     }
     if(getPrimaryBusFlag() &&
-       !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
-       !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits))
+       !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+       !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
     {
         return _altSubVarVal;
     }
@@ -518,8 +518,8 @@ DOUBLE CtiCCSubstationBus::getCurrentWattLoadPointValue() const
 {
     if ((_dualBusEnable && _switchOverStatus) || getPrimaryBusFlag())
     {
-        if(!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
-        !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits))
+        if(!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+        !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
         {
             return _altSubWattVal;
         }
@@ -552,7 +552,7 @@ DOUBLE CtiCCSubstationBus::getCurrentVoltLoadPointValue() const
 {
     if (_dualBusEnable && _switchOverStatus)
     {
-        if(!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+        if(!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) )
         {
             return _altSubControlValue;
         }
@@ -1631,7 +1631,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     {
         _nextchecktime = CtiTime(currenttime.seconds() + 60);
     }
-    else if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
+    else if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
     {
         if (getSendMoreTimeControlledCommandsFlag())
         {
@@ -1655,9 +1655,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     }
     else if( _strategy->getControlInterval() != 0 )
     {
-        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::MultiVoltControlUnits))
+        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltControlUnit))
         {
-            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod))
+            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod))
             {
                 for (LONG i = 0; i < _ccfeeders.size(); i++)
                 {
@@ -1705,7 +1705,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     else
     {
         _nextchecktime = currenttime;
-        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod))
+        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod))
         {
             for (LONG i = 0; i < _ccfeeders.size(); i++)
             {
@@ -1728,8 +1728,8 @@ DOUBLE CtiCCSubstationBus::getSetPoint()
     DOUBLE lagLevel = (getPeakTimeFlag()?_strategy->getPeakLag():_strategy->getOffPeakLag());
     DOUBLE leadLevel = (getPeakTimeFlag()?_strategy->getPeakLead():_strategy->getOffPeakLead());
     DOUBLE setPoint = ((lagLevel + leadLevel)/2);
-    if (!stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-        !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::PF_BY_KQControlUnits ))
+    if (!stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::PFactorKWKVarControlUnit) ||
+        !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::PFactorKWKQControlUnit ))
     {
         setPoint = (getPeakTimeFlag()?_strategy->getPeakPFSetPoint():_strategy->getOffPeakPFSetPoint());
     }
@@ -2065,8 +2065,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
     _varvaluebeforecontrol = oldvarval;
 
     if (getPrimaryBusFlag() && 
-       (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
-       !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ))
+       (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+       !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ))
     {
         setPhaseAValueBeforeControl(oldvarval / 3 );
         setPhaseBValueBeforeControl(oldvarval / 3 );
@@ -2569,7 +2569,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
             BOOL peakFlag = isPeakTime(currentDateTime);
 
-            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) &&
+            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) &&
                  stringCompareIgnoreCase(currentFeeder->getStrategy()->getStrategyName(),"(none)") &&
                 (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0))
             {
@@ -2582,7 +2582,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         }
         if( currentDateTime.seconds() >= getLastOperationTime().seconds() + _strategy->getControlDelayTime() )
         {
-            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
             {
                 for(LONG i=0;i<_ccfeeders.size();i++)
                 {
@@ -2602,7 +2602,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                     }
                 }
             }
-            else if( stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
+            else if( stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )//intentionally left the ! off
             {
                 DOUBLE lagLevel = (isPeakTime(currentDateTime)?_strategy->getPeakLag():_strategy->getOffPeakLag());
                 DOUBLE leadLevel = (getPeakTimeFlag()?_strategy->getPeakLead():_strategy->getOffPeakLead());
@@ -2610,7 +2610,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
 
                 setIWControl(getCurrentWattLoadPointValue());
 
-                if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
+                if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit))
                     setIVControl(getCurrentVoltLoadPointValue());
                 else
                     setIVControl(getCurrentVarLoadPointValue());
@@ -2630,7 +2630,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                                 getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
                     }
                     //resetting integration total...
-                    if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
+                    if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit))
                         setIVControlTot(getCurrentVoltLoadPointValue());
                     else
                         setIVControlTot(getCurrentVarLoadPointValue());
@@ -2640,8 +2640,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 }
 
 
-                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-                   !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                   !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                     setPoint = (getPeakTimeFlag()?_strategy->getPeakPFSetPoint():_strategy->getOffPeakPFSetPoint());
                 setKVARSolution(calculateKVARSolution(_strategy->getControlUnits(),setPoint, getIVControl(), getIWControl()));
                 setTargetVarValue( getKVARSolution() + getIVControl());
@@ -2652,18 +2652,18 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                       getCurrentWattPointQuality() == NormalQuality ||
                       getCurrentVoltPointQuality() == NormalQuality ) )
                 {
-                    if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                    if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                     {
 
                         if( (!_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality) &&
                              getIVControl() > lagLevel ||
                              getIVControl() < leadLevel )
                         {
-                            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) )
+                            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
                             {
                                 regularSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
-                            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
@@ -2685,13 +2685,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                             setSolution("Not Normal Quality.  Var Control Inhibited.");
                         }
                     }
-                    else if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+                    else if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) )
                     {
                         if( (!_IGNORE_NOT_NORMAL_FLAG || getCurrentVoltPointQuality() == NormalQuality) &&
                             (getCurrentVoltLoadPointValue() < lagLevel ||
                             getCurrentVoltLoadPointValue() > leadLevel) )
                         {
-                            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) )
+                            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
                             {
                                 if ((!_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality) &&
                                     getCurrentVarLoadPointId() > 0)
@@ -2702,7 +2702,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                                     dout << CtiTime() << " - Substation Volt Control requires Var PointID.  Var PointID not found in sub bus: " << getPAOName() << endl;
                                 }
                             }
-                            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
@@ -2724,17 +2724,17 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                             setSolution("Not Normal Quality.  Volt Control Inhibited.");
                         }
                     }
-                    else if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-                             !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                    else if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                             !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
                     {
                         if (!_IGNORE_NOT_NORMAL_FLAG ||
                             (getCurrentVarPointQuality() == NormalQuality && getCurrentWattPointQuality() == NormalQuality) )
                         {
-                            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) )
+                            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
                             {
                                 regularSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
-                            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, ccEvents, pilMessages);
                             }
@@ -2789,12 +2789,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
 DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue)
 {
     DOUBLE returnKVARSolution = 0.0;
-    if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::KVARControlUnits) )
+    if( !stringCompareIgnoreCase(controlUnits,ControlStrategy::KVarControlUnit) )
     {
         returnKVARSolution = setPoint - varValue;
     }
-    else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-             !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits))
+    else if( !stringCompareIgnoreCase(controlUnits,ControlStrategy::PFactorKWKVarControlUnit) ||
+             !stringCompareIgnoreCase(controlUnits,ControlStrategy::PFactorKWKQControlUnit))
     {
         DOUBLE targetKVAR = 0.0;
         if (setPoint != 0)
@@ -2814,7 +2814,7 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
         returnKVARSolution = targetKVAR - varValue;
 
     }
-    else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::VoltControlUnits) )
+    else if( !stringCompareIgnoreCase(controlUnits,ControlStrategy::VoltsControlUnit) )
     {
         returnKVARSolution = 0;
     }
@@ -2830,7 +2830,7 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
 void CtiCCSubstationBus::figureAndSetTargetVarValue()
 {
     setKVARSolution(calculateKVARSolution(_strategy->getControlUnits(),getSetPoint(), getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
-    if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+    if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) )
     {
         setTargetVarValue( getKVARSolution() + getCurrentVoltLoadPointValue());
     }
@@ -2854,17 +2854,17 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
         CtiCCFeeder* currentFeeder = NULL;
         LONG currentPosition = getLastFeederControlledPosition();
         LONG iterations = 0;
-        if( ( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) && getCurrentVarLoadPointId() > 0 ) ||
-            ( !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) && getCurrentVoltLoadPointId() > 0 ) )
+        if( ( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) && getCurrentVarLoadPointId() > 0 ) ||
+            ( !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) && getCurrentVoltLoadPointId() > 0 ) )
         {
             if( !(getMaxDailyOpsHitFlag() && _strategy->getMaxOperationDisableFlag()) &&//end day on a trip.
-                ( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) &&
+                ( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) &&
                 lagLevel <  getIVControl() ) ||
-                ( !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) &&
+                ( !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) &&
                 lagLevel >  getIVControl() ) )
             {
                 //if( _CC_DEBUG )
-                if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName() << endl;
@@ -2895,7 +2895,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                     }
                     iterations++;
                 }
@@ -2921,7 +2921,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         }
                         else
                         {
-                            DOUBLE controlValue = ( !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getIVControl());
+                            DOUBLE controlValue = ( !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getIVControl());
                             string text = currentFeeder->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Close, controlValue,  getCurrentVarLoadPointValue()) ;
 
                             request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue(),
@@ -2932,7 +2932,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                 if( request == NULL )
                 {
-                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                         createCannotControlBankText("Decrease Var", "Close", ccEvents);
                     else
                         createCannotControlBankText("Increase Volt", "Close", ccEvents);
@@ -2943,12 +2943,12 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                 }
             }
-            else if (( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) &&
+            else if (( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) &&
                       getIVControl() < leadLevel ) ||
-                    ( !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) &&
+                    ( !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) &&
                       getIVControl() > leadLevel )) // lead Level is greater than currentVarPointValue
             {
-                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().c_str() << endl;
@@ -2980,7 +2980,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                     }
                     iterations++;
                 }
@@ -2990,7 +2990,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                     if (!currentFeeder->getDisableFlag())
                     {
-                        DOUBLE controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getIVControl());
+                        DOUBLE controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getIVControl());
                         string text = currentFeeder->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue()) ;
                         request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                     }
@@ -2998,7 +2998,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                 if( request == NULL )
                 {
-                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                         createCannotControlBankText("Increase Var", "Open", ccEvents);
                     else
                         createCannotControlBankText("Decrease Volt", "Open", ccEvents);
@@ -3019,8 +3019,8 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
             }
         }
-        else if( (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-                 !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) ) &&
+        else if( (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                 !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) ) &&
                  getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag() && _strategy->getMaxOperationDisableFlag()) ) //end day on a trip.
@@ -3048,7 +3048,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                     }
                     iterations++;
                 }
@@ -3125,7 +3125,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                     }
                     iterations++;
                 }
@@ -3223,17 +3223,17 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             varSortedFeeders.insert(currentFeeder);
         }
 
-        if( ( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) && getCurrentVarLoadPointId() > 0) ||
-            ( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) && getCurrentVoltLoadPointId() > 0 ) )
+        if( ( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) && getCurrentVarLoadPointId() > 0) ||
+            ( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) && getCurrentVoltLoadPointId() > 0 ) )
         {
             if( !(getMaxDailyOpsHitFlag()  && _strategy->getMaxOperationDisableFlag()) &&//end day on a trip.
-                ( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) &&
+                ( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) &&
                 lagLevel <  getIVControl() ) ||
-                ( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) &&
+                ( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) &&
                 lagLevel >  getIVControl() ) )
             {
                 //if( _CC_DEBUG )
-                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().c_str() << endl;
@@ -3255,11 +3255,11 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
+                            if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit))
                             {
                                 setKVARSolution(-1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                         }
                         else
                         {
@@ -3288,7 +3288,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             }
                             else
                             {
-                                DOUBLE controlValue = ( !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getIVControl());
+                                DOUBLE controlValue = ( !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getIVControl());
                                 string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Close, controlValue, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
                                 request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue(),
                                                                                                         ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseAValue(), ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseBValue(),
@@ -3302,7 +3302,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 }
                 if( request == NULL )
                 {
-                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                         createCannotControlBankText("Decrease Var", "Close", ccEvents);
                     else
                         createCannotControlBankText("Increase Volt", "Close", ccEvents);
@@ -3316,7 +3316,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             else //leadLevel greater than currentVarPointValue
             {
                 //if( _CC_DEBUG )
-                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                if( !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().c_str() << endl;
@@ -3338,11 +3338,11 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
+                            if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit))
                             {
                                 setKVARSolution(1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                         }
                         else
                         {
@@ -3356,7 +3356,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
 
                         if (!currentFeeder->getDisableFlag())
                         {
-                            DOUBLE controlValue = ( !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() :  getIVControl());
+                            DOUBLE controlValue = ( !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() :  getIVControl());
                             string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Open, controlValue, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
                             request = ((CtiCCFeeder*)varSortedFeeders[j])->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue(),
                                                                                                     ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseAValue(), ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseBValue(),
@@ -3370,7 +3370,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
 
                 if( request == NULL )
                 {
-                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                    if(  !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit) )
                         createCannotControlBankText("Increase Var", "Open", ccEvents);
                     else
                         createCannotControlBankText("Decrease Volt", "Open", ccEvents);
@@ -3382,8 +3382,8 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 }
             }
         }
-        else if( (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-                 !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits)) &&
+        else if( (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                 !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit)) &&
                  getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag()  && _strategy->getMaxOperationDisableFlag() ))  //end day on a trip.
@@ -3405,7 +3405,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                         }
                         else
                         {
@@ -3484,7 +3484,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit));
                         }
                         else
                         {
@@ -3610,15 +3610,15 @@ BOOL CtiCCSubstationBus::isControlPoint(LONG pointid)
 {
     BOOL retVal = FALSE;
 
-    if (stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    if (stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits)  &&
+        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit)  &&
             getCurrentVoltLoadPointId() == pointid )
             retVal = TRUE;
-        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits)  &&
+        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit)  &&
             getCurrentVarLoadPointId() == pointid)
             retVal = TRUE;
-        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits) &&
+        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) &&
                  (getCurrentVarLoadPointId() == pointid || getCurrentWattLoadPointId() == pointid) )
             retVal = TRUE;
         else
@@ -3631,12 +3631,12 @@ void CtiCCSubstationBus::updateIntegrationVPoint(const CtiTime &currentDateTime)
 {
     DOUBLE controlVvalue = 0;
 
-    if (stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    if (stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) )
             controlVvalue = getCurrentVoltLoadPointValue();
-        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::KVARControlUnits)||
-                 !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::PF_BY_KVARControlUnits))
+        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit)||
+                 !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
             controlVvalue = getCurrentVarLoadPointValue();
         else
         {
@@ -3680,7 +3680,7 @@ void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
 {
     DOUBLE controlWvalue = 0;
 
-    if (stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    if (stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         controlWvalue = getCurrentWattLoadPointValue();
         if (_strategy->getControlInterval() > 0)
@@ -3736,8 +3736,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 
     try
     {
-        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
-            !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
+            !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
         {
             LONG recentlyControlledFeeders = 0;
             for(LONG i=0;i<_ccfeeders.size();i++)
@@ -3793,8 +3793,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
             }
             figureEstimatedVarLoadPointValue();
         }
-        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) ||
-                 !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
+        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
+                 !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
         {
             LONG currentFeedPos = 0;
             if (getLastFeederControlledPosition() >= 0)
@@ -3823,7 +3823,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 }
                 else
                 {
-                   if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+                   if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                         currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() )
                    {
                        currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
@@ -3894,7 +3894,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )
+        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
         {
             LONG recentlyControlledFeeders = 0;
             for(LONG i=0;i<_ccfeeders.size();i++)
@@ -4023,8 +4023,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     BOOL vResult = FALSE; //fail
 
 
-    if ((stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) &&
-         stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
+    if ((stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) &&
+         stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) ) &&
         getUsePhaseData() && !getTotalizedControlFlag()  )
     {
         returnBoolean = capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents);
@@ -4045,9 +4045,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                     failPercent = currentFeeder->getStrategy()->getFailurePercent();
                 }
 
-                if( ((!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                     !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
-                     !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod)) &&
+                if( ((!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
+                     !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) ||
+                     !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod)) &&
                      currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() ) )
                 {
                     returnBoolean = currentFeeder->capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents,
@@ -4070,9 +4070,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                if( !_IGNORE_NOT_NORMAL_FLAG ||
                                    getCurrentVarPointQuality() == NormalQuality )
                                {
-                                   if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                       !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
-                                       (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+                                   if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                       !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
+                                       (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                                        currentFeeder->getCurrentVarLoadPointId() > 0 ) )
                                    {
                                        newValue =  currentFeeder->getCurrentVarLoadPointValue();
@@ -4203,9 +4203,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                if( !_IGNORE_NOT_NORMAL_FLAG ||
                                    getCurrentVarPointQuality() == NormalQuality )
                                {
-                                   if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                       !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
-                                       (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+                                   if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                       !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
+                                       (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                                        currentFeeder->getCurrentVarLoadPointId() > 0 ))
                                    {
                                        newValue =  currentFeeder->getCurrentVarLoadPointValue();
@@ -4512,7 +4512,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                 failPercent = currentFeeder->getStrategy()->getFailurePercent();
             }
 
-            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
                currentFeeder->getPhaseCId() > 0 && currentFeeder->getTotalizedControlFlag())
             {
@@ -4543,9 +4543,9 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            if( !_IGNORE_NOT_NORMAL_FLAG ||
                                getCurrentVarPointQuality() == NormalQuality )
                            {
-                               if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                   !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
-                                  (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+                               if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                   !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
+                                  (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                                     currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
                                     currentFeeder->getPhaseCId() > 0 )  )
                                {
@@ -4723,9 +4723,9 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            if( !_IGNORE_NOT_NORMAL_FLAG ||
                                getCurrentVarPointQuality() == NormalQuality )
                            {
-                               if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                   !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
-                                  (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+                               if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                   !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
+                                  (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                                     currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
                                     currentFeeder->getPhaseCId() > 0 )  )
                                {
@@ -4995,7 +4995,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
 
         if( _strategy->getControlInterval() > 0 || getLikeDayControlFlag() )
         {
-            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                 (getSendMoreTimeControlledCommandsFlag() && !getRecentlyControlledFlag()) )
             {
                 returnBoolean = TRUE;
@@ -5007,7 +5007,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
         }
         else
         {
-            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
+            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
             {
                 if( getSendMoreTimeControlledCommandsFlag() && !getRecentlyControlledFlag())
                 {
@@ -5018,7 +5018,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5117,7 +5117,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     }
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5151,14 +5151,14 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     }
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
                     returnBoolean = _newpointdatareceivedflag;
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
             {
                 if( _newpointdatareceivedflag )
                 {
@@ -5208,7 +5208,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
 
         if( getRecentlyControlledFlag() )
         {
-            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5277,7 +5277,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5291,14 +5291,14 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
                     returnBoolean = _newpointdatareceivedflag;
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5316,7 +5316,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+            else if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5331,8 +5331,8 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
         }
         else if (getVerificationFlag())
         {
-            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod)||
-                !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+            if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod)||
+                !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5346,7 +5346,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
                     }
                 }
             }
-            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) )
+            else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -5423,8 +5423,8 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
             return returnBoolean;
         }
 
-        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
-            !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
+            !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5453,8 +5453,8 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) ||
-                 !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
+                 !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5494,7 +5494,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
             }
 
         }
-        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )
+        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
         {
             if( minConfirmPercent <= 0 )
             {
@@ -5845,19 +5845,19 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                     DOUBLE phaseBValue = currentFeeder->getPhaseBValue();
                     DOUBLE phaseCValue = currentFeeder->getPhaseCValue();
 
-                    if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                    if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
                     {
-                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
                         confirmValue = currentFeeder->getCurrentVarLoadPointValue();
                     }
-                    else if ( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                    else if ( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                     {
-                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
                         confirmValue = currentFeeder->getCurrentVarLoadPointValue();
                     }
                     else
                     {
-                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         confirmValue = getCurrentVarLoadPointValue();
                         phaseAValue = getPhaseAValue();
                         phaseBValue = getPhaseBValue();
@@ -6038,19 +6038,19 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                     DOUBLE phaseCValue = currentFeeder->getPhaseCValue();
 
 
-                    if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                    if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
                     {
-                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
                         confirmValue = currentFeeder->getCurrentVarLoadPointValue();
                     }
-                    else if ( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                    else if ( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod))
                     {
-                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
                         confirmValue = currentFeeder->getCurrentVarLoadPointValue();
                     }
                     else
                     {
-                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                        controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         confirmValue = getCurrentVarLoadPointValue();
                         phaseAValue = getPhaseAValue();
                         phaseBValue = getPhaseBValue();
@@ -6129,8 +6129,8 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
 
     if( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality )
     {
-        if( (!stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-            !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod)) &&
+        if( (!stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+            !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod)) &&
             _ALLOW_PARALLEL_TRUING )
         {
             if( minConfirmPercent <= 0 )
@@ -6171,8 +6171,8 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
             }
 
         }
-        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
-                 !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) ||
+        else if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::SubstationBusControlMethod) ||
+                 !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) ||
                  !_ALLOW_PARALLEL_TRUING)
         {
             if( minConfirmPercent <= 0 )
@@ -6204,11 +6204,11 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                 {
                     minConfirmPercent = currentFeeder->getStrategy()->getMinConfirmPercent();
                 }
-                if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                    !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
-                    ( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+                if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                    !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) ||
+                    ( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                       currentFeeder->getCurrentVarLoadPointId() > 0 && !currentFeeder->getUsePhaseData() ) ||
-                    ( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) &&
+                    ( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                       currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 &&
                       currentFeeder->getPhaseCId() > 0 && currentFeeder->getUsePhaseData() ) )
                 {
@@ -6410,7 +6410,7 @@ BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
     try
     {
 
-        if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) &&
+        if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) &&
             _ALLOW_PARALLEL_TRUING)
         {
             for(LONG i=0;i<_ccfeeders.size();i++)
@@ -6466,7 +6466,7 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
     try
     {
 
-        if( !stringCompareIgnoreCase(_strategy->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+        if( !stringCompareIgnoreCase(_strategy->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
         {
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
@@ -6960,8 +6960,8 @@ BOOL CtiCCSubstationBus::isVerificationPastMaxConfirmTime(const CtiTime& current
     BOOL returnBoolean = FALSE;
 
 
-    if( (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
-        !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ) &&
+    if( (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) ||
+        !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ) &&
         _ALLOW_PARALLEL_TRUING)
     {
          for(LONG i = 0; i < _ccfeeders.size(); i++)
@@ -7609,7 +7609,7 @@ void CtiCCSubstationBus::updatePointResponseDeltas()
 {
     try
     {
-        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
         {
             for (LONG i = 0; i < _ccfeeders.size();i++)
             {
@@ -7792,7 +7792,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
 {
     CtiCCMonitorPoint outOfRangeMonitorPoint;
 
-    if ( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    if ( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         for (LONG i = 0; i < _ccfeeders.size();i++)
         {
@@ -7843,7 +7843,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
                             //
                     }
                 }
-                else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::MultiVoltVarControlUnits))  //check for VarImprovement flag?
+                else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltVarControlUnit))  //check for VarImprovement flag?
                 {
                     if (analyzeBusForVarImprovement(&outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
                     {
@@ -7937,7 +7937,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
 {
     CtiCCMonitorPoint outOfRangeMonitorPoint;
 
-    if ( stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    if ( stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         if (!getRecentlyControlledFlag() && !getPostOperationMonitorPointScanFlag())
         {
@@ -7985,7 +7985,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
                         //
                 }
             }
-            else if (!stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::MultiVoltVarControlUnits))
+            else if (!stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::MultiVoltVarControlUnit))
             {
                 if (analyzeBusForVarImprovement(&outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
                 {
@@ -8086,7 +8086,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
     CtiRequestMsg* request = NULL;
     CtiTime currentDateTime;
 
-    if ( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+    if ( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         for (LONG i = 0; i < _ccfeeders.size();i++)
         {
@@ -8131,7 +8131,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                                         //Check other monitor point responses using this potential capbank
                                         if (currentFeeder->areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Close))
                                         {
-                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
                                             string text = currentFeeder->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Close, controlValue, currentFeeder->getCurrentVarLoadPointValue());
                                             request = currentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
                                                                                               currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
@@ -8181,7 +8181,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                                         //Check other monitor point responses using this potential capbank
                                         if (currentFeeder->areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Open))
                                         {
-                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
+                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? currentFeeder->getCurrentVoltLoadPointValue() : currentFeeder->getCurrentVarLoadPointValue());
                                             string text = currentFeeder->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Open, controlValue, currentFeeder->getCurrentVarLoadPointValue());
                                             request = currentFeeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
                                                                                               currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
@@ -8279,7 +8279,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Close))
                                     {
-                                        DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = parentFeeder->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                         request =  parentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -8327,7 +8327,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(pt->getPointId(), bank, CtiCCCapBank::Open))
                                     {
-                                        DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = parentFeeder->createTextString(_strategy->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
                                         request = parentFeeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
@@ -8423,12 +8423,12 @@ BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, 
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Close))
                             {
-                                DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 DOUBLE monitorValue =  parentFeeder->getCurrentVarLoadPointValue();
                                 DOUBLE phaseAValue = parentFeeder->getPhaseAValue();
                                 DOUBLE phaseBValue = parentFeeder->getPhaseBValue();
                                 DOUBLE phaseCValue = parentFeeder->getPhaseCValue();
-                                if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                                if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                                 {
                                     monitorValue = getCurrentVarLoadPointValue();
                                     phaseAValue = getPhaseAValue();
@@ -8491,12 +8491,12 @@ BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, 
                                         //Check other monitor point responses using this potential capbank
                                         if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Close))
                                         {
-                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                             DOUBLE monitorValue =  parentFeeder->getCurrentVarLoadPointValue();
                                             DOUBLE phaseAValue = parentFeeder->getPhaseAValue();
                                             DOUBLE phaseBValue = parentFeeder->getPhaseBValue();
                                             DOUBLE phaseCValue = parentFeeder->getPhaseCValue();
-                                            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                                            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                                             {
                                                 monitorValue = getCurrentVarLoadPointValue();
                                                 phaseAValue = getPhaseAValue();
@@ -8574,12 +8574,12 @@ BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, 
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Open))
                             {
-                                DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 DOUBLE monitorValue =  parentFeeder->getCurrentVarLoadPointValue();
                                 DOUBLE phaseAValue = parentFeeder->getPhaseAValue();
                                 DOUBLE phaseBValue = parentFeeder->getPhaseBValue();
                                 DOUBLE phaseCValue = parentFeeder->getPhaseCValue();
-                                if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                                if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                                 {
                                     monitorValue = getCurrentVarLoadPointValue();
                                     phaseAValue = getPhaseAValue();
@@ -8642,12 +8642,12 @@ BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, 
                                         //Check other monitor point responses using this potential capbank
                                         if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open))
                                         {
-                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                            DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                             DOUBLE monitorValue =  currentFeeder->getCurrentVarLoadPointValue();
                                             DOUBLE phaseAValue = currentFeeder->getPhaseAValue();
                                             DOUBLE phaseBValue = currentFeeder->getPhaseBValue();
                                             DOUBLE phaseCValue = currentFeeder->getPhaseCValue();
-                                            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                                            if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                                             {
                                                 monitorValue = getCurrentVarLoadPointValue();
                                                 phaseAValue = getPhaseAValue();
@@ -8838,12 +8838,12 @@ BOOL CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDate
 {
     BOOL retVal = FALSE;
     if (_strategy->getStrategyId() > 0 &&
-       (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::MultiVoltControlUnits) ||
-        !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::MultiVoltVarControlUnits) ) &&
+       (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltControlUnit) ||
+        !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltVarControlUnit) ) &&
         !getVerificationFlag() )
     {
-        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) ||
-            !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) ||
+            !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) )
         {
             for (LONG i = 0; i < _ccfeeders.size();i++)
             {
@@ -8887,8 +8887,8 @@ BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
     BOOL retVal = FALSE;
     if (_strategy->getStrategyId() > 0)
     {
-        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::MultiVoltControlUnits) ||
-            !stringCompareIgnoreCase(_strategy->getControlUnits(),CtiCCSubstationBus::MultiVoltVarControlUnits) )
+        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltControlUnit) ||
+            !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltVarControlUnit) )
         {
             if (_newpointdatareceivedflag || getVerificationFlag())
                 retVal = TRUE;
@@ -9232,7 +9232,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
     if( !getDisableFlag() &&
         currentDateTime.seconds() >= getLastOperationTime().seconds() + _strategy->getControlDelayTime() )
     {
-        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+        if( !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
         {
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
@@ -9324,9 +9324,9 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
     {
 
         //This could be moved to happen when the control strategy is changed instead of running every cycle.
-        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::SubstationBusControlMethod) ||
-            !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) ||
-            !stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
+        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
+            !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) ||
+            !stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
         {
             for (LONG i = 0; i < _ccfeeders.size();i++)
             {
@@ -9340,7 +9340,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
             }
         }
 
-        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod))
+        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod))
         {
             performDataOldAndFallBackNecessaryCheckOnFeeders();
         }
@@ -9348,7 +9348,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
         {
             if (_strategy->getLikeDayFallBack())
             {
-                if (!stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::VoltControlUnits))
+                if (!stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit))
                 {
                     if ((getCurrentVarLoadPointId() && getCurrentVoltLoadPointId()) &&
                         (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
@@ -9357,7 +9357,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
                         subBusFlag = true;
                     }
                 }
-                else if ( !stringCompareIgnoreCase(_strategy->getControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits))
+                else if ( !stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::PFactorKWKVarControlUnit))
                 {
                     if ((getCurrentVarLoadPointId() && getCurrentWattLoadPointId()) &&
                         (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
@@ -9375,7 +9375,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
                     }
                 }
 
-                if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod))
                 {
                     performDataOldAndFallBackNecessaryCheckOnFeeders();
                 }
@@ -10091,7 +10091,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         {
             setSendMoreTimeControlledCommandsFlag(FALSE);
         }
-        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod)||
+        if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod)||
             _likeDayControlFlag)
             figureNextCheckTime();
         if (_voltReductionControlId <= 0 )
@@ -10286,28 +10286,6 @@ bool CtiCCSubstationBus::checkForRateOfChange(const CtiRegression& reg, const Ct
     }
     return false;
 }
-
-
-/* 
-  Public Static members
- 
-    Sync these to the ones in ControlStrategy - these should be deprecated in favor of those
-        - just need to change a gazillion !stringCompareIgnoreCase() conditions
-*/
-const string CtiCCSubstationBus::IndividualFeederControlMethod   = "IndividualFeeder";
-const string CtiCCSubstationBus::SubstationBusControlMethod      = "SubstationBus";
-const string CtiCCSubstationBus::BusOptimizedFeederControlMethod = "BusOptimizedFeeder";
-const string CtiCCSubstationBus::ManualOnlyControlMethod         = "ManualOnly";
-const string CtiCCSubstationBus::TimeOfDayMethod                 = "TimeOfDay";
-
-const string CtiCCSubstationBus::KVARControlUnits         = "kVAr";
-const string CtiCCSubstationBus::VoltControlUnits         = "VOLTS";
-const string CtiCCSubstationBus::MultiVoltControlUnits    = "Multi Volt";
-const string CtiCCSubstationBus::MultiVoltVarControlUnits = "Multi Volt/VAR";
-const string CtiCCSubstationBus::PF_BY_KVARControlUnits   = "P-Factor kW/kVAr";
-const string CtiCCSubstationBus::PF_BY_KQControlUnits     = "P-Factor kW/kQ";
-const string CtiCCSubstationBus::TOD_ControlUnits         = "Time of Day";
-const string CtiCCSubstationBus::IVVC_ControlUnits        = "Integrated Volt/Var";
 
 
 void CtiCCSubstationBus::setStrategy(StrategyPtr strategy)

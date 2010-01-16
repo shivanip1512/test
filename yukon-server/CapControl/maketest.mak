@@ -42,6 +42,7 @@ $(COMPILEBASE)\lib\ctiholidaydb.lib
 
 CAPCTRLTESTOBJS= \
 test_ControlStrategies.obj \
+test_StrategyManager.obj \
 test_ccsubstationbus.obj \
 test_ccFeeder.obj \
 test_likeDayControl.obj \

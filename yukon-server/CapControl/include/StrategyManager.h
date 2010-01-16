@@ -27,7 +27,7 @@ public:
     void unload(const long ID);
     void unloadAll();
 
-    StrategyPtr get(const long ID);
+    StrategyPtr getStrategy(const long ID) const;
 
 private:
 

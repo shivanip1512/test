@@ -2876,8 +2876,8 @@ void CtiCCCommandExecutor::OpenCapBank()
                                 DOUBLE kvarAfter = 0;
                                 DOUBLE kvarChange = 0;
 
-                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                                 {
                                     kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                                     kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
@@ -2896,7 +2896,7 @@ void CtiCCCommandExecutor::OpenCapBank()
 
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                                 if( !savedBusRecentlyControlledFlag ||
-                                    (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
+                                    (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
                                 {
                                     pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                     ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
@@ -2935,12 +2935,12 @@ void CtiCCCommandExecutor::OpenCapBank()
 
 
                             BOOL confirmImmediately = FALSE;
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod)||
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod)||
                                 currentCapBank->getSendAllCommandFlag() )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
                             {
                                 if( savedFeederRecentlyControlledFlag ||
                                     ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -2953,21 +2953,21 @@ void CtiCCCommandExecutor::OpenCapBank()
                                     confirmImmediately = TRUE;
                                 }
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
-                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) ||
+                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 if( savedBusRecentlyControlledFlag ||
                                     ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                                 {
@@ -3197,12 +3197,12 @@ void CtiCCCommandExecutor::CloseCapBank()
                                 DOUBLE kvarChange = 0;
 
                                 BOOL confirmImmediately = FALSE;
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) ||
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod) ||
                                     currentCapBank->getSendAllCommandFlag())
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                                else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
                                 {
                                     if( savedFeederRecentlyControlledFlag ||
                                         ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -3215,21 +3215,21 @@ void CtiCCCommandExecutor::CloseCapBank()
                                         confirmImmediately = TRUE;
                                     }
                                 }
-                                else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
-                                         !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) ||
+                                         !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                                 {
                                     if( savedBusRecentlyControlledFlag ||
                                         ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                                     {
                                         confirmImmediately = TRUE;
                                     }
-                                    if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
+                                    if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) &&
                                         _IGNORE_NOT_NORMAL_FLAG &&
                                         currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                                     {
                                         confirmImmediately = TRUE;
                                     }
-                                    if( (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod)) &&
+                                    if( (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod)) &&
                                         _IGNORE_NOT_NORMAL_FLAG &&
                                         (currentFeeder->getCurrentVarPointQuality() != NormalQuality) )
                                     {
@@ -3259,12 +3259,12 @@ void CtiCCCommandExecutor::CloseCapBank()
 
                                     ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                                     if( !savedBusRecentlyControlledFlag ||
-                                        (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
+                                        (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
                                     {
                                         pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
 
-                                        if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                            !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                        if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                            !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                                         {
                                             kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                                             kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
@@ -3651,8 +3651,8 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
                             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                             pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
 
-                            if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                                 kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
@@ -5081,7 +5081,7 @@ void CtiCCCommandExecutor::Flip7010Device()
 
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                                 if( !savedBusRecentlyControlledFlag ||
-                                    (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
+                                    (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
                                 {
                                     pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                     ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
@@ -5090,8 +5090,8 @@ void CtiCCCommandExecutor::Flip7010Device()
                                 }
                                 DOUBLE kvarBefore = 0;
 
-                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                                 {
                                     kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                                 }
@@ -5134,11 +5134,11 @@ void CtiCCCommandExecutor::Flip7010Device()
 
                             BOOL confirmImmediately = FALSE;
 
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod) )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
                             {
                                 if( savedFeederRecentlyControlledFlag ||
                                     ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -5151,21 +5151,21 @@ void CtiCCCommandExecutor::Flip7010Device()
                                     confirmImmediately = TRUE;
                                 }
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
-                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) ||
+                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 if( savedBusRecentlyControlledFlag ||
                                     ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                                 {
@@ -6067,7 +6067,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                                 if( ( !savedBusRecentlyControlledFlag ||
-                                      (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) ) &&
+                                      (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) ) &&
                                      savedControlStatus != CtiCCCapBank::Open )
                                 {
                                     pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -6113,11 +6113,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             {
                                 confirmImmediately = TRUE;
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod) )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
                                 if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
@@ -6150,8 +6150,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                     confirmImmediately = TRUE;
                                 }
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
-                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) ||
+                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
                                 if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
@@ -6163,13 +6163,13 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                                 {
@@ -6360,7 +6360,7 @@ void CtiCCCommandExecutor::ConfirmClose()
 
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                                 if( ( !savedBusRecentlyControlledFlag ||
-                                      (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) ) &&
+                                      (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) ) &&
                                     savedControlStatus != CtiCCCapBank::Close )
                                 {
                                     pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -6401,11 +6401,11 @@ void CtiCCCommandExecutor::ConfirmClose()
                             {
                                 confirmImmediately = TRUE;
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod) )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
                                 if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
@@ -6437,8 +6437,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                                     confirmImmediately = TRUE;
                                 }
                             }
-                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
-                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) ||
+                                     !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
                                 if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
@@ -6449,13 +6449,13 @@ void CtiCCCommandExecutor::ConfirmClose()
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::SubstationBusControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                                 {
                                     confirmImmediately = TRUE;
                                 }
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) &&
                                     _IGNORE_NOT_NORMAL_FLAG &&
                                     currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                                 {
@@ -6585,8 +6585,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         DOUBLE kvarAfter = 0;
                         DOUBLE kvarChange = 0;
 
-                        if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                            !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                        if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                            !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                         {
                             kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                             kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
@@ -6633,8 +6633,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         DOUBLE kvarAfter = 0;
                         DOUBLE kvarChange = 0;
 
-                        if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                            !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                        if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                            !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                         {
                             kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                             kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
@@ -6691,7 +6691,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
             }
         }
 
-        if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+        if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
         {
             for(LONG x=0;x<ccFeeders.size();x++)
             {
@@ -6730,8 +6730,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                                 DOUBLE kvarAfter = 0;
                                 DOUBLE kvarChange = 0;
 
-                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                                 {
                                     kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                                     kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
@@ -6774,8 +6774,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                                 DOUBLE kvarAfter = 0;
                                 DOUBLE kvarChange = 0;
 
-                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                if (!stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
+                                    !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                                 {
                                     kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
                                     kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
@@ -6813,7 +6813,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                 currentFeeder->setRecentlyControlledFlag(FALSE);
 
-                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
                 {
                     for(LONG x=0;x<ccFeeders.size();x++)
                     {
@@ -7871,7 +7871,7 @@ void CtiCCPointDataMsgExecutor::Execute()
                             {
                                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                                 currentFeeder->setRecentlyControlledFlag(FALSE);
-                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
                                 {
                                     for(LONG x=0;x<ccFeeders.size();x++)
                                     {

@@ -50,7 +50,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCArea )
 
     CtiCCArea();
-    CtiCCArea(RWDBReader& rdr);
+    CtiCCArea(RWDBReader& rdr, StrategyPtr strategy);
     CtiCCArea(const CtiCCArea& area);
 
     virtual ~CtiCCArea();

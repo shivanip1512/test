@@ -52,7 +52,8 @@ _areaUpdatedFlag(false)
 {
 }
 
-CtiCCArea::CtiCCArea(RWDBReader& rdr)
+CtiCCArea::CtiCCArea(RWDBReader& rdr, StrategyPtr strategy)
+    :_strategy(strategy)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
@@ -265,9 +266,6 @@ void CtiCCArea::restore(RWDBReader& rdr)
 
     _insertDynamicDataFlag = TRUE;
     //_dirty = FALSE;
-
-    // NOTE: we are not restoring the strategy settings here.  this must be done on reload
-    // from the database.
 }
 
 

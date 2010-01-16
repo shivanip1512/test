@@ -91,7 +91,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCFeeder();
-    CtiCCFeeder(RWDBReader& rdr);
+    CtiCCFeeder(RWDBReader& rdr, StrategyPtr strategy);
     CtiCCFeeder(const CtiCCFeeder& feeder);
 
     virtual ~CtiCCFeeder();

@@ -45,7 +45,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     CtiCCSpecial();
-    CtiCCSpecial(RWDBReader& rdr);
+    CtiCCSpecial(RWDBReader& rdr, StrategyPtr strategy);
     CtiCCSpecial(const CtiCCSpecial& area);
 
     virtual ~CtiCCSpecial();

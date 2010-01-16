@@ -396,21 +396,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     CtiCCSubstationBus* replicate() const;
 
-    //Possible control methods
-    static const string SubstationBusControlMethod;
-    static const string IndividualFeederControlMethod;
-    static const string BusOptimizedFeederControlMethod;
-    static const string ManualOnlyControlMethod;
-    static const string TimeOfDayMethod;
-
-    static const string KVARControlUnits;
-    static const string VoltControlUnits;
-    static const string MultiVoltControlUnits;
-    static const string MultiVoltVarControlUnits;
-    static const string PF_BY_KVARControlUnits;
-    static const string PF_BY_KQControlUnits;
-    static const string TOD_ControlUnits;
-    static const string IVVC_ControlUnits;
     //static int PeakState;
     //static int OffPeakState;
 

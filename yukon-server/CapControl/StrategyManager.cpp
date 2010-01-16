@@ -35,19 +35,25 @@ void StrategyManager::reloadAll()
 
 void StrategyManager::unload(const long ID)
 {
-    _strategies.erase(ID);
+    if (ID != 0)
+    {
+        _strategies.erase(ID);
+    }
 }
 
 
 void StrategyManager::unloadAll()
 {
+    StrategyPtr     none( new NoStrategy );
+
     _strategies.clear();
+    _strategies.insert( std::make_pair( 0, none ) );      // re-insert the default
 }
 
 
-StrategyPtr StrategyManager::get(const long ID)
+StrategyPtr StrategyManager::getStrategy(const long ID) const
 {
-    StrategyMap::iterator   iter = _strategies.find(ID);
+    StrategyMap::const_iterator iter = _strategies.find(ID);
 
     return iter != _strategies.end()
                     ? iter->second
