@@ -73,7 +73,7 @@
 	                   <a href="javascript:void(0);" 
 	                      class="optDeselect"
 	                      onmouseover="changeOptionStyle(this);"
-	                      onclick="closeTierPopup(); getLocalControlMenu('${paoId}','${localControlTypeCBC}', '${controlType}', event);">more Local Controls</a>
+	                      onclick="closeTierPopup(); getLocalControlMenu('${paoId}','${localControlTypeCBC}', '${controlType}', event);">More Local Controls...</a>
 	               </td>
 			</tr> 
 		</c:if>
