@@ -230,6 +230,10 @@ DROP COLUMN PeakLag, PeakLead, OffPkLag, OffPkLead, PeakVARLag, PeakVARLead,
 DROP INDEX YukonPAObject.INDX_PAO_PAOName_Type;
 /* End YUK-8264 */
 
+/* Start YUK-8213 */
+ALTER TABLE LMCustomerEventBase ALTER COLUMN Notes VARCHAR(500);
+/* End YUK-8213 */ 
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -229,6 +229,10 @@ DROP (PeakLag, PeakLead, OffPkLag, OffPkLead, PeakVARLag, PeakVARLead,
 DROP INDEX INDX_PAO_PAOName_Type;
 /* End YUK-8264 */
 
+/* Start YUK-8213 */
+ALTER TABLE LMCustomerEventBase MODIFY Notes VARCHAR2(500);
+/* End YUK-8213 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

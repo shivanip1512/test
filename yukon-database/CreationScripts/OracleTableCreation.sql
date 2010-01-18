@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/18/2010 5:02:03 PM                         */
+/* Created on:     1/18/2010 5:24:44 PM                         */
 /*==============================================================*/
 
 
@@ -5854,7 +5854,7 @@ create table LMCustomerEventBase  (
    EventTypeID          NUMBER                          not null,
    ActionID             NUMBER                          not null,
    EventDateTime        DATE,
-   Notes                VARCHAR2(100),
+   Notes                VARCHAR2(500),
    AuthorizedBy         VARCHAR2(40),
    constraint PK_LMCUSTOMEREVENTBASE primary key (EventID)
 );

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/18/2010 5:10:38 PM                         */
+/* Created on:     1/18/2010 5:23:43 PM                         */
 /*==============================================================*/
 
 
@@ -8653,7 +8653,7 @@ create table LMCustomerEventBase (
    EventTypeID          numeric              not null,
    ActionID             numeric              not null,
    EventDateTime        datetime             null,
-   Notes                varchar(100)         null,
+   Notes                varchar(500)         null,
    AuthorizedBy         varchar(40)          null,
    constraint PK_LMCUSTOMEREVENTBASE primary key (EventID)
 )
