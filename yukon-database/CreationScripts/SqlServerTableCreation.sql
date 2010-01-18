@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/18/2010 11:58:20 AM                        */
+/* Created on:     1/18/2010 3:28:55 PM                         */
 /*==============================================================*/
 
 
@@ -1334,13 +1334,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CCSTRATEGYTIMEOFDAY')
-            and   type = 'U')
-   drop table CCSTRATEGYTIMEOFDAY
-go
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CCSUBAREAASSIGNMENT')
             and   type = 'U')
    drop table CCSUBAREAASSIGNMENT
@@ -1358,6 +1351,13 @@ if exists (select 1
            where  id = object_id('CCSUBSTATIONSUBBUSLIST')
             and   type = 'U')
    drop table CCSUBSTATIONSUBBUSLIST
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCStrategyTargetSettings')
+            and   type = 'U')
+   drop table CCStrategyTargetSettings
 go
 
 if exists (select 1
@@ -4213,18 +4213,6 @@ create table CCSEASONSTRATEGYASSIGNMENT (
 go
 
 /*==============================================================*/
-/* Table: CCSTRATEGYTIMEOFDAY                                   */
-/*==============================================================*/
-create table CCSTRATEGYTIMEOFDAY (
-   StrategyID           numeric              not null,
-   StartTimeSeconds     numeric              not null,
-   PercentClose         numeric              not null,
-   WkndPercentClose     numeric              not null,
-   constraint PK_STRAT_TOD primary key (StrategyID, StartTimeSeconds)
-)
-go
-
-/*==============================================================*/
 /* Table: CCSUBAREAASSIGNMENT                                   */
 /*==============================================================*/
 create table CCSUBAREAASSIGNMENT (
@@ -4254,6 +4242,18 @@ create table CCSUBSTATIONSUBBUSLIST (
    SubStationBusID      numeric              not null,
    DisplayOrder         numeric              not null,
    constraint PK_CCSUBSTATIONSUBBUSLIST primary key (SubStationID, SubStationBusID)
+)
+go
+
+/*==============================================================*/
+/* Table: CCStrategyTargetSettings                              */
+/*==============================================================*/
+create table CCStrategyTargetSettings (
+   StrategyId           numeric              not null,
+   SettingName          varchar(255)         not null,
+   SettingValue         varchar(255)         not null,
+   SettingType          varchar(255)         not null,
+   constraint PK_CCStratTarSet primary key (StrategyId, SettingName, SettingType)
 )
 go
 
@@ -4734,16 +4734,6 @@ create table CapControlStrategy (
    ControlUnits         varchar(32)          not null,
    ControlDelayTime     numeric              not null,
    ControlSendRetries   numeric              not null,
-   PeakLag              float                not null,
-   PeakLead             float                not null,
-   OffPkLag             float                not null,
-   OffPkLead            float                not null,
-   PeakVARLag           float                not null,
-   PeakVARLead          float                not null,
-   OffPkVARLag          float                not null,
-   OffPkVARLead         float                not null,
-   PeakPFSetPoint       float                not null,
-   OffPkPFSetPoint      float                not null,
    IntegrateFlag        char(1)              not null,
    IntegratePeriod      numeric              not null,
    LikeDayFallBack      char(1)              not null,
@@ -4752,7 +4742,7 @@ create table CapControlStrategy (
 )
 go
 
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0, 'N', '(none)'); 
+insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 'N', 0, 'N', '(none)'); 
 
 /*==============================================================*/
 /* Index: Indx_CapCntrlStrat_name_UNQ                           */
@@ -13834,11 +13824,6 @@ alter table CCSEASONSTRATEGYASSIGNMENT
       references CapControlStrategy (StrategyID)
 go
 
-alter table CCSTRATEGYTIMEOFDAY
-   add constraint FK_STRAT_TOD_CCSTRAT foreign key (StrategyID)
-      references CapControlStrategy (StrategyID)
-go
-
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
@@ -13867,6 +13852,11 @@ go
 alter table CCSUBSTATIONSUBBUSLIST
    add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR foreign key (SubStationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+go
+
+alter table CCStrategyTargetSettings
+   add constraint FK_CCStratTarSet_CapContStrat foreign key (StrategyId)
+      references CapControlStrategy (StrategyID)
 go
 
 alter table CCURTACCTEVENT
