@@ -20,9 +20,12 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NotPaoTypeFilter;
 import com.cannontech.dr.quicksearch.QuickSearchFilter;
 import com.cannontech.dr.quicksearch.QuickSearchRowMapper;
@@ -42,6 +45,7 @@ public class QuickSearchController {
     private FavoritesDao favoritesDao;
     private PaoDetailUrlHelper paoDetailUrlHelper;
     private DemandResponseService demandResponseService;
+    private PaoAuthorizationService paoAuthorizationService;
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String search(ModelMap modelMap, YukonUserContext userContext, 
@@ -49,7 +53,10 @@ public class QuickSearchController {
         LiteYukonUser user = userContext.getYukonUser();
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
-        boolean showControlAreas = 
+        filters.add(new AuthorizedFilter(paoAuthorizationService, 
+                                         userContext.getYukonUser(),
+                                         Permission.LM_VISIBLE));
+        boolean showControlAreas =
             rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
         if (!showControlAreas) {
             filters.add(new NotPaoTypeFilter(PaoType.LM_CONTROL_AREA));
@@ -129,5 +136,10 @@ public class QuickSearchController {
     @Autowired
     public void setDemandResponseService(DemandResponseService demandResponseService) {
         this.demandResponseService = demandResponseService;
+    }
+
+    @Autowired
+    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
+        this.paoAuthorizationService = paoAuthorizationService;
     }
 }
