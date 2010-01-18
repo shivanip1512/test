@@ -97,7 +97,6 @@ public final class BareReportModelAdapter extends ReportModelBase {
     
     @Override
     public boolean useStartDate() {
-//        return model instanceof DatedModelAttributes;
         if(model instanceof DatedModelAttributes) {
             DatedModelAttributes datedModel = (DatedModelAttributes) model;
             return datedModel.useStartDate();
@@ -106,7 +105,6 @@ public final class BareReportModelAdapter extends ReportModelBase {
     
     @Override
     public boolean useStopDate() {
-//        return model instanceof DatedModelAttributes;
         if(model instanceof DatedModelAttributes) {
             DatedModelAttributes datedModel = (DatedModelAttributes) model;
             return datedModel.useStopDate();
