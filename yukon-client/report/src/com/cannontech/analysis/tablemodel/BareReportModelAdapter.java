@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.cannontech.analysis.ColumnProperties;
 
-public final class BareReportModelAdapter extends ReportModelBase {
+public final class BareReportModelAdapter<E> extends ReportModelBase<E> {
 
     private final BareReportModel model;
     private final ReportModelLayout layout;
