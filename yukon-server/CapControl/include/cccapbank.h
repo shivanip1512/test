@@ -23,6 +23,7 @@
 #include <list>
 
 #include "msg_cmd.h"
+#include "msg_pdata.h"
 #include "ccpointresponse.h"
 #include "ccmonitorpoint.h"
 #include "cctwowaycbcpoints.h"
@@ -202,6 +203,7 @@ public:
     CtiCCCapBank& setControlStatus(LONG status);
     CtiCCCapBank& setOperationAnalogPointId(LONG operationpoint);
     CtiCCCapBank& setTotalOperations(LONG operations);
+    CtiCCCapBank& setTotalOperationsAndSendMsg(LONG operations, CtiMultiMsg_vec& pointChanges);
     CtiCCCapBank& setLastStatusChangeTime(const CtiTime& laststatuschangetime);
     CtiCCCapBank& setTagsControlStatus(LONG tags);
 

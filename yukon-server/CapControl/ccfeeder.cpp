@@ -6960,7 +6960,6 @@ void CtiCCFeeder::deleteCCCapBank(long capBankId)
         CtiCCCapBank *capBank = *itr;
         if (capBank->getPAOId() == capBankId)
         {
-            //delete capBank;
             itr = getCCCapBanks().erase(itr);
             break;
         }else
@@ -7679,6 +7678,26 @@ void CtiCCFeeder::createCannotControlBankText(string text, string commandString,
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
     }
 
+}
+
+
+void CtiCCFeeder::resetVerificationFlags()
+{
+    setVerificationFlag(FALSE);
+    setPerformingVerificationFlag(FALSE);
+    setVerificationDoneFlag(FALSE);
+
+   
+    for(LONG k=0;k<_cccapbanks.size();k++)
+    {
+        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[k];
+    
+        currentCapBank->setVerificationFlag(FALSE);
+        currentCapBank->setPerformingVerificationFlag(FALSE);
+        currentCapBank->setVerificationDoneFlag(FALSE);
+        //wouldn't hurt to set this.
+        currentCapBank->setVCtrlIndex(0);
+    }
 }
 
 

@@ -420,8 +420,8 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
                         for(LONG k=0;k<ccCapBanks.size();k++)
                         {
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                            if (currentCapBank->getControlStatus() != CtiCCCapBank::OpenPending &&
-                                currentCapBank->getControlStatus() != CtiCCCapBank::ClosePending)
+                            if (!currentCapBank->isPendingStatus() &&
+                                (currentCapBank->getVCtrlIndex() <=0 || currentCapBank->getVCtrlIndex() >= 5) )
                             {
                                 currentCapBank->setVerificationFlag(FALSE);
                                 currentCapBank->setPerformingVerificationFlag(FALSE);
@@ -433,22 +433,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
                     }
                     else
                     {
-                        currentFeeder->setVerificationFlag(FALSE);
-                        currentFeeder->setPerformingVerificationFlag(FALSE);
-                        currentFeeder->setVerificationDoneFlag(FALSE);
-
-                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                        for(LONG k=0;k<ccCapBanks.size();k++)
-                        {
-                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-
-                            currentCapBank->setVerificationFlag(FALSE);
-                            currentCapBank->setPerformingVerificationFlag(FALSE);
-                            currentCapBank->setVerificationDoneFlag(FALSE);
-                            //wouldn't hurt to set this.
-                            currentCapBank->setVCtrlIndex(0);
-                        }
+                        currentFeeder->resetVerificationFlags();
                     }
                 }
                 string text = currentSubstationBus->getVerificationString();
@@ -500,23 +485,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
                 for(LONG j=0;j<ccFeeders.size();j++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-
-                    currentFeeder->setVerificationFlag(FALSE);
-                    currentFeeder->setPerformingVerificationFlag(FALSE);
-                    currentFeeder->setVerificationDoneFlag(FALSE);
-
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(LONG k=0;k<ccCapBanks.size();k++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-
-                        currentCapBank->setVerificationFlag(FALSE);
-                        currentCapBank->setPerformingVerificationFlag(FALSE);
-                        currentCapBank->setVerificationDoneFlag(FALSE);
-                        //wouldn't hurt to set this.
-                        currentCapBank->setVCtrlIndex(0);
-                    }
+                    currentFeeder->resetVerificationFlags();
                 }
 
                 //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
@@ -7288,7 +7257,7 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
                                 {
                                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                                     currentCapBank->setCurrentDailyOperations(0);
-                                    currentCapBank->setTotalOperations(0);
+                                    currentCapBank->setTotalOperationsAndSendMsg(0, pointChanges);
                                     currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                                 }
                                 currentFeeder->setCurrentDailyOperationsAndSendMsg(0, pointChanges);

@@ -334,6 +334,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     double computeRegression( CtiTime time );
     string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
     void createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents);
+    void resetVerificationFlags();
 
     CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                         string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);

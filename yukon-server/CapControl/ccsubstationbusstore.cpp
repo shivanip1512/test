@@ -8991,7 +8991,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 {
                     CtiCCArea *area = *itr;
                     if (area->getPAOId() == areaId)
-                    {
+                    {   
                         itr = _ccGeoAreas->erase(itr);
                         break;
                     }else
@@ -9509,8 +9509,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                 capBankToDelete = findCapBankByPAObjectID(capBankId);
                 if (capBankToDelete != NULL)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "What the $#@%!." << endl;
+
                     capBankToDelete = NULL;
                 }
                 else

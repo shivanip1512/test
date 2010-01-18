@@ -2084,6 +2084,31 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperations(LONG operations)
     return *this;
 }
 
+
+/*---------------------------------------------------------------------------
+    setCurrentDailyOperations
+
+    Sets the current daily operations of the feeder
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(LONG operations, CtiMultiMsg_vec& pointChanges)
+{
+    if( _totaloperations != operations )
+    {
+        if( getOperationAnalogPointId() > 0 )
+        {
+            pointChanges.push_back(new CtiPointDataMsg(getOperationAnalogPointId(),operations,NormalQuality,AnalogPointType));
+        }
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _totaloperations = operations;
+
+    return *this;
+}
+
 /*---------------------------------------------------------------------------
     setLastStatusChangeTime
 
