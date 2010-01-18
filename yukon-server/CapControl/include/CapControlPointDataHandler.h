@@ -4,6 +4,11 @@
 #include "yukon.h"
 #include "PointDataHandler.h"
 
+/**
+ * Extended PointDataHandler to keep cap control specific
+ * connection code out of the base class.
+ *
+ */
 class CapControlPointDataHandler : public PointDataHandler
 {
     public:

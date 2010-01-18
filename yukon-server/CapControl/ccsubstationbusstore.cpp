@@ -5841,42 +5841,42 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         for each(LoadTapChangerPtr ltc in ltcList)
         {
             int ltcId = ltc->getPaoId();
-            LitePoint point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::LtcVoltageStr);
+            LitePoint point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::LtcVoltage);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setLtcVoltagePoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::LowerTapStr);
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::LowerTap);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setLowerTapPoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::RaiseTapStr);
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::RaiseTap);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setRaiseTapPoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::LowerVoltStr);
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::LowerVoltLimit);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setLowerVoltPoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::UpperVoltStr);
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::UpperVoltLimit);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setUpperVoltPoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,LoadTapChanger::AutoRemoteStr);
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::ControlMode);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setAutoRemotePoint(point);

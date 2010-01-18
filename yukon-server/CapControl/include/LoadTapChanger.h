@@ -55,13 +55,6 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
         const LitePoint& getLowerVoltPoint();
 
         void getRegistrationPoints(std::list<int>& regPoints);
-
-        static const std::string LowerTapStr;
-        static const std::string RaiseTapStr;
-        static const std::string UpperVoltStr;
-        static const std::string LowerVoltStr;
-        static const std::string AutoRemoteStr;
-        static const std::string LtcVoltageStr;
 };
 
 typedef LoadTapChanger* LoadTapChangerPtr;

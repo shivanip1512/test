@@ -1,13 +1,6 @@
 #include "yukon.h"
 #include "LoadTapChanger.h"
 
-const std::string LoadTapChanger::LowerTapStr = "Lower Tap Position";
-const std::string LoadTapChanger::RaiseTapStr = "Raise Tap Position";
-const std::string LoadTapChanger::UpperVoltStr = "Upper Volt Limit";
-const std::string LoadTapChanger::LowerVoltStr = "Lower Volt Limit";
-const std::string LoadTapChanger::AutoRemoteStr = "Auto/Remote Control";
-const std::string LoadTapChanger::LtcVoltageStr = "LTC Voltage";
-
 LoadTapChanger::LoadTapChanger() : Inherited()
 {
 

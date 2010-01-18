@@ -79,7 +79,8 @@ thread_register_data.obj \
 thread_monitor.obj \
 xml_object.obj \
 LitePoint.obj \
-AttributeService.obj
+AttributeService.obj \
+PointAttribute.obj \
 
 
 CTIPROGS=\

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "LitePoint.h"
+#include "PointAttribute.h"
 
 /**
  * This Class is to hold the accessors for Attribute
@@ -23,7 +24,7 @@ class IM_EX_CTIBASE AttributeService
 {
     public:
         static std::list<LitePoint> getExtraPaoPoints(int paoId);
-        static LitePoint getPointByPaoAndAttribute(int paoId, const std::string& attribute);
+        static LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute);
 
     private:
 

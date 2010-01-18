@@ -17,4 +17,5 @@ enum CapControlType
     SpecialArea,
     Ltc = TYPELTC
 };
+
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString);
