@@ -234,6 +234,12 @@ DROP INDEX YukonPAObject.INDX_PAO_PAOName_Type;
 ALTER TABLE LMCustomerEventBase ALTER COLUMN Notes VARCHAR(500);
 /* End YUK-8213 */ 
 
+/* Start YUK-8276 */
+DELETE CCSeasonStrategyAssignment WHERE StrategyId = 0;
+DELETE CCHolidayStrategyAssignment WHERE StrategyId = 0;
+DELETE CapControlStrategy WHERE StrategyId = 0;
+/* End YUK-8276 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

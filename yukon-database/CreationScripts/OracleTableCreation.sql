@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/18/2010 5:24:44 PM                         */
+/* Created on:     1/18/2010 5:38:03 PM                         */
 /*==============================================================*/
 
 
@@ -2108,8 +2108,6 @@ create table CapControlStrategy  (
    EndDaySettings       VARCHAR2(20)                    not null,
    constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
 );
-
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 'N', 0, 'N', '(none)'); 
 
 /*==============================================================*/
 /* Index: Indx_CapCntrlStrat_name_UNQ                           */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/18/2010 5:23:43 PM                         */
+/* Created on:     1/18/2010 5:39:18 PM                         */
 /*==============================================================*/
 
 
@@ -4732,8 +4732,6 @@ create table CapControlStrategy (
    constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
 )
 go
-
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 'N', 0, 'N', '(none)'); 
 
 /*==============================================================*/
 /* Index: Indx_CapCntrlStrat_name_UNQ                           */
