@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/18/2010 3:32:15 PM                         */
+/* Created on:     1/18/2010 5:02:03 PM                         */
 /*==============================================================*/
 
 
@@ -256,8 +256,6 @@ drop index Indx_YukonGroup_groupName_UNQ;
 drop index Indx_YkLstDefID;
 
 drop index Indx_PAO;
-
-drop index Indx_PAO_PAOName_Type;
 
 drop index Indx_YukRol_Nm;
 
@@ -9092,14 +9090,6 @@ create unique index Indx_PAO on YukonPAObject (
    Category ASC,
    PAOName ASC,
    PAOClass ASC
-);
-
-/*==============================================================*/
-/* Index: Indx_PAO_PAOName_Type                                 */
-/*==============================================================*/
-create index Indx_PAO_PAOName_Type on YukonPAObject (
-   PAOName ASC,
-   Type ASC
 );
 
 /*==============================================================*/

@@ -225,6 +225,10 @@ DROP (PeakLag, PeakLead, OffPkLag, OffPkLead, PeakVARLag, PeakVARLead,
       OffPkVARlag, OffPkVARlead, PeakPFSetPoint, OffPkPFSetPoint);
 /* End YUK-8271 */
 
+/* Start YUK-8264 */
+DROP INDEX INDX_PAO_PAOName_Type;
+/* End YUK-8264 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
