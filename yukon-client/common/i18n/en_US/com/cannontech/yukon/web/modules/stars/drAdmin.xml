@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<!-- Appliance Category Configuration -->
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.pageTitle">Appliance Category</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.breadcrumb.configEnergyCompany">Config Energy Company</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.breadcrumb.editApplianceCategory">Edit Appliance Category</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.info">Info</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.actions">Actions</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.categoryName">Category Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.displayName">Display Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.sameAsCategoryName">Same as Category Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.type">Type</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon">Icon</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.editDetailInformation">Edit Detail Information</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.addPrograms">Add Program(s)</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.createVirtualProgram">Create Virtual Program</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.NO_IMAGE">No Image</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.AC">AC</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.DUAL_FUEL">Dual Fuel</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.ELECTRIC">Electric</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.GENERATION">Generation</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.GRAIN_DRYER">Grain Dryer</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.HEAT_PUMP">Heat Pump</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.HOT_TUB">Hot Tub</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.IRRIGATION">Irrigation</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.LOAD">Load</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.POOL">Pool</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.SETBACK">Setback</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.STORAGE_HEAT">Storage Heat</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.WATER_HEATER">Water Heater</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.OTHER_IMAGE">Other Image</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.description">Description</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.customerSelectable">Customer Selectable</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.isCustomerSelectable">This appliance category is customer selectable.</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.isNotCustomerSelectable">This appliance category is not customer selectable.</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.customerSelectableDescription">
+    This option allows the appliance category to be selectable by the consumer.
+    Unchecking this will remove the appliance category from the consumer enrollment page.
+</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.ok">OK</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.cancel">Cancel</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.filters">Filters</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.assignedPrograms">Assigned Programs</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.programName">Program Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.actions">Actions</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.displayOrder">Display Order</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.editDialogTitle">Edit Assigned Program</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.edit">/WebConfig/yukon/Icons/edit.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.edit.hover">/WebConfig/yukon/Icons/edit_over.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.edit.alt">Edit Assigned Program</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.removeDialogTitle">Remove Assigned Program</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.remove">/WebConfig/yukon/Icons/delete.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.remove.hover">/WebConfig/yukon/Icons/delete_over.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.remove.alt">Remove Assigned Program</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.upDialogTitle">Move Program Up</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.up">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.up.hover">/WebConfig/yukon/Icons/green_arrow_up_over.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.up.disabled">/WebConfig/yukon/Icons/control_stop_blue_disabled.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.up.alt">Move Program Up</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.downDialogTitle">Move Program Down</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.down">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.down.hover">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.down.disabled">/WebConfig/yukon/Icons/control_stop_blue_disabled.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.down.alt">Move Program Down</entry>
+
+<!-- Appliance Category Assigned Programs -->
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.title">{0}</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.displayName">Display Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.sameAsProgramName">Same as Program Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.shortName">Short Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.sameAsDisplayName">Same as Display Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.description">Description</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.chanceOfControl">Chance of Control</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.programDescriptionIcons">Program Description Icons</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.savings">Savings</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.controlPercent">Control %</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.environment">Environment</entry>
+
+
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.ok">OK</entry>
+<entry key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.cancel">Cancel</entry>
+
+<!-- Edit Program Enrollment -->
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.pageTitle">Program Enrollment</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.breadcrumb.operationsHome">Operations Home</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.breadcrumb.editProgramEnrollment">Program Enrollment</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.enrolledPrograms">Enrolled Programs</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.addEnrollment">Add Enrollment</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.name">Name</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.applianceCategory">Appliance Category</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.group">Group</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.hardwareAndRelay">Hardware &amp;amp; Relay</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.status">Status</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.actions">Actions</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.programHistory">Program History</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.date">Date</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.type">Type</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.program">Program</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.editDialogTitle">Edit Enrollment</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.edit">/WebConfig/yukon/Icons/edit.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.edit.hover">/WebConfig/yukon/Icons/edit_over.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.edit.alt">Edit Enrollment</entry>
+
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.removeDialogTitle">Remove Enrollment</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.remove">/WebConfig/yukon/Icons/delete.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.remove.hover">/WebConfig/yukon/Icons/delete_over.gif</entry>
+<entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.remove.alt">Remove Enrollment</entry>
+
+</properties>

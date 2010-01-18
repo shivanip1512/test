@@ -96,7 +96,9 @@ ItemPicker.prototype = {
 	    url = this.setUrlIntParameter(url);
 	    
 	    url += '&criteria=' + this.criteria;
-	    url += '&start=' + start;
+	    if (start) {
+	        url += '&start=' + start;
+	    }
 	    new Ajax.Request(url, {'method': 'get', 'onComplete': this.onComplete.bind(this), 'onFailure': this.ajaxError.bind(this)});
 	},
 	
@@ -227,7 +229,9 @@ ItemPicker.prototype = {
 	    url = this.setUrlIntParameter(url);
 	    
 	    url += '&criteria=' + this.criteria;
-	    url += '&start=' + start;
+	    if (start) {
+	        url += '&start=' + start;
+	    }
 	    new Ajax.Request(url, {'method': 'get', 'onComplete': this.onComplete.bind(this), 'onFailure': this.ajaxError.bind(this)});
 	},
 	

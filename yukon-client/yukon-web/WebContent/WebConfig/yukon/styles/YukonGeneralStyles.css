@@ -718,17 +718,16 @@ div.pagedBox table.boxTable {
     color:#006633;
 }
 
-.errorRed {
-    color:#CC0000;
-}
-
 tr.lightRedBackground {
 	background: #FFDDDD;
 }
 
-.errorMessage {
+.errorRed, .errorMessage {
     color:#CC0000;
-    font-style: italic;
+}
+
+ul.errorMessage {
+	margin-bottom:  15px;
 }
 
 .warningMessage {
@@ -808,7 +807,7 @@ div.actionArea {
 }
 
 div.actionArea input {
-	width: 75px;
+    width: 100px;
 }
 
 a.simpleLink {
@@ -872,7 +871,9 @@ div.dialogScrollArea {
 
 /* the following was pulled from http://www.hedgerwow.com/360/bugs/css-select-free.html */
 /* if this needs to be reused, consider making a generic class selector in one of the common css files */
-.simplePopup iframe
+/* This can be removed when support for IE 6 is dropped. */
+.simplePopup iframe,
+#itemPicker_popup iframe
 {
     display:none;/*sorry for IE5*/
     display/**/:block;/*sorry for IE5*/

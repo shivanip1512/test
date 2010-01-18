@@ -1,10 +1,19 @@
 package com.cannontech.stars.dr.program.service.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.bulk.filter.PostProcessingFilter;
+import com.cannontech.common.bulk.filter.SqlFilter;
+import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -13,6 +22,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.util.ECUtils;
@@ -21,7 +31,9 @@ public class ProgramServiceImpl implements ProgramService {
     private ApplianceDao applianceDao;
     private ProgramDao programDao;
     private RolePropertyDao rolePropertyDao;
-    
+    private FilterService filterService;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
+
     @Override
     public boolean hasProgramAccess(final CustomerAccount customerAccount, final Program program) {
         final List<Appliance> appliances = applianceDao.getByAccountId(customerAccount.getAccountId());
@@ -71,7 +83,20 @@ public class ProgramServiceImpl implements ProgramService {
         }
         return program;
     }
-    
+
+    @Override
+    public SearchResult<Program> filterPrograms(Integer applianceCategoryId) {
+        UiFilter<Program> filter = null;
+        if (applianceCategoryId != null) {
+            filter = new ForApplianceCategoryFilter(applianceCategoryId);
+        }
+        Comparator<Program> sorter = null;
+        SearchResult<Program> filteredPrograms =
+            filterService.filter(filter, sorter, 0, Integer.MAX_VALUE,
+                                 new ProgramRowMapper(simpleJdbcTemplate));
+        return filteredPrograms;
+    }
+
     @Autowired
     public void setApplianceDao(ApplianceDao applianceDao) {
         this.applianceDao = applianceDao;
@@ -85,5 +110,44 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }    
+    }
+
+    @Autowired
+    public void setFilterService(FilterService filterService) {
+        this.filterService = filterService;
+    }
+
+    @Autowired
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+
+    public static class ForApplianceCategoryFilter implements UiFilter<Program> {
+        private int applianceCategoryId;
+
+        public ForApplianceCategoryFilter(int applianceCategoryId) {
+            this.applianceCategoryId = applianceCategoryId;
+        }
+
+        @Override
+        public List<PostProcessingFilter<Program>> getPostProcessingFilters() {
+            return null;
+        }
+
+        @Override
+        public List<SqlFilter> getSqlFilters() {
+            List<SqlFilter> retVal = new ArrayList<SqlFilter>(1);
+            retVal.add(new SqlFilter(){
+
+                @Override
+                public SqlFragmentSource getWhereClauseFragment() {
+                    SqlStatementBuilder retVal = new SqlStatementBuilder(
+                        "applianceCategoryId =");
+                    retVal.appendArgument(applianceCategoryId);
+                    return retVal;
+                }});
+
+            return retVal;
+        }
+    }
 }

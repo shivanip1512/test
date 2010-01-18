@@ -4,10 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.program.model.ChanceOfControl;
 import com.cannontech.stars.dr.program.model.Program;
 
@@ -16,14 +18,30 @@ import com.cannontech.stars.dr.program.model.Program;
  * NOTE: This mapper *MUST* be used inside of a transaction otherwise there is a
  * possibility of running out of db connections 
  */
-public class ProgramRowMapper implements ParameterizedRowMapper<Program> {
+public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
 	
 	private SimpleJdbcTemplate simpleJdbcTemplate;
 	
 	public ProgramRowMapper(SimpleJdbcTemplate simpleJdbcTemplate) {
 		this.simpleJdbcTemplate = simpleJdbcTemplate;
 	}
-	
+
+    @Override
+    public SqlFragmentSource getBaseQuery() {
+        SqlStatementBuilder retVal = new SqlStatementBuilder();
+        retVal.append("SELECT programId, programOrder, ywc.description,");
+        retVal.append("ywc.url, alternateDisplayName,");
+        retVal.append("paoName, yle.entryText as chanceOfControl,");
+        retVal.append("applianceCategoryID, logoLocation");
+        retVal.append("FROM lmProgramWebPublishing pwp,");
+        retVal.append("yukonWebConfiguration ywc, yukonPAObject ypo,");
+        retVal.append("yukonListEntry yle ");
+        retVal.append("WHERE pwp.websettingsId = ywc.configurationId");
+        retVal.append("AND ypo.paobjectId = pwp.deviceId");
+        retVal.append("AND yle.entryID = pwp.chanceOfControlId");
+        return retVal;
+    }
+
     @Override
     public Program mapRow(ResultSet rs, int rowNum) throws SQLException {
         final Program program = new Program();

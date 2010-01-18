@@ -410,6 +410,14 @@
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
+    <servlet>
+        <servlet-name>starsDemandResponseAdmin</servlet-name>
+        <servlet-class>
+            com.cannontech.web.spring.CannonDispatcherServlet
+        </servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
 	<servlet>
 		<servlet-name>widgetDispatcher</servlet-name>
 		<servlet-class>
@@ -899,10 +907,15 @@
 		<url-pattern>/spring/macsscheduler/*</url-pattern>
 	</servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>stars</servlet-name>
-		<url-pattern>/spring/stars/*</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>stars</servlet-name>
+        <url-pattern>/spring/stars/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>starsDemandResponseAdmin</servlet-name>
+        <url-pattern>/spring/stars/dr/admin/*</url-pattern>
+    </servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>stars</servlet-name>

@@ -375,6 +375,61 @@
     
   </module>
 
+  <module name="energyCompanyAdmin">
+    <skin name="STANDARD"/>
+    <links>
+      <option id="configEnergyCompany">
+        <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
+      </option>
+    </links>
+  </module>
+
+  <module name="accountAdmin">
+    <skin name="STANDARD"/>
+    <links>
+      <option id="account">
+        <link>/temp/intentionalyBad/account/general</link>
+        <links>
+          <option id="general">
+            <link>/temp/intentionalyBad/account/general</link>
+          </option>
+          <option id="contact">
+            <link>/temp/intentionalyBad/account/contacts</link>
+          </option>
+        </links>
+      </option>
+      <option id="programs">
+        <link>/temp/intentionalyBad/programs/enrollment</link>
+        <links>
+          <option id="controlHistory">
+            <link>/temp/intentionalyBad/programs/controlHistory</link>
+          </option>
+          <option id="enrollment">
+            <link>/spring/stars/dr/admin/account/programEnrollment/edit</link>
+          </option>
+          <option id="optOut">
+            <link>/temp/intentionalyBad/programs/optOut</link>
+          </option>
+        </links>
+      </option>
+      <option id="appliances">
+        <link>/temp/intentionalyBad/appliances</link>
+      </option>
+      <option id="hardware">
+        <link>/temp/intentionalyBad/hardware</link>
+      </option>
+      <option id="workOrders">
+        <link>/temp/intentionalyBad/workOrders</link>
+      </option>
+      <option id="administration">
+        <link>/temp/intentionalyBad/administration</link>
+      </option>
+      <option id="eventLogging">
+        <link>/temp/intentionalyBad/eventLogging</link>
+      </option>
+    </links>
+  </module>
+
   <module name="internal">
     <skin name="INNER"/>
   </module>
