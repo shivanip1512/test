@@ -38,6 +38,7 @@ test_rwutil.obj \
 test_readers_writer_lock.obj \
 test_utility.obj \
 test_xmlobject.obj \
+test_PointAttribute.obj \
 
 
 LIBS=\

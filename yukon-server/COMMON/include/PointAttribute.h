@@ -5,16 +5,18 @@
 #include "dlldefs.h"
 
 #include <string>
+#include <map>
 
 class IM_EX_CTIBASE PointAttribute
 {
     private:
         enum Attribute
         {
+            UnknownAttribute,
             LowerTapAttribute,
             RaiseTapAttribute,
             LtcVoltageAttribute,
-            ControlModeAttribute,
+            AutoRemoteControlAttribute,
             UpperVoltLimitAttribute,
             LowerVoltLimitAttribute,
             KeepAliveAttribute
@@ -22,17 +24,21 @@ class IM_EX_CTIBASE PointAttribute
 
     public:
 
+        static const PointAttribute Unknown;
         static const PointAttribute LowerTap;
         static const PointAttribute RaiseTap;
         static const PointAttribute LtcVoltage;
-        static const PointAttribute ControlMode;
+        static const PointAttribute AutoRemoteControl;
         static const PointAttribute UpperVoltLimit;
         static const PointAttribute LowerVoltLimit;
         static const PointAttribute KeepAlive;
 
         std::string name() const;
-        std::string getDescription() const;
         int value() const;
+
+        static const PointAttribute& valueOf(const std::string& name);
+
+        const bool operator == (const PointAttribute& rhs) const;
 
     private:
 
@@ -40,9 +46,11 @@ class IM_EX_CTIBASE PointAttribute
          * This should never be called in code. Attributes will be built
          * up statically
          */
-        PointAttribute(Attribute value, std::string name, std::string description);
+        PointAttribute(Attribute value, const std::string& name);
 
-        std::string _name;
-        std::string _description;
         int _value;
+        std::string _name;
+
+        typedef std::map<std::string,PointAttribute*> AttributeMap;
+        static AttributeMap nameToAttributeMap;
 };

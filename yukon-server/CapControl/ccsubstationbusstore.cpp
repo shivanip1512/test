@@ -5766,8 +5766,6 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         }
         _paobject_ltc_map.clear();
         _ltc_subbus_map.clear();
-
-
     }
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -5876,7 +5874,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::ControlMode);
+            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::AutoRemoteControl);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setAutoRemotePoint(point);

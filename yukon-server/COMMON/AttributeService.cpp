@@ -54,7 +54,7 @@ std::list<LitePoint> AttributeService::getExtraPaoPoints(int paoId)
 LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
 {
     int pointId;
-    string attributeName = attribute.getDescription();
+    string attributeName = attribute.name();
 
     {
         string sql("SELECT pointId FROM ExtraPaoPointAssignment WHERE paoId = ");
