@@ -161,7 +161,9 @@
                                     </label><br>
                                 </td>
                                 <td align="right"> 
-                                    <span id="weekdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKDAY" /></span> 
+                                    <span id="everyDayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode != 'ALL')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.EVERYDAY" /></span> 
+
+                                    <span id="weekdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode == 'ALL')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKDAY" /></span> 
                                     <a id="weekdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKDAY')? 'none' : ''}" href="javascript:changeTimePeriod('WEEKDAY')"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKDAY" /></a> 
 
                                     <span id="saturdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SATURDAY')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.SATURDAY" /></span>
