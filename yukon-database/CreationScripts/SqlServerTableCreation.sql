@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/18/2010 5:39:18 PM                         */
+/* Created on:     1/19/2010 2:56:07 PM                         */
 /*==============================================================*/
 
 
@@ -15534,6 +15534,7 @@ go
 alter table OptOutTemporaryOverride
    add constraint FK_OptOutTempOver_LMProgWebPub foreign key (ProgramId)
       references LMProgramWebPublishing (ProgramID)
+         on delete cascade
 go
 
 alter table PAOExclusion

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/18/2010 5:38:03 PM                         */
+/* Created on:     1/19/2010 2:59:06 PM                         */
 /*==============================================================*/
 
 
@@ -12077,7 +12077,8 @@ alter table OptOutEvent
 
 alter table OptOutTemporaryOverride
    add constraint FK_OptOutTempOver_LMProgWebPub foreign key (ProgramId)
-      references LMProgramWebPublishing (ProgramID);
+      references LMProgramWebPublishing (ProgramID)
+      on delete cascade;
 
 alter table PAOExclusion
    add constraint FK_PAOEx_Pt foreign key (PointID)

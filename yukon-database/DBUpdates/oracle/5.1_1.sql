@@ -9,7 +9,8 @@ INSERT INTO YukonRoleProperty VALUES(-20910,-209,'Device Reconfiguration','false
 /* Start YUK-8219 */
 ALTER TABLE OptOutTemporaryOverride
     ADD CONSTRAINT FK_OptOutTempOver_LMProgWebPub FOREIGN KEY (ProgramId)
-        REFERENCES LMProgramWebPublishing (ProgramId);
+        REFERENCES LMProgramWebPublishing (ProgramId)
+            ON DELETE CASCADE;
 /* End YUK-8219 */
 
 /* Start YUK-8271 */
