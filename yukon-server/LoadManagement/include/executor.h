@@ -87,12 +87,26 @@ private:
     void StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop);
     void StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
     void StopCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& stop);
-
-    void CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea = NULL);
-    void CoerceStopTime(CtiLMProgramBaseSPtr program, CtiTime& stop);
-    
+   
     CtiServerRequestMsg* _request;
     CtiLMManualControlRequest* _controlMsg;
+
+protected:
+    void CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea = NULL);
+};
+
+class Test_CtiLMManualControlRequestExecutor : public CtiLMManualControlRequestExecutor
+{
+public:
+    Test_CtiLMManualControlRequestExecutor() : 
+        CtiLMManualControlRequestExecutor(NULL, NULL)
+    {
+
+    }
+    void CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea = NULL)
+    {
+        CtiLMManualControlRequestExecutor::CoerceStartStopTime(program, start, stop, controlArea);
+    }
 };
 
 class CtiLMEnergyExchangeControlMsgExecutor : public CtiLMExecutor

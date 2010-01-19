@@ -10,6 +10,7 @@
 #include "lmprogramcontrolwindow.h"
 #include "lmutility.h"
 #include "lmconstraint.h"
+#include "executor.h"
 
 #include <string>
 #include <vector>
@@ -1393,3 +1394,295 @@ BOOST_AUTO_TEST_CASE(test_control_window_error_message_stop_control_area_window)
                        "that runs from 07/01/2009 04:00:00 to 07/01/2009 08:00:00");
 }
 
+// Note that this is nearly identical to the test below,
+// the same function is really being tested twice
+BOOST_AUTO_TEST_CASE(test_coerce_start_stop_time)
+{
+    Test_CtiLMManualControlRequestExecutor executor;
+
+    CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
+    window1->setPAOId(1);
+    window1->setWindowNumber(1);
+    window1->setAvailableStartTime(3600);   // 1am
+    window1->setAvailableStopTime(14400);   // 4am
+
+    CtiLMProgramControlWindow *window2 = new CtiLMProgramControlWindow();
+    window2->setPAOId(1);
+    window2->setWindowNumber(2);
+    window2->setAvailableStartTime(14460);   // 4am, 1 minute
+    window2->setAvailableStopTime(28860);   // 8am, 1 minute
+
+    CtiLMProgramBaseSPtr lmProgram = CtiLMProgramBaseSPtr(CTIDBG_new CtiLMProgramDirect());
+    lmProgram->getLMProgramControlWindows().push_back(window1);
+    lmProgram->getLMProgramControlWindows().push_back(window2);
+
+    // define control area window from 02:00 to 08:00
+    CtiLMControlArea controlArea;
+    controlArea.setCurrentDailyStartTime(7200);
+    controlArea.setCurrentDailyStopTime(28800);
+
+    CtiTime start = CtiTime(0, 0, 0);
+    CtiTime stop = CtiTime(23, 0, 0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(2, 0, 0));
+    BOOST_CHECK_EQUAL(stop,  CtiTime::CtiTime(4, 0, 0));
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(1, 0, 0));
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(4, 1, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(8, 0, 0));
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(2, 0, 0).addDays(1));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(3, 0, 0).addDays(1));
+
+    // Note this completely bypasses one of the programs
+    controlArea.setCurrentDailyStartTime(14520); // 4 h, 2 minute
+
+    start = CtiTime(0, 0, 0);
+    stop = CtiTime(23, 0, 0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(4, 2, 0));
+    BOOST_CHECK_EQUAL(stop,  CtiTime::CtiTime(8, 0, 0));
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(1, 0, 0));
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(4, 2, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(8, 0, 0));
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(21, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(3, 0, 0).addDays(1));
+
+    //Bypass all programs with control area, no match at all
+    // Note this completely bypasses one of the programs
+    controlArea.setCurrentDailyStartTime(30000);
+    controlArea.setCurrentDailyStopTime(38000);
+
+    start = CtiTime(0, 0, 0);
+    stop = CtiTime(23, 0, 0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(stop,  CtiTime::CtiTime(23, 0, 0));
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(1, 0, 0));
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(4, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(8, 2, 0));
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(21, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(3, 0, 0).addDays(1));
+
+    // Test with no programs
+    lmProgram->getLMProgramControlWindows().clear();
+
+    controlArea.setCurrentDailyStartTime(14520); // 4 h, 2 minute
+    controlArea.setCurrentDailyStopTime(28800);
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(10,0,0);
+    stop.addDays(1);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(4, 2, 0).addDays(1));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(8, 0, 0).addDays(1));
+
+    controlArea.setCurrentDailyStartTime(-1);
+    controlArea.setCurrentDailyStopTime(-1);
+
+    start = CtiTime(0, 0, 0);
+    stop = CtiTime(23, 0, 0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(stop,  CtiTime::CtiTime(23, 0, 0));
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(1, 0, 0));
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(4, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(8, 2, 0));
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    executor.CoerceStartStopTime(lmProgram, start, stop, &controlArea);
+    BOOST_CHECK_EQUAL(start, CtiTime::CtiTime(21, 0, 0));
+    BOOST_CHECK_EQUAL(stop, CtiTime::CtiTime(3, 0, 0).addDays(1));
+
+}
+
+// Note that this is nearly identical to the test above,
+// the same function is really being tested twice
+BOOST_AUTO_TEST_CASE(test_util_fit_to_window)
+{
+    CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
+    window1->setPAOId(1);
+    window1->setWindowNumber(1);
+    window1->setAvailableStartTime(3600);   // 1am
+    window1->setAvailableStopTime(14400);   // 4am
+
+    CtiLMProgramControlWindow *window2 = new CtiLMProgramControlWindow();
+    window2->setPAOId(1);
+    window2->setWindowNumber(2);
+    window2->setAvailableStartTime(14460);   // 4am, 1 minute
+    window2->setAvailableStopTime(28860);   // 8am, 1 minute
+
+    CtiLMProgramBaseSPtr lmProgram = CtiLMProgramBaseSPtr(CTIDBG_new CtiLMProgramDirect());
+    lmProgram->getLMProgramControlWindows().push_back(window1);
+    lmProgram->getLMProgramControlWindows().push_back(window2);
+
+    // define control area window from 02:00 to 08:00
+    CtiLMControlArea controlArea;
+    controlArea.setCurrentDailyStartTime(7200);
+    controlArea.setCurrentDailyStopTime(28800);
+
+    CtiTime resultStart;
+    CtiTime resultStop;
+
+    CtiTime start = CtiTime(0, 0, 0);
+    CtiTime stop = CtiTime(23, 0, 0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(2, 0, 0));
+    BOOST_CHECK_EQUAL(resultStop,  CtiTime::CtiTime(4, 0, 0));
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), false);
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(4, 1, 0));
+    BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(8, 0, 0));
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(2, 0, 0).addDays(1));
+    BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(3, 0, 0).addDays(1));
+
+    // Note this completely bypasses one of the programs
+    controlArea.setCurrentDailyStartTime(14520); // 4 h, 2 minute
+
+    start = CtiTime(0, 0, 0);
+    stop = CtiTime(23, 0, 0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(4, 2, 0));
+    BOOST_CHECK_EQUAL(resultStop,  CtiTime::CtiTime(8, 0, 0));
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), false);
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(4, 2, 0));
+    BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(8, 0, 0));
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), false);
+
+    //Bypass all programs with control area, no match at all
+    // Note this completely bypasses one of the programs
+    controlArea.setCurrentDailyStartTime(30000);
+    controlArea.setCurrentDailyStopTime(38000);
+
+    start = CtiTime(0, 0, 0);
+    stop = CtiTime(23, 0, 0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), false);
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), false);
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), false);
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), false);
+
+    // Test with no programs
+    lmProgram->getLMProgramControlWindows().clear();
+
+    controlArea.setCurrentDailyStartTime(14520); // 4 h, 2 minute
+    controlArea.setCurrentDailyStopTime(28800);
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(10,0,0);
+    stop.addDays(1);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(4, 2, 0).addDays(1));
+    BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(8, 0, 0).addDays(1));
+
+    controlArea.setCurrentDailyStartTime(-1);
+    controlArea.setCurrentDailyStopTime(-1);
+
+    start = CtiTime(0, 0, 0);
+    stop = CtiTime(23, 0, 0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(resultStop,  CtiTime::CtiTime(23, 0, 0));
+
+    start = CtiTime(0,0,0);
+    stop  = CtiTime(1,0,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(0, 0, 0));
+    BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(1, 0, 0));
+
+    start = CtiTime(4,0,0);
+    stop  = CtiTime(8,2,0);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(4, 0, 0));
+    BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(8, 2, 0));
+
+    start = CtiTime(21,0,0);
+    stop  = CtiTime(3,0,0);
+    stop.addDays(1);
+    BOOST_CHECK_EQUAL(FitTimeToWindows(start, stop, resultStart, resultStop, &controlArea, lmProgram), true);
+    BOOST_CHECK_EQUAL(resultStart, CtiTime::CtiTime(21, 0, 0));
+    BOOST_CHECK_EQUAL(resultStop, CtiTime::CtiTime(3, 0, 0).addDays(1));
+
+}

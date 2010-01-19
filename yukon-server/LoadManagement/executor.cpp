@@ -1729,156 +1729,18 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
         dout << CtiTime() << " - before coerce start: " << start.asString() << " stop: " << stop.asString() << endl;
     }
 
-    CtiDate rightNow;   // fixed date point for all of the get[Avaliable|CurrentDaily][Start|Stop]Time() functions
+    CtiTime resultStart, resultStop;
 
-    std::vector<CtiLMProgramControlWindow*>& control_windows = program->getLMProgramControlWindows();
-
-    bool found_cw = false;
-    for( int i = 0; i < control_windows.size() && !found_cw; i++ )
+    if( FitTimeToWindows(start, stop, resultStart, resultStop, controlArea, program) )
     {
-        // Do the start, stop times fit into this control window?  if not maybe the next one 
-        CtiLMProgramControlWindow* cw = (CtiLMProgramControlWindow*) control_windows[i];
-
-        if( cw->getAvailableStartTime(rightNow).date() == cw->getAvailableStopTime(rightNow).date() )    // control window doesn't span midnight
-        {
-            if( start <= cw->getAvailableStopTime(rightNow) )
-            {
-                //Lets pick this control window, figure out the start and stop
-                if( start < cw->getAvailableStartTime(rightNow) )   // start is before beginning of control window, set the start time to the
-                {                                           // beginning of this control window
-                    start = cw->getAvailableStartTime(rightNow);
-                    found_cw = true;
-                }
-                else        // start is inside this control window, no need to change it
-                {
-                    found_cw = true;                
-                }
-    
-                if( stop >= cw->getAvailableStopTime(rightNow) )    // stop time is outside this control window, shorten it up
-                {
-                    stop = cw->getAvailableStopTime(rightNow);
-                }
-                else
-                {
-                    // stop is inside this control window, no need to change it
-                }
-            }
-        }
-        else    // control window spans midnight --- stop time is tomorrow
-        {
-            CtiTime todaysWindowStopTime = cw->getAvailableStopTime(rightNow);
-            todaysWindowStopTime.addDays(-1);
-
-            if( start <= todaysWindowStopTime )     // start time is OK
-            {
-                found_cw = true;                
-                if( stop > todaysWindowStopTime )   // shorten window if necessary
-                {
-                    stop = todaysWindowStopTime;
-                }
-            }
-            else if( start < cw->getAvailableStartTime(rightNow) )  // start time outside of window
-            {
-                start = cw->getAvailableStartTime(rightNow);        // move start position to start of next window
-                
-                if( stop >= start )
-                {
-                    found_cw = true;                
-                    if( stop > cw->getAvailableStopTime(rightNow) ) // shorten window to tomorrows stop time if necessary
-                    {
-                        stop = cw->getAvailableStopTime(rightNow);
-                    }
-                }
-                else    // stop < start
-                {
-                    // not a valid window - check next one if available
-                }
-            }
-            else    // start >= cw->getAvailableStartTime()
-            {
-                found_cw = true;                
-                if( stop > cw->getAvailableStopTime(rightNow) )     // shorten window to tomorrows stop time if necessary
-                {
-                    stop = cw->getAvailableStopTime(rightNow);
-                }
-            }
-        }
-    }
-
-    if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-    {
-        CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(program);
-
-        if( lmProgramDirect->getNotifyActiveOffset() != CtiLMProgramDirect::invalidNotifyOffset )   // there is no notify active offset
-        {
-            if( (start.seconds() - start.now().seconds()) < lmProgramDirect->getNotifyActiveOffset() )
-            {
-                //we add (time we must go to)-(current start time) seconds to get to (time we must go to);
-                start += start.now().seconds() - start.seconds() + lmProgramDirect->getNotifyActiveOffset();
-            }
-        }
-    }
-
-    if( controlArea != NULL )
-    {
-        if( controlArea->getCurrentDailyStartTime(rightNow).date() == controlArea->getCurrentDailyStopTime(rightNow).date() )   // window doesn't span midnight
-        {
-            if( start <= controlArea->getCurrentDailyStopTime(rightNow) )
-            {
-                if( start < controlArea->getCurrentDailyStartTime(rightNow) )   // shorten window start time if necessary
-                {
-                    start = controlArea->getCurrentDailyStartTime(rightNow);
-                }
-
-                if( stop > controlArea->getCurrentDailyStopTime(rightNow) )     // shorten window stop time if necessary
-                {
-                    stop = controlArea->getCurrentDailyStopTime(rightNow);
-                }
-            }
-        }
-        else        // window does span midnight
-        {
-            CtiTime todaysWindowStopTime = controlArea->getCurrentDailyStopTime(rightNow);
-            todaysWindowStopTime.addDays(-1);
-
-            if( start <= todaysWindowStopTime )     // start time is OK
-            {
-                if( stop > todaysWindowStopTime )   // shorten window if necessary
-                {
-                    stop = todaysWindowStopTime;
-                }
-            }
-            else if( start < controlArea->getCurrentDailyStartTime(rightNow) )      // start time outside of window
-            {
-                start = controlArea->getCurrentDailyStartTime(rightNow);            // move start position to start of next window
-
-                if( stop >= start )
-                {
-                    if( stop > controlArea->getCurrentDailyStopTime(rightNow) )     // shorten window to tomorrows stop time if necessary
-                    {
-                        stop = controlArea->getCurrentDailyStopTime(rightNow);
-                    }
-                }
-            }
-            else    // start >= controlArea->getCurrentDailyStartTime()
-            {
-                if( stop > controlArea->getCurrentDailyStopTime(rightNow) )         // shorten window to tomorrows stop time if necessary
-                {
-                    stop = controlArea->getCurrentDailyStopTime(rightNow);
-                }
-            }
-        }
+        start = resultStart;
+        stop = resultStop;
     }
 
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " - after coerce start: " << start.asString() << " stop: " << stop.asString() << endl;
     }
-}
-
-void CoerceStopTime(CtiLMProgramBaseSPtr program, CtiTime& stop)
-{
-
 }
 
 /*---------------------------------------------------------------------------

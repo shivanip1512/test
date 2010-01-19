@@ -4753,14 +4753,15 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
         ret_val = updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901); // consider if any groups have ramped out
     }
 
-    bool in_control_window = (getControlWindow(secondsFromBeginningOfDay) != NULL);
+    CtiTime now;
+    bool is_control_time = (now < getDirectStopTime() && now > getDirectStartTime());
     bool inactive = (getProgramState() == CtiLMProgramBase::InactiveState);
     bool disabled = getDisableFlag();
     bool is_ramping_out = getIsRampingOut();
 
     if( inactive )
     {
-        if( in_control_window && !disabled ) //do we need to do a timed start?
+        if( is_control_time && !disabled ) //do we need to do a timed start?
         {
             // timed start
             return(ret_val || startTimedProgram(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg));
@@ -4772,7 +4773,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
     } // end timed start
     else if( timed_active ) //do we need to do a timed stop or just refresh?
     {
-        if( (!in_control_window || disabled) )
+        if( (!is_control_time || disabled) )
         {
             if( !is_ramping_out && was_ramping_out )  //we just finished ramping out!
             {
@@ -4849,7 +4850,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
     assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
 
     CtiTime startTime(CtiTime((unsigned long)secondsFrom1901));
-    CtiTime endTime(controlWindow->getAvailableStopTime());
+    CtiTime endTime = controlWindow->getAvailableStopTime();
     if( !getConstraintOverride() && !con_checker.checkManualProgramConstraints(startTime.seconds(), endTime.seconds()) )
     {
         if( !_announced_program_constraint_violation )
@@ -4895,7 +4896,6 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
         setProgramState(CtiLMProgramBase::TimedActiveState);
 
         setDirectStartTime(startTime);
-        setDirectStopTime(endTime);
         _announced_program_constraint_violation = false;
         return true;
     }

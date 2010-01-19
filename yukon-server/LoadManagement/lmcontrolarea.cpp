@@ -2454,7 +2454,9 @@ void CtiLMControlArea::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
   updateTimedPrograms
 
   Updates the start/stop time of all the timed programs in this control
-  area
+  area based on both program and control area windows
+ 
+  If a manual control was received, this will not override it.
 ----------------------------------------------------------------------------*/
 void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
 {
@@ -2466,36 +2468,16 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
         {
             CtiLMProgramDirectSPtr lm_direct = boost::static_pointer_cast< CtiLMProgramDirect >(lm_program);
 
-            CtiDate today;
-            CtiTime start(today);
-            CtiTime stop(today);
+            CtiTime resultStart, resultStop;
 
-            CtiLMProgramControlWindow* cw = lm_program->getControlWindow(secondsFromBeginningOfDay);
-            if( cw == 0 )
-            {
-                cw = lm_program->getNextControlWindow(secondsFromBeginningOfDay);
-            }
-
-            if( cw != 0 )
-            {
-                start = cw->getAvailableStartTime();
-                stop  = cw->getAvailableStopTime();
-
-                //control window could be from earlier in the day, add a day to it to indicate
-                //tomorrow
-                if( cw->getAvailableStopTime() < CtiTime::now() )
-                {
-                    start.addDays(1);
-                    stop.addDays(1);
-                }
-            }
+            CtiTime beginTime = GetTimeFromOffsetAndDate(secondsFromBeginningOfDay, CtiDate());
 
             if( !lm_direct->getManualControlReceivedFlag() &&
-                (lm_direct->getDirectStartTime() != start ||
-                 lm_direct->getDirectStopTime() != stop) )
+                FitTimeToWindows(beginTime, CtiTime(CtiTime::pos_infin), resultStart, resultStop, this, lm_program) &&
+                lm_direct->getDirectStopTime() != resultStop )
             {
-                lm_direct->setDirectStartTime(start);
-                lm_direct->setDirectStopTime(stop);
+                lm_direct->setDirectStartTime(resultStart);
+                lm_direct->setDirectStopTime(resultStop);
                 setUpdatedFlag(TRUE);
             }
         }
