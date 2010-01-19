@@ -228,7 +228,9 @@ DROP COLUMN PeakLag, PeakLead, OffPkLag, OffPkLead, PeakVARLag, PeakVARLead,
 /* End YUK-8271 */
 
 /* Start YUK-8264 */
+/* @error ignore-begin */
 DROP INDEX INDX_PAO_PAOName_Type;
+/* @error ignore-end */
 /* End YUK-8264 */
 
 /* Start YUK-8213 */
