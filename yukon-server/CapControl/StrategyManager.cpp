@@ -8,16 +8,18 @@
 
 #include "StrategyManager.h"
 
-/*
-    New Strategy hierarchy starts below! 
-*/
+
+const long StrategyManager::_defaultID = 0;
+
 
 StrategyManager::StrategyManager( std::auto_ptr<StrategyLoader> loader )
     : _loader( loader )
 {
     StrategyPtr     none( new NoStrategy );
 
-    _strategies.insert( std::make_pair( 0, none ) );      // a sane default for get() to use...
+    none->setStrategyId(_defaultID);
+
+    _strategies.insert( std::make_pair( none->getStrategyId(), none ) );        // a sane default for get() to use...
 }
 
 
@@ -35,7 +37,7 @@ void StrategyManager::reloadAll()
 
 void StrategyManager::unload(const long ID)
 {
-    if (ID != 0)
+    if (ID != _defaultID)               // do NOT erase the default
     {
         _strategies.erase(ID);
     }
@@ -44,10 +46,10 @@ void StrategyManager::unload(const long ID)
 
 void StrategyManager::unloadAll()
 {
-    StrategyPtr     none( new NoStrategy );
+    StrategyPtr     none = getStrategy(_defaultID);                             // grab the default
 
-    _strategies.clear();
-    _strategies.insert( std::make_pair( 0, none ) );      // re-insert the default
+    _strategies.clear();                                                        // clear the map
+    _strategies.insert( std::make_pair( none->getStrategyId(), none ) );        // re-insert the default
 }
 
 
@@ -57,6 +59,6 @@ StrategyPtr StrategyManager::getStrategy(const long ID) const
 
     return iter != _strategies.end()
                     ? iter->second
-                    : _strategies.find(0)->second;
+                    : _strategies.find(_defaultID)->second;
 }
 

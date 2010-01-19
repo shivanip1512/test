@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "logger.h"
 #include "ControlStrategies.h"
 
 
@@ -159,124 +160,303 @@ const std::string ControlStrategy::getEndDaySettings() const
     return _endDaySettings;
 }
 
-
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getPeakLag() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getOffPeakLag() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getPeakLead() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getOffPeakLead() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getPeakVARLag() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getOffPeakVARLag() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getPeakVARLead() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getOffPeakVARLead() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getPeakPFSetPoint() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * @return      0.0
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 double ControlStrategy::getOffPeakPFSetPoint() const
 {
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+
     return 0.0;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setPeakLag(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setOffPeakLag(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setPeakLead(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setOffPeakLead(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setPeakVARLag(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setOffPeakVARLag(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setPeakVARLead(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setOffPeakVARLead(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setPeakPFSetPoint(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 
+/** 
+ * This function has no effect on the strategy. 
+ *  
+ * @param       value   The new input value. 
+ * @deprecated  This function is supplied for backwards 
+ *              compatability with the old style strategies.
+ */
 void ControlStrategy::setOffPeakPFSetPoint(const double value)
 {
-    // empty!
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
 }
 
 

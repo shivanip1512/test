@@ -31,6 +31,8 @@ public:
 
 private:
 
+    static const long   _defaultID;
+
     StrategyMap _strategies;
 
     std::auto_ptr<StrategyLoader>   _loader;

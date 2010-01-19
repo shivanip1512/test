@@ -208,5 +208,12 @@ test_pointholder.obj:	yukon.h precompiled.h ctidbgmem.h \
 		pointdefs.h message.h collectable.h rwutil.h ctitime.h \
 		boost_time.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h
+test_strategymanager.obj:	StrategyManager.h ControlStrategies.h \
+		StrategyLoader.h dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticonnect.h yukon.h precompiled.h ctidbgmem.h netports.h \
+		sema.h IVVCStrategy.h KVarStrategy.h MultiVoltStrategy.h \
+		MultiVoltVarStrategy.h NoStrategy.h PFactorKWKVarStrategy.h \
+		PFactorKWKQStrategy.h TimeOfDayStrategy.h VoltStrategy.h
 #ENDUPDATE#
 

@@ -122,6 +122,8 @@ public:
     virtual void setPeakPFSetPoint(const double value);
     virtual void setOffPeakPFSetPoint(const double value);
 
+    // End of backwards compatability section.
+
     // Mutators
 
     void setMaxOperationDisableFlag(const bool flag);
