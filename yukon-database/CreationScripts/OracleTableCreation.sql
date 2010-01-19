@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/19/2010 2:59:06 PM                         */
+/* Created on:     1/19/2010 5:15:14 PM                         */
 /*==============================================================*/
 
 
@@ -11291,7 +11291,8 @@ alter table DynamicCCMonitorPointResponse
 
 alter table DynamicCCOriginalParent
    add constraint FK_DynCCOrigParent_YukonPAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table DynamicCCSubstationBus
    add constraint FK_CCSubBs_DySubBs foreign key (SubstationBusID)

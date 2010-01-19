@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/19/2010 2:56:07 PM                         */
+/* Created on:     1/19/2010 5:18:37 PM                         */
 /*==============================================================*/
 
 
@@ -14556,6 +14556,7 @@ go
 alter table DynamicCCOriginalParent
    add constraint FK_DynCCOrigParent_YukonPAO foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table DynamicCCSubstationBus
