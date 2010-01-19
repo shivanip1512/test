@@ -43,12 +43,12 @@ CtiPointType_t LitePoint::getPointType()
     return _pointType;
 }
 
-void LitePoint::setPointName(std::string pointName)
+void LitePoint::setPointName(const std::string& pointName)
 {
     _pointName = pointName;
 }
 
-std::string LitePoint::getPointName()
+std::string LitePoint::getPointName()const
 {
     return _pointName;
 }

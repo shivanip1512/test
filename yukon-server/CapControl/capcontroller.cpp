@@ -344,7 +344,7 @@ void CtiCapController::messageSender()
                 CtiCCSubstation_set stationChanges;
                 CtiCCArea_set areaChanges;
 
-                std::map<long, CtiCCSubstationBusPtr>::iterator busIter = store->getPAOSubMap()->begin();
+                SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
                 for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
                 {
                     CtiCCSubstationBusPtr currentSubstationBus = busIter->second;CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
@@ -582,7 +582,7 @@ void CtiCapController::controlLoop()
 
                     areaChanges.clear();
                     stationChanges.clear();
-                    std::map<long, CtiCCSubstationBusPtr>::iterator busIter = store->getPAOSubMap()->begin();
+                    SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
                     for ( ;  !store->getStoreRecentlyReset() && busIter != store->getPAOSubMap()->end() ; busIter++)
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -1112,7 +1112,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
         {
             currentSubstationBus->setLastVerificationCheck(currentDateTime);
 
-            
+
 
             if( (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
                  currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder) &&
@@ -1778,7 +1778,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             CtiCCSubstation_vec stationChanges;
             CtiCCArea_vec areaChanges;
 
-            std::map<long, CtiCCAreaPtr>::iterator areaIter = store->getPAOAreaMap()->begin();
+            AreaMap::iterator areaIter = store->getPAOAreaMap()->begin();
             for ( ; areaIter != store->getPAOAreaMap()->end() ; areaIter++)
             {
                 CtiCCAreaPtr currentArea = areaIter->second;
@@ -1809,7 +1809,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     regMsg->insert(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
             }
-            std::map<long, CtiCCSpecialPtr>::iterator spAreaIter = store->getPAOSpecialAreaMap()->begin();
+            SpecialAreaMap::iterator spAreaIter = store->getPAOSpecialAreaMap()->begin();
             for ( ; spAreaIter != store->getPAOSpecialAreaMap()->end() ; spAreaIter++)
             {
                 CtiCCSpecialPtr currentSpArea = spAreaIter->second;
@@ -1840,7 +1840,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 }
 
             }
-            std::map<long, CtiCCSubstationPtr>::iterator stationIter = store->getPAOStationMap()->begin();
+            SubstationMap::iterator stationIter = store->getPAOStationMap()->begin();
             for ( ; stationIter != store->getPAOStationMap()->end() ; stationIter++)
             {
                 CtiCCSubstation* currentStation = stationIter->second;
@@ -1872,7 +1872,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 }
 
             }
-            std::map<long, CtiCCSubstationBusPtr>::iterator busIter = store->getPAOSubMap()->begin();
+            SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
             for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
             {
                 CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
@@ -4212,7 +4212,7 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts->getCapacitorBankState() <<" CAPBANK: "<<
         currentCapBank->getPAOName() << " is "<< currentCapBank->getControlStatusText() <<
-        " waiting for VAR change." << endl;                         
+        " waiting for VAR change." << endl;
     }
 
     string text = string("CBC Unsolicited Event!");

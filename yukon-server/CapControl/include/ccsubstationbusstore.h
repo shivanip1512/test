@@ -102,6 +102,14 @@ private:
 };
 
 
+typedef map< long, CtiCCSpecialPtr > SpecialAreaMap;
+typedef map< long, CtiCCAreaPtr > AreaMap;
+typedef map< long, CtiCCSubstationPtr > SubstationMap;
+typedef map< long, CtiCCSubstationBusPtr > SubBusMap;
+typedef map< long, CtiCCFeederPtr > FeederMap;
+typedef map< long, CtiCCCapBankPtr > CapBankMap;
+typedef map< long, LoadTapChangerPtr> LtcMap;
+
 class CtiCCSubstationBusStore : public PointDataListener
 {
 public:
@@ -431,11 +439,11 @@ public:
     const CtiTime& getLinkDropOutTime() const;
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
 
-    map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
-    map <long, CtiCCAreaPtr>* getPAOAreaMap();
-    map <long, CtiCCSubstationPtr>* getPAOStationMap();
-    map <long, CtiCCSpecialPtr>* getPAOSpecialAreaMap();
-    map <long, LoadTapChangerPtr>* getLtcMap();
+    SubBusMap* getPAOSubMap();
+    AreaMap* getPAOAreaMap();
+    SubstationMap* getPAOStationMap();
+    SpecialAreaMap* getPAOSpecialAreaMap();
+    LtcMap* getLtcMap();
 
      static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
@@ -561,13 +569,13 @@ private:
 
     static const string m3iAMFMNullString;
 
-    map< long, CtiCCSpecialPtr > _paobject_specialarea_map;
-    map< long, CtiCCAreaPtr > _paobject_area_map;
-    map< long, CtiCCSubstationPtr > _paobject_substation_map;
-    map< long, CtiCCSubstationBusPtr > _paobject_subbus_map;
-    map< long, CtiCCFeederPtr > _paobject_feeder_map;
-    map< long, CtiCCCapBankPtr > _paobject_capbank_map;
-    map< long, LoadTapChangerPtr> _paobject_ltc_map;
+    SpecialAreaMap _paobject_specialarea_map;
+    AreaMap _paobject_area_map;
+    SubstationMap _paobject_substation_map;
+    SubBusMap _paobject_subbus_map;
+    FeederMap _paobject_feeder_map;
+    CapBankMap _paobject_capbank_map;
+    LtcMap _paobject_ltc_map;
 
     multimap< long, CtiCCAreaPtr > _pointid_area_map;
     multimap< long, CtiCCSpecialPtr > _pointid_specialarea_map;

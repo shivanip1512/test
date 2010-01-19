@@ -5756,7 +5756,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
     else
     {
         //Clear all Ltcs
-        for each(const std::pair<const long, LoadTapChangerPtr >& p in _paobject_ltc_map)
+        for each(LtcMap::value_type p in _paobject_ltc_map)
         {
             if (p.second != NULL)
             {
@@ -5832,7 +5832,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         }
         else
         {
-            for each(const std::pair<const long, LoadTapChangerPtr >& p in _paobject_ltc_map)
+            for each(LtcMap::value_type p in _paobject_ltc_map)
             {
                 ltcList.push_back(p.second);
             }
@@ -8991,7 +8991,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 {
                     CtiCCArea *area = *itr;
                     if (area->getPAOId() == areaId)
-                    {   
+                    {
                         itr = _ccGeoAreas->erase(itr);
                         break;
                     }else
@@ -10799,25 +10799,25 @@ void CtiCCSubstationBusStore::removeItemsFromMap(int mapType, long first)
     }
     return;
 }
-map <long, CtiCCSubstationBusPtr>* CtiCCSubstationBusStore::getPAOSubMap()
+SubBusMap* CtiCCSubstationBusStore::getPAOSubMap()
 {
     return &_paobject_subbus_map;
 }
 
-map <long, LoadTapChangerPtr>* CtiCCSubstationBusStore::getLtcMap()
+LtcMap* CtiCCSubstationBusStore::getLtcMap()
 {
     return &_paobject_ltc_map;
 }
 
-map <long, CtiCCAreaPtr>* CtiCCSubstationBusStore::getPAOAreaMap()
+AreaMap* CtiCCSubstationBusStore::getPAOAreaMap()
 {
     return &_paobject_area_map;
 }
-map <long, CtiCCSubstationPtr>* CtiCCSubstationBusStore::getPAOStationMap()
+SubstationMap* CtiCCSubstationBusStore::getPAOStationMap()
 {
     return &_paobject_substation_map;
 }
-map <long, CtiCCSpecialPtr>* CtiCCSubstationBusStore::getPAOSpecialAreaMap()
+SpecialAreaMap* CtiCCSubstationBusStore::getPAOSpecialAreaMap()
 {
     return &_paobject_specialarea_map;
 }

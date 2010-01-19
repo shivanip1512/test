@@ -22,7 +22,7 @@ class PointValueHolder
     private:
 
         typedef std::map<int,double> ValueMap;
-        typedef std::map<int,double>::iterator ValueMapItr;
+        typedef ValueMap::iterator ValueMapItr;
 
         ValueMap _valueMap;
 

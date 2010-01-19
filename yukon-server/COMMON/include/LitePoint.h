@@ -19,8 +19,8 @@ class IM_EX_CTIBASE LitePoint
         void setPointType(CtiPointType_t pointType);
         CtiPointType_t getPointType();
 
-        void setPointName(std::string pointName);
-        std::string getPointName();
+        void setPointName(const std::string& pointName);
+        std::string getPointName() const;
 
         void setPaoId(int paoId);
         int getPaoId();
