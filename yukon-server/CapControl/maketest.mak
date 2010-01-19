@@ -63,7 +63,7 @@ $(OBJ)\ccsubstationbusstore.obj \
 $(OBJ)\pao_schedule.obj \
 $(OBJ)\pao_event.obj \
 $(OBJ)\mgr_paosched.obj \
-$(OBJ)\ControlStrategies.obj \
+$(OBJ)\ControlStrategy.obj \
 $(OBJ)\IVVCStrategy.obj \
 $(OBJ)\KVarStrategy.obj \
 $(OBJ)\MultiVoltStrategy.obj \
@@ -146,7 +146,7 @@ test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		configval.h observe.h ccmonitorpoint.h msg_cmd.h ctidate.h \
 		ccoriginalparent.h cccapbank.h ccpointresponse.h \
 		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		msg_pcrequest.h ControlStrategies.h regression.h \
+		msg_pcrequest.h ControlStrategy.h regression.h \
 		ccsubstationbus.h TimeOfDayStrategy.h ccsubstationbusstore.h \
 		ccarea.h ccsparea.h ccid.h ccstate.h ccmessage.h \
 		ccsubstation.h ccstatsobject.h LoadTapChanger.h LitePoint.h \
@@ -168,7 +168,7 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		configval.h observe.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h ccoriginalparent.h cccapbank.h ccpointresponse.h \
 		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		msg_pcrequest.h ControlStrategies.h regression.h \
+		msg_pcrequest.h ControlStrategy.h regression.h \
 		TimeOfDayStrategy.h ccsubstation.h ccarea.h \
 		ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
 		ccmessage.h ccstatsobject.h LoadTapChanger.h LitePoint.h \
@@ -181,7 +181,7 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		ccexecutor.h msg_signal.h ctdpcptrq.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
 		ccUnitTestUtil.h
-test_controlstrategies.obj:	ControlStrategies.h NoStrategy.h
+test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h
 test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -193,7 +193,7 @@ test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		configval.h observe.h ccmonitorpoint.h msg_cmd.h ctidate.h \
 		ccoriginalparent.h cccapbank.h ccpointresponse.h \
 		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		msg_pcrequest.h ControlStrategies.h regression.h \
+		msg_pcrequest.h ControlStrategy.h regression.h \
 		ccsubstationbus.h TimeOfDayStrategy.h ccUnitTestUtil.h \
 		ccsubstationbusstore.h ccarea.h ccsparea.h ccid.h ccstate.h \
 		ccmessage.h ccsubstation.h ccstatsobject.h LoadTapChanger.h \
@@ -208,7 +208,7 @@ test_pointholder.obj:	yukon.h precompiled.h ctidbgmem.h \
 		pointdefs.h message.h collectable.h rwutil.h ctitime.h \
 		boost_time.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h
-test_strategymanager.obj:	StrategyManager.h ControlStrategies.h \
+test_strategymanager.obj:	StrategyManager.h ControlStrategy.h \
 		StrategyLoader.h dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		cticonnect.h yukon.h precompiled.h ctidbgmem.h netports.h \

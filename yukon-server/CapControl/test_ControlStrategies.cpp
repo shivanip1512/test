@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 #include "NoStrategy.h"
 
 using boost::unit_test_framework::test_suite;

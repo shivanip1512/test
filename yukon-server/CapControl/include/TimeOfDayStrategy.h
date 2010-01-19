@@ -1,16 +1,10 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_CONTROLSTRATEGY_TIMEOFDAYSTRATEGY_H
-#define CTI_CONTROLSTRATEGY_TIMEOFDAYSTRATEGY_H
+#pragma once
 
 #include <string>
 #include <map>
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 
 
 class TimeOfDayStrategy : public ControlStrategy
@@ -54,7 +48,4 @@ private:
     TimeOfDayMapping    _timeOfDay;
 
 };
-
-
-#endif
 

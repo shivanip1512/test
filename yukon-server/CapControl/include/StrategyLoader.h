@@ -1,15 +1,9 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_STRATEGYLOADER_H
-#define CTI_STRATEGYLOADER_H
+#pragma once
 
 #include "dbaccess.h"
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 #include "IVVCStrategy.h"
 #include "KVarStrategy.h"
 #include "MultiVoltStrategy.h"
@@ -63,10 +57,4 @@ private:
 
     RWRecursiveLock<RWMutexLock>    _dbMutex;
 };
-
-
-
-
-
-#endif
 

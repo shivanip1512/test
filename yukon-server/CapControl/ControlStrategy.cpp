@@ -1,15 +1,10 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
 #include "yukon.h"
 
 #include <string>
 
 #include "logger.h"
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 
 
 ControlStrategy::ControlStrategy() :

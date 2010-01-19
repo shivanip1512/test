@@ -1,15 +1,9 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_CONTROLSTRATEGY_KVARSTRATEGY_H
-#define CTI_CONTROLSTRATEGY_KVARSTRATEGY_H
+#pragma once
 
 #include <string>
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 
 
 class KVarStrategy : public ControlStrategy
@@ -54,6 +48,4 @@ private:
     double _peakKVarLagging;
     double _offpeakKVarLagging;
 };
-
-#endif
 

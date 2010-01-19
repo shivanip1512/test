@@ -33,7 +33,7 @@ using std::list;
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
               

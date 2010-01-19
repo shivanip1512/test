@@ -36,7 +36,7 @@ using std::list;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 #include "ccmonitorpoint.h"
 
 typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;

@@ -1,15 +1,9 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_CONTROLSTRATEGY_PFACTORKWKQSTRATEGY_H
-#define CTI_CONTROLSTRATEGY_PFACTORKWKQSTRATEGY_H
+#pragma once
 
 #include <string>
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 
 
 class PFactorKWKQStrategy : public ControlStrategy
@@ -60,7 +54,4 @@ private:
     double _peakMinBankClose;
     double _offpeakMinBankClose;
 };
-
-
-#endif
 

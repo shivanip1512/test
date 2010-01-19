@@ -35,7 +35,7 @@ using boost::shared_ptr;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 #include "TimeOfDayStrategy.h"
 #include "ccmonitorpoint.h"
 

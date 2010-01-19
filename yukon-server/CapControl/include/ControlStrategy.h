@@ -1,11 +1,5 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_CONTROLSTRATEGY_H
-#define CTI_CONTROLSTRATEGY_H
+#pragma once
 
 #include <string>
 #include <map>
@@ -173,7 +167,4 @@ private:
 typedef boost::shared_ptr<ControlStrategy>  StrategyPtr;
 
 typedef std::map<long, StrategyPtr>         StrategyMap;
-
-
-#endif
 

@@ -1,15 +1,10 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
 #include "yukon.h"
 
 #include "StrategyManager.h"
 
 
-const long StrategyManager::_defaultID = 0;
+const long StrategyManager::_defaultID = -10;       // client supplies strategy IDs >= 0
 
 
 StrategyManager::StrategyManager( std::auto_ptr<StrategyLoader> loader )
@@ -60,5 +55,11 @@ StrategyPtr StrategyManager::getStrategy(const long ID) const
     return iter != _strategies.end()
                     ? iter->second
                     : _strategies.find(_defaultID)->second;
+}
+
+
+const long StrategyManager::getDefaultId() const
+{
+    return _defaultID;
 }
 

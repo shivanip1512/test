@@ -33,7 +33,7 @@
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 #include "sorted_vector.h"
 #include "regression.h"
 

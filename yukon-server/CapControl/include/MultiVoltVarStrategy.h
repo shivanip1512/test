@@ -1,15 +1,9 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_CONTROLSTRATEGY_MULTIVOLTVARSTRATEGY_H
-#define CTI_CONTROLSTRATEGY_MULTIVOLTVARSTRATEGY_H
+#pragma once
 
 #include <string>
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 
 
 class MultiVoltVarStrategy : public ControlStrategy
@@ -66,7 +60,4 @@ private:
     double _peakKVarLagging;
     double _offpeakKVarLagging;
 };
-
-
-#endif
 

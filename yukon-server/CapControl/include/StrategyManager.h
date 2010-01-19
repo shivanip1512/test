@@ -1,15 +1,9 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_STRATEGYMANAGER_H
-#define CTI_STRATEGYMANAGER_H
+#pragma once
 
 #include <memory>
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 #include "StrategyLoader.h"
 
 
@@ -17,7 +11,6 @@ class StrategyManager
 {
 
 public:
-
 
     StrategyManager( std::auto_ptr<StrategyLoader> loader );
 
@@ -29,6 +22,8 @@ public:
 
     StrategyPtr getStrategy(const long ID) const;
 
+    const long getDefaultId() const;
+
 private:
 
     static const long   _defaultID;
@@ -38,6 +33,4 @@ private:
     std::auto_ptr<StrategyLoader>   _loader;
 
 };
-
-#endif
 

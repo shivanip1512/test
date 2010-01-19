@@ -1,15 +1,9 @@
-/* 
-    COPYRIGHT: Copyright (C) 2010
-                    Cooper Power Systems EAS
-                    Cannon Technologies, Inc.
----------------------------------------------------------------------------*/
 
-#ifndef CTI_CONTROLSTRATEGY_NOSTRATEGY_H
-#define CTI_CONTROLSTRATEGY_NOSTRATEGY_H
+#pragma once
 
 #include <string>
 
-#include "ControlStrategies.h"
+#include "ControlStrategy.h"
 
 
 class NoStrategy : public ControlStrategy
@@ -35,6 +29,4 @@ public:
 
     virtual void setControlMethod(const std::string & method);
 };
-
-#endif
 
