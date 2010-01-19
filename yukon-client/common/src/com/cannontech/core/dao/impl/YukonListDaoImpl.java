@@ -18,6 +18,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.YukonListEntryRowMapper;
 import com.cannontech.util.Validator;
 
 /**
@@ -46,7 +47,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
                                   "FROM YukonListEntry " +
                                   "WHERE ListID = ?";
         
-        listEntryRowMapper = YukonListDaoImpl.createListEntryRowMapper();
+        listEntryRowMapper = new YukonListEntryRowMapper();
         
     }
     
@@ -306,21 +307,6 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         return null;
 	}
     
-    private static final ParameterizedRowMapper<YukonListEntry> createListEntryRowMapper() {
-        final ParameterizedRowMapper<YukonListEntry> rowMapper = new ParameterizedRowMapper<YukonListEntry>() {
-            public YukonListEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-                final YukonListEntry entry = new YukonListEntry();
-                entry.setEntryID(rs.getInt("EntryID"));
-                entry.setListID(rs.getInt("ListID"));
-                entry.setEntryOrder(rs.getInt("EntryOrder"));
-                entry.setEntryText(rs.getString("EntryText"));
-                entry.setYukonDefID(rs.getInt("YukonDefinitionID"));
-                return entry;
-            }
-        };
-        return rowMapper;
-    }
-
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

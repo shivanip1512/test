@@ -514,6 +514,11 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>asButton</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
   <tag>
     <name>multiPaoPicker</name>
@@ -1492,6 +1497,12 @@
             Outputs the logo for the given key or nothing if the key is not found
         </description>
         <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>id for img tag</description>
+        </attribute>
+        <attribute>
             <name>key</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1574,6 +1585,27 @@
             <name>initialClassName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>elementType</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>elementType</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	Type of element that will enclose the body of te tag. Defaults to 'span'.
+            </description>
+        </attribute>
+        <attribute>
+            <name>staticClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	Class name that should always be on the element in addition to whatever class the updater appends.
+            </description>
         </attribute>
     </tag>
     
@@ -1706,7 +1738,7 @@
     <attribute>
         <name>var</name>
         <required>false</required>
-        <rtexprvalue>false</rtexprvalue>
+        <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
         <name>scope</name>

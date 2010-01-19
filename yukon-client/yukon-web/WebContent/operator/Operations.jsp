@@ -202,6 +202,14 @@
 	        	<a href="Hardware/PurchaseTrack.jsp">Purchasing</a>
 	        </tags:sectionLink>
 	    </cti:checkProperty>
+	    
+	    <!-- YUK-8217 waiting for full implementation
+	    <cti:checkProperty property="InventoryRole.DEVICE_RECONFIG"> 
+	        <tags:sectionLink>
+	        	<a href="/spring/stars/operator/deviceReconfig/home">Device Reconfiguration</a>
+	        </tags:sectionLink>
+	    </cti:checkProperty>
+	     -->
         
         <!-- Hardware search form -->
         <c:if test="${showStarsList}">

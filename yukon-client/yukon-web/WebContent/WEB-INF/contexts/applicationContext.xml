@@ -1202,6 +1202,9 @@
     <bean id="accountNumberMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProvider"/>
     <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
     
+    <bean id="deviceReconfigService" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigServiceImpl"/>
+    <bean id="deviceReconfigLoadGroupSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigLoadGroupSelectionTypeHandler"/>
+    <bean id="deviceReconfigProgramSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigProgramSelectionTypeHandler"/>
     
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 </beans>

@@ -23,5 +23,5 @@ public interface InventoryRole {
     public static final int ALLOW_DESIGNATION_CODES = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 7;
     public static final int ALLOW_MULTIPLE_WAREHOUSES = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 8;
     public static final int PURCHASING_ACCESS = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 9;
-    
+    public static final int DEVICE_RECONFIG = OperatorRoleDefs.INVENTORY_PROPERTYID_BASE - 10;
 }

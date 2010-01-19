@@ -11,6 +11,9 @@ import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.StringUtils;
 
 public class PaoPickerTag extends ItemPickerTag {
+	
+	private Boolean asButton = false;
+	
     public PaoPickerTag() {
         super();
     }
@@ -36,10 +39,23 @@ public class PaoPickerTag extends ItemPickerTag {
             + request.getContextPath() + "'," + finalTriggerAction;
         getJspContext().getOut().println("<script type=\"text/javascript\"> " + pickerId + " = new PaoPicker(" + initString + ");");
         getJspContext().getOut().println("</script> ");
-        String outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";
-        getJspContext().getOut().println( outputTagString );
-        getJspBody().invoke(null);
-        getJspContext().getOut().println("</a>");
+        
+        String outputTagString = "";
+        if (asButton) {
+            outputTagString = "<input type=\"button\" value=\"";
+            getJspContext().getOut().print(outputTagString);
+            
+            getJspBody().invoke(null);
+            
+            outputTagString = "\" onclick=\"javascript:" + pickerId + ".showPicker()\" style=\"width:140px;\">";
+            getJspContext().getOut().println(outputTagString);
+        }
+        else {
+            outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";
+            getJspContext().getOut().println(outputTagString);
+            getJspBody().invoke(null);
+            getJspContext().getOut().println("</a>");
+        }
     }
     
     public String getPaoIdField() {
@@ -64,5 +80,13 @@ public class PaoPickerTag extends ItemPickerTag {
 
     public void setTypeElement(String parentItemNameElement) {
         this.parentItemNameElement = parentItemNameElement;
+    }
+    
+    public Boolean getAsButton() {
+        return asButton;
+    }
+
+    public void setAsButton(Boolean asButton) {
+        this.asButton = asButton;
     }
 }

@@ -175,7 +175,14 @@
           <link>/operator/Hardware/PurchaseTrack.jsp</link>
           <requireRoleProperty value="PURCHASING_ACCESS" />
         </option>
-      
+        
+        <!-- YUK-8217 waiting for full implementation
+        <option id="deviceReconfig">
+          <link>/spring/stars/operator/deviceReconfig/home</link>
+          <requireRoleProperty value="DEVICE_RECONFIG" />
+        </option>
+         -->
+        
       </links>
     </option>
 

@@ -365,6 +365,7 @@ public enum YukonRoleProperty {
     ALLOW_DESIGNATION_CODES(INVENTORY, com.cannontech.roles.operator.InventoryRole.ALLOW_DESIGNATION_CODES, stringType()),
     ALLOW_MULTIPLE_WAREHOUSES(INVENTORY, com.cannontech.roles.operator.InventoryRole.ALLOW_MULTIPLE_WAREHOUSES, stringType()),
     PURCHASING_ACCESS(INVENTORY, com.cannontech.roles.operator.InventoryRole.PURCHASING_ACCESS, booleanType()),
+    DEVICE_RECONFIG(INVENTORY, com.cannontech.roles.operator.InventoryRole.DEVICE_RECONFIG, booleanType()),
     
     IMPORTER_ENABLED(METERING, com.cannontech.roles.operator.MeteringRole.IMPORTER_ENABLED, booleanType()),
     PROFILE_COLLECTION(METERING, com.cannontech.roles.operator.MeteringRole.PROFILE_COLLECTION, booleanType()),

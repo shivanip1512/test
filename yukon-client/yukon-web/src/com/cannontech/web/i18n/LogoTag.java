@@ -10,6 +10,7 @@ import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.taglib.UniqueIdentifierTag;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 /**
@@ -17,8 +18,13 @@ import com.cannontech.web.taglib.YukonTagSupport;
  */
 public class LogoTag extends YukonTagSupport {
 
+	private String id = null;
     private String key;
 
+    public void setId(String id) {
+		this.id = id;
+	}
+    
     public void setKey(String key) {
         this.key = key;
     }
@@ -27,6 +33,10 @@ public class LogoTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
 
 		MessageSourceAccessor messageSourceAccessor = getMessageSource();
+		
+		if (id == null) {
+			id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "logoTag");
+		}
     	
         try {
             String url = messageSourceAccessor.getMessage(key);
@@ -36,7 +46,7 @@ public class LogoTag extends YukonTagSupport {
 	
 	            // Create image html
 	            StringBuilder sb = new StringBuilder();
-	            sb.append("<img class=\"logoImage\" src=\"");
+	            sb.append("<img id=\"" + id + "\" class=\"logoImage\" src=\"");
 	            sb.append(safeUrl);
 	            sb.append("\"");
 	

@@ -242,6 +242,9 @@
 
     <bean id="controlHistoryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistoryServiceImpl"/>
     
+    <!-- Device Reconfig -->
+    <bean id="deviceReconfigDao" class="com.cannontech.stars.dr.deviceReconfig.dao.impl.DeviceReconfigDaoImpl"/>
+    
     <!-- Import Customer Accounts/Hardware Import Job -->    
     <bean id="importCustAccountsSchedulerJob"
         class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
