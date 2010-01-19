@@ -258,10 +258,10 @@
 
     <table name="YukonPAObject">
         <primaryKey name="PAObjectID"/>
-        <identifier name="Type"/>
+        <identifier name="Category"/>
+        <identifier name="PAOClass"/>
         <identifier name="PAOName"/>
-        <data name="Category"/>
-        <data name="PAOClass"/>
+        <data name="Type"/>
         <data name="Description"/>
         <data name="DisableFlag"/>
         <data name="PaoStatistics"/>
