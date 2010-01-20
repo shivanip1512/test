@@ -43,6 +43,11 @@ public class TableDefinition {
             }
             column.setNullId(columnElement.getAttributeValue("nullId"));
             column.setFilterValue(columnElement.getAttributeValue("filterValue"));
+            String addToDisplayLabelsStr = columnElement.getAttributeValue("addToDisplayLabels");
+            if (addToDisplayLabelsStr != null &&
+                addToDisplayLabelsStr.equalsIgnoreCase("true")){
+                column.setAddToDisplayLabels(true);
+            }
             this.columns.put(columnType.toString(), column);
         }
     }
@@ -63,6 +68,19 @@ public class TableDefinition {
             columns.addAll(this.columns.get(columnType.toString()));
         
         return columns;
+    }
+    
+    public List<Column> getAddToDisplayLabelsColumns(){
+        List<Column> results = new ArrayList<Column>();
+        List<Column> dataColumns = this.getColumns(ColumnTypeEnum.DATA);
+        
+        for (Column dataColumn : dataColumns) {
+            if (dataColumn.isAddToDisplayLabels()) {
+                results.add(dataColumn);
+            }
+        }
+        
+        return results;
     }
     
     public List<Column> getAllColumns(){

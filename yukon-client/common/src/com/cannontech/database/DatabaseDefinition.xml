@@ -261,7 +261,7 @@
         <identifier name="Category"/>
         <identifier name="PAOClass"/>
         <identifier name="PAOName"/>
-        <data name="Type"/>
+        <data name="Type" addToDisplayLabels="true"/>
         <data name="Description"/>
         <data name="DisableFlag"/>
         <data name="PaoStatistics"/>

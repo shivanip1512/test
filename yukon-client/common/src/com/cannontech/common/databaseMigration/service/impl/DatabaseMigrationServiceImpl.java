@@ -922,6 +922,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             String elementColumnName = childElement.getAttributeValue("field");
             
             List<Column> identifyingColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
+            identifyingColumns.addAll(table.getAddToDisplayLabelsColumns());
             for (Column identifyingColumn : identifyingColumns) {
                 if (!(identifyingColumn.getName().equals(elementColumnName))) {continue;}
                 
@@ -1198,6 +1199,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         
         List<Column> identifyingColumns = 
             tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
+        
+        identifyingColumns.addAll(tableDefinition.getAddToDisplayLabelsColumns());
         
         for (Column identifyingColumn : identifyingColumns) {
             if(identifyingColumn.getTableRef() != null) {

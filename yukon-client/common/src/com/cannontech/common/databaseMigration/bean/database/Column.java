@@ -8,6 +8,7 @@ public class Column{
     ReferenceTypeEnum refType;
     String nullId;
     String filterValue;
+    boolean addToDisplayLabels = false;
     
     // Name
     public String getName() {
@@ -65,6 +66,14 @@ public class Column{
         this.filterValue = filterValue;
     }
     
+    // Add to Display Labels
+    public boolean isAddToDisplayLabels() {
+        return addToDisplayLabels;
+    }
+    public void setAddToDisplayLabels(boolean addToDisplayLabels) {
+        this.addToDisplayLabels = addToDisplayLabels;
+    }
+
     public String toString(){
         return "Name = "+this.name+
                ", Column Type = "+this.columnType+
