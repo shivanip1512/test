@@ -1809,6 +1809,8 @@ CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
 
 CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
 {
+    string name = getPaoName();
+
     for (LONG j=0; j<getPointResponse().size(); j++)
     {
         CtiCCPointResponse* pResponse = (CtiCCPointResponse*)getPointResponse()[j];
@@ -1818,7 +1820,7 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPaoName()<<" Point ID: "<<pResponse->getPointId()<<" preOpValue: "<<pResponse->getPreOpValue() <<" currentValue: "<<point->getValue()<< endl;
+                dout << CtiTime() << " MULTIVOLT: Bank ID: " << name <<" Point ID: " << pResponse->getPointId() << " preOpValue: " << pResponse->getPreOpValue() << " currentValue: " <<point->getValue() << endl;
             }
 
             //if (pResponse->getDelta() != 0)
@@ -1830,7 +1832,7 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPaoName()<<" Point ID: "<<pResponse->getPointId()<<" fabs: "<<fabsy <<" delta: "<<delta<< endl;
+                dout << CtiTime() << " MULTIVOLT: Bank ID: " << name <<" Point ID: " << pResponse->getPointId() << " fabs: " << fabsy << " delta: " << delta << endl;
             }
             {
                 pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1.0)) +

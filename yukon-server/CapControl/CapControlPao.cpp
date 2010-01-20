@@ -21,22 +21,15 @@ CapControlPao::CapControlPao(RWDBReader& rdr)
 void CapControlPao::restore(RWDBReader& rdr)
 {
     string tempString;
-    //string categoryString;
 
     rdr["paobjectid"] >> _paoId;
     rdr["category"] >> _paoCategory;
-    //_paoCategory = resolvePAOCategory(categoryString);
-
     rdr["paoclass"] >> _paoClass;
-    //_paoClass = resolvePAOClass(tempString);
-
     rdr["paoname"] >> _paoName;
     rdr["type"] >> _paoType;
-    //_paoType = resolvePAOType(categoryString,tempString);
-
     rdr["description"] >> _paoDescription;
-
     rdr["disableflag"] >> tempString;
+
     std::transform(tempString.begin(), tempString.end(), tempString.begin(), tolower);
     _disableFlag = (tempString=="y"?true:false);
 }
@@ -51,7 +44,7 @@ void CapControlPao::setPaoId(int paoId)
     _paoId = paoId;
 }
 
-const std::string& CapControlPao::getPaoCategory()
+const std::string& CapControlPao::getPaoCategory() const
 {
     return _paoCategory;
 }
@@ -61,7 +54,7 @@ void CapControlPao::setPaocategory(const std::string& paoCategory)
     _paoCategory = paoCategory;
 }
 
-const std::string& CapControlPao::getPaoClass()
+const std::string& CapControlPao::getPaoClass() const
 {
     return _paoClass;
 }
@@ -71,7 +64,7 @@ void CapControlPao::setPaoClass(const std::string& paoClass)
     _paoClass = paoClass;
 }
 
-const std::string& CapControlPao::getPaoName()
+const std::string CapControlPao::getPaoName() const
 {
     return _paoName;
 }
@@ -81,7 +74,7 @@ void CapControlPao::setPaoName(const std::string& paoName)
     _paoName = paoName;
 }
 
-const std::string& CapControlPao::getPaoType()
+const std::string& CapControlPao::getPaoType() const
 {
     return _paoType;
 }
@@ -91,7 +84,7 @@ void CapControlPao::setPaoType(const std::string& paoType)
     _paoType = paoType;
 }
 
-const std::string& CapControlPao::getPaoDescription()
+const std::string& CapControlPao::getPaoDescription() const
 {
     return _paoDescription;
 }
@@ -101,7 +94,7 @@ void CapControlPao::setPaoDescription(const std::string& description)
     _paoDescription = description;
 }
 
-bool CapControlPao::getDisableFlag()
+bool CapControlPao::getDisableFlag() const
 {
     return _disableFlag;
 }
@@ -111,7 +104,7 @@ void CapControlPao::setDisableFlag(bool disableFlag)
     _disableFlag = disableFlag;
 }
 
-const std::string& CapControlPao::getPaoStatistics()
+const std::string& CapControlPao::getPaoStatistics() const
 {
     return _paoStatistics;
 }
