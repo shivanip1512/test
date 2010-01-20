@@ -220,11 +220,13 @@
 	        </tags:sectionLink>
 	    </cti:checkProperty>
 	    
+	    <%-- YUK-8217 needs full implementation
 	    <cti:checkProperty property="InventoryRole.DEVICE_RECONFIG"> 
 	        <tags:sectionLink>
 	        	<a href="/spring/stars/operator/deviceReconfig/home">Inventory Operations</a>
 	        </tags:sectionLink>
 	    </cti:checkProperty>
+	     --%>
         
         <!-- Hardware search form -->
         <c:if test="${showStarsList}">
