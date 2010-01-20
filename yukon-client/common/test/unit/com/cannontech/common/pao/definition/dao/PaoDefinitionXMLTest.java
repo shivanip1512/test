@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.Unmarshaller;
 
-//import com.cannontech.common.pao.definition.model.castor.PaoDefinitions;
+import com.cannontech.common.pao.definition.model.castor.PaoDefinitions;
 
 /**
  * Test class to test validity of deviceDefinition.xml file
@@ -24,10 +24,10 @@ public class PaoDefinitionXMLTest extends TestCase {
         try {
             reader = new InputStreamReader(this.getClass()
                                                .getClassLoader()
-                                               .getResourceAsStream("com/cannontech/common/device/definition/dao/deviceDefinition.xml"));
+                                               .getResourceAsStream("com/cannontech/common/pao/definition/dao/paoDefinition.xml"));
 
             // Use castor to parse the xml file
-//            Unmarshaller.unmarshal(PaoDefinitions.class, reader);
+            Unmarshaller.unmarshal(PaoDefinitions.class, reader);
 
         } catch (Exception e) {
             throw new Exception("Exception while parsing deviceDefinition.xml. ", e);

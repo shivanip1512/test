@@ -48,10 +48,10 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
         // Use testPaoDefinition.xml for testing
         ClassLoader classLoader = dao.getClass().getClassLoader();
-        URL inputResource = classLoader.getResource("com/cannontech/common/device/definition/dao/testPaoDefinition.xml");
+        URL inputResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/testPaoDefinition.xml");
         dao.setInputFile(new UrlResource(inputResource));
 
-        URL schemaResource = classLoader.getResource("com/cannontech/common/device/definition/dao/deviceDefinition.xsd");
+        URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
         dao.setCustomInputFile(null);
@@ -305,11 +305,11 @@ public class PaoDefinitionDaoImplTest extends TestCase {
 
         // Set up the device definition dao with both an inputFile and a customInputFile
         PaoDefinitionDaoImpl dao = new PaoDefinitionDaoImpl();
-        URL inputResource = classLoader.getResource("com/cannontech/common/device/definition/dao/testPaoDefinition.xml");
+        URL inputResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/testPaoDefinition.xml");
         dao.setInputFile(new UrlResource(inputResource));
-        URL customFileUrl = classLoader.getResource("com/cannontech/common/device/definition/dao/testCustomPaoDefinition.xml");
+        URL customFileUrl = classLoader.getResource("com/cannontech/common/pao/definition/dao/testCustomPaoDefinition.xml");
         
-        URL schemaResource = classLoader.getResource("com/cannontech/common/device/definition/dao/deviceDefinition.xsd");
+        URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
         dao.setCustomInputFile(new UrlResource(customFileUrl));
