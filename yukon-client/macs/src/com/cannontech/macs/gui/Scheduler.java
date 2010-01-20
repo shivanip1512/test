@@ -240,7 +240,8 @@ public javax.swing.JPanel getMainJPanel()
 
 		javax.swing.JButton[] buttons =
 		{
-			mainPanel.getEditViewButton(),
+			mainPanel.getEditButton(),
+			mainPanel.getViewButton(),
 			mainPanel.getEnableDisableButton(),
 			mainPanel.getStartStopButton(),
 			mainPanel.getCreateScheduleButton(),

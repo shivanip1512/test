@@ -14,6 +14,7 @@ public class SchedulerPopUpMenu extends com.cannontech.clientutils.popup.JPopUpM
 	private javax.swing.JMenuItem jMenuItemEnableDisable = null;
 	private javax.swing.JMenuItem jMenuItemStartStop = null;
 	private javax.swing.JMenuItem jMenuItemEdit = null;
+    private javax.swing.JMenuItem jMenuItemView = null;	
 	private javax.swing.JMenuItem jMenuItemDelete = null;
 	private javax.swing.JMenuItem jMenuItemUpdate = null;
 
@@ -22,6 +23,7 @@ public class SchedulerPopUpMenu extends com.cannontech.clientutils.popup.JPopUpM
 	public static final int ENABLEDISABLE_SCHEDULE = 2;
 	public static final int EDIT_SCHEDULE = 3;
 	public static final int UPDATE_SCHEDULE = 4;
+	public static final int VIEW_SCHEDULE = 5;
 /**
  * SchedulerPopUpMenu constructor comment.
  */
@@ -49,6 +51,9 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	if( event.getSource() == SchedulerPopUpMenu.this.getJMenuItemEdit() )
 		firePopUpEvent( new com.cannontech.clientutils.commonutils.GenericEvent( this, "editSchedule", EDIT_SCHEDULE) );
 		
+    if( event.getSource() == SchedulerPopUpMenu.this.getJMenuItemView() )
+        firePopUpEvent( new com.cannontech.clientutils.commonutils.GenericEvent( this, "viewSchedule", VIEW_SCHEDULE) );
+    
 	if( event.getSource() == SchedulerPopUpMenu.this.getJMenuItemEnableDisable() )
 		firePopUpEvent( new com.cannontech.clientutils.commonutils.GenericEvent( this, "enableDisableSchedule", ENABLEDISABLE_SCHEDULE ) );
 		
@@ -93,6 +98,19 @@ private javax.swing.JMenuItem getJMenuItemEdit()
 	}
 	
 	return jMenuItemEdit;
+}
+private javax.swing.JMenuItem getJMenuItemView() 
+{
+    if( jMenuItemView == null )
+    {
+        jMenuItemView = new javax.swing.JMenuItem();
+        jMenuItemView.setName("JMenuItemView");
+        jMenuItemView.setMnemonic('v');
+        jMenuItemView.setText("View...");
+        jMenuItemView.setVisible(true);
+    }
+    
+    return jMenuItemView;
 }
 /**
  * Insert the method's description here.
@@ -163,6 +181,7 @@ private void initConnections()
 {
 	getJMenuItemDelete().addActionListener( this );
 	getJMenuItemEdit().addActionListener( this );
+	getJMenuItemView().addActionListener( this );
 	getJMenuItemEnableDisable().addActionListener( this );
 	getJMenuItemStartStop().addActionListener( this );
 	getJMenuItemUpdate().addActionListener( this );
@@ -184,6 +203,9 @@ private void initialize()
 	if( getJMenuItemEdit().isVisible() )
 		add(getJMenuItemEdit(), getJMenuItemEdit().getName());
 
+    if( getJMenuItemView().isVisible() )
+        add(getJMenuItemView(), getJMenuItemView().getName());
+    
 	if( getJMenuItemUpdate().isVisible() )
 		add(getJMenuItemUpdate(), getJMenuItemUpdate().getName());
 		
@@ -204,6 +226,7 @@ public void setSchedule(Schedule newSchedule)
 
 	if( getSchedule() != null )
 	{
+	    getJMenuItemView().setEnabled(true);
 		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_RUNNING ) )
 		{
 			getJMenuItemDelete().setEnabled(false);

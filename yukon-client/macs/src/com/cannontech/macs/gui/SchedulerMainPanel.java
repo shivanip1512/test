@@ -38,6 +38,7 @@ import com.cannontech.macs.debug.ScheduleDebugViewer;
 import com.cannontech.macs.events.MACSGenericTableModelEvent;
 import com.cannontech.macs.gui.popup.SchedulerPopUpMenu;
 import com.cannontech.macs.schedule.editor.ScheduleEditorPanel;
+import com.cannontech.macs.schedule.editor.ScheduleViewPanel;
 import com.cannontech.macs.schedule.wizard.ScheduleWizardPanel;
 import com.cannontech.message.macs.message.Info;
 import com.cannontech.message.macs.message.OverrideRequest;
@@ -64,6 +65,7 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements ActionList
 	private JButton startStopButton;
 	private JButton enableDisableButton;
 	private JButton editButton;
+    private JButton viewButton;	
 	private JButton createScheduleButton;
 	private JButton deleteScheduleButton;
 	
@@ -112,10 +114,14 @@ public void actionPerformed(ActionEvent event)
 		{
 			executeCreateButton_ActionPerformed( event );
 		}
-		else if( event.getSource() == getEditViewButton() )
+		else if( event.getSource() == getEditButton() )
 		{
 			executeEditButton_ActionPerformed( event );
 		}
+        else if( event.getSource() == getViewButton() )
+        {
+            executeViewButton_ActionPerformed( event );
+        }		
 		/*else if( event.getSource() == schedulerFileMenu.connectMenuItem )
 		{
 			try
@@ -226,9 +232,20 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
  */
 private void executeEditButton_ActionPerformed( ActionEvent event )
 {
-   if( !getSelectedSchedule().getCurrentState().equals(Schedule.STATE_PENDING) &&
-    	!getSelectedSchedule().getCurrentState().equals(Schedule.STATE_RUNNING) )
-		showEditorPanel( getSelectedSchedule() );
+    if( getSelectedSchedule() == null )
+        return;
+    if( !getSelectedSchedule().getCurrentState().equals(Schedule.STATE_PENDING) &&
+            !getSelectedSchedule().getCurrentState().equals(Schedule.STATE_RUNNING) ) {
+        //create a new editor panel for this Schedule
+        ScheduleEditorPanel editPanel = new ScheduleEditorPanel();       
+        showEditViewPanel( getSelectedSchedule(), editPanel );
+    }
+}
+private void executeViewButton_ActionPerformed( ActionEvent event )
+{
+    //create a new editor panel for this Schedule
+    ScheduleViewPanel viewPanel = new ScheduleViewPanel();       
+    showEditViewPanel( getSelectedSchedule(), viewPanel );
 }
 /**
  * Insert the method's description here.
@@ -454,7 +471,7 @@ public javax.swing.JButton getDeleteScheduleButton()
  * Creation date: (8/4/00 9:01:12 AM)
  * @return javax.swing.JButton
  */
-public javax.swing.JButton getEditViewButton() 
+public javax.swing.JButton getEditButton() 
 {
 	if( editButton == null )
 	{
@@ -466,6 +483,20 @@ public javax.swing.JButton getEditViewButton()
 	}
 	
 	return editButton;
+}
+
+public javax.swing.JButton getViewButton() 
+{
+    if( viewButton == null )
+    {
+        viewButton = new JButton("View...");
+        viewButton.setPreferredSize( new java.awt.Dimension( 80, 23 ) );
+        viewButton.addActionListener(this);
+        viewButton.setEnabled(false);
+        viewButton.setVisible( true );
+    }
+    
+    return viewButton;
 }
 /**
  * Insert the method's description here.
@@ -673,6 +704,9 @@ public void handlePopUpEvent(GenericEvent event)
 			executeEditButton_ActionPerformed( new ActionEvent(this, SchedulerPopUpMenu.EDIT_SCHEDULE, "edit") );
 			break;
 
+			case SchedulerPopUpMenu.VIEW_SCHEDULE:
+		    executeViewButton_ActionPerformed( new ActionEvent(this, SchedulerPopUpMenu.VIEW_SCHEDULE, "view") );
+		    break;
 			case SchedulerPopUpMenu.ENABLEDISABLE_SCHEDULE:
 			executeEnableDisableButton_ActionPerformed( new ActionEvent(this, SchedulerPopUpMenu.ENABLEDISABLE_SCHEDULE, "enableDisable") );
 			break;
@@ -740,7 +774,8 @@ private void initialize( boolean initPanelOnly )
 		buttonPanel.setLayout( new java.awt.FlowLayout() );
 		buttonPanel.add( getStartStopButton() );
 		buttonPanel.add( getEnableDisableButton() );
-		buttonPanel.add( getEditViewButton() );
+		buttonPanel.add( getEditButton() );
+        buttonPanel.add( getViewButton() );		
 		buttonPanel.add( getCreateScheduleButton() );
 		buttonPanel.add( getDeleteScheduleButton() );
 
@@ -768,8 +803,8 @@ public void mouseClicked(MouseEvent event)
 	{
 		if( event.isShiftDown() )
 			showDebugInfo();
-		else		
-			executeEditButton_ActionPerformed( new ActionEvent(event.getSource(), event.getID(), "Mouse Clicked") );
+		else 
+		    executeViewButton_ActionPerformed( new ActionEvent(event.getSource(), event.getID(), "Mouse Clicked") );			    
 	}
 }
 /**
@@ -992,7 +1027,7 @@ private void showDebugInfo( )
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent
  */
-public void showEditorPanel( final Schedule selectedSchedule ) 
+public void showEditViewPanel( final Schedule selectedSchedule, PropertyPanel editViewPanel ) 
 {
 	if( selectedSchedule == null )
 		return;
@@ -1004,19 +1039,15 @@ public void showEditorPanel( final Schedule selectedSchedule )
 	{
 		owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
-		//create a new editor panel for this Schedule
-		ScheduleEditorPanel panel = new ScheduleEditorPanel();
-				//(ScheduleEditorPanel)selectedSchedule.getEditorPanel();
-				
 		javax.swing.JFrame frame = getAvailableFrame();
-		frame.setContentPane( panel );
+		frame.setContentPane( editViewPanel );
 		
 		// sets the size of EVERY editor frame!!!!!!!
 		frame.setSize(450,700);
-		panel.addPropertyPanelListener(this);
+		editViewPanel.addPropertyPanelListener(this);
 	
-		frame.setTitle( panel.toString() );
-		frame.setLocation( getEditViewButton().getLocation() );
+		frame.setTitle( editViewPanel.toString() );
+		frame.setLocation( getEditButton().getLocation() );
 		frame.setIconImages(TDCMainFrame.getIconsImages());
 		frame.show();
 
@@ -1024,7 +1055,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 		// to change its meaning of the Schedule
 		Schedule tempSched = (Schedule)CtiUtilities.copyObject(selectedSchedule);
 		tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
-		panel.setValue( tempSched );
+		editViewPanel.setValue( tempSched );
 
 		frame.validate();
 	
@@ -1079,17 +1110,18 @@ private void synchTableAndButtons(Schedule selected)
 	
 	getDeleteScheduleButton().setEnabled(true);
 	getEnableDisableButton().setEnabled(true);
+	getViewButton().setEnabled(true);
 
    if (selected.getCurrentState().equals(Schedule.STATE_WAITING))
    {
-   	  getEditViewButton().setEnabled(true);
+   	  getEditButton().setEnabled(true);
 	  getStartStopButton().setText("Start");
 	  getStartStopButton().setEnabled(true);
 	  getEnableDisableButton().setText("Disable");
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_RUNNING))
    {
-   	  getEditViewButton().setEnabled(false);
+   	  getEditButton().setEnabled(false);
 	  getStartStopButton().setText("Stop");
 	  getStartStopButton().setEnabled(true);
 	  getDeleteScheduleButton().setEnabled(false);
@@ -1097,7 +1129,7 @@ private void synchTableAndButtons(Schedule selected)
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_DISABLED))
    {
-   	  getEditViewButton().setEnabled(true);
+   	  getEditButton().setEnabled(true);
 	  getStartStopButton().setText("Start");
 	  getStartStopButton().setEnabled(false);
 	  getEnableDisableButton().setText("Enable");
@@ -1107,7 +1139,7 @@ private void synchTableAndButtons(Schedule selected)
 	   //disable all buttons!!
 	  getStartStopButton().setText("Stop");
 	  getEnableDisableButton().setEnabled(false);
-	  getEditViewButton().setEnabled(false);
+	  getEditButton().setEnabled(false);
 	  getDeleteScheduleButton().setEnabled(false);
    }
    //revalidate();
@@ -1201,7 +1233,8 @@ public void messageReceived( MessageEvent e )
         {
             getStartStopButton().setEnabled(false);
             getEnableDisableButton().setEnabled(false);
-            getEditViewButton().setEnabled(false);
+            getEditButton().setEnabled(false);
+            getViewButton().setEnabled(false);
             getDeleteScheduleButton().setEnabled(false);
             
             for( int i = 0; i < getFrames().size(); i++ )
