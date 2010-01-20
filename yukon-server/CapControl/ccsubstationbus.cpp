@@ -9634,11 +9634,14 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _paodescription
     << _disableflag
     << _parentId
+    << _strategy->getMaxDailyOperation()
+    << _strategy->getMaxOperationDisableFlag()
     << _currentvarloadpointid
     << tempVar
     << _currentwattloadpointid
     << tempWatt
     << _maplocationid
+    << _strategy->getControlUnits()
     << _decimalplaces
     << _newpointdatareceivedflag
     << _busupdatedflag
@@ -9657,6 +9660,10 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << tempestimatedpowerfactorvalue
     << _currentvarpointquality
     << _waivecontrolflag
+    << _strategy->getPeakLag()
+    << _strategy->getOffPeakLag()
+    << _strategy->getPeakLead()
+    << _strategy->getOffPeakLead()
     << _currentvoltloadpointid
     << tempVolt
     << _verificationFlag
@@ -9666,6 +9673,9 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _targetvarvalue
     << _solution
     << _ovUvDisabledFlag
+    << _strategy->getPeakPFSetPoint()
+    << _strategy->getOffPeakPFSetPoint()
+    << _strategy->getControlMethod()
     << _phaseAvalue
     << _phaseBvalue
     << _phaseCvalue

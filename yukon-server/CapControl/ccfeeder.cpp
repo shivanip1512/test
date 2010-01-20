@@ -6548,6 +6548,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _paodescription
     << _disableflag
     << _parentId
+    << _strategy->getMaxDailyOperation()
+    << _strategy->getMaxOperationDisableFlag()
     << _currentvarloadpointid
     << _currentvarloadpointvalue
     << _currentwattloadpointid
@@ -6569,8 +6571,13 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << tempestimatedpowerfactorvalue
     << _currentvarpointquality
     << _waivecontrolflag
+    << _strategy->getControlUnits()
     << _decimalPlaces
     << _peakTimeFlag
+    << _strategy->getPeakLag()
+    << _strategy->getOffPeakLag()
+    << _strategy->getPeakLead()
+    << _strategy->getOffPeakLead()
     << _currentvoltloadpointid
     << _currentvoltloadpointvalue
     << _currentwattpointquality
@@ -6578,6 +6585,9 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _targetvarvalue
     << _solution
     << _ovUvDisabledFlag
+    << _strategy->getPeakPFSetPoint()
+    << _strategy->getOffPeakPFSetPoint()
+    << _strategy->getControlMethod()
     << _phaseAvalue
     << _phaseBvalue
     << _phaseCvalue
