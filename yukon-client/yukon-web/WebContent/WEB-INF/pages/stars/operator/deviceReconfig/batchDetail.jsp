@@ -6,7 +6,7 @@
 <cti:msg var="pageTitle" key="yukon.web.modules.dr.deviceReconfig.batchDetail.pageTitle"/>
 <cti:url var="deleteImg" value="/WebConfig/yukon/Icons/delete.gif"/>
 
-<cti:standardPage title="${pageTitle}" module="dr">
+<cti:standardPage title="Device Reconfiguration Result Detail" module="dr">
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
@@ -16,103 +16,77 @@
 	
 	<cti:standardMenu menuSelection="blank"/>
 
-    <h2>${pageTitle}</h2>
+    <h2>Device Reconfiguration Result Detail</h2>
     <br>
     
-    <cti:includeScript link="/JavaScript/deviceReconfig.js"/>
-    
-    <script type="text/javascript">
-    </script>
-    
-   <tags:sectionContainer title="Batches">
-    
-    	<table class="resultsTable">
-    	
-    		<tr>
-    			<th>Batch Number</th>
-    			<th>Device Count</th>
-    			<th>Start Time</th>
-    			<th>Status</th>
-    			<th>Cancel</th>
-    		</tr>
-    		
-    		<tr>
-    			<td>1</td>
-    			<td>9</td>
-    			<td>01/15/2010 13:10</td>
-    			<td><span class="okGreen">Complete</span></td>
-    			<td>
-    				N/A
-    			</td>
-    		</tr>
-    		
-    		<tr>
-    			<td>2</td>
-    			<td>9</td>
-    			<td>01/15/2010 13:40</td>
-    			<td><span class="okGreen">Complete</span></td>
-    			<td>
-    				N/A
-    			</td>
-    		</tr>
-    		
-    		<tr>
-    			<td>3</td>
-    			<td>9</td>
-    			<td>01/15/2010 14:10</td>
-    			<td><span class="okGreen">Complete</span></td>
-    			<td>
-    				N/A
-    			</td>
-    		</tr>
-    		
-    		<tr>
-    			<td>5</td>
-    			<td>9</td>
-    			<td>01/15/2010 14:40</td>
-    			<td><span class="okGreen">Complete</span></td>
-    			<td>
-    				N/A
-    			</td>
-    		</tr>
-    		
-    		<tr>
-    			<td>6</td>
-    			<td>9</td>
-    			<td>01/15/2010 15:10</td>
-    			<td><span class="okGreen">Complete</span></td>
-    			<td>
-    				N/A
-    			</td>
-    		</tr>
-    		
-    		<tr>
-    			<td>7</td>
-    			<td>9</td>
-    			<td>01/15/2010 15:10</td>
-    			<td>In Progress</td>
-    			<td>
-    				<img src="${deleteImg}">
-    			</td>
-    		</tr>
-    		
-    		<c:forEach var="batchNumber" begin="8" end="22" step="1">
-    		
-    			<tr>
-	    			<td>${batchNumber}</td>
-	    			<td>9</td>
-	    			<td>N/A</td>
-	    			<td><span class="subtleGray">Waiting</span></td>
-	    			<td>
-	    				<img src="${deleteImg}">
-	    			</td>
-	    		</tr>
-    		
-    		</c:forEach>
-    		
-    	
-    	</table>
-    
-    </tags:sectionContainer>
+	<tags:boxContainer title="'Golay Group 1' Reconfiguration Result Detail">
+	
+		<%-- NOTE --%>
+		<table>
+		    <tr>
+		        <td valign="top" class="smallBoldLabel">Note:</td>
+		        <td style="font-size:11px;">
+		            Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.
+					<br><br>
+		        </td>
+		    </tr>
+		</table>
+		
+		
+		
+		<%-- PROGRESS --%>
+		<span class="normalBoldLabel">Progress: </span>
+		Complete
+		
+		<div style="padding:10px;">
+		
+		    <table cellpadding="0px" border="0px" class="noStyle">
+			    <tr>
+			        <td>
+			            <div id="progressBorder_${pbarId}" class="progressBarBorder" align="left">
+			                <div id="progressInner_${pbarId}" class="progressBarInner" style="width:100px;">
+			                </div>
+			            </div>
+			        </td>
+			        <td>
+			            <span id="percentComplete_${pbarId}" class="progressBarPercentComplete">100%</span>
+			        </td>
+			        <td>
+			            <span class="progressBarCompletedCount" <c:if test="${hideCount}">style="display:none;"</c:if>>1650/1650</span>
+			        </td>
+			    </tr>
+			</table>
+			
+			
+	
+		</div>
+
+		<br>
+
+		<%-- SUCCESS --%>
+		<span class="normalBoldLabel">Successfully Paged: </span>
+		<span class="okGreen">1646</span>
+		
+		<div style="padding:10px;">
+		
+		    <a href="" class="small">Choose New Operation For These Devices</a> <img src="/WebConfig/yukon/Icons/magnifier.gif">
+	
+		</div>
+
+		<br>
+
+		<%-- FAILED --%>
+		<span class="normalBoldLabel">Failed To Page: </span>
+		<span class="errorRed">4</span>
+		
+		<div style="padding:10px;">
+		
+		    <a href="" class="small">Choose New Operation For These Devices</a> <img src="/WebConfig/yukon/Icons/magnifier.gif">
+	
+		</div>
+		
+	
+	
+	</tags:boxContainer>
     
 </cti:standardPage>

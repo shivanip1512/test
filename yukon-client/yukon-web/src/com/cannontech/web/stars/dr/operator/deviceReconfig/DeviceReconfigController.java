@@ -34,6 +34,9 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.deviceReconfig.dao.DeviceReconfigDao;
 import com.cannontech.stars.dr.deviceReconfig.model.DeviceReconfigDeviceType;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExprTagAmPmOptionEnum;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExprTagDailyOptionEnum;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.input.type.IntegerSetType;
@@ -50,6 +53,30 @@ public class DeviceReconfigController {
 	private StarsDatabaseCache starsDatabaseCache;
 	private DeviceReconfigService deviceReconfigService;
 	private DateFormattingService dateFormattingService;
+	
+	// CHOOSE SELECTION TYPE
+	@RequestMapping(value = "/operator/deviceReconfig/chooseSelectionType", method = RequestMethod.GET)
+    public String chooseSelectionType(ModelMap modelMap, YukonUserContext userContext) {
+		
+
+		return "operator/deviceReconfig/chooseSelectionType.jsp";
+	}
+	
+	// CHOOSE OPERATION
+	@RequestMapping(value = "/operator/deviceReconfig/chooseOperation")
+    public String chooseOperation(ModelMap modelMap, YukonUserContext userContext) {
+		
+
+		return "operator/deviceReconfig/chooseOperation.jsp";
+	}
+	
+	// ADD RULE DIALOG
+	@RequestMapping(value = "/operator/deviceReconfig/addRuleDialog")
+    public String addRuleDialog(ModelMap modelMap, YukonUserContext userContext) {
+		
+
+		return "operator/deviceReconfig/addRuleDialog.jsp";
+	}
 	
 	// HOME
 	@RequestMapping(value = "/operator/deviceReconfig/home", method = RequestMethod.GET)
@@ -113,8 +140,19 @@ public class DeviceReconfigController {
 		}
 		
 		// get inventory
+		List<Integer> programPaoIds = Lists.newArrayList();
+		programPaoIds.add(67);
+		deviceReconfigOptions.setLoadProgramPaoIds(programPaoIds);
 		List<Integer> inventoryIdsList = deviceReconfigService.getInventoryIdsIntersectionFromReconfigOptions(deviceReconfigOptions, userContext);
 		modelMap.addAttribute("inventoryIdsCount", inventoryIdsList.size());
+		
+		// run schedule
+		CronExpressionTagState cronState = new CronExpressionTagState();
+		cronState.setCronExpressionAmPm(CronExprTagAmPmOptionEnum.PM);
+		cronState.setHour(9);
+		cronState.setMinute(55);
+		cronState.setCronExpressionDailyOption(CronExprTagDailyOptionEnum.WEEKDAYS);
+		modelMap.addAttribute("cronState", cronState);
 		
 		return "operator/deviceReconfig/setupSchedule.jsp";
 	}

@@ -96,6 +96,23 @@
 					</div>
 				</form>
 			</div>
+			
+			<br>
+			<div class="sectionForm">
+				<form name="custSearchForm2" method="POST" action="/operator/general/search">
+					<div class="sectionFormLabel">Search for existing customer:</div>
+					<div>
+						<select name="searchBy" onchange="document.custSearchForm2.searchValue.value=''">
+							<c:forEach items="${customerSearchList}" var="entry">
+								<option value="${entry.entryID}" >${entry.content}</option>
+							</c:forEach>
+						</select>
+			
+						<input type="text" name="searchValue" size="15" value=''>
+						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm2.submit();"> 
+					</div>
+				</form>
+			</div>
         </c:if>
 	</tags:operationSection>
 	
@@ -203,13 +220,11 @@
 	        </tags:sectionLink>
 	    </cti:checkProperty>
 	    
-	    <!-- YUK-8217 waiting for full implementation
 	    <cti:checkProperty property="InventoryRole.DEVICE_RECONFIG"> 
 	        <tags:sectionLink>
-	        	<a href="/spring/stars/operator/deviceReconfig/home">Device Reconfiguration</a>
+	        	<a href="/spring/stars/operator/deviceReconfig/home">Inventory Operations</a>
 	        </tags:sectionLink>
 	    </cti:checkProperty>
-	     -->
         
         <!-- Hardware search form -->
         <c:if test="${showStarsList}">

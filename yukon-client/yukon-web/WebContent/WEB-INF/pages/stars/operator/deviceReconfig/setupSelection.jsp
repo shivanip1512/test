@@ -3,34 +3,40 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.dr.deviceReconfig.setupSelection.pageTitle"/>
 <cti:msg var="deviceSelectionSectionTitle" key="yukon.web.modules.dr.deviceReconfig.setupSelection.deviceSelectionSectionTitle"/>
-<cti:msg var="reconfigurationStyleSectionTitle" key="yukon.web.modules.dr.deviceReconfig.setupSelection.reconfigurationStyleSectionTitle"/>
 <cti:msg var="helpImg" key="yukon.web.modules.dr.deviceReconfig.setupSelection.help.img"/>
 
+<cti:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
+<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.gif"/>
+<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
+<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 
-<cti:standardPage title="${pageTitle}" module="dr">
+
+<cti:standardPage title="Inventory Selection" module="dr">
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/stars/operator/deviceReconfig/home" title="Device Reconfiguration" />
-	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
+	    <cti:crumbLink url="/spring/stars/operator/deviceReconfig/home" title="Inventory Operations" />
+	    <cti:crumbLink title="Inventory Selection" />
 	</cti:breadCrumbs>
 	
 	<cti:standardMenu menuSelection="blank"/>
 
-    <h2>${pageTitle}</h2>
+    <h2>Inventory Selection</h2>
     <br>
     
     <cti:includeScript link="/JavaScript/deviceReconfig.js"/>
+    <cti:includeScript link="/JavaScript/simpleDialog.js"/>
+    
+    <tags:simpleDialog id="addRuleDialog"/>
     
     <script type="text/javascript">
     </script>
     
-    <tags:simpleDialog id="deviceReconfigSharedPreviewDialog"/>
-    
     <style>
     	table.selectionTable td {vertical-align:top;}
+    	table.selectionTable td.selectionTypeCol {width:200px;font-weight:bold;}
+    	table.selectionTable td.selectionParamCol {}
     	table.selectionTable td.deviceCountCol {text-align:right;padding-right:20px;}
     	table.selectionTable th.deviceCountCol {text-align:right;padding-right:20px;}
     	table.reconfigStyleTable td {vertical-align:top;}
@@ -45,74 +51,38 @@
     <%-- MISC FORMS --%>
     <form id="cancelForm" action="/spring/stars/operator/deviceReconfig/home" method="get"></form>
     
-    <form id="deviceReconfigForm" action="/spring/stars/operator/deviceReconfig/setupSchedule" method="post">
+    <form id="deviceReconfigForm" action="/spring/stars/operator/deviceReconfig/chooseOperation" method="post">
     
-    	<tags:boxContainer title="Instructions">
-    	
-    		<div style="font-size:11px;">
-    	
-	    		<b>1) Device Selection</b>
-	    		<br>
-	    		<div style="padding-left:20px;">
-	    				&bull; File Upload: Upload a CSV formatted file containing serial number, device type, and account number.
-	    				<br>
-	    				&bull; Device Properties: Set parameters. Devices that meet <u>all</u> set parameters will be included.
-	    		</div>
-	    		<br>
-	    		
-	    		<b>2) Configuration Options</b>
-	    		<br>
-	    		<div style="padding-left:20px;">
-	    				&bull; Current Configuration: Use the current configuration already saved for each piece of inventory in the database. 
-	    				<br>
-	    				&bull; Device Properties: Use same configuration for all devices based on a specific load group.
-	    		</div>
-	    		<br>
-	    		
-	    		<b>3) Click "Next" button to setup scheduling options.</b>
-	    		<br>
+    		<b>
+    		Match 
+			<select name="compositionType">
+				<option value="UNION">At Least One</option>
+				<option value="INTERSECTION" selected="selected">Every One</option>
+ 			</select>
+ 			of the following rules:
+ 			</b>
+ 			<br><br>
     		
-    		</div>
-    	
-    	</tags:boxContainer>
-    	<br>
-    	
-    	<tags:sectionContainer title="${deviceSelectionSectionTitle}">
-    	
-    		<%-- FILE IMPORT --%>
-    		<div style="padding-bottom:8px;">
-	    		<input type="radio" name="deviceSelectionStyle" onclick="$('fileUploadField').disabled = false;" value="IMPORT" id="deviceSelectionStyleByImportRadio" <c:if test="${deviceReconfigOptions.deviceSelectionStyle == 'IMPORT'}">checked</c:if>>
-	    		<b>File Upload</b>
-    		</div>
-   			<input type="file" id="fileUploadField" value="Select File" onclick="checkByImportRadio();">
-   			<br><br>
 		    
-	    	<%-- SELECTION TABLE --%>
-	    	<div style="padding-bottom:8px;">
-		    	<input type="radio" name="deviceSelectionStyle" onclick="$('fileUploadField').disabled = true;" value="SELECTION" id="deviceSelectionStyleBySelectionRadio" <c:if test="${deviceReconfigOptions.deviceSelectionStyle == 'SELECTION'}">checked</c:if>>
-			    <b>Device Properties</b> 
-		    </div>
-		    <table class="miniResultsTable selectionTable">
+		    <table class="resultsTable selectionTable">
 		    
 		    	<tr>
-		    		<th style="width:200px;">Selection Type</th>
-		    		<th >Parameters</th>
-		    		<th class="deviceCountCol">Device Count</th>
+		    		<th colspan="2">Rules</th>
+		    		<th style="text-align:center;width:100px;">Remove</th>
 		    	</tr>
 		    	
 		    	<%-- LOAD GROUP --%>
 		    	<tr>
-		    		</td>
 		    		<td class="selectionTypeCol">
 		    			Load Group
 		    		</td>
-		    		<td>
-		    			<input type="hidden" id="loadGroupPaoIds" name="loadGroupPaoIds" value="">
-		    			<cti:multiPaoPicker pickerId="loadGroupPaoIdsPicker" paoIdField="loadGroupPaoIds" asButton="true" finalTriggerAction="loadGroupPaoIdsPickerComplete" constraint="com.cannontech.common.search.criteria.LMGroupCriteria">Select</cti:multiPaoPicker>
+		    		<td class="selectionParamCol">
+		    			4 Load Groups Selected
+		    			&nbsp; <img src="/WebConfig/yukon/Icons/edit.gif">
 		    		</td>
-		    		<td class="deviceCountCol">
-		    			96
-		    		</td>
+		    		<td style="text-align:center;">
+						<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+					</td>
 		    	</tr>
 		    	
 		    	<%-- PROGRAM --%>
@@ -120,13 +90,13 @@
 		    		<td class="selectionTypeCol">
 		    			Program
 		    		</td>
-		    		<td>
-		    			<input type="hidden" id="loadProgramPaoIds" name="loadProgramPaoIds" value="">
-		    			<cti:multiPaoPicker pickerId="loadProgramPaoIdsPicker" paoIdField="loadProgramPaoIds" asButton="true" finalTriggerAction="loadProgramPaoIdsPickerComplete" constraint="com.cannontech.common.search.criteria.LMProgramCriteria">Select</cti:multiPaoPicker>
+		    		<td class="selectionParamCol">
+		    			2 Load Programs Selected
+		    			&nbsp; <img src="/WebConfig/yukon/Icons/edit.gif">
 		    		</td>
-		    		<td class="deviceCountCol">
-		    			41
-		    		</td>
+		    		<td style="text-align:center;">
+						<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+					</td>
 		    	</tr>
 		    	
 		    	<%-- FIELD INSTALL DATE --%>
@@ -134,13 +104,13 @@
 		    		<td class="selectionTypeCol">
 		    			Field Install Date
 		    		</td>
-		    		<td>
-		    			<cti:formatDate var="fieldInstallDateStr" type="DATE" value="${deviceReconfigOptions.fieldInstallDate}" nullText=""/>
-		    			<tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="${fieldInstallDateStr}"/>
+		    		<td class="selectionParamCol">
+		    			12/15/2009
+		    			&nbsp; <img src="/WebConfig/yukon/Icons/edit.gif">
 		    		</td>
-		    		<td class="deviceCountCol">
-		    			0
-		    		</td>
+		    		<td style="text-align:center;">
+						<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+					</td>
 		    	</tr>
 		    	
 		    	<%-- PROGRAM SIGNUP DATE --%>
@@ -148,13 +118,13 @@
 		    		<td class="selectionTypeCol">
 		    			Program Sign-Up Date
 		    		</td>
-		    		<td>
-		    			<cti:formatDate var="programSignupDateStr" type="DATE" value="${deviceReconfigOptions.programSignupDate}" nullText=""/>
-		    			<tags:dateInputCalendar fieldName="programSignupDate"  fieldValue="${programSignupDateStr}"/>
+		    		<td class="selectionParamCol">
+		    			04/15/2008
+		    			&nbsp; <img src="/WebConfig/yukon/Icons/edit.gif">
 		    		</td>
-		    		<td class="deviceCountCol">
-		    			0
-		    		</td>
+		    		<td style="text-align:center;">
+						<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+					</td>
 		    	</tr>
 		    	
 		    	<%-- DEVICE TYPE --%>
@@ -162,16 +132,13 @@
 		    		<td class="selectionTypeCol">
 		    			Device Type
 		    		</td>
-		    		<td>
-		    			<select name="deviceType">
-		    				<c:forEach var="availableDeviceType" items="${availableDeviceTypes}">
-		    					<option value="${availableDeviceType.yukonListEntry.yukonDefID}" <c:if test="${deviceReconfigOptions.deviceType == availableDeviceType.yukonListEntry.yukonDefID}">selected</c:if>>${availableDeviceType.name}</option>
-		    				</c:forEach>
-		    			</select>
+		    		<td class="selectionParamCol">
+		    			Residential ExpressStat
+		    			&nbsp; <img src="/WebConfig/yukon/Icons/edit.gif">
 		    		</td>
-		    		<td class="deviceCountCol">
-		    			121
-		    		</td>
+		    		<td style="text-align:center;">
+						<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+					</td>
 		    	</tr>
 		    	
 		    	<%-- SERIAL NUMBER RANGE --%>
@@ -179,56 +146,47 @@
 		    		<td class="selectionTypeCol">
 		    			Serial Number Range
 		    		</td>
-		    		<td>
-		    			<input type="text" name="serialNumberRangeStart" id="serialNumberRangeStart" maxlength="12" size="12" value="${deviceReconfigOptions.serialNumberRangeStart}">
-		    			&nbsp;to&nbsp;
-		    			<input type="text" name="serialNumberRangeEnd" id="serialNumberRangeEnd" maxlength="12" size="12"  value="${deviceReconfigOptions.serialNumberRangeEnd}">
+		    		<td class="selectionParamCol">
+		    			100880 - 102600
+		    			&nbsp; <img src="/WebConfig/yukon/Icons/edit.gif">
 		    		</td>
-		    		<td class="deviceCountCol">
-		    			0
-		    		</td>
+		    		<td style="text-align:center;">
+						<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+					</td>
 		    	</tr>
 		    	
 		    	<%-- NOT ENROLLED --%>
 		    	<tr>
 		    		<td class="selectionTypeCol">
-		    			Not Enrolled
+		    			Enrolled
 		    		</td>
-		    		<td>
-		    			<input type="checkbox" name="notEnrolled" id="notEnrolled" <c:if test="${deviceReconfigOptions.notEnrolled}">checked</c:if>> 
-		    			Inventory present on an account, but not enrolled in any program.
+		    		<td class="selectionParamCol">
+		    			Devices not enrolled in any program.
+		    			&nbsp; <img src="/WebConfig/yukon/Icons/edit.gif">
 		    		</td>
-		    		<td class="deviceCountCol">
-		    			10
-		    		</td>
+		    		<td style="text-align:center;">
+						<input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'" name="removeRow${group.order}">
+					</td>
 		    	</tr>
+		    	
+		    	<%-- ADD RULE --%>
+				<tr style="background-color:#EEE;">
+					<td colspan="3">
+						<img src="${add}" onclick="openSimpleDialog('addRuleDialog', '/spring/stars/operator/deviceReconfig/addRuleDialog', 'Add Rule')" onmouseover="javascript:this.src='${addOver}'" onmouseout="javascript:this.src='${add}'" name="addRow">
+						Add Rule
+					</td>
+				</tr>
 		    	
 		    </table>
 		    
 		    
-	    
+	    <%--
 	    </tags:sectionContainer>
-	    <br>
-	    
-	    <tags:sectionContainer title="${reconfigurationStyleSectionTitle}">
-	    
-	    	<input type="radio" name="reconfigurationStyle" value="CURRENT_SETTINGS" id="reconfigurationStyleByCurrentSettingsRadio" <c:if test="${deviceReconfigOptions.reconfigurationStyle == 'CURRENT_SETTINGS'}">checked</c:if>>
-	    	<b>Current Configuration</b>
-	    	<img src="${helpImg}">
-	    	<br><br>
-	    
-	    	<input type="radio" name="reconfigurationStyle" value="LOAD_GROUP" id="reconfigurationStyleByLoadGroupRadio" <c:if test="${deviceReconfigOptions.reconfigurationStyle == 'LOAD_GROUP'}">checked</c:if>>
-	    	<b>Load Group Addressing</b>
-	    	<input type="hidden" id="reconfigStyleByLoadGroupId" name="reconfigStyleByLoadGroupId" value="${deviceReconfigOptions.reconfigStyleByLoadGroupId}">
-		   	<cti:paoPicker pickerId="reconfigStyleByLoadGroupIdPicker" paoIdField="reconfigStyleByLoadGroupId" asButton="true" finalTriggerAction="reconfigStyleByLoadGroupIdPickerComplete" constraint="com.cannontech.common.search.criteria.LMGroupCriteria">Select</cti:paoPicker>
-	    	<img src="${helpImg}">
-	    	
-	    </tags:sectionContainer>
+	     --%>
 	    
 	    <%-- SETUP SCHEDULE BUTTON --%>
     	<br>
-    	<tags:slowInput myFormId="cancelForm" label="Cancel" width="80px"/>
-    	<tags:slowInput myFormId="deviceReconfigForm" label="Next" width="80px"/>
+    	<tags:slowInput myFormId="deviceReconfigForm" label="Select" width="80px"/>
     
     </form>
     

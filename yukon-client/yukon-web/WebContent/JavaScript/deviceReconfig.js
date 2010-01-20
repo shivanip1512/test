@@ -1,4 +1,11 @@
 
+function swapSelectionTypeParamers() {
+	
+	var val = $('selectionTypeSelect').options[$('selectionTypeSelect').selectedIndex].value;
+	
+	alert(val);
+}
+
 // GROUP
 function loadGroupPaoIdsPickerComplete() {
 	
