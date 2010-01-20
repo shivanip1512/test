@@ -406,6 +406,12 @@
     <entry key="yukon.dr.consumer.optout.startDateTooEarly">The start date cannot be earlier than today.</entry>
     <entry key="yukon.dr.consumer.optout.startDateTooLate">The start date cannot be more than 1 year in the future.</entry>
 
+    <!-- optOutDisabled.jsp -->
+    <entry key="yukon.dr.consumer.optoutdisabled.header">Opt Out Disabled</entry>
+    <entry key="yukon.dr.consumer.optoutdisabled.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.optoutdisabled.msg">Opt Outs are currently disabled.</entry>
+    <entry key="yukon.dr.consumer.optoutdisabled.home">Home</entry>
+    
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.consumer.optoutlist.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>

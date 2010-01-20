@@ -69,7 +69,9 @@ public class OptOutController extends AbstractConsumerController {
             YukonUserContext yukonUserContext, ModelMap map) {
     	
     	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	this.checkOptOutsEnabled(user);
+    	if (!optOutStatusService.getOptOutEnabled(user)) {
+    	    return "consumer/optout/optOutDisabled.jsp";
+    	}
     	
         Calendar cal = Calendar.getInstance(yukonUserContext.getTimeZone());
     	Date currentDate = cal.getTime();
@@ -120,7 +122,9 @@ public class OptOutController extends AbstractConsumerController {
             int durationInDays, String error, ModelMap map) {
 
     	final LiteYukonUser user = yukonUserContext.getYukonUser();
-    	this.checkOptOutsEnabled(user);
+        if (!optOutStatusService.getOptOutEnabled(user)) {
+            return "consumer/optout/optOutDisabled.jsp";
+        }
 
         final boolean hasDeviceSelection =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
@@ -182,7 +186,9 @@ public class OptOutController extends AbstractConsumerController {
             String jsonInventoryIds, ModelMap map) {
         
     	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	checkOptOutsEnabled(user);
+        if (!optOutStatusService.getOptOutEnabled(user)) {
+            return "consumer/optout/optOutDisabled.jsp";
+        }
 
         map.addAttribute("startDate", startDate);
         map.addAttribute("durationInDays", durationInDays);
@@ -213,7 +219,9 @@ public class OptOutController extends AbstractConsumerController {
             String jsonInventoryIds, HttpServletRequest request, ModelMap map) throws Exception {
         
     	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	checkOptOutsEnabled(user);
+        if (!optOutStatusService.getOptOutEnabled(user)) {
+            return "consumer/optout/optOutDisabled.jsp";
+        }
 
     	List<Integer> inventoryIds = getInventoryIds(yukonUserContext, jsonInventoryIds);
     	validateInventoryIds(inventoryIds, customerAccount);
@@ -277,7 +285,9 @@ public class OptOutController extends AbstractConsumerController {
 
     	// Make sure opt outs are enabled for the user
     	LiteYukonUser user = yukonUserContext.getYukonUser();
-    	this.checkOptOutsEnabled(user);
+        if (!optOutStatusService.getOptOutEnabled(user)) {
+            return "consumer/optout/optOutDisabled.jsp";
+        }
     	
     	// Make sure the event is the current user's event
     	this.checkEventAgainstAccount(eventId, customerAccount);
@@ -331,16 +341,6 @@ public class OptOutController extends AbstractConsumerController {
         
 }
 
-    /**
-     * Helper method to make sure opt outs are enabled for the given user
-     */
-    private void checkOptOutsEnabled(LiteYukonUser user) {
-    	boolean optOutEnabled = optOutStatusService.getOptOutEnabled(user);
-    	if(!optOutEnabled) {
-    		throw new NotAuthorizedException("Opt Outs are currently disabled.");
-    	}
-    }
-    
     /**
      * Helper method to make sure the event being updated belongs to the current account
      */
