@@ -147,12 +147,12 @@ CapControlPao& CapControlPao::operator=(const CapControlPao& right)
     return *this;
 }
 
-int CapControlPao::operator == (const CapControlPao& right) const
+bool CapControlPao::operator == (const CapControlPao& right) const
 {
     return _paoId == right._paoId;
 }
 
-int CapControlPao::operator != (const CapControlPao& right) const
+bool CapControlPao::operator != (const CapControlPao& right) const
 {
     return _paoId != right._paoId;
 }
