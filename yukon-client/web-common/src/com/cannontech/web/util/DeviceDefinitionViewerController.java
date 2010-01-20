@@ -19,16 +19,16 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.device.definition.attribute.lookup.BasicAttributeDefinition;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.CommandDefinition;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DeviceTag;
-import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.CommandDefinition;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -36,7 +36,7 @@ import com.cannontech.database.data.point.PointType;
 
 public class DeviceDefinitionViewerController extends AbstractController {
 
-	private DeviceDefinitionDao deviceDefinitionDao;
+	private PaoDefinitionDao paoDefinitionDao;
 	private UnitMeasureDao unitMeasureDao;
 	private StateDao stateDao;
 	
@@ -48,14 +48,14 @@ public class DeviceDefinitionViewerController extends AbstractController {
         ModelAndView mav = new ModelAndView("deviceDefinition/deviceDefinitionViewer.jsp");
         
         // init
-        Set<DeviceDefinition> allDefinitions = deviceDefinitionDao.getAllDeviceDefinitions();
-        Map<String, Set<DeviceDefinition>> allDeviceTypes = new LinkedHashMap<String, Set<DeviceDefinition>>();
-        Set<DeviceDefinition> displayDefinitions = new LinkedHashSet<DeviceDefinition>();
+        Set<PaoDefinition> allDefinitions = paoDefinitionDao.getAllPaoDefinitions();
+        Map<String, Set<PaoDefinition>> allDeviceTypes = new LinkedHashMap<String, Set<PaoDefinition>>();
+        Set<PaoDefinition> displayDefinitions = new LinkedHashSet<PaoDefinition>();
         
         Set<String> allDisplayGroups = new LinkedHashSet<String>();
         Set<String> allChangeGroups = new HashSet<String>();
         Set<Attribute> allAttributes = new HashSet<Attribute>();
-        Set<DeviceTag> allTags = new HashSet<DeviceTag>();
+        Set<PaoTag> allTags = new HashSet<PaoTag>();
         
         // parameters
         String deviceTypeParam = ServletRequestUtils.getStringParameter(request, "deviceType");
@@ -65,7 +65,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         String tagParam = ServletRequestUtils.getStringParameter(request, "tag");
         
         // all
-        for (DeviceDefinition deviceDefiniton : allDefinitions) {
+        for (PaoDefinition deviceDefiniton : allDefinitions) {
         	
         	// allDeviceTypes
         	String displayGroup = deviceDefiniton.getDisplayGroup();
@@ -73,7 +73,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         		displayGroup = "Untitled";
         	}
         	if (!allDeviceTypes.containsKey(displayGroup)) {
-        		allDeviceTypes.put(displayGroup, new LinkedHashSet<DeviceDefinition>());
+        		allDeviceTypes.put(displayGroup, new LinkedHashSet<PaoDefinition>());
         	}
         	allDeviceTypes.get(displayGroup).add(deviceDefiniton);
         	
@@ -89,7 +89,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         	}
         	
         	// allAttributes
-        	List<AttributeDefinition> definitionAttributes = new ArrayList<AttributeDefinition>(deviceDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
+        	List<AttributeDefinition> definitionAttributes = new ArrayList<AttributeDefinition>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
         	for (AttributeDefinition attribute : definitionAttributes) {
         		if (!allAttributes.contains(attribute)) {
         			allAttributes.add(attribute.getAttribute());
@@ -97,8 +97,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
         	}
         	
         	// allTags
-        	List<DeviceTag> definitionTags = new ArrayList<DeviceTag>(deviceDefinitionDao.getSupportedTags(deviceDefiniton));
-        	for (DeviceTag tag : definitionTags) {
+        	List<PaoTag> definitionTags = new ArrayList<PaoTag>(paoDefinitionDao.getSupportedTags(deviceDefiniton));
+        	for (PaoTag tag : definitionTags) {
         		if (!allTags.contains(tag)) {
         			allTags.add(tag);
         		}
@@ -124,7 +124,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         			}
         		}
         	} else if (!StringUtils.isBlank(tagParam)) {
-        		for (DeviceTag tag : definitionTags) {
+        		for (PaoTag tag : definitionTags) {
         			if (tagParam.equals(tag.name())) {
         				displayDefinitions.add(deviceDefiniton);
         			}
@@ -136,7 +136,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         
         // display definitions info
         Map<String, Set<DeviceInfo>> displayDefinitionsMap = new HashMap<String, Set<DeviceInfo>>();
-        for (DeviceDefinition deviceDefiniton : displayDefinitions) {
+        for (PaoDefinition deviceDefiniton : displayDefinitions) {
         	String displayGroup = deviceDefiniton.getDisplayGroup();
         	DeviceInfo deviceInfo = new DeviceInfo(deviceDefiniton);
         	if (!displayDefinitionsMap.containsKey(displayGroup)) {
@@ -167,10 +167,10 @@ public class DeviceDefinitionViewerController extends AbstractController {
         return mav;
     }
 	
-	private Map<String, Set<DeviceDefinition>> sortDeviceTypesByGroupOrder(Map<String, Set<DeviceDefinition>> allDeviceTypes) {
-		Map<String, Set<DeviceDefinition>> sortedAllDeviceTypes = new LinkedHashMap<String, Set<DeviceDefinition>>();
+	private Map<String, Set<PaoDefinition>> sortDeviceTypesByGroupOrder(Map<String, Set<PaoDefinition>> allDeviceTypes) {
+		Map<String, Set<PaoDefinition>> sortedAllDeviceTypes = new LinkedHashMap<String, Set<PaoDefinition>>();
 		for (String displayGroup : DISPLAY_GROUP_ORDER) {
-			Set<DeviceDefinition> deviceSet = allDeviceTypes.remove(displayGroup);
+			Set<PaoDefinition> deviceSet = allDeviceTypes.remove(displayGroup);
 			if (deviceSet != null) {
 				sortedAllDeviceTypes.put(displayGroup, deviceSet);
 			}
@@ -205,18 +205,18 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	
 	public class DeviceInfo {
 		
-		private DeviceDefinition definition;
+		private PaoDefinition definition;
 		private List<PointTemplateWrapper> points;
 		private List<AttributeWrapper> attributes;
 		private List<CommandDefinitionWrapper> commands;
-		private List<DeviceTag> tags;
+		private List<PaoTag> tags;
 		
-		public DeviceInfo(DeviceDefinition deviceDefiniton) {
+		public DeviceInfo(PaoDefinition deviceDefiniton) {
 			
 			this.definition = deviceDefiniton;
 			
 			// points
-			List<PointTemplate> pointTemplates = new ArrayList<PointTemplate>(deviceDefinitionDao.getAllPointTemplates(deviceDefiniton));
+			List<PointTemplate> pointTemplates = new ArrayList<PointTemplate>(paoDefinitionDao.getAllPointTemplates(deviceDefiniton));
 			Collections.sort(pointTemplates);
 			
 			this.points = new ArrayList<PointTemplateWrapper>();
@@ -225,14 +225,14 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			}
 			
 			// attributes
-			List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>(deviceDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
+			List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
 			this.attributes = new ArrayList<AttributeWrapper>();
 			for (AttributeDefinition attribute : attributes) {
 				this.attributes.add(new AttributeWrapper(attribute));
 			}
 			
 			// commands
-			List<CommandDefinition> commands = new ArrayList<CommandDefinition>(deviceDefinitionDao.getAvailableCommands(deviceDefiniton));
+			List<CommandDefinition> commands = new ArrayList<CommandDefinition>(paoDefinitionDao.getAvailableCommands(deviceDefiniton));
 			Collections.sort(commands);
 			this.commands = new ArrayList<CommandDefinitionWrapper>();
 			for (CommandDefinition commandDefinition : commands) {
@@ -240,10 +240,10 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			}
 			
 			// tags
-			this.tags = new ArrayList<DeviceTag>(deviceDefinitionDao.getSupportedTags(deviceDefiniton));
+			this.tags = new ArrayList<PaoTag>(paoDefinitionDao.getSupportedTags(deviceDefiniton));
 		}
 
-		public DeviceDefinition getDefinition() {
+		public PaoDefinition getDefinition() {
 			return definition;
 		}
 		public List<PointTemplateWrapper> getPoints() {
@@ -255,7 +255,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public List<CommandDefinitionWrapper> getCommands() {
 			return commands;
 		}
-		public List<DeviceTag> getTags() {
+		public List<PaoTag> getTags() {
 			return tags;
 		}
 	}
@@ -325,12 +325,12 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		private CommandDefinition commandDefinition;
 		private List<String> pointNames = new ArrayList<String>();
 		
-		public CommandDefinitionWrapper(CommandDefinition commandDefinition, DeviceDefinition deviceDefiniton) {
+		public CommandDefinitionWrapper(CommandDefinition commandDefinition, PaoDefinition deviceDefiniton) {
 			
 			this.commandDefinition = commandDefinition;
 			
 			Set<PointIdentifier> affectedPointList = commandDefinition.getAffectedPointList();
-			Set<PointTemplate> allPointTemplates = deviceDefinitionDao.getAllPointTemplates(deviceDefiniton);
+			Set<PointTemplate> allPointTemplates = paoDefinitionDao.getAllPointTemplates(deviceDefiniton);
 			for (PointIdentifier affectedPoint : affectedPointList) {
 				for (PointTemplate pointTemplate : allPointTemplates) {
 					if (affectedPoint.getType() == pointTemplate.getType() && affectedPoint.getOffset() == pointTemplate.getOffset()) {
@@ -351,8 +351,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	
 	
 	@Autowired
-	public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-		this.deviceDefinitionDao = deviceDefinitionDao;
+	public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
 	}
 	@Autowired
 	public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {

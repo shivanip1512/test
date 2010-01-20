@@ -23,15 +23,15 @@ import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.AttributeHelper;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.PointService;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeHelper;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
@@ -65,7 +65,7 @@ public class MeterController extends MultiActionController {
     private CachingPointFormattingService cachingPointFormattingService = null;
     private PointUpdateBackingService pointUpdateBackingService = null;
     private RolePropertyDao rolePropertyDao = null;
-    private DeviceDefinitionDao deviceDefinitionDao = null;
+    private PaoDefinitionDao paoDefinitionDao = null;
     private MspMeterSearchService mspMeterSearchService;
 
     public MeterController() {
@@ -120,8 +120,8 @@ public class MeterController extends MultiActionController {
 	}
     
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-		this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
 	}
     
     @Autowired
@@ -269,7 +269,7 @@ public class MeterController extends MultiActionController {
         
         Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
         
-        boolean highBillSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.HIGH_BILL);
+        boolean highBillSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.HIGH_BILL);
         mav.addObject("highBillSupported", highBillSupported);
 
         boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
@@ -293,17 +293,17 @@ public class MeterController extends MultiActionController {
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);
 
-        boolean touSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.TOU);
+        boolean touSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.TOU);
         mav.addObject("touSupported", touSupported);
 
-        boolean moveSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.MOVE_SUPPORTED);
+        boolean moveSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.MOVE_SUPPORTED);
         boolean moveEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT, user);
         mav.addObject("moveSupported", (moveSupported && moveEnabled));
 
-        boolean lpSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.LOAD_PROFILE);
+        boolean lpSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.LOAD_PROFILE);
         mav.addObject("lpSupported", lpSupported);
 
-        boolean peakReportSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.PEAK_REPORT);
+        boolean peakReportSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PEAK_REPORT);
         mav.addObject("peakReportSupported", peakReportSupported);
 
         boolean isMCT4XX = DeviceTypesFuncs.isMCT4XX(device.getType());
@@ -312,8 +312,8 @@ public class MeterController extends MultiActionController {
         boolean voltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
         mav.addObject("voltageSupported", voltageSupported);
         
-        boolean configSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430) ||
-                                              deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470);
+        boolean configSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430) ||
+                                              paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470);
         mav.addObject("configSupported", configSupported);
 
         return mav;
