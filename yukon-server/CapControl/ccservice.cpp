@@ -35,7 +35,6 @@ BOOL  _RETRY_FAILED_BANKS;
 ULONG _DB_RELOAD_WAIT;
 BOOL  _LOG_MAPID_INFO;
 ULONG _LINK_STATUS_TIMEOUT;
-BOOL  _END_DAY_ON_TRIP;
 ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 ULONG _MAX_KVAR;
 ULONG _MAX_KVAR_TIMEOUT;
@@ -345,24 +344,6 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
-    _END_DAY_ON_TRIP = FALSE;
-
-    strcpy(var, "CAP_CONTROL_END_DAY_ON_TRIP");
-    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-        _END_DAY_ON_TRIP = (str=="true"?TRUE:FALSE);
-        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
 
     _MAX_KVAR = gConfigParms.getValueAsULong("CAP_CONTROL_MAX_KVAR", -1);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD)
@@ -552,7 +533,7 @@ void CtiCCService::Init()
     }
 
     _OP_STATS_REFRESH_RATE = 3600; //seconds
-                                
+
     strcpy(var, "CAP_CONTROL_OP_STATS_REFRESH_RATE");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
@@ -584,7 +565,7 @@ void CtiCCService::Init()
     {
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         _MAXOPS_ALARM_CAT = "%"+str+"%";
-        
+
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

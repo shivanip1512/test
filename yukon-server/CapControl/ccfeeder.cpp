@@ -40,7 +40,6 @@ extern BOOL _USE_FLIP_FLAG;
 extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
-extern BOOL _END_DAY_ON_TRIP;
 extern ULONG _MAX_KVAR;
 extern ULONG _MAX_KVAR_TIMEOUT;
 extern BOOL _LOG_MAPID_INFO;
@@ -1383,7 +1382,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
     CtiCCCapBankPtr returnCapBank = NULL;
     CtiTime currentTime = CtiTime();
     BankOperation solution;
-    bool endOnTrip = false;
+    bool endDayFlag = false;
     std::vector<CtiCCCapBankPtr> banks;
 
     if (kvarSolution == 0.0)
@@ -1522,10 +1521,15 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                         pointChanges.push_back(pSig);
                     }
 
-                    if (_END_DAY_ON_TRIP && (solution == Open))
+                    if (!_strategy->getEndDaySettings().compare("Trip") && (solution == Open))
                     {
                         // We need this to return this bank (since we disabled it).
-                        endOnTrip = true;
+                        endDayFlag = true;
+                    }
+                    else if (!_strategy->getEndDaySettings().compare("Close") && (solution == Close))
+                    {
+                        // We need this to return this bank (since we disabled it).
+                        endDayFlag = true;
                     }
                     else
                     {
@@ -1535,7 +1539,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                 }
             }
 
-            if (!currentCapBank->getDisableFlag() || endOnTrip)
+            if (!currentCapBank->getDisableFlag() || endDayFlag)
             {
                 returnCapBank = currentCapBank;
             }
@@ -2478,9 +2482,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
                 try
                 {
-                    if( !(dailyMaxOpsHitFlag && maxOpsDisableFlag) &&
-                        !(getMaxDailyOpsHitFlag() && maxOpsDisableFlag) &&
-                        ( !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::KVarControlUnit) &&
+                    if( ( !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::KVarControlUnit) &&
                           lagLevel < getIVControl() ) ||
                         ( !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::VoltsControlUnit) &&
                           lagLevel > getIVControl() ) )
@@ -6750,33 +6752,23 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
         }
         setMaxDailyOpsHitFlag(TRUE);
 
-        //we should disable feeder if the flag says so
-       /* if( getMaxOperationDisableFlag() )
-        {
-            setDisableFlag(TRUE);
-       //     setBusUpdatedFlag(TRUE);
-            string text = string("Feeder Disabled");
-            string additional = string("Feeder: ");
-            additional += getPAOName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += getMapLocationId();
-                additional += " (";
-                additional += getPAODescription();
-                additional += ")";
-            }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-
-            //keepGoing = FALSE;
-            // feeder disable flag is already set, so it will return false.
-        } */
         retVal = TRUE;
     }
 
     if( _strategy->getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
     {
-        if ( !_END_DAY_ON_TRIP )
+        bool endOfDayOverride = false;
+
+        if (_strategy->getEndDaySettings().compare("Trip") == 0)
+        {
+            endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),Feeder);
+        }
+        else if (_strategy->getEndDaySettings().compare("Close") == 0)
+        {
+            endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),Feeder);
+        }
+
+        if (endOfDayOverride == false)
         {
             setDisableFlag(TRUE);
             string text = string("Feeder Disabled");
@@ -6799,51 +6791,8 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
             }
             CtiCCSubstationBusStore::getInstance()->UpdateFeederDisableFlagInDB(this);
 
+
             retVal = FALSE;
-        }
-        else
-        {
-            bool closeFoundFlag = false;
-            for (LONG j=0; j<getCCCapBanks().size(); j++)
-            {
-                CtiCCCapBank* currentCap = (CtiCCCapBank*)getCCCapBanks()[j];
-                if (currentCap->getControlStatus() == CtiCCCapBank::Close ||
-                    currentCap->getControlStatus() == CtiCCCapBank::CloseQuestionable )
-                {
-                    retVal = TRUE;
-                    closeFoundFlag = true;
-                    break;
-                }
-            }
-
-
-            if (!closeFoundFlag)
-            {
-                setDisableFlag(TRUE);
-                string text = string("Feeder Disabled");
-                string additional = string("Feeder: ");
-                additional += getPaoName();
-                if (_LOG_MAPID_INFO)
-                {
-                    additional += " MapID: ";
-                    additional += getMapLocationId();
-                    additional += " (";
-                    additional += getPaoDescription();
-                    additional += ")";
-                }
-                if (getDailyOperationsAnalogPointId() > 0)
-                {
-                    CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
-                                                                                        TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
-                    pSig->setCondition(CtiTablePointAlarming::highReasonability);
-                    pointChanges.push_back(pSig);
-                }
-                CtiCCSubstationBusStore::getInstance()->UpdateFeederDisableFlagInDB(this);
-
-
-                retVal = FALSE;
-            }
-
         }
     }
 

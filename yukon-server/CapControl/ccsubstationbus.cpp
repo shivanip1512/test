@@ -40,7 +40,6 @@ extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _ALLOW_PARALLEL_TRUING;
 extern BOOL _LOG_MAPID_INFO;
-extern BOOL _END_DAY_ON_TRIP;
 extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 extern bool _RATE_OF_CHANGE;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
@@ -2359,33 +2358,6 @@ BOOL CtiCCSubstationBus::maxOperationsHitDisableBus()
    return FALSE;
 }
 
-BOOL CtiCCSubstationBus::isAnyBankClosed()
-{
-    BOOL closeFoundFlag = false;
-    for(LONG i=0;i<_ccfeeders.size();i++)
-    {
-        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-        if (!currentFeeder->getDisableFlag())
-        {
-            for (LONG j=0; j<currentFeeder->getCCCapBanks().size(); j++)
-            {
-                CtiCCCapBank* currentCap = (CtiCCCapBank*)currentFeeder->getCCCapBanks()[j];
-                if (currentCap->getControlStatus() == CtiCCCapBank::Close ||
-                    currentCap->getControlStatus() == CtiCCCapBank::CloseQuestionable )
-                {
-                    closeFoundFlag = true;
-                    break;
-                }
-            }
-            if (closeFoundFlag)
-            {
-                break;
-            }
-        }
-    }
-    return closeFoundFlag;
-}
-
 /*---------------------------------------------------------------------------
     checkForAndProvideNeededControl
 
@@ -2398,17 +2370,25 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
     checkForMaxDailyOpsHit();
     if( _strategy->getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
     {
-        if ( !_END_DAY_ON_TRIP )
+        if (_strategy->getEndDaySettings().compare("Trip") == 0)
         {
-            keepGoing = maxOperationsHitDisableBus();
-        }
-        else
-        {
-            bool closeFoundFlag = isAnyBankClosed();
-            if (!closeFoundFlag)
+            bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),SubBus);
+            if (flag == false)
             {
                 keepGoing = maxOperationsHitDisableBus();
             }
+        }
+        else if (_strategy->getEndDaySettings().compare("Close") == 0)
+        {
+            bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),SubBus);
+            if (flag == false)
+            {
+                keepGoing = maxOperationsHitDisableBus();
+            }
+        }
+        else
+        {
+            keepGoing = maxOperationsHitDisableBus();
         }
     }
 

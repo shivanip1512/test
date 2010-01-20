@@ -285,7 +285,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void clearOutNewPointReceivedFlags();
     BOOL maxOperationsHitDisableBus();
     void checkForMaxDailyOpsHit();
-    BOOL isAnyBankClosed();
+
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);

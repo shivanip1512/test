@@ -12038,7 +12038,37 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
     return;
 }
 
+bool CtiCCSubstationBusStore::isAnyBankClosed(int paoId, CapControlType type)
+{
+    std::vector<CtiCCCapBankPtr> banks = getCapBanksByPaoIdAndType(paoId,type);
 
+    for each (CtiCCCapBankPtr bank in banks)
+    {
+        if (bank->getControlStatus() == CtiCCCapBank::Close ||
+            bank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool CtiCCSubstationBusStore::isAnyBankOpen(int paoId, CapControlType type)
+{
+    std::vector<CtiCCCapBankPtr> banks = getCapBanksByPaoIdAndType(paoId,type);
+
+    for each (CtiCCCapBankPtr bank in banks)
+    {
+        if (bank->getControlStatus() == CtiCCCapBank::Open ||
+            bank->getControlStatus() == CtiCCCapBank::OpenQuestionable )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 /* Private Static members */
 const string CtiCCSubstationBusStore::m3iAMFMInterfaceString = "M3I";

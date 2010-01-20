@@ -23,7 +23,6 @@
 #include "ccUnitTestUtil.h"
 
 extern BOOL _RETRY_FAILED_BANKS;
-extern BOOL _END_DAY_ON_TRIP;
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
@@ -236,6 +235,28 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     BOOST_CHECK_EQUAL(bank->getRetryCloseFailedFlag(),TRUE);
 
+    capBank4->setControlStatus(CtiCCCapBank::Open);
+    feeder->getStrategy()->setEndDaySettings("Close");//  _END_DAY_ON_TRIP = true;
+    capBank4->setDisableFlag(false);
+    capBank4->setMaxDailyOpsHitFlag(false);
+    capBank4->setCurrentDailyOperations(2);
+    capBank4->setMaxDailyOperation(2);
+    capBank4->setOperationAnalogPointId(1);
+    capBank4->setMaxOpsDisableFlag(true);
+    bank = feeder->findCapBankToChangeVars(-550,pointChanges,-500,500,600);
+    BOOST_CHECK_EQUAL(pointChanges.size(),2);
+    delete_container(pointChanges);
+    pointChanges.clear();
+    BOOST_REQUIRE_EQUAL((bank == NULL), false);
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank4");
+    capBank4->setDisableFlag(false);
+    capBank4->setMaxDailyOpsHitFlag(false);
+    capBank4->setCurrentDailyOperations(0);
+    capBank4->setMaxDailyOperation(0);
+    capBank4->setOperationAnalogPointId(0);
+    capBank4->setMaxOpsDisableFlag(false);
+    feeder->getStrategy()->setEndDaySettings("(none)");//_END_DAY_ON_TRIP = false;
+
     /*************************************************************************************************/
     //Try Kvar > 0
     //Setup for new direction
@@ -332,7 +353,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setDisableFlag(false);
     capBank4->setMaxOpsDisableFlag(false);
 
-    _END_DAY_ON_TRIP = true;
+    feeder->getStrategy()->setEndDaySettings("Trip");//  _END_DAY_ON_TRIP = true;
     capBank4->setDisableFlag(false);
     capBank4->setMaxDailyOpsHitFlag(false);
     capBank4->setCurrentDailyOperations(2);
@@ -351,7 +372,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     capBank4->setMaxDailyOperation(0);
     capBank4->setOperationAnalogPointId(0);
     capBank4->setMaxOpsDisableFlag(false);
-    _END_DAY_ON_TRIP = false;
+    feeder->getStrategy()->setEndDaySettings("(none)");//_END_DAY_ON_TRIP = false;
 
     delete feeder;
     feeder = NULL;

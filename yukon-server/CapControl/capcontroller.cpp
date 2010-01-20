@@ -70,7 +70,6 @@ extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
-extern BOOL _END_DAY_ON_TRIP;
 extern ULONG _MAX_KVAR;
 extern ULONG _MAX_KVAR_TIMEOUT;
 extern BOOL _LOG_MAPID_INFO;
@@ -4634,24 +4633,6 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             std::transform(str.begin(), str.end(), str.begin(), ::tolower);
             _RETRY_FAILED_BANKS = (str=="true"?TRUE:FALSE);
-            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << str << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
-        _END_DAY_ON_TRIP = FALSE;
-
-        strcpy(var, "CAP_CONTROL_END_DAY_ON_TRIP");
-        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
-        {
-            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-            _END_DAY_ON_TRIP = (str=="true"?TRUE:FALSE);
             if ( _CC_DEBUG & CC_DEBUG_STANDARD)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);

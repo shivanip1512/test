@@ -487,6 +487,9 @@ public:
 
     CapControlPointDataHandler& getPointDataHandler();
     virtual bool handlePointDataByPaoId(int paoId, CtiPointDataMsg* message);
+
+    bool isAnyBankOpen(int paoId, CapControlType type);
+    bool isAnyBankClosed(int paoId, CapControlType type);
 private:
 
     /* Relating to Max Kvar Cparm */
