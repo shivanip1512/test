@@ -255,3 +255,4 @@ ALTER TABLE DynamicCCOriginalParent
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '20-JAN-2010', 'Latest Update', 1);
