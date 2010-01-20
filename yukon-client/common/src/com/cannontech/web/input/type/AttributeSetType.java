@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 /**
  * Implementation of input type which represents an integer input type

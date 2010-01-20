@@ -22,16 +22,16 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
-import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -47,7 +47,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
     private DeviceBase currentDevice = null;
 
-    private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
+    private PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
     private DeviceUpdateService deviceUpdateService = (DeviceUpdateService) YukonSpringHook.getBean("deviceUpdateService");
     private PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
 
@@ -91,7 +91,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
      */
     public Object getValue(Object val) {
 
-        DeviceDefinition newDefinition = (DeviceDefinition) getJListDevices().getSelectedValue();
+        PaoDefinition newDefinition = (PaoDefinition) getJListDevices().getSelectedValue();
 
         if (val == null) {
             return newDefinition.getType();
@@ -110,12 +110,12 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                 getJTextPaneNotes().setText("generating type differences...");
                 new Thread(new Runnable() {
                     public void run() {
-                        DeviceDefinition deviceDefinition = (DeviceDefinition) getJListDevices().getSelectedValue();
-                        String text = generateDeviceChangeText(deviceDefinition);
-                        if (((DeviceDefinition) getJListDevices().getSelectedValue()).equals(deviceDefinition)) {
+                        PaoDefinition paoDefinition = (PaoDefinition) getJListDevices().getSelectedValue();
+                        String text = generateDeviceChangeText(paoDefinition);
+                        if (((PaoDefinition) getJListDevices().getSelectedValue()).equals(paoDefinition)) {
 
                             int currentDeviceType = PAOGroups.getDeviceType(currentDevice.getPAOType());
-                            int newType = deviceDefinition.getType().getDeviceTypeId();
+                            int newType = paoDefinition.getType().getDeviceTypeId();
                             
                             if (DeviceTypesFuncs.isDisconnectMCT(currentDeviceType) && (DeviceTypesFuncs.isMCT410(newType)) ) {
                                 isDisconnect = true;
@@ -211,10 +211,10 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         // Get a list of all of the device definitions that the device can
         // change to and sort the list by device type
-        List<DeviceDefinition> deviceList = new ArrayList<DeviceDefinition>();
+        List<PaoDefinition> deviceList = new ArrayList<PaoDefinition>();
         DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        deviceList.addAll(deviceDefinitionService.getChangeableDevices(yukonDevice));
+        deviceList.addAll(paoDefinitionService.getChangeablePaos(yukonDevice));
         Collections.sort(deviceList);
 
         // Set the JList data
@@ -226,11 +226,11 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     /**
      * Helper method to generate text explaining what will be changed on the
      * current device to change it's type to the selected type
-     * @param deviceDefinition - Selected definition to change the current
+     * @param paoDefinition - Selected definition to change the current
      *            device to
      * @return A string explaining change details
      */
-    private String generateDeviceChangeText(DeviceDefinition deviceDefinition) {
+    private String generateDeviceChangeText(PaoDefinition paoDefinition) {
 
         StringBuffer buffer = new StringBuffer();
 
@@ -241,11 +241,11 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         // Add text to explain what type the current device is and what it is
         // changing to
         buffer.append("Change from " + device.getPAOType() + " to "
-                + deviceDefinition.getDisplayName() + "\n\n");
+                + paoDefinition.getDisplayName() + "\n\n");
 
         // Add text for point additions
-        Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(yukonDevice,
-                                                                                         deviceDefinition);
+        Set<PointTemplate> addTemplates = paoDefinitionService.getPointTemplatesToAdd(yukonDevice,
+                                                                                         paoDefinition);
         buffer.append("Points to add:\n");
         if (addTemplates.size() == 0) {
             buffer.append("--none\n");
@@ -257,19 +257,19 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         buffer.append("\n");
 
         // Add text for point deletions
-        Set<PointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice,
-                                                                                               deviceDefinition);
+        Set<PointIdentifier> removeTemplates = paoDefinitionService.getPointTemplatesToRemove(yukonDevice,
+                                                                                               paoDefinition);
         buffer.append("Points to remove:\n");
-        buffer.append(this.generateRemoveChangeText(deviceDefinition, removeTemplates));
+        buffer.append(this.generateRemoveChangeText(paoDefinition, removeTemplates));
 
         // Add text for point transfers
-        Collection<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
-                                                                                                       deviceDefinition);
+        Collection<PointTemplateTransferPair> transferTemplates = paoDefinitionService.getPointTemplatesToTransfer(yukonDevice,
+                                                                                                       paoDefinition);
         buffer.append("Points to transfer:\n");
         if (transferTemplates.size() == 0) {
             buffer.append("--none\n");
         } else {
-            buffer.append(this.generatePointTransferChangeText(deviceDefinition, transferTemplates));
+            buffer.append(this.generatePointTransferChangeText(paoDefinition, transferTemplates));
         }
 
         return buffer.toString();
@@ -278,12 +278,12 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     /**
      * Helper method to generate notes for each point that will be removed when
      * the device type is changed
-     * @param deviceDefinition - Selected definition to change the current
+     * @param paoDefinition - Selected definition to change the current
      *            device to
      * @param removeTemplates - Templates of points to remove
      * @return A String with remove information
      */
-    private String generateRemoveChangeText(DeviceDefinition deviceDefinition,
+    private String generateRemoveChangeText(PaoDefinition paoDefinition,
             Set<PointIdentifier> removeTemplates) {
 
         StringBuffer buffer = new StringBuffer();
@@ -315,12 +315,12 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     /**
      * Helper method to generate notes for what will change about each point
      * that will be transferred
-     * @param deviceDefinition - Selected definition to change the current
+     * @param paoDefinition - Selected definition to change the current
      *            device to
      * @param transferTemplates - Templates for points to transfer
      * @return A String with change information
      */
-    private String generatePointTransferChangeText(DeviceDefinition deviceDefinition,
+    private String generatePointTransferChangeText(PaoDefinition paoDefinition,
             Iterable<PointTemplateTransferPair> transferTemplates) {
 
         StringBuffer buffer = new StringBuffer();

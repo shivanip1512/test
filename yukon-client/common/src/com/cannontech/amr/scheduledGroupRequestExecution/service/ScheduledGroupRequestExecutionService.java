@@ -2,9 +2,9 @@ package com.cannontech.amr.scheduledGroupRequestExecution.service;
 
 import java.util.Set;
 
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.RetryStrategy;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.user.YukonUserContext;
 

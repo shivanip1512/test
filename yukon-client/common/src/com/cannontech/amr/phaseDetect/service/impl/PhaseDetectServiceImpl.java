@@ -23,8 +23,6 @@ import com.cannontech.amr.phaseDetect.data.UndefinedPhaseException;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
@@ -42,6 +40,8 @@ import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.RouteBroadcastService;
 import com.cannontech.common.device.service.RouteBroadcastService.CompletionCallback;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -87,8 +87,8 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
 
     @Override
     public void clearPhaseData(LiteYukonUser user) {
-        /* mct410base comes from the deviceDefinition.xml file and represents all mct 410s. */
-        /* In the future it would be retrieved from some enum builts on the deviceDefinition.xml file. */
+        /* mct410base comes from the paoDefinition.xml file and represents all mct 410s. */
+        /* In the future it would be retrieved from some enum builts on the paoDefinition.xml file. */
         String command = "putconfig emetcon phasedetect clear broadcast MCT_410_BASE"; 
         
         final CountDownLatch finishedLatch = new CountDownLatch(1);

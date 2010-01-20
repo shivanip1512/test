@@ -1,6 +1,6 @@
 <%@ attribute name="headerKey" required="true" %>
-<%@ attribute name="usageAttribute" required="true" type="com.cannontech.common.device.attribute.model.Attribute" %>
-<%@ attribute name="peakAttribute" required="true" type="com.cannontech.common.device.attribute.model.Attribute" %>
+<%@ attribute name="usageAttribute" required="true" type="com.cannontech.common.pao.attribute.model.Attribute" %>
+<%@ attribute name="peakAttribute" required="true" type="com.cannontech.common.pao.attribute.model.Attribute" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>

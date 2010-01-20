@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Multimap;
 

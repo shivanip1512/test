@@ -3,8 +3,8 @@ package com.cannontech.amr.deviceread.service.impl;
 import java.util.Set;
 
 import com.cannontech.amr.deviceread.dao.impl.SetCoveringSolver;
-import com.cannontech.common.device.definition.model.CommandDefinition;
-import com.cannontech.common.device.definition.model.PointIdentifier;
+import com.cannontech.common.pao.definition.model.CommandDefinition;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 
 public class CommandWrapper implements SetCoveringSolver.HasWeight<PointIdentifier> {
 

@@ -9,9 +9,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -26,7 +26,7 @@ public class ProfileController extends MultiActionController {
 
     private RolePropertyDao rolePropertyDao;
     private DeviceDao deviceDao;
-    private DeviceDefinitionDao deviceDefinitionDao;
+    private PaoDefinitionDao paoDefinitionDao;
     
     public ModelAndView home(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
@@ -39,7 +39,7 @@ public class ProfileController extends MultiActionController {
         
         mav.addObject("deviceId", deviceId);
         
-        boolean lpSupported = deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.LOAD_PROFILE);
+        boolean lpSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.LOAD_PROFILE);
         mav.addObject("lpSupported", lpSupported);
         
         boolean profileCollection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.PROFILE_COLLECTION, user);
@@ -62,7 +62,7 @@ public class ProfileController extends MultiActionController {
 	}
     
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-		this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
 	}
 }

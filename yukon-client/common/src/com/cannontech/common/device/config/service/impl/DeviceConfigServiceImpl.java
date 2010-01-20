@@ -26,14 +26,14 @@ import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallb
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
@@ -47,7 +47,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
     private DeviceConfigurationDao deviceConfigurationDao;
     private MeterDao meterDao;
-    private DeviceDefinitionDao deviceDefinitionDao;
+    private PaoDefinitionDao paoDefinitionDao;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
@@ -56,8 +56,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
         for(SimpleDevice device : deviceCollection.getDeviceList()){
-            if(!deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)
-                    && !deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
+            if(!paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430)
+                    && !paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470)) {
                 unsupportedDevices.add(device);
             }else{
                 supportedDevices.add(device);
@@ -110,8 +110,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         
         for(YukonDevice device : devices) {
             Meter meter = meterDao.getForYukonDevice(device);
-            if(deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)
-                    || deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
+            if(paoDefinitionDao.isTagSupported(meter.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430)
+                    || paoDefinitionDao.isTagSupported(meter.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470)) {
                 VerifyResult verifyResult = new VerifyResult(meter);
                 verifyResult.setConfig(deviceConfigurationDao.findConfigurationForDevice(device));
                 result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
@@ -221,8 +221,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     }
     
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
     
     @Autowired

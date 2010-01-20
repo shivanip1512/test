@@ -31,7 +31,7 @@ public class LtcDaoImpl implements LtcDao {
     
 //    private Logger log = YukonLogManager.getLogger(LtcDao.class);
     
-//    private DeviceDefinitionService deviceDefinitionService;
+//    private PaoDefinitionService paoDefinitionService;
     private SimpleJdbcTemplate simpleJdbcTemplate;
 
     private NextValueHelper nextValueHelper;
@@ -57,7 +57,7 @@ public class LtcDaoImpl implements LtcDao {
             throw new DataIntegrityViolationException("Insert of LTC, " + ltc.getName() + ", failed.", e);
         }
         
-//        List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(persistentLtc.getPAObjectID(), PAOGroups.getDeviceType(persistentLtc.getPAOType())));
+//        List<PointBase> points = paoDefinitionService.createAllPointsForDevice(new SimpleDevice(persistentLtc.getPAObjectID(), PAOGroups.getDeviceType(persistentLtc.getPAOType())));
 //        MultiDBPersistent pointMulti = new MultiDBPersistent();
 //        pointMulti.getDBPersistentVector().addAll(points);
 //        try {
@@ -175,8 +175,8 @@ public class LtcDaoImpl implements LtcDao {
     }
     
 //    @Autowired
-//    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-//        this.deviceDefinitionService = deviceDefinitionService;
+//    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
+//        this.paoDefinitionService = paoDefinitionService;
 //    }
     
     @Autowired

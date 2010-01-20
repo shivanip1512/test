@@ -26,7 +26,6 @@ import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
@@ -34,6 +33,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;

@@ -14,9 +14,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.DaoFactory;
@@ -353,10 +353,10 @@ private SmartMultiDBPersistent createSmartDBPersistent( DeviceBase deviceBase )
 	SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
     smartDB.addOwnerDBPersistent(deviceBase);
 
-	DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
+	PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
 	DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
 	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
-    List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
+    List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
 
     for (PointBase point : defaultPoints) {
         smartDB.addDBPersistent(point);

@@ -2,10 +2,10 @@ package com.cannontech.billing.device.base;
 
 import java.sql.Timestamp;
 
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 
 /**
  * Interface to be implemented for each type of billable device

@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
 

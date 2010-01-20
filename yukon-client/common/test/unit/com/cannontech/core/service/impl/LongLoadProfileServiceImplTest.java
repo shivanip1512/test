@@ -17,10 +17,10 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoAdapter;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoAdapter;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.service.LoadProfileService;
@@ -185,9 +185,9 @@ public class LongLoadProfileServiceImplTest {
             
         });
         
-        serviceDebug.setDeviceDefinitionDao(new DeviceDefinitionDaoAdapter(){
+        serviceDebug.setPaoDefinitionDao(new PaoDefinitionDaoAdapter(){
         	@Override
-        	public boolean isTagSupported(PaoType deviceType, DeviceTag tag) {
+        	public boolean isTagSupported(PaoType deviceType, PaoTag tag) {
         		return true;
         	}
             

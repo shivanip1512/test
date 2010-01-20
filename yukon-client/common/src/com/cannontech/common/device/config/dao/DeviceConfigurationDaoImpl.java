@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.StringRowMapper;
@@ -45,7 +45,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private PaoGroupsWrapper paoGroupsWrapper;
     private DBPersistentDao dbPersistentDao = null;
     private List<ConfigurationTemplate> configurationTemplateList = null;
-    private DeviceDefinitionDao deviceDefinitionDao;
+    private PaoDefinitionDao paoDefinitionDao;
 
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
@@ -63,8 +63,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         this.dbPersistentDao = dbPersistentDao;
     }
     
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 
     public List<ConfigurationTemplate> getConfigurationTemplateList() {
@@ -250,10 +250,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException {
         // Get the device types that the configuration supports
-        DeviceTag tag = configuration.getType().getSupportedDeviceTag();
+        PaoTag tag = configuration.getType().getSupportedDeviceTag();
         
         // Only add the devices whose type is supported by the configuration
-        if (!deviceDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), tag)) {
+        if (!paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), tag)) {
             throw new InvalidDeviceTypeException("Device type: " 
                 + device.getPaoIdentifier().getPaoType().name() 
                 + " is invalid for config: " + configuration.getName());

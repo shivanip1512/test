@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.springframework.integration.annotation.Transformer;
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;

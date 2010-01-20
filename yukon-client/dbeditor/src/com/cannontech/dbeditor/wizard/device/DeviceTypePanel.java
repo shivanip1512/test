@@ -9,15 +9,15 @@ import java.util.Map;
 
 import javax.swing.event.ListSelectionListener;
 
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.spring.YukonSpringHook;
 
 public class DeviceTypePanel extends DataInputPanel implements ListSelectionListener {
-    private Map<String, List<DeviceDefinition>> deviceDisplayGroupMap = null;
+    private Map<String, List<PaoDefinition>> deviceDisplayGroupMap = null;
 
     private javax.swing.JLabel ivjTypeLabel = null;
 
@@ -103,7 +103,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
      * @return int
      */
     public int getDeviceType() {
-        return ((DeviceDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
+        return ((PaoDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
     }
 
     /**
@@ -226,7 +226,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
     public Object getValue(Object val) {
         // Determine the correct type of device and return it
 
-        int type = ((DeviceDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
+        int type = ((PaoDefinition) getDeviceTypeList().getSelectedValue()).getType().getDeviceTypeId();
         DeviceBase returnDevice = DeviceFactory.createDevice(type);
 
         return returnDevice;
@@ -257,8 +257,8 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
     private void initialize() {
 
         // Initialize the device type map
-        DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
-        this.deviceDisplayGroupMap = deviceDefinitionService.getDeviceDisplayGroupMap();
+        PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
+        this.deviceDisplayGroupMap = paoDefinitionService.getPaoDisplayGroupMap();
 
         try {
             setName("DeviceTypePanel");

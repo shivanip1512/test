@@ -3,9 +3,9 @@ package com.cannontech.amr.meter.service.impl;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.service.MeterService;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;

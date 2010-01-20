@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
-import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;

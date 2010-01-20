@@ -1,7 +1,7 @@
 package com.cannontech.core.dynamic.impl;
 
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 public class RichPointValue {

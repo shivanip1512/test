@@ -2,9 +2,9 @@ package com.cannontech.common.device.service;
 
 import java.util.List;
 
-import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -43,7 +43,7 @@ public interface DeviceUpdateService {
      * @return The changed device
      */
     public abstract DeviceBase changeDeviceType(DeviceBase currentDevice,
-            DeviceDefinition newDefinition);
+            PaoDefinition newDefinition);
 
     /**
      * Method to change a device's type
@@ -51,5 +51,5 @@ public interface DeviceUpdateService {
      * @param newDefinition - Definition of type to change to
      */
     public SimpleDevice changeDeviceType(YukonDevice currentDevice,
-            DeviceDefinition newDefinition);
+            PaoDefinition newDefinition);
 }

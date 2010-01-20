@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeDynamicDataSource;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.Block;

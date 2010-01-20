@@ -14,15 +14,15 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -42,7 +42,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private MeterReadService meterReadService;
     private AttributeService attributeService;
     private StateDao stateDao;
-    private DeviceDefinitionDao deviceDefinitionDao;
+    private PaoDefinitionDao paoDefinitionDao;
     private DynamicDataSource dynamicDataSource;
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private PaoCommandAuthorizationService commandAuthorizationService;
@@ -144,15 +144,15 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         }
         
         boolean is410Supported =
-            deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DISCONNECT_410);
+            paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_410);
         mav.addObject("is410Supported", is410Supported);
 
         boolean is310Supported =
-            deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DISCONNECT_310);
+            paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_310);
         mav.addObject("is310Supported", is310Supported);
         
         boolean is213Supported =
-            deviceDefinitionDao.isTagSupported(device.getDeviceType(), DeviceTag.DISCONNECT_213);
+            paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_213);
         mav.addObject("is213Supported",is213Supported);
         
         mav.addObject("isConfigured", isConfigured);
@@ -330,8 +330,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     }
 
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 }
 

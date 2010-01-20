@@ -14,10 +14,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;

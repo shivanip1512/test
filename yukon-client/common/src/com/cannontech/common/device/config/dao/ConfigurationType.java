@@ -4,7 +4,7 @@ import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.MCT410Configuration;
 import com.cannontech.common.device.config.model.MCT430Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
-import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.criteria.MCT410Criteria;
 import com.cannontech.common.search.criteria.MCT430Criteria;
 import com.cannontech.common.search.criteria.MCT470Criteria;
@@ -28,8 +28,8 @@ public enum ConfigurationType {
             return MCT470Criteria.class;
         }
 
-        public DeviceTag getSupportedDeviceTag() {
-            return DeviceTag.DEVICE_CONFIGURATION_470;
+        public PaoTag getSupportedDeviceTag() {
+            return PaoTag.DEVICE_CONFIGURATION_470;
         }
     },
     MCT430 {
@@ -45,8 +45,8 @@ public enum ConfigurationType {
             return MCT430Criteria.class;
         }
 
-        public DeviceTag getSupportedDeviceTag() {
-            return DeviceTag.DEVICE_CONFIGURATION_430;
+        public PaoTag getSupportedDeviceTag() {
+            return PaoTag.DEVICE_CONFIGURATION_430;
         }
     },
     MCT410 {
@@ -62,7 +62,7 @@ public enum ConfigurationType {
             return MCT410Criteria.class;
         }
 
-        public DeviceTag getSupportedDeviceTag() {
+        public PaoTag getSupportedDeviceTag() {
             return null;
         }
     };
@@ -92,5 +92,5 @@ public enum ConfigurationType {
      * supports
      * @return Array of device types
      */
-    public abstract DeviceTag getSupportedDeviceTag();
+    public abstract PaoTag getSupportedDeviceTag();
 }

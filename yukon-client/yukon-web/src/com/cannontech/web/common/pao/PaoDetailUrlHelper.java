@@ -4,23 +4,23 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class PaoDetailUrlHelper {
-    private static Map<DeviceTag, Function<YukonPao, String>> supportDeviceUrlPatterns;
+    private static Map<PaoTag, Function<YukonPao, String>> supportDeviceUrlPatterns;
     private static Map<PaoType, Function<YukonPao, String>> supportPaoUrlPatterns;
     static {
         // note that ImmutableMap preserves the order of its entries
 
         // Device urls
-        Builder<DeviceTag, Function<YukonPao, String>> tagBuilder = ImmutableMap.builder();
-        tagBuilder.put(DeviceTag.METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+        Builder<PaoTag, Function<YukonPao, String>> tagBuilder = ImmutableMap.builder();
+        tagBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
                 return "/spring/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
@@ -67,7 +67,7 @@ public class PaoDetailUrlHelper {
         
     }
     
-    private DeviceDefinitionDao deviceDefinitionDao;
+    private PaoDefinitionDao paoDefinitionDao;
     
     /**
      * Returns a URL for the appropriate detail page (e.g. the Meter Detail page)
@@ -81,8 +81,8 @@ public class PaoDetailUrlHelper {
         PaoType paoType = pao.getPaoIdentifier().getPaoType();
         
         // Check device url pattern map
-        for (Map.Entry<DeviceTag, Function<YukonPao, String>> entry : supportDeviceUrlPatterns.entrySet()) {
-            if (deviceDefinitionDao.isTagSupported(paoType, entry.getKey())) {
+        for (Map.Entry<PaoTag, Function<YukonPao, String>> entry : supportDeviceUrlPatterns.entrySet()) {
+            if (paoDefinitionDao.isTagSupported(paoType, entry.getKey())) {
                 String url = entry.getValue().apply(pao);
                 return url;
             }
@@ -100,7 +100,7 @@ public class PaoDetailUrlHelper {
     }
     
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

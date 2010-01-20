@@ -2,6 +2,6 @@
 <project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="loadcontrol">
         <wb-resource deploy-path="/" source-path="/src"/>
-        <wb-resource deploy-path="/" source-path="/test/unit"/>
+<wb-resource deploy-path="/" source-path="/test/unit"/>
     </wb-module>
 </project-modules>

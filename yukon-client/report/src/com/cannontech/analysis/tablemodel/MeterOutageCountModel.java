@@ -16,13 +16,13 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCollections;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;

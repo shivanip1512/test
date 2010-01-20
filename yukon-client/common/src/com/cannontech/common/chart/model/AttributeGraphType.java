@@ -1,6 +1,6 @@
 package com.cannontech.common.chart.model;
 
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public class AttributeGraphType {
 

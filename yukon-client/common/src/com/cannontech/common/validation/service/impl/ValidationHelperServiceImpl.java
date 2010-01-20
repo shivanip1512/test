@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
 import com.cannontech.common.events.loggers.VeeReviewEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validation.dao.RphTagDao;

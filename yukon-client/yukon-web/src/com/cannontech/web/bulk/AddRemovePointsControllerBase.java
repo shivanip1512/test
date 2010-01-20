@@ -35,17 +35,17 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -63,7 +63,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
 
 	protected BulkProcessor bulkProcessor = null;
     protected PaoGroupsWrapper paoGroupsWrapper;
-    protected DeviceDefinitionDao deviceDefinitionDao;
+    protected PaoDefinitionDao paoDefinitionDao;
     protected PointService pointService;
     protected DBPersistentDao dbPersistentDao;
     protected TemporaryDeviceGroupService temporaryDeviceGroupService;
@@ -293,7 +293,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         			
         				log.debug("Selected point checkbox: deviceType=" + checkedDeviceType + " pointType=" + pointType + " offset=" + offset);
         			
-	        			PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateByTypeAndOffset(PaoType.getForId(checkedDeviceType), new PointIdentifier(pointType, offset));
+	        			PointTemplate pointTemplate = paoDefinitionDao.getPointTemplateByTypeAndOffset(PaoType.getForId(checkedDeviceType), new PointIdentifier(pointType, offset));
 	        			
 	        			if (!pointTemplatesMap.containsKey(checkedDeviceType)) {
 	        				pointTemplatesMap.put(checkedDeviceType, new HashSet<PointTemplate>());
@@ -321,8 +321,8 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         for (int deviceType : deviceTypeSet) {
             
             // all defined point templates for device type, convert to wrappers that are all initially unmasked
-            DeviceDefinition deviceDefiniton = deviceDefinitionDao.getDeviceDefinition(PaoType.getForId(deviceType));
-            Set<PointTemplateWrapper> allPointTemplates = convertToPointTemplateWrapperSet(deviceDefinitionDao.getAllPointTemplates(deviceDefiniton), false);
+            PaoDefinition deviceDefiniton = paoDefinitionDao.getPaoDefinition(PaoType.getForId(deviceType));
+            Set<PointTemplateWrapper> allPointTemplates = convertToPointTemplateWrapperSet(paoDefinitionDao.getAllPointTemplates(deviceDefiniton), false);
             
             
             // mask those device type points where all the the device of this type have the point
@@ -424,8 +424,8 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
 		this.paoGroupsWrapper = paoGroupsWrapper;
 	}
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-		this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
 	}
     @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {

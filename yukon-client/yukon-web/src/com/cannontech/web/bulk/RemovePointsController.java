@@ -20,11 +20,11 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -113,8 +113,8 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         for (int deviceType : deviceTypeSet) {
         	
         	// all defined point templates for device type, convert to wrappers that are all initially unmasked
-        	DeviceDefinition deviceDefiniton = deviceDefinitionDao.getDeviceDefinition(PaoType.getForId(deviceType));
-        	Set<PointTemplateWrapper> allPointTemplates = convertToPointTemplateWrapperSet(deviceDefinitionDao.getAllPointTemplates(deviceDefiniton), false);
+        	PaoDefinition deviceDefiniton = paoDefinitionDao.getPaoDefinition(PaoType.getForId(deviceType));
+        	Set<PointTemplateWrapper> allPointTemplates = convertToPointTemplateWrapperSet(paoDefinitionDao.getAllPointTemplates(deviceDefiniton), false);
         	
         	// mask those device type points none of the devices of this type have the point
         	if (maskMissingPoints) {

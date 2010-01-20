@@ -23,12 +23,12 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.AttributeNameComparator;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeNameComparator;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;

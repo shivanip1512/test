@@ -2,7 +2,7 @@ package com.cannontech.core.dynamic;
 
 import java.io.Serializable;
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 public class RichPointData implements Serializable {

@@ -3,7 +3,7 @@ package com.cannontech.core.dao;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;

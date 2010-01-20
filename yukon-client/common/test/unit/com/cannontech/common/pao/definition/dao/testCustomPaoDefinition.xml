@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
+
+<!--
+This file contains a custom pao definition.
+-->
+
+<paoDefinitions>
+    
+    <pao id="MCT310">
+        <displayName>Custom Device 1</displayName>
+        <displayGroup>customDisplay1</displayGroup>
+        <changeGroup>customChange1</changeGroup>
+        <points>
+            <point type="PulseAccumulator" offset="2">
+            	<init>false</init>
+                <name>pulse1</name>
+                <multiplier value="2.5"/>
+                <unitofmeasure value="measure0"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <commands>
+        	<command id="CUSTOM_COMMAND_1">
+        		<name>command1</name>
+        		<cmd text="do custom command1" />
+        		<pointRef name="pulse2"/>
+        	</command>
+        </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="pulse2" />
+        	</attribute>
+        </attributes>      
+    </pao>
+
+</paoDefinitions>

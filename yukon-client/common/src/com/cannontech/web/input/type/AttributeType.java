@@ -5,8 +5,8 @@ import java.beans.PropertyEditorSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 
 /**
  * Implementation of input type which represents an integer input type

@@ -5,10 +5,10 @@ import java.sql.Timestamp;
 import com.cannontech.billing.device.base.BillingData;
 import com.cannontech.billing.device.base.BillingDeviceBase;
 import com.cannontech.billing.device.base.DeviceData;
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.point.PointTypes;
 
 /**

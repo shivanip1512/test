@@ -2,9 +2,9 @@ package com.cannontech.common.pao;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableList.Builder;

@@ -1,6 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
-import com.cannontech.common.device.service.PointService;
+import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;

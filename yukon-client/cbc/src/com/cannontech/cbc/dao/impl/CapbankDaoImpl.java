@@ -20,9 +20,9 @@ import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -52,7 +52,7 @@ public class CapbankDaoImpl implements CapbankDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private PaoDao paoDao;
-    private DeviceDefinitionService deviceDefinitionService;
+    private PaoDefinitionService paoDefinitionService;
     
     static {
         insertSql = "INSERT INTO CAPBANK (DEVICEID,OPERATIONALSTATE,ControllerType," + 
@@ -128,8 +128,8 @@ public class CapbankDaoImpl implements CapbankDao {
 	}
     
     @Autowired
-    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
+    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
+        this.paoDefinitionService = paoDefinitionService;
     }
 
     @Override
@@ -147,7 +147,7 @@ public class CapbankDaoImpl implements CapbankDao {
 
 		SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
 		smartDB.addOwnerDBPersistent(device);
-		List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(newId, PaoType.CAPBANK));
+		List<PointBase> points = paoDefinitionService.createAllPointsForPao(new SimpleDevice(newId, PaoType.CAPBANK));
 		smartDB.addAllDBPersistent(points);
 		try { 
 		    Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, smartDB).execute();

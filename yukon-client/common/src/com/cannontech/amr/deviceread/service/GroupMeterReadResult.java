@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.Set;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.MultipleDeviceResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.ExceptionStatus;
 

@@ -17,9 +17,9 @@ import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.creation.DeviceCreationException;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -60,7 +60,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	
 	private PaoDao paoDao;
 	private PointDao pointDao;
-	private DeviceDefinitionService deviceDefinitionService;
+	private PaoDefinitionService paoDefinitionService;
 	private DeviceDao deviceDao;
 	
     static {
@@ -143,7 +143,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 			CTILogger.error("Update of controller information in DeviceCBC table failed for cbc with name: " + capbankController.getName());
 		}
 		if (addPoints) {
-			List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(new SimpleDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
+			List<PointBase> points = paoDefinitionService.createAllPointsForPao(new SimpleDevice(controller.getPAObjectID(), PAOGroups.getDeviceType(controller.getPAOType())));
 			MultiDBPersistent pointMulti = new MultiDBPersistent();
 	        pointMulti.getDBPersistentVector().addAll(points);
 	        try {
@@ -478,9 +478,8 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	}
     
     @Autowired
-	public void setDeviceDefinitionService(
-			DeviceDefinitionService deviceDefinitionService) {
-		this.deviceDefinitionService = deviceDefinitionService;
+	public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
+		this.paoDefinitionService = paoDefinitionService;
 	}
     
     @Autowired

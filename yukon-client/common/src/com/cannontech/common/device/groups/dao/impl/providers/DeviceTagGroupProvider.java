@@ -7,31 +7,31 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.DeviceTag;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 
-public class DeviceTagGroupProvider extends BinningDeviceGroupProviderBase<DeviceTag> {
-    private DeviceDefinitionDao deviceDefinitionDao;
+public class DeviceTagGroupProvider extends BinningDeviceGroupProviderBase<PaoTag> {
+    private PaoDefinitionDao paoDefinitionDao;
     
     @Override
-    protected List<DeviceTag> getAllBins() {
-        DeviceTag[] values = DeviceTag.values();
+    protected List<PaoTag> getAllBins() {
+        PaoTag[] values = PaoTag.values();
         return Arrays.asList(values);
     }
     
     @Override
-    protected SqlFragmentSource getChildSqlSelectForBin(DeviceTag bin) {
-        Set<DeviceDefinition> devicesThatSupportTag = deviceDefinitionDao.getDevicesThatSupportTag(bin);
-        Collection<String> collection = Collections2.transform(devicesThatSupportTag, new Function<DeviceDefinition, String>() {
+    protected SqlFragmentSource getChildSqlSelectForBin(PaoTag bin) {
+        Set<PaoDefinition> devicesThatSupportTag = paoDefinitionDao.getPaosThatSupportTag(bin);
+        Collection<String> collection = Collections2.transform(devicesThatSupportTag, new Function<PaoDefinition, String>() {
             @Override
-            public String apply(DeviceDefinition deviceDefinition) {
-                return deviceDefinition.getType().getPaoTypeName();
+            public String apply(PaoDefinition paoDefinition) {
+                return paoDefinition.getType().getPaoTypeName();
             }
         });
         
@@ -54,19 +54,19 @@ public class DeviceTagGroupProvider extends BinningDeviceGroupProviderBase<Devic
     }
     
     @Override
-    protected String getGroupName(DeviceTag bin) {
+    protected String getGroupName(PaoTag bin) {
         return bin.getDescription();
     }
 
     @Override
-    protected Set<DeviceTag> getBinsForDevice(YukonDevice device) {
-        Set<DeviceTag> supportedTags = deviceDefinitionDao.getSupportedTags(device.getPaoIdentifier().getPaoType());
+    protected Set<PaoTag> getBinsForDevice(YukonDevice device) {
+        Set<PaoTag> supportedTags = paoDefinitionDao.getSupportedTags(device.getPaoIdentifier().getPaoType());
         return supportedTags;
     }
     
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 
 }

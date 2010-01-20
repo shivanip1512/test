@@ -202,7 +202,7 @@
         <property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
         <property name="meterDao" ref="meterDao"/>
         <property name="deviceConfigService" ref="deviceConfigService"/>
-        <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
+        <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
     </bean>
 
     <bean id="readCurrentTimeWidget"

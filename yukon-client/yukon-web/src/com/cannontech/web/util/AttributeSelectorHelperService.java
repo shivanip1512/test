@@ -4,7 +4,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
 
 public interface AttributeSelectorHelperService {
 

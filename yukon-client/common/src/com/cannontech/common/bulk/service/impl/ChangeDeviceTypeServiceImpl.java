@@ -7,21 +7,21 @@ import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
 
-    private DeviceDefinitionDao deviceDefinitionDao;
+    private PaoDefinitionDao paoDefinitionDao;
     private PaoDao paoDao;
-    private DeviceDefinitionService deviceDefinitionService;
+    private PaoDefinitionService paoDefinitionService;
     private DeviceUpdateService deviceUpdateService;
     
     public SimpleDevice changeDeviceType(SimpleDevice device, PaoType newDeviceType ) {
@@ -33,20 +33,20 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
                 return device;
             }
 
-            DeviceDefinition selectedDeviceDefinition = deviceDefinitionDao.getDeviceDefinition(newDeviceType);
+            PaoDefinition selectedPaoDefinition = paoDefinitionDao.getPaoDefinition(newDeviceType);
 
             // get set of all definition applicable for this device to be changed to
-            Set<DeviceDefinition> applicableDefinitions = deviceDefinitionService.getChangeableDevices(device);
+            Set<PaoDefinition> applicableDefinitions = paoDefinitionService.getChangeablePaos(device);
 
             // if its not in the set, throw a processing error
-            if (!applicableDefinitions.contains(selectedDeviceDefinition)) {
+            if (!applicableDefinitions.contains(selectedPaoDefinition)) {
 
                 LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
-                String errorMsg = selectedDeviceDefinition.getDisplayName() + " is not an applicable type for device: " + devicePao.getPaoName();
+                String errorMsg = selectedPaoDefinition.getDisplayName() + " is not an applicable type for device: " + devicePao.getPaoName();
                 throw new ProcessingException(errorMsg);
             }
             else {
-                return deviceUpdateService.changeDeviceType(device, selectedDeviceDefinition);
+                return deviceUpdateService.changeDeviceType(device, selectedPaoDefinition);
             }
 
         }
@@ -61,8 +61,8 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
     }
     
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
     
     @Autowired
@@ -71,9 +71,8 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
     }
     
     @Autowired
-    public void setDeviceDefinitionService(
-            DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
+    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
+        this.paoDefinitionService = paoDefinitionService;
     }
     
     @Autowired

@@ -13,12 +13,12 @@ import javax.swing.SwingUtilities;
 
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -44,7 +44,7 @@ import com.cannontech.spring.YukonSpringHook;
 
 public final class DatabaseEditorUtil {
     private static final Executor threadExecutor = YukonSpringHook.getBean("globalScheduledExecutor", Executor.class);
-    private static final DeviceDefinitionDao deviceDefinitionDao = YukonSpringHook.getBean("deviceDefinitionDao", DeviceDefinitionDao.class);
+    private static final PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
     private static final DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
     private static final AttributeService attributeService = YukonSpringHook.getBean("attributeService", AttributeService.class);
     private static final PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);

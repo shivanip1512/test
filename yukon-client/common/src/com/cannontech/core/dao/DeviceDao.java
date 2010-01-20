@@ -2,10 +2,10 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -117,7 +117,7 @@ public interface DeviceDao {
     
     /**
      * Method to change the route of a given device based on a route id
-     * Higher level method exists in {@link DeviceDefinitionService} that takes a device
+     * Higher level method exists in {@link PaoDefinitionService} that takes a device
      * name and checks if it is valid, then delegates here for update.
      * @param newRouteId
      */
@@ -132,7 +132,7 @@ public interface DeviceDao {
     
     /**
      * Method to change the devicecarriersettings address for given device
-     * Higher level method exists in {@link DeviceDefinitionService} that checks if address
+     * Higher level method exists in {@link PaoDefinitionService} that checks if address
      * is in valid range for device.
      * @param deviceId
      * @param newAddress

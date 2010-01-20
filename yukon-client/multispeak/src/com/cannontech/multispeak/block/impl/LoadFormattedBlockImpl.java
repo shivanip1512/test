@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.data.load.LoadValList;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;

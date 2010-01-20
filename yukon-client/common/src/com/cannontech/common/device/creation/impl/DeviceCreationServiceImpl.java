@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -47,7 +47,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private DBPersistentDao dbPersistentDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DeviceDefinitionService deviceDefinitionService = null;
+    private PaoDefinitionService paoDefinitionService = null;
     
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -129,7 +129,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             
             // CREATE POINTS
             if (createPoints) {
-                List<PointBase> points = deviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
+                List<PointBase> points = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
                 this.applyPoints(newDevice, points);
             }
             
@@ -261,8 +261,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Required
-    public void setDeviceDefinitionService(
-            DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
+    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
+        this.paoDefinitionService = paoDefinitionService;
     }
 }

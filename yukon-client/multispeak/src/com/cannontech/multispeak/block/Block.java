@@ -1,7 +1,7 @@
 package com.cannontech.multispeak.block;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 

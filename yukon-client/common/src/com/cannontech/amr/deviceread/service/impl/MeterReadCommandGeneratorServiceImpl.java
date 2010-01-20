@@ -12,16 +12,16 @@ import com.cannontech.amr.deviceread.dao.impl.SetCoveringSolver;
 import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.CommandDefinition;
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.CommandDefinition;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -35,7 +35,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 
 	private AttributeService attributeService;
 	private DeviceDao deviceDao;
-	private DeviceDefinitionDao deviceDefinitionDao;
+	private PaoDefinitionDao paoDefinitionDao;
 	
 	private Logger log = YukonLogManager.getLogger(MeterReadCommandGeneratorServiceImpl.class);
 	
@@ -142,7 +142,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
     }
 	
 	private Set<CommandWrapper> getMinimalCommandSet(PaoIdentifier device, Set<PointIdentifier> pointSet) {
-        Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getCommandsThatAffectPoints(device.getPaoType(), pointSet);
+        Set<CommandDefinition> allPossibleCommands = paoDefinitionDao.getCommandsThatAffectPoints(device.getPaoType(), pointSet);
         
         Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());
         for (CommandDefinition definition : allPossibleCommands) {
@@ -174,7 +174,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	}
 	
 	@Autowired
-	public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-		this.deviceDefinitionDao = deviceDefinitionDao;
+	public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
 	}
 }

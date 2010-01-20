@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBank;

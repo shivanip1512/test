@@ -4,7 +4,7 @@
  */
 package com.cannontech.database.data.point;
 
-import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;

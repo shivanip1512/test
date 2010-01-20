@@ -49,7 +49,7 @@
        <delete dir="build"/>        
     </target>
     
-	<!-- Target to generate the castor classes for the deviceDefinition schema -->
+	<!-- Target to generate the castor classes for the paoDefinition schema -->
     <target name="generateCastorClasses">
         
         <taskdef name="castor-srcgen" classname="org.exolab.castor.tools.ant.taskdefs.CastorSourceGenTask">
@@ -63,13 +63,14 @@
 		<!-- Clear out any old generated classes -->
         <delete>
             <fileset dir="src/com/cannontech/common/device/definition/model/castor" includes="*.java"/>
+        	<fileset dir="src/com/cannontech/common/pao/definition/model/castor" includes="*.java"/>
         </delete>
-        <castor-srcgen file="src/com/cannontech/common/device/definition/dao/deviceDefinition.xsd"
+        <castor-srcgen file="src/com/cannontech/common/pao/definition/dao/paoDefinition.xsd"
                           todir="src"
-                          package="com.cannontech.common.device.definition.model.castor"
+                          package="com.cannontech.common.pao.definition.model.castor"
                           types="j2"
                           warnings="true" 
-        				  properties="src/com/cannontech/common/device/definition/dao/deviceDefinitionBuild.properties"/>
+        				  properties="src/com/cannontech/common/pao/definition/dao/paoDefinitionBuild.properties"/>
     </target>
 
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->

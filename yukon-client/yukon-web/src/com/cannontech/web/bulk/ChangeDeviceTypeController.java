@@ -24,13 +24,13 @@ import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -41,7 +41,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
 
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     private BulkProcessor bulkProcessor;
-    private DeviceDefinitionService deviceDefinitionService;
+    private PaoDefinitionService paoDefinitionService;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
@@ -62,9 +62,9 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         mav.addObject("deviceCollection", deviceCollection);
         
         Map<String, Integer> deviceTypes = new LinkedHashMap<String, Integer>();
-        Map<String, List<DeviceDefinition>> deviceGroupMap = deviceDefinitionService.getDeviceDisplayGroupMap();
+        Map<String, List<PaoDefinition>> deviceGroupMap = paoDefinitionService.getPaoDisplayGroupMap();
         for (String key : deviceGroupMap.keySet()) {
-            for (DeviceDefinition def :  deviceGroupMap.get(key)) {
+            for (PaoDefinition def :  deviceGroupMap.get(key)) {
                 deviceTypes.put(def.getDisplayName(), def.getType().getDeviceTypeId());
             }
         }
@@ -164,8 +164,8 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
     }
     
     @Autowired
-    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
+    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
+        this.paoDefinitionService = paoDefinitionService;
     }
     
     @Autowired

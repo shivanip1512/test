@@ -3,7 +3,7 @@ package com.cannontech.common.device.model;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class PreviousReadings {

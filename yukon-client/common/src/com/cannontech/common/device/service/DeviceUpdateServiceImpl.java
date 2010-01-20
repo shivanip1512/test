@@ -12,17 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.model.PointIdentifier;
-import com.cannontech.common.device.definition.model.PointTemplate;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -63,7 +64,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private PaoDao paoDao = null;
     private RouteDiscoveryService routeDiscoveryService = null;
     private CommandRequestDeviceExecutor commandRequestDeviceExecutor = null;
-    private DeviceDefinitionService deviceDefinitionService = null;
+    private PaoDefinitionService paoDefinitionService = null;
     private PointService pointService = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private AttributeService attributeService = null;
@@ -146,7 +147,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     
     @Transactional
     public SimpleDevice changeDeviceType(YukonDevice currentDevice,
-            DeviceDefinition newDefinition) {
+            PaoDefinition newDefinition) {
         
         DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getPaoIdentifier().getPaoId());
         
@@ -182,7 +183,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
     @SuppressWarnings("unchecked")
     @Transactional
-    public DeviceBase changeDeviceType(DeviceBase currentDevice, DeviceDefinition newDefinition) {
+    public DeviceBase changeDeviceType(DeviceBase currentDevice, PaoDefinition newDefinition) {
 
         DeviceBase oldDevice = null;
 
@@ -298,11 +299,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
      * @param newDefinition - Definition of new device type
      * @throws TransactionException
      */
-    private void removePoints(DeviceBase device, DeviceDefinition newDefinition)
+    private void removePoints(DeviceBase device, PaoDefinition newDefinition)
     throws TransactionException {
 
     	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<PointIdentifier> removeTemplates = deviceDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
+        Set<PointIdentifier> removeTemplates = paoDefinitionService.getPointTemplatesToRemove(yukonDevice, newDefinition);
 
         SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
@@ -324,11 +325,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
      * @param newDefinition - Definition of new device type
      * @throws TransactionException
      */
-    private void addPoints(DeviceBase device, DeviceDefinition newDefinition)
+    private void addPoints(DeviceBase device, PaoDefinition newDefinition)
     throws TransactionException {
 
     	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Set<PointTemplate> addTemplates = deviceDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
+        Set<PointTemplate> addTemplates = paoDefinitionService.getPointTemplatesToAdd(yukonDevice, newDefinition);
         for (PointTemplate template : addTemplates) {
         	
         	log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type=" + template.getType() + " offset=" + template.getOffset());
@@ -348,11 +349,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
      * @param newDefinition - Definition of new device type
      * @throws TransactionException
      */
-    private void transferPoints(DeviceBase device, DeviceDefinition newDefinition)
+    private void transferPoints(DeviceBase device, PaoDefinition newDefinition)
     throws TransactionException {
 
     	SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(device);
-        Iterable<PointTemplateTransferPair> transferTemplates = deviceDefinitionService.getPointTemplatesToTransfer(yukonDevice,
+        Iterable<PointTemplateTransferPair> transferTemplates = paoDefinitionService.getPointTemplatesToTransfer(yukonDevice,
                                                                                 newDefinition);
 
         SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
@@ -399,9 +400,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     }
     
     @Autowired
-    public void setDeviceDefinitionService(
-			DeviceDefinitionService deviceDefinitionService) {
-		this.deviceDefinitionService = deviceDefinitionService;
+    public void setPaoDefinitionService(
+			PaoDefinitionService paoDefinitionService) {
+		this.paoDefinitionService = paoDefinitionService;
 	}
     
     @Autowired

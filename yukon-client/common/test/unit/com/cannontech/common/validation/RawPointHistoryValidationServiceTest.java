@@ -6,10 +6,10 @@ import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.cannontech.common.device.definition.model.PaoPointIdentifier;
-import com.cannontech.common.device.definition.model.PointIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.validation.RawPointHistoryValidationService.AnalysisResult;
 import com.cannontech.common.validation.RawPointHistoryValidationService.RawPointHistoryWorkUnit;
 import com.cannontech.common.validation.RawPointHistoryValidationService.RawPointHistoryWrapper;

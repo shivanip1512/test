@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.common.device.definition.model.DeviceDefinition;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 
 /**
  * Implementation of input type which represents a list input type. This class
@@ -17,7 +17,7 @@ import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 public class DeviceTypeEnumeratedType extends BaseEnumeratedType<Integer> {
 
     
-    private DeviceDefinitionService deviceDefinitionService = null;
+    private PaoDefinitionService paoDefinitionService = null;
     private List<InputOption> optionList = new ArrayList<InputOption>();
     private InputType<Integer> enumeratedType;
     
@@ -26,10 +26,10 @@ public class DeviceTypeEnumeratedType extends BaseEnumeratedType<Integer> {
         // re-get available routes
         optionList = new ArrayList<InputOption>();
 
-        Map<String, List<DeviceDefinition>> deviceGroupMap = deviceDefinitionService.getDeviceDisplayGroupMap();
+        Map<String, List<PaoDefinition>> deviceGroupMap = paoDefinitionService.getPaoDisplayGroupMap();
         for (String key : deviceGroupMap.keySet()) {
             
-            for (DeviceDefinition def :  deviceGroupMap.get(key)) {
+            for (PaoDefinition def :  deviceGroupMap.get(key)) {
                 
                 InputOption option = new InputOption();
                 option.setText(def.getDisplayName());
@@ -58,8 +58,8 @@ public class DeviceTypeEnumeratedType extends BaseEnumeratedType<Integer> {
     }
 
     @Required
-    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
+    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
+        this.paoDefinitionService = paoDefinitionService;
     }
 
 }

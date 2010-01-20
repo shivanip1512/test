@@ -16,7 +16,6 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
@@ -26,6 +25,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.support.YukonTaskBase;

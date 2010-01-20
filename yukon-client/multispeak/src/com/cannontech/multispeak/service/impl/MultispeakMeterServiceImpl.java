@@ -32,8 +32,6 @@ import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationService;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -44,6 +42,8 @@ import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -108,7 +108,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
     private TransactionTemplate transactionTemplate = null;
-    private DeviceDefinitionDao deviceDefinitionDao = null;
+    private PaoDefinitionDao paoDefinitionDao = null;
     private DeviceCreationService deviceCreationService = null;
     private DeviceUpdateService deviceUpdateService = null;
     private SubstationDao substationDao = null;
@@ -1650,8 +1650,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String existingType = meter.getTypeStr();
         if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
             try {
-                DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(PaoType.getForId(templateMeter.getType()));
-                deviceUpdateService.changeDeviceType(meter, deviceDefinition);
+                PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(PaoType.getForId(templateMeter.getType()));
+                deviceUpdateService.changeDeviceType(meter, paoDefinition);
                 mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getTypeStr() + ").", mspVendor.getCompanyName());
             } catch (DataRetrievalFailureException e) {
                 CTILogger.warn(e);
@@ -1731,8 +1731,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         this.transactionTemplate = transactionTemplate;
     }
     @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
     @Autowired
     public void setDeviceCreationService(

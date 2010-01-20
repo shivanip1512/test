@@ -39,7 +39,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
@@ -47,6 +46,7 @@ import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
@@ -259,7 +259,7 @@ public class DatabaseEditor
     
     private static DatabaseEditor editor = null;
     
-    private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceDefinitionService");
+    private PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
     
 /**
  * DatabaseEditor constructor comment.
@@ -855,12 +855,12 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 
 	  DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
       if (userObject instanceof DeviceBase
-              && deviceDefinitionService.isDeviceTypeChangeable(deviceDao.getYukonDeviceForDevice((DeviceBase) userObject))) {
+              && paoDefinitionService.isPaoTypeChangeable(deviceDao.getYukonDeviceForDevice((DeviceBase) userObject))) {
           showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(userObject));
       } else if (userObject instanceof DeviceMeterGroupBase) {
           int deviceId = ((DeviceMeterGroupBase) userObject).getDeviceMeterGroup().getDeviceID();
           SimpleDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
-          if(deviceDefinitionService.isDeviceTypeChangeable(device)) {
+          if(paoDefinitionService.isPaoTypeChangeable(device)) {
               YukonPAObject yukonPAObject = PAOFactory.createPAObject(deviceId);
               showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(yukonPAObject));
           }

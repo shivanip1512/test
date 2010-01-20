@@ -20,8 +20,8 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.DeviceTag;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -38,7 +38,7 @@ public class ConfigWidget extends WidgetControllerBase {
     private MeterDao meterDao;
     private DeviceConfigurationDao deviceConfigurationDao;
     private DeviceConfigService deviceConfigService;
-    private DeviceDefinitionDao deviceDefinitionDao;
+    private PaoDefinitionDao paoDefinitionDao;
     
     /**
      * This method renders the default deviceGroupWidget
@@ -58,9 +58,9 @@ public class ConfigWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
         ConfigurationType type = ConfigurationType.MCT410;
-        if(deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_470)) {
+        if(paoDefinitionDao.isTagSupported(meter.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470)) {
             type = ConfigurationType.MCT470;
-        }else if(deviceDefinitionDao.isTagSupported(meter.getDeviceType(), DeviceTag.DEVICE_CONFIGURATION_430)) {
+        }else if(paoDefinitionDao.isTagSupported(meter.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430)) {
             type = ConfigurationType.MCT430;
         }
         List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
@@ -145,8 +145,8 @@ public class ConfigWidget extends WidgetControllerBase {
     }
     
     @Required
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 }
 

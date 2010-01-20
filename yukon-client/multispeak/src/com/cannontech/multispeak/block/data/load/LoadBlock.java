@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.BlockBase;

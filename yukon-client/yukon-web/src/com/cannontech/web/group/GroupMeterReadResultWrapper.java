@@ -7,7 +7,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
 
 public class GroupMeterReadResultWrapper {
 

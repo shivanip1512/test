@@ -18,13 +18,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.servlet.YukonUserContextUtils;
