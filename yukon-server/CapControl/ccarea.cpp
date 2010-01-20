@@ -37,15 +37,13 @@ RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCArea::CtiCCArea() :
-_paoid(0),
-_disableflag(false),
 _voltReductionControlPointId(0),
 _voltReductionControlValue(0),
-_pfactor(0),    
-_estPfactor(0),     
-_ovUvDisabledFlag(false),    
-_reEnableAreaFlag(false),    
-_childVoltReductionFlag(false),    
+_pfactor(0),
+_estPfactor(0),
+_ovUvDisabledFlag(false),
+_reEnableAreaFlag(false),
+_childVoltReductionFlag(false),
 _insertDynamicDataFlag(false),
 _dirty(false),
 _areaUpdatedFlag(false)
@@ -56,11 +54,11 @@ CtiCCArea::CtiCCArea(RWDBReader& rdr, StrategyPtr strategy)
     :_strategy(strategy)
 {
     restore(rdr);
-    _operationStats.setPAOId(_paoid);
-    _confirmationStats.setPAOId(_paoid);
+    _operationStats.setPAOId(getPaoId());
+    _confirmationStats.setPAOId(getPaoId());
 }
 
-CtiCCArea::CtiCCArea(const CtiCCArea& area) 
+CtiCCArea::CtiCCArea(const CtiCCArea& area)
 {
     operator=(area);
 }
@@ -69,9 +67,9 @@ CtiCCArea::CtiCCArea(const CtiCCArea& area)
     Destructor
 ---------------------------------------------------------------------------*/
 CtiCCArea::~CtiCCArea()
-{  
+{
     _pointIds.clear();
-    
+
     if (!_subStationIds.empty())
     {
         _subStationIds.clear();
@@ -89,55 +87,6 @@ CtiCCConfirmationStats& CtiCCArea::getConfirmationStats()
     return _confirmationStats;
 }
 
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiCCArea::restoreGuts(RWvistream& istrm)
-{
-    long tempSubBusId;
-    long numOfSubBusIds;
-
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _paoid
-    >> _paocategory
-    >> _paoclass
-    >> _paoname
-    >> _paotype
-    >> _paodescription
-    >> _disableflag
-    >> _ovUvDisabledFlag;
-
-    istrm >> numOfSubBusIds;
-    _subStationIds.clear();
-    for(LONG i=0;i<numOfSubBusIds;i++)
-    {
-        istrm >> tempSubBusId;
-        _subStationIds.push_back(tempSubBusId);
-    }
-
-
-    double pfDisplayValue = _pfactor;
-    double estPfDisplayValue = _estPfactor;
-
-    // Modifying the display value of pFactor to represent +100% values as a negative value.
-    if (_pfactor > 1)
-    {
-        pfDisplayValue -= 2;
-    }
-    if (_estPfactor > 1)
-    {
-        estPfDisplayValue -= 2;
-    }
-    istrm >> pfDisplayValue
-        >> estPfDisplayValue
-        >> _voltReductionControlValue
-        >> _childVoltReductionFlag;
-}
-
 /*---------------------------------------------------------------------------
     saveGuts
 
@@ -147,14 +96,10 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
-    ostrm << _paoid
-    << _paocategory
-    << _paoclass
-    << _paoname
-    << _paotype
-    << _paodescription
-    << _disableflag
-    << _ovUvDisabledFlag;
+    //CapControlPao
+    CapControlPao::saveGuts(ostrm);
+
+    ostrm <<  _ovUvDisabledFlag;
     ostrm << _subStationIds.size();
 
     std::list<long>::const_iterator iter = _subStationIds.begin();
@@ -175,21 +120,15 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
 {
     if( this != &right )
     {
-        _paoid = right.getPAOId();
-        _paocategory = right._paocategory;
-        _paoclass = right._paoclass;
-        _paoname = right._paoname;
-        _paotype = right._paotype;
-        _paodescription = right._paodescription;
-        _disableflag = right._disableflag;
+        CapControlPao::operator=(right);
         _voltReductionControlPointId = right._voltReductionControlPointId;
         _voltReductionControlValue = right._voltReductionControlValue;
         _childVoltReductionFlag = right._childVoltReductionFlag;
 
         _strategy = right._strategy;
 
-        _pfactor = right._pfactor;     
-        _estPfactor = right._estPfactor;  
+        _pfactor = right._pfactor;
+        _estPfactor = right._estPfactor;
 
         _additionalFlags = right._additionalFlags;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
@@ -199,25 +138,9 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _confirmationStats = right._confirmationStats;
 
         _areaUpdatedFlag = right._areaUpdatedFlag;
-        
+
     }
     return *this;
-}
-
-/*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiCCArea::operator==(const CtiCCArea& right) const
-{
-    return getPAOId() == right.getPAOId();
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiCCArea::operator!=(const CtiCCArea& right) const
-{
-    return getPAOId() != right.getPAOId();
 }
 
 /*---------------------------------------------------------------------------
@@ -237,17 +160,7 @@ CtiCCArea* CtiCCArea::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCArea::restore(RWDBReader& rdr)
 {
-    string tempBoolString;
-
-    rdr["paobjectid"] >> _paoid;
-    rdr["category"] >> _paocategory;
-    rdr["paoclass"] >> _paoclass;
-    rdr["paoname"] >> _paoname;
-    rdr["type"] >> _paotype;
-    rdr["description"] >> _paodescription;
-    rdr["disableflag"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+    CapControlPao::restore(rdr);
 
     rdr["voltreductionpointid"] >> _voltReductionControlPointId;
     if (_voltReductionControlPointId <= 0)
@@ -296,22 +209,22 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
         {
             RWDBUpdater updater = dynamicCCAreaTable.updater();
 
-            
+
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[1] = (_reEnableAreaFlag?'Y':'N');
             addFlags[2] = (_childVoltReductionFlag?'Y':'N');
             addFlags[3] = (_areaUpdatedFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + 
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) +
                                 char2string(*(addFlags+3)));
             _additionalFlags.append("NNNNNNNNNNNNNNNN");
 
             updater.clear();
 
-            updater.where(dynamicCCAreaTable["areaid"]==_paoid);
+            updater.where(dynamicCCAreaTable["areaid"]==getPaoId());
             updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
                     <<  dynamicCCAreaTable["controlvalue"].assign( _voltReductionControlValue );
-                    
+
 
             updater.execute( conn );
 
@@ -340,13 +253,13 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted area into dynamicCCArea: " << getPAOName() << endl;
+                dout << CtiTime() << " - Inserted area into dynamicCCArea: " << getPaoName() << endl;
             }
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             RWDBInserter inserter = dynamicCCAreaTable.inserter();
-            //TS FLAG
-            inserter << _paoid
+
+            inserter << getPaoId()
                 <<  string2RWCString(addFlags)
                 <<  _voltReductionControlValue;
 
@@ -389,7 +302,7 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
     }
 }
 void CtiCCArea::setDynamicData(RWDBReader& rdr)
-{   
+{
     string tempBoolString;
 
     rdr["additionalflags"] >> _additionalFlags;
@@ -405,82 +318,11 @@ void CtiCCArea::setDynamicData(RWDBReader& rdr)
     {
         setVoltReductionControlValue(FALSE);
     }
-    
+
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
 
 
-}
-
-
-/*---------------------------------------------------------------------------
-    getPAOId
-
-    Returns the unique id of the area
----------------------------------------------------------------------------*/
-LONG CtiCCArea::getPAOId() const
-{
-    return _paoid;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOCategory
-
-    Returns the pao category of the area
----------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOCategory() const
-{
-    return _paocategory;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOClass
-
-    Returns the pao class of the area
----------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOClass() const
-{
-    return _paoclass;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOName
-
-    Returns the pao name of the area
----------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOName() const
-{
-    return _paoname;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOType
-
-    Returns the pao type of the area
----------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOType() const
-{
-    return _paotype;
-}
-
-/*---------------------------------------------------------------------------
-    getPAODescription
-
-    Returns the pao description of the area
----------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAODescription() const
-{
-    return _paodescription;
-}
-
-/*---------------------------------------------------------------------------
-    getDisableFlag
-
-    Returns the disable flag of the area
----------------------------------------------------------------------------*/
-BOOL CtiCCArea::getDisableFlag() const
-{
-    return _disableflag;
 }
 
 /*---------------------------------------------------------------------------
@@ -541,7 +383,7 @@ BOOL CtiCCArea::getReEnableAreaFlag() const
 
 /*---------------------------------------------------------------------------
     isDirty()
-    
+
     Returns the dirty flag of the area
 ---------------------------------------------------------------------------*/
 BOOL CtiCCArea::isDirty() const
@@ -557,85 +399,6 @@ DOUBLE CtiCCArea::getPFactor() const
 DOUBLE CtiCCArea::getEstPFactor() const
 {
     return _estPfactor;
-}
-
-
-/*---------------------------------------------------------------------------
-    setPAOId
-
-    Sets the unique id of the area - use with caution
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOId(LONG id)
-{
-    _paoid = id;
-    //do not notify observers of this!
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOCategory
-
-    Sets the pao category of the area
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOCategory(const string& category)
-{
-    _paocategory = category;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOClass
-
-    Sets the pao class of the area
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOClass(const string& pclass)
-{
-    _paoclass = pclass;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOName
-
-    Sets the pao name of the area
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOName(const string& name)
-{
-    _paoname = name;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOType
-
-    Sets the pao type of the area
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOType(const string& _type)
-{
-    _paotype = _type;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAODescription
-
-    Sets the pao description of the area
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAODescription(const string& description)
-{
-    _paodescription = description;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setDisableFlag
-
-    Sets the disable flag of the area
----------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setDisableFlag(BOOL disable)
-{
-    _disableflag = disable;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -667,7 +430,7 @@ CtiCCArea& CtiCCArea::setVoltReductionControlPointId(LONG pointId)
 CtiCCArea& CtiCCArea::setVoltReductionControlValue(BOOL flag)
 {
     if(_voltReductionControlValue != flag)
-    {    
+    {
         _dirty = TRUE;
     }
     _voltReductionControlValue = flag;
@@ -681,7 +444,7 @@ CtiCCArea& CtiCCArea::setVoltReductionControlValue(BOOL flag)
 CtiCCArea& CtiCCArea::setChildVoltReductionFlag(BOOL flag)
 {
     if(_childVoltReductionFlag != flag)
-    {    
+    {
         setAreaUpdatedFlag(TRUE);
         _dirty = TRUE;
     }
@@ -721,9 +484,9 @@ CtiCCArea& CtiCCArea::setReEnableAreaFlag(BOOL flag)
 
 CtiCCArea& CtiCCArea::setPFactor(DOUBLE pfactor)
 {
-    
+
     if(_pfactor != pfactor)
-    {    
+    {
         _dirty = TRUE;
         setAreaUpdatedFlag(TRUE);
     }
@@ -735,7 +498,7 @@ CtiCCArea& CtiCCArea::setPFactor(DOUBLE pfactor)
 CtiCCArea& CtiCCArea::setEstPFactor(DOUBLE estPfactor)
 {
     if(_estPfactor != estPfactor)
-    {    
+    {
         _dirty = TRUE;
         setAreaUpdatedFlag(TRUE);
     }
@@ -754,7 +517,7 @@ void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capM
     while (subIter != getSubStationList()->end())
     {
         currentSubstation = store->findSubstationByPAObjectID(*subIter);
-        subIter++;            
+        subIter++;
         if (currentSubstation != NULL  &&
             (getDisableFlag() || currentSubstation->getDisableFlag()))
         {

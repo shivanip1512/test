@@ -369,7 +369,7 @@ int CtiCCSubstationBusStore::getNbrOfSubsWithAltSubID(long altSubId)
 {
     return _altsub_sub_idmap.count(altSubId);
 }
-pair<multimap<long,long>::iterator,multimap<long,long>::iterator> CtiCCSubstationBusStore::getSubsWithAltSubID(long altSubId)
+pair<multimap<long,long>::iterator,multimap<long,long>::iterator> CtiCCSubstationBusStore::getSubsWithAltSubID(int altSubId)
 {
     return _altsub_sub_idmap.equal_range(altSubId);
 }
@@ -480,19 +480,19 @@ long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
 
 void CtiCCSubstationBusStore::addAreaToPaoMap(CtiCCAreaPtr area)
 {
-    _paobject_area_map.insert(make_pair(area->getPAOId(),area));
+    _paobject_area_map.insert(make_pair(area->getPaoId(),area));
 }
 void CtiCCSubstationBusStore::addSubstationToPaoMap(CtiCCSubstationPtr station)
 {
-    _paobject_substation_map.insert(make_pair(station->getPAOId(),station));
+    _paobject_substation_map.insert(make_pair(station->getPaoId(),station));
 }
 void CtiCCSubstationBusStore::addSubBusToPaoMap(CtiCCSubstationBusPtr bus)
 {
-    _paobject_subbus_map.insert(make_pair(bus->getPAOId(),bus));
+    _paobject_subbus_map.insert(make_pair(bus->getPaoId(),bus));
 }
 void CtiCCSubstationBusStore::addFeederToPaoMap(CtiCCFeederPtr feeder)
 {
-    _paobject_feeder_map.insert(make_pair(feeder->getPAOId(),feeder));
+    _paobject_feeder_map.insert(make_pair(feeder->getPaoId(),feeder));
 }
 
 
@@ -1405,13 +1405,13 @@ void CtiCCSubstationBusStore::reset()
         for(i = 0; i< _ccSpecialAreas->size();i++)
         {
              CtiCCSpecialPtr spArea =  (CtiCCSpecialPtr)(*_ccSpecialAreas).at(i);
-             cascadeStrategySettingsToChildren(spArea->getPAOId(), 0, 0);
+             cascadeStrategySettingsToChildren(spArea->getPaoId(), 0, 0);
         }
 
         for(i=0;i< _ccGeoAreas->size();i++)
         {
             CtiCCAreaPtr area =  (CtiCCAreaPtr)(*_ccGeoAreas).at(i);
-            cascadeStrategySettingsToChildren(0, area->getPAOId(), 0);
+            cascadeStrategySettingsToChildren(0, area->getPaoId(), 0);
 
             //disables verification on a subbus if the parent area or substation have been disabled.
             area->checkForAndStopVerificationOnChildSubBuses(capMessages);
@@ -1846,9 +1846,9 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                 {
                                     char tempchar[64] = "";
                                     string text = string("M3i Change, Cap Bank Bank Size: ");
-                                    text += currentCapBank->getPAOName();
+                                    text += currentCapBank->getPaoName();
                                     text += ", PAO Id: ";
-                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    _ltoa(currentCapBank->getPaoId(),tempchar,10);
                                     text += tempchar;
                                     string additional = string("Was: ");
                                     _ltoa(currentCapBank->getBankSize(),tempchar,10);
@@ -1857,7 +1857,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     _ltoa(kvarrating,tempchar,10);
                                     additional += tempchar;
                                     additional += ", on Feeder: ";
-                                    additional += currentFeeder->getPAOName();
+                                    additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1874,16 +1874,16 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                 {
                                     char tempchar[64] = "";
                                     string text = string("M3i Change, Cap Bank Op State: ");
-                                    text += currentCapBank->getPAOName();
+                                    text += currentCapBank->getPaoName();
                                     text += ", PAO Id: ";
-                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    _ltoa(currentCapBank->getPaoId(),tempchar,10);
                                     text += tempchar;
                                     string additional = string("Was: ");
                                     additional += currentCapBank->getOperationalState();
                                     additional += ", Now: ";
                                     additional += tempFixedOperationalStateString;
                                     additional += ", on Feeder: ";
-                                    additional += currentFeeder->getPAOName();
+                                    additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1898,16 +1898,16 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                 {
                                     char tempchar[64] = "";
                                     string text = string("M3i Change, Cap Bank Disable Flag: ");
-                                    text += currentCapBank->getPAOName();
+                                    text += currentCapBank->getPaoName();
                                     text += ", PAO Id: ";
-                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    _ltoa(currentCapBank->getPaoId(),tempchar,10);
                                     text += tempchar;
                                     string additional = string("Was: ");
                                     additional += (currentCapBank->getDisableFlag()?m3iAMFMDisabledString:m3iAMFMEnabledString);
                                     additional += ", Now: ";
                                     additional += cap_disable_flag;
                                     additional += ", on Feeder: ";
-                                    additional += currentFeeder->getPAOName();
+                                    additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1922,16 +1922,16 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                 {
                                     char tempchar[64] = "";
                                     string text = string("M3i Change, Cap Bank Controller Type: ");
-                                    text += currentCapBank->getPAOName();
+                                    text += currentCapBank->getPaoName();
                                     text += ", PAO Id: ";
-                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    _ltoa(currentCapBank->getPaoId(),tempchar,10);
                                     text += tempchar;
                                     string additional = string("Was: ");
                                     additional += currentCapBank->getControllerType();
                                     additional += ", Now: ";
                                     additional += translateCBCModelToControllerType(cbc_model);
                                     additional += ", on Feeder: ";
-                                    additional += currentFeeder->getPAOName();
+                                    additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1941,28 +1941,28 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                 currentCapBank->setControllerType(translateCBCModelToControllerType(cbc_model));
                                 updateCapBankFlag = true;
                             }
-                            if( !stringCompareIgnoreCase(currentCapBank->getPAODescription(),location) )
+                            if( !stringCompareIgnoreCase(currentCapBank->getPaoDescription(),location) )
                             {
                                 {
                                     char tempchar[64] = "";
                                     string text = string("M3i Change, Cap Bank Location: ");
-                                    text += currentCapBank->getPAOName();
+                                    text += currentCapBank->getPaoName();
                                     text += ", PAO Id: ";
-                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    _ltoa(currentCapBank->getPaoId(),tempchar,10);
                                     text += tempchar;
                                     string additional("Was: ");
-                                    additional += currentCapBank->getPAODescription();
+                                    additional += currentCapBank->getPaoDescription();
                                     additional += ", Now: ";
                                     additional += location;
                                     additional += ", on Feeder: ";
-                                    additional += currentFeeder->getPAOName();
+                                    additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - " << text << ", " << additional << endl;
                                     }
                                 }
-                                currentCapBank->setPAODescription(location);
+                                currentCapBank->setPaoDescription(location);
                                 updateCapBankFlag = true;
                             }
                             if( updateCapBankFlag )
@@ -2070,19 +2070,19 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
                 {
                     char tempchar[64] = "";
                     string text = string("M3i Change, Cap Bank moved feeders: ");
-                    text += movedCapBank->getPAOName();
+                    text += movedCapBank->getPaoName();
                     text += ", PAO Id: ";
-                    _ltoa(movedCapBank->getPAOId(),tempchar,10);
+                    _ltoa(movedCapBank->getPaoId(),tempchar,10);
                     text += tempchar;
                     string additional = string("Moved from: ");
-                    additional += oldFeeder->getPAOName();
+                    additional += oldFeeder->getPaoName();
                     additional += ", id: ";
-                    _ltoa(oldFeeder->getPAOId(),tempchar,10);
+                    _ltoa(oldFeeder->getPaoId(),tempchar,10);
                     additional += tempchar;
                     additional += " To: ";
-                    additional += currentFeeder->getPAOName();
+                    additional += currentFeeder->getPaoName();
                     additional += ", id: ";
-                    _ltoa(currentFeeder->getPAOId(),tempchar,10);
+                    _ltoa(currentFeeder->getPaoId(),tempchar,10);
                     additional += tempchar;
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                     {
@@ -2135,9 +2135,9 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
     {
         char tempchar[64] = "";
         string text("M3i Change, Cap Bank changed order: ");
-        text += currentCapBank->getPAOName();
+        text += currentCapBank->getPaoName();
         text += ", PAO Id: ";
-        _ltoa(currentCapBank->getPAOId(),tempchar,10);
+        _ltoa(currentCapBank->getPaoId(),tempchar,10);
         text += tempchar;
         string additional = string("Moved from: ");
         _ltoa(oldControlOrder,tempchar,10);
@@ -2146,7 +2146,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
         _ltoa(capswitchingorder,tempchar,10);
         additional += tempchar;
         additional += ", on Feeder: ";
-        additional += currentFeeder->getPAOName();
+        additional += currentFeeder->getPaoName();
         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2194,8 +2194,8 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, 
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - M3I change, 'Cap Out of Service' PAO Id: "
-                                         << currentCapBank->getPAOId() << ", name: "
-                                         << currentCapBank->getPAOName() << ", was "
+                                         << currentCapBank->getPaoId() << ", name: "
+                                         << currentCapBank->getPaoName() << ", was "
                                          << enableddisabled << endl;
                                 }
                             }
@@ -2259,8 +2259,8 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, string& f
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - M3I change, 'Feeder Out of Service' PAO Id: "
-                                     << currentFeeder->getPAOId() << ", name: "
-                                     << currentFeeder->getPAOName() << ", was "
+                                     << currentFeeder->getPaoId() << ", name: "
+                                     << currentFeeder->getPaoName() << ", was "
                                      << enableddisabled << endl;
                             }
                         }
@@ -2885,14 +2885,14 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         currentFeeder->setRecentlyControlledFlag(FALSE);
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPAOName() << ", no longer recently controlled because no banks were pending in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPaoName() << ", no longer recently controlled because no banks were pending in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
                     }
                     else if( numberOfCapBanksPending > 1 )
                     {
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Multiple cap banks pending in Feeder: " << currentFeeder->getPAOName() << ", setting status to questionable in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - Multiple cap banks pending in Feeder: " << currentFeeder->getPaoName() << ", setting status to questionable in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
                         for(int k=0;k<ccCapBanks.size();k++)
                         {
@@ -2902,7 +2902,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             {
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                                 currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -2914,7 +2914,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 LONG stationId, areaId, spAreaId;
                                 getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
                                 eventMsg->setActionId(currentCapBank->getActionId());
                                 eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2924,7 +2924,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             {
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                                 currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -2936,7 +2936,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 LONG stationId, areaId, spAreaId;
                                 getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
                                 eventMsg->setActionId(currentCapBank->getActionId());
                                 eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2947,7 +2947,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                     {
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPAOName() << " waiting for Post Op Monitor Scan " << endl;
+                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPaoName() << " waiting for Post Op Monitor Scan " << endl;
                         }
                     }
                     else
@@ -2967,7 +2967,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -2979,7 +2979,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             LONG stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
                             eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2988,7 +2988,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -3000,7 +3000,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             LONG stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
                             eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -3020,7 +3020,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Sub: " << currentSubstationBus->getPAOName() << " waiting for Post Op Monitor Scan " << endl;
+                dout << CtiTime() << " - Sub: " << currentSubstationBus->getPaoName() << " waiting for Post Op Monitor Scan " << endl;
             }
         }
         else//sub bus not recently controlled
@@ -3042,7 +3042,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         currentFeeder->setRecentlyControlledFlag(FALSE);
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPAOName() << ", no longer recently controlled because sub bus not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPaoName() << ", no longer recently controlled because sub bus not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
                     }
 
@@ -3056,7 +3056,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -3069,7 +3069,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             LONG stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control");
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control");
                             eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -3079,7 +3079,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             currentCapBank->setControlRecentlySentFlag(FALSE);
@@ -3092,7 +3092,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             LONG stationId, areaId, spAreaId;
                             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control");
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control");
                             eventMsg->setActionId(currentCapBank->getActionId());
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -3126,7 +3126,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             _ltoa(currentSubstationBus->getCurrentDailyOperations(),tempchar,10);
             text += tempchar;
             string additional("Sub Bus: ");
-            additional += currentSubstationBus->getPAOName();
+            additional += currentSubstationBus->getPaoName();
 
             if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
                 pointChanges.push_back(new CtiSignalMsg(currentSubstationBus->getDailyOperationsAnalogPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control",
@@ -3138,9 +3138,9 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             LONG stationId, areaId, spAreaId;
             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
             if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
-               CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentSubstationBus->getDailyOperationsAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
+               CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentSubstationBus->getDailyOperationsAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
             else
-                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
+                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
 
 
         }
@@ -3210,14 +3210,14 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
             RWDBTable dynamicSubBusTable = getDatabase().table("dynamicccsubstationbus");
             RWDBUpdater updater = dynamicSubBusTable.updater();
 
-            updater.where( dynamicSubBusTable["paobjectid"] == bus->getPAOId() );
+            updater.where( dynamicSubBusTable["paobjectid"] == bus->getPaoId() );
 
             updater << dynamicSubBusTable["verificationflag"].assign( (bus->getVerificationFlag()?"Y":"N") );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPAOId(), ChangePAODb,
-                                                      bus->getPAOCategory(), bus->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
+                                                      bus->getPaoCategory(), bus->getPaoType(),
                                                       ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3249,14 +3249,14 @@ bool CtiCCSubstationBusStore::UpdateAreaDisableFlagInDB(CtiCCArea* area)
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["paobjectid"] == area->getPAOId() );
+            updater.where( yukonPAObjectTable["paobjectid"] == area->getPaoId() );
 
             updater << yukonPAObjectTable["disableflag"].assign( (area->getDisableFlag()?"Y":"N") );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPAOId(), ChangePAODb,
-                                                          area->getPAOCategory(), area->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPaoId(), ChangePAODb,
+                                                          area->getPaoCategory(), area->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3285,14 +3285,14 @@ bool CtiCCSubstationBusStore::UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* are
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["paobjectid"] == area->getPAOId() );
+            updater.where( yukonPAObjectTable["paobjectid"] == area->getPaoId() );
 
             updater << yukonPAObjectTable["disableflag"].assign( (area->getDisableFlag()?"Y":"N") );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPAOId(), ChangePAODb,
-                                                          area->getPAOCategory(), area->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPaoId(), ChangePAODb,
+                                                          area->getPaoCategory(), area->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE2);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3321,14 +3321,14 @@ bool CtiCCSubstationBusStore::UpdateSubstationDisableFlagInDB(CtiCCSubstation* s
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["paobjectid"] == station->getPAOId() );
+            updater.where( yukonPAObjectTable["paobjectid"] == station->getPaoId() );
 
             updater << yukonPAObjectTable["disableflag"].assign( (station->getDisableFlag()?"Y":"N") );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(station->getPAOId(), ChangePAODb,
-                                                          station->getPAOCategory(), station->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(station->getPaoId(), ChangePAODb,
+                                                          station->getPaoCategory(), station->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3358,14 +3358,14 @@ bool CtiCCSubstationBusStore::UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus)
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["paobjectid"] == bus->getPAOId() );
+            updater.where( yukonPAObjectTable["paobjectid"] == bus->getPaoId() );
 
             updater << yukonPAObjectTable["disableflag"].assign( (bus->getDisableFlag()?"Y":"N") );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPAOId(), ChangePAODb,
-                                                          bus->getPAOCategory(), bus->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
+                                                          bus->getPaoCategory(), bus->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3395,14 +3395,14 @@ bool CtiCCSubstationBusStore::UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder)
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["paobjectid"] == feeder->getPAOId() );
+            updater.where( yukonPAObjectTable["paobjectid"] == feeder->getPaoId() );
 
             updater << yukonPAObjectTable["disableflag"].assign( (feeder->getDisableFlag()?"Y":"N") );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(feeder->getPAOId(), ChangePAODb,
-                                                          feeder->getPAOCategory(), feeder->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(feeder->getPaoId(), ChangePAODb,
+                                                          feeder->getPaoCategory(), feeder->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3431,15 +3431,15 @@ bool CtiCCSubstationBusStore::UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["paobjectid"] == capbank->getPAOId() );
+            updater.where( yukonPAObjectTable["paobjectid"] == capbank->getPaoId() );
 
             updater << yukonPAObjectTable["disableflag"].assign( (capbank->getDisableFlag()?"Y":"N") );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPAOId(), ChangePAODb,
-                                                          capbank->getPAOCategory(),
-                                                          capbank->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
+                                                          capbank->getPaoCategory(),
+                                                          capbank->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3468,15 +3468,15 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
             RWDBTable yukonPAObjectTable = getDatabase().table("capbank");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["deviceid"] == capbank->getPAOId() );
+            updater.where( yukonPAObjectTable["deviceid"] == capbank->getPaoId() );
 
             updater << yukonPAObjectTable["operationalstate"].assign( capbank->getOperationalState().c_str() );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPAOId(), ChangePAODb,
-                                                          capbank->getPAOCategory(),
-                                                          capbank->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
+                                                          capbank->getPaoCategory(),
+                                                          capbank->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3506,27 +3506,27 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
             RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
             RWDBUpdater updater = yukonPAObjectTable.updater();
 
-            updater.where( yukonPAObjectTable["paobjectid"] == capbank->getPAOId() );
+            updater.where( yukonPAObjectTable["paobjectid"] == capbank->getPaoId() );
 
-            updater << yukonPAObjectTable["paoname"].assign( capbank->getPAOName().c_str() )
+            updater << yukonPAObjectTable["paoname"].assign( capbank->getPaoName().c_str() )
                     << yukonPAObjectTable["disableflag"].assign( (capbank->getDisableFlag()?"Y":"N") )
-                    << yukonPAObjectTable["description"].assign( capbank->getPAODescription().c_str() );
+                    << yukonPAObjectTable["description"].assign( capbank->getPaoDescription().c_str() );
 
             updater.execute( conn );
 
             RWDBTable capBankTable = getDatabase().table("capbank");
             updater = capBankTable.updater();
 
-            updater.where( capBankTable["deviceid"] == capbank->getPAOId() );
+            updater.where( capBankTable["deviceid"] == capbank->getPaoId() );
 
             updater << capBankTable["banksize"].assign( capbank->getBankSize() )
                     << capBankTable["operationalstate"].assign( capbank->getOperationalState().c_str() );
 
             updater.execute( conn );
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPAOId(), ChangePAODb,
-                                                          capbank->getPAOCategory(),
-                                                          capbank->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
+                                                          capbank->getPaoCategory(),
+                                                          capbank->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3557,7 +3557,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
             RWDBTable ccFeederBankListTable = getDatabase().table("ccfeederbanklist");
             RWDBDeleter deleter = ccFeederBankListTable.deleter();
 
-            deleter.where( ccFeederBankListTable["feederid"] == feeder->getPAOId() );
+            deleter.where( ccFeederBankListTable["feederid"] == feeder->getPaoId() );
 
             deleter.execute( conn );
 
@@ -3569,8 +3569,8 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[i];
 
-                dbInserter << feeder->getPAOId()
-                         << currentCapBank->getPAOId()
+                dbInserter << feeder->getPaoId()
+                         << currentCapBank->getPaoId()
                          << currentCapBank->getControlOrder()
                          << currentCapBank->getCloseOrder()
                          << currentCapBank->getTripOrder();
@@ -3578,9 +3578,9 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
                 dbInserter.execute( conn );
             }
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(feeder->getPAOId(), ChangePAODb,
-                                                          feeder->getPAOCategory(),
-                                                          feeder->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(feeder->getPaoId(), ChangePAODb,
+                                                          feeder->getPaoCategory(),
+                                                          feeder->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -3613,7 +3613,7 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
             RWDBTable ccFeederSubAssignmentTable = getDatabase().table("ccfeedersubassignment");
             RWDBDeleter deleter = ccFeederSubAssignmentTable.deleter();
 
-            deleter.where( ccFeederSubAssignmentTable["substationbusid"] == bus->getPAOId() );
+            deleter.where( ccFeederSubAssignmentTable["substationbusid"] == bus->getPaoId() );
 
             deleter.execute( conn );
 
@@ -3627,16 +3627,16 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
 
                 currentFeeder->dumpDynamicData(conn, currentDateTime);
 
-                dbInserter << bus->getPAOId()
-                         << currentFeeder->getPAOId()
+                dbInserter << bus->getPaoId()
+                         << currentFeeder->getPaoId()
                          << currentFeeder->getDisplayOrder();
 
                 dbInserter.execute( conn );
             }
 
-            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPAOId(), ChangePAODb,
-                                                          bus->getPAOCategory(),
-                                                          bus->getPAOType(),
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
+                                                          bus->getPaoCategory(),
+                                                          bus->getPaoType(),
                                                           ChangeTypeUpdate);
             dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
@@ -4581,7 +4581,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                         {
 
                             CtiCCSubstationPtr currentCCSubstation = CtiCCSubstationPtr(new CtiCCSubstation(rdr));
-                            paobject_substation_map->insert(make_pair(currentCCSubstation->getPAOId(),currentCCSubstation));
+                            paobject_substation_map->insert(make_pair(currentCCSubstation->getPaoId(),currentCCSubstation));
 
                             if (currentCCSubstation->getVoltReductionControlId() > 0 )
                             {
@@ -4626,7 +4626,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                             rdr["substationid"] >> currentSubstationId;
                             CtiCCSubstationPtr currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
 
-                            if (currentCCSubstation->getPAOId() == currentSubstationId)
+                            if (currentCCSubstation->getPaoId() == currentSubstationId)
                             {
                                  currentCCSubstation->setDynamicData(rdr);
                             }
@@ -4982,7 +4982,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
                             CtiCCAreaPtr currentCCArea = CtiCCAreaPtr(new CtiCCArea(rdr, _strategyManager.getStrategy( _strategyManager.getDefaultId() )));
 
-                            paobject_area_map->insert(make_pair(currentCCArea->getPAOId(),currentCCArea));
+                            paobject_area_map->insert(make_pair(currentCCArea->getPaoId(),currentCCArea));
 
 
                             ccGeoAreas->push_back( currentCCArea );
@@ -5166,7 +5166,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                             rdr["areaid"] >> currentAreaId;
                             CtiCCAreaPtr currentCCArea = paobject_area_map->find(currentAreaId)->second;
 
-                            if (currentCCArea->getPAOId() == currentAreaId)
+                            if (currentCCArea->getPaoId() == currentAreaId)
                             {
                                  currentCCArea->setDynamicData(rdr);
                             }
@@ -5394,7 +5394,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
 
                             CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr(new CtiCCSpecial(rdr, _strategyManager.getStrategy( _strategyManager.getDefaultId() )));
 
-                            paobject_specialarea_map->insert(make_pair(currentCCSpArea->getPAOId(),currentCCSpArea));
+                            paobject_specialarea_map->insert(make_pair(currentCCSpArea->getPaoId(),currentCCSpArea));
 
 
                             ccSpecialAreas->push_back( currentCCSpArea );
@@ -5577,7 +5577,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
                             rdr["areaid"] >> currentSpAreaId;
                             CtiCCSpecialPtr currentCCSpArea = paobject_specialarea_map->find(currentSpAreaId)->second;
 
-                            if (currentCCSpArea->getPAOId() == currentSpAreaId)
+                            if (currentCCSpArea->getPaoId() == currentSpAreaId)
                             {
                                  currentCCSpArea->setDynamicData(rdr);
                             }
@@ -5756,7 +5756,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
     else
     {
         //Clear all Ltcs
-        for each(LtcMap::value_type p in _paobject_ltc_map)
+        for each(const LtcMap::value_type& p in _paobject_ltc_map)
         {
             if (p.second != NULL)
             {
@@ -5830,7 +5830,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         }
         else
         {
-            for each(LtcMap::value_type p in _paobject_ltc_map)
+            for each(const LtcMap::value_type& p in _paobject_ltc_map)
             {
                 ltcList.push_back(p.second);
             }
@@ -6033,7 +6033,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         {
                             currentCCSubstationBus = CtiCCSubstationBusPtr(new CtiCCSubstationBus(rdr, _strategyManager.getStrategy( _strategyManager.getDefaultId() )));   // default to no strategy
 
-                            paobject_subbus_map->insert(make_pair(currentCCSubstationBus->getPAOId(),currentCCSubstationBus));
+                            paobject_subbus_map->insert(make_pair(currentCCSubstationBus->getPaoId(),currentCCSubstationBus));
 
                             if (currentCCSubstationBus->getCurrentVarLoadPointId() > 0 )
                             {
@@ -6057,9 +6057,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                             }
 
                             if (currentCCSubstationBus->getDualBusEnable() &&
-                                currentCCSubstationBus->getAltDualSubId() != currentCCSubstationBus->getPAOId())
+                                currentCCSubstationBus->getAltDualSubId() != currentCCSubstationBus->getPaoId())
                             {
-                                altsub_sub_idmap->insert(make_pair(currentCCSubstationBus->getAltDualSubId(), currentCCSubstationBus->getPAOId()));
+                                altsub_sub_idmap->insert(make_pair(currentCCSubstationBus->getAltDualSubId(), currentCCSubstationBus->getPaoId()));
                             }
                             if (currentCCSubstationBus->getUsePhaseData())
                             {
@@ -6190,7 +6190,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
                                     if (currentCCSubstation != NULL)
                                     {
-                                        currentCCSubstationBus->setParentName(currentCCSubstation->getPAOName());
+                                        currentCCSubstationBus->setParentName(currentCCSubstation->getPaoName());
                                         list <LONG>::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
                                         bool found = false;
                                         for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
@@ -6444,8 +6444,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                             else
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPAOName()<<" will NOT operate in Dual Mode."<<endl;
-                                                dout << "   Alternate Sub: "<<dualBus->getPAOName()<<" does not have a VAR Point ID attached."<< endl;
+                                                dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPaoName()<<" will NOT operate in Dual Mode."<<endl;
+                                                dout << "   Alternate Sub: "<<dualBus->getPaoName()<<" does not have a VAR Point ID attached."<< endl;
                                             }
                                         }
                                         else if(!stringCompareIgnoreCase(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
@@ -6458,8 +6458,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                             else
                                             {
                                                  CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                 dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPAOName()<<" will NOT operate in Dual Mode."<<endl;
-                                                 dout << "   Alternate Sub: "<<dualBus->getPAOName()<<" does not have a Volt Point ID attached."<< endl;
+                                                 dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPaoName()<<" will NOT operate in Dual Mode."<<endl;
+                                                 dout << "   Alternate Sub: "<<dualBus->getPaoName()<<" does not have a Volt Point ID attached."<< endl;
                                             }
                                         }
                                     }
@@ -6585,7 +6585,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                             rdr["substationbusid"] >> currentSubBusId;
                             CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
 
-                            if (currentCCSubstationBus->getPAOId() == currentSubBusId)
+                            if (currentCCSubstationBus->getPaoId() == currentSubBusId)
                             {
                                  currentCCSubstationBus->setDynamicData(rdr);
                             }
@@ -6779,7 +6779,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
         if (feederToUpdate != NULL)
         {
             CtiCCSubstationBusPtr subBus = NULL;
-            deleteFeeder(feederToUpdate->getPAOId());
+            deleteFeeder(feederToUpdate->getPaoId());
         }
 
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -6851,7 +6851,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                         {
                             currentCCFeeder = CtiCCFeederPtr(new CtiCCFeeder(rdr, _strategyManager.getStrategy( _strategyManager.getDefaultId() )));
 
-                            paobject_feeder_map->insert(make_pair(currentCCFeeder->getPAOId(),currentCCFeeder));
+                            paobject_feeder_map->insert(make_pair(currentCCFeeder->getPaoId(),currentCCFeeder));
 
                             if (currentCCFeeder->getCurrentVarLoadPointId() > 0 )
                             {
@@ -6932,7 +6932,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                 StrategyPtr pStrategy = currentCCSubstationBus->getStrategy();
 
                                 currentCCFeeder->setParentControlUnits(currentCCSubstationBus->getStrategy()->getControlUnits());
-                                currentCCFeeder->setParentName(currentCCSubstationBus->getPAOName());
+                                currentCCFeeder->setParentName(currentCCSubstationBus->getPaoName());
 
                                 if (currentCCFeeder->getStrategy()->getStrategyId() == 0)
                                 {
@@ -7195,7 +7195,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                         {
                             CtiCCCapBankPtr bank = (CtiCCCapBankPtr)capBanks[i];
 
-                            reloadMonitorPointsFromDatabase(bank->getPAOId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map);
+                            reloadMonitorPointsFromDatabase(bank->getPaoId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map);
                         }
                     }
                 }
@@ -7370,7 +7370,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
                         LONG tempPAObjectId = 0;
                         rdr["paobjectid"] >> tempPAObjectId;
-                        if (    tempPAObjectId == currentCCFeeder->getPAOId() )
+                        if (    tempPAObjectId == currentCCFeeder->getPaoId() )
                         {
                             rdr["pointid"] >> isNull;
                             if ( !isNull )
@@ -7545,7 +7545,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     {
                         CtiCCCapBankPtr currentCCCapBank = CtiCCCapBankPtr(new CtiCCCapBank(rdr));
 
-                        paobject_capbank_map->insert(make_pair(currentCCCapBank->getPAOId(),currentCCCapBank));
+                        paobject_capbank_map->insert(make_pair(currentCCCapBank->getPaoId(),currentCCCapBank));
                     }
                 }
                 {
@@ -8280,13 +8280,13 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                                                     CtiCCCapBank* bank = (CtiCCCapBank*)banks[a];
 
                                                     currentPointResponse = new CtiCCPointResponse(rdr);
-                                                    currentPointResponse->setBankId(bank->getPAOId());
+                                                    currentPointResponse->setBankId(bank->getPaoId());
                                                     currentPointResponse->setPointId(currentMonPoint->getPointId());
 
                                                     bank->getPointResponse().push_back(currentPointResponse);
                                                     {
                                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                        dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPAOId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
+                                                        dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPaoId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
                                                     }
                                                 }
                                             }
@@ -8299,14 +8299,14 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                                         {
                                             CtiCCCapBank* bank = (CtiCCCapBank*)banks[a];
                                             currentPointResponse = new CtiCCPointResponse(rdr);
-                                            currentPointResponse->setBankId(bank->getPAOId());
+                                            currentPointResponse->setBankId(bank->getPaoId());
                                             currentPointResponse->setPointId(currentMonPoint->getPointId());
 
                                             bank->getPointResponse().push_back(currentPointResponse);
 
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPAOId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
+                                                dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPaoId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
                                             }
                                         }
                                     }
@@ -8819,7 +8819,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
             CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(h);
             if (currentCCSubstationBus->getParentId() == substationId)
             {
-                 deleteList.push_back(currentCCSubstationBus->getPAOId());
+                 deleteList.push_back(currentCCSubstationBus->getPaoId());
             }
         }
         for( std::list<int>::iterator itr = deleteList.begin(); itr != deleteList.end(); itr++)
@@ -8841,7 +8841,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
                     multimap< long, CtiCCSubstationPtr >::iterator iter1 = _pointid_station_map.lower_bound(pointid);
                     while (iter1 != _pointid_station_map.end() || iter1 != _pointid_station_map.upper_bound(pointid))
                     {
-                       if (((CtiCCSubstationPtr)iter1->second)->getPAOId() == substationToDelete->getPAOId())
+                       if (((CtiCCSubstationPtr)iter1->second)->getPaoId() == substationToDelete->getPaoId())
                        {
                            _pointid_station_map.erase(iter1);
                            break;
@@ -8878,15 +8878,15 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
                 itrSp++;
             }
 
-            string substationName = substationToDelete->getPAOName();
-            _paobject_substation_map.erase(substationToDelete->getPAOId());
-            _substation_area_map.erase(substationToDelete->getPAOId());
-            _substation_specialarea_map.erase(substationToDelete->getPAOId());
+            string substationName = substationToDelete->getPaoName();
+            _paobject_substation_map.erase(substationToDelete->getPaoId());
+            _substation_area_map.erase(substationToDelete->getPaoId());
+            _substation_specialarea_map.erase(substationToDelete->getPaoId());
             CtiCCSubstation_vec::iterator itr = _ccSubstations->begin();
             for( ;itr != _ccSubstations->end(); itr++ )
             {
                 CtiCCSubstation *substation = *itr;
-                if (substation->getPAOId() == substationId)
+                if (substation->getPaoId() == substationId)
                 {
                     _ccSubstations->erase(itr);
                     break;
@@ -8936,7 +8936,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                         multimap< long, CtiCCAreaPtr >::iterator iter1 = _pointid_area_map.lower_bound(pointid);
                         while (iter1 != _pointid_area_map.end() || iter1 != _pointid_area_map.upper_bound(pointid))
                         {
-                           if (((CtiCCAreaPtr)iter1->second)->getPAOId() == areaToDelete->getPAOId())
+                           if (((CtiCCAreaPtr)iter1->second)->getPaoId() == areaToDelete->getPaoId())
                            {
                                _pointid_area_map.erase(iter1);
                                break;
@@ -8982,13 +8982,13 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
 
             try
             {
-                string areaName = areaToDelete->getPAOName();
-                _paobject_area_map.erase(areaToDelete->getPAOId());
+                string areaName = areaToDelete->getPaoName();
+                _paobject_area_map.erase(areaToDelete->getPaoId());
                 CtiCCArea_vec::iterator itr = _ccGeoAreas->begin();
                 while ( itr != _ccGeoAreas->end() )
                 {
                     CtiCCArea *area = *itr;
-                    if (area->getPAOId() == areaId)
+                    if (area->getPaoId() == areaId)
                     {
                         itr = _ccGeoAreas->erase(itr);
                         break;
@@ -9042,7 +9042,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                         multimap< long, CtiCCSpecialPtr >::iterator iter1 = _pointid_specialarea_map.lower_bound(pointid);
                         while (iter1 != _pointid_specialarea_map.end() || iter1 != _pointid_specialarea_map.upper_bound(pointid))
                         {
-                           if (((CtiCCSpecialPtr)iter1->second)->getPAOId() == spAreaToDelete->getPAOId())
+                           if (((CtiCCSpecialPtr)iter1->second)->getPaoId() == spAreaToDelete->getPaoId())
                            {
                                _pointid_specialarea_map.erase(iter1);
                                break;
@@ -9080,13 +9080,13 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
 
             try
             {
-                string areaName = spAreaToDelete->getPAOName();
-                _paobject_specialarea_map.erase(spAreaToDelete->getPAOId());
+                string areaName = spAreaToDelete->getPaoName();
+                _paobject_specialarea_map.erase(spAreaToDelete->getPaoId());
                 CtiCCSpArea_vec::iterator itr = _ccSpecialAreas->begin();
                 while ( itr != _ccSpecialAreas->end() )
                 {
                     CtiCCSpecial *area = *itr;
-                    if (area->getPAOId() == areaId)
+                    if (area->getPaoId() == areaId)
                     {
                         itr = _ccSpecialAreas->erase(itr);
                         break;
@@ -9160,7 +9160,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
         for(LONG i=0;i<feedCount;i++)
         {
             CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
-            deleteFeederList.push_back(feederToDelete->getPAOId());
+            deleteFeederList.push_back(feederToDelete->getPaoId());
         }
         for( std::list<int>::iterator itr = deleteFeederList.begin(); itr != deleteFeederList.end(); itr++ )
         {
@@ -9181,7 +9181,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                     multimap< long, CtiCCSubstationBusPtr >::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
                     while (iter1 != _pointid_subbus_map.end() || iter1 != _pointid_subbus_map.upper_bound(pointid))
                     {
-                       if (((CtiCCSubstationBusPtr)iter1->second)->getPAOId() == subToDelete->getPAOId())
+                       if (((CtiCCSubstationBusPtr)iter1->second)->getPaoId() == subToDelete->getPaoId())
                        {
                            _pointid_subbus_map.erase(iter1);
                            break;
@@ -9225,12 +9225,12 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 _altsub_sub_idmap.erase(subBusId);
             }
             //Deleting this sub from altSubMap
-            if (subToDelete->getAltDualSubId() != subToDelete->getPAOId())
+            if (subToDelete->getAltDualSubId() != subToDelete->getPaoId())
             {
                 multimap <long, long>::iterator iter = _altsub_sub_idmap.begin();
                 while (iter != _altsub_sub_idmap.end())
                 {
-                    if (iter->second == subToDelete->getPAOId())
+                    if (iter->second == subToDelete->getPaoId())
                     {
                         _altsub_sub_idmap.erase(iter);
                         iter = _altsub_sub_idmap.end();
@@ -9249,14 +9249,14 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 
         try
         {
-            string subBusName = subToDelete->getPAOName();
-            _paobject_subbus_map.erase(subToDelete->getPAOId());
-            _subbus_substation_map.erase(subToDelete->getPAOId());
+            string subBusName = subToDelete->getPaoName();
+            _paobject_subbus_map.erase(subToDelete->getPaoId());
+            _subbus_substation_map.erase(subToDelete->getPaoId());
             CtiCCSubstationBus_vec::iterator itr = _ccSubstationBuses->begin();
             while ( itr != _ccSubstationBuses->end() )
             {
                 CtiCCSubstationBus *subBus = *itr;
-                if (subBus->getPAOId() == subBusId)
+                if (subBus->getPaoId() == subBusId)
                 {
                     itr = _ccSubstationBuses->erase(itr);
                     break;
@@ -9298,7 +9298,7 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
         for (LONG j = 0; j < capCount; j++)
         {
             CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
-            capbankDeleteList.push_back(capBankToDelete->getPAOId());
+            capbankDeleteList.push_back(capBankToDelete->getPaoId());
         }
         for( std::list<int>::iterator itr = capbankDeleteList.begin(); itr != capbankDeleteList.end(); itr++ )
         {
@@ -9317,7 +9317,7 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
                 multimap< long, CtiCCFeederPtr >::iterator iter1 = _pointid_feeder_map.lower_bound(pointid);
                 while (iter1 != _pointid_feeder_map.end() || iter1 != _pointid_feeder_map.upper_bound(pointid))
                 {
-                    if (((CtiCCFeederPtr)iter1->second)->getPAOId() == feederToDelete->getPAOId())
+                    if (((CtiCCFeederPtr)iter1->second)->getPaoId() == feederToDelete->getPaoId())
                     {
                         _pointid_feeder_map.erase(iter1);
                         break;
@@ -9342,9 +9342,9 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
                 }
             }
 
-            string feederName = feederToDelete->getPAOName();
-            _paobject_feeder_map.erase(feederToDelete->getPAOId());
-            _feeder_subbus_map.erase(feederToDelete->getPAOId());
+            string feederName = feederToDelete->getPaoName();
+            _paobject_feeder_map.erase(feederToDelete->getPaoId());
+            _feeder_subbus_map.erase(feederToDelete->getPaoId());
 
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
@@ -9389,7 +9389,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                     multimap< long, CtiCCCapBankPtr >::iterator iter1 = _pointid_capbank_map.lower_bound(pointid);
                     while (iter1 != _pointid_capbank_map.end() || iter1 != _pointid_capbank_map.upper_bound(pointid))
                     {
-                        if (((CtiCCCapBankPtr)iter1->second)->getPAOId() == capBankToDelete->getPAOId())
+                        if (((CtiCCCapBankPtr)iter1->second)->getPaoId() == capBankToDelete->getPaoId())
                         {
                             _pointid_capbank_map.erase(iter1);
                             break;
@@ -9438,8 +9438,8 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                     }
                 }
 
-                string capBankName = capBankToDelete->getPAOName();
-                _paobject_capbank_map.erase(capBankToDelete->getPAOId());
+                string capBankName = capBankToDelete->getPaoName();
+                _paobject_capbank_map.erase(capBankToDelete->getPaoId());
                 if( _CC_DEBUG & CC_DEBUG_DELETION )
                 {
                     if (_paobject_capbank_map.size() > 0)
@@ -9456,7 +9456,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                     }
                 }
 
-                _capbank_subbus_map.erase(capBankToDelete->getPAOId());
+                _capbank_subbus_map.erase(capBankToDelete->getPaoId());
                 if( _CC_DEBUG & CC_DEBUG_DELETION )
                 {
                     if (_capbank_subbus_map.size() > 0)
@@ -9472,7 +9472,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                         }
                     }
                 }
-                _capbank_feeder_map.erase(capBankToDelete->getPAOId());
+                _capbank_feeder_map.erase(capBankToDelete->getPaoId());
                 if( _CC_DEBUG & CC_DEBUG_DELETION )
                 {
                     if (_capbank_feeder_map.size() > 0)
@@ -9625,7 +9625,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
                      if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                      {
                          CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" modified "<< endl;
+                         dout << CtiTime() << " Sub " <<tempSub->getPaoName()<<" modified "<< endl;
                      }
                      modifiedSubsSet.insert(tempSub);
                      msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
@@ -9666,7 +9666,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
                  if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                  {
                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                      dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" modified "<< endl;
+                      dout << CtiTime() << " Sub " <<tempSub->getPaoName()<<" modified "<< endl;
                  }
                  modifiedSubsSet.insert(tempSub);
                  msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
@@ -9678,7 +9678,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
                  if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                  {
                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                      dout << CtiTime() << " Sub " <<tempSub->getPAOName()<<" NOT modified "<< endl;
+                      dout << CtiTime() << " Sub " <<tempSub->getPaoName()<<" NOT modified "<< endl;
                  }
              }
          }
@@ -10036,7 +10036,7 @@ void CtiCCSubstationBusStore::initializeAllPeakTimeFlagsAndMonitorPoints(BOOL se
     for(LONG i=0;i<_ccSubstationBuses->size();i++)
     {
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
-        calculateParentPowerFactor(currentSubstationBus->getPAOId());
+        calculateParentPowerFactor(currentSubstationBus->getPaoId());
         currentSubstationBus->getMultipleMonitorPoints().clear();
 
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
@@ -10493,7 +10493,7 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
 
                 // print out something about it not processing the thing....
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " UNSOLICTED MSG for: "<< currentCapBank->getPAOName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated() << endl;
+                dout << CtiTime() << " UNSOLICTED MSG for: "<< currentCapBank->getPaoName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated() << endl;
             }
         }
         listIter++;
@@ -10571,7 +10571,7 @@ void CtiCCSubstationBusStore::checkUnexpectedUnsolicitedList()
 
                 // print out something about it not processing the thing....
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " UNSOLICTED MSG for: "<< currentCapBank->getPAOName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated() << endl;
+                dout << CtiTime() << " UNSOLICTED MSG for: "<< currentCapBank->getPaoName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated() << endl;
             }
         }
     }
@@ -11453,7 +11453,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                             if (cap != NULL)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPAOName()<< endl;
+                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName()<< endl;
                             }
                             else
                             {
@@ -11527,7 +11527,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                             if (cap != NULL)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPAOName()<< endl;
+                                dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName()<< endl;
                             }
                             else
                             {
@@ -11667,7 +11667,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                                 if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " ##### Incrementing User Def Comm Counts for Cap: "<< cap->getPAOName() << endl;
+                                    dout << CtiTime() << " ##### Incrementing User Def Comm Counts for Cap: "<< cap->getPaoName() << endl;
                                 }
                                 cap->getConfirmationStats().incrementUserDefCommCounts(attempts);
                                 cap->getConfirmationStats().incrementUserDefCommFails(errorTotal);

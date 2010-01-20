@@ -36,6 +36,7 @@
 #include "ControlStrategy.h"
 #include "sorted_vector.h"
 #include "regression.h"
+#include "CapControlPao.h"
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
@@ -83,7 +84,7 @@ struct FeederVARComparison
     }
 };
 
-class CtiCCFeeder : public RWCollectable
+class CtiCCFeeder : public RWCollectable, public CapControlPao
 {
 
 public:
@@ -96,13 +97,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     virtual ~CtiCCFeeder();
 
-    LONG getPAOId() const;
-    const string& getPAOCategory() const;
-    const string& getPAOClass() const;
-    const string& getPAOName() const;
-    const string& getPAOType() const;
-    const string& getPAODescription() const;
-    BOOL getDisableFlag() const;
     LONG getParentId() const;
 
     LONG getCurrentVarLoadPointId() const;
@@ -185,14 +179,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
 
-
-    CtiCCFeeder& setPAOId(LONG id);
-    CtiCCFeeder& setPAOCategory(const string& category);
-    CtiCCFeeder& setPAOClass(const string& pclass);
-    CtiCCFeeder& setPAOName(const string& name);
-    CtiCCFeeder& setPAOType(const string& type);
-    CtiCCFeeder& setPAODescription(const string& description);
-    CtiCCFeeder& setDisableFlag(BOOL disable);
     CtiCCFeeder& setParentId(LONG parentId);
     CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiTime timestamp);
@@ -375,13 +361,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
 
     CtiCCFeeder& operator=(const CtiCCFeeder& right);
-
-    bool  operator==(const CtiCCFeeder& right) const;
-    bool  operator!=(const CtiCCFeeder& right) const;
 
     CtiCCFeeder* replicate() const;
 
@@ -407,13 +389,6 @@ private:
 
     StrategyPtr    _strategy;
 
-    LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
-    string _paotype;
-    string _paodescription;
-    BOOL _disableflag;
     LONG _parentId; //subBusId
     BOOL _multiMonitorFlag;
 

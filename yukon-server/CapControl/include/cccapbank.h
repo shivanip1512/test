@@ -34,6 +34,7 @@
 #include "observe.h"
 #include "ctitime.h"
 #include "ctidate.h"
+#include "CapControlPao.h"
 
 using boost::shared_ptr;
 
@@ -79,7 +80,7 @@ namespace capcontrol
         UNINSTALLED
     };
 }
-class CtiCCCapBank : public RWCollectable
+class CtiCCCapBank : public RWCollectable, public CapControlPao
 {
 
 public:
@@ -92,13 +93,6 @@ public:
 
     virtual ~CtiCCCapBank();
 
-    LONG getPAOId() const;
-    const string& getPAOCategory() const;
-    const string& getPAOClass() const;
-    const string& getPAOName() const;
-    const string& getPAOType() const;
-    const string& getPAODescription() const;
-    BOOL getDisableFlag() const;
     LONG getParentId() const;
     BOOL getAlarmInhibitFlag() const;
     BOOL getControlInhibitFlag() const;
@@ -171,13 +165,6 @@ public:
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
     std::vector <CtiCCPointResponsePtr>& getPointResponse() {return _pointResponses;};
 
-    CtiCCCapBank& setPAOId(LONG id);
-    CtiCCCapBank& setPAOCategory(const string& category);
-    CtiCCCapBank& setPAOClass(const string& pclass);
-    CtiCCCapBank& setPAOName(const string& name);
-    CtiCCCapBank& setPAOType(const string& type);
-    CtiCCCapBank& setPAODescription(const string& description);
-    CtiCCCapBank& setDisableFlag(BOOL disable);
     CtiCCCapBank& setParentId(LONG parentId);
     CtiCCCapBank& setAlarmInhibitFlag(BOOL alarminhibit);
     CtiCCCapBank& setControlInhibitFlag(BOOL controlinhibit);
@@ -283,13 +270,9 @@ public:
     void setDynamicData(RWDBReader& rdr);
 
     //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
 
     CtiCCCapBank& operator=(const CtiCCCapBank& right);
-
-    int operator==(const CtiCCCapBank& right) const;
-    int operator!=(const CtiCCCapBank& right) const;
 
     /* Static Members */
 
@@ -322,13 +305,6 @@ private:
 
     const string& convertOperationalState( int num );
 
-    LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
-    string _paotype;
-    string _paodescription;
-    BOOL _disableflag;
     LONG _parentId; //feederId
     BOOL _alarminhibitflag;
     BOOL _controlinhibitflag;

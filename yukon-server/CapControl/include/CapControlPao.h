@@ -12,11 +12,11 @@ class CapControlPao
 {
     private:
         int _paoId;
-        int _paoCategory;
-        int _paoClass;
+        std::string _paoCategory;
+        std::string _paoClass;
         std::string _paoName;
-        int _paoType;
-        std::string _description;
+        std::string _paoType;
+        std::string _paoDescription;
         bool _disableFlag;
         std::string _paoStatistics;
 
@@ -25,23 +25,23 @@ class CapControlPao
         CapControlPao();
         CapControlPao(RWDBReader& rdr);
 
-        int getPaoId();
+        int getPaoId() const;
         void setPaoId(int paoId);
 
-        int getPaoCategory();
-        void setPaocategory(int paoCategory);
+        const std::string& getPaoCategory();
+        void setPaocategory(const std::string& paoCategory);
 
-        int getPaoClass();
-        void setPaoClass(int paoClass);
+        const std::string& getPaoClass();
+        void setPaoClass(const std::string& paoClass);
 
         const std::string& getPaoName();
         void setPaoName(const std::string& paoName);
 
-        int getPaoType();
-        void setPaoType(int paoType);
+        const std::string& getPaoType();
+        void setPaoType(const std::string& paoType);
 
-        const std::string& getDescription();
-        void setDescription(const std::string& description);
+        const std::string& getPaoDescription();
+        void setPaoDescription(const std::string& description);
 
         bool getDisableFlag();
         void setDisableFlag(bool disableFlag);
@@ -49,4 +49,11 @@ class CapControlPao
         const std::string& getPaoStatistics();
         void setPaoStatistics(const std::string& paoStatistics);
 
+        CapControlPao& operator=(const CapControlPao& right);
+
+        void CapControlPao::restore(RWDBReader& rdr);
+        void CapControlPao::saveGuts(RWvostream& ostrm) const;
+
+        int CapControlPao::operator == (const CapControlPao& right) const;
+        int CapControlPao::operator != (const CapControlPao& right) const;
 };

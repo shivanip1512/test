@@ -33,64 +33,62 @@ RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCCapBank::CtiCCCapBank() :
-_paoid(0),                    
-_disableflag(false),                        
-_parentId(0),                      
-_alarminhibitflag(false),                         
-_controlinhibitflag(false),                       
-_maxdailyops(0),                        
-_currentdailyoperations(0),                   
-_maxopsdisableflag(false),                        
-_controldeviceid(0),                    
-_controlpointid(0),                     
-_banksize(0),                      
-_reclosedelay(0),                       
-_controlorder(0),                       
-_triporder(0),                     
-_closeorder(0),                    
-_statuspointid(0),                      
-_controlstatus(0),                      
-_operationanalogpointid(0),                   
-_totaloperations(0),                    
-_tagscontrolstatus(0),                        
-_originalfeederid(0),                         
-_originalswitchingorder(0),                   
-_originalcloseorder(0),                       
-_originaltriporder(0),                        
-_verificationControlStatus(0),                
-_vCtrlIndex(0),                    
-_retryFlag(false),                     
-_prevVerificationControlStatus(0),            
-_assumedOrigCapBankPos(0),                    
-_verificationFlag(false),                         
-_performingVerificationFlag(false),               
-_verificationDoneFlag(false),                     
-_retryOpenFailedFlag(false),                      
-_retryCloseFailedFlag(false),                     
-_ovUvDisabledFlag(false),                         
-_maxDailyOpsHitFlag(false),                       
-_controlStatusPartialFlag(false),                 
-_controlStatusSignificantFlag(false),             
-_controlStatusAbnQualityFlag(false),              
-_controlStatusFailFlag(false),                    
-_controlStatusCommFailFlag(false),                
-_controlStatusNoControlFlag(false),               
-_controlStatusUnSolicitedFlag(false),             
-_reEnableOvUvFlag(false),                          
-_localControlFlag(false),                          
-_controlRecentlySentFlag(false),                   
-_porterRetFailFlag(false),                        
-_unsolicitedPendingFlag(false),                    
-_udpPortNumber(0),                       
-_reportedCBCLastControlReason(0),              
-_reportedCBCState(0),                          
-_ignoreFlag(false),                     
-_ignoreReason(0),                        
-_controlStatusQuality(false),                      
-_sendAllCommandFlag(false),                        
-_actionId(0),                       
-_insertDynamicDataFlag(false),                     
-_dirty(false)                     
+_parentId(0),
+_alarminhibitflag(false),
+_controlinhibitflag(false),
+_maxdailyops(0),
+_currentdailyoperations(0),
+_maxopsdisableflag(false),
+_controldeviceid(0),
+_controlpointid(0),
+_banksize(0),
+_reclosedelay(0),
+_controlorder(0),
+_triporder(0),
+_closeorder(0),
+_statuspointid(0),
+_controlstatus(0),
+_operationanalogpointid(0),
+_totaloperations(0),
+_tagscontrolstatus(0),
+_originalfeederid(0),
+_originalswitchingorder(0),
+_originalcloseorder(0),
+_originaltriporder(0),
+_verificationControlStatus(0),
+_vCtrlIndex(0),
+_retryFlag(false),
+_prevVerificationControlStatus(0),
+_assumedOrigCapBankPos(0),
+_verificationFlag(false),
+_performingVerificationFlag(false),
+_verificationDoneFlag(false),
+_retryOpenFailedFlag(false),
+_retryCloseFailedFlag(false),
+_ovUvDisabledFlag(false),
+_maxDailyOpsHitFlag(false),
+_controlStatusPartialFlag(false),
+_controlStatusSignificantFlag(false),
+_controlStatusAbnQualityFlag(false),
+_controlStatusFailFlag(false),
+_controlStatusCommFailFlag(false),
+_controlStatusNoControlFlag(false),
+_controlStatusUnSolicitedFlag(false),
+_reEnableOvUvFlag(false),
+_localControlFlag(false),
+_controlRecentlySentFlag(false),
+_porterRetFailFlag(false),
+_unsolicitedPendingFlag(false),
+_udpPortNumber(0),
+_reportedCBCLastControlReason(0),
+_reportedCBCState(0),
+_ignoreFlag(false),
+_ignoreReason(0),
+_controlStatusQuality(false),
+_sendAllCommandFlag(false),
+_actionId(0),
+_insertDynamicDataFlag(false),
+_dirty(false)
 {
     _twoWayPoints = NULL;
     _ovuvSituationFlag = false;
@@ -103,9 +101,9 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
      _pointResponses.clear();
      _twoWayPoints = NULL;
      _ovuvSituationFlag = false;
-     _operationStats.setPAOId(_paoid);
-     _confirmationStats.setPAOId(_paoid);
-     _originalParent.setPAOId(_paoid);
+     _operationStats.setPAOId(getPaoId());
+     _confirmationStats.setPAOId(getPaoId());
+     _originalParent.setPAOId(getPaoId());
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
@@ -176,67 +174,6 @@ CtiCCConfirmationStats& CtiCCCapBank::getConfirmationStats()
 CtiCCOriginalParent& CtiCCCapBank::getOriginalParent()
 {
     return _originalParent;
-}
-
-
-/*---------------------------------------------------------------------------
-    getPAOId
-
-    Returns the unique id of the cap bank device
----------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getPAOId() const
-{
-    return _paoid;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOCategory
-
-    Returns the pao category of the cap bank
----------------------------------------------------------------------------*/
-const string& CtiCCCapBank::getPAOCategory() const
-{
-    return _paocategory;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOClass
-
-    Returns the pao class of the cap bank
----------------------------------------------------------------------------*/
-const string& CtiCCCapBank::getPAOClass() const
-{
-    return _paoclass;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOName
-
-    Returns the pao name of the cap bank
----------------------------------------------------------------------------*/
-const string& CtiCCCapBank::getPAOName() const
-{
-    return _paoname;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOType
-
-    Returns the pao type of the cap bank
----------------------------------------------------------------------------*/
-const string& CtiCCCapBank::getPAOType() const
-{
-    return _paotype;
-}
-
-/*---------------------------------------------------------------------------
-    getPAODescription
-
-    Returns the pao description of the cap bank
----------------------------------------------------------------------------*/
-const string& CtiCCCapBank::getPAODescription() const
-{
-    return _paodescription;
 }
 
 /*---------------------------------------------------------------------------
@@ -319,17 +256,6 @@ LONG CtiCCCapBank::getActionId() const
         return _actionId;
     else
         return CCEventActionIdGen(getStatusPointId());
-}
-
-
-/*---------------------------------------------------------------------------
-    getDisableFlag
-
-    Returns the disable flag of the cap bank
----------------------------------------------------------------------------*/
-BOOL CtiCCCapBank::getDisableFlag() const
-{
-    return _disableflag;
 }
 
 /*---------------------------------------------------------------------------
@@ -786,90 +712,6 @@ const CtiTime& CtiCCCapBank::getLastStatusChangeTime() const
 LONG CtiCCCapBank::getTagsControlStatus() const
 {
     return _tagscontrolstatus;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOId
-
-    Sets the id of the capbank - use with caution
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOId(LONG id)
-{
-    _paoid = id;
-    //do not notify observers of this !
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOCategory
-
-    Sets the pao category of the capbank
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOCategory(const string& category)
-{
-    _paocategory = category;
-
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOClass
-
-    Sets the pao class of the capbank
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOClass(const string& pclass)
-{
-    _paoclass = pclass;
-
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOName
-
-    Sets the pao name of the capbank
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOName(const string& name)
-{
-    _paoname = name;
-
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOType
-
-    Sets the pao type of the capbank
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOType(const string& _type)
-{
-    _paotype = _type;
-
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAODescription
-
-    Sets the pao description of the capbank
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAODescription(const string& description)
-{
-    _paodescription = description;
-
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setDisableFlag
-
-    Sets the disable flag of the capbank
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setDisableFlag(BOOL disable)
-{
-    _disableflag = disable;
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -1781,7 +1623,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CB: "<<getPAOId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus() << endl;
+        dout << CtiTime() << " CB: "<<getPaoId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus() << endl;
     }
     switch (ctrlIdx)
     {
@@ -1976,7 +1818,7 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPAOName()<<" Point ID: "<<pResponse->getPointId()<<" preOpValue: "<<pResponse->getPreOpValue() <<" currentValue: "<<point->getValue()<< endl;
+                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPaoName()<<" Point ID: "<<pResponse->getPointId()<<" preOpValue: "<<pResponse->getPreOpValue() <<" currentValue: "<<point->getValue()<< endl;
             }
 
             //if (pResponse->getDelta() != 0)
@@ -1988,7 +1830,7 @@ CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPAOName()<<" Point ID: "<<pResponse->getPointId()<<" fabs: "<<fabsy <<" delta: "<<delta<< endl;
+                dout << CtiTime() << " MULTIVOLT: Bank ID: " <<getPaoName()<<" Point ID: "<<pResponse->getPointId()<<" fabs: "<<fabsy <<" delta: "<<delta<< endl;
             }
             {
                 pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1.0)) +
@@ -2194,63 +2036,6 @@ CtiCCPointResponse* CtiCCCapBank::getPointResponse(CtiCCMonitorPoint* point)
 
 }
 
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiCCCapBank::restoreGuts(RWvistream& istrm)
-{
-    CtiTime tempTime1;
-    LONG tempParentId;
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _paoid
-    >> _paocategory
-    >> _paoclass
-    >> _paoname
-    >> _paotype
-    >> _paodescription
-    >> _disableflag
-    >> _parentId
-    >> _maxdailyops
-    >> _maxopsdisableflag
-    >> _alarminhibitflag
-    >> _controlinhibitflag
-    >> _operationalstate
-    >> _controllertype
-    >> _controldeviceid
-    >> _banksize
-    >> _typeofswitch
-    >> _switchmanufacture
-    >> _maplocationid
-    >> _reclosedelay
-    >> _controlorder
-    >> _statuspointid
-    >> _controlstatus
-    >> _operationanalogpointid
-    >> _totaloperations
-    >> tempTime1
-    >> _tagscontrolstatus
-    >> tempParentId
-    >> _currentdailyoperations
-    >> _ignoreFlag
-    >> _ignoreReason
-    >> _ovUvDisabledFlag
-    >> _triporder
-    >> _closeorder
-    >> _controlDeviceType;
-    istrm >> _sBeforeVars;
-    istrm >> _sAfterVars;
-    istrm >> _sPercentChange;
-    istrm >> _maxDailyOpsHitFlag;
-    istrm >> _ovuvSituationFlag;
-    istrm >> _controlStatusQuality;
-    istrm >> _localControlFlag;
-    istrm >> _partialPhaseInfo;
-    _laststatuschangetime = CtiTime(tempTime1);
-    _originalParent.setOriginalParentId(tempParentId);
-}
 
 /*---------------------------------------------------------------------------
     saveGuts
@@ -2260,15 +2045,10 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
 void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
 {
     LONG tempParentId = _originalParent.getOriginalParentId();
-    RWCollectable::saveGuts( ostrm );
 
-    ostrm << _paoid;
-    ostrm << _paocategory;
-    ostrm << _paoclass;
-    ostrm << _paoname;
-    ostrm << _paotype;
-    ostrm << _paodescription;
-    ostrm << _disableflag;
+    RWCollectable::saveGuts(ostrm);
+    CapControlPao::saveGuts(ostrm);
+
     ostrm << _parentId;
     ostrm << _maxdailyops;
     ostrm << _maxopsdisableflag;
@@ -2316,13 +2096,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 {
     if( this != &rightObj )
     {
-        _paoid = rightObj._paoid;
-        _paocategory = rightObj._paocategory;
-        _paoclass = rightObj._paoclass;
-        _paoname = rightObj._paoname;
-        _paotype = rightObj._paotype;
-        _paodescription = rightObj._paodescription;
-        _disableflag = rightObj._disableflag;
+        CapControlPao::operator=(rightObj);
         _parentId = rightObj._parentId;
         _alarminhibitflag = rightObj._alarminhibitflag;
         _controlinhibitflag = rightObj._controlinhibitflag;
@@ -2352,14 +2126,14 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _prevVerificationControlStatus = rightObj._prevVerificationControlStatus;
         _vCtrlIndex = rightObj._vCtrlIndex;
         _additionalFlags = rightObj._additionalFlags;
-        _verificationFlag = rightObj._verificationFlag;          
+        _verificationFlag = rightObj._verificationFlag;
         _performingVerificationFlag = rightObj._performingVerificationFlag;
-        _verificationDoneFlag = rightObj._verificationDoneFlag;      
+        _verificationDoneFlag = rightObj._verificationDoneFlag;
         _retryOpenFailedFlag = rightObj._retryOpenFailedFlag;
-        _retryCloseFailedFlag = rightObj._retryCloseFailedFlag;           
+        _retryCloseFailedFlag = rightObj._retryCloseFailedFlag;
         _ovUvDisabledFlag = rightObj._ovUvDisabledFlag;
         _maxDailyOpsHitFlag = rightObj._maxDailyOpsHitFlag;
-        _controlStatusPartialFlag =     rightObj._controlStatusPartialFlag;   
+        _controlStatusPartialFlag =     rightObj._controlStatusPartialFlag;
         _controlStatusSignificantFlag = rightObj._controlStatusSignificantFlag;
         _controlStatusAbnQualityFlag = rightObj._controlStatusAbnQualityFlag;
         _controlStatusFailFlag = rightObj._controlStatusFailFlag;
@@ -2408,23 +2182,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiCCCapBank::operator==(const CtiCCCapBank& rightObj) const
-{
-    return getPAOId() == rightObj.getPAOId();
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiCCCapBank::operator!=(const CtiCCCapBank& rightObj) const
-{
-    return getPAOId() != rightObj.getPAOId();
-}
-
-
-/*---------------------------------------------------------------------------
     restore
 
     Restores self's state given a RWDBReader
@@ -2436,15 +2193,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     CtiTime dynamicTimeStamp;
     string tempBoolString;
 
-    rdr["paobjectid"] >> _paoid;
-    rdr["category"] >> _paocategory;
-    rdr["paoclass"] >> _paoclass;
-    rdr["paoname"] >> _paoname;
-    rdr["type"] >> _paotype;
-    rdr["description"] >> _paodescription;
-    rdr["disableflag"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
+    CapControlPao::restore(rdr);
+
     rdr["operationalstate"] >> _operationalstate;
     rdr["controllertype"] >> _controllertype;
     rdr["controldeviceid"] >> _controldeviceid;
@@ -2511,7 +2261,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setIgnoreIndicatorTimeUpdated(gInvalidCtiTime);
     setUnsolicitedChangeTimeUpdated(gInvalidCtiTime);
 
-    _originalParent.setPAOId(_paoid);
+    _originalParent.setPAOId(getPaoId());
 
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
@@ -2695,7 +2445,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
-            updater.where(dynamicCCCapBankTable["capbankid"]==_paoid);
+            updater.where(dynamicCCCapBankTable["capbankid"]==getPaoId());
 
             updater << dynamicCCCapBankTable["controlstatus"].assign( _controlstatus )
             << dynamicCCCapBankTable["totaloperations"].assign( _totaloperations )
@@ -2738,14 +2488,14 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPAOName() << endl;
+                dout << CtiTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPaoName() << endl;
             }
 
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             RWDBInserter dbInserter = dynamicCCCapBankTable.inserter();
 
-            dbInserter << _paoid
+            dbInserter << getPaoId()
             << _controlstatus
             << _totaloperations
             << _laststatuschangetime

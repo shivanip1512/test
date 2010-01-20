@@ -14,7 +14,7 @@ T *create_object(long objectid, string name)
 {
     T *object = new T();
 
-    object->setPAOId(objectid);
-    object->setPAOName(name);
+    object->setPaoId(objectid);
+    object->setPaoName(name);
     return object;
 }

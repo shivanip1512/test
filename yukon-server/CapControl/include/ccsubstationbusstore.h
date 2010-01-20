@@ -184,7 +184,7 @@ public:
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubstationsWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
-    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> getSubsWithAltSubID(long altSubId);
+    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> getSubsWithAltSubID(int altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
 

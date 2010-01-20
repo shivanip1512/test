@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank1");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank1");
 
     //First bank closed, should be Bank2 now
     bank->setControlStatus(CtiCCCapBank::Close);
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
 
     //First two banks closed, should be Bank3 now
     bank->setControlStatus(CtiCCCapBank::Close);
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
 
     //First three banks closed, try an open, Bank3 expected
     bank->setControlStatus(CtiCCCapBank::Close);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
 
     //First 2 banks closed, try an open, Bank2 expected
     bank->setControlStatus(CtiCCCapBank::Open);
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
 
     //First bank closed, try an open, Bank1 expected
     bank->setControlStatus(CtiCCCapBank::Open);
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank1");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank1");
     //open the bank.
     bank->setControlStatus(CtiCCCapBank::Open);
 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
     capBank1->setDisableFlag(false);
 
     //test controlInhibit
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
     capBank1->setControlInhibitFlag(false);
 
     //test Operational State != Switched.
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
     capBank1->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
 
     CtiTime timeNow;
@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank1");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank1");
     BOOST_CHECK_EQUAL(bank->getIgnoreFlag(),FALSE);
     capBank1->setIgnoreFlag(false);
 
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
     BOOST_CHECK_EQUAL(capBank1->getIgnoreFlag(),TRUE);
     capBank1->setIgnoreFlag(false);
     capBank1->setLastStatusChangeTime(CtiTime());
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank2");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
     //Make sure the fist bank max op stuff was set.
     BOOST_CHECK_EQUAL(capBank1->getMaxDailyOpsHitFlag(),TRUE);
     BOOST_CHECK_EQUAL(capBank1->getDisableFlag(),TRUE);
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     BOOST_CHECK_EQUAL(bank->getRetryCloseFailedFlag(),TRUE);
 
     /*************************************************************************************************/
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     capBank4->setDisableFlag(false);
 
     //test controlInhibit
@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     capBank4->setControlInhibitFlag(false);
 
     //test Operational State != Switched.
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     capBank4->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
 
     timeNow = CtiTime();
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank4");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank4");
     BOOST_CHECK_EQUAL(bank->getIgnoreFlag(),FALSE);
     capBank4->setIgnoreFlag(false);
 
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     BOOST_CHECK_EQUAL(capBank4->getIgnoreFlag(),TRUE);
     capBank4->setIgnoreFlag(false);
     capBank4->setLastStatusChangeTime(CtiTime());
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank3");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     //Make sure the fist bank max op stuff was set.
     BOOST_CHECK_EQUAL(capBank4->getMaxDailyOpsHitFlag(),TRUE);
     BOOST_CHECK_EQUAL(capBank4->getDisableFlag(),TRUE);
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank4");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank4");
     capBank4->setDisableFlag(false);
     capBank4->setMaxDailyOpsHitFlag(false);
     capBank4->setCurrentDailyOperations(0);
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_with_small_lead_lag)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank150");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank150");
 
     capBank1->setCloseOrder(1);
     capBank1->setTripOrder(0);
@@ -416,7 +416,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_with_small_lead_lag)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank600");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank600");
 
     capBank1->setBankSize(100);
     capBank2->setBankSize(100);
@@ -427,7 +427,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_with_small_lead_lag)
     delete_container(pointChanges);
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
-    BOOST_CHECK_EQUAL(bank->getPAOName(),"Bank600");
+    BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank600");
 
     delete feeder;
     feeder = NULL;

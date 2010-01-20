@@ -1,15 +1,15 @@
 
 /*---------------------------------------------------------------------------
         Filename:  ccsubstationbus.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiCCSubstationBus
                         CtiCCSubstationBus maintains the state and handles
-                        the persistence of strategies for Cap Control.                             
+                        the persistence of strategies for Cap Control.
 
         Initial Date:  8/27/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 
@@ -23,8 +23,8 @@ using std::list;
 #include <rw/vstream.h>
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>  
-#include <list> 
+#include <rw/thr/recursiv.h>
+#include <list>
 #include <vector>
 
 #include "dbaccess.h"
@@ -38,11 +38,12 @@ using std::list;
 #include "msg_cmd.h"
 #include "ControlStrategy.h"
 #include "ccmonitorpoint.h"
+#include "CapControlPao.h"
 
 typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
 
-              
-class CtiCCArea : public RWCollectable
+
+class CtiCCArea : public RWCollectable, public CapControlPao
 {
 
 public:
@@ -55,13 +56,6 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     virtual ~CtiCCArea();
 
-    LONG getPAOId() const;
-    const string& getPAOCategory() const;
-    const string& getPAOClass() const;
-    const string& getPAOName() const;
-    const string& getPAOType() const;
-    const string& getPAODescription() const;
-    BOOL getDisableFlag() const;
     LONG getVoltReductionControlPointId() const;
     BOOL getVoltReductionControlValue() const;
     BOOL getOvUvDisabledFlag() const;
@@ -78,13 +72,6 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     void deleteCCSubs(long subId);
 
-    CtiCCArea& setPAOId(LONG id);
-    CtiCCArea& setPAOCategory(const string& category);
-    CtiCCArea& setPAOClass(const string& pclass);
-    CtiCCArea& setPAOName(const string& name);
-    CtiCCArea& setPAOType(const string& type);
-    CtiCCArea& setPAODescription(const string& description);
-    CtiCCArea& setDisableFlag(BOOL disable);
     CtiCCArea& setVoltReductionControlPointId(LONG pointId);
     CtiCCArea& setVoltReductionControlValue(BOOL flag);
     CtiCCArea& setOvUvDisabledFlag(BOOL flag);
@@ -104,13 +91,9 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     void setDynamicData(RWDBReader& rdr);
 
     //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
 
     CtiCCArea& operator=(const CtiCCArea& right);
-
-    int operator==(const CtiCCArea& right) const;
-    int operator!=(const CtiCCArea& right) const;
 
     CtiCCArea* replicate() const;
 
@@ -120,14 +103,6 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 private:
 
     StrategyPtr    _strategy;
-
-    LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
-    string _paotype;
-    string _paodescription;
-    BOOL _disableflag;
 
     LONG _voltReductionControlPointId;
     BOOL _voltReductionControlValue;
@@ -153,7 +128,7 @@ private:
 
     void restore(RWDBReader& rdr);
 
-   
+
 };
 
 

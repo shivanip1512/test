@@ -38,30 +38,28 @@ RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCSubstation::CtiCCSubstation() :
-_paoid(0),           
-_disableflag(false),           
-_parentId(0),        
-_displayOrder(0),          
-_ovUvDisabledFlag(false),      
-_voltReductionFlag(false),     
+_parentId(0),
+_displayOrder(0),
+_ovUvDisabledFlag(false),
+_voltReductionFlag(false),
 _recentlyControlledFlag(false),
-_stationUpdatedFlag(false),    
+_stationUpdatedFlag(false),
 _childVoltReductionFlag(false),
-_pfactor(0),        
-_estPfactor(0),            
-_saEnabledFlag(false),         
-_saEnabledId(0),           
+_pfactor(0),
+_estPfactor(0),
+_saEnabledFlag(false),
+_saEnabledId(0),
 _voltReductionControlId(0),
 _insertDynamicDataFlag(false),
-_dirty(false)        
+_dirty(false)
 {
 }
 
-CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr)
+CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr) : CapControlPao(rdr)
 {
     restore(rdr);
-    _operationStats.setPAOId(_paoid);
-    _confirmationStats.setPAOId(_paoid);
+    _operationStats.setPAOId(getPaoId());
+    _confirmationStats.setPAOId(getPaoId());
 }
 
 CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
@@ -97,49 +95,6 @@ CtiCCConfirmationStats& CtiCCSubstation::getConfirmationStats()
     return _confirmationStats;
 }
 
-
-
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiCCSubstation::restoreGuts(RWvistream& istrm)
-{
-    LONG tempSubBusId;
-    LONG numOfSubBusIds;
-
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _paoid
-    >> _paocategory
-    >> _paoclass
-    >> _paoname
-    >> _paotype
-    >> _paodescription
-    >> _disableflag
-    >> _parentId
-    >> _ovUvDisabledFlag;
-
-    istrm >> numOfSubBusIds;
-    _subBusIds.clear();
-    for(LONG i=0;i<numOfSubBusIds;i++)
-    {
-        istrm >> tempSubBusId;
-        _subBusIds.push_back(tempSubBusId);
-    }
-    istrm >> _pfactor
-        >> _estPfactor
-        >> _saEnabledFlag
-        >> _saEnabledId
-        >> _voltReductionFlag
-        >> _recentlyControlledFlag
-        >> _childVoltReductionFlag;
-
-
-}
-
 /*---------------------------------------------------------------------------
     saveGuts
 
@@ -147,17 +102,11 @@ void CtiCCSubstation::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
 {
-    RWCollectable::saveGuts( ostrm );
+    RWCollectable::saveGuts(ostrm);
+    CapControlPao::saveGuts(ostrm);
 
-    ostrm << _paoid
-    << _paocategory
-    << _paoclass
-    << _paoname
-    << _paotype
-    << _paodescription
-    << _disableflag
-    << _parentId
-    << _ovUvDisabledFlag;
+    ostrm << _parentId
+          << _ovUvDisabledFlag;
 
     ostrm << _subBusIds.size();
     std::list<LONG>::const_iterator iter = _subBusIds.begin();
@@ -198,13 +147,8 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 {
     if( this != &right )
     {
-        _paoid = right.getPAOId();
-        _paocategory = right._paocategory;
-        _paoclass = right._paoclass;
-        _paoname = right._paoname;
-        _paotype = right._paotype;
-        _paodescription = right._paodescription;
-        _disableflag = right._disableflag;
+        CapControlPao::operator=(right);
+
         _parentName = right._parentName;
         _parentId = right._parentId;
         _displayOrder = right._displayOrder;
@@ -233,22 +177,6 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 }
 
 /*---------------------------------------------------------------------------
-    operator==
----------------------------------------------------------------------------*/
-int CtiCCSubstation::operator==(const CtiCCSubstation& right) const
-{
-    return getPAOId() == right.getPAOId();
-}
-
-/*---------------------------------------------------------------------------
-    operator!=
----------------------------------------------------------------------------*/
-int CtiCCSubstation::operator!=(const CtiCCSubstation& right) const
-{
-    return getPAOId() != right.getPAOId();
-}
-
-/*---------------------------------------------------------------------------
     replicate
 
     Restores self's operation fields
@@ -265,17 +193,9 @@ CtiCCSubstation* CtiCCSubstation::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCSubstation::restore(RWDBReader& rdr)
 {
-    string tempBoolString;
+    CapControlPao::restore(rdr);
 
-    rdr["paobjectid"] >> _paoid;
-    rdr["category"] >> _paocategory;
-    rdr["paoclass"] >> _paoclass;
-    rdr["paoname"] >> _paoname;
-    rdr["type"] >> _paotype;
-    rdr["description"] >> _paodescription;
-    rdr["disableflag"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+    string tempBoolString;
 
     rdr["voltreductionpointid"] >> _voltReductionControlId;
 
@@ -336,7 +256,7 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
 
             updater.clear();
 
-            updater.where(dynamicCCSubstationTable["substationid"]==_paoid);
+            updater.where(dynamicCCSubstationTable["substationid"]==getPaoId());
 
             updater << dynamicCCSubstationTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
                     << dynamicCCSubstationTable["saenabledid"].assign( _saEnabledId );
@@ -368,13 +288,13 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted substation into dynamicCCSubstation: " << getPAOName() << endl;
+                dout << CtiTime() << " - Inserted substation into dynamicCCSubstation: " << getPaoName() << endl;
             }
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             RWDBInserter inserter = dynamicCCSubstationTable.inserter();
-            //TS FLAG
-            inserter << _paoid
+
+            inserter << getPaoId()
                     <<  string2RWCString(addFlags)
                     << _saEnabledId;
 
@@ -437,76 +357,6 @@ void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
     _dirty = false;
 }
 
-
-/*---------------------------------------------------------------------------
-    getPAOId
-
-    Returns the unique id of the area
----------------------------------------------------------------------------*/
-LONG CtiCCSubstation::getPAOId() const
-{
-    return _paoid;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOCategory
-
-    Returns the pao category of the area
----------------------------------------------------------------------------*/
-const string& CtiCCSubstation::getPAOCategory() const
-{
-    return _paocategory;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOClass
-
-    Returns the pao class of the area
----------------------------------------------------------------------------*/
-const string& CtiCCSubstation::getPAOClass() const
-{
-    return _paoclass;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOName
-
-    Returns the pao name of the area
----------------------------------------------------------------------------*/
-const string& CtiCCSubstation::getPAOName() const
-{
-    return _paoname;
-}
-
-/*---------------------------------------------------------------------------
-    getPAOType
-
-    Returns the pao type of the area
----------------------------------------------------------------------------*/
-const string& CtiCCSubstation::getPAOType() const
-{
-    return _paotype;
-}
-
-/*---------------------------------------------------------------------------
-    getPAODescription
-
-    Returns the pao description of the area
----------------------------------------------------------------------------*/
-const string& CtiCCSubstation::getPAODescription() const
-{
-    return _paodescription;
-}
-
-/*---------------------------------------------------------------------------
-    getDisableFlag
-
-    Returns the disable flag of the area
----------------------------------------------------------------------------*/
-BOOL CtiCCSubstation::getDisableFlag() const
-{
-    return _disableflag;
-}
 /*---------------------------------------------------------------------------
     getOvUvDisabledFlag
 
@@ -619,85 +469,6 @@ LONG CtiCCSubstation::getSaEnabledId() const
 BOOL CtiCCSubstation::isDirty() const
 {
     return _dirty;
-}
-
-
-/*---------------------------------------------------------------------------
-    setPAOId
-
-    Sets the unique id of the area - use with caution
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setPAOId(LONG id)
-{
-    _paoid = id;
-    //do not notify observers of this!
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOCategory
-
-    Sets the pao category of the area
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setPAOCategory(const string& category)
-{
-    _paocategory = category;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOClass
-
-    Sets the pao class of the area
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setPAOClass(const string& pclass)
-{
-    _paoclass = pclass;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOName
-
-    Sets the pao name of the area
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setPAOName(const string& name)
-{
-    _paoname = name;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAOType
-
-    Sets the pao type of the area
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setPAOType(const string& _type)
-{
-    _paotype = _type;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPAODescription
-
-    Sets the pao description of the area
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setPAODescription(const string& description)
-{
-    _paodescription = description;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setDisableFlag
-
-    Sets the disable flag of the area
----------------------------------------------------------------------------*/
-CtiCCSubstation& CtiCCSubstation::setDisableFlag(BOOL disable)
-{
-    _disableflag = disable;
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -940,7 +711,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
             try
             {
                 //reset VerificationFlag
-                capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
+                capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPaoId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
 
             }
             catch(...)

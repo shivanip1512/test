@@ -38,6 +38,7 @@ using boost::shared_ptr;
 #include "ControlStrategy.h"
 #include "TimeOfDayStrategy.h"
 #include "ccmonitorpoint.h"
+#include "CapControlPao.h"
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 //For Sorted Vector, the vector will use this to determine position in the vector.
@@ -61,7 +62,7 @@ enum CtiCCMultiBusState
     RECORD_ADAPTIVE_VOLTAGE,
 };
 
-class CtiCCSubstationBus : public RWCollectable
+class CtiCCSubstationBus : public RWCollectable, public CapControlPao
 {
 
 public:
@@ -74,14 +75,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     virtual ~CtiCCSubstationBus();
 
-    LONG getPAOId() const;
-    const string& getPAOCategory() const;
-    const string& getPAOClass() const;
-    const string& getPAOName() const;
-    const string& getPAOType() const;
-    const string& getPAODescription() const;
-    BOOL getDisableFlag() const;
     LONG getParentId() const;
+
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     DOUBLE getRawCurrentVarLoadPointValue() const;
@@ -178,13 +173,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
 
-    CtiCCSubstationBus& setPAOId(LONG id);
-    CtiCCSubstationBus& setPAOCategory(const string& category);
-    CtiCCSubstationBus& setPAOClass(const string& pclass);
-    CtiCCSubstationBus& setPAOName(const string& name);
-    CtiCCSubstationBus& setPAOType(const string& type);
-    CtiCCSubstationBus& setPAODescription(const string& description);
-    CtiCCSubstationBus& setDisableFlag(BOOL disable);
     CtiCCSubstationBus& setParentId(LONG parentId);
 
 // OK!
@@ -328,7 +316,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
     BOOL analyzeBusForVarImprovement(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
 
-    LONG getAlterateBusIdForPrimary() const;
+    int getAlterateBusIdForPrimary() const;
     BOOL isBusPerformingVerification();
     BOOL isBusReadyToStartVerification();
     BOOL isBusVerificationAlreadyStarted();
@@ -386,13 +374,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
 
     //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
 
     CtiCCSubstationBus& operator=(const CtiCCSubstationBus& right);
-
-    int operator==(const CtiCCSubstationBus& right) const;
-    int operator!=(const CtiCCSubstationBus& right) const;
 
     CtiCCSubstationBus* replicate() const;
 
@@ -411,13 +395,6 @@ private:
     StrategyPtr     _strategy;
     bool            _parentOverride;
 
-    LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
-    string _paotype;
-    string _paodescription;
-    BOOL _disableflag;
     LONG _parentId;
     LONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;

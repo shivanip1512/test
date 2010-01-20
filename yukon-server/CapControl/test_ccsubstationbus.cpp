@@ -53,8 +53,8 @@ void initialize_area(CtiCCSubstationBusStore* store, CtiCCArea* area)
 void initialize_station(CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
 {
     station->setSaEnabledFlag(FALSE);
-    station->setParentId(parentArea->getPAOId());
-    parentArea->getSubStationList()->push_back(station->getPAOId());
+    station->setParentId(parentArea->getPaoId());
+    parentArea->getSubStationList()->push_back(station->getPaoId());
     store->addSubstationToPaoMap(station);
     station->setDisableFlag(FALSE);
 
@@ -64,24 +64,24 @@ void initialize_bus(CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, Cti
 {
 
 
-    bus->setParentId(parentStation->getPAOId());
+    bus->setParentId(parentStation->getPaoId());
     bus->setEventSequence(22);
     bus->setCurrentVarLoadPointId(1);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     bus->setVerificationFlag(FALSE);
-    parentStation->getCCSubIds()->push_back(bus->getPAOId());
+    parentStation->getCCSubIds()->push_back(bus->getPaoId());
     store->addSubBusToPaoMap(bus);
     bus->setDisableFlag(FALSE);
-    bus->setVerificationFlag(FALSE);           
-    bus->setPerformingVerificationFlag(FALSE); 
-    bus->setVerificationDoneFlag(FALSE);       
+    bus->setVerificationFlag(FALSE);
+    bus->setPerformingVerificationFlag(FALSE);
+    bus->setVerificationDoneFlag(FALSE);
 }
 void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
 {
-    StrategyPtr noStrategy( new NoStrategy ); 
+    StrategyPtr noStrategy( new NoStrategy );
 
-    long feederId = feed->getPAOId();
-    long busId = parentBus->getPAOId();
+    long feederId = feed->getPaoId();
+    long busId = parentBus->getPaoId();
     feed->setParentId(busId);
     feed->setDisplayOrder(displayOrder);
     parentBus->getCCFeeders().push_back(feed);
@@ -101,8 +101,8 @@ void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCS
 
 void initialize_capbank(CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCCFeeder* parentFeed, long displayOrder)
 {
-    long bankId = cap->getPAOId();
-    long fdrId = parentFeed->getPAOId();
+    long bankId = cap->getPaoId();
+    long fdrId = parentFeed->getPaoId();
     cap->setParentId(fdrId);
     cap->setControlOrder(displayOrder);
     cap->setCloseOrder(displayOrder);
@@ -111,9 +111,9 @@ void initialize_capbank(CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCC
     store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &bankId, &fdrId);
     cap->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
     cap->setDisableFlag(FALSE);
-    cap->setVerificationFlag(FALSE);          
+    cap->setVerificationFlag(FALSE);
     cap->setPerformingVerificationFlag(FALSE);
-    cap->setVerificationDoneFlag(FALSE);   
+    cap->setVerificationDoneFlag(FALSE);
     cap->setBankSize(600);
 
     cap->setControlPointId(1);
@@ -129,19 +129,19 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     StrategyPtr strategy( new NoStrategy );
     bus->setStrategy( strategy );
 
-    area->setPAOId(3);
-    station->setPAOId(2);
-    bus->setPAOId(1);
-    bus->setPAOName("Test SubBus");
+    area->setPaoId(3);
+    station->setPaoId(2);
+    bus->setPaoId(1);
+    bus->setPaoName("Test SubBus");
     bus->setParentId(2);
     bus->setEventSequence(22);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     station->setParentId(1);
     station->setSaEnabledFlag(FALSE);
     store->addAreaToPaoMap(area);
-    area->getSubStationList()->push_back(station->getPAOId());
+    area->getSubStationList()->push_back(station->getPaoId());
     store->addSubstationToPaoMap(station);
-    station->getCCSubIds()->push_back(bus->getPAOId());
+    station->getCCSubIds()->push_back(bus->getPaoId());
     store->addSubBusToPaoMap(bus);
 
     bus->setCorrectionNeededNoBankAvailFlag(FALSE);
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j-1];
 
         CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, bus1->getPAOId(), currentFeeder->getPAOId(), bus2->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, bus1->getPaoId(), currentFeeder->getPaoId(), bus2->getPaoId(), currentFeeder->getDisplayOrder() + 0.5));
         executor->Execute();
         delete executor;
         j--;
@@ -225,11 +225,11 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
     while (j > 0)
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders2[j-1];
-        if (currentFeeder->getOriginalParent().getOriginalParentId() == bus1->getPAOId())
+        if (currentFeeder->getOriginalParent().getOriginalParentId() == bus1->getPaoId())
         {
 
             CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPAOId()));
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()));
             executor->Execute();
             delete executor;
         }
@@ -258,11 +258,11 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
     CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
-    
+
     CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
 
-    StrategyPtr strat( new PFactorKWKVarStrategy ); 
+    StrategyPtr strat( new PFactorKWKVarStrategy );
 
     strat->setStrategyId(100);
     strat->setStrategyName("StrategyIndvlFdr");
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiCCCapBank *cap11a = create_object<CtiCCCapBank>(14, "capBank11a");
     CtiCCCapBank *cap11b = create_object<CtiCCCapBank>(15, "capBank11b");
     CtiCCCapBank *cap11c = create_object<CtiCCCapBank>(16, "capBank11c");
-    
+
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(false);
     initialize_area(store, area);
     initialize_station(store, station, area);
@@ -302,12 +302,12 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     initialize_capbank(store, cap11c, feed11, 3);
 
     bus1->setVerificationDisableOvUvFlag(false);
-  
+
     feed11->setUsePhaseData(false);
-    cap11a->setControlStatus(CtiCCCapBank::Open); 
-    cap11b->setControlStatus(CtiCCCapBank::OpenQuestionable); 
-    cap11c->setControlStatus(CtiCCCapBank::OpenFail); 
-   
+    cap11a->setControlStatus(CtiCCCapBank::Open);
+    cap11b->setControlStatus(CtiCCCapBank::OpenQuestionable);
+    cap11c->setControlStatus(CtiCCCapBank::OpenFail);
+
     bus1->setStrategy(strat);
 
     feed11->setCurrentVarLoadPointId(1);
@@ -318,10 +318,10 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     /*CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, bus1->getPAOId(), CtiPAOScheduleManager::AllBanks, 0, false));
     executor->Execute();
-    
+
     bus1->setCapBanksToVerifyFlags(CtiPAOScheduleManager::AllBanks, ccEvents);
-    
-    
+
+
     BOOST_CHECK_EQUAL(bus1->getVerificationFlag(), TRUE);
     BOOST_CHECK_EQUAL(feed11->getVerificationFlag(), TRUE);
     BOOST_CHECK_EQUAL(cap11a->getVerificationFlag(), TRUE);
@@ -364,7 +364,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     BOOST_CHECK_EQUAL(cap11b->getControlStatus(), CtiCCCapBank::Open);
     BOOST_CHECK_EQUAL(cap11c->getControlStatus(), CtiCCCapBank::ClosePending);
 
-    
+
     currentDateTime = currentDateTime + bus1->getMaxConfirmTime() + 1;
 
     //should go to CloseFail, then assumedWrongInitialState and go ClosePending again.
@@ -387,5 +387,5 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     BOOST_CHECK_EQUAL(feed11->getVerificationFlag(), FALSE);
     BOOST_CHECK_EQUAL(cap11a->getVerificationFlag(), FALSE);
     */
-    
+
 }

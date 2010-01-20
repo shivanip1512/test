@@ -360,12 +360,12 @@ void CtiCapController::messageSender()
                         {
                             if (currentStation->getStationUpdatedFlag())
                             {
-                                store->updateSubstationObjectSet(currentStation->getPAOId(), (CtiMultiMsg_set&)stationChanges);
+                                store->updateSubstationObjectSet(currentStation->getPaoId(), (CtiMultiMsg_set&)stationChanges);
                                 currentStation->setStationUpdatedFlag(FALSE);
                             }
                             if (currentArea->getAreaUpdatedFlag())
                             {
-                                store->updateAreaObjectSet(currentArea->getPAOId(),(CtiMultiMsg_set&)areaChanges);
+                                store->updateAreaObjectSet(currentArea->getPaoId(),(CtiMultiMsg_set&)areaChanges);
                                 currentArea->setAreaUpdatedFlag(FALSE);
                             }
                             subStationBusChanges.push_back(currentSubstationBus);
@@ -696,12 +696,12 @@ void CtiCapController::controlLoop()
                                         currentStation->checkAndUpdateRecentlyControlledFlag();
                                         if (currentStation->getStationUpdatedFlag())
                                         {
-                                            store->updateSubstationObjectSet(currentStation->getPAOId(), (CtiMultiMsg_set&)stationChanges);
+                                            store->updateSubstationObjectSet(currentStation->getPaoId(), (CtiMultiMsg_set&)stationChanges);
                                             currentStation->setStationUpdatedFlag(FALSE);
                                         }
                                         if (currentArea->getAreaUpdatedFlag())
                                         {
-                                            store->updateAreaObjectSet(currentArea->getPAOId(),(CtiMultiMsg_set&)areaChanges);
+                                            store->updateAreaObjectSet(currentArea->getPaoId(),(CtiMultiMsg_set&)areaChanges);
                                             currentArea->setAreaUpdatedFlag(FALSE);
                                         }
 
@@ -1177,7 +1177,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                             if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                             {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<< "( "<<currentSubstationBus->getPAOId()<<" ) CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                    dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
                             }
 
                             currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
@@ -1196,12 +1196,12 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                             //reset VerificationFlag
                             currentSubstationBus->setVerificationFlag(FALSE);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
-                            capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
+                            capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPaoId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
+                            capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
                             if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                             {
                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                               dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName()<< "( "<<currentSubstationBus->getPAOId()<<" ) "<<endl;
+                               dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) "<<endl;
                             }
                         }
                     }
@@ -1223,7 +1223,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                 if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                 {
                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
+                   dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName() << endl;
                 }
                 int strategy = (long)currentSubstationBus->getVerificationStrategy();
 
@@ -1250,7 +1250,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                         {
                              CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                             dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
                         }
                         currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -1284,13 +1284,13 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                         //reset VerificationFlag
                         currentSubstationBus->setVerificationFlag(FALSE);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
-                        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
+                        capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPaoId(),0, -1, currentSubstationBus->getVerificationDisableOvUvFlag()));
+                        capMessages.push_back(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
 
                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                         {
                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOName() << endl;
+                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName() << endl;
                         }
                     }
                     catch(...)
@@ -2222,31 +2222,31 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             {
                                 CtiCCSubstationBusPtr sub = subBusBegin->second;
                                 objType = SubBus;
-                                changeId = sub->getPAOId();
+                                changeId = sub->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feederBegin, feederEnd))
                             {
                                 CtiCCFeederPtr feed = feederBegin->second;
                                 objType = Feeder;
-                                changeId = feed->getPAOId();
+                                changeId = feed->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capBankBegin, capBankEnd))
                             {
                                 CtiCCCapBankPtr cap = capBankBegin->second;
                                 objType = CapBank;
-                                changeId = cap->getPAOId();
+                                changeId = cap->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaBegin, areaEnd))
                             {
                                 CtiCCAreaPtr area = areaBegin->second;
                                 objType = Area;
-                                changeId = area->getPAOId();
+                                changeId = area->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), sAreaBegin, sAreaEnd))
                             {
                                 CtiCCSpecialPtr specialArea = sAreaBegin->second;
                                 objType = SpecialArea;
-                                changeId = specialArea->getPAOId();
+                                changeId = specialArea->getPaoId();
                             }
                         }
                         else if (resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE &&
@@ -2274,11 +2274,11 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
 
                                 CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
                                 objType = CapBank;
-                                changeId = cap->getPAOId();
+                                changeId = cap->getPaoId();
                                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                                 {
                                      CtiLockGuard<CtiLogger> logger_guard(dout);
-                                     dout << CtiTime() << " Cap "<<cap->getPAOName() <<" was found on sub " << endl;
+                                     dout << CtiTime() << " Cap "<<cap->getPaoName() <<" was found on sub " << endl;
                                 }
                             }
                         }
@@ -2423,7 +2423,7 @@ void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstatio
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    if (currentBus->getAltDualSubId() == currentBus->getPAOId() )
+    if (currentBus->getAltDualSubId() == currentBus->getPaoId() )
     {
         if (!stringCompareIgnoreCase(currentBus->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) )
         {
@@ -2485,7 +2485,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
         INT seqId = CCEventSeqIdGen();
         currentSubstationBus->setEventSequence(seqId);
-        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
+        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
         if (!currentSubstationBus->getDualBusEnable())
         {
             if (value > 0)
@@ -2495,8 +2495,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                     currentSubstationBus->setDisableFlag(TRUE);
                     currentSubstationBus->setReEnableBusFlag(TRUE);
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
-                    string text = currentSubstationBus->getPAOName();
+                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
+                    string text = currentSubstationBus->getPaoName();
                     text += " Disabled";
                     string additional = string("Inhibit PointId Updated");
 
@@ -2508,8 +2508,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
             {
                 currentSubstationBus->setDisableFlag(FALSE);
                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
-                string text = currentSubstationBus->getPAOName();
+                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
+                string text = currentSubstationBus->getPaoName();
                 text += " Enabled";
                 string additional = string("Inhibit PointId Updated");
 
@@ -2521,8 +2521,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
         }
         else //dual Bus Enabled.
         {
-            string text = currentSubstationBus->getPAOName();
-            if (currentSubstationBus->getAltDualSubId() != currentSubstationBus->getPAOId())
+            string text = currentSubstationBus->getPaoName();
+            if (currentSubstationBus->getAltDualSubId() != currentSubstationBus->getPaoId())
             {
                 CtiCCSubstationBusPtr altSub = NULL;
                 altSub = store->findSubBusByPAObjectID(currentSubstationBus->getAltDualSubId());
@@ -2542,7 +2542,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                             {
                                 updateSwitchOverStatus = FALSE;
                                 text += " is already operating in Dual Bus Mode operating as Primary for ";
-                                text += altSub->getPAOName();
+                                text += altSub->getPaoName();
                                 text += ".";
                             }
                             else
@@ -2575,7 +2575,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                     CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j-1];
 
                                     CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), altSub->getPAOId(), currentFeeder->getDisplayOrder() + 0.5));
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), altSub->getPaoId(), currentFeeder->getDisplayOrder() + 0.5));
                                     executor->Execute();
                                     delete executor;
                                     j--;
@@ -2595,7 +2595,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                             currentSubstationBus->setDisableFlag(FALSE);
                             currentSubstationBus->setReEnableBusFlag(FALSE);
                             text += " ReEnabled";
-                            if (altSub->getAltDualSubId() == currentSubstationBus->getPAOId())
+                            if (altSub->getAltDualSubId() == currentSubstationBus->getPaoId())
                             {
                                 if (altSub->getSwitchOverStatus() && altSub->getDisableFlag() && altSub->getReEnableBusFlag())
                                 {
@@ -2620,11 +2620,11 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 while (j > 0)
                                 {
                                     CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j-1];
-                                    if (currentFeeder->getOriginalParent().getOriginalParentId() == currentSubstationBus->getPAOId())
+                                    if (currentFeeder->getOriginalParent().getOriginalParentId() == currentSubstationBus->getPaoId())
                                     {
 
                                         CtiCCExecutorFactory f;
-                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPAOId()));
+                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()));
                                         executor->Execute();
                                         delete executor;
                                     }
@@ -2652,8 +2652,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
         currentSubstationBus->setEventSequence(seqId);
         LONG stationId, areaId, spAreaId;
         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
-        string text = currentSubstationBus->getPAOName();
+        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
+        string text = currentSubstationBus->getPaoName();
         text += " Disabled";
         string additional = string("Inhibit PointId Updated");
 
@@ -2752,7 +2752,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                             if (currentArea != NULL)
                             {
                                 CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPAOId()));
+                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()));
                                 executor->Execute();
                                 delete executor;
 
@@ -2769,7 +2769,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                             if (currentArea != NULL)
                             {
                                 CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPAOId()));
+                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()));
                                 executor->Execute();
                                 delete executor;
 
@@ -2821,7 +2821,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                                 if (currentArea->getVoltReductionControlValue())
                                 {
                                     CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPAOId()));
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()));
                                     executor->Execute();
                                     delete executor;
 
@@ -2829,7 +2829,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                                 else
                                 {
                                     CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPAOId()));
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()));
                                     executor->Execute();
                                     delete executor;
 
@@ -2879,7 +2879,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                                 if (currentSpArea->getVoltReductionControlValue())
                                 {
                                     CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPAOId()));
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPaoId()));
                                     executor->Execute();
                                     delete executor;
 
@@ -2887,7 +2887,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                                 else
                                 {
                                     CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSpArea->getPAOId()));
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSpArea->getPaoId()));
                                     executor->Execute();
                                     delete executor;
 
@@ -2939,7 +2939,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentStation->getPAOId()));
+                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentStation->getPaoId()));
                                 executor->Execute();
                                 delete executor;
                             }
@@ -2959,7 +2959,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentStation->getPAOId()));
+                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentStation->getPaoId()));
                                 executor->Execute();
                                 delete executor;
                             }
@@ -3052,7 +3052,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             }
                             currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                            store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
+                            store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
                             {
@@ -3101,7 +3101,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         {
                             currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                            store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
+                            store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
                             {
@@ -3197,7 +3197,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                     if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
+                        dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName() << endl;
                     }
 
                     //do nothing
@@ -3214,7 +3214,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                 multimap<long,long>::iterator it;
                 pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
 
-                ret = store->getSubsWithAltSubID(currentSubstationBus->getPAOId());
+                ret = store->getSubsWithAltSubID(currentSubstationBus->getPaoId());
                 for (it = ret.first; it != ret.second; it++)
                 {
                     CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID((*it).second);
@@ -3261,7 +3261,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPAOId()));
+                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()));
                                 executor->Execute();
                                 delete executor;
                             }
@@ -3278,7 +3278,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPAOId()));
+                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()));
                                 executor->Execute();
                                 delete executor;
                             }
@@ -3319,7 +3319,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
             //CtiCCFeederPtr currentFeeder = store->findFeederByPointID(pointID, feederCount);
             if (currentFeeder != NULL)
             {
-                long subBusId = store->findSubBusIDbyFeederID(currentFeeder->getPAOId());
+                long subBusId = store->findSubBusIDbyFeederID(currentFeeder->getPaoId());
                 if (subBusId != NULL)
                 {
                     currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
@@ -3379,7 +3379,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentSubstationBus->figureAndSetPowerFactorByFeederValues();
-                                store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
+                                store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
                                 {
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
@@ -3423,7 +3423,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentSubstationBus->figureAndSetPowerFactorByFeederValues();
-                                store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
+                                store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
                                 {
                                     sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
@@ -3479,7 +3479,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                         if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
+                            dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName() << endl;
                         }
 
                         //do nothing
@@ -3556,13 +3556,13 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
             currentFeeder = NULL;
             if (currentCapBank != NULL)
             {
-                long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPAOId());
+                long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPaoId());
                 if (subBusId != NULL)
                 {
                     currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
                     if (currentSubstationBus != NULL)
                     {
-                        long feederId = store->findFeederIDbyCapBankID(currentCapBank->getPAOId());
+                        long feederId = store->findFeederIDbyCapBankID(currentCapBank->getPaoId());
                         if (feederId != NULL)
                         {
                             currentFeeder = store->findFeederByPAObjectID(feederId);
@@ -3590,7 +3590,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - CapBank: "<<currentCapBank->getPAOName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
+                                    dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
                                 }
                                 if ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
                                     currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) &&
@@ -3606,7 +3606,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentFeeder->setRetryIndex(0);
                                     LONG stationId, areaId, spAreaId;
                                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                    CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "point data msg" );
+                                    CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "point data msg" );
                                     eventMsg->setActionId(currentCapBank->getActionId());
                                     eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
 
@@ -3964,14 +3964,14 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                 }
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Porter Return May Indicate a Comm Failure!!  Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
+                    dout << CtiTime() << " - Porter Return May Indicate a Comm Failure!!  Bus: " << currentSubstationBus->getPaoName() << ", Feeder: " << currentFeeder->getPaoName()<< ", CapBank: " << currentCapBank->getPaoName() << endl;
                 }
                 if( currentCapBank->getStatusPointId() > 0 )
                 {
                     string additional = ("Sub: ");
-                    additional += currentSubstationBus->getPAOName();
+                    additional += currentSubstationBus->getPaoName();
                     additional += "  Feeder: ";
-                    additional += currentFeeder->getPAOName();
+                    additional += currentFeeder->getPaoName();
 
                     string text = string("Porter Return May Indicate a Comm Failure!");
                     string text1 = string("Var: Porter Fail Msg, ");
@@ -4013,7 +4013,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                         sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                         LONG stationId, areaId, spAreaId;
                         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                        CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress());
+                        CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress());
                         eventMsg->setActionId(currentCapBank->getActionId());
                         eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                         getCCEventMsgQueueHandle().write(eventMsg);
@@ -4026,8 +4026,8 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                                  << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                    dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
+                                  << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
                 }
 
                 if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
@@ -4124,7 +4124,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
     LONG stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
 
 
     if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -4134,7 +4134,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
         if (currentCapBank->getCurrentDailyOperations() > 0)
             currentCapBank->setCurrentDailyOperations( currentCapBank->getCurrentDailyOperations() - 1);
         getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
     }
     getCCEventMsgQueueHandle().write(multiCCEventMsg);
 
@@ -4175,10 +4175,10 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
     LONG stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
     currentCapBank->setActionId( CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
 
 
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
     if (ccEvents.size() > 0)
     {
         getCCEventMsgQueueHandle().write(multiCCEventMsg);
@@ -4211,7 +4211,7 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts->getCapacitorBankState() <<" CAPBANK: "<<
-        currentCapBank->getPAOName() << " is "<< currentCapBank->getControlStatusText() <<
+        currentCapBank->getPaoName() << " is "<< currentCapBank->getControlStatusText() <<
         " waiting for VAR change." << endl;
     }
 
@@ -4231,7 +4231,7 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
     //send the cceventmsg.
     LONG stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlUnexpectedCBCStateReported, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlUnexpectedCBCStateReported, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
     if (ccEvents.size() > 0)
     {
         getCCEventMsgQueueHandle().write(multiCCEventMsg);

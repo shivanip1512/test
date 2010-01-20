@@ -3,7 +3,7 @@
 
     Programmer:  Julie Richter
 
-    Description:    
+    Description:
 
     Initial Date:  1/27/2005
 
@@ -27,7 +27,7 @@
 #include <rw/re.h>
 
 #include <boost/regex.hpp>
-     
+
 extern ULONG _CC_DEBUG;
 using namespace std;
 /* The singleton instance of CtiPAOScheduleManager */
@@ -113,14 +113,14 @@ void CtiPAOScheduleManager::doResetThr()
     CtiTime rwnow, announceTime, tickleTime;
     tickleTime.now();
     while (TRUE)
-    {   
+    {
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
             rwRunnable().serviceCancellation();
 
             CtiTime currentTime = CtiTime();
-        
+
             if ( !isValid() && currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+30 )
             {
                 //if( _CC_DEBUG )
@@ -147,16 +147,16 @@ void CtiPAOScheduleManager::doResetThr()
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " CapControl mgrPAOSchedule doResetThr. TID: " << rwThreadId() << endl;
             }
-        
+
            /* if(!_shutdownOnThreadTimeout)
             {*/
                 ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
             /*}
             else
-            {   
+            {
                 ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl mgrPAOSchedule doResetThr")) );
             //}*/
-        }    
+        }
     }
 
     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::LogOut ) );
@@ -242,7 +242,7 @@ void CtiPAOScheduleManager::mainLoop()
                             if (!updateSchedules.empty())
                             {
                                 updateDataBaseSchedules(updateSchedules);
-                            } 
+                            }
                         }
                         catch(...)
                         {
@@ -281,13 +281,13 @@ void CtiPAOScheduleManager::mainLoop()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " CapControl mgrPAOSchedule mainLoop TID: " << rwThreadId() << endl;
                 }
-          
+
                /* if(!_shutdownOnThreadTimeout)
                 {*/
                     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
                 /*}
                 else
-                {   
+                {
                     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl mgrPAOSchedule mainLoop")) );
                 //}*/
             }
@@ -320,26 +320,26 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                 if ((*iter)->getNextRunTime() < currentTime)
                 {
                     if ((*iter)->getIntervalRate() > 0 && !(*iter)->isDisabled())
-                    {   
-                        if (_initialCapControlStartUp) 
+                    {
+                        if (_initialCapControlStartUp)
                         {
                             _initialCapControlStartUp = FALSE;
                             //(*iter)->setLastRunTime((*iter)->getNextRunTime());
                             (*iter)->setLastRunTime(currentTime);
                             CtiTime tempNextTime = CtiTime((*iter)->getNextRunTime().seconds() + (*iter)->getIntervalRate());
-                            if (tempNextTime < currentTime) 
+                            if (tempNextTime < currentTime)
                             {
 
                                 string text = string("ERROR - Schedule: ");
                                 text += (*iter)->getScheduleName();
-                                
+
                                 string additional = string("Schedule ID ");
                                 additional += longToString((*iter)->getScheduleId());
                                 additional += " did not run at: ";
                                 additional += tempNextTime.asString();
 
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                while (tempNextTime < currentTime) 
+                                while (tempNextTime < currentTime)
                                 {
                                     tempNextTime = CtiTime(tempNextTime.seconds() + (*iter)->getIntervalRate());
                                 }
@@ -419,7 +419,7 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
         default:
             break;
     }
- 
+
 }
 int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, long &secsSinceLastOperation)
 {
@@ -427,9 +427,9 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     string tempCommand;
     LONG multiplier = 0;
     BOOL disableOvUvFlag = false;
-    
+
     int retVal = SomethingElse; //0 capbank event...future use could include other devices??  dunno..open to expand on.
-                             
+
     if ( findStringIgnoreCase(command,"CapBanks"))
     {
         retVal = CapControlVerification;
@@ -487,12 +487,12 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
             }
 
             if (secsSinceLastOperation > 0)
-            {                             
+            {
                 strategy = BanksInactiveForXTime;
             }
             else
                 retVal = SomethingElse;
-                
+
         }
         else if (!stringCompareIgnoreCase(command,"Verify Standalone CapBanks"))
         {
@@ -507,40 +507,40 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     {
         retVal = SendTimeSync;
     }
-    
+
     return retVal;
 }
 
 void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
 {
     CtiTime currentTime = CtiTime();
-        
+
     //schedule->setLastRunTime(schedule->getNextRunTime());
     schedule->setLastRunTime(currentTime);
     if (schedule->getIntervalRate() <= 0)
-    {                                   
+    {
         schedule->setNextRunTime( currentTime );
     }
     else
     {
         CtiTime tempNextTime = CtiTime(schedule->getNextRunTime().seconds() + schedule->getIntervalRate());
-        if (tempNextTime < currentTime) 
+        if (tempNextTime < currentTime)
         {
-        
+
             string text = string("ERROR - Schedule: ");
             text += schedule->getScheduleName();
-            
+
             string additional = string("Schedule ID ");
             additional += longToString(schedule->getScheduleId());
             additional += " did not run at: ";
             additional += tempNextTime.asString();
-        
+
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalEvent, "cap control"));
-            while (tempNextTime < currentTime) 
+            while (tempNextTime < currentTime)
             {
                 tempNextTime = CtiTime(tempNextTime.seconds() + schedule->getIntervalRate());
             }
-           
+
         }
         schedule->setNextRunTime(tempNextTime);
     }
@@ -635,7 +635,7 @@ bool CtiPAOScheduleManager::findEvent(long id, CtiPAOEvent &event)
                 event = *(*iter);
                 retVal = true;
                 break;
-            } 
+            }
             iter++;
         }
     }
@@ -683,14 +683,14 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
         bool wasAlreadyRunning = false;
 
 
         std::list <CtiPAOSchedule *> tempSchedules;
         tempSchedules.clear();
         try
-        {     
+        {
 
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
@@ -702,7 +702,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
                 }
 
                 if ( conn.isValid() )
-                {   
+                {
                     RWDBDatabase db = getDatabase();
                     RWDBTable paoScheduleTable = db.table("paoschedule");
                     {
@@ -772,14 +772,14 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
+
         bool wasAlreadyRunning = false;
 
 
         std::list <CtiPAOEvent *> tempEvents;
         tempEvents.clear();
         try
-        {     
+        {
 
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
@@ -791,7 +791,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
                 }
 
                 if ( conn.isValid() )
-                {   
+                {
                     RWDBDatabase db = getDatabase();
                     RWDBTable paoEventTable = db.table("paoscheduleassignment");
                     {
@@ -842,7 +842,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        
+
         _events.clear();
         _events.assign(tempEvents.begin(), tempEvents.end());
         setValid(true);

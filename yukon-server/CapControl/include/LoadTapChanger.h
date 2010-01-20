@@ -22,8 +22,6 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
 
         PointValueHolder _pointValues;
 
-        typedef CapControlPao Inherited;
-
     public:
         LoadTapChanger();
         LoadTapChanger(RWDBReader& rdr);

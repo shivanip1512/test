@@ -2,15 +2,15 @@
 
 /*---------------------------------------------------------------------------
         Filename:  ccsubstation.h
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Header file for CtiCCSubstationBus
                         CtiCCSubstationBus maintains the state and handles
-                        the persistence of strategies for Cap Control.                             
+                        the persistence of strategies for Cap Control.
 
         Initial Date:  8/27/2001
-        
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 
@@ -24,8 +24,8 @@ using std::list;
 #include <rw/vstream.h>
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>  
-#include <list> 
+#include <rw/thr/recursiv.h>
+#include <list>
 #include <vector>
 
 #include "dbaccess.h"
@@ -39,10 +39,10 @@ using std::list;
 #include "ControlStrategy.h"
 #include "ccmonitorpoint.h"
 #include "ccsubstationbus.h"
+#include "CapControlPao.h"
 
 
-              
-class CtiCCSubstation : public RWCollectable
+class CtiCCSubstation : public RWCollectable, public CapControlPao
 {
 
 public:
@@ -55,13 +55,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     virtual ~CtiCCSubstation();
 
-    LONG getPAOId() const;
-    const string& getPAOCategory() const;
-    const string& getPAOClass() const;
-    const string& getPAOName() const;
-    const string& getPAOType() const;
-    const string& getPAODescription() const;
-    BOOL getDisableFlag() const;
     BOOL getOvUvDisabledFlag() const;
     BOOL getVoltReductionFlag() const;
     const string& getParentName() const;
@@ -75,20 +68,13 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     LONG getSaEnabledId() const;
     LONG getVoltReductionControlId() const;
     BOOL getChildVoltReductionFlag() const;
-    
+
     list <LONG>* getCCSubIds(){return &_subBusIds;};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
     list <LONG>* getPointIds() {return &_pointIds; };
 
-    CtiCCSubstation& setPAOId(LONG id);
-    CtiCCSubstation& setPAOCategory(const string& category);
-    CtiCCSubstation& setPAOClass(const string& pclass);
-    CtiCCSubstation& setPAOName(const string& name);
-    CtiCCSubstation& setPAOType(const string& type);
-    CtiCCSubstation& setPAODescription(const string& description);
-    CtiCCSubstation& setDisableFlag(BOOL disable);
     CtiCCSubstation& setOvUvDisabledFlag(BOOL flag);
     CtiCCSubstation& setVoltReductionFlag(BOOL flag);
     CtiCCSubstation& setParentName(const string& name);
@@ -102,7 +88,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& setSaEnabledId(LONG saId);
     CtiCCSubstation& setVoltReductionControlId(LONG pointid);
     CtiCCSubstation& setChildVoltReductionFlag(BOOL flag);
-    
+
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     CtiCCSubstation& checkAndUpdateRecentlyControlledFlag();
@@ -113,26 +99,14 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     void setDynamicData(RWDBReader& rdr);
 
     //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
 
     CtiCCSubstation& operator=(const CtiCCSubstation& right);
 
-    int operator==(const CtiCCSubstation& right) const;
-    int operator!=(const CtiCCSubstation& right) const;
-
     CtiCCSubstation* replicate() const;
 
-    
     private:
 
-    LONG _paoid;
-    string _paocategory;
-    string _paoclass;
-    string _paoname;
-    string _paotype;
-    string _paodescription;
-    BOOL _disableflag;
     string _parentName;
     LONG _parentId;
     LONG _displayOrder;
@@ -159,10 +133,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     std::list <long> _subBusIds;
     std::list <long> _pointIds;
-    
+
     void restore(RWDBReader& rdr);
-  
-    
+
+
 };
 
 //typedef shared_ptr<CtiCCSubstation> CtiCCSubstationPtr;

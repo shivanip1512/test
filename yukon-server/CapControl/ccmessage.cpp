@@ -213,7 +213,7 @@ CtiCCObjectMoveMsg::CtiCCObjectMoveMsg(BOOL permanentflag, LONG oldparentid, LON
     _switchingorder(switchingorder),
     _closeOrder(closeOrder),
     _tripOrder(tripOrder)
-    
+
 {
 
 
@@ -263,13 +263,13 @@ float CtiCCObjectMoveMsg::getTripOrder() const
 void CtiCCObjectMoveMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
-    strm >> _permanentflag  
-         >> _oldparentid    
-         >> _objectid       
-         >> _newparentid    
-         >> _switchingorder 
-         >> _closeOrder     
-         >> _tripOrder;     
+    strm >> _permanentflag
+         >> _oldparentid
+         >> _objectid
+         >> _newparentid
+         >> _switchingorder
+         >> _closeOrder
+         >> _tripOrder;
 
     return;
 }
@@ -283,13 +283,13 @@ void CtiCCObjectMoveMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
 
-    strm << _permanentflag 
-         << _oldparentid   
-         << _objectid      
-         << _newparentid   
+    strm << _permanentflag
+         << _oldparentid
+         << _objectid
+         << _newparentid
          << _switchingorder
-         << _closeOrder    
-         << _tripOrder;     
+         << _closeOrder
+         << _tripOrder;
 
     return;
 }
@@ -636,7 +636,7 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSubstationBusMsg has "<< buses.size()<<" entries." << endl;
@@ -647,7 +647,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Sub: "<<((CtiCCSubstationBus*)buses[h])->getPAOName()<<" "<<((CtiCCSubstationBus*)buses[h])->getCurrentVarLoadPointValue()<<" "<<((CtiCCSubstationBus*)buses[h])->getEstimatedVarLoadPointValue() <<" "<<
+                dout << CtiTime() << " - Sub: "<<((CtiCCSubstationBus*)buses[h])->getPaoName()<<" "<<((CtiCCSubstationBus*)buses[h])->getCurrentVarLoadPointValue()<<" "<<((CtiCCSubstationBus*)buses[h])->getEstimatedVarLoadPointValue() <<" "<<
                     ((CtiCCSubstationBus*)buses[h])->getStrategy()->getPeakLead()<<" "<<((CtiCCSubstationBus*)buses[h])->getStrategy()->getPeakLag()<< endl;
             }
             CtiFeeder_vec& feeds =   ((CtiCCSubstationBus*)buses[h])->getCCFeeders();
@@ -655,16 +655,16 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " -    Feed: "<<((CtiCCFeeder*)feeds[hh])->getPAOName()<<" "<<((CtiCCFeeder*)feeds[hh])->getCurrentVarLoadPointValue()<<" "<<((CtiCCFeeder*)feeds[hh])->getEstimatedVarLoadPointValue() <<" " <<
+                    dout << CtiTime() << " -    Feed: "<<((CtiCCFeeder*)feeds[hh])->getPaoName()<<" "<<((CtiCCFeeder*)feeds[hh])->getCurrentVarLoadPointValue()<<" "<<((CtiCCFeeder*)feeds[hh])->getEstimatedVarLoadPointValue() <<" " <<
                         ((CtiCCFeeder*)feeds[hh])->getStrategy()->getPeakLead()<<" "<<((CtiCCFeeder*)feeds[hh])->getStrategy()->getPeakLag()<< endl;
                 }
 
                 CtiCCCapBank_SVector& caps =   ((CtiCCFeeder*)feeds[hh])->getCCCapBanks();
-                for (int hhh = 0; hhh < caps.size(); hhh++) 
+                for (int hhh = 0; hhh < caps.size(); hhh++)
                 {
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " -        Cap: "<<((CtiCCCapBank*)caps[hhh])->getPAOName() <<" "<<
+                        dout << CtiTime() << " -        Cap: "<<((CtiCCCapBank*)caps[hhh])->getPaoName() <<" "<<
                             ((CtiCCCapBank*)caps[hhh])->getControlStatusText()<< endl;
                     }
                 }
@@ -681,7 +681,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSubstationBusMsg has "<< buses.size()<<" entries." << endl;
@@ -907,7 +907,7 @@ RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _ccGeoAreas = new CtiCCArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
@@ -918,7 +918,7 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : C
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Area: "<<((CtiCCArea*)ccGeoAreas[h])->getPAOName()<< endl;
+                dout << CtiTime() << " - Area: "<<((CtiCCArea*)ccGeoAreas[h])->getPaoName()<< endl;
             }
         }
     }
@@ -933,7 +933,7 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : C
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_set& ccGeoAreas, ULONG bitMask) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _ccGeoAreas = new CtiCCArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
@@ -1017,7 +1017,7 @@ void CtiCCGeoAreasMsg::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCGeoAreasMsg::saveGuts(RWvostream& strm) const
@@ -1041,7 +1041,7 @@ RWDEFINE_COLLECTABLE( CtiCCSpecialAreasMsg, CTICCSPECIALAREAS_MSG_ID )
 CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
 {
     _ccSpecialAreas = new CtiCCSpArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
@@ -1052,7 +1052,7 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : Ct
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)ccSpecialAreas[h])->getPAOName()<< endl;
+                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)ccSpecialAreas[h])->getPaoName()<< endl;
             }
         }
     }
@@ -1066,7 +1066,7 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : Ct
 CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_set& ccSpecialAreas) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
 {
     _ccSpecialAreas = new CtiCCSpArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )  
+    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
@@ -1162,8 +1162,8 @@ void CtiCCSpecialAreasMsg::saveGuts(RWvostream& strm) const
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPAOName()<<
-                    " : "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPAOId()<< endl;
+                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPaoName()<<
+                    " : "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPaoId()<< endl;
             }
         }
     }
@@ -1200,7 +1200,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULO
             CtiCCSubstation* station = (CtiCCSubstation*)ccSubstations[h];
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Substation: "<<station->getPAOName()<< " Parent: "<< station->getParentId() <<" SAEnabled ?"<<station->getSaEnabledFlag() << " SAEnId : " << station->getSaEnabledId()<< endl;
+                dout << CtiTime() << " - Substation: "<<station->getPaoName()<< " Parent: "<< station->getParentId() <<" SAEnabled ?"<<station->getSaEnabledFlag() << " SAEnId : " << station->getSaEnabledId()<< endl;
             }
             std::list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
             while (iterBus  != station->getCCSubIds()->end())

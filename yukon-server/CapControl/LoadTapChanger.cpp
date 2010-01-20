@@ -1,12 +1,12 @@
 #include "yukon.h"
 #include "LoadTapChanger.h"
 
-LoadTapChanger::LoadTapChanger() : Inherited()
+LoadTapChanger::LoadTapChanger() : CapControlPao()
 {
 
 }
 
-LoadTapChanger::LoadTapChanger(RWDBReader& rdr) : Inherited(rdr)
+LoadTapChanger::LoadTapChanger(RWDBReader& rdr) : CapControlPao(rdr)
 {
 
 }
