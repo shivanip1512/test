@@ -48,13 +48,16 @@ class CtiCapController
 {
 public:
 
+    CtiCapController();
+    virtual ~CtiCapController();
     static CtiCapController* getInstance();
+    static void setInstance(CtiCapController* controller);
+    static void deleteInstance();
 
-   
     void start();
     void stop();
 
-    void sendMessageToDispatch(CtiMessage* message);
+    virtual void sendMessageToDispatch(CtiMessage* message);
     void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
     void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
     CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
@@ -81,18 +84,15 @@ public:
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
 
     DispatchConnection* getDispatchConnection();
+    CtiConnection* getPILConnection();
 private:
 
-    CtiCapController();
-    virtual ~CtiCapController();
 
-    void deleteInstance();
     void controlLoop();
     void messageSender();
     void outClientMsgs();
     void processCCEventMsgs();
 
-    CtiConnection* getPILConnection();
 
     void checkDispatch(ULONG secondsFrom1901);
     void checkPIL(ULONG secondsFrom1901);

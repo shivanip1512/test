@@ -253,7 +253,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                                 text += " is being controlled.";
 
 
-                                INT seqId = CCEventSeqIdGen();
+                              INT seqId = CCEventSeqIdGen();
                                 currentSubstationBus->setEventSequence(seqId);
                                 LONG stationId, areaId, spAreaId;
                                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
@@ -398,119 +398,114 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _subVerificationMsg->getSubBusId();
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
 
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
+
+    if( currentSubstationBus != NULL && subID == currentSubstationBus->getPaoId() )
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
-        if( subID == currentSubstationBus->getPaoId() )
+        if (currentSubstationBus->getPerformingVerificationFlag())
         {
-            if (currentSubstationBus->getPerformingVerificationFlag())
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+            for(LONG j=0;j<ccFeeders.size();j++)
             {
-                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-                for(LONG j=0;j<ccFeeders.size();j++)
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                if (currentFeeder->getPerformingVerificationFlag())
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-                    if (currentFeeder->getPerformingVerificationFlag())
+
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                    for(LONG k=0;k<ccCapBanks.size();k++)
                     {
-
-                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                        for(LONG k=0;k<ccCapBanks.size();k++)
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                        if (!currentCapBank->isPendingStatus() &&
+                            (currentCapBank->getVCtrlIndex() <=0 || currentCapBank->getVCtrlIndex() >= 5) )
                         {
-                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                            if (!currentCapBank->isPendingStatus() &&
-                                (currentCapBank->getVCtrlIndex() <=0 || currentCapBank->getVCtrlIndex() >= 5) )
-                            {
-                                currentCapBank->setVerificationFlag(FALSE);
-                                currentCapBank->setPerformingVerificationFlag(FALSE);
-                                currentCapBank->setVerificationDoneFlag(FALSE);
-                                //wouldn't hurt to set this.
-                                currentCapBank->setVCtrlIndex(0);
-                            }
+                            currentCapBank->setVerificationFlag(FALSE);
+                            currentCapBank->setPerformingVerificationFlag(FALSE);
+                            currentCapBank->setVerificationDoneFlag(FALSE);
+                            //wouldn't hurt to set this.
+                            currentCapBank->setVCtrlIndex(0);
                         }
                     }
-                    else
-                    {
-                        currentFeeder->resetVerificationFlags();
-                    }
                 }
-                string text = currentSubstationBus->getVerificationString();
-                text += " Stopping after currentBank";
-                string additional = string("Bus: ");
-                additional += currentSubstationBus->getPaoName();
-                if (_LOG_MAPID_INFO)
+                else
                 {
-                    additional += " MapID: ";
-                    additional += currentSubstationBus->getMapLocationId();
-                    additional += " (";
-                    additional += currentSubstationBus->getPaoDescription();
-                    additional += ")";
-                }
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
-
-                LONG stationId, areaId, spAreaId;
-                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
-
-                if( _CC_DEBUG & CC_DEBUG_STANDARD )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Verification Stop Message received from client.  Current Cap Bank Verification will complete first."<< endl;
-                }
-
-            }
-            else
-            {
-                currentSubstationBus->setVerificationFlag(FALSE);
-                currentSubstationBus->setPerformingVerificationFlag(FALSE);
-                currentSubstationBus->setOverlappingVerificationFlag( FALSE );
-                currentSubstationBus->setVerificationDoneFlag(FALSE);
-                currentSubstationBus->setWaitToFinishRegularControlFlag(FALSE);
-
-                if (currentSubstationBus->getVerificationDisableOvUvFlag())
-                {
-                    CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()));
-                    executor->Execute();
-                    delete executor;
-                    currentSubstationBus->setVerificationDisableOvUvFlag(FALSE);
-                }
-
-                currentSubstationBus->setBusUpdatedFlag(TRUE);
-
-                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-                for(LONG j=0;j<ccFeeders.size();j++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
                     currentFeeder->resetVerificationFlags();
                 }
-
-                //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                //CtiString text = CtiString("Substation Bus Verification Disabled");
-                string text = currentSubstationBus->getVerificationString();
-                text += " Stopping";
-                string additional = string("Bus: ");
-                additional += currentSubstationBus->getPaoName();
-                if (_LOG_MAPID_INFO)
-                {
-                    additional += " MapID: ";
-                    additional += currentSubstationBus->getMapLocationId();
-                    additional += " (";
-                    additional += currentSubstationBus->getPaoDescription();
-                    additional += ")";
-                }
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
-
-                LONG stationId, areaId, spAreaId;
-                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
-                break;
             }
+            string text = currentSubstationBus->getVerificationString();
+            text += " Stopping after currentBank";
+            string additional = string("Bus: ");
+            additional += currentSubstationBus->getPaoName();
+            if (_LOG_MAPID_INFO)
+            {
+                additional += " MapID: ";
+                additional += currentSubstationBus->getMapLocationId();
+                additional += " (";
+                additional += currentSubstationBus->getPaoDescription();
+                additional += ")";
+            }
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+
+            LONG stationId, areaId, spAreaId;
+            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Verification Stop Message received from client.  Current Cap Bank Verification will complete first."<< endl;
+            }
+
+        }
+        else
+        {
+            currentSubstationBus->setVerificationFlag(FALSE);
+            currentSubstationBus->setPerformingVerificationFlag(FALSE);
+            currentSubstationBus->setOverlappingVerificationFlag( FALSE );
+            currentSubstationBus->setVerificationDoneFlag(FALSE);
+            currentSubstationBus->setWaitToFinishRegularControlFlag(FALSE);
+
+            if (currentSubstationBus->getVerificationDisableOvUvFlag())
+            {
+                CtiCCExecutorFactory f;
+                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()));
+                executor->Execute();
+                delete executor;
+                currentSubstationBus->setVerificationDisableOvUvFlag(FALSE);
+            }
+
+            currentSubstationBus->setBusUpdatedFlag(TRUE);
+
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+            for(LONG j=0;j<ccFeeders.size();j++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                currentFeeder->resetVerificationFlags();
+            }
+
+            string text = currentSubstationBus->getVerificationString();
+            text += " Stopping";
+            string additional = string("Bus: ");
+            additional += currentSubstationBus->getPaoName();
+            if (_LOG_MAPID_INFO)
+            {
+                additional += " MapID: ";
+                additional += currentSubstationBus->getMapLocationId();
+                additional += " (";
+                additional += currentSubstationBus->getPaoDescription();
+                additional += ")";
+            }
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+
+            LONG stationId, areaId, spAreaId;
+            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
         }
     }
+    
 }
 
 

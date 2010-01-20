@@ -120,6 +120,21 @@ void CtiCapController::deleteInstance()
 }
 
 /*---------------------------------------------------------------------------
+    setInstance
+
+    Sets the instance to the passed instance. This should only be used in Unit Tests.
+---------------------------------------------------------------------------*/
+void CtiCapController::setInstance(CtiCapController* controller)
+{
+    if (_instance != NULL)
+    {
+        deleteInstance();
+    }
+    _instance = controller;
+
+}
+
+/*---------------------------------------------------------------------------
     Constructor
 
     Private to ensure that only one CtiCapController is available through the

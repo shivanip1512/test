@@ -1647,8 +1647,8 @@ BOOL CtiCCCapBank::updateVerificationState(void)
         }
     case 2:
         {
-            if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                _USE_FLIP_FLAG == TRUE)
+            if (!(stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
+                _USE_FLIP_FLAG == TRUE))
             {
 
                 if ( (getControlStatus() == Open || getControlStatus() == Close) &&
@@ -1723,18 +1723,13 @@ BOOL CtiCCCapBank::updateVerificationState(void)
             if (getControlStatus() == OpenFail ||
                 getControlStatus() == CloseFail )
             {
-                if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                    _USE_FLIP_FLAG == TRUE)
+                if ((stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
+                    _USE_FLIP_FLAG == TRUE)||
+                    _retryFlag )
                 {
                     ctrlIdx = 5;
                     _verificationDoneFlag = TRUE;
                     _retryFlag = FALSE;
-                }
-                else if (_retryFlag)
-                {
-                    _retryFlag = FALSE;
-                    ctrlIdx = 5;
-                    _verificationDoneFlag = TRUE;
                 }
                 else
                 {
