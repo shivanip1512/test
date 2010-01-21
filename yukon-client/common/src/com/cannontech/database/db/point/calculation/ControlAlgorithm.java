@@ -8,7 +8,8 @@ public enum ControlAlgorithm {
 	MULTIVOLT("Multi Volt"),
 	MULTIVOLTVAR("Multi Volt Var"),
 	PFACTORKWKVAR("P-Factor kW/kVAr"),
-	INTEGRATED_VOLT_VAR("Integrated Volt/Var");
+	INTEGRATED_VOLT_VAR("Integrated Volt/Var"),
+	TIME_OF_DAY("Time of Day");
 	
 	private final String displayName;
 	

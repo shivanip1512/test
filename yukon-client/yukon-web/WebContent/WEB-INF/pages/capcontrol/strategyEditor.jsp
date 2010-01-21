@@ -204,39 +204,35 @@
 
                 </x:panelGrid>
                 
-                <x:panelGrid forceId="true" id="peakSettingsGrid" columns="3"> 
+                <h:dataTable id="peakSettingsData" var="setting" headerClass="peakSettingsTableHeader" rowClasses="peakSettingsTableCell"
+                    value="#{capControlForm.strategy.targetSettings}"
+                    columnClasses="peakSettingsTableCell">
+
+                    <h:column>
+                        <f:facet name="header">
+                        </f:facet>
+                        <h:outputText value="#{setting.name}" />
+                        <h:outputText value=":" />
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Peak" />
+                        </f:facet>
+                        <x:inputText styleClass="char8Label" required="true" value="#{setting.peakValue}" />
+                        <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
+                    </h:column>
                     
-                    <h:dataTable id="peakSettingsData" var="setting" headerClass="peakSettingsTableHeader" rowClasses="peakSettingsTableCell"
-                        value="#{capControlForm.strategy.targetSettings}"
-                        columnClasses="peakSettingsTableCell" rows="10">
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Off Peak" />
+                        </f:facet>
+                        <x:inputText styleClass="char8Label" required="true" value="#{setting.offPeakValue}" />
+                        <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
+                    </h:column>
 
-                        <h:column>
-                            <f:facet name="header">
-                            </f:facet>
-                            <h:outputText value="#{setting.name}" />
-                            <h:outputText value=":" />
-                        </h:column>
-
-                        <h:column>
-                            <f:facet name="header">
-                                <x:outputText value="Peak" />
-                            </f:facet>
-                            <x:inputText styleClass="char8Label" required="true" value="#{setting.peakValue}" />
-                            <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
-                        </h:column>
-                        
-                        <h:column>
-                            <f:facet name="header">
-                                <x:outputText value="Off Peak" />
-                            </f:facet>
-                            <x:inputText styleClass="char8Label" required="true" value="#{setting.offPeakValue}" />
-                            <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
-                        </h:column>
-
-                    </h:dataTable>
+                </h:dataTable>
                     
-                </x:panelGrid>
-                
                 <x:outputText value="* ( - ) indicates leading" rendered="#{capControlForm.strategy.PFAlgorithm}"/>
             </x:htmlTag>
             
@@ -253,6 +249,69 @@
                     <f:selectItems value="#{selLists.daySelections}"/>
                 </x:selectManyCheckbox>
             </x:htmlTag>
+        </h:column>
+        
+        <h:column rendered="#{capControlForm.currentStrategyID != 0 && (capControlForm.timeOfDay)}" >
+            <x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend">
+                    <x:outputText value="Time of Day Strategy Settings" />
+                </x:htmlTag>
+                
+                <h:dataTable id="timeOfDaySettingsData" var="todSetting" headerClass="peakSettingsTableHeader" rowClasses="peakSettingsTableCell"
+                    value="#{capControlForm.strategy.targetSettings}"
+                    columnClasses="peakSettingsTableCell">
+
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Week Day" />
+                        </f:facet>
+                        <h:outputText value="#{todSetting.name}" style="padding-left:50px;"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Close" />
+                        </f:facet>
+                        <x:inputText styleClass="char4Label" required="true" value="#{todSetting.peakValue}" />
+                        <x:outputText value="%" styleClass="padUnitsLabel"/>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Open" />
+                        </f:facet>
+                        <x:outputText value="#{100 - todSetting.peakValue}" styleClass="padUnitsLabel"/>
+                        <x:outputText value="%" styleClass="padUnitsLabel"/>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Weekend" />
+                        </f:facet>
+                        <h:outputText value="#{todSetting.name}" style="padding-left:50px;"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Close" />
+                        </f:facet>
+                        <x:inputText styleClass="char4Label" required="true" value="#{todSetting.offPeakValue}" />
+                        <x:outputText value="%" styleClass="padUnitsLabel"/>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Open" />
+                        </f:facet>
+                        <x:outputText value="#{100 - todSetting.offPeakValue}" styleClass="padUnitsLabel"/>
+                        <x:outputText value="%" styleClass="padUnitsLabel"/>
+                    </h:column>
+
+                </h:dataTable>
+                    
+                
+            </x:htmlTag>
+            
         </h:column>
         
     </x:panelGrid>

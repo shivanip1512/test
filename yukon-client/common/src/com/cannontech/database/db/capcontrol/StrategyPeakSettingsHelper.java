@@ -49,6 +49,33 @@ public class StrategyPeakSettingsHelper {
                 settings.add(TargetSettingType.PF_WEIGHT.getPeakTargetSetting());
                 settings.add(TargetSettingType.DECISION_WEIGHT.getPeakTargetSetting());
                 break;
+                
+            case TIME_OF_DAY :
+                settings.add(TargetSettingType.HOUR_ZERO.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_ONE.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_TWO.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_THREE.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_FOUR.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_FIVE.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_SIX.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_SEVEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_EIGHT.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_NINE.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_TEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_ELEVEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_TWELVE.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_THIRTEEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_FOURTEEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_FIFTEEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_SIXTEEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_SEVENTEEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_EIGHTEEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_NINETEEN.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_TWENTY.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_TWENTYONE.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_TWENTYTWO.getPeakTargetSetting());
+                settings.add(TargetSettingType.HOUR_TWENTYTHREE.getPeakTargetSetting());
+                break;
         }
         
         return settings;
@@ -65,6 +92,7 @@ public class StrategyPeakSettingsHelper {
                 
                 settingString = kvarLag.getPeakValue() + "<" + "kVar" + "<" + kvarLead.getPeakValue();
                 break;
+                
             case VOLTS:
             case MULTIVOLT:
                 PeakTargetSetting lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
@@ -72,6 +100,7 @@ public class StrategyPeakSettingsHelper {
                 
                 settingString = lowerVoltLimit.getPeakValue() + "<" + "V" + "<" + upperVoltLimit.getPeakValue();
                 break;
+                
             case MULTIVOLTVAR:
                 kvarLag = getPeakTargetSetting(TargetSettingType.KVAR_LAGGING, strategy.getTargetSettings());
                 kvarLead = getPeakTargetSetting(TargetSettingType.KVAR_LEADING, strategy.getTargetSettings());
@@ -81,12 +110,18 @@ public class StrategyPeakSettingsHelper {
                 settingString = lowerVoltLimit.getPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getPeakValue();
                 settingString += " : " + kvarLag.getPeakValue() + "<" + "kVar" + "<" + kvarLead.getPeakValue();
                 break;
+                
             case PFACTORKWKVAR:
                 PeakTargetSetting targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
                 PeakTargetSetting minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
                 PeakTargetSetting minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());
                 settingString =  minBankClose.getPeakValue() + "<" + targetPF.getPeakValue() + "<" + minBankOpen.getPeakValue();
-                break;              
+                break;
+                
+            case TIME_OF_DAY :
+                settingString = "---";
+                break;
+                
             default:
                 settingString = "Unknown Algorithm";
                 break;
@@ -106,6 +141,7 @@ public class StrategyPeakSettingsHelper {
                 
                 settingString = kvarLag.getOffPeakValue() + "<" + "kVar" + "<" + kvarLead.getOffPeakValue();
                 break;
+                
             case VOLTS:
             case MULTIVOLT:
                 PeakTargetSetting lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
@@ -113,6 +149,7 @@ public class StrategyPeakSettingsHelper {
                 
                 settingString = lowerVoltLimit.getOffPeakValue() + "<" + "V" + "<" + upperVoltLimit.getOffPeakValue();
                 break;
+                
             case MULTIVOLTVAR:
                 kvarLag = getPeakTargetSetting(TargetSettingType.KVAR_LAGGING, strategy.getTargetSettings());
                 kvarLead = getPeakTargetSetting(TargetSettingType.KVAR_LEADING, strategy.getTargetSettings());
@@ -122,12 +159,18 @@ public class StrategyPeakSettingsHelper {
                 settingString = lowerVoltLimit.getOffPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getOffPeakValue();
                 settingString += " : " + kvarLag.getOffPeakValue() + "<" + "kVar" + "<" + kvarLead.getOffPeakValue();
                 break;
+                
             case PFACTORKWKVAR:
                 PeakTargetSetting targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
                 PeakTargetSetting minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
                 PeakTargetSetting minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());
                 settingString =  minBankClose.getOffPeakValue() + "<" + targetPF.getOffPeakValue() + "<" + minBankOpen.getOffPeakValue();
-                break;              
+                break;
+                
+            case TIME_OF_DAY :
+                settingString = "---";
+                break;
+                
             default:
                 settingString = "Unknown Algorithm";
                 break;

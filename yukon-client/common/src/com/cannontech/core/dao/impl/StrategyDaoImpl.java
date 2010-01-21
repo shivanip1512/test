@@ -73,6 +73,10 @@ public class StrategyDaoImpl implements StrategyDao{
         
         List<CapControlStrategy> strategies = simpleJdbcTemplate.query(sql.toString(), rowMapper);
         
+        for(CapControlStrategy strategy : strategies) {
+            strategy.setTargetSettings(getPeakSettings(strategy));
+        }
+        
         return strategies;
     }
     
@@ -140,7 +144,20 @@ public class StrategyDaoImpl implements StrategyDao{
     }
 
     @Override
-    public void savePeakSettings(List<PeakTargetSetting> targetSettings, int strategyId) {
+    public void savePeakSettings(CapControlStrategy strategy) {
+        List<PeakTargetSetting> targetSettings = strategy.getTargetSettings();
+        int strategyId = strategy.getStrategyID();
+        
+        PeaksTargetType peak;
+        PeaksTargetType offpeak;
+        if(strategy.isTimeOfDay()){
+            peak = PeaksTargetType.WEEKDAY;
+            offpeak = PeaksTargetType.WEEKEND;
+        } else {
+            peak = PeaksTargetType.PEAK;
+            offpeak = PeaksTargetType.OFFPEAK;
+        }
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from CCStrategyTargetSettings where strategyId = ").appendArgument(strategyId);
         simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
@@ -150,26 +167,35 @@ public class StrategyDaoImpl implements StrategyDao{
             sql.appendArgument(strategyId);
             sql.append(", ").appendArgument(setting.getName());
             sql.append(", ").appendArgument(setting.getPeakValue());
-            sql.append(", ").appendArgument(PeaksTargetType.PEAK).append(" ) ");
+            sql.append(", ").appendArgument(peak).append(" ) ");
             simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
             
             sql = new SqlStatementBuilder("insert into CCStrategyTargetSettings values ( ");
             sql.appendArgument(strategyId);
             sql.append(", ").appendArgument(setting.getName());
             sql.append(", ").appendArgument(setting.getOffPeakValue());
-            sql.append(", ").appendArgument(PeaksTargetType.OFFPEAK).append(" ) ");
+            sql.append(", ").appendArgument(offpeak).append(" ) ");
             simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
         }
     }
 
     @Override
     public List<PeakTargetSetting> getPeakSettings(CapControlStrategy strategy) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("select peaks.name, peaks.value peakValue, offpeaks.value offPeakValue");
+        PeaksTargetType peak;
+        PeaksTargetType offpeak;
+        if(strategy.isTimeOfDay()){
+            peak = PeaksTargetType.WEEKDAY;
+            offpeak = PeaksTargetType.WEEKEND;
+        } else {
+            peak = PeaksTargetType.PEAK;
+            offpeak = PeaksTargetType.OFFPEAK;
+        }
+        SqlStatementBuilder sql = new SqlStatementBuilder("select peaks.SettingName name, peaks.SettingValue peakValue, offpeaks.SettingValue offPeakValue");
         sql.append("from CCStrategyTargetSettings peaks, CCStrategyTargetSettings offpeaks");
-        sql.append("where peaks.name = offpeaks.name");
+        sql.append("where peaks.SettingName = offpeaks.SettingName");
         sql.append("and peaks.strategyid = offpeaks.strategyid");
-        sql.append("and peaks.type = ").appendArgument(PeaksTargetType.PEAK);
-        sql.append("and offpeaks.type = ").appendArgument(PeaksTargetType.OFFPEAK);
+        sql.append("and peaks.SettingType = ").appendArgument(peak);
+        sql.append("and offpeaks.SettingType = ").appendArgument(offpeak);
         sql.append("and peaks.strategyid = ").appendArgument(strategy.getStrategyID());
         
         ParameterizedRowMapper<PeakTargetSetting> mapper = new ParameterizedRowMapper<PeakTargetSetting>() {

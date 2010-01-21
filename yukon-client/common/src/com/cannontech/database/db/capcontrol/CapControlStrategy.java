@@ -18,6 +18,8 @@ import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -28,7 +30,7 @@ import com.cannontech.spring.YukonSpringHook;
  *  No .data. object for this DBPersistent at this time.
  * 
  */
-public class CapControlStrategy extends com.cannontech.database.db.DBPersistent  implements com.cannontech.database.db.CTIDbChange {
+public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
 	private Integer strategyID = null;
 	private String strategyName = null;
 	private String controlMethod = CNTRL_INDIVIDUAL_FEEDER;
@@ -393,7 +395,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		Object constraintValues[] = { getStrategyID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 		StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
-		strategyDao.savePeakSettings(targetSettings, strategyID);
+		strategyDao.savePeakSettings(this);
 	}
 
 	/**
@@ -735,6 +737,10 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
             return true;
         else
             return false;
+    }
+    
+    public boolean isTimeOfDay(){
+        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.TIME_OF_DAY.getDisplayName());
     }
     
     public void controlUnitsChanged(String newValue) {

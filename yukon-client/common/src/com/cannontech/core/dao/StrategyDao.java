@@ -15,7 +15,7 @@ public interface StrategyDao {
     
     public int add(String name);
 
-    public void savePeakSettings(List<PeakTargetSetting> targetSettings, int strategyId);
+    public void savePeakSettings(CapControlStrategy strategy);
 
     public List<PeakTargetSetting> getPeakSettings(CapControlStrategy capControlStrategy);
 }
