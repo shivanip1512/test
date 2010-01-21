@@ -71,6 +71,24 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(4, feeder->getCCCapBanks().size());
 
     CtiMultiMsg_vec pointChanges;
+    StrategyPtr strat( new PFactorKWKVarStrategy );
+
+    strat->setStrategyId(100);
+    strat->setStrategyName("StrategyIndvlFdr");
+    strat->setControlInterval(0);
+    strat->setControlMethod(ControlStrategy::IndividualFeederControlMethod);
+    strat->setMaxConfirmTime(60);
+    strat->setMinConfirmPercent(75);
+    strat->setFailurePercent(25);
+    strat->setControlSendRetries(0);
+    strat->setPeakLag(80);
+    strat->setPeakLead(80);
+    strat->setOffPeakLag(80);
+    strat->setOffPeakLead(80);
+    strat->setPeakPFSetPoint(100);
+    strat->setOffPeakPFSetPoint(100);
+    feeder->setStrategy(strat);
+    feeder->getStrategy()->setEndDaySettings("(none)");//_END_DAY_ON_TRIP = false;
 
     //Simulate a close, should be the first bank.
     CtiCCCapBank * bank = feeder->findCapBankToChangeVars(0.0,pointChanges,-500,500,600);
