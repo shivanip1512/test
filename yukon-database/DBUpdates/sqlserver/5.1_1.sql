@@ -60,7 +60,7 @@ WHEN (StartTimeSeconds = 24*3600) THEN '24:00'
 ELSE '00:00'
 END,
 PercentClose,
-'WeekDay'
+'WEEKDAY'
 FROM CCStrategyTimeOfDay;
 
 INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
@@ -93,7 +93,7 @@ WHEN (StartTimeSeconds = 24*3600) THEN '24:00'
 ELSE '00:00'
 END,
 WkndPercentClose,
-'WeekEnd'
+'WEEKEND'
 FROM CCStrategyTimeOfDay;
 
 DROP TABLE CCStrategyTimeOfDay;

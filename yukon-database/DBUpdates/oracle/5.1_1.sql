@@ -58,7 +58,7 @@ WHEN (StartTimeSeconds = 24*3600) THEN '24:00'
 ELSE '00:00'
 END,
 PercentClose,
-'WeekDay'
+'WEEKDAY'
 FROM CCStrategyTimeOfDay;
 
 INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
@@ -91,7 +91,7 @@ WHEN (StartTimeSeconds = 24*3600) THEN '24:00'
 ELSE '00:00'
 END,
 WkndPercentClose,
-'WeekEnd'
+'WEEKEND'
 FROM CCStrategyTimeOfDay;
 
 DROP TABLE CCStrategyTimeOfDay;
@@ -256,4 +256,3 @@ ALTER TABLE DynamicCCOriginalParent
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '20-JAN-2010', 'Latest Update', 1);
