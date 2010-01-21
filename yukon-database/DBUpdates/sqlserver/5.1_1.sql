@@ -24,8 +24,9 @@ CREATE TABLE CCStrategyTargetSettings (
 GO
 
 ALTER TABLE CCStrategyTargetSettings
-   ADD CONSTRAINT FK_CCStratTarSet_CapContStrat FOREIGN KEY (StrategyId)
-      REFERENCES CapControlStrategy (StrategyId);
+    ADD CONSTRAINT FK_CCStratTarSet_CapContStrat FOREIGN KEY (StrategyId)
+        REFERENCES CapControlStrategy (StrategyId)
+            ON DELETE CASCADE;
 GO
 
 /* Porting Time limits from CCStrategyTimeOfDay */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/19/2010 5:18:37 PM                         */
+/* Created on:     1/20/2010 6:26:28 PM                         */
 /*==============================================================*/
 
 
@@ -13837,6 +13837,7 @@ go
 alter table CCStrategyTargetSettings
    add constraint FK_CCStratTarSet_CapContStrat foreign key (StrategyId)
       references CapControlStrategy (StrategyID)
+         on delete cascade
 go
 
 alter table CCURTACCTEVENT

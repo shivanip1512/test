@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/19/2010 5:15:14 PM                         */
+/* Created on:     1/20/2010 6:28:45 PM                         */
 /*==============================================================*/
 
 
@@ -10714,7 +10714,8 @@ alter table CCSUBSTATIONSUBBUSLIST
 
 alter table CCStrategyTargetSettings
    add constraint FK_CCStratTarSet_CapContStrat foreign key (StrategyId)
-      references CapControlStrategy (StrategyID);
+      references CapControlStrategy (StrategyID)
+      on delete cascade;
 
 alter table CCURTACCTEVENT
    add constraint FK_CCURTACC_CCURTPRO foreign key (CCurtProgramID)
