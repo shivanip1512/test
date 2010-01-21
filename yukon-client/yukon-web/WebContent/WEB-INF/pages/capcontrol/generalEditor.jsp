@@ -16,7 +16,7 @@
         				<x:panelGroup>
     
                             <x:outputText value="#{capControlForm.PAOBase.PAOType} (id: #{capControlForm.PAOBase.PAObjectID})"
-                                rendered="#{!capControlForm.editingController}"/>
+                                rendered="#{!capControlForm.editingController && !capControlForm.editingCBCStrategy}"/>
                         
                             <x:selectOneMenu id="Select_702XCBC_PAOType" value="#{capControlForm.CBControllerEditor.deviceType}"
             					rendered="#{capControlForm.CBControllerEditor.device702X && capControlForm.PAOBase.PAOType != 'CAP BANK'}">
@@ -47,19 +47,19 @@
         				
                         <x:panelGroup>
                             <x:inputText id="paoName" value="#{capControlForm.PAOBase.PAOName}" styleClass="char32Label" required="true" maxlength="60"
-                                rendered="#{capControlForm.PAOBase.PAOType != 'CAP BANK'}" />
+                                rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.PAOType != 'CAP BANK'}" />
                             
                             <x:inputText id="paoNameForCaps" value="#{capBankEditor.capBank.PAOName}" styleClass="char32Label"
-                                required="true" maxlength="60" rendered="#{capControlForm.PAOBase.PAOType == 'CAP BANK'}" />
+                                required="true" maxlength="60" rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.PAOType == 'CAP BANK'}" />
                         </x:panelGroup>
         				
                     </x:panelGrid>
     				
                     <h:selectBooleanCheckbox id="disablePao" value="#{capControlForm.PAOBase.disabled}"
-    					rendered="#{capControlForm.PAOBase.PAOType != 'CAP BANK'}"/>
+    					rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.PAOType != 'CAP BANK'}"/>
     				
                     <h:selectBooleanCheckbox id="disablePaoForCaps" value="#{capBankEditor.capBank.disabled}"
-    					rendered="#{capControlForm.PAOBase.PAOType == 'CAP BANK'}"/>
+    					rendered="#{!capControlForm.editingCBCStrategy && capControlForm.PAOBase.PAOType == 'CAP BANK'}"/>
     
     				<x:outputLabel for="disablePao" value="Disable" title="Disables/Enables the object." styleClass="padCheckBoxLabel"/>
                     
@@ -85,8 +85,7 @@
                     <x:outputLabel for="stratName" value="Name: " title="System wide label for this object" />
     				
                     <x:inputText id="stratName" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].strategyName}"
-    					styleClass="char32Label" required="true" maxlength="32"
-    					disabled="#{capControlForm.currentStrategyID == 0}" />
+    					styleClass="char32Label" required="true" maxlength="32"/>
     				
     			</h:panelGroup>
             </x:panelGrid>

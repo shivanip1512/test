@@ -69,7 +69,7 @@ public class StrategyDaoImpl implements StrategyDao{
         "ControlUnits, ControlDelayTime, ControlSendRetries," +
         "IntegrateFlag, IntegratePeriod," +
         "LikeDayFallBack, EndDaySettings" +
-        " from CapControlStrategy  where StrategyId > 0 order by StrategyName";
+        " from CapControlStrategy order by StrategyName";
         
         List<CapControlStrategy> strategies = simpleJdbcTemplate.query(sql.toString(), rowMapper);
         
@@ -212,7 +212,7 @@ public class StrategyDaoImpl implements StrategyDao{
         };
 
         List<PeakTargetSetting> settings = simpleJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
-        if(settings.isEmpty() && strategy.getStrategyID() != 0) {
+        if(settings.isEmpty()) {
             ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits());
             settings = StrategyPeakSettingsHelper.getSettingDefaults(algorithm);
         }

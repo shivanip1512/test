@@ -58,8 +58,8 @@ public class EditorDataModelImpl implements EditorDataModel {
         // save current page for return
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
         CBCNavigationUtil.bookmarkThisLocation(session);
-        String type = JSFParamUtil.getJSFReqParam("strattype");
-        String itemid = JSFParamUtil.getJSFReqParam("stratitemid");
+        String type = JSFParamUtil.getJSFReqParam("type");
+        String itemid = JSFParamUtil.getJSFReqParam("itemid");
         JSFUtil.redirect("/editor/cbcBase.jsf?type=" + type + "&itemid=" + itemid);
     }
     

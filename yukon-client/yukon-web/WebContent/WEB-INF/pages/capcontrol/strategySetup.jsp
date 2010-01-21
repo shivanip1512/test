@@ -46,8 +46,8 @@
                             action="#{capControlForm.dataModel.createEditorLink}" value="Edit" rendered="#{capControlForm.editingAuthorized}"
                             actionListener="#{capControlForm.setTab}"
                             title="Click here to edit this strategy.">
-                            <f:param name="strattype" id="stratType" value="#{selLists.strategyEditorType}" />
-                            <f:param name="stratitemid" id="stratItemid" value="#{capControlForm.assignedStratMap[season]}" />
+                            <f:param name="type" id="stratType" value="5"/>
+                            <f:param name="itemid" id="stratItemid" value="#{capControlForm.assignedStratMap[season]}" />
                             <f:param name="tabId" value="7"/>
                         </x:commandLink>
                     </h:column>

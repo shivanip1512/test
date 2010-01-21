@@ -39,7 +39,7 @@
 
     <x:htmlTag value="br"/>
     <h:selectBooleanCheckbox id="Edit_Strategy" onclick="lockButtonsPerSubmit('Strategy_Buttons'); submit();"
-        value="#{capControlForm.editingCBCStrategy}" disabled="#{capControlForm.currentStrategyID == 0}" />
+        value="#{capControlForm.editingCBCStrategy}" />
         
     <x:outputLabel for="Edit_Strategy" value="Edit Strategy" title="A toggle to edit the selected strategy" styleClass="padCheckBoxLabel"/>
     
@@ -52,14 +52,13 @@
         <x:commandButton id="Create_Strategy" value="New Strategy" title="Create a new strategy"
                 action="#{capControlForm.createStrategy}" styleClass="stdButton" />
         <x:commandButton id="Delete_Strategy" value="Delete Strategy" title="Delete the selected strategy" styleClass="stdButton"
-                action="#{capControlForm.deleteStrategy}" onclick="return window.confirm('Are you sure you want to delete this strategy?\r\nNote: Deleting this strategy will force all data to be saved and the current strategy will be set to (none).');"
-                disabled="#{capControlForm.currentStrategyID == 0}">
+                action="#{capControlForm.deleteStrategy}" onclick="return window.confirm('Are you sure you want to delete this strategy?\r\nNote: Deleting this strategy will force all data to be saved and the current strategy will be set to (none).');">
                 <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
         </x:commandButton>
     </x:panelGroup>
     
     <x:panelGrid forceId="true" id="body" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell" >
-        <h:column rendered="#{capControlForm.currentStrategyID != 0}" >
+        <h:column>
         
             <x:htmlTag value="fieldset" styleClass="fieldSet">
                 <x:htmlTag value="legend">
@@ -69,7 +68,7 @@
                 <x:panelGrid columns="2">
                     <x:outputLabel for="Control_Method" value="Control Method: " title="How the CapBanks are to be controlled"/>
                     <x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
-                        value="#{capControlForm.strategy.controlMethod}">
+                        value="#{capControlForm.strategy.controlMethod}" valueChangeListener="#{capControlForm.controlMethodChanged}">
                         <f:selectItems value="#{capControlForm.controlMethods}"/>
                     </x:selectOneMenu>
     
@@ -170,7 +169,7 @@
             </x:htmlTag>
         </h:column>
         
-        <h:column rendered="#{capControlForm.currentStrategyID != 0 && (!capControlForm.timeOfDay)}" >
+        <h:column rendered="#{!capControlForm.timeOfDay}" >
             <x:htmlTag value="fieldset" styleClass="fieldSet">
                 <x:htmlTag value="legend">
                     <x:outputText value="Strategy Peaks" />
@@ -244,14 +243,13 @@
                 </x:htmlTag>
                     
                 <x:selectManyCheckbox id="Peak_Operating_Days" value="#{capControlForm.stratDaysOfWeek}"
-                    disabled="#{!capControlForm.editingCBCStrategy}" layout="pageDirection" 
-                    rendered="#{capControlForm.currentStrategyID != 0}">
+                    disabled="#{!capControlForm.editingCBCStrategy}" layout="pageDirection">
                     <f:selectItems value="#{selLists.daySelections}"/>
                 </x:selectManyCheckbox>
             </x:htmlTag>
         </h:column>
         
-        <h:column rendered="#{capControlForm.currentStrategyID != 0 && (capControlForm.timeOfDay)}" >
+        <h:column rendered="#{capControlForm.timeOfDay}" >
             <x:htmlTag value="fieldset" styleClass="fieldSet">
                 <x:htmlTag value="legend">
                     <x:outputText value="Time of Day Strategy Settings" />

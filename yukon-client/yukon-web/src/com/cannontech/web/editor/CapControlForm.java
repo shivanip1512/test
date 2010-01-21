@@ -86,7 +86,6 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
-import com.cannontech.database.db.capcontrol.CCStrategyTimeOfDaySet;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
@@ -155,7 +154,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private Integer scheduleId = -1000;
     private Integer holidayScheduleId = -1000;
     private Integer holidayStrategyId = -1000;
-    private CCStrategyTimeOfDaySet strategyTimeOfDay = null;
     private CapControlCreationService capControlCreationService;
     private CapbankControllerDao capbankControllerDao;
     
@@ -554,22 +552,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             itemID = strat.getStrategyID().intValue();
             editingCBCStrategy = true;
             initPanels(CapControlTypes.CAP_CONTROL_STRATEGY);
-            if(strat.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-                CCStrategyTimeOfDaySet tod = getStrategyTimeOfDay();
-                tod.setStrategyId(strat.getStrategyID());
-                Connection connection = CBCDBUtil.getConnection();
-                try {
-                    tod.retrieve(connection);
-                } catch( SQLException sql ) {
-                    log.error("Unable to retrieve CCStrategyTimeofDay Object", sql );
-                }
-                finally {
-                    getDbPersistent().setDbConnection( null );
-                    try {
-                        if( connection != null ) connection.close();
-                    } catch( SQLException e2 ) { }         
-                }
-            }
         }
 		
 		/* Restore the value of the dual bus from DB */
@@ -785,10 +767,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 boolean ok = checkStrategy(currentStrategy);
                 if(ok) {
                     updateDBObject(currentStrategy, facesMsg);
-                    if(currentStrategy.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-                        getStrategyTimeOfDay().setStrategyId(currentStrategy.getStrategyID());
-                        getStrategyTimeOfDay().add(connection);
-                    }
     				cbcStrategies = null;
                     setEditingCBCStrategy(false);
                 }else {
@@ -864,18 +842,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 if(ok) {
                     setEditingCBCStrategy(false);
                     updateDBObject(strategy, facesMsg);
-                    if(strategy.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-                        CCStrategyTimeOfDaySet ccStrategyTimeOfDay = getStrategyTimeOfDay();
-                        if(CapControlStrategy.todExists(ccStrategyTimeOfDay.getStrategyId())) {
-                            ccStrategyTimeOfDay.update(connection);
-                        }else {
-                            getStrategyTimeOfDay().setStrategyId(strategy.getStrategyID());
-                            getStrategyTimeOfDay().add(connection);
-                        }
-                    }else {
-                        CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
-                        strategyTimeOfDay = new CCStrategyTimeOfDaySet();
-                    }
                 }else {
                 	facesMsg.setDetail("ERROR: When using Integrate Control, the analysis interval must be greater than or equal to the integration interval.");
                     facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
@@ -1951,15 +1917,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public List<CapControlStrategy> getAllCBCStrats() {
-        List<CapControlStrategy> allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
-        List<CapControlStrategy> allStratList = new ArrayList<CapControlStrategy>();
-        for (int i = 0; i < allCBCStrategies.size(); i++) {
-            CapControlStrategy strategy = allCBCStrategies.get(i);
-            if (strategy.getStrategyID().intValue() > 0) {
-                allStratList.add(strategy);
-            }
-        }
-        return allStratList;
+        return CapControlStrategy.getAllCBCStrategies();
     }
     
     @SuppressWarnings("unchecked")
@@ -2036,17 +1994,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, JSFParamUtil.getYukonUser());
     }
     
-    public CCStrategyTimeOfDaySet getStrategyTimeOfDay() {
-        if(strategyTimeOfDay == null) {
-            strategyTimeOfDay = new CCStrategyTimeOfDaySet(getCurrentStrategyID());
-        }
-        return strategyTimeOfDay;
-    }
-    
-    public void setStrategyTimeOfDay(CCStrategyTimeOfDaySet strategyTimeOfDay) {
-        this.strategyTimeOfDay = strategyTimeOfDay;
-    }
-
     public void setScheduleId(Integer id) {
         this.scheduleId = id;
     }
@@ -2117,4 +2064,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     public void controlUnitsChanged(ValueChangeEvent e){
         getStrategy().controlUnitsChanged(e.getNewValue().toString());
     }
+
+    public void controlMethodChanged(ValueChangeEvent e){
+        getStrategy().controlMethodChanged(e.getNewValue().toString());
+    }
+    
 }

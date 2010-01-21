@@ -746,4 +746,13 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
     public void controlUnitsChanged(String newValue) {
         targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.getControlAlgorithm(newValue));
     }
+    
+    public void controlMethodChanged(String newValue) {
+        if(newValue.equalsIgnoreCase("TimeOfDay")){
+            targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.TIME_OF_DAY);
+        } else {
+            targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.getControlAlgorithm(getControlUnits()));
+        }
+    }
+    
 }
