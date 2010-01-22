@@ -278,4 +278,4 @@ GO
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '22-DEC-2010', 'Latest Update', 1);
+INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '22-JAN-2010', 'Latest Update', 1);
