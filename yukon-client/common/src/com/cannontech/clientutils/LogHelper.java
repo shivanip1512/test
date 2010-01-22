@@ -1,5 +1,6 @@
 package com.cannontech.clientutils;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class LogHelper {
@@ -12,6 +13,21 @@ public class LogHelper {
     
     public static LogHelper getInstance(Logger log) {
         return new LogHelper(log);
+    }
+    
+    private static void log(Logger log, Level level, String format, Object... args) {
+        if (log.isEnabledFor(level)) {
+            String output = String.format(format, args);
+            log.log(level, output);
+        }
+    }
+    
+    public static void warn(Logger log, String format, Object ... args) {
+        log(log, Level.WARN, format, args);
+    }
+
+    public void warn(String format, Object ... args) {
+        warn(log, format, args);
     }
     
     public static void debug(Logger log, String format, Object ... args) {

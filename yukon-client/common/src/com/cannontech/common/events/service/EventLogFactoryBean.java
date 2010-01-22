@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
@@ -298,11 +299,10 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
             public void run() {
                 try {
                     eventLogDao.insert(eventLog);
-                    if (log.isDebugEnabled()) {
-                    	log.debug("Event Logged: " + eventLog);
-                    }
+                    LogHelper.debug(log, "Event Logged: %s", eventLog);
                 } catch (Exception e) {
                     log.warn("Unable to insert logging event", e);
+                    LogHelper.warn(log, "Event Not Logged: %s", eventLog);
                 }
             }
         };

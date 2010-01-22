@@ -3,7 +3,7 @@ package com.cannontech.common.events.model;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.joda.time.DateTime;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -69,11 +69,7 @@ public class EventLog {
     
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("eventType", eventType)
-            .append("dateTime", dateTime)
-            .append("arguments", arguments)
-            .toString();
+        return eventType + " @ " + new DateTime(dateTime) + " " + Arrays.toString(arguments);
     }
 
 }
