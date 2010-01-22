@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/20/2010 6:28:45 PM                         */
+/* Created on:     1/22/2010 11:40:20 AM                        */
 /*==============================================================*/
 
 
@@ -336,6 +336,8 @@ drop table CCSUBSPECIALAREAASSIGNMENT cascade constraints;
 drop table CCSUBSTATIONSUBBUSLIST cascade constraints;
 
 drop table CCStrategyTargetSettings cascade constraints;
+
+drop table CCSubstationBusToLTC cascade constraints;
 
 drop table CCURTACCTEVENT cascade constraints;
 
@@ -1661,6 +1663,15 @@ create table CCStrategyTargetSettings  (
    SettingValue         VARCHAR2(255)                   not null,
    SettingType          VARCHAR2(255)                   not null,
    constraint PK_CCStratTarSet primary key (StrategyId, SettingName, SettingType)
+);
+
+/*==============================================================*/
+/* Table: CCSubstationBusToLTC                                  */
+/*==============================================================*/
+create table CCSubstationBusToLTC  (
+   LtcId                NUMBER                          not null,
+   SubstationBusId      NUMBER                          not null,
+   constraint PK_CCSubBusToLtc primary key (LtcId)
 );
 
 /*==============================================================*/
@@ -10715,6 +10726,16 @@ alter table CCSUBSTATIONSUBBUSLIST
 alter table CCStrategyTargetSettings
    add constraint FK_CCStratTarSet_CapContStrat foreign key (StrategyId)
       references CapControlStrategy (StrategyID)
+      on delete cascade;
+
+alter table CCSubstationBusToLTC
+   add constraint FK_CCSubBusToLTC_CapContSubBus foreign key (SubstationBusId)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+      on delete cascade;
+
+alter table CCSubstationBusToLTC
+   add constraint FK_CCSubBusToLTC_YukonPAO foreign key (LtcId)
+      references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table CCURTACCTEVENT

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/20/2010 6:26:28 PM                         */
+/* Created on:     1/22/2010 11:38:25 AM                        */
 /*==============================================================*/
 
 
@@ -1349,6 +1349,13 @@ if exists (select 1
            where  id = object_id('CCStrategyTargetSettings')
             and   type = 'U')
    drop table CCStrategyTargetSettings
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCSubstationBusToLTC')
+            and   type = 'U')
+   drop table CCSubstationBusToLTC
 go
 
 if exists (select 1
@@ -4245,6 +4252,16 @@ create table CCStrategyTargetSettings (
    SettingValue         varchar(255)         not null,
    SettingType          varchar(255)         not null,
    constraint PK_CCStratTarSet primary key (StrategyId, SettingName, SettingType)
+)
+go
+
+/*==============================================================*/
+/* Table: CCSubstationBusToLTC                                  */
+/*==============================================================*/
+create table CCSubstationBusToLTC (
+   LtcId                numeric              not null,
+   SubstationBusId      numeric              not null,
+   constraint PK_CCSubBusToLtc primary key (LtcId)
 )
 go
 
@@ -13837,6 +13854,18 @@ go
 alter table CCStrategyTargetSettings
    add constraint FK_CCStratTarSet_CapContStrat foreign key (StrategyId)
       references CapControlStrategy (StrategyID)
+         on delete cascade
+go
+
+alter table CCSubstationBusToLTC
+   add constraint FK_CCSubBusToLTC_CapContSubBus foreign key (SubstationBusId)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+         on delete cascade
+go
+
+alter table CCSubstationBusToLTC
+   add constraint FK_CCSubBusToLTC_YukonPAO foreign key (LtcId)
+      references YukonPAObject (PAObjectID)
          on delete cascade
 go
 

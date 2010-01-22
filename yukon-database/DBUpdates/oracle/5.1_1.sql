@@ -252,6 +252,25 @@ ALTER TABLE DynamicCCOriginalParent
             ON DELETE CASCADE;
 /* End YUK-8250 */
 
+/* Start YUK-8301 */
+CREATE TABLE CCSubstationBusToLTC  (
+   LtcId                NUMBER                          NOT NULL,
+   SubstationBusId      NUMBER                          NOT NULL,
+   CONSTRAINT PK_CCSubBusToLtc PRIMARY KEY (LtcId)
+);
+
+ALTER TABLE CCSubstationBusToLTC
+    ADD CONSTRAINT FK_CCSubBusToLTC_CapContSubBus FOREIGN KEY (SubstationBusId)
+        REFERENCES CapControlSubstationBus (SubstationBusId)
+            ON DELETE CASCADE;
+
+ALTER TABLE CCSubstationBusToLTC
+    ADD CONSTRAINT FK_CCSubBusToLTC_YukonPAO FOREIGN KEY (LtcId)
+        REFERENCES YukonPAObject (PAObjectId)
+            ON DELETE CASCADE;
+/* End YUK-8301 */
+
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -253,8 +253,29 @@ ALTER TABLE DynamicCCOriginalParent
             ON DELETE CASCADE;
 /* End YUK-8250 */
 
+/* Start YUK-8301 */
+CREATE TABLE CCSubstationBusToLTC (
+   LtcId                NUMERIC              NOT NULL,
+   SubstationBusId      NUMERIC              NOT NULL,
+   CONSTRAINT PK_CCSubBusToLtc PRIMARY KEY (LtcId)
+);
+GO
+
+ALTER TABLE CCSubstationBusToLTC
+    ADD CONSTRAINT FK_CCSubBusToLTC_CapContSubBus FOREIGN KEY (SubstationBusId)
+        REFERENCES CapControlSubstationBus (SubstationBusId)
+            ON DELETE CASCADE;
+GO
+
+ALTER TABLE CCSubstationBusToLTC
+    ADD CONSTRAINT FK_CCSubBusToLTC_YukonPAO FOREIGN KEY (LtcId)
+        REFERENCES YukonPAObject (PAObjectId)
+            ON DELETE CASCADE;
+GO
+/* End YUK-8301 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '20-DEC-2010', 'Latest Update', 1);
+INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '22-DEC-2010', 'Latest Update', 1);
