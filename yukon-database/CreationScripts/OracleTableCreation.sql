@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/22/2010 3:01:37 PM                         */
+/* Created on:     1/25/2010 10:25:44 AM                        */
 /*==============================================================*/
 
 
@@ -1762,7 +1762,7 @@ create table CCurtEEParticipant  (
 /*==============================================================*/
 create table CCurtEEParticipantSelection  (
    CCurtEEParticipantSelectionID NUMBER                          not null,
-   ConnectionAudit      VARCHAR2(255)                   not null,
+   ConnectionAudit      VARCHAR2(2550)                  not null,
    SubmitTime           DATE                            not null,
    State                VARCHAR2(255)                   not null,
    CCurtEEParticipantID NUMBER                          not null,

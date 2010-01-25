@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/22/2010 3:06:36 PM                         */
+/* Created on:     1/25/2010 10:24:54 AM                        */
 /*==============================================================*/
 
 
@@ -4367,7 +4367,7 @@ go
 /*==============================================================*/
 create table CCurtEEParticipantSelection (
    CCurtEEParticipantSelectionID numeric              not null,
-   ConnectionAudit      varchar(255)         not null,
+   ConnectionAudit      varchar(2550)        not null,
    SubmitTime           datetime             not null,
    State                varchar(255)         not null,
    CCurtEEParticipantID numeric              not null,

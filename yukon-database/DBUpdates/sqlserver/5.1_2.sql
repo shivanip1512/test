@@ -8,6 +8,11 @@ DeviceId ASC
 );
 /* End YUK-8288 */
 
+/* Start YUK-8160 */
+ALTER TABLE CCurtEEParticipantSelection 
+ALTER COLUMN ConnectionAudit VARCHAR(2550) NOT NULL; 
+/* End YUK-8160 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
