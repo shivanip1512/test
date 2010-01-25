@@ -38,47 +38,44 @@
 	            <x:messages id="messageList" showSummary="true" showDetail="true" styleClass="smallResults" errorClass="errorResults" layout="table"/>
 	
 	            <h:panelGrid id="body" columns="1" styleClass="pageBody">
+                    <x:div styleClass="deletionDiv">
+                    
+    	                <h:dataTable id="deleteItems" var="dbObj" 
+                                styleClass="deletionScrollerTable" 
+                                headerClass="deletionScrollerTableHeader"
+    	                        footerClass="deletionScrollerTableHeader"
+    	                        rowClasses="altTableRow,tableRow"
+    	                        columnClasses="deletionScrollerTableCell,deletionScrollerTableCell,deletionScrollerTableCell"
+    	                        value="#{paoDeleteForm.deleteItems}">
+                                
+    	                   <h:column>
+    	                        <f:facet name="header">
+    	                            <x:outputText value="Will Delete" title="If the particular item will be deleted upon submission"/>
+    	                        </f:facet>
+    	                        <x:outputText value="yes" rendered="#{dbObj.deleteAllowed}"/>
+    	                        <x:outputText value="no" rendered="#{!dbObj.deleteAllowed}" styleClass="alert" />
+    	                   </h:column>
+    	    
+    	                   <h:column>
+    	                        <f:facet name="header">
+    	                            <x:outputText value="Selected Item(s)" title="The items that are selected for deletion"/>
+    	                        </f:facet>
+    	                        <x:outputText value="#{dbObj.name}" />
+    	                   </h:column>
+    	    
+    	                   <h:column>
+    	                        <f:facet name="header">
+    	                            <x:outputText value="Status" title="Detailed message describing why this item may or may not be deleted" />
+    	                        </f:facet>
+    	                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && !dbObj.wasDeleted}" />
+    	                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && dbObj.wasDeleted}" styleClass="complete" />
+    	                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{dbObj.deleteError}" styleClass="alert" />
+    	                       
+    	                   </h:column>
+    	    
+    	                </h:dataTable>
 	
-	                <f:facet name="header">
-	                    <x:panelGroup>
-	                    </x:panelGroup>
-	                </f:facet>
-	
-	
-	                <h:dataTable id="deleteItems" var="dbObj"
-	                        styleClass="fullTable" headerClass="scrollerTableHeader"
-	                        footerClass="scrollerTableHeader"
-	                        rowClasses="tableRow,altTableRow"
-	                        value="#{paoDeleteForm.deleteItems}"
-	                        columnClasses="gridCellSmall,gridCellMedium,gridCellLarge" >
-	                   <h:column>
-	                        <f:facet name="header">
-	                            <x:outputText value="Will Delete" title="If the particular item will be deleted upon submission"/>
-	                        </f:facet>
-	                        <x:outputText value="yes" rendered="#{dbObj.deleteAllowed}"/>
-	                        <x:outputText value="no" rendered="#{!dbObj.deleteAllowed}" styleClass="alert" />
-	                   </h:column>
-	    
-	                   <h:column>
-	                        <f:facet name="header">
-	                            <x:outputText value="Selected Item(s)" title="The items that are selected for deletion"/>
-	                        </f:facet>
-	                        <x:outputText value="#{dbObj.name}" />
-	                   </h:column>
-	    
-	                   <h:column>
-	                        <f:facet name="header">
-	                            <x:outputText value="Status" title="Detailed message describing why this item may or may not be deleted" />
-	                        </f:facet>
-	                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && !dbObj.wasDeleted}" />
-	                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && dbObj.wasDeleted}" styleClass="complete" />
-	                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{dbObj.deleteError}" styleClass="alert" />
-	                       
-	                   </h:column>
-	    
-	                </h:dataTable>
-	
-	
+                    </x:div>
 	
 	                <f:facet name="footer">
 	                    <x:panelGroup id="buttons" forceId="true">

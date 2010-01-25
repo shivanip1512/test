@@ -46,9 +46,7 @@
         <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
         <cti:crumbLink title="Strategies"/>
     </cti:breadCrumbs>
-    <b>
-        <div id="errorElement" style="text-align: center; color: red"></div>
-    </b>
+        <div id="errorElement" style="text-align: center; color: red;font-weight: bold;"></div>
     <table class="resultsTable" id="strategyTable" width="90%" border="0"
         cellspacing="0" cellpadding="3" align="center">
         <thead>
@@ -62,14 +60,31 @@
                 <th>Pass/Fail(%)</th>
                 <th>Peak Settings</th>
                 <th>Off Peak Settings</th>
-                <th></th>
             </tr>
         </thead>
         <tbody id="tableBody">
             <c:forEach var="item" items="${strategies}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>"
                     id="s_${item.strategyID}">
-                    <td><c:out value="${item.strategyName}" /></td>
+                    <td nowrap="nowrap">
+                        <c:choose>
+                            <c:when test="${hasEditingRole}">
+                                <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyID}" class="imgLink">
+                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
+                                </a>
+                                <a href="javascript:removeStrategy(${item.strategyID}, '${item.strategyName}');" class="imgLink">
+                                    <img class="rAlign editImg pointer" src="/WebConfig/yukon/Icons/delete.gif">
+                                </a>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyID}" class="imgLink">
+                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
+                        
+                        <c:out value="${item.strategyName}" />
+                    </td>
                     <td><c:out value="${item.controlMethod}" /></td>
                     <td><c:out value="${item.controlUnits}" /></td>
                     <td>
@@ -82,21 +97,6 @@
                     <td><c:out value="${item.passFailPercentString}"/></td>
                     <td><c:out value="${item.peakSettingsString}"/></td>
                     <td><c:out value="${item.offPeakSettingsString}"/></td>
-                    <td nowrap="nowrap">
-                        <c:choose>
-                            <c:when test="${hasEditingRole}">
-                                <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyID}">
-                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
-                                </a>
-                                <img src="/WebConfig/yukon/Icons/delete.gif " class="pointer" onclick="removeStrategy(${item.strategyID}, '${item.strategyName}');">
-                            </c:when>
-                            <c:otherwise>
-                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyID}">
-                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
-                                </a>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
                 </tr>
             </c:forEach>
         </tbody>

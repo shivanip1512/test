@@ -77,7 +77,7 @@
                     <x:panelGroup>
                     </x:panelGroup>
                 </f:facet>
-                <x:panelTabbedPane id="tabPane" activeTabStyleClass="activeTab" style="width: 100%; vertical-align: top;" selectedIndex="#{capControlForm.selectedPanelIndex}" serverSideTabSwitch="#{false}">
+                <x:panelTabbedPane id="tabPane" selectedIndex="#{capControlForm.selectedPanelIndex}" serverSideTabSwitch="#{false}">
                     
                     <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}">
                         <jsp:include page="/WEB-INF/pages/capcontrol/generalEditor.jsp"/>

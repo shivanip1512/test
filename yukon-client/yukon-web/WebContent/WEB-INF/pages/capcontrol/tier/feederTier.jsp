@@ -128,14 +128,14 @@
     </c:otherwise>
 </c:choose>
 	<ct:abstractContainer type="box" title="Substation" hideEnabled="false">
-		<table id="substationTable" class="tierTable">
+		<table id="substationTable" class="compactResultsTable">
         
 			<tr>
 				<th class="lAlign">Substation Name</th>
 				<th class="lAlign">State</th>
 			</tr>
             
-            <tr class="altTableCell" id="tr_substation_${substation.ccId}">
+            <tr class="tableCell" id="tr_substation_${substation.ccId}">
             
                 <td id="anc_${thisSubStationId}">
                     <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${substation.ccId}" class="tierIconLink">
@@ -178,7 +178,7 @@
 
 	<ct:abstractContainer type="box" title="Substation Bus" hideEnabled="true" showInitially="true">
 
-		<table id="subBusTable" class="tierTable">
+		<table id="subBusTable" class="compactResultsTable rowHighlighting">
 			<tr>
 				<th><input type="checkbox" name="chkAllSubBusesBx" onclick="checkAll(this, 'cti_chkbxSubBuses');" class="tierCheckBox">
 				    <select id='subBusFilter' onchange='applySubBusFilter(this);'>
@@ -205,10 +205,10 @@
                 <c:set var="subBusRowClass" value="tableCell"/>
                     <c:choose>
                         <c:when test="${subBusRowCount % 2 == 0}">
-                            <c:set var="subBusRowClass" value="altTableCell"/>
+                            <c:set var="subBusRowClass" value="tableCell"/>
                         </c:when>
                         <c:otherwise>
-                            <c:set var="subBusRowClass" value="tableCell"/>
+                            <c:set var="subBusRowClass" value="altTableCell"/>
                         </c:otherwise>
                     </c:choose>
                     <c:set var="subBusRowCount" value="${subBusRowCount + 1}"/>
@@ -325,52 +325,58 @@
                     
     			</tr>
     			<tr class="tableCellSnapShot">
-    				<td colspan="8">
+    				<td colspan="9" class="tableCellSnapShot">
         				<table id="subSnapShot${thisSubBusId}">
         				
         			        <tr class="tableCellSnapShot" style="display: none;">
         				        <td colspan="2">
-        				        <b><u>Substation Info</u></b>
+        				            <span class="snapShotSubLabel">Substation Info</span>
         				        </td>	
         			        </tr>
         			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><b><font class="lIndent">Area: </font></b></td>
-        	                    <td><b><font class="lIndent">${areaName}</font>
-        					        <font color="red">
-        		                        <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED" />
-        		                    </font></b>
+        				        <td><span class="lIndent">Area: </span></td>
+        	                    <td>
+                                    <span class="lIndent">${areaName}</span>
+        		                    <span class="errorRed"><cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED" /></span>
         				        </td>
         					</tr>
         			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><b><font class="lIndent">Control Method: </font></b></td>
-        				        <td><b><font class="lIndent">${viewableSubBus.subBus.controlMethod} (${viewableSubBus.subBus.controlUnits})</font></b></td>
+        				        <td><span class="lIndent">Control Method: </span></td>
+        				        <td>
+                                    <span class="lIndent">${viewableSubBus.subBus.controlMethod} (${viewableSubBus.subBus.controlUnits})</span>
+                                </td>
         					</tr>
         			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><b><font class="lIndent">Var Point: </font></b></td>
-        				        <td><b><font class="lIndent">
-        				        <c:choose>
-        					        <c:when test="${viewableSubBus.varPoint != null}">${viewableSubBus.varPoint.pointName}</c:when>
-        					        <c:otherwise>(none)</c:otherwise>
-        				        </c:choose>
-        				        </font></b></td>
+        				        <td><span class="lIndent">Var Point: </span></td>
+        				        <td>
+                                    <span class="lIndent">
+                				        <c:choose>
+                					        <c:when test="${viewableSubBus.varPoint != null}">${viewableSubBus.varPoint.pointName}</c:when>
+                					        <c:otherwise>(none)</c:otherwise>
+                				        </c:choose>
+        				            </span>
+                                </td>
         					</tr>
         				    <tr class="tableCellSnapShot" style="display: none;">
-                                <td><b><font class="lIndent">Watt Point: </font></b></td>
-                                <td><b><font class="lIndent">
-        			        	<c:choose>
-        					        <c:when test="${viewableSubBus.wattPoint != null}">${viewableSubBus.wattPoint.pointName}</c:when>
-        					        <c:otherwise>(none)</c:otherwise>
-        				        </c:choose>
-                                </font></b></td>
+                                <td><span class="lIndent">Watt Point: </span></td>
+                                <td>
+                                    <span class="lIndent">
+        			        	    <c:choose>
+        					           <c:when test="${viewableSubBus.wattPoint != null}">${viewableSubBus.wattPoint.pointName}</c:when>
+        					           <c:otherwise>(none)</c:otherwise>
+        				            </c:choose>
+                                    </span>
+                                </td>
         					</tr>
         				    <tr class="tableCellSnapShot" style="display: none;">
-                                <td><b><font class="lIndent">Volt Point: </font></b></td>
-                                <td><b><font class="lIndent">
-        			        	<c:choose>
-        					        <c:when test="${viewableSubBus.voltPoint != null}">${viewableSubBus.voltPoint.pointName}</c:when>
-        					        <c:otherwise>(none)</c:otherwise>
-        				        </c:choose>
-                                </font></b></td>
+                                <td><span class="lIndent">Volt Point: </span></td>
+                                <td><span class="lIndent">
+            			        	<c:choose>
+            					        <c:when test="${viewableSubBus.voltPoint != null}">${viewableSubBus.voltPoint.pointName}</c:when>
+            					        <c:otherwise>(none)</c:otherwise>
+            				        </c:choose>
+                                    </span>
+                                </td>
         			        </tr>
         				
         				</table>
@@ -385,7 +391,7 @@
 
 	<ct:abstractContainer type="box" title="Feeders" hideEnabled="true" showInitially="true">
 
-		<table id="fdrTable" class="tierTable">
+		<table id="fdrTable" class="compactResultsTable rowHighlighting">
         	<tr>
          		<th><input type="checkbox" name="chkAllFdrsBx" onclick="checkAll(this, 'cti_chkbxFdrs');" class="tierCheckBox">
          			<select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
@@ -409,10 +415,10 @@
                 <c:set var="feederRowClass" value="tableCell"/>
 	            <c:choose>
 	                <c:when test="${feederRowCount % 2 == 0}">
-	                    <c:set var="feederRowClass" value="altTableCell"/>
+	                    <c:set var="feederRowClass" value="tableCell"/>
 	                </c:when>
 	                <c:otherwise>
-	                    <c:set var="feederRowClass" value="tableCell"/>
+	                    <c:set var="feederRowClass" value="altTableCell"/>
 	                </c:otherwise>
 	            </c:choose>
 	            <c:set var="feederRowCount" value="${feederRowCount + 1}"/>
@@ -509,7 +515,7 @@
 	<br>
 	
 	<ct:abstractContainer type="box" title="Capacitor Banks" hideEnabled="true" showInitially="true">
-        <table id="capBankTable" class="tierTable">
+        <table id="capBankTable" class="compactResultsTable rowHighlighting">
             <tr>
                 <th><input type="checkbox" name="chkAllBanksBx" onclick="checkAll(this, 'cti_chkbxBanks');" class="tierCheckBox"></th>
                 <th>CBC Name</th>
@@ -533,10 +539,10 @@
                 <c:set var="bankRowClass" value="tableCell"/>
                 <c:choose>
                     <c:when test="${bankRowCount % 2 == 0}">
-                        <c:set var="bankRowClass" value="altTableCell"/>
+                        <c:set var="bankRowClass" value="tableCell"/>
                     </c:when>
                     <c:otherwise>
-                        <c:set var="bankRowClass" value="tableCell"/>
+                        <c:set var="bankRowClass" value="altTableCell"/>
                     </c:otherwise>
                 </c:choose>
                 <c:set var="bankRowCount" value="${bankRowCount + 1}"/>

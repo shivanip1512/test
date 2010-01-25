@@ -26,19 +26,16 @@
 	
 }
 
-th {
-	font-weight: bold;
-    background-color: transparent;
-    text-align: left;
+table.compactResultsTable td {
+	padding: 2px 1px 1px;
 }
 
-.tierTable {
-	width: 100%;
-	border-collapse: collapse;
-	vertical-align: middle;
-	padding-top: 0px;
-	padding: 0px;
-	margin: 0px;
+table.compactResultsTable th {
+    padding-left: 1px;
+}
+
+td.tableCellSnapShot {
+    padding: 0px !important;
 }
 
 .altTableCell, .tableCell, .flyover {
@@ -108,10 +105,17 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 
 .lIndent {
 	margin-left: 27px;
+	font-weight: bold;
 }
 
 .llIndent{
 	margin-left: 54px;
+	font-weight: bold;
+}
+
+.snapShotSubLabel {
+	text-decoration: underline;
+	font-weight: bold;
 }
 
 .capbankTempMoveLink{

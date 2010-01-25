@@ -33,55 +33,52 @@ deleteForm.initItem();
 
             <h:panelGrid id="body" columns="1" styleClass="pageBody">
 
-                <f:facet name="header">
-                    <x:panelGroup>
-                    </x:panelGroup>
-                </f:facet>
+                <x:div styleClass="deletionDiv">
+                
+                    <h:dataTable id="deleteItems" var="dbObj"
+                            styleClass="deletionScrollerTable" 
+                            headerClass="deletionScrollerTableHeader"
+                            footerClass="deletionScrollerTableHeader"
+                            rowClasses="altTableRow,tableRow"
+                            value="#{pointDeleteForm.deleteItems}"
+                            columnClasses="deletionScrollerTableCell,deletionScrollerTableCell,deletionScrollerTableCell,deletionScrollerTableCell" >
+                       <h:column>
+                            <f:facet name="header">
+                                <x:outputText value="Is Deletable?" title="If the particular item will be deleted upon submission"/>
+                            </f:facet>
+                            <x:outputText value="yes" rendered="#{dbObj.deleteAllowed}"/>
+                            <x:outputText value="no" rendered="#{!dbObj.deleteAllowed}" styleClass="alert" />
+                       </h:column>
+        
+                       <h:column>
+                            <f:facet name="header">
+                                <x:outputText value="Confirm Delete" title="Check if want to delete permanenty"/>
+                            </f:facet>
+    						<h:selectBooleanCheckbox id="confirmDelete" onclick="submit()" 
+    												immediate="true"  value="#{dbObj.checked}" 
+    												disabled="#{!dbObj.deleteAllowed}"/>
+    						        
+                       </h:column>
+                       <h:column>
+                            <f:facet name="header">
+                                <x:outputText value="Selected Item(s)" title="The items that are selected for deletion"/>
+                            </f:facet>
+                            <x:outputText value="#{dbObj.name}" />
+                       </h:column>
+        
+                       <h:column>
+                            <f:facet name="header">
+                                <x:outputText value="Status" title="Detailed message describing why this item may or may not be deleted" />
+                            </f:facet>
+                            <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && !dbObj.wasDeleted}" />
+                            <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && dbObj.wasDeleted}" styleClass="complete" />
+                            <x:outputText value="#{dbObj.warningMsg}" rendered="#{dbObj.deleteError}" styleClass="alert" />
+                           
+                       </h:column>
+        
+                    </h:dataTable>
 
-
-                <h:dataTable id="deleteItems" var="dbObj"
-                        styleClass="fullTable" headerClass="scrollerTableHeader"
-                        footerClass="scrollerTableHeader"
-                        rowClasses="tableRow,altTableRow"
-                        value="#{pointDeleteForm.deleteItems}"
-                        columnClasses="gridCellSmall,gridCellSmall,gridCellMedium,gridCellLarge" >
-                   <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Is Deletable?" title="If the particular item will be deleted upon submission"/>
-                        </f:facet>
-                        <x:outputText value="yes" rendered="#{dbObj.deleteAllowed}"/>
-                        <x:outputText value="no" rendered="#{!dbObj.deleteAllowed}" styleClass="alert" />
-                   </h:column>
-    
-                   <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Confirm Delete" title="Check if want to delete permanenty"/>
-                        </f:facet>
-						<h:selectBooleanCheckbox id="confirmDelete" onclick="submit()" 
-												immediate="true"  value="#{dbObj.checked}" 
-												disabled="#{!dbObj.deleteAllowed}"/>
-						        
-                   </h:column>
-                   <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Selected Item(s)" title="The items that are selected for deletion"/>
-                        </f:facet>
-                        <x:outputText value="#{dbObj.name}" />
-                   </h:column>
-    
-                   <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Status" title="Detailed message describing why this item may or may not be deleted" />
-                        </f:facet>
-                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && !dbObj.wasDeleted}" />
-                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{!dbObj.deleteError && dbObj.wasDeleted}" styleClass="complete" />
-                        <x:outputText value="#{dbObj.warningMsg}" rendered="#{dbObj.deleteError}" styleClass="alert" />
-                       
-                   </h:column>
-    
-                </h:dataTable>
-
-
+                </x:div>
 
                 <f:facet name="footer">
                     <x:panelGroup>

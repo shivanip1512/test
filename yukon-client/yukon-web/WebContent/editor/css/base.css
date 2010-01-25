@@ -116,7 +116,7 @@ legend, .legendLikeLabel{
 
 .fieldSet {
     padding: 2px;
-    border: 1px solid #ccc;
+    border: 1px solid #cccccc;
 }
 
 .scrollerDiv {
@@ -145,12 +145,19 @@ legend, .legendLikeLabel{
 
 .fullTable {
 	width: 100%;
+	padding: 2px;
+    border: 1px solid gray;
+    border-collapse: collapse;
 }
 
-.scrollerTable, .fullTable {
-    padding: 2px;
-    border: 1px solid gray;
+.scrollerTable {
     width: 300px;
+}
+
+.scrollerTable, .bigScrollerTable {
+	padding: 2px;
+    border: 1px solid gray;
+    border-collapse: collapse;
 }
 
 .bigScrollerTable {
@@ -183,6 +190,33 @@ legend, .legendLikeLabel{
 
 .scrollerLeft {
     text-align: left;
+}
+
+.deletionScrollerTable {
+	width: 100%;
+    border-collapse: collapse;
+}
+
+.deletionScrollerTableHeader {
+	border-bottom: 1px solid #CCCCCC;
+    color:  #000000;
+    font-size: 12px;
+    font-weight: 600;
+    text-align:left;
+    vertical-align:bottom;
+    padding: 3px;
+}
+
+.deletionScrollerTableCell {
+    padding: 2px 2px;
+    font-size: 11px;
+    padding-top:3px;
+    vertical-align: top;
+}
+
+.deletionDiv {
+	padding: 4px;
+	border: 1px solid #777777
 }
 
 .scrollerTableHeader {
@@ -314,8 +348,18 @@ legend, .legendLikeLabel{
 	padding-right: 5px;
 }
 
+.myFaces_panelTabbedPane {
+	width: 100%; 
+	vertical-align: top;
+}
+
+.myFaces_panelTabbedPane_pane {
+    border: solid 1px #777777;
+    border-top: 0px;
+}
+
 .myFaces_panelTabbedPane_activeHeaderCell input {
-    background-color: #ccc !important;
+    background-color: #cccccc !important;
     padding: .3em .5em;
     color:  #06C;
     font-size: 14px;
@@ -324,53 +368,58 @@ legend, .legendLikeLabel{
     background-repeat:repeat-x;
 }
 
-.myFaces_panelTabbedPane_inactiveHeaderCell {
-    border-color:#ccc;
-    border-style: solid outset solid solid;
-    border-width: 1px;
-    background-color: #555555;
-    border-top-width: 0px;
-}
-
-.myFaces_panelTabbedPane_activeHeaderCell {
-    border-color:#ccc;
-    border-style: solid outset solid solid;
-    border-width: 1px;
-    background-color: #ccc;
-    border-top-width: 0px;
-}
-
 .myFaces_panelTabbedPane_inactiveHeaderCell input {
     padding: .3em .5em;
     color:  #06C;
     font-size: 14px;
-    background-color: #ccc;
+    background-color: #cccccc !important;
 }
 
-.myFaces_panelTabbedPane_pane {
-	border: 2px #ccc;
-	border-color:#ccc;
-    border-style: solid;
-    border-width: 2px;
-    border-top-width: 0px;
+.myFaces_panelTabbedPane_inactiveHeaderCell {
+    border-style: solid none none solid;
+    border-color: #777777 #777777;
+    border-width: 1px;
+    background-color: #555555 !important;
 }
 
-.myFaces_panelTabbedPane_subHeaderCell_last {
-    border-right:none;
-    border-top:none;
+.myFaces_panelTabbedPane_activeHeaderCell {
+    border-style: solid none none solid;
+    border-color: #777777 #777777;
+    border-width: 1px;
+    background-color: #cccccc !important;
 }
 
-.myFaces_panelTabbedPane_subHeaderCell_active {
-	background-color: #ccc;
-    border: none;
-}
-
-.myFaces_panelTabbedPane_subHeaderCell_inactive {
-	background-color: #ccc;
-	border: none;
+.myFaces_panelTabbedPane_emptyHeaderCell {
+	border-left: solid #777777 1px;
+	border-bottom: solid #777777 1px;
 }
 
 .myFaces_panelTabbedPane_subHeaderCell {
-	background-color: #ccc;
-    height: 0px;
+	background-color: #cccccc !important;
+    margin: 0px;
+	padding: 0px;
+	line-height: 1px;
+	color: #cccccc;
+	height: 1px;
+	border-top: none;
+	border-bottom: none;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_last {
+    border-left: none;
+    border-right: solid #777777 1px;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_first {
+    border-right: none;
+    border-left: solid #777777 1px;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_active {
+	background-color: #cccccc !important;
+}
+
+.myFaces_panelTabbedPane_subHeaderCell_inactive {
+	background-color: #cccccc !important;
+	border
 }

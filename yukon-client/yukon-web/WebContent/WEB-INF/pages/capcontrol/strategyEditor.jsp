@@ -2,42 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
-<f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCArea'] 
-                                     || capControlForm.visibleTabs['CBCSubstationBus'] 
-                                     || capControlForm.visibleTabs['CBCFeeder'] 
-                                     || capControlForm.visibleTabs['CBCStrategy']}" >
+<f:subview id="cbcStrategy">
 
-    <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCArea']}" >
-        <x:htmlTag value="br"/>
-        <x:outputLabel for="Area_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
-        <x:selectOneMenu id="Area_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
-                value="#{capControlForm.PAOBase.capControlArea.strategyID}" 
-                valueChangeListener="#{capControlForm.newStrategySelected}" >
-            <f:selectItems value="#{capControlForm.cbcStrategies}"/>
-        </x:selectOneMenu>
-    </f:subview>
-
-    <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
-        <x:htmlTag value="br"/>
-        <x:outputLabel for="Sub_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
-        <x:selectOneMenu id="Sub_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
-                value="#{capControlForm.PAOBase.capControlSubstationBus.strategyID}" 
-                valueChangeListener="#{capControlForm.newStrategySelected}">
-            <f:selectItems value="#{capControlForm.cbcStrategies}"/>
-        </x:selectOneMenu>
-    </f:subview>
-
-    <f:subview id="paoFeeder" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >
-        <x:htmlTag value="br"/>
-        <x:outputLabel for="Feeder_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
-        <x:selectOneMenu id="Feeder_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
-                value="#{capControlForm.PAOBase.capControlFeeder.strategyID}" 
-                valueChangeListener="#{capControlForm.newStrategySelected}">
-            <f:selectItems value="#{capControlForm.cbcStrategies}"/>
-        </x:selectOneMenu>
-    </f:subview>
-
-    <x:htmlTag value="br"/>
     <h:selectBooleanCheckbox id="Edit_Strategy" onclick="lockButtonsPerSubmit('Strategy_Buttons'); submit();"
         value="#{capControlForm.editingCBCStrategy}" />
         
@@ -72,8 +38,10 @@
                         <f:selectItems value="#{capControlForm.controlMethods}"/>
                     </x:selectOneMenu>
     
-                    <x:outputLabel for="Control_Interval" value="Analysis Interval: " title="How often the system should check to determine the need for control"/>
+                    <x:outputLabel for="Control_Interval" value="Analysis Interval: " rendered="#{!capControlForm.timeOfDay}" 
+                        title="How often the system should check to determine the need for control"/>
                     <x:selectOneMenu id="Control_Interval" disabled="#{!capControlForm.editingCBCStrategy}"
+                        rendered="#{!capControlForm.timeOfDay}"
                         value="#{capControlForm.strategy.controlInterval}" >
                         <f:selectItem itemLabel="(On New Data Only)" itemValue="0"/>
                         <f:selectItems value="#{capControlForm.timeInterval}"/>

@@ -46,9 +46,7 @@
 		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
 		<cti:crumbLink title="Schedules"/>
 	</cti:breadCrumbs>
-	<b>
-	<div id="errorElement" style="text-align: center; color: red"></div>
-	</b>
+	<div id="errorElement" style="text-align: center; color: red;font-weight: bold;"></div>
 	<table class="resultsTable" id="scheduleTable" width="90%" border="0"
 		cellspacing="0" cellpadding="3" align="center">
 		<thead>
@@ -58,14 +56,31 @@
 				<th>Next Run Time</th>
 				<th>Interval</th>
 				<th>Disabled</th>
-				<th></th>
 			</tr>
 		</thead>
 		<tbody id="tableBody">
 			<c:forEach var="item" items="${scheduleList}">
 				<tr class="<tags:alternateRow odd="" even="altRow"/>"
 					id="s_${item.scheduleID}">
-					<td><c:out value="${item.scheduleName}" /></td>
+					<td nowrap="nowrap">
+                        <c:choose>
+                            <c:when test="${hasEditingRole}">
+                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" class="imgLink">
+                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
+                                </a>
+                                <a href="javascript:removeSchedule(${item.scheduleID}, '${item.scheduleName}');" class="imgLink">
+                                    <img src="/WebConfig/yukon/Icons/delete.gif " class="rAlign editImg pointer">
+                                </a>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" class="imgLink">
+                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
+                        
+                        <c:out value="${item.scheduleName}" />
+                    </td>
 					<td>
                         <c:choose>
                             <c:when test="${item.lastRunTime.time <= startOfTime}">
@@ -95,21 +110,6 @@
 							<c:otherwise>
 	                                No
 	                        </c:otherwise>
-                        </c:choose>
-					</td>
-					<td align="center">
-                        <c:choose>
-                            <c:when test="${hasEditingRole}">
-	                            <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}">
-	                                <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
-	                            </a>
-	                            <img src="/WebConfig/yukon/Icons/delete.gif " class="pointer" onclick="removeSchedule(${item.scheduleID}, '${item.scheduleName}');">
-                            </c:when>
-                            <c:otherwise>
-                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}">
-                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
-                                </a>
-                            </c:otherwise>
                         </c:choose>
 					</td>
 				</tr>

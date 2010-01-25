@@ -815,6 +815,10 @@ a.simpleLink {
     color: black;
 }
 
+a.imgLink {
+    text-decoration: none;
+}
+
 table.rowHighlighting tr:hover td {
     background-color: yellow;
 }

@@ -197,9 +197,10 @@ Event.observe(window, 'load', function() {
 		<br><br>
 		
 		<c:if test="${param.failed}">
-			<b><div id="addFailed" style="text-align:center;color:red">The Add Failed: ${param.failedReason}</div></b>
+			<div id="addFailed" style="text-align:center;color:red;font-weight:bold;">The Add Failed: ${param.failedReason}</div>
 		</c:if>
-			<b><div id="errorElement" style="text-align:center;color:red"></div></b>
+        
+		<div id="errorElement" style="text-align:center;color:red;font-weight:bold;"></div>
 		
 		<table class="resultsTable" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
 		<thead>
@@ -210,14 +211,19 @@ Event.observe(window, 'load', function() {
 				<th>Command</th>
 				<th>Device</th>
 				<th>Disable OvUv</th>
-				<th>Delete</th>
 			</tr>
 			</thead>
 			<tbody id="tableBody">
 			<c:forEach var="item" items="${itemList}">
 				<tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}" >
 					<td id="schedRow" style="display:none"/>
-					<td><c:out value="${item.scheduleName}" /></td>
+					<td>
+                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                            <img src="/WebConfig/yukon/Icons/delete.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
+                        </cti:checkProperty>
+                        
+                        <c:out value="${item.scheduleName}" />
+                    </td>
 					<td><cti:formatDate value="${item.lastRunTime}" type="DATEHM" /></td>
 					<td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
 					<td><c:out value="${item.commandName}" /></td>
@@ -227,11 +233,6 @@ Event.observe(window, 'load', function() {
                             <option value="Y" <c:if test="${item.disableOvUv == 'Y'}">selected="selected"</c:if>>Y</option>
                             <option value="N" <c:if test="${item.disableOvUv == 'N'}">selected="selected"</c:if>>N</option>
                         </select>
-					</td>
-					<td align="center">
-                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                            <img src="/WebConfig/yukon/Icons/delete.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
-                        </cti:checkProperty>
 					</td>
 				</tr>
 				

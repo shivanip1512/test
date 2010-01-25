@@ -62,7 +62,7 @@
 
 <ct:abstractContainer type="box" hideEnabled="false" title="${containerTitle}" id="last_titled_container">
           
-	<table id="subTable" width="100%" cellspacing="0" cellpadding="0" >
+	<table id="subTable" class="compactResultsTable">
 	  <tr class="columnHeader lAlign">              
 	    <th style="font-weight:bold;">
 	    	<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>
@@ -77,12 +77,11 @@
 	    <th style="font-weight:bold;">PFactor / Est.</th>
 	  </tr>
 
-
 		<c:forEach var="subStation" items="${subStations}">
 
 		            <input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}"></input>
 		            
-			        <tr class="<ct:alternateRow odd="altRow" even=""/>">
+			        <tr class="<ct:alternateRow odd="" even="altRow"/>">
 						<td>
 						    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
 	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true" style="text-decoration:none;">
@@ -102,9 +101,9 @@
 						    
 						    <a href="${myLink}" class="" id="anc_${subStation.ccId}"> ${subStation.ccName}</a>
 						    
-						    <font color="red">
+						    <span class="errorRed">
 		                        <cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="SA_ENABLED" />
-		                    </font>
+		                    </span>
 						</td>
 		                
 		                <td>
