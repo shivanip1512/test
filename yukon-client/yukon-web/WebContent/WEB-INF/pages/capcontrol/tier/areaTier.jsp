@@ -116,7 +116,7 @@
     					</tr>
     					
     					<tr>
-    						<td colspan="3">
+    						<td colspan="3" class="tableCellSnapShot">
     						<table id="allAreas${thisAreaId}">
     							<c:forEach var="station" items="${viewableArea.subStations}">
     								<tr style="display: none;">
@@ -127,7 +127,7 @@
     							</c:forEach>
     	  					</table>
     		  				</td>
-    						<td colspan="6"></td>
+    						<td colspan="6" class="tableCellSnapShot"></td>
     		  			</tr>
     					
             		</c:forEach>
