@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/22/2010 11:38:25 AM                        */
+/* Created on:     1/22/2010 3:06:36 PM                         */
 /*==============================================================*/
 
 
@@ -768,6 +768,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index LMProgramEvent.INDX_LMProgEvent_AcctId_ProgId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMProgramWebPublishing')
+            and   name  = 'Indx_LMPWP_DevId_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMProgramWebPublishing.Indx_LMPWP_DevId_UNQ
 go
 
 if exists (select 1
@@ -9297,6 +9306,14 @@ create table LMProgramWebPublishing (
 go
 
 insert into LMProgramWebPublishing values (0,0,0,0,0,0);
+
+/*==============================================================*/
+/* Index: Indx_LMPWP_DevId_UNQ                                  */
+/*==============================================================*/
+create unique index Indx_LMPWP_DevId_UNQ on LMProgramWebPublishing (
+DeviceID ASC
+)
+go
 
 /*==============================================================*/
 /* Table: LMThermoStatGear                                      */
