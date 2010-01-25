@@ -95,19 +95,6 @@ protected:
     void CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea = NULL);
 };
 
-class Test_CtiLMManualControlRequestExecutor : public CtiLMManualControlRequestExecutor
-{
-public:
-    Test_CtiLMManualControlRequestExecutor() : 
-        CtiLMManualControlRequestExecutor(NULL, NULL)
-    {
-
-    }
-    void CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea = NULL)
-    {
-        CtiLMManualControlRequestExecutor::CoerceStartStopTime(program, start, stop, controlArea);
-    }
-};
 
 class CtiLMEnergyExchangeControlMsgExecutor : public CtiLMExecutor
 {

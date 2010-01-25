@@ -36,6 +36,7 @@ test_queue.obj \
 test_resolvers.obj \
 test_rwutil.obj \
 test_readers_writer_lock.obj \
+test_timeperiod.obj \
 test_utility.obj \
 test_xmlobject.obj \
 test_PointAttribute.obj \
@@ -120,10 +121,11 @@ amq_connection.obj:	yukon.h precompiled.h ctidbgmem.h utility.h \
 		activemqcpp.h connection.h
 attributeservice.obj:	yukon.h precompiled.h ctidbgmem.h \
 		AttributeService.h LitePoint.h dlldefs.h pointtypes.h \
-		resolvers.h types.h db_entry_defines.h numstr.h dbaccess.h \
-		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
-		clrdump.h cticonnect.h netports.h sema.h rwutil.h ctitime.h \
-		boost_time.h boostutil.h utility.h queues.h sorted_vector.h
+		PointAttribute.h resolvers.h types.h db_entry_defines.h \
+		numstr.h dbaccess.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
+		mutex.h guard.h clrdump.h cticonnect.h netports.h sema.h \
+		rwutil.h ctitime.h boost_time.h boostutil.h utility.h \
+		queues.h sorted_vector.h
 bfexec.obj:	yukon.h precompiled.h ctidbgmem.h bfexec.h
 cmdparse.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h \
 		ctitokenizer.h dlldefs.h parsevalue.h cparms.h rwutil.h \
@@ -251,6 +253,8 @@ pexec.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h mutex.h \
 		dsm2err.h devicetypes.h queues.h cticalls.h os2_2w32.h \
 		types.h logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
 		sorted_vector.h ctinexus.h
+pointattribute.obj:	yukon.h precompiled.h ctidbgmem.h PointAttribute.h \
+		dlldefs.h
 point_change.obj:	yukon.h precompiled.h ctidbgmem.h point_change.h \
 		dlldefs.h
 portsup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
@@ -329,6 +333,8 @@ test_numstr.obj:	yukon.h precompiled.h ctidbgmem.h numstr.h dlldefs.h
 test_old_queues.obj:	dsm2.h mutex.h dlldefs.h guard.h numstr.h \
 		clrdump.h cticonnect.h yukon.h precompiled.h ctidbgmem.h \
 		netports.h queues.h cticalls.h os2_2w32.h types.h
+test_pointattribute.obj:	yukon.h precompiled.h ctidbgmem.h \
+		PointAttribute.h dlldefs.h
 test_queue.obj:	queue.h cparms.h rwutil.h yukon.h precompiled.h \
 		ctidbgmem.h ctitime.h dlldefs.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -348,6 +354,10 @@ test_rwutil.obj:	rwutil.h yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		ctidate.h logger.h thread.h mutex.h guard.h clrdump.h \
 		CtiPCPtrQueue.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		netports.h sema.h
+test_timeperiod.obj:	timeperiod.h dlldefs.h ctitime.h ctidate.h \
+		logger.h thread.h mutex.h guard.h numstr.h clrdump.h \
+		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \
+		types.h sorted_vector.h
 test_utility.obj:	yukon.h precompiled.h ctidbgmem.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h dsm2.h mutex.h guard.h clrdump.h \
@@ -379,6 +389,8 @@ thread_timer.obj:	yukon.h precompiled.h ctidbgmem.h thread_timer.h \
 		thread_register_data.h boost_time.h cticalls.h os2_2w32.h \
 		types.h boostutil.h utility.h ctitime.h queues.h \
 		sorted_vector.h
+timeperiod.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
+		timeperiod.h
 ucttime.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		clrdump.h cticonnect.h netports.h elogger.h logger.h thread.h \

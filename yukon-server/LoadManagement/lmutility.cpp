@@ -3,6 +3,7 @@
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
+#include "timeperiod.h"
 #include "lmutility.h"
 
 #include "lmprogramcontrolwindow.h"
@@ -73,195 +74,190 @@ string ControlWindowErrorMessage(const CtiTime &windowStartTime,
 
 
 // Given the requested start/stop time, tries to use program and control area windows
-// and returns appropriate start/stop times.
+// and returns appropriate start/stop times. If not successful, the result start/stop 
+// may be anything.
+// 
 // Returns true if successful, false if not.
 bool FitTimeToWindows(CtiTime proposedStart, CtiTime proposedStop,
                       CtiTime &resultStart, CtiTime &resultStop,
                       CtiLMControlArea *controlArea,
                       CtiLMProgramBaseSPtr program)
 {
-    resultStart = proposedStart;
-    resultStop = proposedStop;
+    using Cti::TimePeriod;
+    TimePeriod result(proposedStart, proposedStop);
 
-    CtiTime caStart = CtiTime(CtiTime::neg_infin);
-    CtiTime caStop = CtiTime(CtiTime::neg_infin);
+    TimePeriod caTime(CtiTime::CtiTime(CtiTime::neg_infin), CtiTime::CtiTime(CtiTime::neg_infin));
     if( controlArea != NULL )
     {
-        caStart = controlArea->getCurrentDailyStartTime(proposedStart.date());
-        caStop = controlArea->getCurrentDailyStopTime(proposedStart.date());
+        caTime = TimePeriod(controlArea->getCurrentDailyStartTime(proposedStart.date()), 
+                            controlArea->getCurrentDailyStopTime(proposedStart.date()));
     }
 
-    CtiTime pr1Start = CtiTime(CtiTime::neg_infin), pr2Start = CtiTime(CtiTime::neg_infin),
-            pr1Stop = CtiTime(CtiTime::neg_infin), pr2Stop = CtiTime(CtiTime::neg_infin);
+    TimePeriod program1Time = TimePeriod(CtiTime::CtiTime(CtiTime::neg_infin), CtiTime::CtiTime(CtiTime::neg_infin));
+    TimePeriod program2Time = TimePeriod(CtiTime::CtiTime(CtiTime::neg_infin), CtiTime::CtiTime(CtiTime::neg_infin));
 
     std::vector<CtiLMProgramControlWindow*>& control_windows = program->getLMProgramControlWindows();
 
     if( control_windows.size() )
     {
-        pr1Start = control_windows[0]->getAvailableStartTime(proposedStart.date());
-        pr1Stop = control_windows[0]->getAvailableStopTime(proposedStart.date());
+        program1Time = TimePeriod(control_windows[0]->getAvailableStartTime(proposedStart.date()),
+                                  control_windows[0]->getAvailableStopTime(proposedStart.date()));
+
+        if( program1Time.begin().date() < program1Time.end().date() )
+        {
+            // If this is a date that loops over midnight, getAvailableStartTime returns
+            // the window beginning today, and we want the window that ends today.
+            program1Time.addDays(-1);
+        }
     }
 
     if( control_windows.size() > 1 )
     {
-        pr2Start = control_windows[1]->getAvailableStartTime(proposedStart.date());
-        pr2Stop = control_windows[1]->getAvailableStopTime(proposedStart.date());
+        program2Time = TimePeriod(control_windows[1]->getAvailableStartTime(proposedStart.date()),
+                                  control_windows[1]->getAvailableStopTime(proposedStart.date()));
+
+        if( program2Time.begin().date() < program2Time.end().date() )
+        {
+            // If this is a date that loops over midnight, getAvailableStartTime returns
+            // the window beginning today, and we want the window that ends today.
+            program2Time.addDays(-1);
+        }
     }
 
     // Check if we have any windows at all!
-    if( (!caStart.is_neg_infinity()  && !caStop.is_neg_infinity()) ||
-        (!pr1Start.is_neg_infinity() && !pr1Stop.is_neg_infinity()) ||
-        (!pr2Start.is_neg_infinity() && !pr2Stop.is_neg_infinity()) )
+    if( !caTime.is_null() || !program1Time.is_null() || !program2Time.is_null() )
     {
-        CtiTime newWindow1Start = pr1Start;
-        CtiTime newWindow1Stop = pr1Stop;
-        CtiTime newWindow2Start = pr2Start;
-        CtiTime newWindow2Stop = pr2Stop;
+        // Note that every path here must set result!
 
         // First check, if there are no program windows, the window is the control area window.
-        if( !caStart.is_neg_infinity() && !caStop.is_neg_infinity() &&
-            pr1Start.is_neg_infinity() && pr1Stop.is_neg_infinity() &&
-            pr2Start.is_neg_infinity() && pr2Stop.is_neg_infinity() )
+        if( !caTime.is_null() && program1Time.is_null() && program2Time.is_null() )
         {
-            newWindow1Start = caStart;
-            newWindow1Stop = caStop;
+            while( caTime.end() <= proposedStart )
+            {
+                caTime.addDays(1);
+            }
+            result = TimePeriod(std::max(caTime.begin(), proposedStart), std::min(caTime.end(), proposedStop));
         }
         else
         {
-            // We have a 1 or more program based windows, if there is a control area
-            // the program windows must be snapped down to the CA window.
-            if( !newWindow1Start.is_neg_infinity() && !newWindow1Stop.is_neg_infinity() &&
-                !caStart.is_neg_infinity() && !caStop.is_neg_infinity() )
+            TimePeriod possibleResult1 = TimePeriod(CtiTime::CtiTime(CtiTime::neg_infin), CtiTime::CtiTime(CtiTime::neg_infin));
+            TimePeriod possibleResult2 = TimePeriod(CtiTime::CtiTime(CtiTime::neg_infin), CtiTime::CtiTime(CtiTime::neg_infin));
+            // We have a 1 or more program based windows
+            if( caTime.is_null() )
             {
-                if( caStart > newWindow1Start )
+                // No control area window, check the programs only. Easy mode!
+                if( !program1Time.is_null() )
                 {
-                    newWindow1Start = caStart;
+                    while( program1Time.end() <= proposedStart )
+                    {
+                        program1Time.addDays(1);
+                    }
+                    possibleResult1 = program1Time;
                 }
 
-                if( caStop < newWindow1Stop )
+                if( !program2Time.is_null() )
                 {
-                    newWindow1Stop = caStop;
+                    while( program2Time.end() <= proposedStart )
+                    {
+                        program2Time.addDays(1);
+                    }
+                    possibleResult2 = program2Time;
                 }
-                
-                // if this happens, the program is totally outside of the control area window.
-                // If no overlap, the window is totally invalid.
-                if( newWindow1Start >= newWindow1Stop )
+
+            }
+            else // Both programs and a control window! Hard mode begin!
+            {
+                bool result1Found = false, result2Found = false;;
+                int progDays = 0;
+                int caDays = 0;
+
+                for( caDays = 0; caDays < 2 && (!result1Found || !result2Found); )
                 {
-                    newWindow1Start = CtiTime(CtiTime::neg_infin);
-                    newWindow1Stop = CtiTime(CtiTime::neg_infin);
+                    for( progDays = 0; progDays < 3 && !result1Found && !program1Time.is_null(); )
+                    {
+                        TimePeriod possiblePeriod = caTime.intersection(program1Time);
+                        if( !possiblePeriod.is_null() )
+                        {
+                            if( possiblePeriod.end() > proposedStart )
+                            {
+                                // This is the first and only allowed result from this program. Record it!
+                                possibleResult1 = possiblePeriod;
+                                result1Found = true;
+                            }
+                        }
+                        
+                        program1Time.addDays(1);
+                        progDays++;
+                    }
+
+                    program1Time.addDays(-1*progDays);
+
+                    for( progDays = 0; progDays < 3 && !result2Found && !program2Time.is_null(); )
+                    {
+                        TimePeriod possiblePeriod = caTime.intersection(program2Time);
+                        if( !possiblePeriod.is_null() )
+                        {
+                            if( possiblePeriod.end() > proposedStart )
+                            {
+                                // This is the first and only allowed result from this program. Record it!
+                                possibleResult2 = possiblePeriod;
+                                result2Found = true;
+                            }
+                        }
+                       
+                        program2Time.addDays(1);
+                        progDays++;
+                    }
+
+                    program2Time.addDays(-1*progDays);
+                    caTime.addDays(1);
+                    caDays ++;
                 }
+                caTime.addDays(-1*caDays);
             }
 
-            if( !newWindow2Start.is_neg_infinity() && !newWindow2Stop.is_neg_infinity() &&
-                !caStart.is_neg_infinity() && !caStop.is_neg_infinity() )
+            if( !possibleResult1.is_null() && !possibleResult2.is_null() )
             {
-                if( caStart > newWindow2Start )
+                if( possibleResult1.intersects(possibleResult2) )
                 {
-                    newWindow2Start = caStart;
+                    result = possibleResult1.merge(possibleResult2).intersection(result);
                 }
+                else 
+                {
+                    // Try the one that has the first start time first.
+                    if( possibleResult1.begin() > possibleResult2.begin() )
+                    {
+                        TimePeriod temp = possibleResult2;
+                        possibleResult2 = possibleResult1;
+                        possibleResult1 = temp;
+                    }
 
-                if( caStop < newWindow2Stop )
-                {
-                    newWindow2Stop = caStop;
-                }
-                
-                // if this happens, the program is totally outside of the control area window.
-                // If no overlap, the window is totally invalid.
-                if( newWindow2Start >= newWindow2Stop )
-                {
-                    newWindow2Start = CtiTime(CtiTime::neg_infin);
-                    newWindow2Stop = CtiTime(CtiTime::neg_infin);
+                    if( possibleResult1.intersects(result) )
+                    {
+                        result = possibleResult1.intersection(result);
+                    }
+                    else
+                    {
+                        result = possibleResult2.intersection(result);
+                    }
                 }
             }
-        }
-
-        if( newWindow1Start.is_neg_infinity() && newWindow2Start.is_neg_infinity() )
-        {
-            // The windows do not overlap, return no control found.
-            resultStart = CtiTime(CtiTime::neg_infin);
-            resultStop = CtiTime(CtiTime::neg_infin);
-            return false;
-        }
-
-
-        int bothWindowsValid = false;
-        if( !newWindow1Start.is_neg_infinity() && !newWindow2Start.is_neg_infinity() )
-        {
-            bothWindowsValid = true;
-        }
-
-        // We want window 1 to be < window 2, always.
-        // We also want window 1 to be the valid window if there is only 1 valid
-        if( (!newWindow2Start.is_neg_infinity() && newWindow1Start.is_neg_infinity()) || 
-            (bothWindowsValid && newWindow1Stop > newWindow2Stop) )
-        {
-            //Swap them.
-            CtiTime tempWindow1Start = newWindow2Start;
-            CtiTime tempWindow1Stop = newWindow2Stop;
-            newWindow2Start = newWindow1Start;
-            newWindow2Stop = newWindow1Stop;
-            newWindow1Start = tempWindow1Start;
-            newWindow1Stop = tempWindow1Stop;
-        }
-
-        if( bothWindowsValid && newWindow1Stop > newWindow2Start )
-        {
-            //What we have here is 1 window! they span each other. Who set this up?
-            newWindow1Stop = newWindow2Stop;
-            newWindow2Start = CtiTime(CtiTime::neg_infin);
-            newWindow2Stop = CtiTime(CtiTime::neg_infin);
-        }
-
-        // At this point, we have our two control windows, both of which are set up correctly
-        // in order and invalid if necessary.
-        if( newWindow1Stop > proposedStart )
-        {
-            resultStart = std::max(newWindow1Start, proposedStart);
-            resultStop = std::min(newWindow1Stop, proposedStop);
-        }
-        else if( bothWindowsValid && newWindow2Stop > proposedStart )
-        {
-            resultStart = std::max(newWindow2Start, proposedStart);
-            resultStop = std::min(newWindow2Stop, proposedStop);
-        }
-        else
-        {
-            newWindow1Start.addDays(1);
-            newWindow1Stop.addDays(1);
-
-            if( bothWindowsValid )
+            else if( !possibleResult1.is_null() )
             {
-                newWindow2Start.addDays(1);
-                newWindow2Stop.addDays(1);
+                result = possibleResult1.intersection(result);
             }
-
-            if( newWindow1Stop > proposedStart )
+            else if( !possibleResult2.is_null() )
             {
-                resultStart = std::max(newWindow1Start, proposedStart);
-                resultStop = std::min(newWindow1Stop, proposedStop);
-            }
-            else if( bothWindowsValid && newWindow2Stop > proposedStart )
-            {
-                resultStart = std::max(newWindow2Start, proposedStart);
-                resultStop = std::min(newWindow2Stop, proposedStop);
+                result = possibleResult2.intersection(result);
             }
             else
             {
-                // Somehow we found nothing???
-                resultStart = CtiTime(CtiTime::neg_infin);
-                resultStop = CtiTime(CtiTime::neg_infin);
-                return false;
+                result = TimePeriod(CtiTime(CtiTime::neg_infin), CtiTime(CtiTime::neg_infin));
             }
         }
-        
-        if( resultStart >= resultStop )
-        {
-            resultStart = CtiTime(CtiTime::neg_infin);
-            resultStop = CtiTime(CtiTime::neg_infin);
-            return false;
-        }
-        // We are done and successful!
     }
 
-    return true;
+    resultStart = result.begin();
+    resultStop = result.end();
+    return !result.is_null();
 }

@@ -2472,8 +2472,15 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
 
             CtiTime beginTime = GetTimeFromOffsetAndDate(secondsFromBeginningOfDay, CtiDate());
 
+            if( !FitTimeToWindows(beginTime, CtiTime(CtiTime::pos_infin), resultStart, resultStop, this, lm_program) )
+            {
+                // If we cant find the next window, this generally means our windows are
+                // messed up and no control will ever happen. Tell client there is a problem!
+                resultStart = CtiTime::neg_infin;
+                resultStop = CtiTime::neg_infin;
+            }
+
             if( !lm_direct->getManualControlReceivedFlag() &&
-                FitTimeToWindows(beginTime, CtiTime(CtiTime::pos_infin), resultStart, resultStop, this, lm_program) &&
                 lm_direct->getDirectStopTime() != resultStop )
             {
                 lm_direct->setDirectStartTime(resultStart);
