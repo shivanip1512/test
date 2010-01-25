@@ -342,7 +342,8 @@ public class OptOutServiceImpl implements OptOutService {
 				
 				// Cancel the scheduled opt out
 				event.setState(OptOutEventState.SCHEDULE_CANCELED);
-				// No need to update schedule date or start/stop date;
+				event.setScheduledDate(new Date());
+				// No need to update start/stop date;
 				// SCHEDULE_CANCELED entries are ignored by OptOut Counts logic, OptOut history WS calls
 				// Control history is calculated from actual LMHardwareControlGroup entries.
 				optOutEventDao.save(event, OptOutAction.CANCEL_SCHEDULE, user);

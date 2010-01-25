@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.optout.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -177,7 +178,6 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("FROM OptOutEvent ");
 		sql.append("WHERE CustomerAccountId = ?");
 		sql.append("	AND ((StartDate < ? AND StopDate < ?) OR (EventState = ?))");
-		sql.append("ORDER BY StartDate DESC");
 		
 		Date now = new Date();
 		
@@ -186,22 +186,14 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		if (numberOfRecords != null && numberOfRecords.length == 1) {
 			// If a max records was supplied, only process that number of records
 			maxNumberOfRecords = numberOfRecords[0];
-
-			eventList = (List<OptOutEventDto>) yukonJdbcTemplate.getJdbcOperations().query(
-													sql.toString(), 
-													new Object[]{customerAccountId, now, now, OptOutEventState.SCHEDULE_CANCELED.toString()}, 
-													new OptOutEventDtoExtractor(maxNumberOfRecords));
 		} else {
 			// Process and return all records
-			
-			eventList = yukonJdbcTemplate.query(
-					sql.toString(), 
-					new OptOutEventDtoRowMapper(), 
-					customerAccountId,
-					now,
-					now,
-					OptOutEventState.SCHEDULE_CANCELED.toString());
+		    maxNumberOfRecords = Integer.MAX_VALUE;
 		}
+        eventList = (List<OptOutEventDto>) yukonJdbcTemplate.getJdbcOperations().query(
+                                                sql.toString(), 
+                                                new Object[]{customerAccountId, now, now, OptOutEventState.SCHEDULE_CANCELED.toString()}, 
+                                                new OptOutEventDtoExtractor(maxNumberOfRecords));
 		
 		return eventList;
 	}
@@ -720,7 +712,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 			List<OptOutEventDto> eventList = new ArrayList<OptOutEventDto>();
 			
-			while(rs.next() && maxNumberOfRecords-- > 0){
+			while(rs.next()){
 				OptOutEventDto event = new OptOutEventDto();
 				event.setEventId(rs.getInt("OptOutEventId"));
 				event.setScheduledDate(rs.getTimestamp("ScheduledDate"));
@@ -730,19 +722,30 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				String eventStateString = rs.getString("EventState");
 				OptOutEventState eventState = OptOutEventState.valueOf(eventStateString);
 				event.setState(eventState);
-				
-				int inventoryId = rs.getInt("InventoryId");
-				HardwareSummary inventory = inventoryDao.getHardwareSummaryById(inventoryId);
-				event.setInventory(inventory);
-				
-				List<Program> programList = 
-					enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId,
-					                                               event.getStartDate(),
-					                                               event.getStopDate());
-				event.setProgramList(programList);
+				event.setInventoryId(rs.getInt("InventoryId"));
 				
 				eventList.add(event);
-				
+			}
+			
+			//sort here
+			Collections.sort(eventList, new OptOutEventDto().getSorter());
+			
+			//get requested records here
+			if (maxNumberOfRecords > eventList.size()) {
+			    maxNumberOfRecords = eventList.size();
+			}
+			eventList = eventList.subList(0, maxNumberOfRecords);
+			
+			//get the additional event info here
+			for (OptOutEventDto event: eventList) {
+                HardwareSummary inventory = inventoryDao.getHardwareSummaryById(event.getInventoryId());
+                event.setInventory(inventory);
+                
+                List<Program> programList = 
+                    enrollmentDao.getEnrolledProgramIdsByInventory(event.getInventoryId(),
+                                                                   event.getStartDate(),
+                                                                   event.getStopDate());
+                event.setProgramList(programList);
 			}
 			
 			return eventList;
