@@ -1,405 +1,409 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="module_config.xsl"?>
 <mainmenu>
-<!-- 
+  <!-- 
      If you need to add functionality to the menu, please see the following classes:
        com.cannontech.web.menu.CommonMenuBuilder
        com.cannontech.web.menu.StandardMenuRenderer
        
      The <requireRoleProperty> tag can be used under the <option> and <module> elements.
-     More than one tag can be specified if needed. The "value" attribute currently
-     accepts either a fully qualified field name (e.g. com.cannontech.something.Class.PROPERTY)
-     or a shortend version if the class is under com.cannontech.roles 
-     (e.g. CBCSettingsRole.ACCESS).
+     More than one tag can be specified if needed. The "value" attribute accepts a standard
+     RoleAndPropertyDescriptionService compatible expression.
      
-     Multiple values can be specified in the tag and they will be evaluated with OR semantics. The
-     tag accepts any combination of both Roles and Properties. 
-     (e.g. METERING,MeteringRole.IMPORTER_ENABLED)
-     
-     Role and properties can be checked for a false value by prefixing the role or property name
-     with a "!".
-
-     If you need to add a new "permission" types (like requireProperty) see:
-       com.cannontech.user.checker.UserChecker
-       com.cannontech.web.menu.CommonMenuBuilder
-       
      Be sure to use <link> for normal URLs (context path will be added)
      and <action> to call a JavaScript function via the javascript: protocol.
      
      CSS and JS files that should be included on every page of the module 
      can be declared with the <css file=""/> and <script file=""/> tags
      respectively.
--->
+  -->
+  
   <portals>
-    <links>
+    <options>
       <!-- Consumer Account Information -->
-      <option id="consumerAccountInformation">
+      <option name="consumerAccountInformation">
         <requireRoleProperty value="CONSUMER_INFO" />
 
-        <links>
-          <option id="newAccount">
+        <options>
+          <option name="newAccount">
             <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD" />
-            <link>/operator/Consumer/New.jsp?Init=true&amp;Wizard=true</link>
+            <link>/operator/Consumer/New.jsp?Init=true&amp;Wizard=true
+            </link>
           </option>
-          <option id="newAccount">
+          <option name="newAccount">
             <requireRoleProperty value="!OPERATOR_NEW_ACCOUNT_WIZARD" />
             <link>/operator/Consumer/New.jsp?Init=true</link>
           </option>
-          <option id="optOutAdmin">
+          <option name="optOutAdmin">
             <link>/spring/stars/operator/optOut/admin</link>
           </option>
-        </links>
+        </options>
       </option>
 
       <!-- Metering -->
-      <option id="metering">
+      <option name="metering">
         <requireRoleProperty value="METERING,APPLICATION_BILLING,TRENDING,SCHEDULER,DEVICE_ACTIONS" />
 
-        <links>
-          <option id="allTrends">
+        <options>
+          <option name="allTrends">
             <link>/operator/Metering/Metering.jsp</link>
             <requireRoleProperty value="TRENDING" />
           </option>
 
-          <option id="bulkImporter">
+          <option name="bulkImporter">
             <link>/spring/amr/bulkimporter/home</link>
             <requireRoleProperty value="METERING" />
             <requireRoleProperty value="IMPORTER_ENABLED" />
           </option>
 
-          <option id="metering">
+          <option name="metering">
             <link>/spring/meter/start</link>
             <requireRoleProperty value="METERING,APPLICATION_BILLING,SCHEDULER" />
           </option>
 
-          <option id="bulkOperations">
+          <option name="bulkOperations">
             <link>/spring/bulk/bulkHome</link>
             <requireRoleProperty value="DEVICE_ACTIONS" />
           </option>
-        </links>
+        </options>
       </option>
 
       <!-- Load Response -->
-      <option id="loadResponse">
+      <option name="loadResponse">
         <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
 
-        <links>
-          <option id="direct">
+        <options>
+          <option name="direct">
             <link>/operator/LoadControl/oper_direct.jsp</link>
             <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
             <requireRoleProperty value="DIRECT_CONTROL" />
           </option>
 
-          <option id="ciCurtailment">
+          <option name="ciCurtailment">
             <link>/cc/programSelect.jsf</link>
             <requireRoleProperty value="CI_CURTAILMENT" />
           </option>
 
-          <option id="oddsForControl">
+          <option name="oddsForControl">
             <link>/operator/Consumer/Odds.jsp</link>
             <requireRoleProperty value="ODDS_FOR_CONTROL" />
           </option>
 
-          <option id="threeTierDirect">
+          <option name="threeTierDirect">
             <link>/loadmgmt/controlareas.jsp</link>
             <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
             <requireRoleProperty value="THREE_TIER_DIRECT" />
           </option>
 
-          <option id="demandResponse">
+          <option name="demandResponse">
             <link>/spring/dr/home</link>
             <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
             <requireRoleProperty value="THREE_TIER_DIRECT" />
           </option>
-        </links>
+        </options>
       </option>
 
       <!-- Distribution Automation -->
-      <option id="distributionAutomation">
-        <links>
-          <option id="capControl">
+      <option name="distributionAutomation">
+        <options>
+          <option name="capControl">
             <requireRoleProperty value="CBC_SETTINGS" />
             <link>/spring/capcontrol/tier/areas</link>
           </option>
-          <option id="eSub">
+          <option name="eSub">
             <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
             <link>/esub/home</link>
           </option>
-        </links>
+        </options>
       </option>
 
       <!-- Hardware Inventory -->
-      <option id="hardwareInventory">
+      <option name="hardwareInventory">
         <requireRoleProperty value="INVENTORY" />
 
-        <links>
-          <option id="inventory">
+        <options>
+          <option name="inventory">
             <link>/operator/Hardware/Filter.jsp</link>
             <requireRoleProperty value="INVENTORY_SHOW_ALL" />
           </option>
 
-          <option id="purchasing">
+          <option name="purchasing">
             <link>/operator/Hardware/PurchaseTrack.jsp</link>
             <requireRoleProperty value="PURCHASING_ACCESS" />
           </option>
-
-          <!-- YUK-8217 waiting for full implementation 
-          <option id="deviceReconfig"> 
+          <!-- YUK-8217 waiting for full implementation
+          <option name="deviceReconfig">
             <link>/spring/stars/operator/deviceReconfig/home</link>
             <requireRoleProperty value="DEVICE_RECONFIG" />
           </option>
           -->
 
-        </links>
+        </options>
       </option>
 
       <!-- Analysis -->
-      <option id="analysis">
+      <option name="analysis">
 
-        <links>
-          <option id="reporting">
+        <options>
+          <option name="reporting">
             <link>/analysis/Reports.jsp</link>
             <requireRoleProperty value="REPORTING" />
           </option>
 
-          <option id="commander">
+          <option name="commander">
             <link>/apps/SelectDevice.jsp</link>
             <requireRoleProperty value="ENABLE_WEB_COMMANDER" />
           </option>
 
-          <option id="visualDisplays">
+          <option name="visualDisplays">
             <link>/spring/multispeak/visualDisplays/loadManagement/home</link>
             <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
           </option>
 
-        </links>
+        </options>
       </option>
 
       <!-- Administration -->
-      <option id="administration">
+      <option name="administration">
         <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
 
-        <links>
-          <option id="configEnergyCompany">
+        <options>
+          <option name="configEnergyCompany">
             <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
             <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
           </option>
 
-          <option id="memberManagement">
+          <option name="memberManagement">
             <link>/operator/Admin/ManageMembers.jsp</link>
             <requireRoleProperty value="ADMIN_MANAGE_MEMBERS" />
           </option>
 
-          <option id="newEnergyCompany">
+          <option name="newEnergyCompany">
             <link>/operator/Admin/NewEnergyCompany.jsp</link>
             <requireRoleProperty value="ADMIN_CREATE_ENERGY_COMPANY" />
           </option>
 
           <!--
-            <option id="deleteEnergyCompany"> <link>/servlet/StarsAdmin</link> <requireRoleProperty
-            value="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"/> </option>
+            <option name="deleteEnergyCompany">
+              <link>/servlet/StarsAdmin</link>
+              <requireRoleProperty value="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"/>
+            </option>
           -->
-          <option id="viewBatchCommands">
+          <option name="viewBatchCommands">
             <link>/operator/Admin/SwitchCommands.jsp</link>
             <requireRoleProperty value="ADMIN_VIEW_BATCH_COMMANDS" />
           </option>
 
-          <option id="viewScheduledOptOutEvents">
+          <option name="viewScheduledOptOutEvents">
             <link>/operator/Admin/OptOutEvents.jsp</link>
             <requireRoleProperty value="ADMIN_VIEW_OPT_OUT_EVENTS" />
           </option>
 
-          <option id="multispeakSetup">
+          <option name="multispeakSetup">
             <link>/msp_setup.jsp</link>
             <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
           </option>
 
-          <option id="userGroupEditor">
+          <option name="userGroupEditor">
             <link>/spring/editor/userGroupSelector</link>
             <requireRoleProperty value="ADMIN_LM_USER_ASSIGN" />
           </option>
 
-          <option id="viewLogs">
+          <option name="viewLogs">
             <link>/spring/support/logging/menu</link>
             <requireRoleProperty value="ADMIN_VIEW_LOGS" />
           </option>
 
-          <option id="manageIndexes">
+          <option name="manageIndexes">
             <link>/index/manage</link>
             <requireRoleProperty value="ADMIN_MANAGE_INDEXES" />
           </option>
 
-          <option id="deviceConfiguration">
+          <option name="deviceConfiguration">
             <link>/spring/deviceConfiguration?home</link>
             <requireRoleProperty value="ADMIN_VIEW_CONFIG" />
           </option>
 
-        </links>
+        </options>
       </option>
 
-    </links>
+    </options>
   </portals>
 
   <!--  Modules -->
   <module name="amr">
     <skin name="STANDARD" />
-    <links>
-      <option id="meters">
-        <link>/spring/meter/start</link>
-      </option>
-      <option id="billing">
-        <requireRoleProperty value="APPLICATION_BILLING" />
-        <link>/operator/Metering/Billing.jsp</link>
-        <links>
-          <option id="generation">
-            <link>/operator/Metering/Billing.jsp</link>
-          </option>
-          <option id="setup">
-            <requireRoleProperty value="DYNAMIC_BILLING_FILE_SETUP" />
-            <link>/spring/dynamicBilling/overview</link>
-          </option>
-        </links>
-      </option>
-      <option id="scheduler">
-        <requireRoleProperty value="SCHEDULER" />
-        <link>/spring/macsscheduler/schedules/view</link>
-      </option>
-      <option id="devicegroups">
-        <link>/spring/group/editor/home</link>
-        <links>
-          <option id="home">
-            <link>/spring/group/editor/home</link>
-          </option>
-          <option id="commander">
-            <link>/spring/group/commander/groupProcessing</link>
-            <requireRoleProperty value="GROUP_COMMANDER" />
-          </option>
-          <option id="groupMeterRead">
-            <link>/spring/group/groupMeterRead/homeGroup</link>
-          </option>
-          <option id="updater">
-            <link>/spring/group/updater/upload</link>
-          </option>
-        </links>
-      </option>
-      <option id="commandRequestExecution">
-        <requireRoleProperty value="SCHEDULER" />
-        <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
-        <links>
-          <option id="scheduleLogs">
-            <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
-          </option>
-          <option id="createSchedule">
-            <requireRoleProperty value="MANAGE_SCHEDULES" />
-            <link>/spring/group/scheduledGroupRequestExecution/home</link>
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="meters">
+          <link>/spring/meter/start</link>
+        </option>
+        <option name="billing">
+          <requireRoleProperty value="APPLICATION_BILLING" />
+          <link>/operator/Metering/Billing.jsp</link>
+          <options>
+            <option name="generation">
+              <link>/operator/Metering/Billing.jsp</link>
+            </option>
+            <option name="setup">
+              <requireRoleProperty value="DYNAMIC_BILLING_FILE_SETUP" />
+              <link>/spring/dynamicBilling/overview</link>
+            </option>
+          </options>
+        </option>
+        <option name="scheduler">
+          <requireRoleProperty value="SCHEDULER" />
+          <link>/spring/macsscheduler/schedules/view</link>
+        </option>
+        <option name="devicegroups">
+          <link>/spring/group/editor/home</link>
+          <options>
+            <option name="home">
+              <link>/spring/group/editor/home</link>
+            </option>
+            <option name="commander">
+              <link>/spring/group/commander/groupProcessing</link>
+              <requireRoleProperty value="GROUP_COMMANDER" />
+            </option>
+            <option name="groupMeterRead">
+              <link>/spring/group/groupMeterRead/homeGroup</link>
+            </option>
+            <option name="updater">
+              <link>/spring/group/updater/upload</link>
+            </option>
+          </options>
+        </option>
+        <option name="commandRequestExecution">
+          <requireRoleProperty value="SCHEDULER" />
+          <link>/spring/group/scheduledGroupRequestExecutionResults/jobs
+          </link>
+          <options>
+            <option name="scheduleLogs">
+              <link>/spring/group/scheduledGroupRequestExecutionResults/jobs
+              </link>
+            </option>
+            <option name="createSchedule">
+              <requireRoleProperty value="MANAGE_SCHEDULES" />
+              <link>/spring/group/scheduledGroupRequestExecution/home
+              </link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
     <search action="/spring/meter/search" method="get" fieldname="Quick Search" />
 
   </module>
 
   <module name="monitors">
     <skin name="STANDARD" />
-    <links>
-      <option id="validation">
-        <links>
-          <option id="review">
-            <link>/spring/common/veeReview/home</link>
-          </option>
-          <option id="helper">
-            <link>/spring/common/vee/helper/menu</link>
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="validation">
+          <options>
+            <option name="review">
+              <link>/spring/common/veeReview/home</link>
+            </option>
+            <option name="helper">
+              <link>/spring/common/vee/helper/menu</link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
   </module>
 
   <module name="dr">
     <skin name="STANDARD" />
-    <links>
-      <option id="home">
-        <link>/spring/dr/home</link>
-      </option>
-      <option id="details">
-        <link>/spring/dr/details</link>
-        <links>
-          <option id="scenarios">
-            <requireRoleProperty value="SHOW_SCENARIOS" />
-            <link>/spring/dr/scenario/list</link>
-          </option>
-          <option id="controlareas">
-            <requireRoleProperty value="SHOW_CONTROL_AREAS" />
-            <link>/spring/dr/controlArea/list</link>
-          </option>
-          <option id="programs">
-            <link>/spring/dr/program/list</link>
-          </option>
-          <option id="loadgroups">
-            <link>/spring/dr/loadGroup/list</link>
-          </option>
-        </links>
-      </option>
-      <dynamicOptions bean="drOptOutMenuOption" />
-    </links>
+    <menu>
+      <options>
+        <option name="home">
+          <link>/spring/dr/home</link>
+        </option>
+        <option name="details">
+          <link>/spring/dr/details</link>
+          <options>
+            <option name="scenarios">
+              <requireRoleProperty value="SHOW_SCENARIOS" />
+              <link>/spring/dr/scenario/list</link>
+            </option>
+            <option name="controlareas">
+              <requireRoleProperty value="SHOW_CONTROL_AREAS" />
+              <link>/spring/dr/controlArea/list</link>
+            </option>
+            <option name="programs">
+              <link>/spring/dr/program/list</link>
+            </option>
+            <option name="loadgroups">
+              <link>/spring/dr/loadGroup/list</link>
+            </option>
+          </options>
+        </option>
+        <dynamicOptions bean="drOptOutMenuOption" />
+      </options>
+    </menu>
     <search action="/spring/dr/search" method="get" fieldname="name" />
 
   </module>
 
   <module name="energyCompanyAdmin">
     <skin name="STANDARD" />
-    <links>
-      <option id="configEnergyCompany">
-        <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="configEnergyCompany">
+          <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
+        </option>
+      </options>
+    </menu>
   </module>
 
   <module name="accountAdmin">
     <skin name="STANDARD" />
-    <links>
-      <option id="account">
-        <link>/temp/intentionalyBad/account/general</link>
-        <links>
-          <option id="general">
-            <link>/temp/intentionalyBad/account/general</link>
-          </option>
-          <option id="contact">
-            <link>/temp/intentionalyBad/account/contacts</link>
-          </option>
-        </links>
-      </option>
-      <option id="programs">
-        <link>/temp/intentionalyBad/programs/enrollment</link>
-        <links>
-          <option id="controlHistory">
-            <link>/temp/intentionalyBad/programs/controlHistory</link>
-          </option>
-          <option id="enrollment">
-            <link>/spring/stars/dr/admin/account/programEnrollment/edit</link>
-          </option>
-          <option id="optOut">
-            <link>/temp/intentionalyBad/programs/optOut</link>
-          </option>
-        </links>
-      </option>
-      <option id="appliances">
-        <link>/temp/intentionalyBad/appliances</link>
-      </option>
-      <option id="hardware">
-        <link>/temp/intentionalyBad/hardware</link>
-      </option>
-      <option id="workOrders">
-        <link>/temp/intentionalyBad/workOrders</link>
-      </option>
-      <option id="administration">
-        <link>/temp/intentionalyBad/administration</link>
-      </option>
-      <option id="eventLogging">
-        <link>/temp/intentionalyBad/eventLogging</link>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="account">
+          <link>/temp/intentionalyBad/account/general</link>
+          <options>
+            <option name="general">
+              <link>/temp/intentionalyBad/account/general</link>
+            </option>
+            <option name="contact">
+              <link>/temp/intentionalyBad/account/contacts</link>
+            </option>
+          </options>
+        </option>
+        <option name="programs">
+          <link>/temp/intentionalyBad/programs/enrollment</link>
+          <options>
+            <option name="controlHistory">
+              <link>/temp/intentionalyBad/programs/controlHistory</link>
+            </option>
+            <option name="enrollment">
+              <link>/spring/stars/dr/admin/account/programEnrollment/edit
+              </link>
+            </option>
+            <option name="optOut">
+              <link>/temp/intentionalyBad/programs/optOut</link>
+            </option>
+          </options>
+        </option>
+        <option name="appliances">
+          <link>/temp/intentionalyBad/appliances</link>
+        </option>
+        <option name="hardware">
+          <link>/temp/intentionalyBad/hardware</link>
+        </option>
+        <option name="workOrders">
+          <link>/temp/intentionalyBad/workOrders</link>
+        </option>
+        <option name="administration">
+          <link>/temp/intentionalyBad/administration</link>
+        </option>
+        <option name="eventLogging">
+          <link>/temp/intentionalyBad/eventLogging</link>
+        </option>
+      </options>
+    </menu>
   </module>
 
   <module name="internal">
@@ -408,273 +412,312 @@
 
   <module name="consumer">
     <skin name="LEFT_SIDE_MENU" />
-    <links>
-      <option id="account">
-        <links>
-          <option id="general">
-            <link>/spring/stars/consumer/general</link>
-          </option>
-          <option id="contacts">
-            <requireRoleProperty value="RESIDENTIAL_CONTACTS_ACCESS" />
-            <link>/spring/stars/consumer/contacts</link>
-          </option>
-        </links>
-      </option>
-      <option id="thermostat">
-        <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT" />
-        <links>
-          <dynamicOptions bean="themostatMenuOption" />
-        </links>
-      </option>
-      <option id="programs">
-        <links>
-          <option id="controlHistory">
-            <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
-            <link>/spring/stars/consumer/controlhistory</link>
-          </option>
-          <option id="enrollment">
-            <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
-            <link>/spring/stars/consumer/enrollment</link>
-          </option>
-          <dynamicOptions bean="optOutMenuOption">
-            <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT" />
-          </dynamicOptions>
-        </links>
-      </option>
-      <option id="trending">
-        <requireRoleProperty value="TRENDING" />
-        <links>
-          <dynamicOptions bean="trendingMenuOption">
-            <requireRoleProperty value="TRENDING" />
-          </dynamicOptions>
-        </links>
-      </option>
-      <option id="questions">
-        <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
-        <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
-        <links>
-          <option id="contactUs">
-            <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
-            <link>/spring/stars/consumer/contactus</link>
-          </option>
-          <dynamicOptions id="faq" bean="consumerFAQMenuOption">
-            <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
-          </dynamicOptions>
-        </links>
-      </option>
-      <option id="administration">
-        <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
-        <links>
-          <option id="changeLogin">
-            <link>/spring/stars/consumer/changelogin</link>
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="account">
+          <options>
+            <option name="general">
+              <link>/spring/stars/consumer/general</link>
+            </option>
+            <option name="contacts">
+              <requireRoleProperty value="RESIDENTIAL_CONTACTS_ACCESS" />
+              <link>/spring/stars/consumer/contacts</link>
+            </option>
+          </options>
+        </option>
+        <option name="thermostat">
+          <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT" />
+          <options>
+            <dynamicOptions bean="themostatMenuOption" />
+          </options>
+        </option>
+        <option name="programs">
+          <options>
+            <option name="controlHistory">
+              <requireRoleProperty
+                value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
+              <link>/spring/stars/consumer/controlhistory</link>
+            </option>
+            <option name="enrollment">
+              <requireRoleProperty
+                value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
+              <link>/spring/stars/consumer/enrollment</link>
+            </option>
+            <dynamicOptions bean="optOutMenuOption">
+              <requireRoleProperty
+                value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT" />
+            </dynamicOptions>
+          </options>
+        </option>
+        <option name="trending">
+          <requireRoleProperty value="TRENDING" />
+          <options>
+            <dynamicOptions bean="trendingMenuOption">
+              <requireRoleProperty value="TRENDING" />
+            </dynamicOptions>
+          </options>
+        </option>
+        <option name="questions">
+          <requireRoleProperty
+            value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
+          <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
+          <options>
+            <option name="contactUs">
+              <requireRoleProperty
+                value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
+              <link>/spring/stars/consumer/contactus</link>
+            </option>
+            <dynamicOptions id="faq" bean="consumerFAQMenuOption">
+              <requireRoleProperty
+                value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
+            </dynamicOptions>
+          </options>
+        </option>
+        <option name="administration">
+          <requireRoleProperty
+            value="RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
+          <options>
+            <option name="changeLogin">
+              <link>/spring/stars/consumer/changelogin</link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
     <css file="/WebConfig/yukon/styles/StarsConsumerStyles.css" />
   </module>
 
   <module name="capcontrol">
-    <links>
-      <option id="create">
-        <requireRoleProperty value="CBC_DATABASE_EDIT" />
-        <links>
-          <option id="area">
-            <link>/editor/cbcWizBase.jsf?type=4002</link>
-          </option>
-          <option id="specialarea">
-            <link>/editor/cbcWizBase.jsf?type=4003</link>
-          </option>
-          <option id="substation">
-            <link>/editor/cbcWizBase.jsf?type=4004</link>
-          </option>
-          <option id="substationbus">
-            <link>/editor/cbcWizBase.jsf?type=4000</link>
-          </option>
-          <option id="feeder">
-            <link>/editor/cbcWizBase.jsf?type=4001</link>
-          </option>
-          <option id="capbank">
-            <link>/editor/cbcWizBase.jsf?type=1050</link>
-          </option>
-          <option id="cbc">
-            <link>/editor/cbcWizBase.jsf?type=1051</link>
-          </option>
-          <option id="schedule">
-            <link>/editor/cbcWizBase.jsf?type=4005</link>
-          </option>
-          <option id="strategy">
-            <link>/editor/cbcWizBase.jsf?type=4006</link>
-          </option>
-          <option id="loadtapchanger">
-            <link>/editor/cbcWizBase.jsf?type=4007</link>
-          </option>
-        </links>
-      </option>
-      <option id="analysis">
-        <requireRoleProperty value="!HIDE_REPORTS" />
-        <links>
-          <option id="todaykvarperwatt">
-            <requireRoleProperty value="!HIDE_GRAPHS" />
-            <script>loadPointChartGreyBox('Today kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')</script>
-          </option>
-          <option id="todaypf">
-            <requireRoleProperty value="!HIDE_GRAPHS" />
-            <script>loadPointChartGreyBox('Today PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')</script>
-          </option>
-          <option id="30daykvarperwatt">
-            <requireRoleProperty value="!HIDE_GRAPHS" />
-            <script>loadPointChartGreyBox('30 Day kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')</script>
-          </option>
-          <option id="30daypf">
-            <requireRoleProperty value="!HIDE_GRAPHS" />
-            <script>loadPointChartGreyBox('30 Day PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')</script>
-          </option>
-        </links>
-      </option>
-      <option id="view">
-        <links>
-          <option id="schedules">
-            <link>/spring/capcontrol/schedule/schedules</link>
-          </option>
-          <option id="strategies">
-            <link>/spring/capcontrol/strategy/strategies</link>
-          </option>
+    <menu>
+      <options>
+        <option name="create">
+          <requireRoleProperty value="CBC_DATABASE_EDIT" />
+          <options>
+            <option name="area">
+              <link>/editor/cbcWizBase.jsf?type=4002</link>
+            </option>
+            <option name="specialarea">
+              <link>/editor/cbcWizBase.jsf?type=4003</link>
+            </option>
+            <option name="substation">
+              <link>/editor/cbcWizBase.jsf?type=4004</link>
+            </option>
+            <option name="substationbus">
+              <link>/editor/cbcWizBase.jsf?type=4000</link>
+            </option>
+            <option name="feeder">
+              <link>/editor/cbcWizBase.jsf?type=4001</link>
+            </option>
+            <option name="capbank">
+              <link>/editor/cbcWizBase.jsf?type=1050</link>
+            </option>
+            <option name="cbc">
+              <link>/editor/cbcWizBase.jsf?type=1051</link>
+            </option>
+            <option name="schedule">
+              <link>/editor/cbcWizBase.jsf?type=4005</link>
+            </option>
+            <option name="strategy">
+              <link>/editor/cbcWizBase.jsf?type=4006</link>
+            </option>
+            <option name="loadtapchanger">
+              <link>/editor/cbcWizBase.jsf?type=4007</link>
+            </option>
+          </options>
+        </option>
+        <option name="analysis">
+          <requireRoleProperty value="!HIDE_REPORTS" />
+          <options>
+            <option name="todaykvarperwatt">
+              <requireRoleProperty value="!HIDE_GRAPHS" />
+              <script>loadPointChartGreyBox('Today kVAR/Watt',
+                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')
+              </script>
+            </option>
+            <option name="todaypf">
+              <requireRoleProperty value="!HIDE_GRAPHS" />
+              <script>loadPointChartGreyBox('Today PF',
+                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')
+              </script>
+            </option>
+            <option name="30daykvarperwatt">
+              <requireRoleProperty value="!HIDE_GRAPHS" />
+              <script>loadPointChartGreyBox('30 Day kVAR/Watt',
+                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')
+              </script>
+            </option>
+            <option name="30daypf">
+              <requireRoleProperty value="!HIDE_GRAPHS" />
+              <script>loadPointChartGreyBox('30 Day PF',
+                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')
+              </script>
+            </option>
+          </options>
+        </option>
+        <option name="view">
+          <options>
+            <option name="schedules">
+              <link>/spring/capcontrol/schedule/schedules</link>
+            </option>
+            <option name="strategies">
+              <link>/spring/capcontrol/strategy/strategies</link>
+            </option>
 
-          <option id="scheduleassignment">
-            <link>/spring/capcontrol/schedule/scheduleAssignments</link>
-          </option>
-          <option id="recentcontrols">
-            <script>showRecentCmds('recentControls')</script>
-          </option>
-          <option id="recentcapbankmoves">
-            <link>/spring/capcontrol/move/movedCapBanks</link>
-          </option>
-          <option id="specialareas">
-            <link>/spring/capcontrol/tier/areas?isSpecialArea=true</link>
-          </option>
+            <option name="scheduleassignment">
+              <link>/spring/capcontrol/schedule/scheduleAssignments
+              </link>
+            </option>
+            <option name="recentcontrols">
+              <script>showRecentCmds('recentControls')</script>
+            </option>
+            <option name="recentcapbankmoves">
+              <link>/spring/capcontrol/move/movedCapBanks</link>
+            </option>
+            <option name="specialareas">
+              <link>/spring/capcontrol/tier/areas?isSpecialArea=true
+              </link>
+            </option>
 
-        </links>
-      </option>
-      <option id="orphans">
-        <links>
-          <option id="orphanedsubstations">
-            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
-          </option>
-          <option id="orphanedsubstationbuses">
-            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__</link>
-          </option>
-          <option id="orphanedfeeders">
-            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__</link>
-          </option>
-          <option id="orphanedcapbanks">
-            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__</link>
-          </option>
-          <option id="orphanedcbcs">
-            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
-          </option>
-          <option id="orphanedltcs">
-            <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oLTCs__</link>
-          </option>
-        </links>
-      </option>
-    </links>
-    <search action="/spring/capcontrol/search/searchResults" method="get" fieldname="cbc_lastSearch" />
+          </options>
+        </option>
+        <option name="orphans">
+          <options>
+            <option name="orphanedsubstations">
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__
+              </link>
+            </option>
+            <option name="orphanedsubstationbuses">
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__
+              </link>
+            </option>
+            <option name="orphanedfeeders">
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__
+              </link>
+            </option>
+            <option name="orphanedcapbanks">
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__
+              </link>
+            </option>
+            <option name="orphanedcbcs">
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__
+              </link>
+            </option>
+            <option name="orphanedltcs">
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oLTCs__
+              </link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
+    <search action="/spring/capcontrol/search/searchResults"
+      method="get" fieldname="cbc_lastSearch" />
     <skin name="STANDARD" />
     <css file="/css/base.css" />
     <css file="/WebConfig/yukon/styles/capcontrollogos.css" />
   </module>
 
   <module name="capcontrol_internal">
-    <!-- The module is used for the inner frames that are used on the cap control pages. -->
+    <!--
+      The module is used for the inner frames that are used on the cap
+      control pages.
+    -->
     <skin name="INNER" />
     <css file="css/base.css" /> <!-- normally this should be an absolute path -->
   </module>
 
   <module name="commercialcurtailment">
-    <links>
-      <option id="ccurt_events">
-        <link>/cc/programSelect.jsf</link>
-      </option>
-      <option id="ccurt_setup">
-        <links>
-          <option id="ccurt_programs">
-            <link>/cc/programList.jsf</link>
-          </option>
-          <option id="ccurt_groups">
-            <link>/cc/groupList.jsf</link>
-          </option>
-          <option id="ccurt_customers">
-            <link>/cc/customerList.jsf</link>
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="ccurt_events">
+          <link>/cc/programSelect.jsf</link>
+        </option>
+        <option name="ccurt_setup">
+          <options>
+            <option name="ccurt_programs">
+              <link>/cc/programList.jsf</link>
+            </option>
+            <option name="ccurt_groups">
+              <link>/cc/groupList.jsf</link>
+            </option>
+            <option name="ccurt_customers">
+              <link>/cc/customerList.jsf</link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
     <css file="/cc/base.css" />
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
     <skin name="STANDARD" />
   </module>
 
   <module name="commercialcurtailment_user">
-    <links>
-      <option id="control">
-        <link>/cc/user/overview.jsf</link>
-      </option>
-      <option id="trending">
-        <link>/user/CILC/user_trending_sp.jsp</link>
-      </option>
-      <option id="profile">
-        <link>/user/CILC/customerProfile.jsf</link>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="control">
+          <link>/cc/user/overview.jsf</link>
+        </option>
+        <option name="trending">
+          <link>/user/CILC/user_trending_sp.jsp</link>
+        </option>
+        <option name="profile">
+          <link>/user/CILC/customerProfile.jsf</link>
+        </option>
+      </options>
+    </menu>
     <css file="/cc/base.css" />
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
     <skin name="STANDARD" />
   </module>
 
   <module name="reporting">
-    <links>
-      <option id="reports">
-        <links>
-          <option id="administrator">
-            <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
-            <requireRoleProperty value="ADMIN_REPORTS_GROUP" />
-          </option>
-          <option id="metering">
-            <link>/analysis/Reports.jsp?groupType=METERING</link>
-            <requireRoleProperty value="AMR_REPORTS_GROUP" />
-          </option>
-          <option id="capcontrol">
-            <link>/analysis/Reports.jsp?groupType=CAP_CONTROL</link>
-            <requireRoleProperty value="CAP_CONTROL_REPORTS_GROUP" />
-          </option>
-          <option id="statistical">
-            <link>/analysis/Reports.jsp?groupType=STATISTICAL</link>
-            <requireRoleProperty value="STATISTICAL_REPORTS_GROUP" />
-          </option>
-          <option id="database">
-            <link>/analysis/Reports.jsp?groupType=DATABASE</link>
-            <requireRoleProperty value="DATABASE_REPORTS_GROUP" />
-          </option>
-          <option id="management">
-            <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT</link>
-            <requireRoleProperty value="LOAD_MANAGEMENT_REPORTS_GROUP" />
-          </option>
-          <option id="stars">
-            <link>/analysis/Reports.jsp?groupType=STARS</link>
-            <requireRoleProperty value="STARS_REPORTS_GROUP" />
-          </option>
-          <option id="settlement">
-            <link>/analysis/Reports.jsp?groupType=SETTLEMENT</link>
-            <requireRoleProperty value="SETTLEMENT_REPORTS_GROUP" />
-          </option>
-          <option id="cni">
-            <link>/analysis/Reports.jsp?groupType=CCURT</link>
-            <requireRoleProperty value="CI_CURTAILMENT_REPORTS_GROUP" />
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="reports">
+          <options>
+            <option name="administrator">
+              <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE
+              </link>
+              <requireRoleProperty value="ADMIN_REPORTS_GROUP" />
+            </option>
+            <option name="metering">
+              <link>/analysis/Reports.jsp?groupType=METERING</link>
+              <requireRoleProperty value="AMR_REPORTS_GROUP" />
+            </option>
+            <option name="capcontrol">
+              <link>/analysis/Reports.jsp?groupType=CAP_CONTROL</link>
+              <requireRoleProperty value="CAP_CONTROL_REPORTS_GROUP" />
+            </option>
+            <option name="statistical">
+              <link>/analysis/Reports.jsp?groupType=STATISTICAL</link>
+              <requireRoleProperty value="STATISTICAL_REPORTS_GROUP" />
+            </option>
+            <option name="database">
+              <link>/analysis/Reports.jsp?groupType=DATABASE</link>
+              <requireRoleProperty value="DATABASE_REPORTS_GROUP" />
+            </option>
+            <option name="management">
+              <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT
+              </link>
+              <requireRoleProperty value="LOAD_MANAGEMENT_REPORTS_GROUP" />
+            </option>
+            <option name="stars">
+              <link>/analysis/Reports.jsp?groupType=STARS</link>
+              <requireRoleProperty value="STARS_REPORTS_GROUP" />
+            </option>
+            <option name="settlement">
+              <link>/analysis/Reports.jsp?groupType=SETTLEMENT</link>
+              <requireRoleProperty value="SETTLEMENT_REPORTS_GROUP" />
+            </option>
+            <option name="cni">
+              <link>/analysis/Reports.jsp?groupType=CCURT</link>
+              <requireRoleProperty value="CI_CURTAILMENT_REPORTS_GROUP" />
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/Base.css" />
     <css file="/WebConfig/yukon/styles/reportinglogos.css" />
@@ -694,127 +737,133 @@
     <skin name="STANDARD" />
     <css file="setupStyle.css" />
 
-    <links>
+    <menu>
+      <options>
 
-      <option id="multispeak">
-        <link>/msp_setup.jsp?init</link>
-        <links>
-          <option id="interfaces">
-            <link>/msp_setup.jsp?init</link>
-          </option>
-          <option id="route_mappings">
-            <link>/spring/multispeak/setup/routemapping/mappings</link>
-          </option>
-          <option id="lm_mappings">
-            <link>/spring/multispeak/setup/lmMappings/home</link>
-            <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-          </option>
-        </links>
-      </option>
+        <option name="multispeak">
+          <link>/msp_setup.jsp?init</link>
+          <options>
+            <option name="interfaces">
+              <link>/msp_setup.jsp?init</link>
+            </option>
+            <option name="route_mappings">
+              <link>/spring/multispeak/setup/routemapping/mappings
+              </link>
+            </option>
+            <option name="lm_mappings">
+              <link>/spring/multispeak/setup/lmMappings/home</link>
+              <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+            </option>
+          </options>
+        </option>
 
-      <option id="sync">
-        <link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
-        <links>
-          <option id="sync_cis_substation_group">
-            <link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
-          </option>
-        </links>
-      </option>
+        <option name="sync">
+          <link>/spring/multispeak/setup/syncCisSubstationGroup/home
+          </link>
+          <options>
+            <option name="sync_cis_substation_group">
+              <link>/spring/multispeak/setup/syncCisSubstationGroup/home
+              </link>
+            </option>
+          </options>
+        </option>
 
-    </links>
+      </options>
+    </menu>
 
   </module>
 
   <module name="debug">
     <skin name="STANDARD" />
 
-    <links>
-      <option id="loadControlService">
-        <links>
-          <option id="inputs">
-            <link>/spring/debug/loadControlService/inputs/home</link>
-          </option>
-        </links>
-      </option>
-      <option id="accountService">
-        <links>
-          <option id="inputs">
-            <link>/spring/debug/accountService/inputs/home</link>
-          </option>
-        </links>
-      </option>
-      <option id="webservice">
-        <links>
-          <option id="xml">
-            <link>/spring/debug/webservice/xml/home</link>
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="loadControlService">
+          <options>
+            <option name="inputs">
+              <link>/spring/debug/loadControlService/inputs/home</link>
+            </option>
+          </options>
+        </option>
+        <option name="accountService">
+          <options>
+            <option name="inputs">
+              <link>/spring/debug/accountService/inputs/home</link>
+            </option>
+          </options>
+        </option>
+        <option name="webservice">
+          <options>
+            <option name="xml">
+              <link>/spring/debug/webservice/xml/home</link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
   </module>
 
   <module name="support">
     <skin name="STANDARD" />
 
-    <links>
-      <option id="information">
-        <link>/spring/support/</link>
-        <links>
-          <option id="system">
-            <link>/spring/support/</link>
-          </option>
-          <option id="deviceDef">
-            <link>/spring/common/deviceDefinition.xml</link>
-          </option>
-        </links>
-      </option>
-      <option id="logs">
-        <link>/spring/support/logging/menu</link>
-      </option>
-      <option id="database">
-        <link>/spring/support/database/info</link>
-        <links>
-          <option id="info">
-            <link>/spring/support/database/info</link>
-          </option>
-          <option id="compare">
-            <link>/spring/support/database/validate/home</link>
-          </option>
-          <option id="migration">
-            <link>/spring/support/database/migration/home</link>
-            <requireRoleProperty value="ADMIN_DATABASE_MIGRATION" />
-          </option>
-        </links>
-      </option>
-      <option id="scheduler">
-        <link>/spring/support/scheduler/active</link>
-        <links>
-          <option id="active">
-            <link>/spring/support/scheduler/active</link>
-          </option>
-          <option id="status">
-            <link>/spring/support/scheduler/status</link>
-          </option>
-          <option id="jobs">
-            <link>/spring/support/scheduler/jobs</link>
-          </option>
-        </links>
-      </option>
-      <option id="other">
-        <link>/spring/support/threadDump</link>
-        <links>
-          <option id="threadDump">
-            <link>/spring/support/threadDump</link>
-          </option>
-          <option id="events">
-            <link>/spring/common/eventLog/view</link>
-          </option>
-          <option id="moduleInfo">
-            <link>/spring/support/moduleInformation/view</link>
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="information">
+          <link>/spring/support/</link>
+          <options>
+            <option name="system">
+              <link>/spring/support/</link>
+            </option>
+            <option name="deviceDef">
+              <link>/spring/common/deviceDefinition.xml</link>
+            </option>
+          </options>
+        </option>
+        <option name="logs">
+          <link>/spring/support/logging/menu</link>
+        </option>
+        <option name="database">
+          <link>/spring/support/database/info</link>
+          <options>
+            <option name="info">
+              <link>/spring/support/database/info</link>
+            </option>
+            <option name="compare">
+              <link>/spring/support/database/validate/home</link>
+            </option>
+            <option name="migration">
+              <link>/spring/support/database/migration/home</link>
+              <requireRoleProperty value="ADMIN_DATABASE_MIGRATION" />
+            </option>
+          </options>
+        </option>
+        <option name="scheduler">
+          <link>/spring/support/scheduler/active</link>
+          <options>
+            <option name="active">
+              <link>/spring/support/scheduler/active</link>
+            </option>
+            <option name="status">
+              <link>/spring/support/scheduler/status</link>
+            </option>
+            <option name="jobs">
+              <link>/spring/support/scheduler/jobs</link>
+            </option>
+          </options>
+        </option>
+        <option name="other">
+          <link>/spring/support/threadDump</link>
+          <options>
+            <option name="threadDump">
+              <link>/spring/support/threadDump</link>
+            </option>
+            <option name="events">
+              <link>/spring/common/eventLog/view</link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
   </module>
 
   <module name="blank">
@@ -836,11 +885,13 @@
   </module>
 
   <module name="commander">
-    <links>
-      <option id="deviceselection">
-        <link>/apps/SelectDevice.jsp</link>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="deviceselection">
+          <link>/apps/SelectDevice.jsp</link>
+        </option>
+      </options>
+    </menu>
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/commanderStyles.css" />
     <css file="/WebConfig/yukon/Base.css" />
@@ -850,72 +901,82 @@
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/commanderStyles.css" />
 
-    <links>
-      <option id="devices">
-        <links>
-          <option id="mct">
-            <link>SelectDevice.jsp?SortBy=1004</link>
-          </option>
-          <option id="ied">
-            <link>SelectDevice.jsp?SortBy=1002</link>
-          </option>
-          <option id="rtu">
-            <link>SelectDevice.jsp?SortBy=1001</link>
-          </option>
-          <option id="transmitter">
-            <link>SelectDevice.jsp?SortBy=1000</link>
-          </option>
-          <option id="group">
-            <link>/spring/group/commander/groupProcessing</link>
-            <requireRoleProperty value="GROUP_COMMANDER" />
-          </option>
-        </links>
-      </option>
-      <option id="lm">
-        <links>
-          <option id="group">
-            <link>SelectDevice.jsp?SortBy=1005</link>
-          </option>
-          <option id="xcom">
-            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
-            <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL" />
-          </option>
-          <option id="vcom">
-            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
-            <requireRoleProperty value="VERSACOM_SERIAL_MODEL" />
-          </option>
-          <option id="205serial">
-            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
-            <requireRoleProperty value="DCU_SA205_SERIAL_MODEL" />
-          </option>
-          <option id="305serial">
-            <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
-            <requireRoleProperty value="DCU_SA305_SERIAL_MODEL" />
-          </option>
-        </links>
-      </option>
-      <option id="capcontrol">
-        <links>
-          <option id="capcontrolsub">
-            <link>SelectDevice.jsp?SortBy=4</link>
-          </option>
-        </links>
-      </option>
-    </links>
+    <menu>
+      <options>
+        <option name="devices">
+          <options>
+            <option name="mct">
+              <link>SelectDevice.jsp?SortBy=1004</link>
+            </option>
+            <option name="ied">
+              <link>SelectDevice.jsp?SortBy=1002</link>
+            </option>
+            <option name="rtu">
+              <link>SelectDevice.jsp?SortBy=1001</link>
+            </option>
+            <option name="transmitter">
+              <link>SelectDevice.jsp?SortBy=1000</link>
+            </option>
+            <option name="group">
+              <link>/spring/group/commander/groupProcessing</link>
+              <requireRoleProperty value="GROUP_COMMANDER" />
+            </option>
+          </options>
+        </option>
+        <option name="lm">
+          <options>
+            <option name="group">
+              <link>SelectDevice.jsp?SortBy=1005</link>
+            </option>
+            <option name="xcom">
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom
+              </link>
+              <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL" />
+            </option>
+            <option name="vcom">
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom
+              </link>
+              <requireRoleProperty value="VERSACOM_SERIAL_MODEL" />
+            </option>
+            <option name="205serial">
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205
+              </link>
+              <requireRoleProperty value="DCU_SA205_SERIAL_MODEL" />
+            </option>
+            <option name="305serial">
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305
+              </link>
+              <requireRoleProperty value="DCU_SA305_SERIAL_MODEL" />
+            </option>
+          </options>
+        </option>
+        <option name="capcontrol">
+          <options>
+            <option name="capcontrolsub">
+              <link>SelectDevice.jsp?SortBy=4</link>
+            </option>
+          </options>
+        </option>
+      </options>
+    </menu>
   </module>
 
   <module name="visualDisplays">
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/Base.css" />
 
-    <links>
-      <option id="loadManagement">
-        <link>/spring/multispeak/visualDisplays/loadManagement/home</link>
-      </option>
+    <menu>
+      <options>
+        <option name="loadManagement">
+          <link>/spring/multispeak/visualDisplays/loadManagement/home
+          </link>
+        </option>
 
-      <option id="probabilityForPeakLoad">
-        <link>/spring/multispeak/visualDisplays/probabilityForPeak/home</link>
-      </option>
-    </links>
+        <option name="probabilityForPeakLoad">
+          <link>/spring/multispeak/visualDisplays/probabilityForPeak/home
+          </link>
+        </option>
+      </options>
+    </menu>
   </module>
 </mainmenu>

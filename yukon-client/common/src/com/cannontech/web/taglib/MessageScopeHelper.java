@@ -1,19 +1,18 @@
 package com.cannontech.web.taglib;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList.Builder;
 
 public class MessageScopeHelper {
     private static final String scopeAttributeName = "com.cannontech.web.scopeStack";
@@ -45,11 +44,15 @@ public class MessageScopeHelper {
             this.scopeStack = new ArrayDeque<ScopeHolder>();
         }
 
-        public void pushScope(String keyPart, boolean sticky) {
-            if (StringUtils.isBlank(keyPart)) {
+        public void pushScope(String ... searchPaths) {
+            if (searchPaths.length == 0) {
                 return;
             }
-            ScopeHolder scopeHolder = new ScopeHolder(keyPart, sticky);
+            ScopeHolder scopeHolder = new BasicScopeHolder(searchPaths);
+            pushScope(scopeHolder);
+        }
+
+        public void pushScope(ScopeHolder scopeHolder) {
             scopeStack.push(scopeHolder);
         }
 
@@ -58,14 +61,12 @@ public class MessageScopeHelper {
         }
         
         public MessageSourceResolvable generateResolvable(String key, Object ... arguments) {
-            MessageSourceResolvable messageSourceResolvable;
-            if (key.startsWith(".")) {
-                List<String> codes = getFullKeys(key.substring(1), "yukon.web.defaults.");
-                messageSourceResolvable = YukonMessageSourceResolvable.createMultipleCodesWithArguments(codes, arguments);
-            } else {
-                String codes[] = new String[] {key};
-                messageSourceResolvable = new YukonMessageSourceResolvable(codes, arguments);
+            if (key.startsWith("yukon.")) {
+                return new YukonMessageSourceResolvable(key, arguments);
             }
+            MessageSourceResolvable messageSourceResolvable;
+            List<String> codes = getFullKeys(key, "yukon.web.");
+            messageSourceResolvable = YukonMessageSourceResolvable.createMultipleCodesWithArguments(codes, arguments);
             return messageSourceResolvable;
         }
 
@@ -74,78 +75,70 @@ public class MessageScopeHelper {
          * suffix and the current state of the stack of scopes.
          * @param request
          * @param suffix - e.g. "name"
-         * @param defaultPrefix - e.g. "yukon.web.defaults."
+         * @param defaultPrefix - e.g. "yukon.web."
          * @return
          */
-        public List<String> getFullKeys(final String suffix, final String defaultPrefix) {
-            List<ScopeHolder> scopes = Lists.newArrayListWithExpectedSize(scopeStack.size() + 1);
-            Iterators.addAll(scopes, scopeStack.descendingIterator());
-            scopes.add(new ScopeHolder(suffix, true)); // it works nicely to
-            // pretend the suffix is
-            // a sticky scope
-            String[] result = new String[scopes.size()];
-            splitAndProcess(result, 0, "", scopes, defaultPrefix);
+        public List<String> getFullKeys(final String suffix, String defaultPrefix) {
+            List<ScopeHolder> scopes = Lists.newArrayListWithExpectedSize(scopeStack.size());
+            Iterables.addAll(scopes, scopeStack);
+            List<String> result = Lists.newArrayListWithExpectedSize(6);
+            collectKeys(result, scopes, defaultPrefix, suffix);
 
-            return Arrays.asList(result);
+            return result;
         }
 
-        private void splitAndProcess(String[] result, int index, String prefix,
-                List<ScopeHolder> staticKeys, String defaultPrefix) {
-            if (staticKeys.isEmpty()) {
+        /**
+         * @param result
+         * @param scopes
+         * @param defaultPrefix prepended to every result, should always end with a period
+         * @param suffix will be the final part of every result, should always begin with a period
+         */
+        private void collectKeys(List<String> result, List<ScopeHolder> scopes, String defaultPrefix, String suffix) {
+            if (!suffix.startsWith(".")) {
+                result.add(defaultPrefix + suffix);
                 return;
             }
-            if (staticKeys.size() == 1) {
-                result[index] = defaultPrefix + staticKeys.get(0).scope;
-                return;
+            if (scopes.isEmpty()) {
+                throw new IllegalArgumentException("ran out of scopes before finding absolute key");
             }
 
-            // find next sticky (this code will always at least select the last
-            // element)
-            int nextStickyIndex = 1;
-            for (; nextStickyIndex < staticKeys.size(); nextStickyIndex++) {
-                if (staticKeys.get(nextStickyIndex).sticky) {
-                    break;
-                }
-            }
-
-            List<ScopeHolder> left = staticKeys.subList(0, nextStickyIndex);
-            List<ScopeHolder> right = staticKeys.subList(nextStickyIndex, staticKeys.size());
-            Function<ScopeHolder, String> nameFromScope = new Function<ScopeHolder, String>() {
-                public String apply(ScopeHolder from) {
-                    return from.scope;
-                }
-            };
-            List<String> staticKeyStrings = Lists.transform(right,
-                                                            nameFromScope);
-            String suffix = StringUtils.join(staticKeyStrings, ".");
             
-            // The following builds up the currentPrefix string one element at a
-            // time and places it into the result array backwards (easiest to see in a debugger).
-            StringBuilder currentPrefix = new StringBuilder(100);
-            currentPrefix.append(prefix);
-            for (int i = 0; i < left.size(); i++) {
-                currentPrefix.append(left.get(i).scope + ".");
-                result[index + left.size() - i - 1] = currentPrefix + suffix;
+            ScopeHolder currentScope = scopes.get(0);
+            List<ScopeHolder> remainingScopes = scopes.subList(1, scopes.size());
+            List<String> searchPaths = currentScope.getSearchPaths();
+            for (String path : searchPaths) {
+                String newSuffix = path + suffix;
+                collectKeys(result, remainingScopes, defaultPrefix, newSuffix);
             }
-
-            splitAndProcess(result, index + left.size(), defaultPrefix, right, defaultPrefix);
         }
 
     }
 
-    private static class ScopeHolder {
-        public ScopeHolder(String scope, boolean sticky) {
-            super();
-            this.scope = scope;
-            this.sticky = sticky;
+    private static interface ScopeHolder {
+        public List<String> getSearchPaths();
+    }
+    
+    private static abstract class ScopeHolderBase implements ScopeHolder {
+        protected List<String> searchPaths;
+        
+        public List<String> getSearchPaths() {
+            return searchPaths;
         }
-
-        private String scope;
-        private boolean sticky;
-
+        
         @Override
         public String toString() {
-            return scope + (sticky ? "!" : "");
+            return getSearchPaths().toString();
         }
     }
+    
+    public static class BasicScopeHolder extends ScopeHolderBase {
+        public BasicScopeHolder(String ... paths) {
+            Builder<String> builder = ImmutableList.builder();
+            for (int i = 0; i < paths.length; i++) {
+                builder.add(paths[i].trim());
+            }
+            searchPaths = builder.build();
+        }
+    }
+    
 }

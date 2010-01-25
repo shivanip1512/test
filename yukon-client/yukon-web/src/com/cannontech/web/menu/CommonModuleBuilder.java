@@ -65,8 +65,8 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private void processPortalLinks(Document configDoc) throws CommonMenuException {
         Element rootElem = configDoc.getRootElement();
         Element portalLinks = rootElem.getChild("portals");
-        Element topLinks = portalLinks.getChild("links");
-        List<MenuOptionProducer> portalLinkList = processLinksElement(topLinks, menuKeyPrefix);
+        Element topLinks = portalLinks.getChild("options");
+        List<MenuOptionProducer> portalLinkList = processOptionsElement(topLinks, menuKeyPrefix);
         portalLinksBase = new MenuBase(portalLinkList);
     }
 
@@ -85,8 +85,14 @@ public class CommonModuleBuilder implements ModuleBuilder {
         // quickPortalList should have been built by now
         moduleBase.setPortalLinks(portalLinksBase);
         
-        Element topLinks = moduleElement.getChild("links");
-        List<MenuOptionProducer> topLevelOptions = processLinksElement(topLinks, menuKeyModPrefix + moduleName);
+        Element topMenu = moduleElement.getChild("menu");
+        List<MenuOptionProducer> topLevelOptions;
+        if (topMenu != null) {
+            Element topOptions = topMenu.getChild("options");
+            topLevelOptions = processOptionsElement(topOptions, menuKeyModPrefix + moduleName);
+        } else {
+            topLevelOptions = Collections.emptyList();
+        }
         MenuBase menuBase = new MenuBase(topLevelOptions);
         moduleBase.setMenuBase(menuBase);
         
@@ -127,15 +133,15 @@ public class CommonModuleBuilder implements ModuleBuilder {
         List<?> children = parentOfPages.getChildren("page");
         List<PageInfo> result = Lists.newArrayList();
         for (Iterator<?> iterator = children.iterator(); iterator.hasNext();) {
-            Element element = (Element) iterator.next();
+            Element pageElement = (Element) iterator.next();
             PageInfo pageInfo = new PageInfo();
             pageInfo.setModuleName(moduleName);
             pageInfo.setParent(parent);
             
-            String idValue = element.getAttributeValue("name");
+            String idValue = pageElement.getAttributeValue("name");
             pageInfo.setName(idValue);
             
-            String typeString = element.getAttributeValue("type");
+            String typeString = pageElement.getAttributeValue("type");
             PageTypeEnum pageType;
             if (typeString == null) {
                 pageType = PageTypeEnum.BASIC;
@@ -144,14 +150,14 @@ public class CommonModuleBuilder implements ModuleBuilder {
             }
             pageInfo.setPageType(pageType);
             
-            String menuSelection = element.getChildTextTrim("menu");
+            String menuSelection = pageElement.getChildTextTrim("menu");
             pageInfo.setRenderMenu(menuSelection != null);
             pageInfo.setMenuSelection(menuSelection);
             
-            String linkText = element.getChildTextTrim("link");
+            String linkText = pageElement.getChildTextTrim("link");
             pageInfo.setLinkExpression(linkText);
             
-            List<?> argumentElements = element.getChildren("labelArgument");
+            List<?> argumentElements = pageElement.getChildren("labelArgument");
             for (Iterator<?> argumentIterator = argumentElements.iterator(); argumentIterator.hasNext();) {
                 Element argumentElement = (Element) argumentIterator.next();
                 String argumentText = argumentElement.getTextTrim();
@@ -160,13 +166,14 @@ public class CommonModuleBuilder implements ModuleBuilder {
             result.add(pageInfo);
             
             // now add the children of the element
-            List<PageInfo> childCrumbs = processPages(element, moduleName, pageInfo);
+            Element subPagesElement = pageElement.getChild("pages");
+            List<PageInfo> childCrumbs = processPages(subPagesElement, moduleName, pageInfo);
             result.addAll(childCrumbs);
         }
         return result;
     }
 
-    private List<MenuOptionProducer> processLinksElement(Element linksElement, String prefix)
+    private List<MenuOptionProducer> processOptionsElement(Element linksElement, String prefix)
         throws CommonMenuException {
         List<MenuOptionProducer> options = new ArrayList<MenuOptionProducer>();
         if (linksElement != null) {
@@ -206,23 +213,23 @@ public class CommonModuleBuilder implements ModuleBuilder {
         
         UserChecker checker = getCheckerForElement(optionElement);
         
-        String optionId = optionElement.getAttributeValue("id");
+        String optionId = optionElement.getAttributeValue("name");
         String key = prefix + "." + optionId;
         
         Element topAction = optionElement.getChild("script");
         Element topLink = optionElement.getChild("link");
-        Element subLinks = optionElement.getChild("links");
+        Element subOptions = optionElement.getChild("options");
         
         if (topAction != null) {
             SimpleMenuOptionAction actionMenuOption = new SimpleMenuOptionAction(optionId, key);
             actionMenuOption.setScript(topAction.getTextTrim());
             menuOption = actionMenuOption;
-        } else if (topLink != null && subLinks == null) {
+        } else if (topLink != null && subOptions == null) {
             SimpleMenuOptionLink linkMenuOption = new SimpleMenuOptionLink(optionId, key);
             linkMenuOption.setLinkUrl(topLink.getTextTrim());
             menuOption = linkMenuOption;
-        } else if (subLinks != null) {
-            List<MenuOptionProducer> subLinkOptions = processLinksElement(subLinks, key);
+        } else if (subOptions != null) {
+            List<MenuOptionProducer> subLinkOptions = processOptionsElement(subOptions, key);
 
             // Collapse parent elements by default if there is no children
             boolean collapseIfEmpty = true;

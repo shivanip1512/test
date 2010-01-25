@@ -171,7 +171,7 @@ public class PageDetailProducer {
         
         ValueExpression valueExpression = factory.createValueExpression(context, expression, Object.class);
         Object value = valueExpression.getValue(context);
-        String result = objectFormattingService.formatObjectAsValue(value, YukonUserContextUtils.getYukonUserContext(request));
+        String result = objectFormattingService.formatObjectAsString(value, YukonUserContextUtils.getYukonUserContext(request));
         return result;
     }
     

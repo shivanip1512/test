@@ -858,6 +858,9 @@
         <property name="paoAuthorizationService" ref="paoAuthorizationService"/>
     </bean>
     
+    <bean id="msg2TagPrototype" class="com.cannontech.web.i18n.Msg2Tag">
+    </bean>
+    
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
         <property name="maxCacheSize" value="50" />
         <property name="accessOrder" value="true" />

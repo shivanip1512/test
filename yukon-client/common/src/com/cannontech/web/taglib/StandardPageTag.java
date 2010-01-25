@@ -62,11 +62,12 @@ public class StandardPageTag extends BodyTagSupport {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         MessageScope messageScope = MessageScopeHelper.forRequest(request);
         
-        messageScope.pushScope("yukon.web.modules." + model.getModuleName(), false);
         if (StringUtils.isNotBlank(model.getPageName())) {
-            messageScope.pushScope(model.getPageName(), false);
+            String moduleSearchPath = "modules." + model.getModuleName();
+            String modulePlusPageSearchPath = moduleSearchPath + "." + model.getPageName();
+            messageScope.pushScope(modulePlusPageSearchPath);
         }
-        // the above scopes won't be popped so that they're available for the layout
+        // the above scope won't be popped so that it is available for the layout
         
         return EVAL_BODY_BUFFERED;
     }

@@ -18,6 +18,7 @@ import javax.servlet.jsp.tagext.BodyContent;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -95,9 +96,13 @@ public class LayoutController {
             pageDetail.setBreadCrumbText("");
             if (StringUtils.isNotBlank(tagInfo.getTitle())) {
                 pageDetail.setPageTitle(tagInfo.getTitle());
-            } else {
-                MessageSourceResolvable pageTitle = MessageScopeHelper.forRequest(request).generateResolvable(".pageTitle");
-                pageDetail.setPageTitle(messageSourceAccessor.getMessage(pageTitle));
+            } else if (StringUtils.isNotBlank(tagInfo.getPageName())){
+                try {
+                    String pageTitleKey = "yukon.web.modules." + tagInfo.getModuleName() + "." + tagInfo.getPageName() + ".pageTitle";
+                    pageDetail.setPageTitle(messageSourceAccessor.getMessage(pageTitleKey));
+                } catch (NoSuchMessageException e) {
+                    pageDetail.setPageTitle(messageSourceAccessor.getMessageWithDefault("yukon.web.defaults.pageTitle", ""));
+                }
                 
             }
         }

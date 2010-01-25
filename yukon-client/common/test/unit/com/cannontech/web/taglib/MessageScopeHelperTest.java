@@ -1,5 +1,6 @@
 package com.cannontech.web.taglib;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -7,101 +8,108 @@ import org.junit.Test;
 
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 
 public class MessageScopeHelperTest {
+
+    private void assertContainsInOrder(List<String> expected,
+            List<String> actual) {
+        if (expected.equals(actual)) return;
+        if (expected.size() > actual.size()) Assert.fail("actual smaller than expected");
+
+        Iterator<String> expectedIter = expected.iterator();
+        Iterator<String> actualIter = actual.iterator();
+
+        while (expectedIter.hasNext()) {
+            String thisExpected = expectedIter.next();
+            if (!Iterators.contains(actualIter, thisExpected)) {
+                Assert.fail("doesn't contain: " + thisExpected);
+            }
+        }
+    }
 
     @Test
     public void test_basic_module_and_page() {
         MessageScope messageScope = new MessageScopeHelper.MessageScope();
 
-        messageScope.pushScope("prefix.someModule", false);
-        messageScope.pushScope("somePage", false);
+        messageScope.pushScope("modules.someModule.somePage");
 
-        List<String> actual = messageScope.getFullKeys("suffix", "default.");
+        List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
 
-        ImmutableList<String> expected = ImmutableList.of("prefix.someModule.somePage.suffix",
-                                                          "prefix.someModule.suffix",
-                                                          "default.suffix");
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.suffix");
+
+        assertContainsInOrder(expected, actual);
+    }
+
+    @Test
+    public void test_basic_widget() {
+        MessageScope messageScope = new MessageScopeHelper.MessageScope();
+
+        messageScope.pushScope("modules.someModule.somePage");
+        messageScope.pushScope(".someWidget", "widgets.someWidget");
+
+        List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
+
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someWidget.suffix",
+                                                          "yukon.web.widgets.someWidget.suffix");
+
+        assertContainsInOrder(expected, actual);
+    }
+
+    @Test
+    public void test_basic_container() {
+        MessageScope messageScope = new MessageScopeHelper.MessageScope();
+
+        messageScope.pushScope("modules.someModule.somePage");
+        messageScope.pushScope(".someContainer", "");
+
+        List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
+
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someContainer.suffix",
+                                                          "yukon.web.modules.someModule.somePage.suffix");
+
+        assertContainsInOrder(expected, actual);
+    }
+
+    @Test
+    public void test_basic_forced_scope() {
+        MessageScope messageScope = new MessageScopeHelper.MessageScope();
+        
+        messageScope.pushScope("modules.someModule.somePage");
+        messageScope.pushScope(".someScope");
+        
+        List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
+        
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someScope.suffix");
+        
+        assertContainsInOrder(expected, actual);
+    }
+    
+    @Test
+    public void test_basic_default() {
+        MessageScope messageScope = new MessageScopeHelper.MessageScope();
+
+        messageScope.pushScope("modules.someModule.somePage");
+
+        List<String> actual = messageScope.getFullKeys("defaults.suffix", "yukon.web.");
+
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.defaults.suffix");
 
         Assert.assertEquals(expected, actual);
     }
 
     @Test
-    public void test_three_keys() {
+    public void test_basic_component() {
         MessageScope messageScope = new MessageScopeHelper.MessageScope();
 
-        messageScope.pushScope("prefix.someModule", false);
-        messageScope.pushScope("somePage", false);
-        messageScope.pushScope("someContext", false);
+        messageScope.pushScope("modules.someModule.somePage");
+        messageScope.pushScope(".someTag.instance", "components.someTag.instance", "components.someTag");
 
-        List<String> actual = messageScope.getFullKeys("suffix", "default.");
+        List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
 
-        ImmutableList<String> expected = ImmutableList.of("prefix.someModule.somePage.someContext.suffix",
-                                                          "prefix.someModule.somePage.suffix",
-                                                          "prefix.someModule.suffix",
-                                                          "default.suffix");
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test_simple_sticky() {
-        MessageScope messageScope = new MessageScopeHelper.MessageScope();
-
-        messageScope.pushScope("prefix.someModule", false);
-        messageScope.pushScope("somePage", false);
-        messageScope.pushScope("someComponent", true);
-
-        List<String> actual = messageScope.getFullKeys("suffix", "default.");
-
-        ImmutableList<String> expected = ImmutableList.of("prefix.someModule.somePage.someComponent.suffix",
-                                                          "prefix.someModule.someComponent.suffix",
-                                                          "default.someComponent.suffix",
-                                                          "default.suffix");
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test_middle_sticky() {
-        MessageScope messageScope = new MessageScopeHelper.MessageScope();
-
-        messageScope.pushScope("modules.someModule", false);
-        messageScope.pushScope("somePage", false);
-        messageScope.pushScope("someComponent", true);
-        messageScope.pushScope("someContext", false);
-
-        List<String> actual = messageScope.getFullKeys("suffix", "default.");
-
-        ImmutableList<String> expected = ImmutableList.of("modules.someModule.somePage.someComponent.someContext.suffix",
-                                                          "modules.someModule.someComponent.someContext.suffix",
-                                                          "default.someComponent.someContext.suffix",
-                                                          "default.someComponent.suffix",
-                                                          "default.suffix");
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test_two_sticky() {
-        MessageScope messageScope = new MessageScopeHelper.MessageScope();
-
-        messageScope.pushScope("modules.someModule", false);
-        messageScope.pushScope("somePage", false);
-        messageScope.pushScope("componentName", false);
-        messageScope.pushScope("someComponent", true);
-        messageScope.pushScope("someComponent2", true);
-        messageScope.pushScope("someContext2", false);
-
-        List<String> actual = messageScope.getFullKeys("suffix", "default.");
-
-        ImmutableList<String> expected = ImmutableList.of("modules.someModule.somePage.componentName.someComponent.someComponent2.someContext2.suffix",
-                                                          "modules.someModule.somePage.someComponent.someComponent2.someContext2.suffix",
-                                                          "modules.someModule.someComponent.someComponent2.someContext2.suffix",
-                                                          "default.someComponent.someComponent2.someContext2.suffix",
-                                                          "default.someComponent2.someContext2.suffix",
-                                                          "default.someComponent2.suffix",
-                                                          "default.suffix");
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someTag.instance.suffix",
+                                                          "yukon.web.components.someTag.instance.suffix",
+                                                          "yukon.web.components.someTag.suffix");
 
         Assert.assertEquals(expected, actual);
     }
@@ -110,19 +118,36 @@ public class MessageScopeHelperTest {
     public void test_push_pop() {
         MessageScope messageScope = new MessageScopeHelper.MessageScope();
 
-        messageScope.pushScope("prefix.someModule", false);
-        messageScope.pushScope("somePage", false);
-        messageScope.pushScope("someContext1", false);
+        messageScope.pushScope("modules.someModule.somePage");
+        messageScope.pushScope(".someTag.instance", "components.someTag.instance", "components.someTag");
         messageScope.popScope();
-        messageScope.pushScope("someContext2", false);
+        messageScope.pushScope(".someTag2.instance", "components.someTag2.instance", "components.someTag2");
 
-        List<String> actual = messageScope.getFullKeys("suffix", "default.");
+        List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
 
-        ImmutableList<String> expected = ImmutableList.of("prefix.someModule.somePage.someContext2.suffix",
-                                                          "prefix.someModule.somePage.suffix",
-                                                          "prefix.someModule.suffix",
-                                                          "default.suffix");
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someTag2.instance.suffix",
+                                                          "yukon.web.components.someTag2.instance.suffix",
+        "yukon.web.components.someTag2.suffix");
 
         Assert.assertEquals(expected, actual);
     }
+
+    @Test
+    public void test_basic_component_in_widget() {
+        MessageScope messageScope = new MessageScopeHelper.MessageScope();
+
+        messageScope.pushScope("modules.someModule.somePage");
+        messageScope.pushScope(".someWidget", "widgets.someWidget");
+        messageScope.pushScope(".someTag.instance", "components.someTag.instance", "components.someTag");
+
+        List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
+
+        ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someWidget.someTag.instance.suffix",
+                                                          "yukon.web.widgets.someWidget.someTag.instance.suffix",
+                                                          "yukon.web.components.someTag.instance.suffix",
+                                                          "yukon.web.components.someTag.suffix");
+
+        Assert.assertEquals(expected, actual);
+    }
+
 }

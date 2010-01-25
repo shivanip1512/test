@@ -5,6 +5,7 @@ import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.TemplateProcessorFactory;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
@@ -13,42 +14,25 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
     private TemplateProcessorFactory templateProcessorFactory;
 
     @Override
-    public String formatObjectAsValue(Object value, YukonUserContext userContext) {
-        Object result = formatNonStringPortion(value, userContext);
-        if (result == null) {
-            throw new IllegalArgumentException("input resolved to null");
-        }
-        return result.toString();
+    public String formatObjectAsString(Object value, YukonUserContext userContext) {
+        MessageSourceResolvable resolvable = formatObjectAsResolvable(value, userContext);
+        String result = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(resolvable);
+        return result;
     }
-
-    private Object formatNonStringPortion(Object value, YukonUserContext userContext) {
-        if (value instanceof MessageSourceResolvable) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            return messageSourceAccessor.getMessage((MessageSourceResolvable) value);
-        }
-        if (value instanceof DisplayableEnum) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            DisplayableEnum displayableEnum = (DisplayableEnum) value;
-            return messageSourceAccessor.getMessage(displayableEnum);
-        }
-        if (value instanceof ResolvableTemplate) {
-            return templateProcessorFactory.processResolvableTemplate((ResolvableTemplate) value,
-                                                                      userContext);
-        }
-        return value;
-    }
-
+    
     @Override
-    public String formatObjectAsKey(Object value, YukonUserContext userContext) {
-        if (value instanceof String) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            return messageSourceAccessor.getMessage((String) value);
+    public MessageSourceResolvable formatObjectAsResolvable(Object object, YukonUserContext userContext) {
+        if (object instanceof MessageSourceResolvable) {
+            return (MessageSourceResolvable) object;
         }
-        Object result = formatNonStringPortion(value, userContext);
-        if (result instanceof String) {
-            return result.toString();
+        if (object instanceof DisplayableEnum) {
+            return new YukonMessageSourceResolvable(((DisplayableEnum) object).getFormatKey());
         }
-        throw new IllegalArgumentException("input was not a legal key");
+        if (object instanceof ResolvableTemplate) {
+            String string = templateProcessorFactory.processResolvableTemplate((ResolvableTemplate) object, userContext);
+            return YukonMessageSourceResolvable.createDefaultWithoutCode(string);
+        }
+        return YukonMessageSourceResolvable.createDefaultWithoutCode(object.toString());
     }
 
     @Autowired

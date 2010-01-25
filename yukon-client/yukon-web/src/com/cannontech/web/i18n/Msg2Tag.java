@@ -2,10 +2,13 @@ package com.cannontech.web.i18n;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.util.StringUtils;
@@ -14,14 +17,16 @@ import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.TagUtils;
 
-import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.YukonTagSupport;
+import com.google.common.collect.Maps;
 
+@Configurable("msg2TagPrototype")
 public class Msg2Tag extends YukonTagSupport {
+    private ObjectFormattingService objectFormattingService;
 
     private Object arguments;
     private String argumentSeparator;
@@ -32,6 +37,7 @@ public class Msg2Tag extends YukonTagSupport {
     private boolean htmlEscape = true;
     private boolean fallback = false;
     private boolean debug = false;
+    private boolean blankIfMissing = false;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -43,30 +49,36 @@ public class Msg2Tag extends YukonTagSupport {
         if (key instanceof String) {
             String baseCode = (String) key;
             resolvable = MessageScopeHelper.forRequest(getRequest()).generateResolvable(baseCode, resolvedArguments);
-        } else if (key instanceof MessageSourceResolvable) {
-            resolvable = (MessageSourceResolvable) key;
-        } else if (key instanceof DisplayableEnum) {
-            DisplayableEnum displayableEnum = (DisplayableEnum) key;
-            resolvable = new YukonMessageSourceResolvable(displayableEnum.getFormatKey(), resolvedArguments);
-        } else if (key == null) {
-            throw new IllegalArgumentException("Expected a String MessageSourceResolvable, got a null");
         } else {
-            throw new IllegalArgumentException("Expected a String or MessageSourceResolvable, got a " + key.getClass().getName());
+            resolvable = objectFormattingService.formatObjectAsResolvable(key, getUserContext());
         }
         
         String message;
         try {
-            if (debug) {
-                message = org.apache.commons.lang.StringUtils.join(resolvable.getCodes(), ", \n");
-            } else {
-                message = getMessageSource().getMessage(resolvable);
-            }
+            message = getMessageSource().getMessage(resolvable);
         } catch (NoSuchMessageException e) {
-            if (fallback) {
+            if (blankIfMissing) {
+                message = "";
+            } else if (fallback) {
                 message = resolvable.toString();
             } else {
                 throw e;
             }
+        }
+        
+        if (debug) {
+            String[] codes = resolvable.getCodes();
+            Map<String,String> debugMap = Maps.newLinkedHashMap();
+            for (int i = 0; i < codes.length; i++) {
+                String specificCode = codes[i];
+                String specificCodeMessage = "[undefined]";
+                try {
+                    specificCodeMessage = getMessageSource().getMessage(specificCode, resolvedArguments);
+                } catch (NoSuchMessageException e) {
+                }
+                debugMap.put(specificCode, specificCodeMessage);
+            }
+            getJspContext().setAttribute("msg2TagDebugMap", debugMap, TagUtils.getScope(TagUtils.SCOPE_PAGE));
         }
         
         // HTML and/or JavaScript escape, if demanded.
@@ -175,5 +187,15 @@ public class Msg2Tag extends YukonTagSupport {
     
     public void setFallback(boolean fallback) {
         this.fallback = fallback;
+    }
+    
+    public void setBlankIfMissing(boolean blankIfMissing) {
+        this.blankIfMissing = blankIfMissing;
+    }
+    
+    @Autowired
+    public void setObjectFormattingService(
+            ObjectFormattingService objectFormattingService) {
+        this.objectFormattingService = objectFormattingService;
     }
 }
