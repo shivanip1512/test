@@ -91,9 +91,6 @@ public class AreaDaoImpl implements AreaDao {
 		//Added to YukonPAObject table, now add to CAPCONTROLAREA
 		area.setId(pao.getPaObjectID());
 		simpleJdbcTemplate.update(insertSql, area.getId(), area.getVoltReductionPointId());
-		
-		seasonScheduleDao.saveDefaultSeasonStrategyAssigment(area.getId());
-		holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(area.getId());
 	}
 	
 	@Override
@@ -122,10 +119,6 @@ public class AreaDaoImpl implements AreaDao {
         
         if (result == false) {
             CTILogger.debug("Insert of SpecialArea, " + specialArea.getName() + ", in CAPCONTROLSPECIALAREA table failed.");
-        } else {
-        
-            seasonScheduleDao.saveDefaultSeasonStrategyAssigment(specialArea.getId());
-            holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(specialArea.getId());
         }
     }
 

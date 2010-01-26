@@ -18,7 +18,9 @@
                 <x:htmlTag value="br"/>
                 <x:htmlTag value="br"/>
 			
-                <h:dataTable id="seasons" value="#{capControlForm.seasonsForSchedule}" var="season">
+                <h:dataTable id="seasons" value="#{capControlForm.seasonsForSchedule}" var="season"
+                    columnClasses="scroller"
+                    headerClass="tableHeader scroller">
                     <h:column>
                         <f:facet name="header">
                             <h:outputText value="Season Name" />
@@ -42,8 +44,8 @@
                         <f:facet name="header">
                             <h:outputText value="" />
                         </f:facet>
-                        <x:commandLink
-                            action="#{capControlForm.dataModel.createEditorLink}" value="Edit" rendered="#{capControlForm.editingAuthorized}"
+                        <x:commandLink action="#{capControlForm.dataModel.createEditorLink}" value="Edit" 
+                            rendered="#{capControlForm.editingAuthorized && capControlForm.assignedStratMap[season] > -1}"
                             actionListener="#{capControlForm.setTab}"
                             title="Click here to edit this strategy.">
                             <f:param name="type" id="stratType" value="5"/>
@@ -70,6 +72,7 @@
                     <f:selectItems value="#{capControlForm.cbcHolidaySchedules}" />
                 </x:selectOneMenu> 
                 
+                <x:htmlTag value="br"/>
                 <x:htmlTag value="br"/>
                 
                 <x:panelGrid columns="3">

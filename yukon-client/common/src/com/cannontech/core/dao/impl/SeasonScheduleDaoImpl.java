@@ -86,7 +86,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
             try {
                 strategyId = jdbcTemplate.queryForInt(sql, paoId, season.getScheduleId(), season.getSeasonName());
             } catch (EmptyResultDataAccessException e) {
-                strategyId = 0;
+                strategyId = -1;
             }
             map.put(season, strategyId);
         }
@@ -106,7 +106,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
             try {
                 strategyId = jdbcTemplate.queryForInt(sql, paoId, season.getScheduleId(), season.getSeasonName());
             } catch (EmptyResultDataAccessException e) {
-                strategyId = 0;
+                strategyId = -1;
             }
             if(season.getSeasonName().startsWith("&1&")) {
                 season.setSeasonName(season.getSeasonName().replaceFirst("&1&", ""));
@@ -156,6 +156,8 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         
         for(Season actualSeason : actualSeasons) {
             if(fixedMap.containsKey(actualSeason)) {
+                /* Skip updates where we are not assigning a strategy to a season (strategyId = -1) */
+                if(fixedMap.get(actualSeason) == -1) continue;
                 sql = "Insert Into CCSeasonStrategyAssignment Values ( ?,?,?,? )";
                 jdbcTemplate.update( sql, paoId, actualSeason.getScheduleId(), actualSeason.getSeasonName() , fixedMap.get(actualSeason) );
             }
@@ -195,15 +197,6 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
             }
         }
         return newMap;
-    }
-    
-    public void saveDefaultSeasonStrategyAssigment(int paoId) {
-        
-        String sql = "Delete From CCSeasonStrategyAssignment Where PaobjectId = ?";
-        jdbcTemplate.update(sql, paoId);
-        
-        sql = "Insert Into CCSeasonStrategyAssignment Values ( ?,?,?,? )";
-        jdbcTemplate.update( sql, paoId, -1, "Default" ,  0);
     }
     
     public static Connection getConnection() {

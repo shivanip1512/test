@@ -33,9 +33,6 @@ public abstract class CapControlYukonPAOBase extends com.cannontech.database.dat
     @Override
     public void add() throws SQLException {
         super.add();
-        int paoId = getCapControlPAOID();
-        holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(paoId);
-        seasonScheduleDao.saveDefaultSeasonStrategyAssigment(paoId);
     }
     
     @Override

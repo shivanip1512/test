@@ -134,10 +134,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private ICBControllerModel cbControllerEditor = null;
 	private PointTreeForm pointTreeForm = null;
 	// selectable items that appear in lists on the GUI
-	private SelectItem[] cbcStrategies = null;
-	private SelectItem[] cbcHolidayStrategies = null;
-    private SelectItem[] cbcSchedules = null;
-    private SelectItem[] cbcHolidaySchedules = null;
+	private List<SelectItem> cbcStrategies = null;
 	// variables that hold sub bus info
 	protected List<LiteYukonPAObject> subBusList = null;
     private Integer oldSubBus = null;
@@ -219,48 +216,46 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         this.holidayStrategyId = holidayStrategyId;
     }
     
-    public SelectItem[] getCbcStrategies() {
+    public List<SelectItem> getCbcStrategies() {
 		if (cbcStrategies == null) {
 			List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
-			cbcStrategies = new SelectItem[cbcDBStrats.size()];
-			for (int i = 0; i < cbcDBStrats.size(); i++) {
-				cbcStrategies[i] = new SelectItem(cbcDBStrats.get(i).getStrategyID(), cbcDBStrats.get(i).getStrategyName());
-				getCbcStrategiesMap().put(cbcDBStrats.get(i).getStrategyID(),cbcDBStrats.get(i));
+			cbcStrategies = Lists.newArrayList();
+			cbcStrategies.add(new SelectItem(-1, "(none)"));
+			for (CapControlStrategy strategy : cbcDBStrats) {
+				cbcStrategies.add(new SelectItem(strategy.getStrategyID(), strategy.getStrategyName()));
+				getCbcStrategiesMap().put(strategy.getStrategyID(), strategy);
 			}
 		}
 		return cbcStrategies;
 	}
     
-    public SelectItem[] getCbcHolidayStrategies() {
-        if (cbcHolidayStrategies == null) {
-            List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
-            cbcHolidayStrategies = new SelectItem[cbcDBStrats.size()];
-            for (int i = 0; i < cbcDBStrats.size(); i++) {
-                cbcHolidayStrategies[i] = new SelectItem(cbcDBStrats.get(i).getStrategyID(), cbcDBStrats.get(i).getStrategyName());
-                getCbcStrategiesMap().put(cbcDBStrats.get(i).getStrategyID(),cbcDBStrats.get(i));
-            }
+    public List<SelectItem> getCbcHolidayStrategies() {
+        List<SelectItem> cbcHolidayStrategies;
+        List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
+        cbcHolidayStrategies = Lists.newArrayList();
+        for (CapControlStrategy strategy : cbcDBStrats) {
+            cbcHolidayStrategies.add(new SelectItem(strategy.getStrategyID(), strategy.getStrategyName()));
+            getCbcStrategiesMap().put(strategy.getStrategyID(), strategy);
         }
         return cbcHolidayStrategies;
     }
     
-    public SelectItem[] getCbcSchedules() {
-        if (cbcSchedules== null) {
-            SeasonSchedule[] cbcDBSchedules = SeasonSchedule.getAllCBCSchedules();
-            cbcSchedules = new SelectItem[cbcDBSchedules.length];
-            for (int i = 0; i < cbcDBSchedules.length; i++) {
-                cbcSchedules[i] = new SelectItem(cbcDBSchedules[i].getScheduleId(), cbcDBSchedules[i].getScheduleName());
-            }
+    public List<SelectItem> getCbcSchedules() {
+        List<SelectItem> cbcSchedules;
+        SeasonSchedule[] cbcDBSchedules = SeasonSchedule.getAllCBCSchedules();
+        cbcSchedules = Lists.newArrayList();
+        for (SeasonSchedule schedule : cbcDBSchedules) {
+            cbcSchedules.add(new SelectItem(schedule.getScheduleId(), schedule.getScheduleName()));
         }
         return cbcSchedules;
     }
     
-    public SelectItem[] getCbcHolidaySchedules() {
-        if (cbcHolidaySchedules== null) {
-            HolidaySchedule[] cbcDBSchedules = holidayScheduleDao.getAllHolidaySchedules();
-            cbcHolidaySchedules = new SelectItem[cbcDBSchedules.length];
-            for (int i = 0; i < cbcDBSchedules.length; i++) {
-                cbcHolidaySchedules[i] = new SelectItem(cbcDBSchedules[i].getHolidayScheduleId(), cbcDBSchedules[i].getHolidayScheduleName());
-            }
+    public List<SelectItem> getCbcHolidaySchedules() {
+        List<SelectItem> cbcHolidaySchedules;
+        List<HolidaySchedule> cbcDBSchedules = holidayScheduleDao.getAllHolidaySchedules();
+        cbcHolidaySchedules = Lists.newArrayList();
+        for (HolidaySchedule schedule : cbcDBSchedules) {
+            cbcHolidaySchedules.add(new SelectItem(schedule.getHolidayScheduleId(), schedule.getHolidayScheduleName()));
         }
         return cbcHolidaySchedules;
     }
@@ -271,7 +266,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             List<Season> seasons = seasonScheduleDao.getUserFriendlySeasonsForSchedule(getScheduleId());
             for(Season season : seasons) {
                 if (!map.containsKey(season)) {
-                    map.put(season, 0);
+                    map.put(season, -1);
                 }
             }
             assignedStratMap = map;

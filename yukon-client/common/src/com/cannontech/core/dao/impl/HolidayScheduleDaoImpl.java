@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -15,7 +15,6 @@ import com.cannontech.database.model.Holiday;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 
 public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
@@ -27,6 +26,15 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
             Holiday holiday = new Holiday();
             holiday.setHolidayName( rs.getString("HolidayName"));
             holiday.setScheduleId(rs.getInt("HolidayScheduleId"));
+            return holiday;
+        }
+    };
+    
+    private static final ParameterizedRowMapper<HolidaySchedule> holidayScheduleRowMapper = new ParameterizedRowMapper<HolidaySchedule>() {
+        public HolidaySchedule mapRow(ResultSet rs, int rowNum) throws SQLException {
+            HolidaySchedule holiday = new HolidaySchedule();
+            holiday.setHolidayScheduleId(rs.getInt("HolidayScheduleId"));
+            holiday.setHolidayScheduleName(rs.getString("HolidayScheduleName"));
             return holiday;
         }
     };
@@ -78,9 +86,12 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         String sql = "Select StrategyId " + 
         "From CCHolidayStrategyAssignment " +
         "Where PaobjectId = " + paoId;
-        
-        Integer strategyId = jdbcTemplate.queryForInt(sql);
-        return strategyId;
+        try {
+            Integer strategyId = jdbcTemplate.queryForInt(sql);
+            return strategyId;
+        } catch (EmptyResultDataAccessException e) {
+            return -1;
+        }
     }
     
     public List<Holiday> getHolidaysForSchedule(Integer scheduleId) {
@@ -97,17 +108,11 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         
         String sql = "Delete From CCHolidayStrategyAssignment Where PaobjectId = ?";
         jdbcTemplate.update(sql, paoId);
+        
+        if(scheduleId == -1) return;
+        
         sql = "Insert Into CCHolidayStrategyAssignment Values ( ?,?,? )";
         jdbcTemplate.update( sql, paoId, scheduleId, strategyId);
-    }
-    
-    public void saveDefaultHolidayScheduleStrategyAssigment(int paoId) {
-        
-        String sql = "Delete From CCHolidayStrategyAssignment Where PaobjectId = ?";
-        jdbcTemplate.update(sql, paoId);
-        
-        sql = "Insert Into CCHolidayStrategyAssignment Values ( ?,?,? )";
-        jdbcTemplate.update( sql, paoId, -1, 0);
     }
     
     public static Connection getConnection() {
@@ -123,49 +128,9 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         }
     }
     
-    public HolidaySchedule[] getAllHolidaySchedules() {
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        Vector vect = new Vector(32);
-
-       //Get all the data from the database                
-       String sql = "select " + 
-           "HolidayScheduleID, HolidayScheduleName" +
-           " from HolidaySchedule order by HolidayScheduleName";
-
-        try {       
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-            if( conn == null ) {
-                throw new IllegalStateException("Error getting database connection.");
-            }
-            else {
-                pstmt = conn.prepareStatement(sql.toString());          
-                rset = pstmt.executeQuery();
-
-                while( rset.next() ) {
-                    Integer scheduleId = new Integer (rset.getInt(1));
-                    if(scheduleId != 0) {  // ignore the 'Empty Schedule' schedule for capcontrol purposes
-                        HolidaySchedule cbcHS = new HolidaySchedule();
-        
-                        cbcHS.setHolidayScheduleId( scheduleId );
-                        cbcHS.setHolidayScheduleName( rset.getString(2) );
-                        vect.add( cbcHS );  
-                    }
-                }
-            }       
-        }
-        catch( java.sql.SQLException e ) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            SqlUtils.close(rset, pstmt, conn );
-        }
-
-
-        HolidaySchedule[] strats = new HolidaySchedule[vect.size()];
-        return (HolidaySchedule[])vect.toArray( strats );
+    public List<HolidaySchedule> getAllHolidaySchedules() {
+       String sql = "select HolidayScheduleID, HolidayScheduleName from HolidaySchedule where HolidayScheduleId <> 0 order by HolidayScheduleName";
+       return jdbcTemplate.query(sql, holidayScheduleRowMapper);
     }
 
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {

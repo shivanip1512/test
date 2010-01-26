@@ -139,8 +139,6 @@ public class FeederDaoImpl implements FeederDao {
 			CTILogger.error("Inserting Points for Feeder, " + feeder.getName() + " failed.");
 		}
 		
-		seasonScheduleDao.saveDefaultSeasonStrategyAssigment(feeder.getId());
-		holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(feeder.getId());
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

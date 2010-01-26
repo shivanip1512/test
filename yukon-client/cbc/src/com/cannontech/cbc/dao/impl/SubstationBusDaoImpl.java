@@ -151,8 +151,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 			CTILogger.error("Inserting Points for Subbus, " + bus.getName() + " failed.");
 		}
 		
-		seasonScheduleDao.saveDefaultSeasonStrategyAssigment(bus.getId());
-		holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(bus.getId());
     }
 
     @Override

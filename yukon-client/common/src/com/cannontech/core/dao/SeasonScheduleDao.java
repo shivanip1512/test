@@ -22,8 +22,6 @@ public interface SeasonScheduleDao {
     
     public SeasonSchedule getScheduleForPao(int paoId);
     
-    public void saveDefaultSeasonStrategyAssigment(int paoId);
-    
     public void deleteStrategyAssigment(int paoId);
 
 }
