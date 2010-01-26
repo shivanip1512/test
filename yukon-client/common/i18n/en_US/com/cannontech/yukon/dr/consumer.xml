@@ -93,7 +93,7 @@
     <entry key="yukon.dr.consumer.thermostat.save">Save</entry>
     <entry key="yukon.dr.consumer.thermostat.reset">Reset</entry>
     <entry key="yukon.dr.consumer.thermostat.settings">Thermostat Settings</entry>
-    <entry key="yukon.dr.consumer.thermostat.submit">Save</entry>
+    <entry key="yukon.dr.consumer.thermostat.submit">Send</entry>
     <entry key="yukon.dr.consumer.thermostat.lastSettings">Last Settings:</entry>
     <entry key="yukon.dr.consumer.thermostat.time">Time:</entry>
     <entry key="yukon.dr.consumer.thermostat.runProgram">Run Program</entry>
@@ -130,7 +130,7 @@
                 Adjust <b>MODE</b> and <b>FAN</b> settings.
             </li>
             <li>
-                Click SUBMIT.
+                Click <b>SEND</b>.
             </li>
         </ol>
     ]]></entry>
