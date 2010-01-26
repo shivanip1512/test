@@ -29,6 +29,7 @@
 #include <boost/regex.hpp>
 
 extern ULONG _CC_DEBUG;
+extern BOOL CC_TERMINATE_THREAD_TEST;
 using namespace std;
 /* The singleton instance of CtiPAOScheduleManager */
 CtiPAOScheduleManager* CtiPAOScheduleManager::_instance = NULL;
@@ -148,14 +149,7 @@ void CtiPAOScheduleManager::doResetThr()
                 dout << CtiTime() << " CapControl mgrPAOSchedule doResetThr. TID: " << rwThreadId() << endl;
             }
 
-           /* if(!_shutdownOnThreadTimeout)
-            {*/
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-            /*}
-            else
-            {
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl mgrPAOSchedule doResetThr")) );
-            //}*/
+                 ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
         }
     }
 
@@ -261,6 +255,12 @@ void CtiPAOScheduleManager::mainLoop()
             {
                 rwRunnable().serviceCancellation();
                 rwRunnable().sleep( 500 );
+
+                if (CC_TERMINATE_THREAD_TEST)
+                {
+                    _resetThr.requestCancellation();
+
+                }
             }
             catch(RWCancellation& )
             {
@@ -282,14 +282,7 @@ void CtiPAOScheduleManager::mainLoop()
                     dout << CtiTime() << " CapControl mgrPAOSchedule mainLoop TID: " << rwThreadId() << endl;
                 }
 
-               /* if(!_shutdownOnThreadTimeout)
-                {*/
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-                /*}
-                else
-                {
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl mgrPAOSchedule mainLoop")) );
-                //}*/
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
             }
 
         }

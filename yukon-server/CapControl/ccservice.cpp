@@ -48,6 +48,7 @@ BOOL _TIME_OF_DAY_VAR_CONF;
 string _MAXOPS_ALARM_CAT;
 LONG _MAXOPS_ALARM_CATID;
 ULONG _REFUSAL_TIMEOUT;
+BOOL CC_TERMINATE_THREAD_TEST;
 
 ULONG _OP_STATS_USER_DEF_PERIOD;
 ULONG _OP_STATS_REFRESH_RATE;
@@ -627,6 +628,14 @@ void CtiCCService::Init()
         dout << CtiTime() << " - CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY << endl;
     }
     _quit = false;
+
+    //DO NOT PRINT THIS OUT TO DEBUG unless true
+    CC_TERMINATE_THREAD_TEST = gConfigParms.isTrue("CC_TERMINATE_THREAD_TEST", false);
+    if ( CC_TERMINATE_THREAD_TEST )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CC_TERMINATE_THREAD_TEST: " << CC_TERMINATE_THREAD_TEST << endl;
+    }
 }
 
 void CtiCCService::DeInit()

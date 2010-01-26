@@ -85,6 +85,7 @@ extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 extern ULONG _REFUSAL_TIMEOUT;
 extern BOOL _USE_PHASE_INDICATORS;
 extern ULONG _MSG_PRIORITY;
+extern BOOL CC_TERMINATE_THREAD_TEST;
 
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -4816,6 +4817,13 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY << endl;
+        }
+        //DO NOT PRINT THIS OUT TO DEBUG unless true
+        CC_TERMINATE_THREAD_TEST = gConfigParms.isTrue("CC_TERMINATE_THREAD_TEST", false);
+        if ( CC_TERMINATE_THREAD_TEST )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CC_TERMINATE_THREAD_TEST: " << CC_TERMINATE_THREAD_TEST << endl;
         }
 
     }
