@@ -119,6 +119,7 @@ public class StrategyPeakSettingsHelper {
                 break;
                 
             case TIME_OF_DAY :
+            case INTEGRATED_VOLT_VAR :
                 settingString = "---";
                 break;
                 
@@ -168,6 +169,7 @@ public class StrategyPeakSettingsHelper {
                 break;
                 
             case TIME_OF_DAY :
+            case INTEGRATED_VOLT_VAR :
                 settingString = "---";
                 break;
                 
