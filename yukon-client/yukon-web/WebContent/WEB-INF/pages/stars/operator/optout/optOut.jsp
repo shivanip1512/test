@@ -5,10 +5,10 @@
 
 <h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
 
-<c:if test="${allOptedOut}">
+<c:if test="${!empty currentOptOutList && allOptedOut}">
 	<cti:msg key="yukon.dr.operator.optout.allOptedOut"/>
 </c:if>
-<c:if test="${!optOutsAvailable}">
+<c:if test="${!empty currentOptOutList && !optOutsAvailable}">
     <cti:msg key="yukon.dr.operator.optout.noOptOutsAvailable"/>
 </c:if>
 

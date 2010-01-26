@@ -10,10 +10,10 @@
     
     <h3><cti:msg key="yukon.dr.consumer.optout.header"/></h3>
     <div align="center">
-        <c:if test="${allOptedOut}">
+        <c:if test="${!empty currentOptOutList && allOptedOut}">
             <cti:msg key="yukon.dr.consumer.optout.allOptedOut"/>
         </c:if>
-        <c:if test="${!optOutsAvailable}">
+        <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
             <cti:msg key="yukon.dr.consumer.optout.noOptOutsAvailable"/>
         </c:if>
        	<c:if test="${!allOptedOut && optOutsAvailable}">
