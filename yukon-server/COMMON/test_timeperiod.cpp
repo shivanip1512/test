@@ -12,36 +12,39 @@ using Cti::TimePeriod;
 
 BOOST_AUTO_TEST_CASE(test_timeperiod_conversion)
 {
-    CtiDate::CtiDate(1, 1, 1992);
-    CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
-    TimePeriod largePeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0),
-                           CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2010), 0, 0, 0));
-    TimePeriod smallPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                           CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0));
-    TimePeriod smallIntersectingPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                                       CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 1));
+    const CtiTime LargePeriodBegin    = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
+    const CtiTime LargePeriodEnd      = CtiTime(CtiDate::CtiDate(1, 1, 2010), 0, 0, 0);
+    const CtiTime PositiveInfinity    = CtiTime(CtiTime::pos_infin);
+    const CtiTime NegativeInfinity    = CtiTime(CtiTime::neg_infin);
+
+    TimePeriod largePeriod(LargePeriodBegin, LargePeriodEnd);
 
     // Check that conversions work
-    BOOST_CHECK_EQUAL(largePeriod.begin(),CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0));
-    BOOST_CHECK_EQUAL(largePeriod.end(),CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2010), 0, 0, 0));
+    BOOST_CHECK_EQUAL(largePeriod.begin(), LargePeriodBegin);
+    BOOST_CHECK_EQUAL(largePeriod.end(), LargePeriodEnd);
 
-    TimePeriod infinity(CtiTime::CtiTime(CtiTime::neg_infin),CtiTime::CtiTime(CtiTime::pos_infin));
-    BOOST_CHECK_EQUAL(infinity.begin(), CtiTime::CtiTime(CtiTime::neg_infin));
-    BOOST_CHECK_EQUAL(infinity.end(), CtiTime::CtiTime(CtiTime::pos_infin));
+    TimePeriod infinity(NegativeInfinity, PositiveInfinity);
+    BOOST_CHECK_EQUAL(infinity.begin(), NegativeInfinity);
+    BOOST_CHECK_EQUAL(infinity.end(), PositiveInfinity);
 }
 
 BOOST_AUTO_TEST_CASE(test_timeperiod_intersects)
 {
-    CtiDate::CtiDate(1, 1, 1992);
-    CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
-    TimePeriod largePeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0),
-                           CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2010), 0, 0, 0));
-    TimePeriod smallPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                           CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0));
-    TimePeriod smallIntersectingPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                                       CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 1));
-    TimePeriod largeIntersectingPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                                       CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2000), 0, 0, 1));
+    const CtiTime LargePeriodBegin    = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
+    const CtiTime LargePeriodEnd      = CtiTime(CtiDate::CtiDate(1, 1, 2010), 0, 0, 0);
+    const CtiTime SmallPeriodBegin    = CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0);
+    const CtiTime SmallPeriodEnd      = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
+    const CtiTime SmallIntPeriodBegin = CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0);
+    const CtiTime SmallIntPeriodEnd   = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 1);
+    const CtiTime LargeIntPeriodBegin = CtiTime(CtiDate::CtiDate(1, 1, 1993), 0, 0, 0);
+    const CtiTime LargeIntPeriodEnd   = CtiTime(CtiDate::CtiDate(1, 1, 2000), 0, 0, 1);
+    const CtiTime PositiveInfinity    = CtiTime(CtiTime::pos_infin);
+    const CtiTime NegativeInfinity    = CtiTime(CtiTime::neg_infin);
+
+    TimePeriod largePeriod(LargePeriodBegin, LargePeriodEnd);
+    TimePeriod smallPeriod(SmallPeriodBegin, SmallPeriodEnd);
+    TimePeriod smallIntersectingPeriod(SmallIntPeriodBegin, SmallIntPeriodEnd);
+    TimePeriod largeIntersectingPeriod(LargeIntPeriodBegin, LargeIntPeriodEnd);
 
     // Check if intersect works
     BOOST_CHECK(!largePeriod.intersects(smallPeriod));
@@ -51,26 +54,29 @@ BOOST_AUTO_TEST_CASE(test_timeperiod_intersects)
     BOOST_CHECK(smallIntersectingPeriod.intersects(largePeriod));
 
     aPeriod = largePeriod.intersection(smallIntersectingPeriod);
-    BOOST_CHECK_EQUAL(aPeriod.begin(), CtiTime::CtiTime(CtiDate::CtiDate(1,1,1992),0,0,0));
-    BOOST_CHECK_EQUAL(aPeriod.end(), CtiTime::CtiTime(CtiDate::CtiDate(1,1,1992),0,0,1));
+    BOOST_CHECK_EQUAL(aPeriod.begin(), LargePeriodBegin);
+    BOOST_CHECK_EQUAL(aPeriod.end(), SmallIntPeriodEnd);
 
     aPeriod = largePeriod.intersection(largeIntersectingPeriod);
-    BOOST_CHECK_EQUAL(aPeriod.begin(), CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0));
-    BOOST_CHECK_EQUAL(aPeriod.end(), CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2000), 0, 0, 1));
+    BOOST_CHECK_EQUAL(aPeriod.begin(), LargeIntPeriodBegin);
+    BOOST_CHECK_EQUAL(aPeriod.end(), LargeIntPeriodEnd);
 }
 
 BOOST_AUTO_TEST_CASE(test_timeperiod_merge)
 {
-    CtiDate::CtiDate(1, 1, 1992);
-    CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
-    TimePeriod largePeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0),
-                           CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2010), 0, 0, 0));
-    TimePeriod smallPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                           CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0));
-    TimePeriod smallIntersectingPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                                       CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 1));
-    TimePeriod largeIntersectingPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0),
-                                       CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2020), 0, 0, 1));
+    const CtiTime LargePeriodBegin    = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
+    const CtiTime LargePeriodEnd      = CtiTime(CtiDate::CtiDate(1, 1, 2010), 0, 0, 0);
+    const CtiTime SmallPeriodBegin    = CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0);
+    const CtiTime SmallPeriodEnd      = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
+    const CtiTime SmallIntPeriodBegin = CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0);
+    const CtiTime SmallIntPeriodEnd   = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 1);
+    const CtiTime LargeIntPeriodBegin = CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0);
+    const CtiTime LargeIntPeriodEnd   = CtiTime(CtiDate::CtiDate(1, 1, 2020), 0, 0, 1);
+
+    TimePeriod largePeriod(LargePeriodBegin, LargePeriodEnd);
+    TimePeriod smallPeriod(SmallPeriodBegin, SmallPeriodEnd);
+    TimePeriod smallIntersectingPeriod(SmallIntPeriodBegin, SmallIntPeriodEnd);
+    TimePeriod largeIntersectingPeriod(LargeIntPeriodBegin, LargeIntPeriodEnd);
 
     // Check if merge works
     // assert(!largePeriod.intersects(smallPeriod));
@@ -78,25 +84,28 @@ BOOST_AUTO_TEST_CASE(test_timeperiod_merge)
     BOOST_CHECK(aPeriod.is_null());
 
     aPeriod = largePeriod.merge(smallIntersectingPeriod);
-    BOOST_CHECK_EQUAL(aPeriod.begin(), CtiTime::CtiTime(CtiDate::CtiDate(1,1,1991),0,0,0));
-    BOOST_CHECK_EQUAL(aPeriod.end(), CtiTime::CtiTime(CtiDate::CtiDate(1,1,2010),0,0,0));
+    BOOST_CHECK_EQUAL(aPeriod.begin(), SmallIntPeriodBegin);
+    BOOST_CHECK_EQUAL(aPeriod.end(), LargePeriodEnd);
 
     aPeriod = largePeriod.merge(largeIntersectingPeriod);
-    BOOST_CHECK_EQUAL(aPeriod.begin(), CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1991), 0, 0, 0));
-    BOOST_CHECK_EQUAL(aPeriod.end(), CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2020), 0, 0, 1));
+    BOOST_CHECK_EQUAL(aPeriod.begin(), LargeIntPeriodBegin);
+    BOOST_CHECK_EQUAL(aPeriod.end(), LargeIntPeriodEnd);
 }
 
 BOOST_AUTO_TEST_CASE(test_timeperiod_invalid)
 {
-    TimePeriod invalidPeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0),
-                             CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0));
+    const CtiTime StartOfYear      = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0);
+    const CtiTime AfterStartOfYear = CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 1);
+    const CtiTime PositiveInfinity = CtiTime(CtiTime::pos_infin);
+    const CtiTime NegativeInfinity = CtiTime(CtiTime::neg_infin);
+
+    TimePeriod invalidPeriod(StartOfYear, StartOfYear);
     BOOST_CHECK(invalidPeriod.is_null());
 
-    invalidPeriod = TimePeriod::TimePeriod(CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 1),
-                                           CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 1992), 0, 0, 0));
+    invalidPeriod = TimePeriod::TimePeriod(AfterStartOfYear, StartOfYear);
     BOOST_CHECK(invalidPeriod.is_null());
 
-    TimePeriod validPeriod(CtiTime::CtiTime(CtiTime::neg_infin), CtiTime(CtiTime::pos_infin));
+    TimePeriod validPeriod(NegativeInfinity, PositiveInfinity);
     BOOST_CHECK(!validPeriod.is_null());
 
     // This is not a hard set rule, but a test that addDays is ok when invalid.
