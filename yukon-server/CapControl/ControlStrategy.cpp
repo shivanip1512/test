@@ -5,6 +5,9 @@
 
 #include "logger.h"
 #include "ControlStrategy.h"
+#include "ccid.h"
+
+extern ULONG _CC_DEBUG;
 
 
 ControlStrategy::ControlStrategy() :
@@ -155,6 +158,7 @@ const std::string ControlStrategy::getEndDaySettings() const
     return _endDaySettings;
 }
 
+
 /** 
  * @return      0.0
  * @deprecated  This function is supplied for backwards 
@@ -162,9 +166,7 @@ const std::string ControlStrategy::getEndDaySettings() const
  */
 double ControlStrategy::getPeakLag() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -177,9 +179,7 @@ double ControlStrategy::getPeakLag() const
  */
 double ControlStrategy::getOffPeakLag() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -192,9 +192,7 @@ double ControlStrategy::getOffPeakLag() const
  */
 double ControlStrategy::getPeakLead() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -207,9 +205,7 @@ double ControlStrategy::getPeakLead() const
  */
 double ControlStrategy::getOffPeakLead() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -222,9 +218,7 @@ double ControlStrategy::getOffPeakLead() const
  */
 double ControlStrategy::getPeakVARLag() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -237,9 +231,7 @@ double ControlStrategy::getPeakVARLag() const
  */
 double ControlStrategy::getOffPeakVARLag() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -252,9 +244,7 @@ double ControlStrategy::getOffPeakVARLag() const
  */
 double ControlStrategy::getPeakVARLead() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -267,9 +257,7 @@ double ControlStrategy::getPeakVARLead() const
  */
 double ControlStrategy::getOffPeakVARLead() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -282,9 +270,7 @@ double ControlStrategy::getOffPeakVARLead() const
  */
 double ControlStrategy::getPeakPFSetPoint() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -297,9 +283,7 @@ double ControlStrategy::getPeakPFSetPoint() const
  */
 double ControlStrategy::getOffPeakPFSetPoint() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 
     return 0.0;
 }
@@ -314,9 +298,7 @@ double ControlStrategy::getOffPeakPFSetPoint() const
  */
 void ControlStrategy::setPeakLag(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -329,9 +311,7 @@ void ControlStrategy::setPeakLag(const double value)
  */
 void ControlStrategy::setOffPeakLag(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -344,9 +324,7 @@ void ControlStrategy::setOffPeakLag(const double value)
  */
 void ControlStrategy::setPeakLead(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -359,9 +337,7 @@ void ControlStrategy::setPeakLead(const double value)
  */
 void ControlStrategy::setOffPeakLead(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -374,9 +350,7 @@ void ControlStrategy::setOffPeakLead(const double value)
  */
 void ControlStrategy::setPeakVARLag(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -389,9 +363,7 @@ void ControlStrategy::setPeakVARLag(const double value)
  */
 void ControlStrategy::setOffPeakVARLag(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -404,9 +376,7 @@ void ControlStrategy::setOffPeakVARLag(const double value)
  */
 void ControlStrategy::setPeakVARLead(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -419,9 +389,7 @@ void ControlStrategy::setPeakVARLead(const double value)
  */
 void ControlStrategy::setOffPeakVARLead(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -434,9 +402,7 @@ void ControlStrategy::setOffPeakVARLead(const double value)
  */
 void ControlStrategy::setPeakPFSetPoint(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -449,9 +415,7 @@ void ControlStrategy::setPeakPFSetPoint(const double value)
  */
 void ControlStrategy::setOffPeakPFSetPoint(const double value)
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-    dout <<  "WARNING: Calling deprecated function: " << __FUNCTION__ << std::endl;
+    printError(__FUNCTION__);
 }
 
 
@@ -554,6 +518,21 @@ void ControlStrategy::setDaysOfWeek(const std::string & days)
 void ControlStrategy::setEndDaySettings(const std::string &settings)
 {
     _endDaySettings = settings;
+}
+
+
+void ControlStrategy::printError(const char *function) const
+{
+    static bool _printOnce = true;
+
+    if ( _printOnce && ( _CC_DEBUG & CC_DEBUG_STANDARD ) )
+    {
+        _printOnce = false;
+
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout <<  "\n ** WARNING: Calling deprecated function: " << function << "()\n" << std::endl;
+    }
 }
 
 

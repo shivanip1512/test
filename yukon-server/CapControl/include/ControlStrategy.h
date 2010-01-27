@@ -161,6 +161,8 @@ private:
     long        _integratePeriod;
     bool        _likeDayFallBack;
     std::string _endDaySettings;
+
+    void printError(const char *function) const;
 };
 
 
