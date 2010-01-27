@@ -46,22 +46,22 @@ extern ULONG _MAX_KVAR;
 extern ULONG _SEND_TRIES;
 
 
-void initialize_area(CtiCCSubstationBusStore* store, CtiCCArea* area)
+void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCArea* area)
 {
-    store->addAreaToPaoMap(area);
+    store->insertAreaToPaoMap(area);
     area->setDisableFlag(FALSE);
 }
-void initialize_station(CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
+void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
 {
     station->setSaEnabledFlag(FALSE);
     station->setParentId(parentArea->getPaoId());
     parentArea->getSubStationList()->push_back(station->getPaoId());
-    store->addSubstationToPaoMap(station);
+    store->insertSubstationToPaoMap(station);
     station->setDisableFlag(FALSE);
 
 
 }
-void initialize_bus(CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
+void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
 {
 
 
@@ -71,13 +71,13 @@ void initialize_bus(CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, Cti
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     bus->setVerificationFlag(FALSE);
     parentStation->getCCSubIds()->push_back(bus->getPaoId());
-    store->addSubBusToPaoMap(bus);
+    store->insertSubBusToPaoMap(bus);
     bus->setDisableFlag(FALSE);
     bus->setVerificationFlag(FALSE);
     bus->setPerformingVerificationFlag(FALSE);
     bus->setVerificationDoneFlag(FALSE);
 }
-void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
+void initialize_feeder(Test_CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
 {
     StrategyPtr noStrategy( new NoStrategy );
 
@@ -87,7 +87,7 @@ void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCS
     feed->setDisplayOrder(displayOrder);
     parentBus->getCCFeeders().push_back(feed);
     store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &feederId, &busId);
-    store->addFeederToPaoMap(feed);
+    store->insertFeederToPaoMap(feed);
     feed->setDisableFlag(FALSE);
     feed->setVerificationFlag(FALSE);
     feed->setPerformingVerificationFlag(FALSE);
@@ -100,7 +100,7 @@ void initialize_feeder(CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCS
 
 }
 
-void initialize_capbank(CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCCFeeder* parentFeed, long displayOrder)
+void initialize_capbank(Test_CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCCFeeder* parentFeed, long displayOrder)
 {
     long bankId = cap->getPaoId();
     long fdrId = parentFeed->getPaoId();
@@ -122,10 +122,12 @@ void initialize_capbank(CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCC
 
 BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
 {
+    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+    CtiCCSubstationBusStore::setInstance(store);
+
     CtiCCSubstationBus *bus = new CtiCCSubstationBus();
     CtiCCSubstation *station = new CtiCCSubstation();
     CtiCCArea *area = new CtiCCArea();
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(false);
 
     StrategyPtr strategy( new NoStrategy );
     bus->setStrategy( strategy );
@@ -139,11 +141,11 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     station->setParentId(1);
     station->setSaEnabledFlag(FALSE);
-    store->addAreaToPaoMap(area);
+    store->insertAreaToPaoMap(area);
     area->getSubStationList()->push_back(station->getPaoId());
-    store->addSubstationToPaoMap(station);
+    store->insertSubstationToPaoMap(station);
     station->getCCSubIds()->push_back(bus->getPaoId());
-    store->addSubBusToPaoMap(bus);
+    store->insertSubBusToPaoMap(bus);
 
     bus->setCorrectionNeededNoBankAvailFlag(FALSE);
     CtiMultiMsg_vec ccEvents;
@@ -156,20 +158,22 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     bus->createCannotControlBankText("Increase Var", "Open", ccEvents);
     BOOST_CHECK_EQUAL(ccEvents.size(), 2);
     store->deleteInstance();
-} 
+}
 
 BOOST_AUTO_TEST_CASE(test_lock_invalid_ctitime)
 {
     unsigned long x = 0;
     CtiTime now(x);
     struct tm start_tm;
- 
+
     now.extract(&start_tm);
 
 
 }
 BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 {
+    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+    CtiCCSubstationBusStore::setInstance(store);
 
     CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
@@ -185,7 +189,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
     CtiCCFeeder *feed22 = create_object<CtiCCFeeder>(22, "Feeder22");
     CtiCCFeeder *feed23 = create_object<CtiCCFeeder>(23, "Feeder23");
 
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance(false);
+
     initialize_area(store, area);
     initialize_station(store, station, area);
     initialize_bus(store, bus1, station);
@@ -212,7 +216,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 
         CtiCCExecutorFactory f;
         CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, bus1->getPaoId(), currentFeeder->getPaoId(), bus2->getPaoId(), currentFeeder->getDisplayOrder() + 0.5));
-        executor->Execute();
+        executor->execute();
         delete executor;
         j--;
     }
@@ -231,7 +235,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 
             CtiCCExecutorFactory f;
             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()));
-            executor->Execute();
+            executor->execute();
             delete executor;
         }
         j--;
@@ -245,6 +249,9 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 
 BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 {
+
+    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+    CtiCCSubstationBusStore::setInstance(store);
 
     _MAX_KVAR = 20000;
     _SEND_TRIES = 1;
@@ -288,8 +295,6 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiCCCapBank *cap11b = create_object<CtiCCCapBank>(15, "capBank11b");
     CtiCCCapBank *cap11c = create_object<CtiCCCapBank>(16, "capBank11c");
 
-    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
-    CtiCCSubstationBusStore::setInstance(store);
     Test_CtiCapController* controller = new Test_CtiCapController();
     CtiCapController::setInstance(controller);
 
@@ -322,10 +327,10 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, bus1->getPaoId(), CtiPAOScheduleManager::AllBanks, 0, false));
-    executor->Execute();
-    
+    executor->execute();
+
     delete executor;
-    
+
     bus1->setCapBanksToVerifyFlags(CtiPAOScheduleManager::AllBanks, ccEvents);
 
 
@@ -397,7 +402,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
 
     executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, bus1->getPaoId(), false));
-    executor->Execute();
+    executor->execute();
     delete executor;
 
 
@@ -410,7 +415,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     BOOST_CHECK_EQUAL(feed11->getVerificationFlag(), FALSE);
     BOOST_CHECK_EQUAL(cap11a->getVerificationFlag(), FALSE);
 
-    
-   
+
+
     store->deleteInstance();
 }

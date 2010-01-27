@@ -56,6 +56,7 @@ BOOL _OP_STATS_DYNAMIC_UPDATE;
 BOOL _RETRY_ADJUST_LAST_OP_TIME;
 BOOL _USE_PHASE_INDICATORS;
 ULONG _MSG_PRIORITY;
+ULONG _IVVC_KEEPALIVE;
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -627,6 +628,13 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY << endl;
     }
+
+    _IVVC_KEEPALIVE = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_KEEPALIVE", 0);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_KEEPALIVE: " << _IVVC_KEEPALIVE << endl;
+    }
     _quit = false;
 
     //DO NOT PRINT THIS OUT TO DEBUG unless true
@@ -661,17 +669,17 @@ void CtiCCService::OnStop()
     //Time to quit - send a shutdown message through the system
     CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCShutdown());
-    executor->Execute();
+    executor->execute();
 
     SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 
     delete executor;
 
-    /*if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Cap Control shut down!" << endl;
-    }*/
+    }
 
     SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
 

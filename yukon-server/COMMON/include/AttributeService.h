@@ -23,11 +23,13 @@
 class IM_EX_CTIBASE AttributeService
 {
     public:
-        static std::list<LitePoint> getExtraPaoPoints(int paoId);
-        static LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute);
+        AttributeService();
+
+        virtual std::list<LitePoint> getExtraPaoPoints(int paoId);
+        virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute);
 
     private:
 
-        static LitePoint getLitePointsById(int pointId);
-        static std::list<LitePoint> getLitePointsById(const std::list<int>& pointIds);
+        LitePoint getLitePointsById(int pointId);
+        std::list<LitePoint> getLitePointsById(const std::list<int>& pointIds);
 };

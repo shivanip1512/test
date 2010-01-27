@@ -9,8 +9,7 @@ const PointAttribute PointAttribute::LowerTap = PointAttribute(PointAttribute::L
 const PointAttribute PointAttribute::RaiseTap = PointAttribute(PointAttribute::RaiseTapAttribute,"RAISE_TAP");
 const PointAttribute PointAttribute::LtcVoltage = PointAttribute(PointAttribute::LtcVoltageAttribute,"LTC_VOLTAGE");
 const PointAttribute PointAttribute::AutoRemoteControl = PointAttribute(PointAttribute::AutoRemoteControlAttribute,"AUTO_REMOTE_CONTROL");
-const PointAttribute PointAttribute::UpperVoltLimit = PointAttribute(PointAttribute::UpperVoltLimitAttribute,"UPPER_VOLT_LIMIT");
-const PointAttribute PointAttribute::LowerVoltLimit = PointAttribute(PointAttribute::LowerVoltLimitAttribute,"LOWER_VOLT_LIMIT");
+const PointAttribute PointAttribute::TapPosition = PointAttribute(PointAttribute::TapPositionAttribute,"TAP_POSITION");
 const PointAttribute PointAttribute::KeepAlive = PointAttribute(PointAttribute::KeepAliveAttribute,"KEEP_ALIVE");
 
 
@@ -31,9 +30,9 @@ std::string PointAttribute::name() const
     return _name;
 }
 
-int PointAttribute::value() const
+PointAttribute::Attribute PointAttribute::value() const
 {
-    return (int)_value;
+    return _value;
 }
 
 PointAttribute::PointAttribute(Attribute value, const std::string& name)

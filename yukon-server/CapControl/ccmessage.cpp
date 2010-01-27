@@ -99,17 +99,17 @@ RWDEFINE_COLLECTABLE( CtiCCCommand, CTICCCOMMAND_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCCommand::CtiCCCommand(LONG command) :
-    CtiCCMessage( string("" + command) ),
-    _command(command),
+CtiCCCommand::CtiCCCommand(LONG commandId) :
+    CtiCCMessage( string("" + commandId) ),
+    _command(commandId),
     _id(0)
 {
 }
 
-CtiCCCommand::CtiCCCommand(LONG command, LONG id) :
-    CtiCCMessage( string("CtiCCCommand" + command) ),
-    _command(command),
-    _id( id )
+CtiCCCommand::CtiCCCommand(LONG commandId, LONG targetId) :
+    CtiCCMessage( string("CtiCCCommand" + commandId) ),
+    _command(commandId),
+    _id( targetId )
 {
 }
 

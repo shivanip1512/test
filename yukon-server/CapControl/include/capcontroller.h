@@ -88,11 +88,12 @@ public:
 private:
 
 
+    //Thread Functions
     void controlLoop();
     void messageSender();
     void outClientMsgs();
     void processCCEventMsgs();
-
+    void ivvcKeepAlive();
 
     void checkDispatch(ULONG secondsFrom1901);
     void checkPIL(ULONG secondsFrom1901);
@@ -115,6 +116,7 @@ private:
     RWThread _substationBusThread;
     RWThread _outClientMsgThread;
     RWThread _messageSenderThread;
+    RWThread _ivvcKeepAliveThread;
 
     CtiConnection* _pilConnection;
     DispatchConnection* _dispatchConnection;

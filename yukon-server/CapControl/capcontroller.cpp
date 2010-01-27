@@ -85,6 +85,7 @@ extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 extern ULONG _REFUSAL_TIMEOUT;
 extern BOOL _USE_PHASE_INDICATORS;
 extern ULONG _MSG_PRIORITY;
+extern ULONG _IVVC_KEEPALIVE;
 extern BOOL CC_TERMINATE_THREAD_TEST;
 
 
@@ -184,8 +185,9 @@ void CtiCapController::start()
     _messageSenderThread = threadfunc4;
     threadfunc4.start();
 
-
-
+    RWThreadFunction threadfunc5 = rwMakeThreadFunction( *this, &CtiCapController::ivvcKeepAlive );
+    _ivvcKeepAliveThread = threadfunc5;
+    threadfunc5.start();
 }
 
 /*---------------------------------------------------------------------------
@@ -214,12 +216,12 @@ void CtiCapController::stop()
 
         if ( _outClientMsgThread.isValid() && _outClientMsgThread.requestCancellation() == RW_THR_ABORTED )
         {
-            _outClientMsgThread.terminate();
-
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - OutClientMsg Thread forced to terminate." << endl;
             }
+
+            _outClientMsgThread.terminate();
         }
         else
         {
@@ -229,7 +231,22 @@ void CtiCapController::stop()
 
         if ( _messageSenderThread.isValid() && _messageSenderThread.requestCancellation() == RW_THR_ABORTED )
         {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - messageSender Thread forced to terminate." << endl;
+            }
+
             _messageSenderThread.terminate();
+        }
+        else
+        {
+            _messageSenderThread.requestCancellation();
+            _messageSenderThread.join();
+        }
+
+        if ( _ivvcKeepAliveThread.isValid() && _ivvcKeepAliveThread.requestCancellation() == RW_THR_ABORTED )
+        {
+            _ivvcKeepAliveThread.terminate();
 
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -238,8 +255,8 @@ void CtiCapController::stop()
         }
         else
         {
-            _messageSenderThread.requestCancellation();
-            _messageSenderThread.join();
+            _ivvcKeepAliveThread.requestCancellation();
+            _ivvcKeepAliveThread.join();
         }
     }
     catch(...)
@@ -279,6 +296,89 @@ void CtiCapController::stop()
     }
 }
 
+void CtiCapController::ivvcKeepAlive()
+{
+    try
+    {
+        CtiTime rwnow;
+        CtiTime announceTime((unsigned long) 0);
+        CtiTime tickleTime((unsigned long) 0);
+
+        if (_IVVC_KEEPALIVE == 0)
+        {
+            if (_CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC KeepAlive thread closing. Value of 0. " << endl;
+            }
+            return;
+        }
+
+        while (true)
+        {
+            {
+                CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+                LtcMap* ltcMap = store->getLtcMap();
+                for each (const LtcMap::value_type& p in *ltcMap)
+                {
+                    CtiCCCommand* keepAliveCmd = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, p.second->getPaoId() );//consumed in executor
+
+                    CtiCCExecutor* executor = CtiCCExecutorFactory().createExecutor(keepAliveCmd);
+                    executor->execute();
+                    delete executor;
+                }
+            }
+
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - LTC Keep Alive messages sent." << endl;
+            }
+
+            rwnow = rwnow.now();
+            if(rwnow.seconds() > tickleTime.seconds())
+            {
+                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+                if( rwnow.seconds() > announceTime.seconds() )
+                {
+                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " CapControl ivvcKeepAlive. TID: " << rwThreadId() << endl;
+                }
+
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl ivvcKeepAlive", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            }
+
+            int interations = _IVVC_KEEPALIVE*1000 / 500;
+            for (int i = 0; i <= interations; ++i)
+            {//Broken up to allow a cancellation through.
+                try
+                {
+                    rwRunnable().serviceCancellation();
+                    rwRunnable().sleep(500);
+                }
+                catch(RWCancellation& e)
+                {
+                    throw;
+                }
+            }
+        }
+
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl ivvcKeepAlive", CtiThreadRegData::LogOut ) );
+    }
+    catch(RWCancellation& )
+    {
+        throw;
+    }
+    catch (...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Ivvc Keep Alive thread terminated unexpectedly." << endl;
+    }
+}
 
 void CtiCapController::messageSender()
 {
@@ -401,7 +501,6 @@ void CtiCapController::messageSender()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - ~~~~~~~~~ Point Updater END ~~~~~~~~~~~~ " << endl;
                 }
-
             }
 
             try
@@ -431,17 +530,20 @@ void CtiCapController::messageSender()
 
                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
             }
-
-
         };
 
         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::LogOut ) );
 
     }
+    catch(RWCancellation& )
+    {
+        throw;
+    }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Message Sender thread terminated unexpectedly." << endl;
     }
 }
 
@@ -586,7 +688,6 @@ void CtiCapController::controlLoop()
                 }
                 try
                 {
-
                     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -736,12 +837,13 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
+
                         try
                         {
                             rwRunnable().serviceCancellation();
                             rwRunnable().sleep( 1 );
                         }
-                        catch(RWCancellation& )
+                        catch (RWCancellation& )
                         {
                             throw;
                         }
@@ -758,6 +860,10 @@ void CtiCapController::controlLoop()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - ********** Control Loop End ********* " << endl;
                     }
+                }
+                catch (RWCancellation& )
+                {
+                    throw;
                 }
                 catch(...)
                 {
@@ -839,7 +945,7 @@ void CtiCapController::controlLoop()
                         {
                             CtiCCExecutorFactory f;
                             CtiCCExecutor* executor = f.createExecutor((CtiCCMessage *) temp[i]);
-                            executor->Execute();
+                            executor->execute();
                             delete executor;
                         }
                         multiCapMsg = new CtiMultiMsg();
@@ -871,6 +977,7 @@ void CtiCapController::controlLoop()
                 }
 
             }
+
             try
             {
                 rwRunnable().serviceCancellation();
@@ -920,12 +1027,24 @@ void CtiCapController::controlLoop()
     }
     catch(RWCancellation& )
     {
+        try
+        {
+            CtiPAOScheduleManager* scheduleMgr = CtiPAOScheduleManager::getInstance();
+            scheduleMgr->stop();
+        }
+        catch (...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+
         throw;
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Control Loop thread terminated unexpectedly." << endl;
     }
 }
 
@@ -993,7 +1112,7 @@ void CtiCapController::readClientMsgQueue()
                                 CtiCCExecutor* executor = f.createExecutor( (CtiMessage*) clientMsg );
                                 try
                                 {
-                                    executor->Execute();
+                                    executor->execute();
                                 }
                                 catch(...)
                                 {
@@ -1069,7 +1188,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
 
             try
             {
-                executor1->Execute();
+                executor1->execute();
                 delete executor1;
             }
             catch(...)
@@ -1084,7 +1203,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
             CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationsMsg(stationChanges, broadCastMask));
             try
             {
-                executor1->Execute();
+                executor1->execute();
                 delete executor1;
             }
             catch(...)
@@ -1099,7 +1218,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
              CtiCCExecutor* executor1= f1.createExecutor(new CtiCCGeoAreasMsg(areaChanges, broadCastMask));
              try
              {
-                 executor1->Execute();
+                 executor1->execute();
                  delete executor1;
              }
              catch(...)
@@ -1343,17 +1462,19 @@ void CtiCapController::outClientMsgs()
             RWCollectable* msg = NULL;
             bool retVal = getOutClientMsgQueueHandle().read(msg,5000);
             int totalEntries = getOutClientMsgQueueHandle().entries();
+
             if (retVal)
             {
                 CtiCCClientListener::getInstance()->BroadcastMessage((CtiMessage*)msg);
                 delete msg;
             }
+
             try
             {
                 rwRunnable().serviceCancellation();
                 rwRunnable().sleep( 50 );
             }
-            catch(RWCancellation& )
+            catch(RWCancellation& e)
             {
                 throw;
             }
@@ -1379,13 +1500,16 @@ void CtiCapController::outClientMsgs()
         };
 
         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl outClientMsgs", CtiThreadRegData::LogOut ) );
-
-
+    }
+    catch(RWCancellation& )
+    {
+        throw;
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Out Client Messages thread terminated unexpectedly." << endl;
     }
 }
 
@@ -2591,7 +2715,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
 
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), altSub->getPaoId(), currentFeeder->getDisplayOrder() + 0.5));
-                                    executor->Execute();
+                                    executor->execute();
                                     delete executor;
                                     j--;
                                 }
@@ -2640,7 +2764,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
 
                                         CtiCCExecutorFactory f;
                                         CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()));
-                                        executor->Execute();
+                                        executor->execute();
                                         delete executor;
                                     }
                                     j--;
@@ -2768,7 +2892,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                             {
                                 CtiCCExecutorFactory f;
                                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()));
-                                executor->Execute();
+                                executor->execute();
                                 delete executor;
 
                             }
@@ -2785,7 +2909,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                             {
                                 CtiCCExecutorFactory f;
                                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()));
-                                executor->Execute();
+                                executor->execute();
                                 delete executor;
 
                             }
@@ -2837,7 +2961,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                                 {
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()));
-                                    executor->Execute();
+                                    executor->execute();
                                     delete executor;
 
                                 }
@@ -2845,7 +2969,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                                 {
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()));
-                                    executor->Execute();
+                                    executor->execute();
                                     delete executor;
 
                                 }
@@ -2895,7 +3019,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                                 {
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPaoId()));
-                                    executor->Execute();
+                                    executor->execute();
                                     delete executor;
 
                                 }
@@ -2903,7 +3027,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                                 {
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSpArea->getPaoId()));
-                                    executor->Execute();
+                                    executor->execute();
                                     delete executor;
 
                                 }
@@ -2955,7 +3079,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             {
                                 CtiCCExecutorFactory f;
                                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentStation->getPaoId()));
-                                executor->Execute();
+                                executor->execute();
                                 delete executor;
                             }
 
@@ -2975,7 +3099,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             {
                                 CtiCCExecutorFactory f;
                                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentStation->getPaoId()));
-                                executor->Execute();
+                                executor->execute();
                                 delete executor;
                             }
 
@@ -3277,7 +3401,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             {
                                 CtiCCExecutorFactory f;
                                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()));
-                                executor->Execute();
+                                executor->execute();
                                 delete executor;
                             }
                         }
@@ -3294,7 +3418,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             {
                                 CtiCCExecutorFactory f;
                                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()));
-                                executor->Execute();
+                                executor->execute();
                                 delete executor;
                             }
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -4326,19 +4450,19 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     {
         if (pilRequest != NULL)
         {
-        getPILConnection()->WriteConnQue(pilRequest);
+            getPILConnection()->WriteConnQue(pilRequest);
         }
 
         if (multiMsg != NULL)
         {
             if (multiMsg->getCount() > 0)
             {
-            getDispatchConnection()->WriteConnQue(multiMsg);
+                getDispatchConnection()->WriteConnQue(multiMsg);
             }
-        else
+            else
             {
-            delete multiMsg;
-    }
+                delete multiMsg;
+            }
         }
     }
     catch(...)
@@ -4362,26 +4486,26 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
     {
         if (pilMultiMsg != NULL)
         {
-        if (pilMultiMsg->getCount() > 0)
+            if (pilMultiMsg->getCount() > 0)
             {
-            getPILConnection()->WriteConnQue(pilMultiMsg);
+                getPILConnection()->WriteConnQue(pilMultiMsg);
             }
-        else
+            else
             {
-            delete pilMultiMsg;
+                delete pilMultiMsg;
             }
         }
 
         if (multiMsg != NULL)
         {
-        if( multiMsg->getCount() > 0 )
+            if( multiMsg->getCount() > 0 )
             {
-            getDispatchConnection()->WriteConnQue(multiMsg);
+                getDispatchConnection()->WriteConnQue(multiMsg);
             }
-        else
+            else
             {
-            delete multiMsg;
-    }
+                delete multiMsg;
+            }
         }
     }
     catch(...)
@@ -4419,34 +4543,34 @@ void CtiCapController::loadControlLoopCParms()
     strcpy(var, "CAP_CONTROL_CONTROL_LOOP_NORMAL_DELAY");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_delay = atoi(str.c_str());
-    if( _CC_DEBUG & CC_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << var << ":  " << str << endl;
-    }
+        control_loop_delay = atoi(str.c_str());
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
     }
 
     strcpy(var, "CAP_CONTROL_CONTROL_LOOP_INMSG_DELAY");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_inmsg_delay = atoi(str.c_str());
-    if( _CC_DEBUG & CC_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << var << ":  " << str << endl;
-    }
+        control_loop_inmsg_delay = atoi(str.c_str());
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
     }
 
     strcpy(var, "CAP_CONTROL_CONTROL_LOOP_OUTMSG_DELAY");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_outmsg_delay = atoi(str.c_str());
-    if( _CC_DEBUG & CC_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << var << ":  " << str << endl;
-    }
+        control_loop_outmsg_delay = atoi(str.c_str());
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
     }
 }
 
@@ -4806,12 +4930,14 @@ void CtiCapController::refreshCParmGlobals(bool force)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
+
         _OP_STATS_DYNAMIC_UPDATE = gConfigParms.isTrue("CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE", false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE: " << _OP_STATS_DYNAMIC_UPDATE << endl;
         }
+
         _MSG_PRIORITY = gConfigParms.getValueAsULong("CAP_CONTROL_MSG_PRIORITY", 13);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
@@ -4826,6 +4952,12 @@ void CtiCapController::refreshCParmGlobals(bool force)
             dout << CtiTime() << " - CC_TERMINATE_THREAD_TEST: " << CC_TERMINATE_THREAD_TEST << endl;
         }
 
+        _IVVC_KEEPALIVE = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_KEEPALIVE", 0);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_IVVC_KEEPALIVE: " << _IVVC_KEEPALIVE << endl;
+        }
     }
     catch(RWxmsg& msg )
     {

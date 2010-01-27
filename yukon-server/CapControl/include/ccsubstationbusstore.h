@@ -39,7 +39,7 @@
 #include "ccutil.h"
 
 #include "StrategyManager.h"
-
+#include "AttributeService.h"
 
 
 using std::multimap;
@@ -100,7 +100,6 @@ private:
     long paoid;
     CtiTime timestamp;
 };
-
 
 typedef map< long, CtiCCSpecialPtr > SpecialAreaMap;
 typedef map< long, CtiCCAreaPtr > AreaMap;
@@ -445,7 +444,7 @@ public:
     SpecialAreaMap* getPAOSpecialAreaMap();
     LtcMap* getLtcMap();
 
-     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+    static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
@@ -470,11 +469,15 @@ public:
     void getSubBusParentInfo(CtiCCSubstationBus* bus, LONG &spAreaId, LONG &areaId, LONG &stationId);
     void getFeederParentInfo(CtiCCFeeder* feeder, LONG &spAreaId, LONG &areaId, LONG &stationId);
 
+    //For unit tests only
+protected:
     void addAreaToPaoMap(CtiCCAreaPtr area);
     void addSubstationToPaoMap(CtiCCSubstationPtr station);
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
     void addFeederToPaoMap(CtiCCFeederPtr feeder);
+    void addLtcToPaoMap(LoadTapChangerPtr ltc);
 
+public:
     std::vector<CtiCCSubstationBusPtr> getSubBusesByAreaId(int areaId);
     std::vector<CtiCCSubstationBusPtr> getSubBusesBySpecialAreaId(int areaId);
     std::vector<CtiCCSubstationBusPtr> getSubBusesByStationId(int stationId);
@@ -490,12 +493,17 @@ public:
 
     bool isAnyBankOpen(int paoId, CapControlType type);
     bool isAnyBankClosed(int paoId, CapControlType type);
+
+    //Setter for unit tests.
+    void setAttributeService(AttributeService attributeService);
 private:
 
     /* Relating to Max Kvar Cparm */
     long isKVARAvailable( long kvarNeeded );
 
     void startThreads();
+    void stopThreads();
+
     void reset();
     //bool CtiCCSubstationBusStore::findPointId(long pointId);
     void checkAMFMSystemForUpdates();
@@ -550,6 +558,7 @@ private:
     int  _voltDisabledCount;
 
     CapControlPointDataHandler _pointDataHandler;
+    AttributeService _attributeService;
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;

@@ -72,7 +72,7 @@ std::vector<CtiCCClientConnection*>& CtiCCClientListener::getClientConnectionLis
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE)
+CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE), _socketListener(NULL)
 {
 }
 
@@ -81,6 +81,7 @@ CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::~CtiCCClientListener()
 {
+    _socketListener = NULL;
     if( _instance != NULL )
     {
         delete _instance;
@@ -115,7 +116,11 @@ void CtiCCClientListener::stop()
     try
     {
         _doquit = TRUE;
+        if (_socketListener != NULL)
         {
+            delete _socketListener;
+            _socketListener = NULL;
+
             _listenerthr.join();
             _checkthr.join();
         }
@@ -219,14 +224,14 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::_listen()
 {
-    RWSocketListener* socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
+    _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
 
     do
     {
         try
         {
             {
-                RWPortal portal = (*socketListener)();
+                RWPortal portal = (*_socketListener)();
 
                 CtiCCClientConnection* conn = new CtiCCClientConnection(portal);
 
@@ -291,21 +296,19 @@ void CtiCCClientListener::_check()
                     CtiCCClientConnection* toDelete = *itr;
                     if ( !toDelete->isValid() )
                     {
+                        if( _CC_DEBUG & CC_DEBUG_CLIENT )
                         {
-                            //CtiCCClientConnection* toDelete = _connections.at(i);
-
-                            if( _CC_DEBUG & CC_DEBUG_CLIENT )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;
-                            }
-                            itr = _connections.erase(itr);
-                            delete toDelete;
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;
                         }
+                        itr = _connections.erase(itr);
+                        delete toDelete;
                         break;
                     }
                     else
+                    {
                         ++itr;
+                    }
                 }
             }   //Release mutex
         }
@@ -326,22 +329,15 @@ void CtiCCClientListener::_check()
                 dout << CtiTime() << " CapControl _clientCheck. TID: " << rwThreadId() << endl;
             }
 
-           /*if(!_shutdownOnThreadTimeout)
-            {*/
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-            /*}
-            else
-            {
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl _clientCheck")) );
-            //}*/
+            ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
         }
 
 
     } while ( !_doquit );
 
     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::LogOut ) );
-    {
 
+    {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
         delete_container(_connections);
         _connections.clear();

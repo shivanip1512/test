@@ -148,13 +148,11 @@ public:
         LTC_REMOTE_CONTROL_DISABLE,
         LTC_TAP_POSITION_RAISE,
         LTC_TAP_POSITION_LOWER,
-
-
-
+        LTC_KEEP_ALIVE,
     };
 
-    CtiCCCommand(LONG command);
-    CtiCCCommand(LONG command, LONG id);
+    CtiCCCommand(LONG commandId);
+    CtiCCCommand(LONG commandId, LONG targetId);
     CtiCCCommand(const CtiCCCommand& commandMsg);
 
     virtual ~CtiCCCommand();

@@ -20,7 +20,6 @@
 #include <rw/thr/thrfunc.h>
 //#include <rw/collstr.h>
 
-#include "AttributeService.h"
 #include "ccsubstationbusstore.h"
 #include "ControlStrategy.h"
 #include "ccsubstationbus.h"
@@ -125,22 +124,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
 CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-    if( _resetthr.isValid() )
-    {
-        _resetthr.requestCancellation();
-        _resetthr.join();
-    }
-    if( _amfmthr.isValid() )
-    {
-        _amfmthr.requestCancellation();
-        _amfmthr.join();
-    }
-    if( _opstatsthr.isValid() )
-    {
-        _opstatsthr.requestCancellation();
-        _opstatsthr.join();
-    }
-
+    stopThreads();
     shutdown();
 }
 
@@ -162,6 +146,61 @@ void CtiCCSubstationBusStore::startThreads()
     func3.start();
 }
 
+void CtiCCSubstationBusStore::stopThreads()
+{
+    try
+    {
+        if (_resetthr.isValid() && _resetthr.requestCancellation() == RW_THR_ABORTED)
+        {
+            _resetthr.terminate();
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Store Reset Thread forced to terminate." << endl;
+            }
+        }
+        else
+        {
+            _resetthr.requestCancellation();
+            _resetthr.join();
+        }
+
+        if (_amfmthr.isValid() && _amfmthr.requestCancellation() == RW_THR_ABORTED)
+        {
+            _amfmthr.terminate();
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - AMFM Thread forced to terminate." << endl;
+            }
+        }
+        else
+        {
+            _amfmthr.requestCancellation();
+            _amfmthr.join();
+        }
+
+        if (_opstatsthr.isValid() && _opstatsthr.requestCancellation() == RW_THR_ABORTED)
+        {
+            _opstatsthr.terminate();
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Store Op Stat Thread forced to terminate." << endl;
+            }
+        }
+        else
+        {
+            _opstatsthr.requestCancellation();
+            _opstatsthr.join();
+        }
+    }
+    catch (...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
 
 /*---------------------------------------------------------------------------
     getSubstationBuses
@@ -494,7 +533,10 @@ void CtiCCSubstationBusStore::addFeederToPaoMap(CtiCCFeederPtr feeder)
 {
     _paobject_feeder_map.insert(make_pair(feeder->getPaoId(),feeder));
 }
-
+void CtiCCSubstationBusStore::addLtcToPaoMap(LoadTapChangerPtr ltc)
+{
+    _paobject_ltc_map.insert(make_pair(ltc->getPaoId(),ltc));
+}
 
 std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByAreaId(int areaId)
 {
@@ -1398,7 +1440,7 @@ void CtiCCSubstationBusStore::reset()
         }
         CtiCCExecutorFactory f;
         CtiCCExecutor*executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, systemEnabled));
-        executor->Execute();
+        executor->execute();
         delete executor;
 
         LONG i=0;
@@ -1422,7 +1464,7 @@ void CtiCCSubstationBusStore::reset()
             {
                 CtiCCExecutorFactory f;
                 CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
-                executor->Execute();
+                executor->execute();
                 delete executor;
             }
         }
@@ -1436,7 +1478,7 @@ void CtiCCSubstationBusStore::reset()
         initializeAllPeakTimeFlagsAndMonitorPoints(true);
 
         executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
-        executor->Execute();
+        executor->execute();
         delete executor;
     }
     catch (...)
@@ -2351,8 +2393,6 @@ void CtiCCSubstationBusStore::doOpStatsThr()
 
     while(TRUE)
     {
-        rwRunnable().serviceCancellation();
-
         currentTime = CtiTime();
         secondsFrom1901 = currentTime.seconds();
 
@@ -2420,14 +2460,12 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                 }
 
             }
-
-
-
-
             startUpSendStats = FALSE;
         }
+
         {
             rwRunnable().sleep(500);
+            rwRunnable().serviceCancellation();
         }
     }
 }
@@ -2467,14 +2505,11 @@ void CtiCCSubstationBusStore::doResetThr()
 
     while(TRUE)
     {
-        rwRunnable().serviceCancellation();
-
         CtiTime currentTime;
         currentTime = currentTime.now();
 
         if( currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
         {
-            //if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Periodic restore of substation list from the database" << endl;
@@ -2485,11 +2520,8 @@ void CtiCCSubstationBusStore::doResetThr()
 
             lastPeriodicDatabaseRefresh = CtiTime();
         }
-        else
-        {
-            rwRunnable().sleep(500);
-        }
-       rwnow = rwnow.now();
+
+        rwnow = rwnow.now();
         if(rwnow.seconds() > tickleTime.seconds())
         {
             tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
@@ -2503,6 +2535,10 @@ void CtiCCSubstationBusStore::doResetThr()
            ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
         }
 
+        {
+            rwRunnable().serviceCancellation();
+            rwRunnable().sleep(500);
+        }
     }
 
     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::LogOut ) );
@@ -5839,42 +5875,35 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         for each(LoadTapChangerPtr ltc in ltcList)
         {
             int ltcId = ltc->getPaoId();
-            LitePoint point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::LtcVoltage);
+            LitePoint point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::LtcVoltage);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setLtcVoltagePoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::LowerTap);
+            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::LowerTap);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setLowerTapPoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::RaiseTap);
+            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::RaiseTap);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setRaiseTapPoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::LowerVoltLimit);
+            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::TapPosition);
             if (point.getPointType() != InvalidPointType)
             {
-                ltc->setLowerVoltPoint(point);
+                ltc->setTapPosition(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::UpperVoltLimit);
-            if (point.getPointType() != InvalidPointType)
-            {
-                ltc->setUpperVoltPoint(point);
-                _pointDataHandler.addPoint(point.getPointId(),ltcId);
-            }
-
-            point = AttributeService::getPointByPaoAndAttribute(ltcId,PointAttribute::AutoRemoteControl);
+            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::AutoRemoteControl);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setAutoRemotePoint(point);
@@ -9545,7 +9574,7 @@ bool CtiCCSubstationBusStore::handleAreaDBChange(LONG reloadId, BYTE reloadActio
 
         CtiCCExecutorFactory f;
         CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId));
-        executor->Execute();
+        executor->execute();
         delete executor;
 
 
@@ -9697,7 +9726,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
 
          CtiCCExecutorFactory f;
          CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId));
-         executor->Execute();
+         executor->execute();
          delete executor;
 
      }
@@ -9713,7 +9742,7 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(LONG reloadId, BYTE reloa
 
         CtiCCExecutorFactory f;
         CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId));
-        executor->Execute();
+        executor->execute();
         delete executor;
 
     }
@@ -9761,7 +9790,7 @@ void CtiCCSubstationBusStore::handleSubBusDBChange(LONG reloadId, BYTE reloadAct
 
         CtiCCExecutorFactory f;
         CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId));
-        executor->Execute();
+        executor->execute();
         delete executor;
 
         if (parentStationId != NULL)
@@ -9844,7 +9873,7 @@ void CtiCCSubstationBusStore::handleFeederDBChange(LONG reloadId, BYTE reloadAct
 
         CtiCCExecutorFactory f;
         CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId));
-        executor->Execute();
+        executor->execute();
         delete executor;
 
 
@@ -9861,7 +9890,7 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
 
         CtiCCExecutorFactory f;
         CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadId));
-        executor->Execute();
+        executor->execute();
         delete executor;
 
 
@@ -10097,17 +10126,17 @@ void CtiCCSubstationBusStore::createAndSendClientMessages( ULONG &msgBitMask, UL
 
            executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_set&)modifiedSubsSet,msgBitMask));
         }
-        executor->Execute();
+        executor->execute();
         delete executor;
     }
     executor = f.createExecutor(new CtiCCCapBankStatesMsg(*_ccCapBankStates));
-    executor->Execute();
+    executor->execute();
     delete executor;
     executor = f.createExecutor(new CtiCCGeoAreasMsg(*_ccGeoAreas));
-    executor->Execute();
+    executor->execute();
     delete executor;
     executor = f.createExecutor(new CtiCCSpecialAreasMsg(*_ccSpecialAreas));
-    executor->Execute();
+    executor->execute();
     delete executor;
     if (modifiedSubsSet.size() > 0 || (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent) ||
         modifiedStationsSet.size() > 0 )
@@ -10128,7 +10157,7 @@ void CtiCCSubstationBusStore::createAndSendClientMessages( ULONG &msgBitMask, UL
             }
             executor = f.createExecutor(new CtiCCSubstationsMsg((CtiCCSubstation_set&)modifiedStationsSet, msgSubsBitMask));
         }
-        executor->Execute();
+        executor->execute();
         delete executor;
     }
     try
@@ -10137,7 +10166,7 @@ void CtiCCSubstationBusStore::createAndSendClientMessages( ULONG &msgBitMask, UL
         {
             CtiCCExecutorFactory f;
             CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
-            executor->Execute();
+            executor->execute();
             delete executor;
         }
     }
@@ -10264,7 +10293,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     {
                         CtiCCExecutorFactory f;
                         CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
-                        executor->Execute();
+                        executor->execute();
                         delete executor;
                     }
                 }
@@ -10385,7 +10414,7 @@ void CtiCCSubstationBusStore::sendUserQuit(void *who)
     //UserQuit = TRUE;
     CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCShutdown());
-    executor->Execute();
+    executor->execute();
 
 
 }

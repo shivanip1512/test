@@ -9,6 +9,12 @@ class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
 
         virtual bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus){return true;};
         virtual bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank){return true;};
+
+        void insertAreaToPaoMap(CtiCCAreaPtr area){addAreaToPaoMap(area);};
+        void insertSubstationToPaoMap(CtiCCSubstationPtr station){addSubstationToPaoMap(station);};
+        void insertSubBusToPaoMap(CtiCCSubstationBusPtr bus){addSubBusToPaoMap(bus);};
+        void insertFeederToPaoMap(CtiCCFeederPtr feeder){addFeederToPaoMap(feeder);};
+        void insertLtcToPaoMap(LoadTapChangerPtr ltc){addLtcToPaoMap(ltc);};
 };
 
 

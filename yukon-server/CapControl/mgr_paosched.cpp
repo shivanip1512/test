@@ -103,57 +103,105 @@ void CtiPAOScheduleManager::start()
 ---------------------------------------------------------------------------*/
 void CtiPAOScheduleManager::stop()
 {
+    try
+    {
+        if ( _scheduleThread.isValid() && _scheduleThread.requestCancellation() == RW_THR_ABORTED )
+        {
+            _scheduleThread.terminate();
 
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Pao Schedule Thread forced to terminate." << endl;
+            }
+        }
+        else
+        {
+            _scheduleThread.requestCancellation();
+            _scheduleThread.join();
+        }
+
+        if ( _resetThr.isValid() && _resetThr.requestCancellation() == RW_THR_ABORTED )
+        {
+            _resetThr.terminate();
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Pao Schedule Reset Thread forced to terminate." << endl;
+            }
+        }
+        else
+        {
+            _resetThr.requestCancellation();
+            _resetThr.join();
+        }
+    }
+    catch (...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 void CtiPAOScheduleManager::doResetThr()
 {
-    Sleep(1000);
-    CtiTime lastPeriodicDatabaseRefresh = CtiTime();
-
-    CtiTime rwnow, announceTime, tickleTime;
-    tickleTime.now();
-    while (TRUE)
+    try
     {
+        Sleep(1000);
+        CtiTime lastPeriodicDatabaseRefresh = CtiTime();
+
+        CtiTime rwnow, announceTime, tickleTime;
+        tickleTime.now();
+        while (TRUE)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
-            rwRunnable().serviceCancellation();
-
-            CtiTime currentTime = CtiTime();
-
-            if ( !isValid() && currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+30 )
             {
-                //if( _CC_DEBUG )
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
+                CtiTime currentTime = CtiTime();
+
+                if ( !isValid() && currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+30 )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Periodic restore of schedule list from the database" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Periodic restore of schedule list from the database" << endl;
+                    }
+                    refreshSchedulesFromDB();
+                    refreshEventsFromDB();
+
+                    lastPeriodicDatabaseRefresh = CtiTime();
                 }
-                refreshSchedulesFromDB();
-                refreshEventsFromDB();
-
-                lastPeriodicDatabaseRefresh = CtiTime();
             }
-        }
-        {
-            rwRunnable().sleep(5000);
-        }
-        rwnow = rwnow.now();
-        if(rwnow.seconds() > tickleTime.seconds())
-        {
-            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-            if( rwnow.seconds() > announceTime.seconds() )
+
+
+            rwnow = rwnow.now();
+            if(rwnow.seconds() > tickleTime.seconds())
             {
-                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CapControl mgrPAOSchedule doResetThr. TID: " << rwThreadId() << endl;
+                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+                if( rwnow.seconds() > announceTime.seconds() )
+                {
+                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " CapControl mgrPAOSchedule doResetThr. TID: " << rwThreadId() << endl;
+                }
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
             }
 
-                 ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            for (int i = 0; i < 10; ++i)
+            {
+                rwRunnable().serviceCancellation();
+                rwRunnable().sleep(500);
+            }
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::LogOut ) );
     }
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::LogOut ) );
+    catch(RWCancellation& )
+    {
+        throw;
+    }
+    catch (...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 void CtiPAOScheduleManager::mainLoop()
@@ -289,6 +337,10 @@ void CtiPAOScheduleManager::mainLoop()
 
         ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::LogOut ) );
     }
+    catch(RWCancellation& )
+    {
+        throw;
+    }
     catch (...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -384,7 +436,7 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
             {
                 CtiCCExecutorFactory f;
                 CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, event->getPAOId(), strategy, secsSinceLastOp, event->getDisableOvUvFlag()));
-                executor->Execute();
+                executor->execute();
                 delete executor;
             }
             break;
@@ -392,7 +444,7 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
             {
                 CtiCCExecutorFactory f;
                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, event->getPAOId()));
-                executor->Execute();
+                executor->execute();
                 delete executor;
             }
             break;
@@ -400,7 +452,7 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
             {
                 CtiCCExecutorFactory f;
                 CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SEND_TIME_SYNC, event->getPAOId()));
-                executor->Execute();
+                executor->execute();
                 delete executor;
             }
             break;

@@ -61,24 +61,14 @@ const LitePoint& LoadTapChanger::getAutoRemotePoint()
     return _autoRemotePoint;
 }
 
-void LoadTapChanger::setUpperVoltPoint(const LitePoint& point)
+void LoadTapChanger::setTapPosition(const LitePoint& point)
 {
-    _upperVoltPoint = point;
+    _tapPositionPoint = point;
 }
 
-const LitePoint& LoadTapChanger::getUpperVoltPoint()
+const LitePoint& LoadTapChanger::getTapPosition()
 {
-    return _upperVoltPoint;
-}
-
-void LoadTapChanger::setLowerVoltPoint(const LitePoint& point)
-{
-    _lowerVoltPoint = point;
-}
-
-const LitePoint& LoadTapChanger::getLowerVoltPoint()
-{
-    return _lowerVoltPoint;
+    return _tapPositionPoint;
 }
 
 bool LoadTapChanger::getPointValue(int pointId, double& value)
@@ -112,13 +102,8 @@ void LoadTapChanger::getRegistrationPoints(std::list<int>& regPoints)
         regPoints.push_back(_autoRemotePoint.getPointId());
     }
 
-    if (_upperVoltPoint.getPointType() != InvalidPointType)
+    if (_tapPositionPoint.getPointType() != InvalidPointType)
     {
-        regPoints.push_back(_upperVoltPoint.getPointId());
-    }
-
-    if (_lowerVoltPoint.getPointType() != InvalidPointType)
-    {
-        regPoints.push_back(_lowerVoltPoint.getPointId());
+        regPoints.push_back(_tapPositionPoint.getPointId());
     }
 }

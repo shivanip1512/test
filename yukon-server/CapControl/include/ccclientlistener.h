@@ -1,12 +1,12 @@
 /*-----------------------------------------------------------------------------
     Filename:  ccclientlistener.h
-                    
+
     Programmer:  Josh Wolberg
-    
+
     Description: Header file for CtiCCClientListener
-        
+
     Initial Date:  8/16/2000
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
 -----------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
@@ -43,12 +43,13 @@ protected:
 
 private:
 
-    LONG _port;   
+    LONG _port;
     RWThread _listenerthr;
     RWThread _checkthr;
 
     std::vector<CtiCCClientConnection*> _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
+    RWSocketListener* _socketListener;
 
     static CtiCCClientListener* _instance;
 

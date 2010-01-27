@@ -9,7 +9,7 @@
 
 class IM_EX_CTIBASE PointAttribute
 {
-    private:
+    public:
         enum Attribute
         {
             UnknownAttribute,
@@ -17,24 +17,20 @@ class IM_EX_CTIBASE PointAttribute
             RaiseTapAttribute,
             LtcVoltageAttribute,
             AutoRemoteControlAttribute,
-            UpperVoltLimitAttribute,
-            LowerVoltLimitAttribute,
+            TapPositionAttribute,
             KeepAliveAttribute
         };
-
-    public:
 
         static const PointAttribute Unknown;
         static const PointAttribute LowerTap;
         static const PointAttribute RaiseTap;
         static const PointAttribute LtcVoltage;
         static const PointAttribute AutoRemoteControl;
-        static const PointAttribute UpperVoltLimit;
-        static const PointAttribute LowerVoltLimit;
+        static const PointAttribute TapPosition;
         static const PointAttribute KeepAlive;
 
         std::string name() const;
-        int value() const;
+        Attribute value() const;
 
         static const PointAttribute& valueOf(const std::string& name);
 
@@ -48,7 +44,7 @@ class IM_EX_CTIBASE PointAttribute
          */
         PointAttribute(Attribute value, const std::string& name);
 
-        int _value;
+        Attribute _value;
         std::string _name;
 
         typedef std::map<std::string,PointAttribute*> AttributeMap;

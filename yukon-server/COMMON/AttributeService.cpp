@@ -8,6 +8,11 @@
 
 #include <rw/db/db.h>
 
+
+AttributeService::AttributeService()
+{
+}
+
 /**
  * Returns all Points listed as extra paos.
  *

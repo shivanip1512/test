@@ -46,7 +46,8 @@ test_StrategyManager.obj \
 test_ccsubstationbus.obj \
 test_ccFeeder.obj \
 test_likeDayControl.obj \
-test_pointHolder.obj
+test_pointHolder.obj \
+test_ccExecuter.obj
 
 CAPCTRLBASEOBJS= \
 $(OBJ)\ccservice.obj \

@@ -22,6 +22,7 @@
 #include "ccmessage.h"
 #include "msg_signal.h"
 #include "ctdpcptrq.h"
+#include "AttributeService.h"
 
 #include "ccutil.h"
 
@@ -30,8 +31,7 @@ class CtiCCExecutor
 public:
     virtual ~CtiCCExecutor() {};
 
-    virtual void Execute() {};
-
+    virtual void execute() {};
 
 protected:
     CtiCCExecutor() {};
@@ -45,7 +45,7 @@ public:
     CtiCCClientMsgExecutor(CtiMessage* ccMsg) : _ccMsg(ccMsg){};
     virtual ~CtiCCClientMsgExecutor(){delete _ccMsg;};
 
-    virtual void Execute();
+    virtual void execute();
 
 private:
 
@@ -54,79 +54,98 @@ private:
 
 class CtiCCCommandExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCCommandExecutor(CtiCCCommand* command) : _command(command) {};
-    virtual ~CtiCCCommandExecutor() { delete _command;};
+    public:
+        CtiCCCommandExecutor(CtiCCCommand* command) : _command(command)
+        {
+            _attributeService = new AttributeService();
+        };
 
-    virtual void Execute();
+        virtual ~CtiCCCommandExecutor()
+        {
+            if (_attributeService != NULL)
+            {
+                delete _attributeService;
+            }
+            delete _command;
+        };
 
-private:
-    //Command Functions
-    void EnableSubstationBus();
-    void DisableSubstationBus();
-    void EnableFeeder();
-    void DisableFeeder();
-    void EnableCapBank();
-    void DisableCapBank();
-    void OpenCapBank();
-    void CloseCapBank();
-    void ConfirmOpen();
-    void ConfirmClose();
-    void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG bankId);
-    void SendAllData();
-    void ReturnCapToOriginalFeeder();
-    void ReturnFeederToOriginalSubBus();
-    void ResetDailyOperations();
-    void ConfirmFeeder();
-    void ResetAllSystemOpCounts();
-    void DeleteItem();
-    void ConfirmSub();
-    void ConfirmArea();
-    void EnableArea();
-    void DisableArea();
-    void EnableSystem();
-    void DisableSystem();
-    void Scan2WayDevice();
-    void Flip7010Device();
-    void SendSystemStatus();
-    void SendAllCapBankCommands();
-    void ControlAllCapBanksByFeeder(LONG feederId, int control, CtiMultiMsg_vec& pilMessages,
-                                   CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
-    void SendTimeSync();
-    void changeBankOperationalState();
-    void AutoEnableOvUv();
-    void AutoDisableOvUv();
-    void AutoEnableOvUvByArea();
-    void AutoDisableOvUvByArea();
-    void AutoControlOvUvBySubstation(BOOL disableFlag);
-    void AutoControlOvUvBySubBus(BOOL disableFlag);
-    bool checkForCommandRefusal(CtiCCFeeder* feeder);
-    void ControlAllCapBanks(LONG paoId, int control);
-    void syncCbcAndCapBankStates();
+        virtual void execute();
 
-    // Local Control Command Funtions
-    void sendLocalControl();
-    void enableOvUv(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-    void disableOvUv(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-    void enableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-    void disableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-    void enableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-    void disableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-    void enableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-    void disableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void setAttributeService(AttributeService* attributeService);
 
-    // LTC Commands
-    void sendLTCCommands     (const LONG command);
-    void scanLTC             (const LONG commandType, std::vector<CtiSignalMsg*> &signals, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-    void sendLTCRemoteControl(const LONG commandType, std::vector<CtiSignalMsg*> &signals, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-    void sendLTCTapPosition  (const LONG commandType, std::vector<CtiSignalMsg*> &signals, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
+    private:
+        //Command Functions
+        void EnableSubstationBus();
+        void DisableSubstationBus();
+        void EnableFeeder();
+        void DisableFeeder();
+        void EnableCapBank();
+        void DisableCapBank();
+        void OpenCapBank();
+        void CloseCapBank();
+        void ConfirmOpen();
+        void ConfirmClose();
+        void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG bankId);
+        void SendAllData();
+        void ReturnCapToOriginalFeeder();
+        void ReturnFeederToOriginalSubBus();
+        void ResetDailyOperations();
+        void ConfirmFeeder();
+        void ResetAllSystemOpCounts();
+        void DeleteItem();
+        void ConfirmSub();
+        void ConfirmArea();
+        void EnableArea();
+        void DisableArea();
+        void EnableSystem();
+        void DisableSystem();
+        void Scan2WayDevice();
+        void Flip7010Device();
+        void SendSystemStatus();
+        void SendAllCapBankCommands();
+        void ControlAllCapBanksByFeeder(LONG feederId, int control, CtiMultiMsg_vec& pilMessages,
+                                       CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+        void SendTimeSync();
+        void changeBankOperationalState();
+        void AutoEnableOvUv();
+        void AutoDisableOvUv();
+        void AutoEnableOvUvByArea();
+        void AutoDisableOvUvByArea();
+        void AutoControlOvUvBySubstation(BOOL disableFlag);
+        void AutoControlOvUvBySubBus(BOOL disableFlag);
+        bool checkForCommandRefusal(CtiCCFeeder* feeder);
+        void ControlAllCapBanks(LONG paoId, int control);
+        void syncCbcAndCapBankStates();
 
-    //Helper Functions
-    void setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
-    void printOutEventLogsByIdAndType(int paoId, CapControlType type, const string& actionText, const string& userName,
-                                      CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+        // Local Control Command Funtions
+        void sendLocalControl();
+        void enableOvUv(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void disableOvUv(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void enableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void disableTempControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void enableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void disableVarControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void enableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void disableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
 
-    CtiCCCommand* _command;
+        //Ltc Commands
+        void sendLtcCommands     (const LONG command);
+    public:
+        // LTC Commands Public for unit tests. This must stand until the message sending can be/is refactored.
+        // These should never be called outside the class
+        void scanLtcIntegrity    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
+        void sendLtcRemoteControl(const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
+        void sendLtcTapPosition  (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
+        void sendLtcKeepAlive    (const LONG commandType, std::vector<CtiMessage*> &toDispatch);
+
+    private:
+        //Helper Functions
+        void setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
+        void printOutEventLogsByIdAndType(int paoId, CapControlType type, const string& actionText, const string& userName,
+                                          CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+
+        AttributeService* _attributeService;
+        CtiCCCommand* _command;
 };
 
 class CtiCCCapBankMoveExecutor : public CtiCCExecutor
@@ -135,7 +154,7 @@ public:
     CtiCCCapBankMoveExecutor(CtiCCCapBankMoveMsg* capMoveMsg) : _capMoveMsg(capMoveMsg) {};
     virtual ~CtiCCCapBankMoveExecutor() { delete _capMoveMsg;};
 
-    virtual void Execute();
+    virtual void execute();
 
 private:
 
@@ -149,7 +168,7 @@ public:
     CtiCCFeederMoveExecutor(CtiCCObjectMoveMsg* fdrMoveMsg) : _fdrMoveMsg(fdrMoveMsg) {};
     virtual ~CtiCCFeederMoveExecutor() { delete _fdrMoveMsg;};
 
-    virtual void Execute();
+    virtual void execute();
 
 private:
 
@@ -162,7 +181,7 @@ public:
     CtiCCSubstationVerificationExecutor(CtiCCSubstationVerificationMsg* subVerificationMsg) : _subVerificationMsg(subVerificationMsg) {};
     virtual ~CtiCCSubstationVerificationExecutor() { delete _subVerificationMsg;};
 
-    virtual void Execute();
+    virtual void execute();
 
 private:
 
@@ -178,7 +197,7 @@ public:
     CtiCCPointDataMsgExecutor(CtiPointDataMsg* pointMsg) : _pointDataMsg(pointMsg) {};
     virtual ~CtiCCPointDataMsgExecutor() { delete _pointDataMsg;};
 
-    virtual void Execute();
+    virtual void execute();
 
 private:
     CtiPointDataMsg* _pointDataMsg;
@@ -190,7 +209,7 @@ public:
     CtiCCForwardMsgToDispatchExecutor(CtiMessage* ctiMsg) : _ctiMessage(ctiMsg) {};
     virtual ~CtiCCForwardMsgToDispatchExecutor() { delete _ctiMessage;};
 
-    virtual void Execute();
+    virtual void execute();
 
 private:
     CtiMessage* _ctiMessage;
@@ -202,7 +221,7 @@ public:
     CtiCCMultiMsgExecutor(CtiMultiMsg* multiMsg) : _multiMsg(multiMsg) {};
     virtual ~CtiCCMultiMsgExecutor() { delete _multiMsg;};
 
-    virtual void Execute();
+    virtual void execute();
 
 private:
     CtiMultiMsg* _multiMsg;
@@ -214,7 +233,7 @@ public:
     CtiCCShutdownExecutor() {};
     virtual ~CtiCCShutdownExecutor() {};
 
-    virtual void Execute();
+    virtual void execute();
 };
 
 class CtiCCExecutorFactory

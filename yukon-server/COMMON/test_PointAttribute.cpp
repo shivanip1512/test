@@ -26,18 +26,13 @@ BOOST_AUTO_TEST_CASE(test_valueOf)
     attributeTest = PointAttribute::valueOf("AUTO_REMOTE_CONTROL");
     BOOST_CHECK_EQUAL(PointAttribute::AutoRemoteControl.name(), attributeTest.name());
 
-    attributeTest = PointAttribute::valueOf("UPPER_VOLT_LIMIT");
-    BOOST_CHECK_EQUAL(PointAttribute::UpperVoltLimit.name(), attributeTest.name());
-
-    attributeTest = PointAttribute::valueOf("LOWER_VOLT_LIMIT");
-    BOOST_CHECK_EQUAL(PointAttribute::LowerVoltLimit.name(), attributeTest.name());
+    attributeTest = PointAttribute::valueOf("TAP_POSITION");
+    BOOST_CHECK_EQUAL(PointAttribute::TapPosition.name(), attributeTest.name());
 
     attributeTest = PointAttribute::valueOf("KEEP_ALIVE");
     BOOST_CHECK_EQUAL(PointAttribute::KeepAlive.name(), attributeTest.name());
 
     attributeTest = PointAttribute::valueOf("ERROR_CASE");
     BOOST_CHECK_EQUAL(PointAttribute::Unknown.name(), attributeTest.name());
-
-
 }
 

@@ -17,8 +17,7 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
         LitePoint _lowerTapPoint;
         LitePoint _raiseTapPoint;
         LitePoint _autoRemotePoint;
-        LitePoint _upperVoltPoint;
-        LitePoint _lowerVoltPoint;
+        LitePoint _tapPositionPoint;
 
         PointValueHolder _pointValues;
 
@@ -46,11 +45,8 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
         void setAutoRemotePoint(const LitePoint& point);
         const LitePoint& getAutoRemotePoint();
 
-        void setUpperVoltPoint(const LitePoint& point);
-        const LitePoint& getUpperVoltPoint();
-
-        void setLowerVoltPoint(const LitePoint& point);
-        const LitePoint& getLowerVoltPoint();
+        void setTapPosition(const LitePoint& point);
+        const LitePoint& getTapPosition();
 
         void getRegistrationPoints(std::list<int>& regPoints);
 };
