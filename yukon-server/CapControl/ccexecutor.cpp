@@ -230,7 +230,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
     CtiCCAreaPtr currentArea = NULL;
     CtiCCSubstationPtr currentStation = NULL;
     if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag() &&
-        currentSubstationBus->getStrategy()->getStrategyId() > 0)
+        currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
     {
         currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
         if (currentStation != NULL && !currentStation->getDisableFlag())
@@ -2795,7 +2795,8 @@ void CtiCCCommandExecutor::OpenCapBank()
 
                         updatedSubs.push_back(currentSubstationBus);
 
-                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                        if (!currentSubstationBus->getVerificationFlag() &&
+                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                         {
                             savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
                             savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
@@ -3115,7 +3116,8 @@ void CtiCCCommandExecutor::CloseCapBank()
                         currentCapBank->setSendAllCommandFlag(FALSE);
 
 
-                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                        if (!currentSubstationBus->getVerificationFlag() &&
+                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                         {
 
                             savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
@@ -3564,7 +3566,8 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
 
                 {
                     updatedSubs.push_back(currentSubstationBus);
-                    if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                    if (!currentSubstationBus->getVerificationFlag() &&
+                        currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                     {
                         controlID = currentCapBank->getControlDeviceId();
                         if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
@@ -4987,7 +4990,8 @@ void CtiCCCommandExecutor::Flip7010Device()
 
                         updatedSubs.push_back(currentSubstationBus);
 
-                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                        if (!currentSubstationBus->getVerificationFlag() &&
+                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                         {
                             savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
                             savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
@@ -5340,7 +5344,8 @@ void CtiCCCommandExecutor::ConfirmSub()
     if (currentSubstationBus != NULL)
     {
 
-        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+        if (!currentSubstationBus->getVerificationFlag() &&
+            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
         {
 
             string text1 = string("Manual Confirm Sub");
@@ -5541,7 +5546,8 @@ void CtiCCCommandExecutor::ConfirmFeeder()
     {
         return;
     }
-    if ((currentFeeder->getStrategy()->getStrategyId() > 0 || currentSubstationBus->getStrategy()->getStrategyId() > 0) && !currentFeeder->getDisableFlag())
+    if ((currentFeeder->getStrategy()->getUnitType() != ControlStrategy::None ||
+         currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None) && !currentFeeder->getDisableFlag())
     {
         string text1 = string("Manual Confirm Feeder");
         string additional1 = string("Feeder: ");
@@ -5761,7 +5767,8 @@ void CtiCCCommandExecutor::ConfirmArea()
                     CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
                     if (currentSubstationBus != NULL)
                     {
-                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                        if (!currentSubstationBus->getVerificationFlag() &&
+                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                         {
                             if (!currentSubstationBus->getDisableFlag() && !station->getDisableFlag())
                             {
@@ -5845,7 +5852,8 @@ void CtiCCCommandExecutor::ConfirmArea()
                             CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
                             if (currentSubstationBus != NULL)
                             {
-                                if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                                if (!currentSubstationBus->getVerificationFlag() &&
+                                    currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                                 {
                                     if (!currentSubstationBus->getDisableFlag() && !station->getDisableFlag())
                                     {
@@ -5901,7 +5909,8 @@ void CtiCCCommandExecutor::ConfirmArea()
                     CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
                     if (currentSubstationBus != NULL)
                     {
-                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                        if (!currentSubstationBus->getVerificationFlag() &&
+                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                         {
                             if (!currentSubstationBus->getDisableFlag())
                             {
@@ -5985,7 +5994,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     {
                         found = TRUE;
                         updatedSubs.push_back(currentSubstationBus);
-                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                        if (!currentSubstationBus->getVerificationFlag() &&
+                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                         {
                             savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
                             savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
@@ -6099,7 +6109,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
-                                if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
+                                if (currentFeeder->getStrategy()->getUnitType() != ControlStrategy::None && currentFeeder->getStrategy()->getControlSendRetries() > 0)
                                     sendRetries = currentFeeder->getStrategy()->getControlSendRetries();
                                 if( savedFeederRecentlyControlledFlag ||
                                     ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getStrategy()->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
@@ -6133,7 +6143,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                      !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
-                                if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
+                                if (currentFeeder->getStrategy()->getUnitType() != ControlStrategy::None && currentFeeder->getStrategy()->getControlSendRetries() > 0)
                                     sendRetries = currentFeeder->getStrategy()->getControlSendRetries();
 
                                 if( savedBusRecentlyControlledFlag ||
@@ -6282,7 +6292,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                     {
                         found = TRUE;
                         updatedSubs.push_back(currentSubstationBus);
-                        if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+                        if (!currentSubstationBus->getVerificationFlag() &&
+                            currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
                         {
                             savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
                             savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
@@ -6387,7 +6398,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                             else if( !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
-                                if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
+                                if (currentFeeder->getStrategy()->getUnitType() != ControlStrategy::None && currentFeeder->getStrategy()->getControlSendRetries() > 0)
                                     sendRetries = currentFeeder->getStrategy()->getControlSendRetries();
                                 if( savedFeederRecentlyControlledFlag ||
                                     ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getStrategy()->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
@@ -6420,7 +6431,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                                      !stringCompareIgnoreCase(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
                             {
                                 LONG sendRetries = currentSubstationBus->getControlSendRetries();
-                                if (currentFeeder->getStrategy()->getStrategyId() > 0 && currentFeeder->getStrategy()->getControlSendRetries() > 0)
+                                if (currentFeeder->getStrategy()->getUnitType() != ControlStrategy::None && currentFeeder->getStrategy()->getControlSendRetries() > 0)
                                     sendRetries = currentFeeder->getStrategy()->getControlSendRetries();
                                 if( savedBusRecentlyControlledFlag ||
                                     ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getStrategy()->getMaxConfirmTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) ||
@@ -6448,7 +6459,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                                     dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
                                               << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
                                 }
-                                /*if (currentSubstationBus->getStrategyId() <= 0)
+                                /*if (currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None)
                                 {
                                     confirmImmediately = TRUE;
                                 }*/

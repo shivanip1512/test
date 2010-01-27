@@ -6317,7 +6317,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
                                               currentCCSubstationBus->setStrategy(currentCCStrategy);
 
-                                              if (currentCCStrategy->getStrategyId() == 0)
+                                              if (currentCCStrategy->getUnitType() == ControlStrategy::None)
                                               {
                                                   cascadeStrategySettingsToChildren(0, currentStation->getParentId(), 0);
                                               }
@@ -6427,7 +6427,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
                                              currentCCSubstationBus->setStrategy(currentCCStrategy);
 
-                                             if (currentCCStrategy->getStrategyId() == 0)
+                                             if (currentCCStrategy->getUnitType() == ControlStrategy::None)
                                              {
                                                  cascadeStrategySettingsToChildren(0, currentStation->getParentId(), 0);
                                              }
@@ -6963,7 +6963,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                 currentCCFeeder->setParentControlUnits(currentCCSubstationBus->getStrategy()->getControlUnits());
                                 currentCCFeeder->setParentName(currentCCSubstationBus->getPaoName());
 
-                                if (currentCCFeeder->getStrategy()->getStrategyId() == 0)
+                                if (currentCCFeeder->getStrategy()->getUnitType() == ControlStrategy::None)
                                 {
                                     currentCCFeeder->setStrategy( pStrategy );
                                 }
@@ -11960,7 +11960,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
     if (spAreaId > 0)
     {
         CtiCCSpecial* spArea = findSpecialAreaByPAObjectID(spAreaId);
-        if (spArea != NULL && spArea->getStrategy()->getStrategyId() > 0)
+        if (spArea != NULL && spArea->getStrategy()->getUnitType() != ControlStrategy::None)
         {
             StrategyPtr currentCCStrategy = spArea->getStrategy();
 
@@ -12001,7 +12001,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
     else if (areaId > 0)
     {
         CtiCCArea* area = findAreaByPAObjectID(areaId);
-        if (area != NULL && area->getStrategy()->getStrategyId() > 0)
+        if (area != NULL && area->getStrategy()->getUnitType() != ControlStrategy::None)
         {
             StrategyPtr currentCCStrategy = area->getStrategy();
 
@@ -12019,7 +12019,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
                         CtiCCSubstationBus* currentCCSubstationBus = findSubBusByPAObjectID(subBusId);
                         if (currentCCSubstationBus != NULL)
                         {
-                            if (!station->getSaEnabledFlag() && (currentCCSubstationBus->getStrategy()->getStrategyId() == 0 ||
+                            if (!station->getSaEnabledFlag() && (currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None ||
                                 currentCCSubstationBus->isParentOverride() ) )
                             {
                                 currentCCSubstationBus->setStrategy(currentCCStrategy);
@@ -12044,7 +12044,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
     else if (subBusId > 0)
     {
         CtiCCSubstationBus* currentSubstationBus = findSubBusByPAObjectID(subBusId);
-        if (currentSubstationBus != NULL && currentSubstationBus->getStrategy()->getStrategyId() > 0)
+        if (currentSubstationBus != NULL && currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
         {
             CtiCCSubstationPtr currentStation = NULL;
             currentStation = findSubstationByPAObjectID(currentSubstationBus->getParentId());

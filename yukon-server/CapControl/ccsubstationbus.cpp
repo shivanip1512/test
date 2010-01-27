@@ -560,7 +560,7 @@ LONG CtiCCSubstationBus::getLastFeederControlledSendRetries() const
                 }
 
             }
-            if (feed != NULL && feed->getStrategy()->getStrategyId() > 0)
+            if (feed != NULL && feed->getStrategy()->getUnitType() != ControlStrategy::None)
             {
                 sendRetries = feed->getStrategy()->getControlSendRetries();
             }
@@ -1559,7 +1559,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
             for (LONG i = 0; i < _ccfeeders.size(); i++)
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                if (currentFeeder->getStrategy()->getStrategyId() > 0)
+                if (currentFeeder->getStrategy()->getUnitType() != ControlStrategy::None)
                 {
                     LONG tempsum1 = (currenttime.seconds() - ( currenttime.seconds()%currentFeeder->getStrategy()->getControlInterval() ) + currentFeeder->getStrategy()->getControlInterval() );
                     _nextchecktime = CtiTime(CtiTime(tempsum1));
@@ -4954,7 +4954,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     for(LONG i=0;i<_ccfeeders.size();i++)
                     {
                         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                        if( (currentFeeder->getStrategy()->getStrategyId() > 0  &&
+                        if( (currentFeeder->getStrategy()->getUnitType() != ControlStrategy::None  &&
                             currentFeeder->getStrategy()->getControlInterval() > 0) || currentFeeder->getLikeDayControlFlag() )
                         {
                             returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
@@ -8667,7 +8667,7 @@ BOOL CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oo
 BOOL CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime)
 {
     BOOL retVal = FALSE;
-    if (_strategy->getStrategyId() > 0 &&
+    if (_strategy->getUnitType() != ControlStrategy::None &&
        (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltControlUnit) ||
         !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltVarControlUnit) ) &&
         !getVerificationFlag() )
@@ -8715,7 +8715,7 @@ BOOL CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDate
 BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
 {
     BOOL retVal = FALSE;
-    if (_strategy->getStrategyId() > 0)
+    if (_strategy->getUnitType() != ControlStrategy::None)
     {
         if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltControlUnit) ||
             !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::MultiVoltVarControlUnit) )

@@ -4534,7 +4534,7 @@ BOOL CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxC
 {
     BOOL returnBoolean = FALSE;
 
-    if (_strategy->getStrategyId() > 0 && _strategy->getControlSendRetries() > feederRetries)
+    if (_strategy->getUnitType() != ControlStrategy::None && _strategy->getControlSendRetries() > feederRetries)
     {
         feederRetries = _strategy->getControlSendRetries();
     }
