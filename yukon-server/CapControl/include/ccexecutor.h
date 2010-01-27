@@ -236,11 +236,19 @@ public:
     virtual void execute();
 };
 
+class NoOpExecutor : public CtiCCExecutor
+{
+public:
+    NoOpExecutor() {};
+    virtual ~NoOpExecutor() {};
+
+    virtual void execute(){};
+};
+
 class CtiCCExecutorFactory
 {
 public:
-    CtiCCExecutorFactory() {};
-    CtiCCExecutor* createExecutor(const CtiMessage* message);
+    static std::auto_ptr<CtiCCExecutor> createExecutor(const CtiMessage* message);
 
 };
 #endif

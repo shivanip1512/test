@@ -433,36 +433,24 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
     switch (parseEvent(event->getEventCommand(), strategy, secsSinceLastOp))
     {
         case CapControlVerification:
-            {
-                CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, event->getPAOId(), strategy, secsSinceLastOp, event->getDisableOvUvFlag()));
-                executor->execute();
-                delete executor;
-            }
+        {
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, event->getPAOId(), strategy, secsSinceLastOp, event->getDisableOvUvFlag()))->execute();
             break;
+        }
         case ConfirmSub:
-            {
-                CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, event->getPAOId()));
-                executor->execute();
-                delete executor;
-            }
+        {
+            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, event->getPAOId()))->execute();
             break;
+        }
         case SendTimeSync:
-            {
-                CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SEND_TIME_SYNC, event->getPAOId()));
-                executor->execute();
-                delete executor;
-            }
+        {
+            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::SEND_TIME_SYNC, event->getPAOId()))->execute();
             break;
-        case 4:
-            {
-
-            }
-            break;
+        }
         default:
+        {
             break;
+        }
     }
 
 }

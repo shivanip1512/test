@@ -311,21 +311,15 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
 
-                    CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor;
                     if (currentSubstationBus->getVerificationDisableOvUvFlag())
                     {
-                        executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()));
-                        executor->execute();
-                        delete executor;
+                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
                     }
+
                     CtiCCCommand* cmdMsg = new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId());
                     cmdMsg->setUser(_subVerificationMsg->getUser());
-                    executor = f.createExecutor(cmdMsg);
-                    executor->execute();
-                    delete executor;
 
-
+                    CtiCCExecutorFactory::createExecutor(cmdMsg)->execute();
                 }
                 else
                 {
@@ -484,10 +478,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
 
             if (currentSubstationBus->getVerificationDisableOvUvFlag())
             {
-                CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()));
-                executor->execute();
-                delete executor;
+                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
                 currentSubstationBus->setVerificationDisableOvUvFlag(FALSE);
             }
 
@@ -1051,13 +1042,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates()
     store->getSubBusParentInfo(subBus, spAreaId, areaId, stationId);
     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capBankStateUpdate, seqId, capBank->getControlStatus(), text, _command->getUser()));
 
-
-    CtiCCExecutorFactory f;
-    CtiCCExecutor *executor = NULL;
-
-    executor = f.createExecutor(new CtiCCSubstationBusMsg(subBus));
-    executor->execute();
-    delete executor;
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(subBus))->execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -2143,12 +2128,9 @@ void CtiCCCommandExecutor::SendTimeSync()
                 dout << CtiTime() << " - Special Area is not enabled, commands refused." << endl;
             }
 
-            CtiCCExecutorFactory f;
             CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
             msg->setUser(_command->getUser());
-            CtiCCExecutor* executor = f.createExecutor(msg);
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(msg)->execute();
         }
         else
         {
@@ -2360,12 +2342,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                 dout << CtiTime() << " - Special Area is not enabled, will not set OVUV." << endl;
             }
 
-            CtiCCExecutorFactory f;
             CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
             msg->setUser(_command->getUser());
-            CtiCCExecutor* executor = f.createExecutor(msg);
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(msg)->execute();
 
             return;
         }
@@ -2403,32 +2382,18 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
     if (newCommands->getCount() > 0)
     {
-       CtiCCExecutorFactory f;
-       CtiCCExecutor* executor = f.createExecutor(newCommands);
-       executor->execute();
-       delete executor;
+       CtiCCExecutorFactory::createExecutor(newCommands)->execute();
     }
     else
     {
         delete newCommands;
     }
 
-    CtiCCExecutorFactory f;
-    CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-    executor->execute();
-    delete executor;
-
-    executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-    executor->execute();
-    delete executor;
-
-    executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
-    executor->execute();
-    delete executor;
-
-    executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
-    executor->execute();
-    delete executor;
+    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(ccStations))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,
+                                                                   CtiCCSubstationBusMsg::SubBusModified))->execute();
 
     if (multi->getCount() > 0)
     {
@@ -2722,12 +2687,9 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
                 dout << CtiTime() << " - Feeder already has a bank in a pending state." << endl;
             }
 
-            CtiCCExecutorFactory f;
             CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Another bank is already in a Pending State.");
             msg->setUser(_command->getUser());
-            CtiCCExecutor* executor = f.createExecutor(msg);
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(msg)->execute();
 
             return true;
         }
@@ -3030,17 +2992,11 @@ void CtiCCCommandExecutor::OpenCapBank()
             delete eventMulti;
         if (updatedSubs.size() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
         }
         if (updatedStations.size() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationsMsg(updatedStations));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(updatedStations))->execute();
         }
     }
     else
@@ -3348,19 +3304,12 @@ void CtiCCCommandExecutor::CloseCapBank()
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
         if (updatedSubs.size() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
         }
         if (updatedStations.size() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationsMsg(updatedStations));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(updatedStations))->execute();
         }
-
     }
     else
     {
@@ -3528,10 +3477,7 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
 
     if (updatedSubs.size() > 0)
     {
-        CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
-        executor->execute();
-        delete executor;
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
     }
 }
 
@@ -3755,19 +3701,24 @@ void CtiCCCommandExecutor::EnableArea()
 
 
         if (eventMulti->getCount() > 0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
         else
+        {
             delete eventMulti;
+        }
+
         if (multi->getCount() > 0)
+        {
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        }
         else
+        {
             delete multi;
+        }
 
-
-        CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-        executor->execute();
-        delete executor;
+        CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
     }
     else
     {
@@ -3803,12 +3754,9 @@ void CtiCCCommandExecutor::EnableArea()
 
             if (refusalFlag)
             {
-                CtiCCExecutorFactory f;
                 CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, refusalText);
                 msg->setUser(_command->getUser());
-                CtiCCExecutor* executor = f.createExecutor(msg);
-                executor->execute();
-                delete executor;
+                CtiCCExecutorFactory::createExecutor(msg)->execute();
             }
             else
             {
@@ -3839,21 +3787,25 @@ void CtiCCCommandExecutor::EnableArea()
                         }
                     }
                 }
-                //store->setValid(false);  //This is to do a full DATABASE RELOAD.
 
                 if (eventMulti->getCount() > 0)
+                {
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+                }
                 else
+                {
                     delete eventMulti;
+                }
                 if (multi->getCount() > 0)
+                {
                     CtiCapController::getInstance()->sendMessageToDispatch(multi);
+                }
                 else
+                {
                     delete multi;
+                }
 
-                CtiCCExecutorFactory f;
-                CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-                executor->execute();
-                delete executor;
+                CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
             }
         }
         else
@@ -3873,20 +3825,24 @@ void CtiCCCommandExecutor::EnableArea()
 
 
                 if (eventMulti->getCount() > 0)
+                {
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+                }
                 else
+                {
                     delete eventMulti;
+                }
+
                 if (multi->getCount() > 0)
+                {
                     CtiCapController::getInstance()->sendMessageToDispatch(multi);
+                }
                 else
+                {
                     delete multi;
+                }
 
-
-                CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())));
-                executor->execute();
-                delete executor;
-
+                CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
             }
         }
     }
@@ -3940,19 +3896,10 @@ void CtiCCCommandExecutor::DisableArea()
         CtiMultiMsg_vec& temp = multiCapMsg->getData( );
         for(int i=0;i<temp.size( );i++)
         {
-
-            CtiCCExecutorFactory f;
-           CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
-            executor->execute();
-            delete executor;
-
+            CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
         }
 
-        CtiCCExecutorFactory f;
-        CtiCCExecutor *executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-        executor->execute();
-        delete executor;
-
+        CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
     }
     else
     {
@@ -3987,25 +3934,26 @@ void CtiCCCommandExecutor::DisableArea()
                     }
                 }
             }
-            //store->setValid(false);  //This is to do a full DATABASE RELOAD.
-
 
             if (eventMulti->getCount() > 0)
+            {
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            }
             else
+            {
                 delete eventMulti;
+            }
 
             if (multi->getCount() > 0)
+            {
                 CtiCapController::getInstance()->sendMessageToDispatch(multi);
+            }
             else
+            {
                 delete multi;
+            }
 
-
-            CtiCCExecutorFactory f;
-            CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-            executor->execute();
-            delete executor;
-
+            CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
         }
         else
         {
@@ -4036,19 +3984,10 @@ void CtiCCCommandExecutor::DisableArea()
                 CtiMultiMsg_vec& temp = multiCapMsg->getData( );
                 for(int i=0;i<temp.size( );i++)
                 {
-
-                    CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
-                    executor->execute();
-                    delete executor;
+                    CtiCCExecutorFactory::createExecutor((CtiCCMessage*)capMessages[i])->execute();
                 }
 
-
-                CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())));
-                executor->execute();
-                delete executor;
-
+                CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
             }
         }
     }
@@ -4271,10 +4210,7 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
 
         if (actionMulti->getCount() > 0)
         {
-           CtiCCExecutorFactory f;
-           CtiCCExecutor* executor = f.createExecutor(actionMulti);
-           executor->execute();
-           delete executor;
+           CtiCCExecutorFactory::createExecutor(actionMulti)->execute();
         }
         else
         {
@@ -4294,23 +4230,14 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
         CtiCCExecutor *executor = NULL;
         if (isAreaFlag)
         {
-            executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
         }
         else
         {
-            executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
         }
-        executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
-        executor->execute();
-        delete executor;
-
-        executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
-        executor->execute();
-        delete executor;
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(ccStations))->execute();
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ))->execute();
     }
 
 }
@@ -4467,10 +4394,7 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
 
         if (actionMulti->getCount() > 0)
         {
-           CtiCCExecutorFactory f;
-           CtiCCExecutor* executor = f.createExecutor(actionMulti);
-           executor->execute();
-           delete executor;
+           CtiCCExecutorFactory::createExecutor(actionMulti)->execute();
         }
         else
         {
@@ -4486,27 +4410,17 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
         else
             delete multi;
 
-        CtiCCExecutorFactory f;
         CtiCCExecutor *executor = NULL;
         if (isAreaFlag)
         {
-            executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
         }
         else
         {
-            executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
         }
-        executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
-        executor->execute();
-        delete executor;
-
-        executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
-        executor->execute();
-        delete executor;
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(ccStations))->execute();
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ))->execute();
     }
 
 }
@@ -4649,10 +4563,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
 
         if (actionMulti->getCount() > 0)
         {
-           CtiCCExecutorFactory f;
-           CtiCCExecutor* executor = f.createExecutor(actionMulti);
-           executor->execute();
-           delete executor;
+           CtiCCExecutorFactory::createExecutor(actionMulti)->execute();
         }
         else
         {
@@ -4660,28 +4571,26 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
         }
 
         if (eventMulti->getCount() > 0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
         else
+        {
             delete eventMulti;
+        }
+
         if (multi->getCount() > 0)
+        {
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        }
         else
+        {
             delete multi;
+        }
 
-        CtiCCExecutorFactory f;
-        CtiCCExecutor *executor = NULL;
-
-        executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-        executor->execute();
-        delete executor;
-
-        executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
-        executor->execute();
-        delete executor;
-
-        executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
-        executor->execute();
-        delete executor;
+        CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(ccStations))->execute();
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ))->execute();
     }
 
 }
@@ -4789,10 +4698,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
 
             if (actionMulti->getCount() > 0)
             {
-               CtiCCExecutorFactory f;
-               CtiCCExecutor* executor = f.createExecutor(actionMulti);
-               executor->execute();
-               delete executor;
+               CtiCCExecutorFactory::createExecutor(actionMulti)->execute();
             }
             else
             {
@@ -4800,28 +4706,26 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
             }
 
             if (eventMulti->getCount() > 0)
+            {
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            }
             else
+            {
                 delete eventMulti;
+            }
+
             if (multi->getCount() > 0)
+            {
                 CtiCapController::getInstance()->sendMessageToDispatch(multi);
+            }
             else
+            {
                 delete multi;
+            }
 
-            CtiCCExecutorFactory f;
-            CtiCCExecutor *executor = NULL;
-
-            executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-            executor->execute();
-            delete executor;
-
-            executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
-            executor->execute();
-            delete executor;
-
-            executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(ccStations))->execute();
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ))->execute();
         }
     }
 
@@ -4864,25 +4768,29 @@ void CtiCCCommandExecutor::EnableSystem()
     }
 
     if (eventMulti->getCount() > 0)
+    {
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    }
     else
+    {
         delete eventMulti;
+    }
     if (multi->getCount() > 0)
+    {
         CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    }
     else
+    {
         delete multi;
+    }
 
 
-    CtiCCExecutorFactory f;
-    CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-    executor->execute();
-    delete executor;
+    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
 
     CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 1);
     actionMsg->setUser(_command->getUser());
-    executor = f.createExecutor(actionMsg);
-    executor->execute();
-    delete executor;
+
+    CtiCCExecutorFactory::createExecutor(actionMsg)->execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -4923,26 +4831,29 @@ void CtiCCCommandExecutor::DisableSystem()
     }
 
     if (eventMulti->getCount() > 0)
+    {
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    }
     else
+    {
         delete eventMulti;
+    }
     if (multi->getCount() > 0)
+    {
         CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    }
     else
+    {
         delete multi;
+    }
 
 
-    CtiCCExecutorFactory f;
-    CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-    executor->execute();
-    delete executor;
+    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
 
     CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 0);
     actionMsg->setUser(_command->getUser());
-    executor = f.createExecutor(actionMsg);
-    executor->execute();
-    delete executor;
 
+    CtiCCExecutorFactory::createExecutor(actionMsg)->execute();
 }
 
 
@@ -5219,10 +5130,7 @@ void CtiCCCommandExecutor::Flip7010Device()
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
         if (updatedSubs.size() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
         }
     }
     else
@@ -5785,27 +5693,31 @@ void CtiCCCommandExecutor::ConfirmArea()
         }
         if (confirmMulti->getCount() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(confirmMulti);
-            executor->execute();
-            delete executor;
-
-            executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-            executor->execute();
-            delete executor;
-
-
+            CtiCCExecutorFactory::createExecutor(confirmMulti)->execute();
+            CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
         }
         else
+        {
             delete confirmMulti;
+        }
+
         if (eventMulti->getCount() > 0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
         else
+        {
             delete eventMulti;
+        }
+
         if (multi->getCount() > 0)
+        {
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        }
         else
+        {
             delete multi;
+        }
 
     }
     else
@@ -5821,12 +5733,10 @@ void CtiCCCommandExecutor::ConfirmArea()
                     dout << CtiTime() << " - Special Area is not enabled, commands refused." << endl;
                 }
 
-                CtiCCExecutorFactory f;
                 CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
                 msg->setUser(_command->getUser());
-                CtiCCExecutor* executor = f.createExecutor(msg);
-                executor->execute();
-                delete executor;
+
+                CtiCCExecutorFactory::createExecutor(msg)->execute();
             }
             else
             {
@@ -5868,26 +5778,30 @@ void CtiCCCommandExecutor::ConfirmArea()
                     }
                     iter++;
                 }
+
                 if (confirmMulti->getCount() > 0)
                 {
-                    CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor(confirmMulti);
-                    executor->execute();
-                    delete executor;
-
-                    executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-                    executor->execute();
-                    delete executor;
+                    CtiCCExecutorFactory::createExecutor(confirmMulti)->execute();
+                    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
                 }
+
                 if (eventMulti->getCount() > 0)
+                {
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+                }
                 else
+                {
                     delete eventMulti;
+                }
 
                 if (multi->getCount() > 0)
+                {
                     CtiCapController::getInstance()->sendMessageToDispatch(multi);
+                }
                 else
+                {
                     delete multi;
+                }
             }
         }
         else
@@ -5922,29 +5836,32 @@ void CtiCCCommandExecutor::ConfirmArea()
                     }
                     iterBus++;
                 }
+
                 if (confirmMulti->getCount() > 0)
                 {
-                    CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor(confirmMulti);
-                    executor->execute();
-                    delete executor;
-
-                    executor = f.createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())));
-                    executor->execute();
-                    delete executor;
+                    CtiCCExecutorFactory::createExecutor(confirmMulti)->execute();
+                    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
                 }
+
                 if (eventMulti->getCount() > 0)
+                {
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+                }
                 else
+                {
                     delete eventMulti;
+                }
 
                 if (multi->getCount() > 0)
+                {
                     CtiCapController::getInstance()->sendMessageToDispatch(multi);
+                }
                 else
+                {
                     delete multi;
+                }
             }
         }
-
     }
 }
 
@@ -6225,16 +6142,19 @@ void CtiCCCommandExecutor::ConfirmOpen()
         CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
         if (eventMulti->getCount() >0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
         else
+        {
             delete eventMulti;
+        }
+
         if (updatedSubs.size() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs, CtiCCSubstationBusMsg::SubBusAdded));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs, CtiCCSubstationBusMsg::SubBusAdded))->execute();
         }
     }
     else
@@ -6518,16 +6438,19 @@ void CtiCCCommandExecutor::ConfirmClose()
         CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
         if (eventMulti->getCount() >0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
         else
+        {
             delete eventMulti;
+        }
+
         if (updatedSubs.size() > 0)
         {
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs, CtiCCSubstationBusMsg::SubBusAdded));
-            executor->execute();
-            delete executor;
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs, CtiCCSubstationBusMsg::SubBusAdded))->execute();
         }
     }
     else
@@ -6828,24 +6751,11 @@ void CtiCCCommandExecutor::SendAllData()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    CtiCCExecutorFactory f;
-    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(CtiTime().seconds())), CtiCCSubstationBusMsg::AllSubBusesSent));
-    executor->execute();
-    delete executor;
-    executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())));
-    executor->execute();
-    delete executor;
-    executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())));
-    executor->execute();
-    delete executor;
-    executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-    executor->execute();
-    delete executor;
-    executor = f.createExecutor(new CtiCCSubstationsMsg(*(store->getCCSubstations(CtiTime().seconds())), CtiCCSubstationsMsg::AllSubsSent));
-    executor->execute();
-    delete executor;
-
-
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(CtiTime().seconds())), CtiCCSubstationBusMsg::AllSubBusesSent))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*(store->getCCSubstations(CtiTime().seconds())), CtiCCSubstationsMsg::AllSubsSent))->execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -7307,28 +7217,28 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
 
 
     if (eventMulti->getCount() > 0)
+    {
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    }
     else
+    {
         delete eventMulti;
+    }
+
     if (multi->getCount() > 0)
+    {
         CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    }
     else
+    {
         delete multi;
+    }
 
 
-   CtiCCExecutorFactory f;
-   CtiCCExecutor *executor = NULL;
-   executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-   executor->execute();
-   delete executor;
+   CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
+   CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(ccStations))->execute();
+   CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(ccSubstationBuses,CtiCCSubstationBusMsg::AllSubBusesSent ))->execute();
 
-   executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
-   executor->execute();
-   delete executor;
-
-   executor = f.createExecutor(new CtiCCSubstationBusMsg(ccSubstationBuses,CtiCCSubstationBusMsg::AllSubBusesSent ));
-   executor->execute();
-   delete executor;
 }
 
 /*===========================================================================
@@ -7533,16 +7443,13 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
         {
             modifiedSubsList.push_back(newFeederParentSub);
         }
+
         if (oldFeederParentSub != NULL)
         {
             modifiedSubsList.push_back(oldFeederParentSub);
         }
-        CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
-        executor->execute();
-        delete executor;
 
-
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ))->execute();
     }
     else
     {
@@ -7731,12 +7638,8 @@ void CtiCCExecutor::moveFeeder(BOOL permanentFlag, LONG oldSubBusId, LONG movedF
         modifiedSubsList.clear();
         modifiedSubsList.push_back(newSubBusPtr);
         modifiedSubsList.push_back(oldSubBusPtr);
-        CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
-        executor->execute();
-        delete executor;
 
-
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ))->execute();
     }
     else
     {
@@ -7987,21 +7890,15 @@ void CtiCCPointDataMsgExecutor::execute()
 ---------------------------------------------------------------------------*/
 void CtiCCMultiMsgExecutor::execute()
 {
-    CtiCCExecutorFactory f;
     CtiMultiMsg_vec& msgs = _multiMsg->getData();
-    while(msgs.size( )>0)
+    while (msgs.size() > 0)
     {
         CtiMessage* message = (CtiMessage*)(msgs.back());
         msgs.pop_back();
+
         if( message != NULL )
         {
-            CtiCCExecutor* executor = f.createExecutor(message);
-            executor->execute();
-            delete executor;
-        }
-        else
-        {
-            break;
+            CtiCCExecutorFactory::createExecutor(message)->execute();
         }
     }
 }
@@ -8087,12 +7984,12 @@ void CtiCCShutdownExecutor::execute()
 /*===========================================================================
     CtiCCExecutorFactory
 ===========================================================================*/
-CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
+std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
 {
-    CtiCCExecutor* ret_val = NULL;
+    std::auto_ptr<CtiCCExecutor> ret_val;
     LONG classId = message->isA();
 
-    switch ( classId )
+    switch (classId)
     {
         case CTICCSUBSTATIONBUS_MSG_ID:
         case CTICCCAPBANKSTATES_MSG_ID:
@@ -8100,44 +7997,45 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
         case CTICCSPECIALAREAS_MSG_ID:
         case CTICCSUBSTATION_MSG_ID:
         case CTICCSERVERRESPONSE_ID:
-            ret_val = new CtiCCClientMsgExecutor( (CtiMessage*)message );
+            ret_val.reset(new CtiCCClientMsgExecutor((CtiMessage*)message));
             break;
 
         case CTICCCOMMAND_ID:
-            ret_val = new CtiCCCommandExecutor( (CtiCCCommand*)message );
+            ret_val.reset(new CtiCCCommandExecutor((CtiCCCommand*)message));
             break;
 
         case MSG_POINTDATA:
-            ret_val = new CtiCCPointDataMsgExecutor( (CtiPointDataMsg*)message );
+            ret_val.reset(new CtiCCPointDataMsgExecutor((CtiPointDataMsg*)message));
             break;
 
         case MSG_MULTI:
-            ret_val = new CtiCCMultiMsgExecutor( (CtiMultiMsg*)message );
+            ret_val.reset(new CtiCCMultiMsgExecutor((CtiMultiMsg*)message));
             break;
 
         case MSG_COMMAND:
-            ret_val = new CtiCCForwardMsgToDispatchExecutor( (CtiMessage*)message );
+            ret_val.reset(new CtiCCForwardMsgToDispatchExecutor((CtiMessage*)message));
             break;
 
         case CTICCCAPBANKMOVEMSG_ID:
-            ret_val = new CtiCCCapBankMoveExecutor( (CtiCCCapBankMoveMsg*)message );
+            ret_val.reset(new CtiCCCapBankMoveExecutor((CtiCCCapBankMoveMsg*)message));
             break;
         case CTICCOBJECTMOVEMSG_ID:
-            ret_val = new CtiCCFeederMoveExecutor( (CtiCCObjectMoveMsg*)message );
+            ret_val.reset(new CtiCCFeederMoveExecutor((CtiCCObjectMoveMsg*)message));
             break;
 
         case CTICCSUBVERIFICATIONMSG_ID:
-            ret_val = new CtiCCSubstationVerificationExecutor( (CtiCCSubstationVerificationMsg*)message );
+            ret_val.reset(new CtiCCSubstationVerificationExecutor((CtiCCSubstationVerificationMsg*)message));
             break;
         case CTICCSHUTDOWN_ID:
-            ret_val = new CtiCCShutdownExecutor();
+            ret_val.reset(new CtiCCShutdownExecutor());
             break;
 
         default:
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - CtiCCExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
-            }
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CtiCCExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
+            ret_val.reset(new NoOpExecutor());
+        }
     }
 
     return ret_val;

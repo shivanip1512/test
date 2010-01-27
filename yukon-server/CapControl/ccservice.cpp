@@ -667,13 +667,9 @@ void CtiCCService::OnStop()
     }
 
     //Time to quit - send a shutdown message through the system
-    CtiCCExecutorFactory f;
-    CtiCCExecutor* executor = f.createExecutor(new CtiCCShutdown());
-    executor->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCShutdown())->execute();
 
     SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
-
-    delete executor;
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {

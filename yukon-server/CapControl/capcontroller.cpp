@@ -325,9 +325,7 @@ void CtiCapController::ivvcKeepAlive()
                 {
                     CtiCCCommand* keepAliveCmd = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, p.second->getPaoId() );//consumed in executor
 
-                    CtiCCExecutor* executor = CtiCCExecutorFactory().createExecutor(keepAliveCmd);
-                    executor->execute();
-                    delete executor;
+                    CtiCCExecutorFactory::createExecutor(keepAliveCmd)->execute();
                 }
             }
 
@@ -943,10 +941,7 @@ void CtiCapController::controlLoop()
                         CtiMultiMsg_vec& temp = multiCapMsg->getData( );
                         for(int i=0;i<temp.size( );i++)
                         {
-                            CtiCCExecutorFactory f;
-                            CtiCCExecutor* executor = f.createExecutor((CtiCCMessage *) temp[i]);
-                            executor->execute();
-                            delete executor;
+                            CtiCCExecutorFactory::createExecutor((CtiCCMessage *) temp[i])->execute();
                         }
                         multiCapMsg = new CtiMultiMsg();
                     }
@@ -1091,7 +1086,6 @@ void CtiCapController::readClientMsgQueue()
     try
     {
         CtiTime tempTime;
-        CtiCCExecutorFactory f;
         RWCollectable* clientMsg = NULL;
 
         try
@@ -1099,7 +1093,6 @@ void CtiCapController::readClientMsgQueue()
             tempTime.now();
             while(_inClientMsgQueue.canRead())
             {
-
                 try
                 {
                     clientMsg = _inClientMsgQueue.read();
@@ -1109,19 +1102,9 @@ void CtiCapController::readClientMsgQueue()
                         {
                             try
                             {
-                                CtiCCExecutor* executor = f.createExecutor( (CtiMessage*) clientMsg );
                                 try
                                 {
-                                    executor->execute();
-                                }
-                                catch(...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-                                try
-                                {
-                                    delete executor;
+                                    CtiCCExecutorFactory::createExecutor( (CtiMessage*) clientMsg )->execute();
                                 }
                                 catch(...)
                                 {
@@ -1134,8 +1117,6 @@ void CtiCapController::readClientMsgQueue()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
-
-                            //delete clientMsg;
                         }
                         if (CtiTime::now().seconds() - tempTime.seconds() <= 1)
                         {
@@ -1183,13 +1164,10 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - substationBusChanges: "<<size << endl;
             }
-            CtiCCExecutorFactory f1;
-            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges, broadCastMask));
 
             try
             {
-                executor1->execute();
-                delete executor1;
+                CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(substationBusChanges, broadCastMask))->execute();
             }
             catch(...)
             {
@@ -1199,12 +1177,9 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
         }
         if( stationChanges.size() > 0 )
         {
-            CtiCCExecutorFactory f1;
-            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationsMsg(stationChanges, broadCastMask));
             try
             {
-                executor1->execute();
-                delete executor1;
+                CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(stationChanges, broadCastMask))->execute();
             }
             catch(...)
             {
@@ -1214,12 +1189,9 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
          }
          if( areaChanges.size() > 0 )
          {
-             CtiCCExecutorFactory f1;
-             CtiCCExecutor* executor1= f1.createExecutor(new CtiCCGeoAreasMsg(areaChanges, broadCastMask));
              try
              {
-                 executor1->execute();
-                 delete executor1;
+                 CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(areaChanges, broadCastMask))->execute();
              }
              catch(...)
              {
@@ -2713,10 +2685,9 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 {
                                     CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j-1];
 
-                                    CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCObjectMoveMsg(false, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), altSub->getPaoId(), currentFeeder->getDisplayOrder() + 0.5));
-                                    executor->execute();
-                                    delete executor;
+                                    CtiCCExecutorFactory::createExecutor(new CtiCCObjectMoveMsg(false, currentSubstationBus->getPaoId(),
+                                                                                                currentFeeder->getPaoId(), altSub->getPaoId(),
+                                                                                                currentFeeder->getDisplayOrder() + 0.5))->execute();
                                     j--;
                                 }
                                 altSub->reOrderFeederDisplayOrders();
@@ -2761,11 +2732,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                     CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j-1];
                                     if (currentFeeder->getOriginalParent().getOriginalParentId() == currentSubstationBus->getPaoId())
                                     {
-
-                                        CtiCCExecutorFactory f;
-                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()));
-                                        executor->execute();
-                                        delete executor;
+                                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::RETURN_FEEDER_TO_ORIGINAL_SUBBUS, currentFeeder->getPaoId()))->execute();
                                     }
                                     j--;
                                 }
@@ -2890,11 +2857,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                             CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
                             if (currentArea != NULL)
                             {
-                                CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()));
-                                executor->execute();
-                                delete executor;
-
+                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
                             }
                         }
                     }
@@ -2907,18 +2870,11 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
                             CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
                             if (currentArea != NULL)
                             {
-                                CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()));
-                                executor->execute();
-                                delete executor;
-
+                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
                             }
                         }
-
                     }
-
                 }
-
             }
         }
     }
@@ -2959,19 +2915,11 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                             {
                                 if (currentArea->getVoltReductionControlValue())
                                 {
-                                    CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()));
-                                    executor->execute();
-                                    delete executor;
-
+                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
                                 }
                                 else
                                 {
-                                    CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()));
-                                    executor->execute();
-                                    delete executor;
-
+                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
                                 }
                             }
                             currentArea->checkAndUpdateChildVoltReductionFlags();
@@ -3017,19 +2965,11 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                             {
                                 if (currentSpArea->getVoltReductionControlValue())
                                 {
-                                    CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPaoId()));
-                                    executor->execute();
-                                    delete executor;
-
+                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPaoId()))->execute();
                                 }
                                 else
                                 {
-                                    CtiCCExecutorFactory f;
-                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSpArea->getPaoId()));
-                                    executor->execute();
-                                    delete executor;
-
+                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSpArea->getPaoId()))->execute();
                                 }
                             }
                         }
@@ -3077,12 +3017,8 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             }
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentStation->getPaoId()));
-                                executor->execute();
-                                delete executor;
+                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentStation->getPaoId()))->execute();
                             }
-
                         }
                     }
                     else
@@ -3097,15 +3033,10 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                             }
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentStation->getPaoId()));
-                                executor->execute();
-                                delete executor;
+                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentStation->getPaoId()))->execute();
                             }
-
                         }
                     }
-
                 }
             }
         }
@@ -3399,10 +3330,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()));
-                                executor->execute();
-                                delete executor;
+                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
                             }
                         }
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -3416,11 +3344,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                             if (_AUTO_VOLT_REDUCTION)
                             {
-                                CtiCCExecutorFactory f;
-                                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()));
-                                executor->execute();
-                                delete executor;
+                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSubstationBus->getPaoId()))->execute();
                             }
+
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
                     }

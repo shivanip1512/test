@@ -10,7 +10,7 @@ const long StrategyManager::_defaultID = -10;       // client supplies strategy 
 StrategyManager::StrategyManager( std::auto_ptr<StrategyLoader> loader )
     : _loader( loader )
 {
-    StrategyPtr     none( new NoStrategy );
+    StrategyPtr none( new NoStrategy );
 
     none->setStrategyId(_defaultID);
 
