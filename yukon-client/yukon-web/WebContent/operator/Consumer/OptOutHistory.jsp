@@ -49,8 +49,9 @@ function confirmSubmit(form) { //v1.0
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"> 
-            
+            <div align="center"  class="contentArea"> 
+              <% String header = null; %>
+              <%@ include file="include/InfoSearchBar.jspf" %>
 <%
 
     int accountId = account.getAccountID();
@@ -64,7 +65,7 @@ function confirmSubmit(form) { //v1.0
                 <c:set var="previousOptOutList" value="<%=previousOptOutList %>" />                   
                 
                 <!-- Opt Out History -->
-		        <cti:msg key="yukon.dr.operator.optoutHistory.header"/>
+		        <h3><cti:msg key="yukon.dr.operator.optoutHistory.header"/></h3>
                 <table id="deviceTable" class="miniResultsTable">
                     <tr class="<ct:alternateRow odd="" even="altRow"/>">
                         <th><cti:msg key="yukon.dr.operator.optoutHistory.device"/></th>
