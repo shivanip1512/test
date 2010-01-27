@@ -114,7 +114,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
      */
     private void removeInvalidControlHistory(StarsLMControlHistory controlHistory,
                                              Holder holder) {
-        removeInvalidEnrollmentControllHistory(controlHistory, holder);
+        removeInvalidEnrollmentControlHistory(controlHistory, holder);
     }
 
     /**
@@ -123,8 +123,8 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
      * @param controlHistory
      * @param holder
      */
-    private void removeInvalidEnrollmentControllHistory(StarsLMControlHistory controlHistory,
-                                                        Holder holder) {
+    private void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
+                                                       Holder holder) {
         Date enrollmentStartDate = enrollmentDao.getEnrollmentStartDate(holder.inventoryId, holder.groupId);
 
         List<Integer> removeControlHistoryList = Lists.newArrayList();
