@@ -10,6 +10,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointService;
@@ -30,7 +31,7 @@ public class UpdatePointsProcessorFactory {
 
 
     /* Adjust Multiplier Points Processor */
-    public Processor<YukonDevice> getAdjustMultiplierProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final Double setValue) {
+    public Processor<YukonDevice> getAdjustMultiplierProcessor(final Map<PaoType, Set<PointTemplate>> pointTemplatesMap, final Double setValue) {
 
         SingleProcessor<YukonDevice> updatePointsProcessor = new UpdatePointsProcessorBase(pointTemplatesMap) {
 
@@ -57,7 +58,7 @@ public class UpdatePointsProcessorFactory {
     }
     
     /* Explicit Multiplier Points Processor */
-    public Processor<YukonDevice> getExplicitMultiplierProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final Double setValue) {
+    public Processor<YukonDevice> getExplicitMultiplierProcessor(final Map<PaoType, Set<PointTemplate>> pointTemplatesMap, final Double setValue) {
 
         SingleProcessor<YukonDevice> updatePointsProcessor = new UpdatePointsProcessorBase(pointTemplatesMap) {
 
@@ -80,7 +81,7 @@ public class UpdatePointsProcessorFactory {
     }
     
     /* Decimal Places Points Processor */
-    public Processor<YukonDevice> getDecimalPlacesProcessor(final Map<Integer, Set<PointTemplate>> pointTemplatesMap, final Integer setValue) {
+    public Processor<YukonDevice> getDecimalPlacesProcessor(final Map<PaoType, Set<PointTemplate>> pointTemplatesMap, final Integer setValue) {
 
         SingleProcessor<YukonDevice> updatePointsProcessor = new UpdatePointsProcessorBase(pointTemplatesMap) {
 
@@ -103,17 +104,16 @@ public class UpdatePointsProcessorFactory {
     }
     
     private abstract class UpdatePointsProcessorBase extends SingleProcessor<YukonDevice> {
-        private final Map<Integer, Set<PointTemplate>> pointTemplatesMap;
+        private final Map<PaoType, Set<PointTemplate>> pointTemplatesMap;
 
-        private UpdatePointsProcessorBase(
-                                          Map<Integer, Set<PointTemplate>> pointTemplatesMap) {
+        private UpdatePointsProcessorBase(Map<PaoType, Set<PointTemplate>> pointTemplatesMap) {
             this.pointTemplatesMap = pointTemplatesMap;
         }
 
         @Override
         public final void process(YukonDevice device) throws ProcessingException {
 
-            int deviceType = device.getPaoIdentifier().getPaoType().getDeviceTypeId();
+            PaoType deviceType = device.getPaoIdentifier().getPaoType();
             if (pointTemplatesMap.containsKey(deviceType)) {
                 Set<PointTemplate> pointSet = pointTemplatesMap.get(deviceType);
                 for (PointTemplate pointTemplate : pointSet) {

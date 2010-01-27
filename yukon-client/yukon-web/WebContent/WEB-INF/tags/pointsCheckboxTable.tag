@@ -9,15 +9,15 @@
 <c:set var="columnPercentage" value="${100 / columnCount}"/>
 			
 <cti:dataGrid cols="${columnCount}" tableClasses="compactResultsTable" cellStyle="width:${columnPercentage}%;">
-	<c:forEach var="ptWrapper" items="${pointTemplates}">
+	<c:forEach var="pointTemplateMask" items="${pointTemplates}">
 	
         <cti:dataGridCell>
-			<c:set var="disabled" value="${ptWrapper.masked ? 'disabled' : ''}"/>
-			<c:set var="className" value="${ptWrapper.masked ? 'subtleGray' : ''}"/>
+			<c:set var="disabled" value="${pointTemplateMask.masked ? 'disabled' : ''}"/>
+			<c:set var="className" value="${pointTemplateMask.masked ? 'subtleGray' : ''}"/>
 		
 			<label>
-				<input type="checkbox" ${disabled} name="PT:${deviceType}:${ptWrapper.pointTemplate.pointIdentifier.type}:${ptWrapper.pointTemplate.pointIdentifier.offset}">
-					<span class="${className}">${ptWrapper.pointTemplate.name} [#${ptWrapper.pointTemplate.pointIdentifier.offset}]</span>
+				<input type="checkbox" ${disabled} name="PT:${deviceType}:${pointTemplateMask.pointTemplate.pointIdentifier.type}:${pointTemplateMask.pointTemplate.pointIdentifier.offset}">
+					<span class="${className}">${pointTemplateMask.pointTemplate.name} [#${pointTemplateMask.pointTemplate.pointIdentifier.offset}]</span>
 				</input>
 			</label>
         </cti:dataGridCell>    

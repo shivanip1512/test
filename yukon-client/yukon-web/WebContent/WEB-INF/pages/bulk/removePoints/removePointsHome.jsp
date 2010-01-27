@@ -122,20 +122,26 @@
             
             <%-- SHARED POINTS --%>
             <div id="sharedPointsDiv" style="display:none;">
-	            <tags:deviceTypePointsSection deviceType="0" pointTypesMap="${sharedPointsTypeMap}" columnCount="4" title="${sharedPointsOptionLabel}" />
+	            <tags:deviceTypePointsSection deviceType="0" paoTypeMasks="${sharedPaoTypeMasks}" columnCount="4" title="${sharedPointsOptionLabel}" />
             </div>
             
             <%-- TYPES --%>
             <div id="allPointsDiv">
-	            <c:forEach var="deviceTypeNamesMapEntry" items="${deviceTypeNamesMap}" varStatus="status">
-	            	<c:set var="deviceType" value="${deviceTypeNamesMapEntry.key}"/>
-	            	<c:set var="deviceTypeName" value="${deviceTypeNamesMapEntry.value}"/>
-	            	<tags:deviceTypePointsSection deviceType="${deviceType}" 
-	            									deviceTypeEnum="${deviceTypeEnumMap[deviceType]}" 
-	            									deviceTypeDeviceCollection="${deviceTypeDeviceCollectionMap[deviceType]}" 
-	            									pointTypesMap="${pointsMap[deviceType]}" 
-	            									columnCount="4" 
-	            									title="${deviceTypeName}" />
+            	<c:forEach var="paoTypeMasks" items="${paoTypeMasksList}" varStatus="status">
+	            	<c:set var="deviceType" value="${paoTypeMasks.paoType}"/>
+	            	<c:set var="deviceTypeName" value="${paoTypeMasks.paoType}"/>
+	            	
+	            	<c:forEach var="paoTypeMasks" items="${paoTypeMasksList}" >
+	            		<c:if test="${paoTypeMasks.paoType eq deviceType}">
+	            			<c:set var="pointTemplateMaskMap" value="${paoTypeMasks.pointTemplateMaskMap}" />
+
+		            		<tags:deviceTypePointsSection deviceType="${deviceType.deviceTypeId}" 
+		            									  deviceTypeDeviceCollection="${deviceTypeDeviceCollectionMap[deviceType]}" 
+		            									  paoTypeMasks="${paoTypeMasks}" 
+		            									  columnCount="4" 
+		            									  title="${deviceTypeName}" />
+	            		</c:if>
+	            	</c:forEach>
 	            </c:forEach>
             </div>
                     

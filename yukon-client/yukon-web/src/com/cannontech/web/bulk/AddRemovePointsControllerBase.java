@@ -1,13 +1,10 @@
 package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +29,6 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -46,17 +42,22 @@ import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.ADD_REMOVE_POINTS)
 public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
@@ -73,15 +74,6 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private Logger log = YukonLogManager.getLogger(AddRemovePointsControllerBase.class);
-    protected static Comparator<PointTemplateWrapper> pointTemplateOffsetCompartor;
-    
-    static {
-    	 pointTemplateOffsetCompartor = new java.util.Comparator<PointTemplateWrapper>() {
-			public int compare(PointTemplateWrapper o1, PointTemplateWrapper o2){
-				return o1.getPointTemplate().getOffset() - o2.getPointTemplate().getOffset();
-			}
-		};
-    }
     
     // ABSTRACT
     public abstract ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException;
@@ -133,130 +125,90 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     }
     
     // MISC LIST/MAP ORGANIZING HELPERS
-    protected Set<Integer> getDeviceTypesSet(DeviceCollection deviceCollection){
+    protected Set<PaoType> getDeviceTypesSet(DeviceCollection deviceCollection){
     	
-    	Set<Integer> deviceTypeSet = new LinkedHashSet<Integer>();
+    	Set<PaoType> deviceTypeSet = Sets.newLinkedHashSet();
         for (SimpleDevice device : deviceCollection.getDeviceList()) {
-        	deviceTypeSet.add(device.getType());
+        	deviceTypeSet.add(PaoType.getForId(device.getType()));
         }
         return deviceTypeSet;
     }
     
-    protected Map<Integer, String> getDeviceTypeNamesMap(Set<Integer> deviceTypeSet) {
-    	
-    	Map<Integer, String> deviceTypeNamesMap = new LinkedHashMap<Integer, String>();
-        for (int deviceType : deviceTypeSet) {
-        	String deviceTypeName = paoGroupsWrapper.getPAOTypeString(deviceType);
-        	deviceTypeNamesMap.put(deviceType, deviceTypeName);
-        }
-        return deviceTypeNamesMap;
-    }
-    
-    protected Map<Integer, PaoType> getDeviceTypeEnumMap(Set<Integer> deviceTypeSet) {
-    	
-    	Map<Integer, PaoType> deviceTypeEnumMap = new LinkedHashMap<Integer, PaoType>();
-        for (int deviceType : deviceTypeSet) {
-        	PaoType type = PaoType.getForId(deviceType);
-        	deviceTypeEnumMap.put(deviceType, type);
-        }
-        return deviceTypeEnumMap;
-    }
-    
-    protected Map<Integer, DeviceCollection> getDeviceTypeDeviceCollectionMap(Set<Integer> deviceTypeSet, DeviceCollection deviceCollection) {
+    protected Map<PaoType, DeviceCollection> getDeviceTypeDeviceCollectionMap(Set<PaoType> paoTypeSet, DeviceCollection deviceCollection) {
     	
     	List<SimpleDevice> devices = Lists.newArrayList(deviceCollection.getDeviceList());
     	
-    	Map<Integer, DeviceCollection> deviceTypeDeviceCollectionMap = new LinkedHashMap<Integer, DeviceCollection>();
-        for (int deviceType : deviceTypeSet) {
+    	Map<PaoType, DeviceCollection> deviceTypeDeviceCollectionMap = Maps.newLinkedHashMap();
+        for (PaoType paoType : paoTypeSet) {
         	
         	List<SimpleDevice> devicesOfType = new ArrayList<SimpleDevice>();
         	StoredDeviceGroup typeGroup = temporaryDeviceGroupService.createTempGroup(null);
         	for (SimpleDevice device : devices) {
         		
-        		if (device.getType() == deviceType) {
+        		if (device.getDeviceType().equals(paoType)) {
         			devicesOfType.add(device);
         		}
         	}
         	deviceGroupMemberEditorDao.addDevices(typeGroup, devicesOfType);
         	devices.removeAll(devicesOfType);
         	
-        	deviceTypeDeviceCollectionMap.put(deviceType, deviceGroupCollectionHelper.buildDeviceCollection(typeGroup));
+        	deviceTypeDeviceCollectionMap.put(paoType, deviceGroupCollectionHelper.buildDeviceCollection(typeGroup));
         }
         return deviceTypeDeviceCollectionMap;
     }
     
-    protected Set<PointTemplateWrapper> convertToPointTemplateWrapperSet(Set<PointTemplate> set, final boolean defaultMasking) {
+    protected Map<PointTemplate, Boolean> createSharedPointsTemplateMapWithPointsMap(List<PaoTypeMasks> paoTypeMaskList) {
+    	ArrayListMultimap<PointTemplate, Boolean> sharedPointTemplateMasks = ArrayListMultimap.create();
     	
-    	// map PointTemplate set to a PoinTempalteWrapper set, all initialized with masking false 
-    	ObjectMapper<PointTemplate, PointTemplateWrapper> mapper = new ObjectMapper<PointTemplate, PointTemplateWrapper>() {
-    		public PointTemplateWrapper map(PointTemplate from) throws ObjectMappingException {
-    			PointTemplateWrapper pointTemplateWrapper = new PointTemplateWrapper(from, defaultMasking);
-    			return pointTemplateWrapper;
-    		}
-    	};
-    	MappingSet<PointTemplate, PointTemplateWrapper> wrapperSet = new MappingSet<PointTemplate, PointTemplateWrapper>(set, mapper);
+    	for (PaoTypeMasks paoTypeMasks : paoTypeMaskList) {
+    	    SetMultimap<PointTemplate, Boolean> pointTemplateMask = Multimaps.forMap(paoTypeMasks.getPointTemplateMaskMap());
+            sharedPointTemplateMasks.putAll(pointTemplateMask);
+        }
     	
-    	return wrapperSet;
-    }
-    
-    protected Map<PointType, List<PointTemplateWrapper>> createSharedPointsTypeMapWithPointsMap(Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap) {
-    	
-    	// complete set of all point templates
-    	Set<PointTemplateWrapper> allPointTemplates = new HashSet<PointTemplateWrapper>();
-    	
-    	// list of sets of point templates, one for each device type
-    	List<Set<PointTemplateWrapper>> devicePointTemplateSetsList = new ArrayList<Set<PointTemplateWrapper>>();
-    	
-    	for (int deviceType : pointsMap.keySet()) {
-    		
-    		Set<PointTemplateWrapper> deviceTypePointSet = new HashSet<PointTemplateWrapper>();
-    		
-    		for (PointType pointType : pointsMap.get(deviceType).keySet()) {
-    			
-    			List<PointTemplateWrapper> pointTypePointList = pointsMap.get(deviceType).get(pointType);
-    			deviceTypePointSet.addAll(pointTypePointList);
-    			addPointListToAllPointTemplates(allPointTemplates, pointTypePointList);
-    		}
-    		
-    		devicePointTemplateSetsList.add(deviceTypePointSet);
+    	// remove un-common types
+    	Set<PointTemplate> removeList = Sets.newHashSet();
+    	for (PointTemplate sharedPointTemplate : sharedPointTemplateMasks.keySet()) {
+    	    int pointTemplateCount = sharedPointTemplateMasks.get(sharedPointTemplate).size();
+    	    if (pointTemplateCount < paoTypeMaskList.size()) {
+    	        removeList.add(sharedPointTemplate);
+    	    }
     	}
-    	
-    	// reduce the "all" set by retaining each device type point template set
-    	for (Set<PointTemplateWrapper> deviceTypePointSet : devicePointTemplateSetsList) {
-    		allPointTemplates.retainAll(deviceTypePointSet);
-    	}
-    	
-    	List<PointTemplateWrapper> pointList = new ArrayList<PointTemplateWrapper>(allPointTemplates);
-    	Collections.sort(pointList, pointTemplateOffsetCompartor);
-    	
-    	return createPointTypeMap(pointList);
-    }
-    
-    protected void addPointListToAllPointTemplates(Set<PointTemplateWrapper> allPointTemplates, List<PointTemplateWrapper> pointTypePointList){
-        allPointTemplates.addAll(pointTypePointList);
-    }
-    
-    protected Map<PointType, List<PointTemplateWrapper>> createPointTypeMap(List<PointTemplateWrapper> pointTemplates) {
-    	
-    	Map<PointType, List<PointTemplateWrapper>> pointTypeMap = Maps.newLinkedHashMap();
-    	for (PointTemplateWrapper pointTemplateWrapper : pointTemplates) {
 
-    	    PointType pointType = pointTemplateWrapper.getPointTemplate().getPointIdentifier().getPointType();
-    		
-    		if (!pointTypeMap.containsKey(pointType)) {
-    			pointTypeMap.put(pointType, new ArrayList<PointTemplateWrapper>());
-    		}
-    		pointTypeMap.get(pointType).add(pointTemplateWrapper);
-    	}
+    	for (PointTemplate removedPointTemplate : removeList) {
+    	    sharedPointTemplateMasks.removeAll(removedPointTemplate);
+        }
     	
-    	return pointTypeMap;
+    	// Handle the masking for the result set.
+    	Function<Collection<Boolean>, Boolean> func = new Function<Collection<Boolean>, Boolean>() {
+    	    @Override
+    	    public Boolean apply(Collection<Boolean> pointTemplateMaskSet) {
+    	        return isSharedPointTemplateMasked(pointTemplateMaskSet);
+    	    }
+    	};
+    	
+    	Map<PointTemplate, Boolean> result = Maps.transformValues(sharedPointTemplateMasks.asMap(), func);
+
+        return result;
+    }
+    
+    protected boolean isSharedPointTemplateMasked(Iterable<Boolean> pointTemplateMaskSet){
+        for (Boolean pointTemplateMask : pointTemplateMaskSet) {
+            if (pointTemplateMask == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    protected void addPointListToAllPointTemplates(Map<PointTemplate, Boolean> allPointTemplates, Map<PointTemplate, Boolean> pointTypePointList){
+        allPointTemplates.putAll(pointTypePointList);
     }
     
     @SuppressWarnings("unchecked")
-    protected Map<Integer, Set<PointTemplate>> extractPointTemplatesMapFromParameters (HttpServletRequest request, DeviceCollection deviceCollection, boolean commonPoints) {
+    protected Map<PaoType, Set<PointTemplate>> extractPointTemplatesMapFromParameters (HttpServletRequest request, DeviceCollection deviceCollection, boolean commonPoints) {
     	
     	// POINT TAMPLATES MAP
-        final Map<Integer, Set<PointTemplate>> pointTemplatesMap = new HashMap<Integer, Set<PointTemplate>>();
+        final Map<PaoType, Set<PointTemplate>> pointTemplatesMap = Maps.newHashMap();
         
         Enumeration parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
@@ -268,32 +220,37 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         		String[] parts = StringUtils.split(parameterName, ":");
         		if (parts.length == 4) {
         			
-        			int deviceType = Integer.parseInt(parts[1]);
+        		    
+        		    int paoTypeId = Integer.parseInt(parts[1]);
+        		    PaoType paoType = null;
+        		    if (paoTypeId != 0) { 
+        		        paoType = PaoType.getForId(paoTypeId);
+        		    }
         			int pointType = Integer.parseInt(parts[2]);
         			int offset = Integer.parseInt(parts[3]);
         			
-        			List<Integer> checkedDeviceTypes = new ArrayList<Integer>();
+        			List<PaoType> checkedPaoTypes = Lists.newArrayList();
         			
         			// common point, process as if check box was selected for all device types
-        			if (commonPoints && deviceType == 0) {
+        			if (commonPoints && paoType == null) {
         				
-        				Set<Integer> allDeviceTypesSet = new HashSet<Integer>();
+        				Set<PaoType> allDeviceTypesSet = Sets.newHashSet();
         				for (SimpleDevice device : deviceCollection.getDeviceList()) {
-        					allDeviceTypesSet.add(device.getType());
+        					allDeviceTypesSet.add(device.getDeviceType());
         				}
-        				checkedDeviceTypes.addAll(allDeviceTypesSet);
+        				checkedPaoTypes.addAll(allDeviceTypesSet);
         			}
         			
         			// single device type check box
-        			if (!commonPoints && deviceType > 0) {
-        				checkedDeviceTypes.add(deviceType);
+        			if (!commonPoints && paoType != null) {
+        				checkedPaoTypes.add(paoType);
         			}
         			
-        			for (int checkedDeviceType : checkedDeviceTypes) {
+        			for (PaoType checkedDeviceType : checkedPaoTypes) {
         			
         				log.debug("Selected point checkbox: deviceType=" + checkedDeviceType + " pointType=" + pointType + " offset=" + offset);
         			
-	        			PointTemplate pointTemplate = paoDefinitionDao.getPointTemplateByTypeAndOffset(PaoType.getForId(checkedDeviceType), new PointIdentifier(pointType, offset));
+	        			PointTemplate pointTemplate = paoDefinitionDao.getPointTemplateByTypeAndOffset(checkedDeviceType, new PointIdentifier(pointType, offset));
 	        			
 	        			if (!pointTemplatesMap.containsKey(checkedDeviceType)) {
 	        				pointTemplatesMap.put(checkedDeviceType, new HashSet<PointTemplate>());
@@ -307,112 +264,105 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     	return pointTemplatesMap;
     }
     
- // points map helper
-    protected Map<Integer, Map<PointType, List<PointTemplateWrapper>>> createExistsPointsMap(Set<Integer> deviceTypeSet, boolean maskExistingPoints, boolean maskIfExistOnAllDevices, DeviceCollection deviceCollection) {
-        
-        /// make a copy of device list if we'll be doing maskExistingPoints
-        // being able to remove devices from the list as we process each device type will speed up the next iteration building of the devicesOfTypeList
-        List<SimpleDevice> mutableDeviceList = null;
+    // points map helper
+    protected List<PaoTypeMasks> createExistsPointsMap(Set<PaoType> paoTypeSet, boolean maskExistingPoints, 
+                                                       boolean maskIfExistOnAllDevices, DeviceCollection deviceCollection) {
+
+        // first pull out all the device from the collection that match this device type
+        HashMultimap<PaoType, SimpleDevice> paoTypeToSimpleDeviceMultiMap = null;
         if (maskExistingPoints) {
-            mutableDeviceList = new ArrayList<SimpleDevice>(deviceCollection.getDeviceList());
+            paoTypeToSimpleDeviceMultiMap = HashMultimap.create();
+            
+            for (SimpleDevice device : deviceCollection.getDeviceList()) {
+                paoTypeToSimpleDeviceMultiMap.put(device.getDeviceType(), device);
+            }
         }
         
-        Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap = Maps.newLinkedHashMap();
-        for (int deviceType : deviceTypeSet) {
+        List<PaoTypeMasks> paoTypeMasksList = Lists.newArrayList();
+        for (PaoType paoType : paoTypeSet) {
             
             // all defined point templates for device type, convert to wrappers that are all initially unmasked
-            PaoDefinition deviceDefiniton = paoDefinitionDao.getPaoDefinition(PaoType.getForId(deviceType));
-            Set<PointTemplateWrapper> allPointTemplates = convertToPointTemplateWrapperSet(paoDefinitionDao.getAllPointTemplates(deviceDefiniton), false);
-            
+            PaoDefinition paoDefiniton = paoDefinitionDao.getPaoDefinition(paoType);
+            Set<PointTemplate> allPointTemplates = paoDefinitionDao.getAllPointTemplates(paoDefiniton);
+            Map<PointTemplate, Boolean> pointTemplateMaskMap = createDefaultPointTemplateMaskMap(allPointTemplates);
             
             // mask those device type points where all the the device of this type have the point
             if (maskExistingPoints) {
                 
-                Set<PointTemplateWrapper> maskedPointTemplates = new HashSet<PointTemplateWrapper>();
-                
-                // first pull out all the device from the collection that match this device type
-                List<SimpleDevice> devicesOfTypeList = new ArrayList<SimpleDevice>();
-                for (SimpleDevice device : mutableDeviceList) {
-                    if (device.getType() == deviceType) {
-                        devicesOfTypeList.add(device);
-                    }
-                }
-                mutableDeviceList.removeAll(devicesOfTypeList);
-                
-                // loop over each possible point for this device type
-                for (PointTemplateWrapper pointTemplateWrapper : allPointTemplates) {
-                    
-                    // check each device of this type and see if it has the point or not
-                    boolean allDevicesHavePoint = true;
-                    for (SimpleDevice device : devicesOfTypeList) {
-                        boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplateWrapper.getPointTemplate().getPointIdentifier());
-                        if (!pointExistsForDevice) {
-                            allDevicesHavePoint = false;
-                            break;
-                        }
-                    }
-                    
-                    if(maskIfExistOnAllDevices){
-                        if (allDevicesHavePoint) {
-                            pointTemplateWrapper.setMasked(true);
-                        }
-                    }else {
-                        if (!allDevicesHavePoint) {
-                            pointTemplateWrapper.setMasked(true);
-                        }
-                    }
-                    
-                    maskedPointTemplates.add(pointTemplateWrapper);
-                    
-                }
-                
-                allPointTemplates = maskedPointTemplates;
+                fillInPointTemplateMask(maskIfExistOnAllDevices,
+                                        paoTypeToSimpleDeviceMultiMap, paoType,
+                                        pointTemplateMaskMap);
             }
             
-            // sort points list
-            List<PointTemplateWrapper> pointList = new ArrayList<PointTemplateWrapper>(allPointTemplates);
-            Collections.sort(pointList, pointTemplateOffsetCompartor);
-            
-            // make point type map of points list
-            Map<PointType, List<PointTemplateWrapper>> pointTypeMap = createPointTypeMap(pointList);
-            
-            // add to master device type map
-            pointsMap.put(deviceType, pointTypeMap);
+            PaoTypeMasks paoTypeMasks = new PaoTypeMasks();
+            paoTypeMasks.setPaoType(paoType);
+            paoTypeMasks.setPointTemplateMaskMap(pointTemplateMaskMap);
+            paoTypeMasksList.add(paoTypeMasks);
         }
         
-        return pointsMap;
+        return paoTypeMasksList;
+    }
+    
+    /**
+     * @param maskIfExistOnAllDevices
+     * @param paoTypeToSimpleDeviceMultiMap
+     * @param paoType
+     * @param pointTemplateMaskMap
+     */
+    protected void fillInPointTemplateMask(boolean maskIfExistOnAllDevices,
+                                           HashMultimap<PaoType, SimpleDevice> paoTypeToSimpleDeviceMultiMap,
+                                           PaoType paoType,
+                                           Map<PointTemplate, Boolean> pointTemplateMaskMap) {
+        // loop over each possible point for this device type
+        for (PointTemplate pointTemplate : pointTemplateMaskMap.keySet()) {
+            
+            // check each device of this type and see if it has the point or not
+            boolean allDevicesHavePoint = true;
+            for (SimpleDevice device : paoTypeToSimpleDeviceMultiMap.get(paoType)) {
+                boolean pointExistsForDevice = 
+                    pointService.pointExistsForDevice(device, pointTemplate.getPointIdentifier());
+                if (!pointExistsForDevice) {
+                    allDevicesHavePoint = false;
+                    break;
+                }
+            }
+            
+            if(maskIfExistOnAllDevices){
+                if (allDevicesHavePoint) {
+                    pointTemplateMaskMap.put(pointTemplate, true);
+                }
+            }else {
+                if (!allDevicesHavePoint) {
+                    pointTemplateMaskMap.put(pointTemplate, true);
+                }
+            }
+        }
     }
    
-    public class PointTemplateWrapper {
-    	
-    	private PointTemplate pointTemplate;
-    	private boolean masked;
-    	
-    	public PointTemplateWrapper(PointTemplate pointTemplate, boolean masked) {
-    		this.pointTemplate = pointTemplate;
-    		this.masked = masked;
-    	}
+    public Map<PointTemplate, Boolean> createDefaultPointTemplateMaskMap(Set<PointTemplate> allPointTemplates){
+        Map<PointTemplate, Boolean> results = Maps.newTreeMap(new PointTemplateMaskMapComparator());
+        for (PointTemplate pointTemplate : allPointTemplates) {
+            results.put(pointTemplate, false);
+        }
+        return results;
+    }
+    
+    public class PointTemplateMaskMapComparator implements Comparator<PointTemplate> {
 
-		public PointTemplate getPointTemplate() {
-			return pointTemplate;
-		}
-		public boolean isMasked() {
-			return masked;
-		}
-		public void setMasked(boolean masked) {
-			this.masked = masked;
-		}
-		
-		// this wrapper is just to tack on additional info for the UI, they should compare using the PointTemplate they wrap only
-		@Override
-	    public int hashCode() {
-	        return this.getPointTemplate().hashCode();
-	    }
-		
-		@Override
-	    public boolean equals(Object obj) {
-			return this.getPointTemplate().equals(((PointTemplateWrapper)obj).getPointTemplate());
-	    }
+        @Override
+        public int compare(PointTemplate o1, PointTemplate o2) {
+            // compares types
+            int typeCompare = 
+                Integer.valueOf(o1.getPointType().getPointTypeId()).compareTo(o2.getPointType().getPointTypeId());
+            
+            if(typeCompare != 0) {
+                return typeCompare;
+            }
+            
+            return Integer.valueOf(o1.getPointIdentifier().getOffset()).compareTo(o2.getPointIdentifier().getOffset());
+            
+        }
+        
     }
     
     @Resource(name="transactionPerItemProcessor")

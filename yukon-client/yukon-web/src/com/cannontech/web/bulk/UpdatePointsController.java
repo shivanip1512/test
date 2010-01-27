@@ -19,9 +19,9 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.bulk.model.UpdatePointsFieldType;
 import com.google.common.collect.Lists;
 
@@ -53,25 +53,21 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         mav.addObject("pointFields", pointFields);
         
         // device types set
-        Set<Integer> deviceTypeSet = getDeviceTypesSet(deviceCollection);
+        Set<PaoType> deviceTypeSet = getDeviceTypesSet(deviceCollection);
         
-        // device type names map
-        Map<Integer, String> deviceTypeNamesMap = getDeviceTypeNamesMap(deviceTypeSet);
-        mav.addObject("deviceTypeNamesMap", deviceTypeNamesMap);
-        
-        Map<Integer, PaoType> deviceTypeEnumMap = getDeviceTypeEnumMap(deviceTypeSet);
-        mav.addObject("deviceTypeEnumMap", deviceTypeEnumMap);
-        
-        Map<Integer, DeviceCollection> deviceTypeDeviceCollectionMap = getDeviceTypeDeviceCollectionMap(deviceTypeSet, deviceCollection);
+        Map<PaoType, DeviceCollection> deviceTypeDeviceCollectionMap = getDeviceTypeDeviceCollectionMap(deviceTypeSet, deviceCollection);
         mav.addObject("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
 
         // device type points map
-        Map<Integer, Map<PointType, List<PointTemplateWrapper>>> pointsMap = createExistsPointsMap(deviceTypeSet, maskExistingPoints, false, deviceCollection);
-        mav.addObject("pointsMap", pointsMap);
+        List<PaoTypeMasks> paoTypeMasksList = createExistsPointsMap(deviceTypeSet, maskExistingPoints, false, deviceCollection);
+        mav.addObject("paoTypeMasksList", paoTypeMasksList);
         
         // shared points map
-        Map<PointType, List<PointTemplateWrapper>> sharedPointsTypeMap = createSharedPointsTypeMapWithPointsMap(pointsMap);
-        mav.addObject("sharedPointsTypeMap", sharedPointsTypeMap);
+        Map<PointTemplate, Boolean> sharedPointTemplateMaskMap = createSharedPointsTemplateMapWithPointsMap(paoTypeMasksList);
+
+        PaoTypeMasks sharedPaoTypeMasks = new PaoTypeMasks();
+        sharedPaoTypeMasks.setPointTemplateMaskMap(sharedPointTemplateMaskMap);
+        mav.addObject("sharedPaoTypeMasks", sharedPaoTypeMasks);
         
         return mav;
     }
@@ -105,7 +101,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         UpdatePointsFieldType updateField = UpdatePointsFieldType.valueOf(modifyField);
         String setValue = ServletRequestUtils.getStringParameter(request, "setValue");
         
-        Map<Integer, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
+        Map<PaoType, Set<PointTemplate>> pointTemplatesMap = extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
         
         if(pointTemplatesMap.isEmpty()){
             String noPointsSuppliedMsg = "noPointsSuppliedMsg";
