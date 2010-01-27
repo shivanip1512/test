@@ -13,8 +13,8 @@
     <entry key="yukon.web.modules.dr.optOut.futureOptOuts">Future Opt Outs</entry>
 
     <entry key="yukon.web.modules.dr.optOut.disableOptOutsTitle">Disable Consumer Opt Out Ability for Today</entry>
-    <entry key="yukon.web.modules.dr.optOut.optOutEnabled">Consumer opt outs are currently enabled.</entry>
-    <entry key="yukon.web.modules.dr.optOut.optOutDisabled">Consumer opt outs are currently disabled.</entry>
+    <entry key="yukon.web.modules.dr.optOut.optOutEnabled">Consumer Opt Outs are currently enabled.</entry>
+    <entry key="yukon.web.modules.dr.optOut.optOutDisabled">Consumer Opt Outs are currently disabled.</entry>
     <entry key="yukon.web.modules.dr.optOut.enableOptOuts">Enable Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOut.disableOptOuts">Prohibit Opt Outs</entry>
 
