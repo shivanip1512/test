@@ -292,13 +292,14 @@ porter.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		tbl_port_settings.h tbl_port_timing.h tbl_port_tcpip.h \
 		EncodingFilterFactory.h EncodingFilter.h port_thread_tcp.h \
 		packet_finder.h port_tcp.h tcp_connection_manager.h \
-		port_shr.h port_shr_ip.h msg_trace.h rte_macro.h \
-		tbl_rtmacro.h eventlog.h configparms.h trx_711.h trx_info.h \
-		dllyukon.h pilserver.h server_b.h con_mgr.h dev_ccu721.h \
-		dev_remote.h tbl_dialup.h tbl_direct.h tbl_dv_address.h \
-		dev_ccu721_queue_interface.h device_queue_interface.h \
-		prot_klondike.h prot_wrap.h prot_idlc.h rte_ccu.h rte_xcu.h \
-		tbl_rtcarrier.h tbl_rtrepeater.h
+		tcp_connection.h port_shr.h port_shr_ip.h msg_trace.h \
+		rte_macro.h tbl_rtmacro.h eventlog.h configparms.h trx_711.h \
+		trx_info.h dllyukon.h pilserver.h server_b.h con_mgr.h \
+		dev_ccu721.h dev_remote.h tbl_dialup.h tbl_direct.h \
+		tbl_dv_address.h dev_ccu721_queue_interface.h \
+		device_queue_interface.h prot_klondike.h prot_wrap.h \
+		prot_idlc.h rte_ccu.h rte_xcu.h tbl_rtcarrier.h \
+		tbl_rtrepeater.h
 portersu.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h color.h connection.h exchange.h dllbase.h \
 		dsm2.h mutex.h guard.h numstr.h clrdump.h cticonnect.h \
@@ -672,9 +673,9 @@ port_thread_tcp.obj:	yukon.h precompiled.h ctidbgmem.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h \
 		msg_dbchg.h packet_finder.h port_tcp.h port_serial.h \
 		tbl_port_settings.h tbl_port_timing.h \
-		tcp_connection_manager.h tbl_paoproperty.h c_port_interface.h \
-		elogger.h portglob.h tcpsup.h porter.h dsm2err.h \
-		devicetypes.h statistics.h portfield.h prot_gpuff.h \
+		tcp_connection_manager.h tcp_connection.h tbl_paoproperty.h \
+		c_port_interface.h elogger.h portglob.h tcpsup.h porter.h \
+		dsm2err.h devicetypes.h statistics.h portfield.h prot_gpuff.h \
 		prot_dnp.h dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h \
 		dnp_object_binaryoutput.h mgr_port.h slctprt.h
@@ -754,12 +755,17 @@ systemmsgthread.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h \
 		readers_writer_lock.h mgr_port.h port_base.h tbl_port_base.h \
 		xfer.h tbl_port_statistics.h slctprt.h portdecl.h dsm2err.h \
 		porter.h devicetypes.h
+tcp_connection.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		rwutil.h ctitime.h dlldefs.h boost_time.h boostutil.h \
+		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		sorted_vector.h configkey.h configval.h logger.h thread.h \
+		mutex.h guard.h clrdump.h CtiPCPtrQueue.h tcp_connection.h
 tcp_connection_manager.obj:	yukon.h precompiled.h ctidbgmem.h \
-		tcp_connection_manager.h packet_finder.h dlldefs.h ctitime.h \
-		cparms.h rwutil.h boost_time.h boostutil.h utility.h queues.h \
-		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
-		configkey.h configval.h logger.h thread.h mutex.h guard.h \
-		clrdump.h CtiPCPtrQueue.h
+		tcp_connection_manager.h tcp_connection.h ctitime.h dlldefs.h \
+		packet_finder.h cparms.h rwutil.h boost_time.h boostutil.h \
+		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		sorted_vector.h configkey.h configval.h logger.h thread.h \
+		mutex.h guard.h clrdump.h CtiPCPtrQueue.h
 test_lantronixencryption.obj:	yukon.h precompiled.h ctidbgmem.h \
 		encryption_lantronix.h EncodingFilter.h numstr.h dlldefs.h
 traceset.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h

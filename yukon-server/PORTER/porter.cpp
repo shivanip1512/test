@@ -1404,6 +1404,14 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
         CtiPortManager::coll_type::writer_lock_guard_t guard(PortManager.getLock());
         PortManager.RefreshList();
+
+        if( pChg )
+        {
+            if( CtiPortSPtr port = PortManager.PortGetEqual(pChg->getId()) )
+            {
+                port->verifyPortIsRunnable();
+            }
+        }
     }
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )

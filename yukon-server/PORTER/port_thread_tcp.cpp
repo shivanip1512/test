@@ -1,7 +1,5 @@
 #include "yukon.h"
 
-#include <winsock2.h>
-
 #include "port_thread_tcp.h"
 
 #include "tbl_paoproperty.h"
@@ -85,7 +83,7 @@ bool TcpPortHandler::manageConnections( void )
 
     TcpConnectionManager::id_set connected, failed;
 
-    _connectionManager.checkPendingConnections(connected, failed);
+    _connectionManager.updateConnections(connected, failed);
 
     for each( const long device_id in connected )
     {
@@ -112,14 +110,19 @@ void TcpPortHandler::updateDeviceCommStatus(const long device_id, int status)
 }
 
 
-void TcpPortHandler::loadDeviceProperties(const set<long> &device_ids)
+void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> &devices)
 {
-    loadDeviceTcpProperties(device_ids);
+    set<long> device_ids;
 
-    for each( long device_id in device_ids )
+    for each( const CtiDeviceSingle *dev in devices )
     {
-        _connectionManager.connect(device_id, getDeviceIp(device_id), getDevicePort(device_id));
+        if( dev && !dev->isInhibited() )
+        {
+            device_ids.insert(dev->getID());
+        }
     }
+
+    loadDeviceTcpProperties(device_ids);
 }
 
 
@@ -155,17 +158,50 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
 
     if(rdr.status().errorCode() == RWDBStatus::ok)
     {
+        map<long, unsigned short> tmp_ports;
+        map<long, unsigned long>  tmp_ip_addresses;
+
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
             Database::Tables::PaoPropertyTable paoProperty(rdr);
 
             if( paoProperty.getPropertyName() == "TcpPort" )
             {
-                _ports[paoProperty.getPaoId()] = atoi(paoProperty.getPropertyValue().c_str());
+                tmp_ports[paoProperty.getPaoId()] = atoi(paoProperty.getPropertyValue().c_str());
             }
             else if( paoProperty.getPropertyName() == "TcpIpAddress" )
             {
-                _ip_addresses[paoProperty.getPaoId()] = resolveIp(paoProperty.getPropertyValue());
+                tmp_ip_addresses[paoProperty.getPaoId()] = resolveIp(paoProperty.getPropertyValue());
+            }
+        }
+
+        map<long, unsigned short>::iterator port_itr = tmp_ports.begin();
+        map<long, unsigned long >::iterator ip_itr   = tmp_ip_addresses.begin();
+
+        while( port_itr != tmp_ports.end() &&
+               ip_itr   != tmp_ip_addresses.end() )
+        {
+            if( port_itr->first == ip_itr->first )
+            {
+                _connectionManager.connect(port_itr->first, Connections::SocketAddress(ip_itr->second, port_itr->second));
+                ++port_itr;
+                ++ip_itr;
+            }
+            else if( port_itr->first < ip_itr->first )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - orphan port record (" << port_itr->first << "," << port_itr->second << ") found **** " << __FUNCTION__ << " "<< __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                ++port_itr;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - orphan IP record (" << port_itr->first << "," << port_itr->second << ") found **** " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                ++ip_itr;
             }
         }
     }
@@ -206,38 +242,33 @@ u_long TcpPortHandler::resolveIp(const string &ip)
 
 void TcpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 {
-    set<long> paoids;
+    vector<const CtiDeviceSingle *> devices;
 
-    paoids.insert(device.getID());
+    devices.push_back(&device);
 
-    loadDeviceProperties(paoids);
+    loadDeviceProperties(devices);
 }
 
 void TcpPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
 {
     const long device_id = device.getID();
 
-    _ip_addresses.erase(device_id);
-    _ports.erase(device_id);
-
     _connectionManager.disconnect(device_id);
 }
 
 void TcpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 {
-    const long device_id = device.getID();
-
     //  This is a little wrong - if the properties are removed, this won't detect it
-    //    We don't really handle nonexistent IPs or ports anyway - we should do that, too
-    addDeviceProperties(device);
+    //
+    //  We don't really handle nonexistent IPs or ports anyway - we should do that, too
 
     if( device.isInhibited() )
     {
-        _connectionManager.disconnect(device_id);
+        deleteDeviceProperties(device);
     }
     else
     {
-        _connectionManager.connect(device_id, getDeviceIp(device_id), getDevicePort(device_id));
+        addDeviceProperties(device);
     }
 }
 
@@ -255,13 +286,6 @@ void TcpPortHandler::updatePortProperties( void )
 }
 
 
-void TcpPortHandler::teardownPort( void )
-{
-    //  close all open sockets
-    _connectionManager.disconnectAll();
-}
-
-
 void TcpPortHandler::sendOutbound( device_record &dr )
 {
     //  if we don't have a device or anything to send, there's nothing to do here
@@ -270,51 +294,46 @@ void TcpPortHandler::sendOutbound( device_record &dr )
         return;
     }
 
-    if( !_connectionManager.isConnected(dr.id) )
-    {
-        dr.work.status = ErrorDeviceNotConnected;
+    TcpConnectionManager::bytes buf(dr.work.xfer.getOutBuffer(),
+                                    dr.work.xfer.getOutBuffer() + dr.work.xfer.getOutCount());
 
-        return;
-    }
+    Connections::SocketAddress sa = getDeviceAddress(dr.id);
 
     if( gConfigParms.getValueAsULong("PORTER_TCP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::TcpPortHandler::sendOutbound() - sending packet to "
-                          << ip_to_string(getDeviceIp(dr.id)) << ":" << getDevicePort(dr.id) << " "
+                          << ip_to_string(sa.ip) << ":" << sa.port << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-        for( int xx = 0; xx < dr.work.xfer.getOutCount(); xx++ )
-        {
-            dout << " " << CtiNumStr(dr.work.xfer.getOutBuffer()[xx]).hex().zpad(2).toString();
-        }
+        dout << hex;
 
-        dout << endl;
+        copy(buf.begin(), buf.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
+
+        dout << dec << endl;
     }
 
-    TcpConnectionManager::bytes buf;
-
-    buf.reserve(dr.work.xfer.getOutCount());
-
-    copy(dr.work.xfer.getOutBuffer(),
-         dr.work.xfer.getOutBuffer() + dr.work.xfer.getOutCount(),
-         back_inserter(buf));
-
-    int bytes_sent = _connectionManager.send(dr.id, buf);
-
-    if( bytes_sent == SOCKET_ERROR )
+    try
     {
-        updateDeviceCommStatus(dr.id, TCPWRITEERROR);
+        int bytes_sent = _connectionManager.send(dr.id, buf);
 
-        traceOutbound(dr, TCPWRITEERROR);
-    }
-    else
-    {
         dr.work.xfer.setOutCount(bytes_sent);
 
         traceOutbound(dr, 0);
 
         dr.work.last_outbound = CtiTime::now();
+    }
+    catch( TcpConnectionManager::not_connected &ex )
+    {
+        dr.work.status = ErrorDeviceNotConnected;
+    }
+    catch( TcpConnectionManager::write_error &ex )
+    {
+        dr.work.status = TCPWRITEERROR;
+
+        updateDeviceCommStatus(dr.id, TCPWRITEERROR);
+
+        traceOutbound(dr, TCPWRITEERROR);
     }
 }
 
@@ -388,8 +407,10 @@ UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Pr
 
     p->protocol = packet::ProtocolTypeInvalid;  // should be set by whoever calls findPacket()
 
-    p->ip   = getDeviceIp  (device_id);
-    p->port = getDevicePort(device_id);
+    Connections::SocketAddress sa = getDeviceAddress(device_id);
+
+    p->ip   = sa.ip;
+    p->port = sa.port;
 
     p->data = new unsigned char[pf.size()];
     p->len  = pf.size();
@@ -402,28 +423,27 @@ UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Pr
 }
 
 
-template<class Map>
-typename Map::value_type::second_type find_or_return_numeric_limits_max(const Map &m, const typename Map::key_type &k)
+Connections::SocketAddress TcpPortHandler::getDeviceAddress( const long device_id ) const
 {
-    typename Map::const_iterator itr = m.find(k);
-
-    if( itr != m.end() )
+    try
     {
-        return itr->second;
+        return _connectionManager.getAddress(device_id);
     }
-
-    return numeric_limits<typename Map::value_type::second_type>::max();
+    catch( TcpConnectionManager::no_record &ex )
+    {
+        return Connections::SocketAddress(numeric_limits<u_long>::max(),
+                                          numeric_limits<u_short>::max());
+    }
 }
-
 
 u_long TcpPortHandler::getDeviceIp( const long device_id ) const
 {
-    return find_or_return_numeric_limits_max(_ip_addresses, device_id);
+    return getDeviceAddress(device_id).ip;
 }
 
 u_short TcpPortHandler::getDevicePort( const long device_id ) const
 {
-    return find_or_return_numeric_limits_max(_ports, device_id);
+    return getDeviceAddress(device_id).port;
 }
 
 

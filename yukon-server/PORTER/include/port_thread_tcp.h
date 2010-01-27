@@ -1,10 +1,7 @@
 #pragma once
-#include "yukon.h"
-
-#include <map>
-#include <queue>
 
 #include "unsolicited_handler.h"
+
 #include "packet_finder.h"
 
 #include "port_tcp.h"
@@ -22,17 +19,13 @@ private:
 
     Ports::TcpPortSPtr _tcp_port;
 
-    typedef std::map<long, u_long>  ip_map;
-    typedef std::map<long, u_short> port_map;
-
-    ip_map     _ip_addresses;
-    port_map   _ports;
-
     TcpConnectionManager _connectionManager;
 
     void loadDeviceTcpProperties(const std::set<long> &device_ids);
 
     static u_long resolveIp(const string &ip);
+
+    Connections::SocketAddress getDeviceAddress( const long device_id ) const;
 
     void updateDeviceCommStatus(const long device_id, int status);
 
@@ -46,9 +39,8 @@ protected:
     virtual bool manageConnections( void );
     virtual void sendOutbound( device_record &dr );
     virtual bool collectInbounds( void );
-    virtual void teardownPort( void );
 
-    virtual void loadDeviceProperties(const std::set<long> &device_ids);
+    virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
 
     virtual void addDeviceProperties   (const CtiDeviceSingle &device);
     virtual void updateDeviceProperties(const CtiDeviceSingle &device);

@@ -152,9 +152,8 @@ protected:
     virtual bool manageConnections( void ) = 0;
     virtual void sendOutbound( device_record &dr ) = 0;
     virtual bool collectInbounds( void ) = 0;
-    virtual void teardownPort( void ) = 0;
 
-    virtual void loadDeviceProperties( const std::set<long> &device_ids ) = 0;
+    virtual void loadDeviceProperties( const std::vector<const CtiDeviceSingle *> &devices ) = 0;
 
     virtual void addDeviceProperties   (const CtiDeviceSingle &device) = 0;
     virtual void updateDeviceProperties(const CtiDeviceSingle &device) = 0;

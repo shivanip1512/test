@@ -26,6 +26,7 @@ private:
     EncodingFilterFactory::EncodingFilterSPtr _encodingFilter;
 
     SOCKET _udp_socket;
+    unsigned short _connected_port;
 
     typedef std::pair<unsigned short, unsigned short> dnp_address_pair;
     typedef std::pair<unsigned short, unsigned long>  gpuff_type_serial_pair;
@@ -46,6 +47,9 @@ private:
     port_map _ports;
 
     bool bindSocket( void );
+    bool tryBindSocket( void );
+
+    void teardownSocket( void );
 
     packet *recvPacket( unsigned char * const recv_buf, unsigned max_len );
 
@@ -76,9 +80,8 @@ protected:
     virtual bool manageConnections( void );
     virtual void sendOutbound( device_record &dr );
     virtual bool collectInbounds( void );
-    virtual void teardownPort( void );
 
-    virtual void loadDeviceProperties(const std::set<long> &device_ids);
+    virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
 
     virtual void addDeviceProperties   (const CtiDeviceSingle &device);
     virtual void updateDeviceProperties(const CtiDeviceSingle &device);
@@ -96,7 +99,7 @@ protected:
 public:
 
     UdpPortHandler( Ports::UdpPortSPtr &port, CtiDeviceManager &deviceManager );
-    virtual ~UdpPortHandler() {};
+    virtual ~UdpPortHandler();
 };
 
 }

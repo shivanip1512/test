@@ -54,6 +54,7 @@
 #include <sstream>
 #include <strstream>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 
@@ -95,6 +96,7 @@ public:
 
     std::ostream& operator<<(std::ios_base& (*pf)(std::ios_base&));
     std::ostream& operator<<(std::ostream& (*pf)(std::ostream&));
+    std::ostream& operator<<(std::_Smanip<std::ios_base::fmtflags> &s);
     std::ostream& operator<<(const char *s);
     std::ostream& operator<<(char c);
     std::ostream& operator<<(bool n);

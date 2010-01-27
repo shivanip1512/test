@@ -1,13 +1,11 @@
 #pragma once
 
-#include <set>
-#include <vector>
-
-#include <winsock.h>
-
+#include "tcp_connection.h"
 #include "packet_finder.h"
 
-#include "ctitime.h"
+#include "boost/ptr_container/ptr_map.hpp"
+
+#include <set>
 
 namespace Cti    {
 namespace Porter {
@@ -17,89 +15,75 @@ class TcpConnectionManager
 public:
 
     typedef std::set<long> id_set;
-    typedef std::vector<char> bytes;
+    typedef Connections::SocketStream::bytes bytes;
+
+    struct not_connected : std::runtime_error
+    {
+        not_connected() : std::runtime_error("") {}
+    };
+
+    struct no_record : std::runtime_error
+    {
+        no_record() : std::runtime_error("") {}
+    };
+
+    typedef Connections::EstablishedTcpConnection::write_error write_error;
 
 private:
 
-    struct connection
-    {
-        connection(unsigned long ip_, unsigned short port_) :
-            ip(ip_),
-            port(port_),
-            sock(INVALID_SOCKET)
-        { }
+    typedef Connections::SocketStream             socket_stream;
+    typedef Connections::SocketAddress            address;
 
-        unsigned long  ip;
-        unsigned short port;
+    typedef Connections::InactiveSocketStream     inactive_stream;
+    typedef Connections::PendingTcpConnection     pending_connection;
+    typedef Connections::EstablishedTcpConnection established_connection;
 
-        SOCKET sock;
+    typedef Connections::SocketStream::bytes      bytes;
 
-        bytes stream;
-    };
+    typedef boost::ptr_map<const long, inactive_stream>    inactive_map;
+    typedef boost::ptr_map<const long, pending_connection>     pending_map;
+    typedef boost::ptr_map<const long, established_connection> established_map;
 
-    struct pending : connection
-    {
-        pending(unsigned long ip_, unsigned short port_) :
-            connection(ip_, port_)
-        { }
-
-        CtiTime timeout;
-    };
-
-    typedef std::map<long, pending>    pending_map;
-    typedef std::map<long, connection> connection_map;
-
-    pending_map    _pending;
-    connection_map _established;
-    connection_map _stashed;
-
-    typedef connection_map::iterator       connection_itr;
-    typedef connection_map::const_iterator connection_const_itr;
-    typedef pending_map::iterator          pending_itr;
-    typedef pending_map::const_iterator    pending_const_itr;
+    inactive_map    _inactive;
+    pending_map     _pending;
+    established_map _established;
 
     bool _disabled;
 
-    bool connect(pending &p);
+    const address *findAddress(const long id) const;
+    bytes *findStream(const long id);
 
-    void createConnection(const long id, const unsigned long ip, const short port);
+    void tryConnectInactive();
 
-    connection *findExistingConnection(const long id);
+    void checkPendingConnectionBlock(std::vector<pending_map::iterator> &pending_block, id_set &connected, id_set &errors);
 
-    void checkPendingConnectionBlock(fd_set &writeable_sockets, std::vector<pending_itr> &pending_block, id_set &connected, id_set &errors);
-
-    void disconnectEstablished(connection &c);
-    void disconnectPending    (pending    &p);
-
-    void setConnectionOptions(const pending &p);
-
-    static void reportSocketError(const std::string winsock_function_name, const char *method_name, const char *file, const int line);
-
-    bool readInput(connection &c);
+    void readCandidateSockets(id_set &ready, id_set &errors, std::vector<established_map::iterator> &candidate_sockets);
 
 public:
 
     TcpConnectionManager() :
         _disabled(false)
-    {
-    }
+    { }
 
-    void connect   (const long id, const unsigned long ip, const unsigned short port);
+    void connect   (const long id, const Connections::SocketAddress address);
     void disconnect(const long id);
-    void disconnectAll( void );
 
     bool isConnected(const long id) const;
 
-    void checkPendingConnections( id_set &connected, id_set &errors);
+    //  throws: no_record
+    Connections::SocketAddress getAddress(const long id) const;
 
+    void updateConnections(id_set &connected, id_set &errors);
+
+    //  throws: not_connected, write_error
     int  send(const long id, const bytes &data);
 
     bool recv(id_set &ready, id_set &errors);
 
     bool searchStream(const long id, Protocols::PacketFinder &pf);
 
-    bool enable (void);
-    bool disable(void);
+    void enable (void);
+    void disable(void);
 };
 
 }

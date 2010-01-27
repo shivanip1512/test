@@ -386,8 +386,9 @@ void CtiLogger::initStream()
     }
 }
 
-ostream& CtiLogger::operator<<(ostream& (*pf)(ostream&))  {  initStream();  *_current_stream << pf;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(ios_base& (*pf)(ios_base&)){  initStream();  *_current_stream << pf;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(ostream& (*pf)(ostream&))       {  initStream();  *_current_stream << pf;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(ios_base& (*pf)(ios_base&))     {  initStream();  *_current_stream << pf;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(_Smanip<ios_base::fmtflags> &s) {  initStream();  *_current_stream << s;   return *_current_stream;  }
 
 ostream& CtiLogger::operator<<(const char *s)   {  initStream();  *_current_stream << s;  return *_current_stream;  }
 ostream& CtiLogger::operator<<(char c)          {  initStream();  *_current_stream << c;  return *_current_stream;  }

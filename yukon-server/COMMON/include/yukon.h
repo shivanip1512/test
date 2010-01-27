@@ -21,8 +21,6 @@
 
 #include <rw\thr\mutex.h>
 
-#include <iterator> // allows one to use _outit
-
 // YUKONEOT is needed to make ALL timezones operate correctly wrt the "end-of-time"
 //Changed YUKONEOT to LONG_MAX from ULONG to account for CtiTime not being unsigned   -TS
 #define YUKONEOT (LONG_MAX - 86400 * 2)

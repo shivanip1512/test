@@ -61,12 +61,19 @@ VOID PortUdpThread(void *pid)
     }
 }
 
-UdpPortHandler::UdpPortHandler( Ports::UdpPortSPtr &port, CtiDeviceManager &deviceManager ) :
-    UnsolicitedHandler(boost::static_pointer_cast<CtiPort>(port), deviceManager),
-    _udp_port(port)
+UdpPortHandler::UdpPortHandler( Ports::UdpPortSPtr &udp_port, CtiDeviceManager &deviceManager ) :
+    UnsolicitedHandler(boost::static_pointer_cast<CtiPort>(udp_port), deviceManager),
+    _udp_port(udp_port),
+    _udp_socket(INVALID_SOCKET),
+    _connected_port(0)
 {
-    _encodingFilter = EncodingFilterFactory::getEncodingFilter(port);
-    _udp_socket = INVALID_SOCKET;
+    _encodingFilter = EncodingFilterFactory::getEncodingFilter(udp_port);
+}
+
+
+UdpPortHandler::~UdpPortHandler()
+{
+    teardownSocket();
 }
 
 
@@ -82,7 +89,13 @@ bool UdpPortHandler::setupPort()
         return false;
     }
 
-    while( !bindSocket() )
+    return bindSocket();
+}
+
+
+bool UdpPortHandler::bindSocket()
+{
+    while( !tryBindSocket() )
     {
         Sleep(10000);
 
@@ -104,15 +117,13 @@ bool UdpPortHandler::manageConnections( void )
 }
 
 
-void UdpPortHandler::loadDeviceProperties(const set<long> &device_ids)
+void UdpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> &devices)
 {
-    for each( const long device_id in device_ids )
+    for each( const CtiDeviceSingle *dev in devices )
     {
-        device_record *dr = getDeviceRecordById(device_id);
-
-        if( dr && dr->device )
+        if( dev )
         {
-            addDeviceProperties(*dr->device);
+            addDeviceProperties(*dev);
         }
     }
 }
@@ -225,17 +236,38 @@ UdpPortHandler::gpuff_type_serial_pair UdpPortHandler::makeGpuffTypeSerialPair(c
 
 void UdpPortHandler::updatePortProperties( void )
 {
-    //  if port changed, close and reopen socket on the new port
+    if( _udp_port->isInhibited() )
+    {
+        teardownSocket();
+    }
+    else
+    {
+        //  if port changed, close and reopen socket on the new port
+        if( _udp_port->getIPPort() != _connected_port )
+        {
+            teardownSocket();
+        }
+
+        if( _udp_socket == INVALID_SOCKET )
+        {
+            bindSocket();
+        }
+    }
 }
 
 
-void UdpPortHandler::teardownPort()
+void UdpPortHandler::teardownSocket()
 {
-    closesocket(_udp_socket);
+    if( _udp_socket != INVALID_SOCKET )
+    {
+        closesocket(_udp_socket);
+
+        _udp_socket = INVALID_SOCKET;
+    }
 }
 
 
-bool UdpPortHandler::bindSocket( void )
+bool UdpPortHandler::tryBindSocket( void )
 {
     sockaddr_in local;
 
@@ -263,12 +295,16 @@ bool UdpPortHandler::bindSocket( void )
             dout << CtiTime() << " Cti::Porter::UDP::UdpPortHandler::bindSocket() - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
+        teardownSocket();
+
         return false;
     }
 
     unsigned long on = 1;
 
     ioctlsocket(_udp_socket, FIONBIO, &on);
+
+    _connected_port = _udp_port->getIPPort();
 
     return true;
 }
@@ -419,6 +455,11 @@ bool UdpPortHandler::collectInbounds( void )
 
 UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_buf, unsigned max_len)
 {
+    if( _udp_socket == INVALID_SOCKET )
+    {
+        return 0;
+    }
+
     sockaddr_in from;
 
     int fromlen = sizeof(from);
@@ -562,11 +603,19 @@ void UdpPortHandler::handleDnpPacket(packet *&p)
     //  do we have a device yet?
     if( dr && dr->device )
     {
-        updateDeviceIpAndPort(*dr, *p);
+        if( dr->device->isInhibited() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::handleDnpPacket - device \"" << dr->device->getName() << "\" is inhibited, discarding packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        else
+        {
+            updateDeviceIpAndPort(*dr, *p);
 
-        addInboundWork(dr, p);
+            addInboundWork(dr, p);
 
-        p = 0;
+            p = 0;
+        }
     }
     else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
@@ -605,13 +654,21 @@ void UdpPortHandler::handleGpuffPacket(packet *&p)
     {
         if( dr && dr->device )
         {
-            updateDeviceIpAndPort(*dr, *p);
+            if( dr->device->isInhibited() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Cti::Porter::UdpPortHandler::handleDnpPacket - device \"" << dr->device->getName() << "\" is inhibited, discarding packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            else
+            {
+                updateDeviceIpAndPort(*dr, *p);
 
-            addInboundWork(dr, p);
+                addInboundWork(dr, p);
 
-            traceInbound(p->ip, p->port, 0, p->data, p->len);
+                traceInbound(p->ip, p->port, 0, p->data, p->len);
 
-            p = 0;
+                p = 0;
+            }
         }
         else
         {
@@ -672,8 +729,7 @@ UdpPortHandler::device_record *UdpPortHandler::getDeviceRecordByGpuffDeviceTypeS
 
 bool UdpPortHandler::isDeviceDisconnected( const long device_id ) const
 {
-    //  connectionless, so it's never connected or disconnected
-    return false;
+    return _udp_socket == INVALID_SOCKET;
 }
 
 

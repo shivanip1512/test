@@ -40,6 +40,8 @@ UnsolicitedHandler::~UnsolicitedHandler()
 {
     //  delete the device records
     delete_assoc_container(_device_records);
+
+    haltLog();
 }
 
 
@@ -124,40 +126,33 @@ void UnsolicitedHandler::run( void )
                 Sleep(500);
             }
         }
-
-        teardownPort();
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " " << describePort() << " shutdown." << endl;
     }
-
-    haltLog();
 }
 
 
 void UnsolicitedHandler::initializeDeviceRecords( void )
 {
     vector<CtiDeviceManager::ptr_type> port_devices;
-    set<long> device_ids;
+    vector<const CtiDeviceSingle *> devices;
 
     _deviceManager.getDevicesByPortID(_port->getPortID(), port_devices);
 
     for each(CtiDeviceManager::ptr_type device in port_devices)
     {
-        if( device )
+        if( device && device->isSingle() )
         {
-            const device_record *dr = insertDeviceRecord(device);
+            insertDeviceRecord(device);
 
-            if( dr )
-            {
-                device_ids.insert(dr->id);
-            }
+            devices.push_back(static_cast<CtiDeviceSingle *>(device.get()));
         }
     }
 
-    loadDeviceProperties(device_ids);
+    loadDeviceProperties(devices);
 }
 
 
