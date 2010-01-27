@@ -72,4 +72,14 @@ public interface EnrollmentDao {
 	 * @return
 	 */
 	public Map<Integer, Integer> getActiveEnrollmentExcludeOptOutCount(Date startDate, Date stopDate);
+	
+	/**
+	 * Method to get the start date of a current enrollment.
+	 * 
+	 * @param inventoryId
+	 * @param loadGroupId
+	 * @return
+	 */
+	public Date getEnrollmentStartDate(int inventoryId, int loadGroupId);
+    
 }

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -215,7 +216,27 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		return programIdCountMap;
 	}
     
-    private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {
+	public Date getEnrollmentStartDate(int inventoryId, int lmGroupId) {
+	    
+	    Date now = new Date();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT LMHCG.GroupEnrollStart ");
+        sql.append("FROM LMHardwareControlGroup LMHCG");
+        sql.append("WHERE LMHCG.InventoryId = ?");
+        sql.append("AND LMHCG.LmGroupId = ?");
+        sql.append("AND LMHCG.GroupEnrollStart <= ?");
+        sql.append("AND LMHCG.GroupEnrollStop IS NULL");
+
+        Date startDate = yukonJdbcTemplate.queryForObject(sql.toString(), 
+                                                          new DateRowMapper(), 
+                                                          inventoryId,
+                                                          lmGroupId,
+                                                          now);
+        return startDate;
+    }
+
+	private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {
         final ParameterizedRowMapper<ProgramEnrollment> oldConfigInfoRowMapper = new ParameterizedRowMapper<ProgramEnrollment>() {
             public ProgramEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
                 ProgramEnrollment programEnrollment = new ProgramEnrollment();
