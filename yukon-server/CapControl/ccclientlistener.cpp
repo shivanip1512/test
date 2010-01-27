@@ -118,6 +118,7 @@ void CtiCCClientListener::stop()
         _doquit = TRUE;
         if (_socketListener != NULL)
         {
+            //This delete must happen to interupt the thread.
             delete _socketListener;
             _socketListener = NULL;
 
@@ -224,6 +225,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::_listen()
 {
+    //This must remain a member variable so it can be deleted to trigger an interupt.
     _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
 
     do
