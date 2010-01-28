@@ -14,7 +14,8 @@ public enum TimeOfWeek {
     WEDNESDAY("wed", YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY),
     THURSDAY("thu", YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY),
     FRIDAY("fri", YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY),
-    SATURDAY("sat", YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY);
+    SATURDAY("sat", YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY),
+    EVERYDAY("everyday", -1); //for display only purposes
     
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.dr.consumer.xml

@@ -167,8 +167,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	
     	MessageSource messageSource = messageSourceResolver.getMessageSource(yukonUserContext);
     	TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
+    	TimeOfWeek displayTimeOfWeek = scheduleTimeOfWeek;
+    	if (ThermostatScheduleMode.valueOf(scheduleMode) == ThermostatScheduleMode.ALL) {
+    	    displayTimeOfWeek = TimeOfWeek.EVERYDAY;
+    	}
     	YukonMessageSourceResolvable timeOfWeekString = 
-    		new YukonMessageSourceResolvable(scheduleTimeOfWeek.getDisplayKey());
+    		new YukonMessageSourceResolvable(displayTimeOfWeek.getDisplayKey());
     	
     	List<Object> argumentList = new ArrayList<Object>();
     	argumentList.add(timeOfWeekString);
