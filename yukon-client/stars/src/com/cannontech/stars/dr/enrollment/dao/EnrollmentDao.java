@@ -80,6 +80,6 @@ public interface EnrollmentDao {
 	 * @param loadGroupId
 	 * @return
 	 */
-	public Date getEnrollmentStartDate(int inventoryId, int loadGroupId);
+	public Date getCurrentEnrollmentStartDate(int inventoryId, int loadGroupId);
     
 }

@@ -216,7 +216,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		return programIdCountMap;
 	}
     
-	public Date getEnrollmentStartDate(int inventoryId, int lmGroupId) {
+	public Date getCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
 	    
 	    Date now = new Date();
         

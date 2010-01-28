@@ -33,7 +33,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     private InventoryBaseDao inventoryBaseDao;
     private EnrollmentDao enrollmentDao;
 
-    protected class Holder {
+    protected static class Holder {
         int groupId;
         int inventoryId;
     }
@@ -100,21 +100,10 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                                                                                              yukonUserContext.getTimeZone(),
                                                                                              yukonUserContext.getYukonUser());
         
-        removeInvalidControlHistory(controlHistory, holder);
+        removeInvalidEnrollmentControlHistory(controlHistory, holder);
         
         List<ControlHistoryEvent> eventList = toEventList(controlHistory);
         return eventList;
-    }
-
-    /**
-     * This method removes any invalid control history that was returned.
-     * 
-     * @param controlHistory
-     * @param holder
-     */
-    private void removeInvalidControlHistory(StarsLMControlHistory controlHistory,
-                                             Holder holder) {
-        removeInvalidEnrollmentControlHistory(controlHistory, holder);
     }
 
     /**
@@ -125,7 +114,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
      */
     private void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
                                                        Holder holder) {
-        Date enrollmentStartDate = enrollmentDao.getEnrollmentStartDate(holder.inventoryId, holder.groupId);
+        Date enrollmentStartDate = enrollmentDao.getCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
 
         List<Integer> removeControlHistoryList = Lists.newArrayList();
         for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
