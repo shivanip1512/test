@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -37,6 +40,7 @@ public abstract class AbstractConsumerController {
     protected ControlHistoryDao controlHistoryDao;
     protected AccountCheckerService accountCheckerService;
     protected OptOutEventDao optOutEventDao;
+    protected RolePropertyDao rolePropertyDao;
     
     @ModelAttribute("customerAccount")
     public CustomerAccount getCustomerAccount(HttpServletRequest request) {
@@ -44,8 +48,17 @@ public abstract class AbstractConsumerController {
         LiteYukonUser user = yukonUserContext.getYukonUser();
         
         List<CustomerAccount> accountList = customerAccountDao.getByUser(user);
-        CustomerAccount account = accountList.get(0);
-        return account;
+        
+        if (accountList.size() == 0 &&
+            rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
+            accountList = customerAccountDao.getAccountByAdditionalContactUser(user);
+        }
+        
+        if(accountList.size() > 0){
+            return accountList.get(0);
+        }
+        
+        throw new NotAuthorizedException("The supplied user is not appart of a valid account");
     }
     
     @Autowired
@@ -112,4 +125,8 @@ public abstract class AbstractConsumerController {
 		this.optOutEventDao = optOutEventDao;
 	}
     
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
 }

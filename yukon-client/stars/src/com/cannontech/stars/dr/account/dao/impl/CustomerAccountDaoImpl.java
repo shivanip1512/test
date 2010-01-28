@@ -272,6 +272,27 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     	return totalNumberOfAccounts;
     }
 
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<CustomerAccount> getAccountByAdditionalContactUser(LiteYukonUser user) {
+        Validate.notNull(user, "user parameter cannot be null.");
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("SELECT AccountId, AccountSiteId, AccountNumber, CA.CustomerId,");
+        sb.append("       BillingAddressId, AccountNotes ");
+        sb.append("FROM CustomerAccount CA, Contact Cont, "); 
+        sb.append("     YukonUser YU, CustomerAdditionalContact CAC ");
+        sb.append("WHERE CA.CustomerId = CAC.CustomerId ");
+        sb.append("AND CAC.ContactId = Cont.ContactId ");
+        sb.append("AND YU.UserId = Cont.LoginId ");
+        sb.append("AND YU.UserId = ? ");
+        sb.append("ORDER BY CA.AccountId");
+
+        String sql = sb.toString();
+        List<CustomerAccount> list = simpleJdbcTemplate.query(sql, rowMapper, user.getUserID());
+        return list;
+    }
+    
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
