@@ -496,6 +496,9 @@ public:
 
     //Setter for unit tests.
     void setAttributeService(AttributeService attributeService);
+
+    void executeAllStrategies() const;
+
 private:
 
     /* Relating to Max Kvar Cparm */

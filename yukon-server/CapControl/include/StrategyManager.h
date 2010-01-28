@@ -24,6 +24,8 @@ public:
 
     const long getDefaultId() const;
 
+    void executeAll() const;
+
 private:
 
     static const long   _defaultID;

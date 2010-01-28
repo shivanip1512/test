@@ -12055,6 +12055,13 @@ bool CtiCCSubstationBusStore::isAnyBankOpen(int paoId, CapControlType type)
     return false;
 }
 
+
+void CtiCCSubstationBusStore::executeAllStrategies() const
+{
+    _strategyManager.executeAll();
+}
+
+
 /* Private Static members */
 const string CtiCCSubstationBusStore::m3iAMFMInterfaceString = "M3I";
 

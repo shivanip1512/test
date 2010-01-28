@@ -63,3 +63,12 @@ const long StrategyManager::getDefaultId() const
     return _defaultID;
 }
 
+
+void StrategyManager::executeAll() const
+{
+    for ( StrategyMap::const_iterator b = _strategies.begin(), e = _strategies.end(); b != e; ++b )
+    {
+        b->second->execute();
+    }
+}
+
