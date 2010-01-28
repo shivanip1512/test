@@ -29,6 +29,10 @@
 ---------------------------------------------------------------------------*/
 #include "mc_server.h"
 #include "numstr.h"
+#include "thread_monitor.h"
+#include "msg_pdata.h"
+#include "msg_reg.h"
+#include "connection.h"
 
 #include "rwutil.h"
 #include <time.h>
@@ -64,14 +68,53 @@ void CtiMCServer::run()
 
     try
     {
+        CtiConnection VanGoghConnection;
+        string dispatch_host = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
+        int    dispatch_port = gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS);
+    
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << " Connecting to dispatch, host: " << dispatch_host << ", port: " << dispatch_port << endl;
+        }
+
+        VanGoghConnection.doConnect(dispatch_port, dispatch_host);
+        VanGoghConnection.setName("MACServer to Dispatch");
+        
+        //Send a registration message
+        CtiRegistrationMsg* regMsg = new CtiRegistrationMsg("MACServer", 0, false );
+        VanGoghConnection.WriteConnQue( regMsg );
+
         if( init() )
         {
+            const long threadMonitorPointId = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Macs);
+            CtiTime LastThreadMonitorTime((unsigned long) 0);
+            CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
+            const UCHAR MonitorReportRate = 3;
+            UCHAR checkCount = MonitorReportRate;
 
             /* Main Loop */
             while(true)
             {
-            // Workaround for bug in vc6 debug heap
-            ResetBreakAlloc();
+                // Workaround for bug in vc6 debug heap
+                ResetBreakAlloc();
+
+                // Do thread monitor stuff
+                if( (LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60 )
+                {
+                    if( threadMonitorPointId != 0 )
+                    {
+                        CtiThreadMonitor::State next;
+                        LastThreadMonitorTime = LastThreadMonitorTime.now();
+                        if( (next = ThreadMonitor.getState()) != previous || checkCount++ >= MonitorReportRate )
+                        {
+                            previous = next;
+                            checkCount = 0;
+        
+                            VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                        }
+                    }
+                }
+                // end thread monitor stuff
 
                 if( (msg =_main_queue.getQueue(delay*1000)) != NULL )
                 {
@@ -142,13 +185,21 @@ void CtiMCServer::run()
                 dout << CtiTime() << " Sleeping for " << delay << " millis" << endl;
             }
          }
+            /* End of Main Loop */
         }
         else
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout << CtiTime() << " An error occured during initialization" << endl;
         }
-        /* End of Main Loop */
+        
+
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << CtiTime() << " - " << "Shutting down MACServer connection to VanGogh" << endl;
+        }
+    
+        VanGoghConnection.ShutdownConnection();
     }
     catch(...)
     {
