@@ -28,6 +28,7 @@
 #include "mc_svc.h"
 #include "CParms.h"
 #include "mc_script.h"
+#include "thread_monitor.h"
 
 using namespace std;
 
@@ -133,6 +134,8 @@ void CtiMCService::Run()
     dout.setToStdOut(true);
     dout.start();
 
+    ThreadMonitor.start();
+
     SetStatus(SERVICE_START_PENDING, 66, 5000 );
 
     _mc_server = new CtiMCServer();
@@ -154,6 +157,9 @@ void CtiMCService::Run()
     delete _mc_server;
 
     SetStatus( SERVICE_STOP_PENDING, 50, 2500 );
+
+    ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+    ThreadMonitor.join();
 
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
