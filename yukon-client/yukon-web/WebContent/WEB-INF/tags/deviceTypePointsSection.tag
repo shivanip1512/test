@@ -19,7 +19,7 @@
 			<c:if test="${deviceType > 0}">
             	<cti:msg var="viewDefinitionDetailPopupTitle" key="yukon.common.device.bulk.addRemovePointsHome.viewDefinitionDetailPopupTitle"/>
             	<cti:url var="definitionUrl" value="/spring/common/deviceDefinition.xml">	
-            		<cti:param name="deviceType" value="${deviceType}"/>
+            		<cti:param name="deviceType" value="${pageScope.deviceType}"/>
             	</cti:url>
             	
             	<a href="${definitionUrl}" title="${viewDefinitionDetailPopupTitle} style="text-decoration:none;">

@@ -63,7 +63,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         mav.addObject("paoTypeMasksList", paoTypeMasksList);
         
         // shared points map
-        Map<PointTemplate, Boolean> sharedPointTemplateMaskMap = createSharedPointsTemplateMapWithPointsMap(paoTypeMasksList);
+        Map<PointTemplate, Boolean> sharedPointTemplateMaskMap = createSharedPointsTemplateMap(paoTypeMasksList);
 
         PaoTypeMasks sharedPaoTypeMasks = new PaoTypeMasks();
         sharedPaoTypeMasks.setPointTemplateMaskMap(sharedPointTemplateMaskMap);

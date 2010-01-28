@@ -157,7 +157,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         return deviceTypeDeviceCollectionMap;
     }
     
-    protected Map<PointTemplate, Boolean> createSharedPointsTemplateMapWithPointsMap(List<PaoTypeMasks> paoTypeMaskList) {
+    protected Map<PointTemplate, Boolean> createSharedPointsTemplateMap(List<PaoTypeMasks> paoTypeMaskList) {
     	ArrayListMultimap<PointTemplate, Boolean> sharedPointTemplateMasks = ArrayListMultimap.create();
     	
     	for (PaoTypeMasks paoTypeMasks : paoTypeMaskList) {
