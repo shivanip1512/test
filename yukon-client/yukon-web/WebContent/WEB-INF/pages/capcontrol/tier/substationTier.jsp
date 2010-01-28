@@ -62,7 +62,7 @@
 
 <ct:abstractContainer type="box" hideEnabled="false" title="${containerTitle}" id="last_titled_container">
           
-	<table id="subTable" class="compactResultsTable">
+	<table id="subTable" class="tierTable">
 	  <tr class="columnHeader lAlign">              
 	    <th style="font-weight:bold;">
 	    	<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>

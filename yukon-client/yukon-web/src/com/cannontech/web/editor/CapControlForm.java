@@ -53,6 +53,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionException;
@@ -98,6 +99,7 @@ import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
 import com.cannontech.web.editor.model.DataModelFactory;
@@ -164,6 +166,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private CBCSelectionLists selectionLists = null;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
+    private StrategyDao strategyDao;
     
     /**
 	 * default constructor
@@ -1065,47 +1068,47 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		}
 	}
 
-	public boolean deleteStrategy() {
-	    boolean success = true;
-		// this message will be filled in by the super class
+	public void deleteStrategy() {
+	    FacesContext context = FacesContext.getCurrentInstance(); 
 		FacesMessage facesMsg = new FacesMessage();
+		int stratID = CtiUtilities.NONE_ZERO_ID;
 		try {
 			// cancel any editing of the Strategy we may have been doing
 			setEditingCBCStrategy(false);
-			int stratID = CtiUtilities.NONE_ZERO_ID;
             if (getDbPersistent() instanceof CapControlStrategy) {
                 stratID = ((CapControlStrategy)getDbPersistent()).getStrategyID().intValue();
             }
 			// decide if we need to do any special handling of this transaction based on what other PAOs use this Strategy
-			int[] paos = CapControlStrategy.getAllPAOSUsingSeasonStrategy(stratID, itemID);
-			if (paos.length <= 0) {
+            
+			List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(stratID, itemID);
+			if (otherPaosUsingStrategy.isEmpty()) {
 				// update the current PAOBase object just in case it uses the strategy we are deleting
 				updateDBObject(getDbPersistent(), null);
 				deleteDBObject(getCbcStrategiesMap().get(new Integer(stratID)), facesMsg);
 				// clear out the memory of the any list of Strategies
 				cbcStrategies = null;
 				facesMsg.setDetail("CapControl Strategy delete was SUCCESSFUL");
-				success = true;
+				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+				CtiNavObject navObject = (CtiNavObject) session.getAttribute(ServletUtil.NAVIGATE); 
+				String moduleExitPage = navObject.getModuleExitPage();
+                JSFUtil.redirect(moduleExitPage);
 			} else {
-				StringBuffer items = new StringBuffer("");
-				for (int i = 0; i < paos.length; i++) {
-					items.append(paoDao.getYukonPAOName(paos[i]) + ",");
-                }
-				facesMsg.setDetail("Unable to delete the Strategy since the following items use it: " + items.deleteCharAt(items.length() - 1));
+				if(otherPaosUsingStrategy.size() > 4) {
+				    facesMsg.setDetail("Strategy used by: " + otherPaosUsingStrategy.get(0) 
+				                       + ", " +otherPaosUsingStrategy.get(1)
+				                       + ", " +otherPaosUsingStrategy.get(2)
+				                       + ", " +otherPaosUsingStrategy.get(3) + " ..." + Integer.toString(otherPaosUsingStrategy.size() - 4) + " more.");
+				} else {
+				    facesMsg.setDetail("Strategy used by: " + otherPaosUsingStrategy);
+				}
 				facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-				success = false;
 			}
 		} catch (TransactionException te) {
 			facesMsg.setDetail("Unable to delete the Strategy: " + te.getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            success = false;
 		} finally {
-		    FacesContext context = FacesContext.getCurrentInstance(); 
-			if(context != null) {
-			    context.addMessage("cti_db_delete", facesMsg);
-			}
+		    context.addMessage("cti_db_delete", facesMsg);
 		}
-		return success;
 	}
 
 	public String getPAODescLabel() {
@@ -1936,15 +1939,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         FacesContext.getCurrentInstance().responseComplete();
     }
     
-    @SuppressWarnings("unchecked")
-    public void deleteStrat( ActionEvent ev ) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
-        int elemID = Integer.parseInt( paramMap.get("stratID") );
-        initItem(elemID, DBEditorTypes.EDITOR_STRATEGY);
-        deleteStrategy();
-    }
-    
     public boolean isTimeOfDay() {
         String strat = getStrategy().getControlMethod();
         if( strat.equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)){
@@ -2027,6 +2021,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     public CBCSelectionLists getSelectionLists() {
         return selectionLists;
+    }
+    
+    public void setStrategyDao (StrategyDao strategyDao) {
+        this.strategyDao = strategyDao;
     }
     
     public CapControlStrategy getStrategy() {

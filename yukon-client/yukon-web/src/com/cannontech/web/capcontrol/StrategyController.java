@@ -16,10 +16,8 @@ import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
-import com.cannontech.web.editor.CapControlForm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
@@ -53,13 +51,22 @@ public class StrategyController {
         String resultString = "Strategy deleted successfully.";
         if( strategyId == null) {
             success = false;
-            resultString = "Delete failed, strategyId was NULL";
+            resultString = "Delete failed: StrategyId was NULL";
         } else {
-            CapControlForm capControlForm = (CapControlForm) request.getSession().getAttribute("capControlForm");
-            capControlForm.initItem(strategyId, DBEditorTypes.EDITOR_STRATEGY);
-            success = capControlForm.deleteStrategy();
-            if (!success) {
-                resultString = "The strategy was not in the database. Please refresh this page.";
+            List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(strategyId, 0);
+            if(!otherPaosUsingStrategy.isEmpty()){
+                success = false;
+                if(otherPaosUsingStrategy.size() > 4) {
+                    resultString = "Delete failed: Strategy used by: " + otherPaosUsingStrategy.get(0) 
+                                       + ", " +otherPaosUsingStrategy.get(1)
+                                       + ", " +otherPaosUsingStrategy.get(2)
+                                       + ", " +otherPaosUsingStrategy.get(3) + " ..." + Integer.toString(otherPaosUsingStrategy.size() - 4) + " more.";
+                } else {
+                    resultString = "Delete failed: Strategy used by: " + otherPaosUsingStrategy;
+                }
+            } else {
+                /* Try to delete the strategy */
+                strategyDao.delete(strategyId);
             }
         }
         map.addAttribute("success", success);

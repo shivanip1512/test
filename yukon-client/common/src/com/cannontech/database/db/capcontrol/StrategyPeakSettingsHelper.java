@@ -27,26 +27,26 @@ public class StrategyPeakSettingsHelper {
                 settings.add(TargetSettingType.UPPER_VOLT_LIMIT.getPeakTargetSetting());
                 settings.add(TargetSettingType.LOWER_VOLT_LIMIT.getPeakTargetSetting());
                 
-                settings.add(TargetSettingType.KVAR_LAGGING.getPeakTargetSetting());
                 settings.add(TargetSettingType.KVAR_LEADING.getPeakTargetSetting());
+                settings.add(TargetSettingType.KVAR_LAGGING.getPeakTargetSetting());
                 break;
                 
             case PFACTORKWKVAR :
                 settings.add(TargetSettingType.TARGET_PF.getPeakTargetSetting());
-                settings.add(TargetSettingType.MIN_BANK_OPEN.getPeakTargetSetting());
                 settings.add(TargetSettingType.MIN_BANK_CLOSE.getPeakTargetSetting());
+                settings.add(TargetSettingType.MIN_BANK_OPEN.getPeakTargetSetting());
                 break;
                 
             case INTEGRATED_VOLT_VAR :
                 settings.add(TargetSettingType.UPPER_VOLT_LIMIT.getPeakTargetSetting());
                 settings.add(TargetSettingType.LOWER_VOLT_LIMIT.getPeakTargetSetting());
+                settings.add(TargetSettingType.VOLT_WEIGHT.getPeakTargetSetting());
                 
                 settings.add(TargetSettingType.TARGET_PF.getPeakTargetSetting());
-                settings.add(TargetSettingType.MIN_BANK_OPEN.getPeakTargetSetting());
                 settings.add(TargetSettingType.MIN_BANK_CLOSE.getPeakTargetSetting());
-                
-                settings.add(TargetSettingType.KVOLT_WEIGHT.getPeakTargetSetting());
+                settings.add(TargetSettingType.MIN_BANK_OPEN.getPeakTargetSetting());
                 settings.add(TargetSettingType.PF_WEIGHT.getPeakTargetSetting());
+                
                 settings.add(TargetSettingType.DECISION_WEIGHT.getPeakTargetSetting());
                 break;
                 
@@ -98,7 +98,7 @@ public class StrategyPeakSettingsHelper {
                 PeakTargetSetting lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
                 PeakTargetSetting upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
                 
-                settingString = lowerVoltLimit.getPeakValue() + "<" + "V" + "<" + upperVoltLimit.getPeakValue();
+                settingString = lowerVoltLimit.getPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getPeakValue();
                 break;
                 
             case MULTIVOLTVAR:
@@ -115,12 +115,23 @@ public class StrategyPeakSettingsHelper {
                 PeakTargetSetting targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
                 PeakTargetSetting minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
                 PeakTargetSetting minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());
-                settingString =  minBankClose.getPeakValue() + "<" + targetPF.getPeakValue() + "<" + minBankOpen.getPeakValue();
+                settingString = minBankClose.getPeakValue() + "%C | " + targetPF.getPeakValue() + " | " + minBankOpen.getPeakValue() + "%O";
                 break;
                 
             case TIME_OF_DAY :
-            case INTEGRATED_VOLT_VAR :
                 settingString = "---";
+                break;
+                
+            case INTEGRATED_VOLT_VAR :
+                targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
+                minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
+                minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());
+                
+                lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
+                upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
+                
+                settingString = lowerVoltLimit.getPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getPeakValue() + " : ";
+                settingString += minBankClose.getPeakValue() + "%C | " + targetPF.getPeakValue() + " | " + minBankOpen.getPeakValue() + "%O";
                 break;
                 
             default:
@@ -148,7 +159,7 @@ public class StrategyPeakSettingsHelper {
                 PeakTargetSetting lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
                 PeakTargetSetting upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
                 
-                settingString = lowerVoltLimit.getOffPeakValue() + "<" + "V" + "<" + upperVoltLimit.getOffPeakValue();
+                settingString = lowerVoltLimit.getOffPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getOffPeakValue();
                 break;
                 
             case MULTIVOLTVAR:
@@ -165,12 +176,23 @@ public class StrategyPeakSettingsHelper {
                 PeakTargetSetting targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
                 PeakTargetSetting minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
                 PeakTargetSetting minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());
-                settingString =  minBankClose.getOffPeakValue() + "<" + targetPF.getOffPeakValue() + "<" + minBankOpen.getOffPeakValue();
+                settingString = minBankClose.getOffPeakValue() + "%C | " + targetPF.getOffPeakValue() + " | " + minBankOpen.getOffPeakValue() + "%O";
                 break;
                 
             case TIME_OF_DAY :
-            case INTEGRATED_VOLT_VAR :
                 settingString = "---";
+                break;
+                
+            case INTEGRATED_VOLT_VAR :
+                targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
+                minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
+                minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());
+                
+                lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
+                upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
+                
+                settingString = lowerVoltLimit.getOffPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getOffPeakValue() + " : ";
+                settingString += minBankClose.getOffPeakValue() + "%C | " + targetPF.getOffPeakValue() + " | " + minBankOpen.getOffPeakValue() + "%O";
                 break;
                 
             default:

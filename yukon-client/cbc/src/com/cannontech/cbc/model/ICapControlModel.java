@@ -42,7 +42,7 @@ public interface ICapControlModel {
 
     public abstract void createStrategy();
 
-    public abstract boolean deleteStrategy();
+    public abstract void deleteStrategy();
 
     public abstract String getPAODescLabel();
 

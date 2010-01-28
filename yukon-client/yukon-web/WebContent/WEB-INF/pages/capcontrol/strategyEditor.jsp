@@ -19,7 +19,6 @@
                 action="#{capControlForm.createStrategy}" styleClass="stdButton" />
         <x:commandButton id="Delete_Strategy" value="Delete Strategy" title="Delete the selected strategy" styleClass="stdButton"
                 action="#{capControlForm.deleteStrategy}" onclick="return window.confirm('Are you sure you want to delete this strategy?\r\nNote: Deleting this strategy will force all data to be saved and the current strategy will be set to (none).');">
-                <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
         </x:commandButton>
     </x:panelGroup>
     

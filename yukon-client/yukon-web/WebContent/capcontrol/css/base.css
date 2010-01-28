@@ -26,12 +26,25 @@
 	
 }
 
-table.compactResultsTable td {
-	padding: 2px 1px 1px;
+table.tierTable {
+	width: 100%;
+	border-collapse: collapse;
 }
 
-table.compactResultsTable th {
-    padding-left: 1px;
+table.tierTable td {
+	padding: 2px 1px 1px;
+	vertical-align: middle;
+}
+
+table.tierTable th {
+	border-bottom:1px solid #CCCCCC;
+	color:#000000;
+	font-size:12px;
+	font-weight:600;
+	padding:3px;
+	text-align:left;
+	vertical-align:bottom;
+	padding-left: 1px;
 }
 
 td.tableCellSnapShot {
@@ -228,7 +241,6 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 
 .magnifierImg {
     border: 0;
-    cursor: help;
 }
 
 a.tierIconLink{

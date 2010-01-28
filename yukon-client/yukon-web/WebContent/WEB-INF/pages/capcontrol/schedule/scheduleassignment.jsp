@@ -202,7 +202,7 @@ Event.observe(window, 'load', function() {
         
 		<div id="errorElement" style="text-align:center;color:red;font-weight:bold;"></div>
 		
-		<table class="resultsTable" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<table class="resultsTable smallPadding" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
 		<thead>
 			<tr id="header">
 				<th>Schedule</th>

@@ -47,7 +47,7 @@
 		<cti:crumbLink title="Schedules"/>
 	</cti:breadCrumbs>
 	<div id="errorElement" style="text-align: center; color: red;font-weight: bold;"></div>
-	<table class="resultsTable" id="scheduleTable" width="90%" border="0"
+	<table class="resultsTable smallPadding" id="scheduleTable" width="90%" border="0"
 		cellspacing="0" cellpadding="3" align="center">
 		<thead>
 			<tr id="header">

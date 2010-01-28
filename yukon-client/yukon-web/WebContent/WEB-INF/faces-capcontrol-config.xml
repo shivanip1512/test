@@ -26,6 +26,11 @@
         </managed-property>
         
         <managed-property>
+            <property-name>strategyDao</property-name>
+            <value>#{strategyDao}</value>
+        </managed-property>
+        
+        <managed-property>
             <property-name>capbankControllerDao</property-name>
             <value>#{capbankControllerDao}</value>
         </managed-property>

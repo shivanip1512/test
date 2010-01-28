@@ -2,7 +2,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <cti:standardPage title="Strategies" module="capcontrol">
-    
     <script type="text/javascript" language="JavaScript">
     var firstRun = true;
     function removeStrategy(strategyId, strategyName) {
@@ -14,12 +13,16 @@
             
             new Ajax.Request(url, {'parameters': {'strategyId': strategyId}, 
                 onComplete: function(transport, json) {
-                    if (!json.success) {
-                        $('errorElement').innerHTML = json.resultText;
-                        $('errorElement').show();
+            	    $('deletionResult').removeClassName('okGreen');
+            	    $('deletionResult').removeClassName('errorRed');
+                    if (json.success) {
+                    	deleteStrategyFromPage(strategyId);
+                    	$('deletionResult').addClassName('okGreen');
                     } else {
-                        deleteStrategyFromPage(strategyId);
+                    	$('deletionResult').addClassName('errorRed');
                     }
+                    $('deletionResult').innerHTML = json.resultText;
+                    $('deletionResult').show();
                 
                 } });
         }
@@ -28,7 +31,7 @@
     function hideErrors() {
         
         if(!firstRun) { 
-            $('errorElement').hide();
+            $('deletionResult').hide();
         }
         firstRun = false;
     }
@@ -46,9 +49,8 @@
         <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
         <cti:crumbLink title="Strategies"/>
     </cti:breadCrumbs>
-        <div id="errorElement" style="text-align: center; color: red;font-weight: bold;"></div>
-    <table class="resultsTable" id="strategyTable" width="90%" border="0"
-        cellspacing="0" cellpadding="3" align="center">
+    <div id="deletionResult" class="padded normalBoldLabel"></div>
+    <table class="resultsTable smallPadding" id="strategyTable" width="95%" align="center">
         <thead>
             <tr id="header">
                 <th>Strategy Name</th>

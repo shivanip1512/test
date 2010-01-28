@@ -18,4 +18,10 @@ public interface StrategyDao {
     public void savePeakSettings(CapControlStrategy strategy);
 
     public List<PeakTargetSetting> getPeakSettings(CapControlStrategy capControlStrategy);
+
+    public List<String> getAllOtherPaoNamesUsingSeasonStrategy(int strategyId, int excludedPaoId);
+    
+    public List<String> getAllOtherPaoNamesUsingHolidayStrategy(int strategyId, int excludedPaoId);
+    
+    public List<String> getAllOtherPaoNamesUsingStrategyAssignment(int strategyId, int excludedPaoId);
 }

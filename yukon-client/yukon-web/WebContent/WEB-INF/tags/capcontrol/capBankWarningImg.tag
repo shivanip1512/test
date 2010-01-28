@@ -10,7 +10,7 @@
 </span>
 
 <span id="warning_${paoId}_yellow" style="display: none;" 
-      onmouseover="showDynamicPopup($('warningPopup_${paoId}'));" 
+      onmouseover="showDynamicPopupAbove($('warningPopup_${paoId}'));" 
       onmouseout="nd();">
     <img src="/capcontrol/images/yellow.gif" class="tierImg" alt="">
 </span>
@@ -20,7 +20,7 @@
 </span>
 
 <span id="warning_${paoId}_yellow_local" style="display: none;" 
-      onmouseover="showDynamicPopup($('warningPopup_${paoId}'));" 
+      onmouseover="showDynamicPopupAbove($('warningPopup_${paoId}'));" 
       onmouseout="nd();">
     <img src="/capcontrol/images/yellow_local.gif" class="tierImg" alt="">
 </span>

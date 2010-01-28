@@ -57,7 +57,7 @@
 		<form id="areaForm" action="" method="get">
 		<input type="hidden" name="CCSessionInfo.STR_CC_AREA" />
 		<input type="hidden" name="CCSessionInfo.STR_CC_AREAID"/>
-			<table id="areaTable" class="compactResultsTable">
+			<table id="areaTable" class="tierTable">
     			<thead>
         			<tr class="columnHeader lAlign">                
                         <th style="text-align: left;">Area Name</th>

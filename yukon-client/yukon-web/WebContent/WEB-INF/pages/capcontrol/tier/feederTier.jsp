@@ -128,7 +128,7 @@
     </c:otherwise>
 </c:choose>
 	<ct:abstractContainer type="box" title="Substation" hideEnabled="false">
-		<table id="substationTable" class="compactResultsTable">
+		<table id="substationTable" class="tierTable">
         
 			<tr>
 				<th class="lAlign">Substation Name</th>
@@ -178,7 +178,7 @@
 
 	<ct:abstractContainer type="box" title="Substation Bus" hideEnabled="true" showInitially="true">
 
-		<table id="subBusTable" class="compactResultsTable rowHighlighting">
+		<table id="subBusTable" class="tierTable rowHighlighting">
 			<tr>
 				<th><input type="checkbox" name="chkAllSubBusesBx" onclick="checkAll(this, 'cti_chkbxSubBuses');" class="tierCheckBox">
 				    <select id='subBusFilter' onchange='applySubBusFilter(this);'>
@@ -246,7 +246,7 @@
     				</td>
                     
     				<td>
-                        <capTags:warningImg paoId="${thisSubBusId}" type="SUBBUS"/>      
+                        <capTags:warningImg paoId="${thisSubBusId}" type="SUBBUS"/>
     
     					<a id="subbus_state_${thisSubBusId}"
         				    <c:if test="${hasSubBusControl}">
@@ -264,7 +264,7 @@
                         <c:choose>
                             <c:when test="${viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_SUBSTATION_BUS') ||
                                                     viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER')}">
-    		                    <a onmouseover="showDynamicPopup($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
+    		                    <a onmouseover="showDynamicPopupAbove($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
     								onmouseout="nd();">
     								<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
     							</a>
@@ -391,7 +391,7 @@
 
 	<ct:abstractContainer type="box" title="Feeders" hideEnabled="true" showInitially="true">
 
-		<table id="fdrTable" class="compactResultsTable rowHighlighting">
+		<table id="fdrTable" class="tierTable rowHighlighting">
         	<tr>
          		<th><input type="checkbox" name="chkAllFdrsBx" onclick="checkAll(this, 'cti_chkbxFdrs');" class="tierCheckBox">
          			<select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
@@ -462,7 +462,7 @@
                         <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                         <c:choose>
                             <c:when test="${viewfeeder.feeder.controlmethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER')}">
-		                        <a onmouseover="showDynamicPopup($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
+		                        <a onmouseover="showDynamicPopupAbove($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
 								   onmouseout="nd();">
 		                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
 		                        </a>
@@ -479,7 +479,7 @@
 					<td>
 						<c:choose>
 							<c:when test="${viewfeeder.feeder.usePhaseData}">
-		                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();">
+		                        <a onmouseover="showDynamicPopupAbove($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();">
 			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
 		                        </a>
 						  	</c:when>
@@ -515,10 +515,12 @@
 	<br>
 	
 	<ct:abstractContainer type="box" title="Capacitor Banks" hideEnabled="true" showInitially="true">
-        <table id="capBankTable" class="compactResultsTable rowHighlighting">
+        <table id="capBankTable" class="tierTable rowHighlighting">
             <tr>
-                <th><input type="checkbox" name="chkAllBanksBx" onclick="checkAll(this, 'cti_chkbxBanks');" class="tierCheckBox"></th>
-                <th>CBC Name</th>
+                <th>
+                    <input type="checkbox" name="chkAllBanksBx" onclick="checkAll(this, 'cti_chkbxBanks');" class="tierCheckBox">
+                    CBC Name
+                </th>
                 <th>CB Name (Order) 
                     <img alt="" class="tierImg popupImg" src="/WebConfig/yukon/Icons/information.gif"
                         onmouseover="statusMsgAbove(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" >
@@ -551,37 +553,35 @@
                         <span style="display: none"><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/></span>
                         <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}">
                         <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}" class="tierCheckBox">
-                    </td>
-                    
-    				<td>
-    					<c:choose>
-    						<c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
-    					        
-    					        <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" class="tierIconLink">
-    	                            <img alt="" class="tierImg" src="${editInfoImage}">
-    	                        </a>
-    	                        <c:if test="${hasEditingRole}">
-    		                        <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" class="tierIconLink">
-    	                               <img alt="" src="/WebConfig/yukon/Icons/copy.gif" class="tierImg" border="0" height="15" width="15">
-    	                            </a>
-    	                        </c:if>
-    							${viewableCapBank.controlDevice.paoName}
-    					    </c:when>
-    					    <c:otherwise>
-    					    ---
-    					    </c:otherwise>
-    				    </c:choose>
+                        
+                        <c:choose>
+                            <c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
+                                
+                                <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" class="tierIconLink">
+                                    <img alt="" class="tierImg" src="${editInfoImage}">
+                                </a>
+                                <c:if test="${hasEditingRole}">
+                                    <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" class="tierIconLink">
+                                       <img alt="" src="/WebConfig/yukon/Icons/copy.gif" class="tierImg" border="0" height="15" width="15">
+                                    </a>
+                                </c:if>
+                                ${viewableCapBank.controlDevice.paoName}
+                            </c:when>
+                            <c:otherwise>
+                            ---
+                            </c:otherwise>
+                        </c:choose>
     
-    					<c:if test="${viewableCapBank.twoWayCbc}">
+                        <c:if test="${viewableCapBank.twoWayCbc}">
                             <a href="#" onclick="return GB_show(' ', 
                                 '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&amp;cbcID=${viewableCapBank.controlDevice.liteID}',
                                  500, 600)" class="tierIconLink">
                                 <img alt="" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
-                                    onmouseover="statusMsg(this,'Click here to see the timestamp information for the cap bank controller device.');">
+                                    onmouseover="statusMsgAbove(this,'Click here to see the timestamp information for the cap bank controller device.');">
                            </a>
                         </c:if>
-    				</td>
-    				
+                    </td>
+                    
                     <td>
                     	<c:choose>
     	                	<c:when test="${hasCapbankControl}">
@@ -613,7 +613,7 @@
     					</c:choose>
     					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
     					   <a href="#" class="tierIconLink" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)">
-    					       <img alt="" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');">
+    					       <img alt="" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsgAbove(this, 'Click to see additional information for the cap bank.');">
     					   </a>
     					</cti:checkRolesAndProperties>
     				</td>
@@ -660,7 +660,7 @@
     			                    class="warning" ${popupEvent}="getCapBankTempMoveBack('${thisCapBankId}', event);" 
     		                    </c:when>
     		                    <c:otherwise>
-    		                        onmouseover="statusMsg(this, 'Click here to fully move or temporarily move this CapBank from its current parent feeder');"
+    		                        onmouseover="statusMsgAbove(this, 'Click here to fully move or temporarily move this CapBank from its current parent feeder');"
     		                        onmouseout="nd();"
     		                        onclick="return GB_show('CapBank Move for ${viewableCapBank.capBankDevice.ccName} (Pick feeder by clicking on name)',
     		                            '/spring/capcontrol/move/bankMove?bankid=${thisCapBankId}', 580, 710, onGreyBoxClose);"

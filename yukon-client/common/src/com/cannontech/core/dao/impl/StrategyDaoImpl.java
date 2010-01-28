@@ -6,12 +6,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.StrategyDao;
+import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
@@ -19,14 +20,14 @@ import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.database.incrementer.NextValueHelper;
-
+import com.google.common.collect.Lists;
 
 public class StrategyDaoImpl implements StrategyDao{
     
     private final ParameterizedRowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
-    private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
-
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    
     public StrategyDaoImpl() {
         super();
     }
@@ -52,7 +53,7 @@ public class StrategyDaoImpl implements StrategyDao{
         String likeDayFallBack = "N";
         String endDaySettings = CtiUtilities.STRING_NONE;
         String sql = "INSERT INTO CapControlStrategy VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        simpleJdbcTemplate.update(sql, strategyId, name, controlMethod, maxDailyOperation, maxOperationDisableFlag, peakStartTime, peakStopTime,
+        yukonJdbcTemplate.update(sql, strategyId, name, controlMethod, maxDailyOperation, maxOperationDisableFlag, peakStartTime, peakStopTime,
             controlInterval, minResponseTime, minConfirmPercent, failurePercent, daysOfWeek, controlUnits, controlDelayTime, 
             controlSendRetries, integrateFlag, integratePeriod, likeDayFallBack, endDaySettings);
         return strategyId;
@@ -71,7 +72,7 @@ public class StrategyDaoImpl implements StrategyDao{
         "LikeDayFallBack, EndDaySettings" +
         " from CapControlStrategy order by StrategyName";
         
-        List<CapControlStrategy> strategies = simpleJdbcTemplate.query(sql.toString(), rowMapper);
+        List<CapControlStrategy> strategies = yukonJdbcTemplate.query(sql.toString(), rowMapper);
         
         for(CapControlStrategy strategy : strategies) {
             strategy.setTargetSettings(getPeakSettings(strategy));
@@ -118,9 +119,35 @@ public class StrategyDaoImpl implements StrategyDao{
     @Transactional(readOnly = false)
     public boolean deleteStrategyAssignmentsByStrategyId(int strategyId){
         String deleteStrategyAssignments = "DELETE FROM CCSeasonStrategyAssignment WHERE StrategyId = ?";
-        int rowsAffected = simpleJdbcTemplate.update(deleteStrategyAssignments, strategyId);
+        int rowsAffected = yukonJdbcTemplate.update(deleteStrategyAssignments, strategyId);
         
         return rowsAffected == 1;
+    }
+    
+    @Override
+    public List<String> getAllOtherPaoNamesUsingSeasonStrategy( int strategyId, int excludedPaoId ) {
+       SqlStatementBuilder sql = new SqlStatementBuilder("select ypo.PaoName paoName from YukonPAObject ypo");
+       sql.append("join CCSeasonStrategyAssignment ssa on ssa.paobjectid = ypo.PAObjectID");
+       sql.append("where ssa.strategyid = ").appendArgument(strategyId).append("and ssa.paobjectid <> ").appendArgument(excludedPaoId);
+
+       return yukonJdbcTemplate.query(sql, new StringRowMapper());
+    }
+    
+    @Override
+    public List<String> getAllOtherPaoNamesUsingHolidayStrategy(int strategyId, int excludedPaoId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder("select ypo.PaoName paoName from YukonPAObject ypo");
+        sql.append("join CCHolidayStrategyAssignment hsa on hsa.paobjectid = ypo.PAObjectID");
+        sql.append("where hsa.strategyid = ").appendArgument(strategyId).append("and hsa.paobjectid <> ").appendArgument(excludedPaoId);
+
+        return yukonJdbcTemplate.query(sql, new StringRowMapper());
+    }
+    
+    @Override
+    public List<String> getAllOtherPaoNamesUsingStrategyAssignment(int strategyId, int excludedPaoId) {
+        List<String> allPaosList = Lists.newArrayList();
+        allPaosList.addAll(getAllOtherPaoNamesUsingSeasonStrategy(strategyId, excludedPaoId));
+        allPaosList.addAll(getAllOtherPaoNamesUsingHolidayStrategy(strategyId, excludedPaoId));
+        return allPaosList;
     }
     
     @Override
@@ -128,21 +155,11 @@ public class StrategyDaoImpl implements StrategyDao{
     public boolean delete(int strategyId) {
         deleteStrategyAssignmentsByStrategyId(strategyId);
         String deleteStrategy = "DELETE FROM CapControlStrategy WHERE StrategyId = ?";
-        int rowsAffected = simpleJdbcTemplate.update(deleteStrategy, strategyId);
+        int rowsAffected = yukonJdbcTemplate.update(deleteStrategy, strategyId);
         
         return rowsAffected == 1;
     }
     
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
     @Override
     public void savePeakSettings(CapControlStrategy strategy) {
         List<PeakTargetSetting> targetSettings = strategy.getTargetSettings();
@@ -160,7 +177,7 @@ public class StrategyDaoImpl implements StrategyDao{
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from CCStrategyTargetSettings where strategyId = ").appendArgument(strategyId);
-        simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
         for(PeakTargetSetting setting : targetSettings) {
             sql = new SqlStatementBuilder("insert into CCStrategyTargetSettings values (");
@@ -168,14 +185,14 @@ public class StrategyDaoImpl implements StrategyDao{
             sql.append(", ").appendArgument(setting.getName());
             sql.append(", ").appendArgument(setting.getPeakValue());
             sql.append(", ").appendArgument(peak).append(" ) ");
-            simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+            yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
             
             sql = new SqlStatementBuilder("insert into CCStrategyTargetSettings values ( ");
             sql.appendArgument(strategyId);
             sql.append(", ").appendArgument(setting.getName());
             sql.append(", ").appendArgument(setting.getOffPeakValue());
             sql.append(", ").appendArgument(offpeak).append(" ) ");
-            simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+            yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         }
     }
 
@@ -211,7 +228,7 @@ public class StrategyDaoImpl implements StrategyDao{
             }
         };
 
-        List<PeakTargetSetting> settings = simpleJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+        List<PeakTargetSetting> settings = yukonJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
         if(settings.isEmpty()) {
             ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits());
             settings = StrategyPeakSettingsHelper.getSettingDefaults(algorithm);
@@ -220,4 +237,13 @@ public class StrategyDaoImpl implements StrategyDao{
         return settings;
     }
     
+    @Autowired
+    public void setSimpleJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
 }
