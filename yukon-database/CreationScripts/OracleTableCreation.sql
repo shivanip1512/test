@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/25/2010 10:25:44 AM                        */
+/* Created on:     1/28/2010 4:21:11 PM                         */
 /*==============================================================*/
 
 
@@ -600,6 +600,8 @@ drop table EventInventory cascade constraints;
 drop table EventLog cascade constraints;
 
 drop table EventWorkOrder cascade constraints;
+
+drop table ExtraPaoPointAssignment cascade constraints;
 
 drop table FDRInterface cascade constraints;
 
@@ -5192,6 +5194,16 @@ create table EventWorkOrder  (
    EventID              NUMBER                          not null,
    OrderID              NUMBER                          not null,
    constraint PK_EVENTWORKORDER primary key (EventID)
+);
+
+/*==============================================================*/
+/* Table: ExtraPaoPointAssignment                               */
+/*==============================================================*/
+create table ExtraPaoPointAssignment  (
+   PAObjectId           NUMBER                          not null,
+   PointId              NUMBER                          not null,
+   Attribute            VARCHAR2(255)                   not null,
+   constraint PK_ExtraPAOPointAsgmt primary key (PAObjectId, Attribute)
 );
 
 /*==============================================================*/
@@ -12161,6 +12173,11 @@ alter table PAOowner
       references YukonPAObject (PAObjectID);
 
 alter table POINT
+   add constraint FK_Point_ExtraPAOPointAsgmt foreign key (POINTID)
+      references ExtraPaoPointAssignment (PointId)
+      on delete cascade;
+
+alter table POINT
    add constraint FK_Pt_YukPAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID);
 
@@ -12418,6 +12435,11 @@ alter table YukonGroupRole
 alter table YukonListEntry
    add constraint FK_LstEnty_SelLst foreign key (ListID)
       references YukonSelectionList (ListID);
+
+alter table YukonPAObject
+   add constraint FK_YukonPAO_ExtraPAOPointAsgmt foreign key (PAObjectID)
+      references ExtraPaoPointAssignment (PAObjectId)
+      on delete cascade;
 
 alter table YukonRoleProperty
    add constraint FK_YkRlPrp_YkRle foreign key (RoleID)
