@@ -525,6 +525,7 @@ div.widgetPopup {
 
 .popUpDiv {
     position: fixed;
+    _position: absolute;
     z-index: 100;
     overflow: hidden;
 }
