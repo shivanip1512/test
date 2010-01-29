@@ -22,15 +22,15 @@ CREATE TABLE ExtraPaoPointAssignment (
 );
 GO
 
-ALTER TABLE Point
-    ADD CONSTRAINT FK_Point_ExtraPAOPointAsgmt FOREIGN KEY (PointId)
-        REFERENCES ExtraPaoPointAssignment (PointId)
+ALTER TABLE ExtraPaoPointAssignment
+    ADD CONSTRAINT FK_ExtraPAOPointAsgmt_Point FOREIGN KEY (PointId)
+        REFERENCES POINT (PointId)
             ON DELETE CASCADE;
 GO
 
-ALTER TABLE YukonPAObject
-    ADD CONSTRAINT FK_YukonPAO_ExtraPAOPointAsgmt FOREIGN KEY (PAObjectId)
-        REFERENCES ExtraPaoPointAssignment (PAObjectId)
+ALTER TABLE ExtraPaoPointAssignment
+    ADD CONSTRAINT FK_ExtraPAOPointAsgmt_YukonPAO FOREIGN KEY (PAObjectId)
+        REFERENCES YukonPAObject (PAObjectId)
             ON DELETE CASCADE;
 GO 
 /* End YUK-8315 */

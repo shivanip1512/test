@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/28/2010 4:25:53 PM                         */
+/* Created on:     1/29/2010 10:13:37 AM                        */
 /*==============================================================*/
 
 
@@ -14830,6 +14830,18 @@ alter table EventWorkOrder
       references WorkOrderBase (OrderID)
 go
 
+alter table ExtraPaoPointAssignment
+   add constraint FK_ExtraPAOPointAsgmt_Point foreign key (PointId)
+      references POINT (POINTID)
+         on delete cascade
+go
+
+alter table ExtraPaoPointAssignment
+   add constraint FK_ExtraPAOPointAsgmt_YukonPAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
+go
+
 alter table FDRInterfaceOption
    add constraint FK_FDRINTER_REFERENCE_FDRINTER foreign key (InterfaceID)
       references FDRInterface (InterfaceID)
@@ -15663,12 +15675,6 @@ alter table PAOowner
 go
 
 alter table POINT
-   add constraint FK_Point_ExtraPAOPointAsgmt foreign key (POINTID)
-      references ExtraPaoPointAssignment (PointId)
-         on delete cascade
-go
-
-alter table POINT
    add constraint FK_Pt_YukPAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
 go
@@ -15989,12 +15995,6 @@ go
 alter table YukonListEntry
    add constraint FK_LstEnty_SelLst foreign key (ListID)
       references YukonSelectionList (ListID)
-go
-
-alter table YukonPAObject
-   add constraint FK_YukonPAO_ExtraPAOPointAsgmt foreign key (PAObjectID)
-      references ExtraPaoPointAssignment (PAObjectId)
-         on delete cascade
 go
 
 alter table YukonRoleProperty
