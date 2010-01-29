@@ -58,7 +58,7 @@ public abstract class AbstractConsumerController {
             return accountList.get(0);
         }
         
-        throw new NotAuthorizedException("The supplied user is not appart of a valid account");
+        throw new NotAuthorizedException("The supplied user is not part of a valid account");
     }
     
     @Autowired
