@@ -36,7 +36,6 @@
     
     <%-- BOX --%>
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.readConfig.header"/>
-    <cti:msg var="cancel" key="yukon.common.device.bulk.readConfig.cancel" />
     <cti:msg var="read" key="yukon.common.device.bulk.readConfig.read" />
     <tags:bulkActionContainer   key="yukon.common.device.bulk.readConfig" deviceCollection="${deviceCollection}">
         <form id="readConfigForm" method="post" action="/spring/bulk/config/doReadConfig">
@@ -45,7 +44,6 @@
             <table>
                 <tr>
                     <td><input type="submit" name="readButton" value="${read}"></td>
-                    <td><input type="submit" name="cancelButton" value="${cancel}"></td>
                 </tr>
             </table>
         </form>

@@ -219,7 +219,6 @@
     <entry key="yukon.common.device.bulk.assignConfig.noteLabel">Note:</entry>
     <entry key="yukon.common.device.bulk.assignConfig.noteText">Select the Device Configuration you wish to assign the selected devices to.</entry>
     <entry key="yukon.common.device.bulk.assignConfig.assign">Assign</entry>
-    <entry key="yukon.common.device.bulk.assignConfig.cancel">Cancel</entry>
     <entry key="yukon.common.device.bulk.assignConfig.selectLabel">Device Config:</entry>
     
     <!-- assignConfigResults.jsp -->
@@ -254,7 +253,6 @@
         The standard method will compare the settings of the device with the settings of the configuration and send only the unmatching fields to the device.  The force method
         will send the entire configuration to the device.</entry>
     <entry key="yukon.common.device.bulk.sendConfig.send">Send</entry>
-    <entry key="yukon.common.device.bulk.sendConfig.cancel">Cancel</entry>
     <entry key="yukon.common.device.bulk.sendConfig.selectLabel">Send Method:</entry>
     
     <!-- verifyConfigResults.jsp -->
@@ -280,7 +278,6 @@
     <entry key="yukon.common.device.bulk.verifyConfig.noteText">Compares the settings of the device to the settings of the configuration.
         This action compares database information and does not read from the device.</entry>
     <entry key="yukon.common.device.bulk.verifyConfig.verify">Verify</entry>
-    <entry key="yukon.common.device.bulk.verifyConfig.cancel">Cancel</entry>
     
     <!-- READ CONFIG -->
     <!-- ******************************************************************************************************************** -->
@@ -292,7 +289,6 @@
     <entry key="yukon.common.device.bulk.readConfig.noteLabel">Note:</entry>
     <entry key="yukon.common.device.bulk.readConfig.noteText">Reads the configuration settings from the device and updates the database information for that device.</entry>
     <entry key="yukon.common.device.bulk.readConfig.read">Read</entry>
-    <entry key="yukon.common.device.bulk.readConfig.cancel">Cancel</entry>
     
     <!-- MASS DELETE -->
     <!-- ******************************************************************************************************************** -->
@@ -303,11 +299,10 @@
     <entry key="yukon.common.device.bulk.massDeleteConfirm.header">Confirm Mass Delete:</entry>
     <entry key="yukon.common.device.bulk.massDeleteConfirm.noteLabel">Confirm:</entry>
     <entry key="yukon.common.device.bulk.massDeleteConfirm.noteText"><![CDATA[
-        You are about to delete {0} devices.<br>Use the "Delete" button below to confirm this action and perform the delete, or click "Cancel" to return to the Collection Actions page.
+        You are about to delete {0} devices.<br>Use the "Delete" button below to confirm this action and perform the delete.
     ]]></entry>
     
     <entry key="yukon.common.device.bulk.massDeleteConfirm.delete">Delete</entry>
-    <entry key="yukon.common.device.bulk.massDeleteConfirm.cancel">Cancel</entry>
     
     <!-- massDeleteResults.jsp -->
     <entry key="yukon.common.device.bulk.massDeleteResults.pageTitle">Mass Delete Results</entry>
@@ -338,7 +333,6 @@
     <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.noteText">Select the Device Type you wish to change selected devices to.</entry>
     
     <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.change">Change Device Type</entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.cancel">Cancel</entry>
     
     <!-- changeDeviceTypeResults.jsp -->
     <entry key="yukon.common.device.bulk.changeDeviceTypeResults.pageTitle">Change Device Type Results</entry>
@@ -394,8 +388,6 @@
     
     <!-- misc -->
     <entry key="yukon.common.device.bulk.addPointsHome.addButton">Add Points</entry>
-    <entry key="yukon.common.device.bulk.addPointsHome.cancelButton">Cancel</entry>
-    <entry key="yukon.common.device.bulk.addPointsHome.noPointsSelectedError">No points selected.</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.noPointsSuppliedMsg">Error: Select at least one point to add.</entry>
     
     <!-- addRemovePointsResults.jsp -->
@@ -446,8 +438,6 @@
     
     <!-- misc -->
     <entry key="yukon.common.device.bulk.updatePointsHome.updateButton">Update</entry>
-    <entry key="yukon.common.device.bulk.updatePointsHome.cancelButton">Cancel</entry>
-    <entry key="yukon.common.device.bulk.updatePointsHome.noPointsSelectedError">No points selected.</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg">Error: Select at least one point to update.</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.validDecimalNumberMsg">Error: Value must be a valid decimal number.</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.numberGreaterThanZeroMsg">Error: Value must be a number greater than zero.</entry>
@@ -500,8 +490,6 @@
     
     <!-- misc -->
     <entry key="yukon.common.device.bulk.removePointsHome.removeButton">Remove Points</entry>
-    <entry key="yukon.common.device.bulk.removePointsHome.cancelButton">Cancel</entry>
-    <entry key="yukon.common.device.bulk.removePointsHome.noPointsSelectedError">No points selected.</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.noPointsSuppliedMsg">Error: Select at least one point to remove.</entry>
     
     <!-- addRemovePointsResults.jsp -->

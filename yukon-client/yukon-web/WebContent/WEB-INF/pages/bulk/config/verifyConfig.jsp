@@ -36,7 +36,6 @@
     
     <%-- BOX --%>
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.verifyConfig.header"/>
-    <cti:msg var="cancel" key="yukon.common.device.bulk.verifyConfig.cancel" />
     <cti:msg var="verify" key="yukon.common.device.bulk.verifyConfig.verify" />
     <tags:bulkActionContainer   key="yukon.common.device.bulk.verifyConfig" deviceCollection="${deviceCollection}">
         <form id="verifyConfigForm" method="get" action="/spring/bulk/config/doVerifyConfigs">
@@ -45,7 +44,6 @@
             <table>
                 <tr>
                     <td><input type="submit" name="verifyButton" value="${verify}"></td>
-                    <td><input type="submit" name="cancelButton" value="${cancel}"></td>
                 </tr>
             </table>
         </form>

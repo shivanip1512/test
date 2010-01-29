@@ -83,51 +83,38 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
     public ModelAndView changeDeviceType(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = null;
-        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
-        // CANCEL
-        if (cancelButton != null) {
-            
-            // redirect
-            mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
-            mav.addAllObjects(deviceCollection.getCollectionParameters());
-            return mav;
+        // CALLBACK
+    	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
-        // DO CHANGE
-        } else {
-            
-            // CALLBACK
-        	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-            StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-            StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
-            
-            ChangeDeviceTypeCallbackResult callbackResult = new ChangeDeviceTypeCallbackResult(resultsId,
-																						deviceCollection, 
-																						successGroup, 
-																						processingExceptionGroup, 
-																						deviceGroupMemberEditorDao,
-																						deviceGroupCollectionHelper);
-            
-            // CACHE
-            recentResultsCache.addResult(resultsId, callbackResult);
-            
-            // PROCESS
-            final int selectedDeviceType = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypes"); 
-            SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
+        ChangeDeviceTypeCallbackResult callbackResult = new ChangeDeviceTypeCallbackResult(resultsId,
+																					deviceCollection, 
+																					successGroup, 
+																					processingExceptionGroup, 
+																					deviceGroupMemberEditorDao,
+																					deviceGroupCollectionHelper);
+        
+        // CACHE
+        recentResultsCache.addResult(resultsId, callbackResult);
+        
+        // PROCESS
+        final int selectedDeviceType = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypes"); 
+        SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
 
-                @Override
-                public void process(SimpleDevice device) throws ProcessingException {
-                    changeDeviceTypeService.changeDeviceType(device, PaoType.getForId(selectedDeviceType));
-                }
-            };
-            
-            ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
-            bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
-            
-            mav = new ModelAndView("redirect:changeDeviceTypeResults");
-            mav.addObject("resultsId", resultsId);
-        }
+            @Override
+            public void process(SimpleDevice device) throws ProcessingException {
+                changeDeviceTypeService.changeDeviceType(device, PaoType.getForId(selectedDeviceType));
+            }
+        };
+        
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
+        
+        mav = new ModelAndView("redirect:changeDeviceTypeResults");
+        mav.addObject("resultsId", resultsId);
         
         return mav;
     }

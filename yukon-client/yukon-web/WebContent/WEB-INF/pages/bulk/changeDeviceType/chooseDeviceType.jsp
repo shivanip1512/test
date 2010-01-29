@@ -51,10 +51,9 @@
             </select>
             <br><br>
             
-            <%-- DELETE OR CANCEL BUTTONS --%>
-            <cti:msg var="cancel" key="yukon.common.device.bulk.changeDeviceTypeChoose.cancel" />
+            <%-- DELETE BUTTONS --%>
             <cti:msg var="change" key="yukon.common.device.bulk.changeDeviceTypeChoose.change" />
-            <input type="submit" name="cancelButton" value="${cancel}"> <input type="submit" name="changeButton" value="${change}">
+            <input type="submit" name="changeButton" value="${change}">
             <br>
             
         </form>

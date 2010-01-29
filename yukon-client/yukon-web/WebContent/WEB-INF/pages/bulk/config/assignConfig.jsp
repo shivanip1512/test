@@ -57,12 +57,11 @@
 	                </td>
 	            </tr>
             </table>
-            <%-- ASSIGN OR CANCEL BUTTONS --%>
+            <%-- ASSIGN BUTTON --%>
             <c:choose>
                 <c:when test="${fn:length(existingConfigs) > 0}">
-		            <cti:msg var="cancel" key="yukon.common.device.bulk.assignConfig.cancel" />
 		            <cti:msg var="assign" key="yukon.common.device.bulk.assignConfig.assign" />
-		            <input type="submit" name="cancelButton" value="${cancel}"> <input type="submit" name="assignButton" value="${assign}">
+		            <input type="submit" name="assignButton" value="${assign}">
                 </c:when>
                 <c:otherwise>
                     There are no existing configurations.<br><br>

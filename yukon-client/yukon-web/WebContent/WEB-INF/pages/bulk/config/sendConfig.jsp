@@ -36,7 +36,6 @@
     
     <%-- BOX --%>
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.sendConfig.header"/>
-    <cti:msg var="cancel" key="yukon.common.device.bulk.sendConfig.cancel" />
     <cti:msg var="send" key="yukon.common.device.bulk.sendConfig.send" />
     <tags:bulkActionContainer   key="yukon.common.device.bulk.sendConfig" deviceCollection="${deviceCollection}">
     
@@ -56,7 +55,6 @@
                         </select>
                     </td>
                     <td><input type="submit" name="sendButton" value="${send}"></td>
-                    <td><input type="submit" name="cancelButton" value="${cancel}"></td>
                 </tr>
             </table>
         </form>

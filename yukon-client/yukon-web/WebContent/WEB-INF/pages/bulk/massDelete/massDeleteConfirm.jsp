@@ -63,10 +63,9 @@
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
-            <%-- DELETE OR CANCEL BUTTONS --%>
-            <cti:msg var="cancel" key="yukon.common.device.bulk.massDeleteConfirm.cancel" />
+            <%-- DELETE BUTTON --%>
             <cti:msg var="delete" key="yukon.common.device.bulk.massDeleteConfirm.delete" />
-            <input type="submit" name="cancelButton" value="${cancel}"> <input type="submit" name="deleteButton" value="${delete}">
+            <input type="submit" name="deleteButton" value="${delete}">
             <br>
             
         </form>
