@@ -95,46 +95,33 @@ public class DeviceConfigController extends BulkControllerBase {
     public ModelAndView doAssignConfig(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = null;
-        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        // CANCEL
-        if (cancelButton != null) {
-            
-            // redirect
-            mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
-            mav.addAllObjects(deviceCollection.getCollectionParameters());
-            return mav;
+        // CALLBACK
+        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
-        // DO ASSIGN
-        } else {
-            
-            // CALLBACK
-            String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-            StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-            StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
-            
-            AssignConfigCallbackResult callbackResult = new AssignConfigCallbackResult(resultsId,
-                                                                                        deviceCollection, 
-                                                                                        successGroup, 
-                                                                                        processingExceptionGroup, 
-                                                                                        deviceGroupMemberEditorDao,
-                                                                                        deviceGroupCollectionHelper);
-            
-            // CACHE
-            recentResultsCache.addResult(resultsId, callbackResult);
-            
-            // PROCESS
-            final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
-            ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+        AssignConfigCallbackResult callbackResult = new AssignConfigCallbackResult(resultsId,
+                                                                                    deviceCollection, 
+                                                                                    successGroup, 
+                                                                                    processingExceptionGroup, 
+                                                                                    deviceGroupMemberEditorDao,
+                                                                                    deviceGroupCollectionHelper);
+        
+        // CACHE
+        recentResultsCache.addResult(resultsId, callbackResult);
+        
+        // PROCESS
+        final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
+        ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
 
-            Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
-            
-            ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
-            bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
-            
-            mav = new ModelAndView("redirect:assignConfigResults");
-            mav.addObject("resultsId", resultsId);
-        }
+        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+        
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
+        
+        mav = new ModelAndView("redirect:assignConfigResults");
+        mav.addObject("resultsId", resultsId);
         
         return mav;
     }
@@ -212,14 +199,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @return
      */
     @RequestMapping
-    public String doVerifyConfigs(DeviceCollection deviceCollection, String cancelButton, LiteYukonUser user, ModelMap model) {
+    public String doVerifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
-        // CANCEL
-        if (cancelButton != null) {
-            // redirect
-            model.addAllAttributes(deviceCollection.getCollectionParameters());
-            return "redirect:/spring/bulk/collectionActions";
-        }
         
         // DO VERIFY
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
@@ -248,7 +229,6 @@ public class DeviceConfigController extends BulkControllerBase {
     /**
      * DO READ CONFIG
      * @param deviceCollection
-     * @param cancelButton
      * @param method
      * @param user
      * @param model
@@ -256,15 +236,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping(method=RequestMethod.POST)
-    public String doReadConfig(DeviceCollection deviceCollection, String cancelButton, LiteYukonUser user, ModelMap model) throws ServletException {
+    public String doReadConfig(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) throws ServletException {
         
-        // CANCEL
-        if (cancelButton != null) {
-            // redirect
-            model.addAllAttributes(deviceCollection.getCollectionParameters());
-            return "redirect:/spring/bulk/collectionActions";
-        }
-
         // DO SEND
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
@@ -283,7 +256,6 @@ public class DeviceConfigController extends BulkControllerBase {
     /**
      * DO SEND CONFIG
      * @param deviceCollection
-     * @param cancelButton
      * @param method
      * @param user
      * @param model
@@ -291,15 +263,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping(method=RequestMethod.POST)
-    public String doSendConfig(DeviceCollection deviceCollection, String cancelButton, String method, LiteYukonUser user, ModelMap model) throws ServletException {
+    public String doSendConfig(DeviceCollection deviceCollection, String method, LiteYukonUser user, ModelMap model) throws ServletException {
         
-        // CANCEL
-        if (cancelButton != null) {
-            // redirect
-            model.addAllAttributes(deviceCollection.getCollectionParameters());
-            return "redirect:/spring/bulk/collectionActions";
-        }
-
         // DO SEND
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override

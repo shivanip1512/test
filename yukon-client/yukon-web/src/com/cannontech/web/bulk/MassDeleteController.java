@@ -76,48 +76,35 @@ public class MassDeleteController extends BulkControllerBase {
     public ModelAndView doMassDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = null;
-        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
-        // CANCEL
-        if (cancelButton != null) {
-            
-            // redirect
-            mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
-            mav.addAllObjects(deviceCollection.getCollectionParameters());
-            return mav;
+        // CALLBACK
+    	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
-        // DO DELETE
-        } else {
-            
-            // CALLBACK
-        	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-            StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
-            
-            MassDeleteCallbackResult callbackResult = new MassDeleteCallbackResult(resultsId,
-																			deviceCollection, 
-																			processingExceptionGroup, 
-																			deviceGroupMemberEditorDao,
-																			deviceGroupCollectionHelper);
-            
-            // CACHE
-            recentResultsCache.addResult(resultsId, callbackResult);
-            
-            // PROCESS
-            SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
+        MassDeleteCallbackResult callbackResult = new MassDeleteCallbackResult(resultsId,
+																		deviceCollection, 
+																		processingExceptionGroup, 
+																		deviceGroupMemberEditorDao,
+																		deviceGroupCollectionHelper);
+        
+        // CACHE
+        recentResultsCache.addResult(resultsId, callbackResult);
+        
+        // PROCESS
+        SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
 
-                @Override
-                public void process(SimpleDevice device) throws ProcessingException {
-                    processDeviceDelete(device);
-                }
-            };
-            
-            ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
-            bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
-            
-            mav = new ModelAndView("redirect:massDeleteResults");
-            mav.addObject("resultsId", resultsId);
-        }
+            @Override
+            public void process(SimpleDevice device) throws ProcessingException {
+                processDeviceDelete(device);
+            }
+        };
+        
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
+        
+        mav = new ModelAndView("redirect:massDeleteResults");
+        mav.addObject("resultsId", resultsId);
         
         return mav;
     }
