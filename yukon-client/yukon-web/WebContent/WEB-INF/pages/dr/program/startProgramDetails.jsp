@@ -126,6 +126,11 @@ updateSubmitButtons = function() {
         </tr>
     </table>
 
+    <script type="text/javascript">
+        startNowChecked();
+        scheduleStopChecked();
+    </script>
+    
     <br>
     <br>
 
