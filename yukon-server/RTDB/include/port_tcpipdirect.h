@@ -33,7 +33,6 @@ protected:
 
 private:
 
-   struct sockaddr_in   _server;
    SOCKET               _socket;
 
    bool                 _open;
@@ -50,10 +49,7 @@ public:
    CtiPortTCPIPDirect();
    CtiPortTCPIPDirect(CtiPortDialable *dial);
 
-   CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef);
    virtual ~CtiPortTCPIPDirect();
-
-   CtiPortTCPIPDirect& operator=(const CtiPortTCPIPDirect& aRef);
 
    INT           getIPPort()    const;
    const string &getIPAddress() const;

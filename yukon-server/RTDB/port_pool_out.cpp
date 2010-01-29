@@ -81,15 +81,6 @@ void CtiPortPoolDialout::DecodePooledPortsDatabaseReader(RWDBReader &rdr)
     }
 }
 
-CtiPortPoolDialout& CtiPortPoolDialout::operator=(const CtiPortPoolDialout& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-    }
-    return *this;
-}
-
 size_t CtiPortPoolDialout::addPort(CtiPortSPtr port)
 {
     if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDADDITION)

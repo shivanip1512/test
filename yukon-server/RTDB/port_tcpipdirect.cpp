@@ -46,32 +46,15 @@ _connected(false)
     }
 }
 
-CtiPortTCPIPDirect::CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef)
-{
-    *this = aRef;
-}
-
 CtiPortTCPIPDirect::~CtiPortTCPIPDirect()
 {
-    close(false);
+    CtiPortTCPIPDirect::close(false);
     if(_dialable)
     {
         delete _dialable;
         _dialable = 0;
     }
 }
-
-CtiPortTCPIPDirect& CtiPortTCPIPDirect::operator=(const CtiPortTCPIPDirect& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _tcpIpInfo = aRef._tcpIpInfo;
-    }
-    return *this;
-}
-
 
 const string &CtiPortTCPIPDirect::getIPAddress() const  {  return _tcpIpInfo.getIPAddress();  }
 INT           CtiPortTCPIPDirect::getIPPort()    const  {  return _tcpIpInfo.getIPPort();     }
@@ -117,7 +100,8 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
             /* Take a crack at hooking up */
             /* set up client for stuff we will send */
-            memset (&_server, 0, sizeof (_server));
+            struct sockaddr_in   server;
+            memset (&server, 0, sizeof (server));
             unsigned long ip;
 
             if( isalpha(getIPAddress()[(size_t)0]) )
@@ -130,9 +114,9 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 ip = inet_addr ( getIPAddress().data() );
             }
 
-            _server.sin_family = AF_INET;
-            _server.sin_port = htons( ipport );
-            _server.sin_addr = *(in_addr*)&ip;
+            server.sin_family = AF_INET;
+            server.sin_port = htons( ipport );
+            server.sin_addr = *(in_addr*)&ip;
 
             /* get a stream socket. */
             if((_socket = socket (AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
@@ -146,7 +130,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             }
             else
             {
-                if( connect(_socket, (const struct sockaddr*)&_server, sizeof(_server)) == SOCKET_ERROR)
+                if( connect(_socket, (const struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

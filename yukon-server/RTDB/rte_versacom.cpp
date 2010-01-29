@@ -275,20 +275,20 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
 
     VSTRUCT        VSt;
 
-    CtiProtocolVersacom  Versacom(_transmitterDevice->getType());
+    CtiProtocolVersacom  vcom(_transmitterDevice->getType());
 
     if(OutMessage->EventCode & ENCODED)
     {
         // Someone else did all the parsing and is just needs building
         // Prime the Protocol device with the vstruct, and call the update routine
-        if((status = Versacom.primeAndAppend(OutMessage->Buffer.VSt)) == NORMAL)
+        if((status = vcom.primeAndAppend(OutMessage->Buffer.VSt)) == NORMAL)
         {
-            status = Versacom.updateVersacomMessage();
+            status = vcom.updateVersacomMessage();
         }
     }
     else
     {
-        status = Versacom.parseRequest(parse, OutMessage->Buffer.VSt);  // Pick out the CommandType and parameters
+        status = vcom.parseRequest(parse, OutMessage->Buffer.VSt);  // Pick out the CommandType and parameters
     }
 
     /*
@@ -303,13 +303,13 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
         OutMessage->TimeOut   = 2;
         OutMessage->InLength  = -1;
 
-        for(j = 0; j < Versacom.entries(); j++)
+        for(j = 0; j < vcom.entries(); j++)
         {
             OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );  // Create and copy
 
             if(NewOutMessage != NULL)
             {
-                VSt = Versacom.getVStruct(j);           // Copy in the structure
+                VSt = vcom.getVStruct(j);           // Copy in the structure
 
                 /************** VersaCommSend **************/
                 /* Calculate the length */
@@ -341,9 +341,9 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
         }
     }
 
-    if(Versacom.entries() > 0)
+    if(vcom.entries() > 0)
     {
-        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName();
+        resultString = CtiNumStr(vcom.entries()) + " Versacom commands sent on route " + getName();
     }
     else
     {

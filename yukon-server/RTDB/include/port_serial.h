@@ -36,14 +36,7 @@ public:
 
     CtiPortSerial() {}
 
-    CtiPortSerial(const CtiPortSerial& aRef)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiPortSerial() {}
-
-    CtiPortSerial& operator=(const CtiPortSerial& aRef);
 
     const CtiTablePortSettings& getTablePortSettings() const
     {

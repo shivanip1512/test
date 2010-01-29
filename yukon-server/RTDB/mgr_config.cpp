@@ -24,12 +24,15 @@ using std::string;
 using namespace Cti;
 using namespace Config;
 
-CtiConfigManager::CtiConfigManager() : isInitialized(false)
+CtiConfigManager::CtiConfigManager() : 
+    isInitialized(false), 
+    _devMgr(0)
 {
 }
 
 CtiConfigManager::~CtiConfigManager()
 {
+    _devMgr = 0;
 }
 
 void CtiConfigManager::refreshConfigurations()
@@ -270,19 +273,19 @@ void CtiConfigManager::loadConfigs(long configID)
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
-            long configID;
+            long cfgID;
             string name, type;
 
-            rdr["deviceconfigurationid"] >> configID;
+            rdr["deviceconfigurationid"] >> cfgID;
             rdr["name"] >> name;
             rdr["type"] >> type;
 
-            CtiConfigDeviceSPtr configDevSPtr = _deviceConfig.find(configID);
+            CtiConfigDeviceSPtr configDevSPtr = _deviceConfig.find(cfgID);
 
             if( !configDevSPtr )//This key is not in the map yet
             {
-                CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice(configID, name, type));
-                ConfigDeviceMap::insert_pair tempPair = _deviceConfig.insert(configID,devPtr);
+                CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice(cfgID, name, type));
+                ConfigDeviceMap::insert_pair tempPair = _deviceConfig.insert(cfgID,devPtr);
                 configDevSPtr = tempPair.first->second;
             }
         }
@@ -332,16 +335,16 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
         {
             if( rdr() )
             {
-                long devID, configID;
+                long devID, cfgID;
 
-                rdr["deviceconfigurationid"] >>configID;
+                rdr["deviceconfigurationid"] >>cfgID;
                 rdr["deviceid"]>>devID;
 
                 CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
 
                 CtiConfigDeviceSPtr tempSPtr;
 
-                if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
+                if( (tempSPtr = _deviceConfig.find(cfgID)) && pDev )
                 {
                     pDev->changeDeviceConfig(tempSPtr);
                 }
@@ -361,16 +364,16 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
         {
             while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
             {
-                long devID, configID;
+                long devID, cfgID;
 
-                rdr["deviceconfigurationid"] >>configID;
+                rdr["deviceconfigurationid"] >>cfgID;
                 rdr["deviceid"]>>devID;
 
                 CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
 
                 CtiConfigDeviceSPtr tempSPtr;
 
-                if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
+                if( (tempSPtr = _deviceConfig.find(cfgID)) && pDev )
                 {
                     pDev->changeDeviceConfig(tempSPtr);
                 }

@@ -751,50 +751,31 @@ CtiPortDirect::CtiPortDirect() :
 _dialable(0),
 _portHandle(0)
 {
+    memset(&_dcb, 0, sizeof(_dcb));
+    memset(&_cto, 0, sizeof(_cto));
 }
 
 CtiPortDirect::CtiPortDirect(CtiPortDialable *dial) :
 _dialable(dial),
 _portHandle(0)
 {
+    memset(&_dcb, 0, sizeof(_dcb));
+    memset(&_cto, 0, sizeof(_cto));
+
     if(_dialable != 0)
     {
         _dialable->setSuperPort(this);
     }
 }
 
-CtiPortDirect::CtiPortDirect(const CtiPortDirect& aRef) :
-_dialable(0),
-_portHandle(0)
-{
-    *this = aRef;
-}
-
 CtiPortDirect::~CtiPortDirect()
 {
-    close(false);
+    CtiPortDirect::close(false);  //  prevent virtual dispatch
     if(_dialable)
     {
         delete _dialable;
         _dialable = 0;
     }
-}
-
-CtiPortDirect& CtiPortDirect::operator=(const CtiPortDirect& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _portHandle    = aRef.getHandle();
-        _localSerial   = aRef.getLocalSerial();
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    return *this;
 }
 
 void CtiPortDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const

@@ -54,15 +54,3 @@ CtiPort& CtiPortSerial::setDelay(int Offset, int D)
     return *this;
 }
 
-
-CtiPortSerial& CtiPortSerial::operator=(const CtiPortSerial& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        _tblPortSettings = aRef.getTablePortSettings();
-        _tblPortTimings = aRef.getTablePortTimings();
-    }
-    return *this;
-}
-

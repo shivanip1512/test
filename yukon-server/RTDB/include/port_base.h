@@ -50,6 +50,8 @@ using std::iostream;
 
 #define DEFAULT_QUEUE_GRIPE_POINT 50
 
+#include <boost/noncopyable.hpp>
+
 class CtiPort;
 typedef shared_ptr< CtiPort > CtiPortSPtr;
 
@@ -58,7 +60,7 @@ typedef void (*CTI_PORTTHREAD_FUNC_PTR)(void*);
 typedef CTI_PORTTHREAD_FUNC_PTR (*CTI_PORTTHREAD_FUNC_FACTORY_PTR)(int);
 class CtiTraceMsg;
 
-class IM_EX_PRTDB CtiPort : public CtiMemDBObject
+class IM_EX_PRTDB CtiPort : public CtiMemDBObject, boost::noncopyable
 {
 public:
 
@@ -68,11 +70,9 @@ public:
 
 
     CtiPort();
-    CtiPort(const CtiPort& aRef);
 
     virtual ~CtiPort();
 
-    CtiPort& operator=(const CtiPort& aRef);
     bool operator<(const CtiPort& rhs) const;
 
     LONG getConnectedDevice() const;
@@ -308,7 +308,6 @@ protected:
 
 private:
 
-    size_t                      _traceListOffset;
     CTI_PORTTHREAD_FUNC_PTR     _portFunc;
 
     mutable CtiMutex            _exclusionMux;          // Used when processing the exclusion logic

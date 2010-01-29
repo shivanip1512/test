@@ -48,11 +48,8 @@ public:
 
    CtiPortDirect();
    CtiPortDirect(CtiPortDialable *dial);
-   CtiPortDirect(const CtiPortDirect& aRef);
 
    virtual ~CtiPortDirect();
-
-   CtiPortDirect& operator=(const CtiPortDirect& aRef);
 
    CtiTablePortLocalSerial          getLocalSerial() const;
    CtiTablePortLocalSerial&         getLocalSerial();

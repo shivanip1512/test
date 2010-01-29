@@ -515,7 +515,6 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                                          list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
 {
-    INT            i, j;
     INT            status = NORMAL;
     string      resultString;
     string      byteString;

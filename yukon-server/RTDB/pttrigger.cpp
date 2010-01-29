@@ -253,7 +253,7 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
 void CtiPointTriggerManager::erase(long ptID)
 {
     spiterator pointIter;
-    int startCount = 0, endCount;
+    int startCount = 0, endCount = 0;
 
     {
         LockGuard guard(_mapMux);

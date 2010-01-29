@@ -20,7 +20,9 @@
 
 #include "port_base.h"
 
-class CtiHayesModem
+#include <boost/noncopyable.hpp>
+
+class CtiHayesModem : boost::noncopyable
 {
 public:
 
@@ -115,7 +117,6 @@ public:
     int getOptionRegister(  );
     int getFlagRegister(  );
     int goOnline(  );
-    int setDialingMethod(  int method );
     int dial(  char  *digit_string );
     int repeatLastCommand(  );
     int dialInAnswerMode(  char  *digits );

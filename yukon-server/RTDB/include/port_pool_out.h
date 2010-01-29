@@ -58,16 +58,9 @@ public:
     {
     }
 
-    CtiPortPoolDialout(const CtiPortPoolDialout& aRef)
-    {
-        *this = aRef;
-    }
-
     virtual ~CtiPortPoolDialout()
     {
     }
-
-    CtiPortPoolDialout& operator=(const CtiPortPoolDialout& aRef);
 
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

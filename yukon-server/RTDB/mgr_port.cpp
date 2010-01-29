@@ -563,8 +563,6 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
             if( tempPort->getType() == PortTypeTServerDirect ||
                 tempPort->getType() == PortTypeUdp )
             {
-                //  handle TCP and UDP port reloads...  but for devices... ?
-
                 tempPortTCP = boost::static_pointer_cast<CtiPortTCPIPDirect>(tempPort);
 
                 oldIP   = tempPortTCP->getIPAddress();
@@ -767,7 +765,6 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
             if( !anxiousPort->isExecutionProhibited() && !anxiousPort->isExecutionProhibitedByInternalLogic() )
             {
                 ptr_type port;
-                spiterator itr;
 
                 if(anxiousPort->hasExclusions())
                 {

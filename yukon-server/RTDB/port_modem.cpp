@@ -32,6 +32,7 @@ static int PortKillTime( CtiPort *port, int millisleep )
 }
 
 CtiHayesModem::CtiHayesModem() :
+    _port(0),
     _status(0),
     _delay_value(0),
     _match_string("OK"),
@@ -41,6 +42,7 @@ CtiHayesModem::CtiHayesModem() :
 
 CtiHayesModem::~CtiHayesModem()
 {
+    _port = 0;
 }
 
 
@@ -828,55 +830,6 @@ int  CtiHayesModem::goOnline(  )  /* Tag: Modem public */
         return( error_code );
 }
 
-#if 0
-/*
- *  int setDialingMethod(  int ctrl )
- *
- *  ARGUMENTS
- *
- *    : The _port the modem is attached to.
- *
- *   int ctrl   : The new dialing method.  The three options to be
- *        used here are the constants TOUCH_TONE, PULSE, and
- *        DEFAULT_DIALING_METHOD.  These three options determine
- *        which letter will follow the "ATD" part of the dialing
- *        string.  The letter will either be "T", "P", or nothing.
- *        The dialing method gets stored in the _port structure
- *        so that it is assigned on an individual basis for each
- *        _port.
- *
- *  DESCRIPTION
- *
- *   This command sets the dialing method for a given _port.  See the
- *   description of the ctrl parameter above for an explanation of how
- *   it works.
- *
- *  SIDE EFFECTS
- *
- *   None.
- *
- *  RETURNS
- *
- *   An error code.
- *
- *  AUTHOR
- *
- *
- *
- *  MODIFICATIONS
- *
- */
-
-int  CtiHayesModem::setDialingMethod(  int ctrl )  /* Tag: Modem public */
-{
-    if( _port == NULL )
-        return( ASINVPAR );
-    if( ctrl < TOUCH_TONE || ctrl > DEFAULT_DIALING_METHOD )
-        return( _status = ASINVPAR );
-    _port->dialing_method = ctrl;
-    return( NORMAL );
-}
-#endif
 
 /*
  *  int dial(  char *s )
@@ -1432,11 +1385,11 @@ int  CtiHayesModem::setVerboseMode(  int ctrl )  /* Tag: Modem public */
 }
 
 /*
- *  void waitForOK( long milliseconds, char *match_string )
+ *  void waitForOK( long millisec, char *match_string )
  *
  *  ARGUMENTS
  *
- *   long milliseconds  : The amount of time to wait after a command
+ *   long millisec  : The amount of time to wait after a command
  *            is sent to the modem for a good response.
  *
  *   char *match_string : The string to watch for.
@@ -1468,11 +1421,11 @@ int  CtiHayesModem::setVerboseMode(  int ctrl )  /* Tag: Modem public */
  *
  */
 
-void  CtiHayesModem::waitForOK( long milliseconds, char *match_string )  /* Tag: Modem public */
+void  CtiHayesModem::waitForOK( long millisec, char *match_string )  /* Tag: Modem public */
 {
     if( match_string != NULL )
         _match_string = match_string;
-    _delay_value = -milliseconds;
+    _delay_value = -millisec;
 }
 
 /*
@@ -1550,11 +1503,11 @@ void  CtiHayesModem::setUpAbortKey( unsigned int key )  /* Tag: Modem public */
 #endif
 
 /*
- *  void fixedDelay( long milliseconds )
+ *  void fixedDelay( long millisec )
  *
  *  ARGUMENTS
  *
- *   long milliseconds : The number of milliseconds to delay after any
+ *   long millisec : The number of milliseconds to delay after any
  *           sendString command.
  *
  *  DESCRIPTION
@@ -1584,19 +1537,19 @@ void  CtiHayesModem::setUpAbortKey( unsigned int key )  /* Tag: Modem public */
  */
 
 
-void  CtiHayesModem::fixedDelay( long milliseconds )  /* Tag: Modem public */
+void  CtiHayesModem::fixedDelay( long millisec )  /* Tag: Modem public */
 {
-    _delay_value = milliseconds;
+    _delay_value = millisec;
 }
 
 /*
- *  int sendString(  char *string )
+ *  int sendString(  char *str )
  *
  *  ARGUMENTS
  *
  *      :  The _port the modem is attached to.
  *
- *   char *string :  The string to send out to the modem.
+ *   char *str :  The string to send out to the modem.
  *
  *  DESCRIPTION
  *
@@ -1627,13 +1580,13 @@ void  CtiHayesModem::fixedDelay( long milliseconds )  /* Tag: Modem public */
  *
  */
 
-int  CtiHayesModem::sendString( const char *string )  /* Tag: Modem public */
+int  CtiHayesModem::sendString( const char *str )  /* Tag: Modem public */
 {
     long current_time;
     int retvalue;
     char buffer[40];
 
-    retvalue = sendStringNoWait( string, '\r' );
+    retvalue = sendStringNoWait( str, '\r' );
     if( retvalue < NORMAL )
     {
         return( retvalue );
@@ -1687,13 +1640,13 @@ int  CtiHayesModem::sendString( const char *string )  /* Tag: Modem public */
 }
 
 /*
- *  int sendStringNoWait(  char *string )
+ *  int sendStringNoWait(  char *str )
  *
  *  ARGUMENTS
  *
  *      :  The _port the modem is attached to.
  *
- *   char *string :  The string to send out to the modem.
+ *   char *str :  The string to send out to the modem.
  *
  *  DESCRIPTION
  *
@@ -1720,12 +1673,12 @@ int  CtiHayesModem::sendString( const char *string )  /* Tag: Modem public */
  */
 
 
-int  CtiHayesModem::sendStringNoWait(  const char *string, int termination_sequence )
+int  CtiHayesModem::sendStringNoWait(  const char *str, int termination_sequence )
 {
     int length;
     int saved_status;
 
-    length = writeString( string, termination_sequence );
+    length = writeString( str, termination_sequence );
     if( _status < NORMAL )
         return( _status );
 
@@ -1832,13 +1785,13 @@ int  CtiHayesModem::getRegister(  int num )  /* Tag: Modem public */
 }
 
 /*
- *  long inputLine(  long milliseconds, char *buffer, int length )
+ *  long inputLine(  long millisec, char *buffer, int length )
  *
  *  ARGUMENTS
  *
  *           :  The _port the modem is attached to.
  *
- *   long milliseconds :  The length of time to wait for a full input line.
+ *   long millisec :  The length of time to wait for a full input line.
  *
  *   char *buffer      :  A pointer to the buffer that will receive the
  *            input line.
@@ -1870,7 +1823,7 @@ int  CtiHayesModem::getRegister(  int num )  /* Tag: Modem public */
  *
  */
 
-long  CtiHayesModem::inputLine(  long milliseconds, char *buffer, int length )  /* Tag: Modem public */
+long  CtiHayesModem::inputLine(  long millisec, char *buffer, int length )  /* Tag: Modem public */
 {
     int i;
     int c;
@@ -1878,7 +1831,7 @@ long  CtiHayesModem::inputLine(  long milliseconds, char *buffer, int length )  
     int return_status;
     long return_time;
 
-    timeout = GetTickCount() + milliseconds;
+    timeout = GetTickCount() + millisec;
     i = 0;
     length--;
     if( length <= 0 )
@@ -1933,12 +1886,12 @@ long  CtiHayesModem::inputLine(  long milliseconds, char *buffer, int length )  
 
 
 /*
- * int writeString( PORT *_port, char *string, int termination_sequence )
+ * int writeString( PORT *_port, char *str, int termination_sequence )
  * ARGUMENTS
  *
  * PORT *_port         : A pointer to a generic _port structure.
  *
- * char *string       : A pointer to a null terminated string which will
+ * char *str       : A pointer to a null terminated string which will
  *                      be sent out of the _port.
  *
  * int termination_sequence : if >= 0, this is the character to be sent
@@ -1969,14 +1922,14 @@ long  CtiHayesModem::inputLine(  long milliseconds, char *buffer, int length )  
  *
  */
 
-int CtiHayesModem::writeString(  const char *string, char termination_sequence )
+int CtiHayesModem::writeString(  const char *str, char termination_sequence )
 {
     ULONG bcount = 0;
 
     if( termination_sequence < -2 || termination_sequence > 255)
         return( _status = ASINVPAR );
 
-    _port->writePort((void *)string,  strlen( string ), INFINITE, &bcount);
+    _port->writePort((void *)str,  strlen( str ), INFINITE, &bcount);
 
     if( _status < NORMAL )
         return( _status );

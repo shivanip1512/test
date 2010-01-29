@@ -10,151 +10,6 @@
 * REVISION     :  $Revision: 1.77.2.2 $
 * DATE         :  $Date: 2008/11/21 17:55:24 $
 *
-* HISTORY      :
-* $Log: port_base.cpp,v $
-* Revision 1.78  2008/11/17 17:34:41  mfisher
-* YUK-6591 Porter CPU usage needs to be reduced
-* Refactored many locations that iterated over all devices to select and operate on a subset devices
-* Converted some strings to static const
-* Modified mgr_point's point access update function to alleviate an unnecessary set creation/destruction with every access
-* Added isEmpty() calls in a few places to prevent unnecessary iterator creation
-* Other misc speedups (variable removal/relocation)
-* Revision 1.77  2008/10/28 19:21:43  mfisher
-* YUK-6589 Scanner should not load non-scannable devices
-* refreshList() now takes a list of paoids, which may be empty if it's a full reload
-* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
-* Removed a couple unused Porter functions
-* Added logger unit test
-* Simplified DebugTimer's variables
-*
-* Revision 1.76  2008/08/14 15:57:40  jotteson
-* YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
-* Cancellation now uses the new group message ID.
-* Group Message ID name added to Request, Result, Out, and In messages.
-*
-* Revision 1.75  2008/08/06 18:26:48  mfisher
-* YUK-5288 Comm channel IP address change does not take effect until Porter is restarted
-* Removed getIpAddress()/getIpPort() from CtiPortBase
-*
-* Revision 1.74  2008/07/28 15:41:16  jrichter
-* YUK-5583
-* TAP Terminal baud rate is hard-coded to 1200 bps
-*
-* Revision 1.73  2008/07/21 20:38:26  jotteson
-* YUK-4556 CCU queue backs up and returns no error when uninitialized
-* Added expiration functionality regardless of port's state.
-* Added 24 hour default expiration.
-* Modified Cancellation and Expiration to return error and update statistics.
-*
-* Revision 1.72  2007/07/10 21:03:19  mfisher
-* changed project identification to use new build labels (compileinfo_t)
-*
-* Revision 1.71  2007/06/25 19:00:55  mfisher
-* formatting
-*
-* Revision 1.70  2007/05/31 21:41:19  mfisher
-* Reverted text in comments from "CTIDBG_new" back to "new"
-*
-* Revision 1.69  2007/05/30 14:36:23  mfisher
-* YUK-3793
-* added port share blocking (cparm PORT_SHARE_BLOCKING_DURATION) to prevent anyone from using the port share when we're in control of the port
-*
-* Revision 1.68  2007/02/22 17:46:41  jotteson
-* Bug Id: 814, 651
-* Completed integration of MACS with new system messages. QueueWrites were changed to be sure they put the proper ID into the queues. New messaging used, new device interface used.
-*
-* Revision 1.67  2007/01/22 21:32:35  jotteson
-* Ports now track timing of messages.
-*
-* Revision 1.66  2006/04/26 22:26:51  cplender
-* Altered a few commFail Functions to make certain the state is maintained.
-*
-* Revision 1.65  2006/04/20 17:15:30  cplender
-* SearchQueue needs to detect zeroeth item matches.
-*
-* Revision 1.64  2006/04/13 19:37:45  cplender
-* Port Sharing can be forced to 50% shared by using PORTER_FORCE_PORT_SHARE : true.
-* I would avoid this unless your britches are big enough to know you need it.
-* Added for testing at HLYW
-*
-* Revision 1.63  2006/02/27 23:58:31  tspar
-* Phase two of RWTPtrSlist replacement.
-*
-* Revision 1.62  2006/02/27 20:53:29  jotteson
-* Added work count functionality.
-*
-* Revision 1.61  2006/01/19 16:20:58  jotteson
-* Fixed problem with virtual ports.
-*
-* Revision 1.60  2006/01/16 21:11:23  mfisher
-* Message Flags naming change
-*
-* Revision 1.59  2006/01/04 17:17:50  tspar
-* Added an  if statement in isSimulated() , minor change preventing un-needed executions
-*
-* Revision 1.58  2005/12/29 22:12:41  cplender
-* Added _portShareQueue for support of the portsharing.
-* Allows at up to 50% comms to be shared if both comm types want time.
-*
-* Revision 1.57  2005/12/20 20:02:41  mfisher
-* removed generateTraces(), changed traceBytes() to a static so Cti::Porter::DNPUDP's functions can call it
-*
-* Revision 1.56  2005/12/20 17:20:28  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.55  2005/10/04 20:19:03  mfisher
-* added preload functions, improved isSimulated() a little
-*
-* Revision 1.54  2005/07/22 19:20:21  cplender
-* Make isSimulated const.
-*
-* Revision 1.53  2005/04/11 16:51:23  mfisher
-* CtiProtocolEmetcon is now Cti::Protocol::Emetcon
-*
-* Revision 1.52  2005/03/14 01:20:42  cplender
-* Went back to the list.  Don't want to require the Dinkum STL updates.
-*
-* Revision 1.51  2005/02/25 20:16:22  cplender
-* Changed from list to set for queuedDevices.
-*
-* Revision 1.50  2005/02/17 19:02:58  mfisher
-* Removed space before CVS comment header, moved #include "yukon.h" after CVS header
-*
-* Revision 1.49  2005/02/10 23:24:02  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.48  2005/01/27 17:54:11  cplender
-* Altered the comm logging to create and store in a Comm subdir beneath the base logging directory.
-*
-* Revision 1.47  2005/01/18 19:12:10  cplender
-* _queueGripe added to the port.
-*
-* Revision 1.46  2004/12/14 22:27:17  cplender
-* Added counters to observe communications to the ports and queued devices.  May be removed eventually.
-*
-* Revision 1.45  2004/11/24 17:15:38  cplender
-* Changed queue gripe from ten to fifty.
-*
-* Revision 1.44  2004/11/18 23:45:35  mfisher
-* changed shouldProcessQueuedDevices to disregard waiting port entries...
-* will definitely need to be tuned, but this allows at least some processing
-* while PIL is dumping a large number of entries onto the ports
-*
-* Revision 1.43  2004/11/17 17:51:25  mfisher
-* changed text to reflect RTM/RTC parity instead of just RTM
-*
-* Revision 1.42  2004/11/03 19:22:03  mfisher
-* added RTM and RTC parity settings next to TAP
-*
-* Revision 1.41  2004/06/28 20:16:11  cplender
-* Added cparms
-* # PORTER_RELEASE_IDLE_PORTS : true
-* # DEFAULT_MIN_CONNECT : 0
-* # DEFAULT_MAX_CONNECT : 10
-* and code to support opening and closing ALL port type on usage.  This allows
-* IP ports which disconnect, but do not close thier socket to function correctly.
-*
-*
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -673,39 +528,10 @@ _simulated(0),
 _sharingStatus(false),
 _sharingToggle(false),
 _communicating(false),
+_executing(false),
 _entryMsecTime(0)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
-}
-
-CtiPort::CtiPort(const CtiPort& aRef) :
-_queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
-_portFunc(0),
-_minMaxIdle(false),
-_sharingStatus(false),
-_sharingToggle(false),
-_entryMsecTime(0)
-{
-    *this = aRef;
-}
-
-
-CtiPort& CtiPort::operator=(const CtiPort& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-
-        _traceListOffset = aRef._traceListOffset;
-        setConnectedDeviceUID( aRef.getConnectedDeviceUID() );
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " FINISH THIS " << endl;
-        }
-    }
-    return *this;
 }
 
 LONG CtiPort::getConnectedDevice() const
@@ -1314,9 +1140,9 @@ bool CtiPort::isExecuting() const
     return _executing;
 }
 
-void CtiPort::setExecuting(bool set)
+void CtiPort::setExecuting(bool executing)
 {
-    _executing = set;
+    _executing = executing;
     return;
 }
 

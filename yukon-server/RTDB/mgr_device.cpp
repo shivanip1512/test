@@ -598,7 +598,8 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
 }
 
 CtiDeviceManager::CtiDeviceManager(CtiApplication_t app_id) :
-_app_id(app_id)
+_app_id(app_id),
+_dberrorcode(0)
 {
 }
 
