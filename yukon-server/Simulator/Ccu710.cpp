@@ -445,7 +445,7 @@ error_t Ccu710::processRequest(const request_t &request, reply_t &reply)
                  request.feeder_operation.words.end(),
                  EmetconWord::serializer(request_oitr));
 
-            Sleep(dlc_time(request_buf.size() * 8));
+            Sleep(dlc_time(request_buf.size() * 8) * (request.feeder_operation.repeater_count + 1));
 
             if( !words_expected )
             {
@@ -464,7 +464,7 @@ error_t Ccu710::processRequest(const request_t &request, reply_t &reply)
 //  TODO-P2: Add check to verify we got back the correct number of words
 //  TODO-P2: Change to words-expected to determine the delay, not the size of the reply from Grid.
 
-                Sleep(dlc_time(reply_buf.size() * 8));
+                Sleep(dlc_time(reply_buf.size() * 8) * (request.feeder_operation.repeater_count + 1));
 
                 *reply_oitr++ = makeReplyControl(_address, ReplyControl_StartOfDlcReply);
 
