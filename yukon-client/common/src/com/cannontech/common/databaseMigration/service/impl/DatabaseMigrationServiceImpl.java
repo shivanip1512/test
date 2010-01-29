@@ -214,6 +214,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         List<Element> importItemList = getElementListFromFile(importFile);
 
         ImportDatabaseMigrationStatus importDatabaseMigrationStatus = new ImportDatabaseMigrationStatus(importItemList.size(), importFile);
+        importDatabaseMigrationStatus.setExportType(exportType);
         validationStatusCache.addResult(importDatabaseMigrationStatus.getId(), importDatabaseMigrationStatus);
         validateElementList(importItemList, exportType, importDatabaseMigrationStatus);
         

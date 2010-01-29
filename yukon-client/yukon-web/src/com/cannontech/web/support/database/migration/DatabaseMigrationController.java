@@ -335,6 +335,7 @@ public class DatabaseMigrationController {
         mav.addObject("fileSize", CtiUtilities.formatFileSize(resource.getFile().length(), 1));
         mav.addObject("orgDbUrl", orgEnvironment);
         mav.addObject("orgDbUsername", orgSchemaUser);
+        mav.addObject("exportType", status.getExportType());
         
         addDbInfoToMav(mav);
         

@@ -2,6 +2,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i18n" tagdir="/WEB-INF/tags/i18n" %>
+
 
 <cti:msg var="pageTitle" key="yukon.web.modules.support.databaseMigration.importValidate.pageTitle"/>
 <cti:msg var="homePageTitle" key="yukon.web.modules.support.databaseMigration.pageTitle"/>
@@ -119,7 +121,7 @@
 				<%-- MAIN COMPONENT ROW --%>
 				<tr class="component">
 				
-					<td class="component">Load Groups</td>
+					<td class="component"><i18n:inline key="${exportType.typeKey}"/></td>
 				
 					<%-- objects --%>
 					<td class="component basic">

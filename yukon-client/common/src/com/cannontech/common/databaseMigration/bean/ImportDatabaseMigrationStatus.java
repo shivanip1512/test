@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
 import com.cannontech.common.util.Completable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -20,6 +21,7 @@ public class ImportDatabaseMigrationStatus implements Completable {
     int totalCount = 0;
     Date startTime = null;
     Date stopTime = null;
+    ExportTypeEnum exportType = null;
     
     List<String> labelList = Lists.newArrayList();
     WarningProcessingEnum warningProcessing = WarningProcessingEnum.VALIDATE;
@@ -130,6 +132,14 @@ public class ImportDatabaseMigrationStatus implements Completable {
         this.errorsMap = errorsMap;
     }
     
+    // Export Type
+    public ExportTypeEnum getExportType() {
+        return exportType;
+    }
+    public void setExportType(ExportTypeEnum exportType) {
+        this.exportType = exportType;
+    }
+
     public void complete() {
     	this.stopTime = new Date();
     }
@@ -138,4 +148,5 @@ public class ImportDatabaseMigrationStatus implements Completable {
     public boolean isComplete() {
     	return this.currentCount == this.totalCount;
     }
+    
 }
