@@ -277,19 +277,18 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     public List<CustomerAccount> getAccountByAdditionalContactUser(LiteYukonUser user) {
         Validate.notNull(user, "user parameter cannot be null.");
 
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SELECT AccountId, AccountSiteId, AccountNumber, CA.CustomerId,");
-        sb.append("       BillingAddressId, AccountNotes ");
-        sb.append("FROM CustomerAccount CA, Contact Cont, "); 
-        sb.append("     YukonUser YU, CustomerAdditionalContact CAC ");
-        sb.append("WHERE CA.CustomerId = CAC.CustomerId ");
-        sb.append("AND CAC.ContactId = Cont.ContactId ");
-        sb.append("AND YU.UserId = Cont.LoginId ");
-        sb.append("AND YU.UserId = ? ");
-        sb.append("ORDER BY CA.AccountId");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AccountId, AccountSiteId, AccountNumber, CA.CustomerId,");
+        sql.append("       BillingAddressId, AccountNotes ");
+        sql.append("FROM CustomerAccount CA, Contact Cont, "); 
+        sql.append("     YukonUser YU, CustomerAdditionalContact CAC ");
+        sql.append("WHERE CA.CustomerId = CAC.CustomerId ");
+        sql.append("AND CAC.ContactId = Cont.ContactId ");
+        sql.append("AND YU.UserId = Cont.LoginId ");
+        sql.append("AND YU.UserId = ? ");
+        sql.append("ORDER BY CA.AccountId");
 
-        String sql = sb.toString();
-        List<CustomerAccount> list = simpleJdbcTemplate.query(sql, rowMapper, user.getUserID());
+        List<CustomerAccount> list = simpleJdbcTemplate.query(sql.getSql(), rowMapper, user.getUserID());
         return list;
     }
     
