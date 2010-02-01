@@ -2,9 +2,7 @@ package com.cannontech.loadcontrol.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +12,9 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.YukonJdbcOperations;
-import com.cannontech.loadcontrol.dao.LMProgramGearHistory;
-import com.cannontech.loadcontrol.dao.LMProgramGearHistoryMapper;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.dao.ProgramControlHistoryMapper;
 import com.cannontech.loadcontrol.dao.ProgramIdMapper;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
@@ -136,78 +132,30 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 		return baseProgramControlHistory(programId, startDateTime, stopDateTime);
     }
     
+    
     private List<ProgramControlHistory> baseProgramControlHistory(Integer programId, Date startDateTime, Date stopDateTime) {
         
-    	// get raw LMProgramHistory rows
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT ph.ProgramId, ph.ProgramName, pgh.*");
-    	sql.append("FROM LMProgramHistory ph");
-    	sql.append("INNER JOIN LMProgramGearHistory pgh ON (ph.LMProgramHistoryId = pgh.LMProgramHistoryId)");
-    	sql.append("WHERE pgh.EventTime").gt(startDateTime);
-    	sql.append("AND pgh.EventTime").lte(stopDateTime);
-    	if (programId != null) {
+		sql.append("SELECT");
+		sql.append("ph.ProgramId,");
+		sql.append("ph.ProgramName,");
+		sql.append("lmpgh1.GearName,");
+		sql.append("lmpgh1.EventTime AS startTime,");
+		sql.append("lmpgh2.EventTime AS stopTime");
+		sql.append("FROM LMProgramGearHistory lmpgh1");
+		sql.append("LEFT JOIN LMProgramGearHistory lmpgh2 ON (lmpgh1.LMProgramHistoryId = lmpgh2.LMProgramHistoryId)");
+		sql.append("JOIN LMProgramHistory ph ON ((lmpgh1.LMProgramHistoryId = ph.LMProgramHistoryId))");
+		sql.append("WHERE lmpgh1.Action = 'Start'");
+		sql.append("AND lmpgh2.Action = 'Stop'");
+		sql.append("AND lmpgh1.EventTime <=").appendArgument(stopDateTime);
+		sql.append("AND lmpgh2.EventTime >=").appendArgument(startDateTime);
+		if (programId != null) {
     		sql.append("AND ph.ProgramId").eq(programId);
     	}
-    	sql.append("ORDER BY pgh.LMProgramHistoryId, pgh.LMProgramGearHistoryId");
-        
-        List<LMProgramGearHistory> lmProgramGearHistory = yukonJdbcOperations.query(sql, new LMProgramGearHistoryMapper());
-        
-        // sort
-        ProgramControlHistory currentProgramHistoryRecord = null;
-        LinkedHashMap<Integer, ProgramControlHistory> histMap = new LinkedHashMap<Integer, ProgramControlHistory>();
-        
-        for (LMProgramGearHistory gearHist : lmProgramGearHistory) {
-        	
-        	Integer programHistoryId = gearHist.getProgramHistoryId();
-        	currentProgramHistoryRecord = histMap.get(programHistoryId);
-        	if (currentProgramHistoryRecord == null) {
-        		
-        		currentProgramHistoryRecord = new ProgramControlHistory(gearHist.getProgramId());
-        		currentProgramHistoryRecord.setProgramName(gearHist.getProgramName());
-        		currentProgramHistoryRecord.setGearName(gearHist.getGearName());
-        	}
-        	
-        	boolean recordOk = true;
-        	String action = gearHist.getAction();
-        	Date eventTime = gearHist.getEventTime();
-        	if (action.equals("Start")) {
-        		
-        		currentProgramHistoryRecord.setStartDateTime(eventTime);
-        	
-        	} else if (action.equals("Stop")) {
-        		
-        		currentProgramHistoryRecord.setStopDateTime(eventTime);
-        		
-        		// has no start because startDateTime is in middle of control range? need to go find start
-        		if (currentProgramHistoryRecord.getStartDateTime() == null) {
-        			
-        			SqlStatementBuilder eventTimeSql = new SqlStatementBuilder();
-        			eventTimeSql.append("SELECT pgh.EventTime");
-        			eventTimeSql.append("FROM LMProgramGearHistory pgh");
-        			eventTimeSql.append("WHERE pgh.LMProgramHistoryId").eq(programHistoryId);
-        			eventTimeSql.append("AND pgh.Action = 'Start'");
-        	    	
-        			// case for some crazy reason no Start exists for this stop, exclude record completely
-        			try {
-	        			eventTime = yukonJdbcOperations.queryForObject(eventTimeSql, new DateRowMapper());
-	        			currentProgramHistoryRecord.setStartDateTime(eventTime);
-        			} catch (EmptyResultDataAccessException e) {
-        				recordOk = false;
-        			} catch (IncorrectResultSizeDataAccessException e) {
-        				recordOk = false;
-        			}
-        		}
-        	}
-        	
-        	// add/update record
-        	if (recordOk) {
-        		histMap.put(programHistoryId, currentProgramHistoryRecord);
-        	} else {
-        		histMap.remove(programHistoryId);
-        	}
-        }
-        
-        return new ArrayList<ProgramControlHistory>(histMap.values());
+		sql.append("ORDER BY lmpgh1.LMProgramHistoryId");
+    	
+		List<ProgramControlHistory> programControlHistory = yukonJdbcOperations.query(sql, new ProgramControlHistoryMapper());
+    	return programControlHistory;
     }
     
     @Override
