@@ -86,6 +86,20 @@ function getCapBankTempMoveBack(id, event){
     getMenuFromURL(url, event);
 }
 
+function willMenuFitAbove(yClick, menuHeight) {
+	if ( yClick < menuHeight ) {
+		return false;
+	}
+	return true;
+}
+
+function willMenuFitBelow(yClick, menuHeight) {
+	if ( (yClick + menuHeight) > document.documentElement.clientHeight ) {
+		return false;
+	}
+	return true;
+}
+
 function getMenuFromURL(url, event) {
 	/*
 	 *  In IE the event does not pass through the ajax request
@@ -162,7 +176,9 @@ function showReasonPopup(html, up, x, y) {
 	titleDiv.innerHTML = 'Comments: ' + paoName.value;
 	popupDiv.show();
 	if(up == true){
-		y = y - popupDiv.clientHeight;
+		if( willMenuFitAbove(y, popupDiv.clientHeight) ) {
+			y = y - popupDiv.clientHeight;
+		}
 	}
 	popupDiv.setStyle({
 		top: y + "px",
@@ -180,7 +196,13 @@ function showMenuPopup(html, up, left, x, y) {
 	titleDiv.innerHTML = paoName.value;
 	popupDiv.show();
 	if(up == true){
-		y = y - popupDiv.clientHeight;
+		if( willMenuFitAbove(y, popupDiv.clientHeight) ) {
+			y = y - popupDiv.clientHeight;
+		}
+	} else {
+		if( !willMenuFitBelow(y, popupDiv.clientHeight) ) {
+			y = y - popupDiv.clientHeight;
+		}
 	}
 	if(left == true){
 		x = x - menuPopUpWidth;
@@ -995,24 +1017,16 @@ String.prototype.removeLeadTrailSpace = function () {
 }
 
 function mouseX(evt) {
-	if (evt.pageX) {
-		return evt.pageX;
-	} else if (evt.clientX) {
-	   return evt.clientX + (document.documentElement.scrollLeft ?
-	   document.documentElement.scrollLeft :
-	   document.body.scrollLeft);
+	if (evt.clientX) {
+		return evt.clientX;
 	} else {
 		return null;
 	}
 }
 
 function mouseY(evt) {
-	if (evt.pageY) {
-		return evt.pageY;
-	} else if (evt.clientY) {
-	   return evt.clientY + (document.documentElement.scrollTop ?
-	   document.documentElement.scrollTop :
-	   document.body.scrollTop);
+	if (evt.clientY) {
+		return evt.clientY;
 	} else {
 		return null;
 	}
