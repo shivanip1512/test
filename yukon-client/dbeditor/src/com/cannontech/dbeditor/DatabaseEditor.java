@@ -2749,17 +2749,6 @@ private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
 	f.setResizable(true);
 
 	this.desktopPane.add( f );
-
-	try
-	{
-		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, toCopy);
-		toCopy = t.execute();
-	}
-	catch( Exception e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-
 	
 	wizard.setValue(toCopy);
 	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DatabaseEditor.DBEDITOR_IMG_16));

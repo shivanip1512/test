@@ -124,17 +124,19 @@ public void retrieve() throws java.sql.SQLException
 
 	//retrieve all the gears for this Program
 	java.util.Vector gears = LMProgramDirectGear.getAllDirectGears( getPAObjectID(), getDbConnection() );
+	getLmProgramDirectGearVector().clear();
 	for( int i = 0; i < gears.size(); i++ )
 		getLmProgramDirectGearVector().add( gears.elementAt(i) );
 
 	//retrieve all the Groups for this Program
 	com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups = com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( getPAObjectID() );
+    getLmProgramStorageVector().clear();
 	for( int i = 0; i < groups.length; i++ )
 		getLmProgramStorageVector().add( groups[i] );
 		
 	LMDirectNotificationGroupList[] customers = com.cannontech.database.db.device.lm.LMProgramDirect.getAllNotificationGroupsList( 
 		getPAObjectID(), getDbConnection() );
-
+    getLmProgramDirectNotifyGroupVector().clear();
 	for( int i = 0; i < customers.length; i++ )
 		getLmProgramDirectNotifyGroupVector().add( customers[i] );
 	
