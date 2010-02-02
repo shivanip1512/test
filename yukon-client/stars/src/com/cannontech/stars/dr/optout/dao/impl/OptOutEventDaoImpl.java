@@ -738,9 +738,11 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			
 			//get the additional event info here
 			for (OptOutEventDto event: eventList) {
-                HardwareSummary inventory = inventoryDao.getHardwareSummaryById(event.getInventoryId());
-                event.setInventory(inventory);
-                
+			    try {
+                    HardwareSummary inventory = inventoryDao.getHardwareSummaryById(event.getInventoryId());
+			        event.setInventory(inventory);
+			    } catch(EmptyResultDataAccessException e) {}
+                    
                 List<Program> programList = 
                     enrollmentDao.getEnrolledProgramIdsByInventory(event.getInventoryId(),
                                                                    event.getStartDate(),
