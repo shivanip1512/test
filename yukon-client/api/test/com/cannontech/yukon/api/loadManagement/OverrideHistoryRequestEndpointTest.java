@@ -39,6 +39,8 @@ public class OverrideHistoryRequestEndpointTest {
     private static final String ACCOUNT2 = "account2";
     private static final String PROGRAM1 = "program1";
     private static final String PROGRAM2 = "program2";
+    private static final String PROGRAM1PAO = "program1Pao";
+    private static final String PROGRAM2PAO = "program2Pao";
     private static final String EMTPY_RETURN = "EMPTY";
 
     private static final String INVALID_ACCOUNT = "ACCOUNT_INVALID";
@@ -55,6 +57,10 @@ public class OverrideHistoryRequestEndpointTest {
     private OverrideHistory history2 = null;
     private OverrideHistory history3 = null;
 
+    private OverrideHistory history1v1_1Result = null;
+    private OverrideHistory history2v1_1Result = null;
+    private OverrideHistory history3v1_1Result = null;
+    
     //test response xml data
     static final String byAccountResponseStr = "/y:overrideHistoryByAccountNumberResponse";   
     static final String byAccountHistoryElementStr = byAccountResponseStr + "/y:overrideHistoryEntries/y:overrideHistory";
@@ -82,6 +88,7 @@ public class OverrideHistoryRequestEndpointTest {
         history1.setSerialNumber("serial1");
         Program p1 = new Program();
         p1.setProgramName(PROGRAM1);
+        p1.setProgramPaoName(PROGRAM1PAO);
         history1.setPrograms(Collections.singletonList(p1));
         history1.setAccountNumber(ACCOUNT1);
         history1.setStatus(OverrideStatus.Active);
@@ -96,6 +103,7 @@ public class OverrideHistoryRequestEndpointTest {
         history2.setSerialNumber("serial2");
         Program p2 = new Program();
         p2.setProgramName(PROGRAM2);
+        p2.setProgramPaoName(PROGRAM2PAO);
         history2.setPrograms(Collections.singletonList(p2));
         history2.setAccountNumber(ACCOUNT1);
         history2.setStatus(OverrideStatus.Active);
@@ -110,6 +118,7 @@ public class OverrideHistoryRequestEndpointTest {
         history3.setSerialNumber("serial3");
         Program p3 = new Program();
         p3.setProgramName(PROGRAM1);
+        p3.setProgramPaoName(PROGRAM1PAO);
         history3.setPrograms(Collections.singletonList(p3));
         history3.setAccountNumber(ACCOUNT2);
         history3.setStatus(OverrideStatus.Active);
@@ -119,6 +128,51 @@ public class OverrideHistoryRequestEndpointTest {
         history3.setUserName("user1");
         history3.setOverrideNumber(2);
         history3.setCountedAgainstLimit(true);
+
+        // Setup test histories
+        history1v1_1Result = new OverrideHistory();
+        history1v1_1Result.setSerialNumber("serial1");
+        Program p1v1_1 = new Program();
+        p1v1_1.setProgramName(PROGRAM1PAO);
+        history1v1_1Result.setPrograms(Collections.singletonList(p1v1_1));
+        history1v1_1Result.setAccountNumber(ACCOUNT1);
+        history1v1_1Result.setStatus(OverrideStatus.Active);
+        history1v1_1Result.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
+        history1v1_1Result.setStartDate(Iso8601DateUtil.parseIso8601Date(START_DATE_VALID));
+        history1v1_1Result.setStopDate(Iso8601DateUtil.parseIso8601Date(STOP_DATE_VALID));
+        history1v1_1Result.setUserName("user1");
+        history1v1_1Result.setOverrideNumber(1);
+        history1v1_1Result.setCountedAgainstLimit(true);
+
+        history2v1_1Result = new OverrideHistory();
+        history2v1_1Result.setSerialNumber("serial2");
+        Program p2v1_1 = new Program();
+        p2v1_1.setProgramName(PROGRAM2PAO);
+        p2v1_1.setProgramPaoName(PROGRAM2PAO);
+        history2v1_1Result.setPrograms(Collections.singletonList(p2v1_1));
+        history2v1_1Result.setAccountNumber(ACCOUNT1);
+        history2v1_1Result.setStatus(OverrideStatus.Active);
+        history2v1_1Result.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
+        history2v1_1Result.setStartDate(Iso8601DateUtil.parseIso8601Date(START_DATE_VALID));
+        history2v1_1Result.setStopDate(Iso8601DateUtil.parseIso8601Date(STOP_DATE_VALID));
+        history2v1_1Result.setUserName("user1");
+        history2v1_1Result.setOverrideNumber(2);
+        history2v1_1Result.setCountedAgainstLimit(true);
+        
+        history3v1_1Result = new OverrideHistory();
+        history3v1_1Result.setSerialNumber("serial3");
+        Program p3v1_1 = new Program();
+        p3v1_1.setProgramName(PROGRAM1PAO);
+        p3v1_1.setProgramPaoName(PROGRAM1PAO);
+        history3v1_1Result.setPrograms(Collections.singletonList(p3v1_1));
+        history3v1_1Result.setAccountNumber(ACCOUNT2);
+        history3v1_1Result.setStatus(OverrideStatus.Active);
+        history3v1_1Result.setScheduledDate(Iso8601DateUtil.parseIso8601Date(SCHEDULED_DATE_VALID));
+        history3v1_1Result.setStartDate(Iso8601DateUtil.parseIso8601Date(START_DATE_VALID));
+        history3v1_1Result.setStopDate(Iso8601DateUtil.parseIso8601Date(STOP_DATE_VALID));
+        history3v1_1Result.setUserName("user1");
+        history3v1_1Result.setOverrideNumber(2);
+        history3v1_1Result.setCountedAgainstLimit(true);
     }
     
     
@@ -380,8 +434,8 @@ public class OverrideHistoryRequestEndpointTest {
         actual = template.evaluate(byProgramHistoryElementStr, byProgramName_overrideHistNodeMapper_v1_1);
         // Check result xml values
         expected = new ArrayList<OverrideHistory>();
-        expected.add(history1);
-        expected.add(history3);
+        expected.add(history1v1_1Result);
+        expected.add(history3v1_1Result);
         
         Assert.assertEquals("Result list not as expected", expected, actual);
 
