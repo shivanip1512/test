@@ -4,8 +4,6 @@
 #include "msg_signal.h"
 #include "pointdefs.h"
 
-extern ULONG _CC_DEBUG;
-
 GroupPointDataRequest::GroupPointDataRequest(DispatchConnectionPtr connection) : _complete(false), _pointsSet(false)
 {
     _connection = connection;
@@ -53,26 +51,12 @@ void GroupPointDataRequest::processNewMessage(CtiMessage* message)
                 {
                     _values[pointId] = pointValue;
 
-                    if (_CC_DEBUG & CC_DEBUG_POINT_DATA)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Point Data for Point Id: " << pointId << " received: " << pointValue << endl;
-                    }
-
                     //Check if we are done. and set flag
                     if (_values.size() == _points.size())
                     {
                         _complete = true;
                     }
                 }//else: a point we don't care about.
-            }
-            else
-            {
-                if (_CC_DEBUG & CC_DEBUG_POINT_DATA)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " Point Data for Point Id: " << pData->getId() << " rejected because of quality: " << pointQuality << endl;
-                }
             }
         }
     }
