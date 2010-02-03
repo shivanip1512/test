@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/3/2010 11:31:17 AM                         */
+/* Created on:     2/3/2010 11:45:46 AM                         */
 /*==============================================================*/
 
 
@@ -15601,12 +15601,6 @@ go
 alter table OptOutEvent
    add constraint FK_OptOutEvent_CustAcct foreign key (CustomerAccountId)
       references CustomerAccount (AccountID)
-         on delete cascade
-go
-
-alter table OptOutEvent
-   add constraint FK_OptOutEvent_InvBase foreign key (InventoryId)
-      references InventoryBase (InventoryID)
          on delete cascade
 go
 

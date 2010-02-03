@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2010 11:32:49 AM                         */
+/* Created on:     2/3/2010 11:43:20 AM                         */
 /*==============================================================*/
 
 
@@ -12123,11 +12123,6 @@ alter table OperatorLoginGraphList
 alter table OptOutEvent
    add constraint FK_OptOutEvent_CustAcct foreign key (CustomerAccountId)
       references CustomerAccount (AccountID)
-      on delete cascade;
-
-alter table OptOutEvent
-   add constraint FK_OptOutEvent_InvBase foreign key (InventoryId)
-      references InventoryBase (InventoryID)
       on delete cascade;
 
 alter table OptOutTemporaryOverride

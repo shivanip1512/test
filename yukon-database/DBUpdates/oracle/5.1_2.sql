@@ -38,6 +38,10 @@ UPDATE CapControlSubstationBus SET DisableBusPointId = 0;
 ALTER TABLE CapControlSubstationBus MODIFY DisableBusPointId NOT NULL; 
 /* End YUK-8342 */
 
+/* Start YUK-8336 */
+ALTER TABLE OptOutEvent DROP CONSTRAINT FK_OptOutEvent_InvBase;
+/* End YUK-8336 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
