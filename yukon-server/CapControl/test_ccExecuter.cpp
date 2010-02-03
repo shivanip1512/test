@@ -38,7 +38,7 @@ class TestAttributeService : public AttributeService
                     point.setPointId(42);
                     return point;
                 }
-                case PointAttribute::RaiseTapAttribute:
+                case PointAttribute::TapUpAttribute:
                 {
                     //status Truefalse
                     LitePoint point;
@@ -46,7 +46,7 @@ class TestAttributeService : public AttributeService
                     point.setPointId(42);
                     return point;
                 }
-                case PointAttribute::LowerTapAttribute:
+                case PointAttribute::TapDownAttribute:
                 {
                     //status Truefalse
                     LitePoint point;

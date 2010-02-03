@@ -7,14 +7,16 @@
 #include "message.h"
 #include "DispatchConnection.h"
 #include "dlldefs.h"
+#include "ctitime.h"
 
 #include <list>
 #include <set>
 #include <map>
 
-struct PointIdValue{
-    int pointId;
+struct PointValue{
     double value;
+    unsigned quality;
+    CtiTime timestamp;
 };
 
 class IM_EX_MSG GroupPointDataRequest : public MessageListener
@@ -25,7 +27,7 @@ class IM_EX_MSG GroupPointDataRequest : public MessageListener
 
         bool watchPoints(std::list<long> points);
         bool isComplete();
-        std::map<long,double> getPointValues();
+        std::map<long,PointValue> getPointValues();
 
         //MessageListener
         virtual void processNewMessage(CtiMessage* message);
@@ -34,7 +36,7 @@ class IM_EX_MSG GroupPointDataRequest : public MessageListener
         DispatchConnectionPtr _connection;
 
         std::set<long> _points;
-        std::map<long,double> _values;
+        std::map<long,PointValue> _values;
 
         bool _complete;
         bool _pointsSet;

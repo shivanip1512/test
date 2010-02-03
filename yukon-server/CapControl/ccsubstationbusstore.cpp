@@ -5878,14 +5878,14 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::LowerTap);
+            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::TapDown);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setLowerTapPoint(point);
                 _pointDataHandler.addPoint(point.getPointId(),ltcId);
             }
 
-            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::RaiseTap);
+            point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::TapUp);
             if (point.getPointType() != InvalidPointType)
             {
                 ltc->setRaiseTapPoint(point);

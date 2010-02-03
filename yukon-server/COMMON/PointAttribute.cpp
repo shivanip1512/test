@@ -5,8 +5,8 @@
 PointAttribute::AttributeMap PointAttribute::nameToAttributeMap = PointAttribute::AttributeMap();
 
 const PointAttribute PointAttribute::Unknown = PointAttribute(PointAttribute::UnknownAttribute,"UNKNOWN");
-const PointAttribute PointAttribute::LowerTap = PointAttribute(PointAttribute::LowerTapAttribute,"LOWER_TAP");
-const PointAttribute PointAttribute::RaiseTap = PointAttribute(PointAttribute::RaiseTapAttribute,"RAISE_TAP");
+const PointAttribute PointAttribute::TapDown = PointAttribute(PointAttribute::TapDownAttribute,"TAP_DOWN");
+const PointAttribute PointAttribute::TapUp = PointAttribute(PointAttribute::TapUpAttribute,"TAP_UP");
 const PointAttribute PointAttribute::LtcVoltage = PointAttribute(PointAttribute::LtcVoltageAttribute,"LTC_VOLTAGE");
 const PointAttribute PointAttribute::AutoRemoteControl = PointAttribute(PointAttribute::AutoRemoteControlAttribute,"AUTO_REMOTE_CONTROL");
 const PointAttribute PointAttribute::TapPosition = PointAttribute(PointAttribute::TapPositionAttribute,"TAP_POSITION");

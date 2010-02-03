@@ -36,20 +36,29 @@ void GroupPointDataRequest::processNewMessage(CtiMessage* message)
         long pointId;
         double pointValue;
         unsigned pointQuality;
+        CtiTime pointTime;
 
         //Quality is not in both signal and pdata...
         if (message->isA() == MSG_POINTDATA)
         {
             CtiPointDataMsg* pData = (CtiPointDataMsg*)message;
             pointQuality = pData->getQuality();
+
+
             if (pointQuality == NormalQuality || pointQuality == ManualQuality)
             {
                 pointId = pData->getId();
                 pointValue = pData->getValue();
+                pointTime = pData->getTime();
 
                 if (_points.find(pointId) != _points.end())
                 {
-                    _values[pointId] = pointValue;
+                    PointValue pv;
+                    pv.timestamp = pointTime;
+                    pv.quality = pointQuality;
+                    pv.value = pointValue;
+
+                    _values[pointId] = pv;
 
                     //Check if we are done. and set flag
                     if (_values.size() == _points.size())
@@ -89,7 +98,7 @@ bool GroupPointDataRequest::isComplete()
     return _complete;
 }
 
-std::map<long,double> GroupPointDataRequest::getPointValues()
+std::map<long,PointValue> GroupPointDataRequest::getPointValues()
 {
     return _values;
 }

@@ -13,8 +13,8 @@ class IM_EX_CTIBASE PointAttribute
         enum Attribute
         {
             UnknownAttribute,
-            LowerTapAttribute,
-            RaiseTapAttribute,
+            TapDownAttribute,
+            TapUpAttribute,
             LtcVoltageAttribute,
             AutoRemoteControlAttribute,
             TapPositionAttribute,
@@ -22,8 +22,8 @@ class IM_EX_CTIBASE PointAttribute
         };
 
         static const PointAttribute Unknown;
-        static const PointAttribute LowerTap;
-        static const PointAttribute RaiseTap;
+        static const PointAttribute TapDown;
+        static const PointAttribute TapUp;
         static const PointAttribute LtcVoltage;
         static const PointAttribute AutoRemoteControl;
         static const PointAttribute TapPosition;

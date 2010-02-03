@@ -14,11 +14,11 @@ BOOST_AUTO_TEST_CASE(test_valueOf)
     PointAttribute attributeTest = PointAttribute::valueOf("UNKNOWN");
     BOOST_CHECK_EQUAL(PointAttribute::Unknown.name(), attributeTest.name());
 
-    attributeTest = PointAttribute::valueOf("RAISE_TAP");
-    BOOST_CHECK_EQUAL(PointAttribute::RaiseTap.name(), attributeTest.name());
+    attributeTest = PointAttribute::valueOf("TAP_UP");
+    BOOST_CHECK_EQUAL(PointAttribute::TapUp.name(), attributeTest.name());
 
-    attributeTest = PointAttribute::valueOf("LOWER_TAP");
-    BOOST_CHECK_EQUAL(PointAttribute::LowerTap.name(), attributeTest.name());
+    attributeTest = PointAttribute::valueOf("TAP_DOWN");
+    BOOST_CHECK_EQUAL(PointAttribute::TapDown.name(), attributeTest.name());
 
     attributeTest = PointAttribute::valueOf("LTC_VOLTAGE");
     BOOST_CHECK_EQUAL(PointAttribute::LtcVoltage.name(), attributeTest.name());

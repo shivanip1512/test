@@ -8268,14 +8268,14 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
     {
         case CtiCCCommand::LTC_TAP_POSITION_RAISE:
         {
-            point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::RaiseTap);
+            point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapUp);
             text = string("Raise Tap Position");
             offset = 34;
             break;
         }
         case CtiCCCommand::LTC_TAP_POSITION_LOWER:
         {
-            point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::LowerTap);
+            point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapDown);
             text = string("Lower Tap Position");
             offset = 45;
             break;
