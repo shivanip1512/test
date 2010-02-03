@@ -145,6 +145,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 		sql.append("FROM LMProgramGearHistory lmpgh1");
 		sql.append("LEFT JOIN LMProgramGearHistory lmpgh2 ON (lmpgh1.LMProgramHistoryId = lmpgh2.LMProgramHistoryId)");
 		sql.append("JOIN LMProgramHistory ph ON ((lmpgh1.LMProgramHistoryId = ph.LMProgramHistoryId))");
+		sql.append("JOIN YukonPAObject ypo ON (ph.programId = ypo.PAObjectId)");
 		sql.append("WHERE lmpgh1.Action = 'Start'");
 		sql.append("AND lmpgh2.Action = 'Stop'");
 		sql.append("AND lmpgh1.EventTime <=").appendArgument(stopDateTime);
