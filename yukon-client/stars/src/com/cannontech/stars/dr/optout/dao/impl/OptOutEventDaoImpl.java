@@ -738,10 +738,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			
 			//get the additional event info here
 			for (OptOutEventDto event: eventList) {
-			    try {
-                    HardwareSummary inventory = inventoryDao.getHardwareSummaryById(event.getInventoryId());
-			        event.setInventory(inventory);
-			    } catch(EmptyResultDataAccessException e) {}
+                HardwareSummary inventory = inventoryDao.findHardwareSummaryById(event.getInventoryId());
+		        event.setInventory(inventory);
                     
                 List<Program> programList = 
                     enrollmentDao.getEnrolledProgramIdsByInventory(event.getInventoryId(),
@@ -777,7 +775,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			event.setState(eventState);
 			
 			int inventoryId = rs.getInt("InventoryId");
-			HardwareSummary inventory = inventoryDao.getHardwareSummaryById(inventoryId);
+			HardwareSummary inventory = inventoryDao.findHardwareSummaryById(inventoryId);
 			event.setInventory(inventory);
 			
 			List<Program> programList = 
@@ -819,8 +817,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 			int inventoryId = rs.getInt("InventoryId");
 			history.setInventoryId(inventoryId);
-			HardwareSummary inventory = inventoryDao.getHardwareSummaryById(inventoryId);
-			history.setSerialNumber(inventory.getSerialNumber());
+			HardwareSummary inventory = inventoryDao.findHardwareSummaryById(inventoryId);
+			if (inventory != null){
+			    history.setSerialNumber(inventory.getSerialNumber());
+			}
 
 			int eventId = rs.getInt("OptOutEventId");
 			int userId = getFirstEventUser(eventId);
