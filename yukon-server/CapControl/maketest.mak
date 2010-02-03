@@ -91,8 +91,8 @@ $(OBJ)\CapControlPao.obj \
 $(OBJ)\LoadTapChanger.obj \
 $(OBJ)\CapControlPointDataHandler.obj \
 $(OBJ)\PointValueHolder.obj \
-$(OBJ)\ccutil.obj
-
+$(OBJ)\ccutil.obj \
+$(OBJ)\IVVCAlgorithm.obj
 
 TARGS = capcontrol.exe
 

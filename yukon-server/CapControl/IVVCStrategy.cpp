@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 #include "IVVCStrategy.h"
-
+#include "IVVCAlgorithm.h"
 
 IVVCStrategy::IVVCStrategy()
     : ControlStrategy(),
@@ -230,7 +230,7 @@ void IVVCStrategy::registerUser(const int paoid)
     }
     else
     {
-        _paoStateMap.insert(std::make_pair(paoid, std::make_pair(1, IVVCStatePtr(new IVVCState))));    
+        _paoStateMap.insert(std::make_pair(paoid, std::make_pair(1, IVVCStatePtr(new IVVCState))));
     }
 }
 
@@ -272,8 +272,9 @@ void IVVCStrategy::execute()
 
     for (std::list<IVVCStatePtr>::iterator b = runList.begin(), e = runList.end(); b != e; ++b)
     {
+        CtiCCSubstationBusPtr busPtr = NULL;
 
-        IVVCAlgorithm::execute( *b );
+        IVVCAlgorithm::execute( *b, busPtr, this);
 
     }
 

@@ -83,7 +83,8 @@ VoltStrategy.obj \
 StrategyLoader.obj \
 StrategyManager.obj \
 CapControlPointDatahandler.obj \
-ccutil.obj
+ccutil.obj \
+IVVCAlgorithm.obj
 
 
 TARGS = capcontrol.exe

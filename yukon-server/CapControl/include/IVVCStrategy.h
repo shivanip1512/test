@@ -11,41 +11,7 @@
 #include "guard.h"
 #include "mutex.h"
 #include "ControlStrategy.h"
-
-
-class IVVCState
-{
-
-public:
-    
-    enum State
-    {
-        IDLE
-    };
-
-    IVVCState() : _state(IDLE) { }
-
-private:
-
-    State _state;
-};
-
-
-class IVVCAlgorithm
-{
-
-public:
-
-    typedef boost::shared_ptr<IVVCState>    IVVCStatePtr;
-
-    IVVCAlgorithm() {}
-
-    static void execute(IVVCStatePtr p)
-    {
-        // do stuff!
-    }
-};
-
+#include "IVVCState.h"
 
 class IVVCStrategy : public ControlStrategy
 {
@@ -101,7 +67,6 @@ private:
     double _peakDecisionWeight;
     double _offpeakDecisionWeight;
 
-    typedef IVVCAlgorithm::IVVCStatePtr     IVVCStatePtr;
     typedef std::map<int, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;
 
     PaoToStateMap   _paoStateMap;
