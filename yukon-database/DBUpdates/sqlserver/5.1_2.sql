@@ -47,6 +47,12 @@ ALTER TABLE CapControlSubstationBus ALTER COLUMN DisableBusPointId NUMERIC NOT N
 ALTER TABLE OptOutEvent DROP CONSTRAINT FK_OptOutEvent_InvBase;
 /* End YUK-8336 */
 
+/* Start YUK-8345 */
+UPDATE CCStrategyTargetSettings 
+SET SettingName = 'Volt Weight' 
+WHERE SettingName = 'KVOLT Weight'; 
+/* End YUK-8345 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
