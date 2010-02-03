@@ -13,9 +13,20 @@ void IVVCAlgorithm::execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCSt
         {
             //Set Timestamp
             p->setState(IVVCState::IVVC_PRESCAN_LOOP);
-            //Create Group Request
-            //Send Scans
-            //Fall through
+
+            //GroupRequest
+
+            if (/*scanned == */true)
+            {
+                //Not requesting from dispatch
+                //scanned = false;
+            }
+            else
+            {
+                //Request Points from Dispatch
+            }
+
+            // jump to Prescan
         }
         case IVVCState::IVVC_PRESCAN_LOOP :
         {
@@ -24,10 +35,24 @@ void IVVCAlgorithm::execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCSt
             {//On new data
                 if (/*GroupRequest.isComplete()*/true)
                 {
-                    p->setState(IVVCState::IVVC_ANALYZE_DATA);
+                    if(/*stale*/true)
+                    {
+                        //Send scans
+                        //scanned = true;
+                        //State to Wait
+                        break;
+                    }
+                    else
+                    {
+                        p->setState(IVVCState::IVVC_ANALYZE_DATA);
+                    }
                 }
                 else
                 {
+                    //Are we Timedout break
+                    //yes: check % online
+                    //if yes go control
+                    //if no. turn LTC to Auto and stop heartbeart. State = wait
                     break;//still waiting.
                 }
             }
@@ -35,7 +60,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCSt
             {
                 if (/*ControlInterval has passed*/true)
                 {
-                    if (/*GroupRequest.isComplete()*/true)
+                    //To be considered. Initiate scan if stale? like in 'on new data'
+                    if (/*GroupRequest.isComplete() || > % online */true)
                     {
                         p->setState(IVVCState::IVVC_ANALYZE_DATA);
                     }
@@ -62,11 +88,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCSt
                 if (/*CapBank Op*/true)
                 {
                     //send cap bank command
-                    p->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
+                    p->setState(IVVCState::IVVC_CONTROLLED_LOOP);
                 }
                 else
-                {//Do we want to Post Control Wait on LTC ops too?
-                    // Operate LTC.
+                {
+                    // Operate LTC. Check Delay
 
                     // No Verify, No Post Scan
                     p->setState(IVVCState::IVVC_WAIT);
@@ -81,36 +107,49 @@ void IVVCAlgorithm::execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCSt
             }
 
         }
+        case IVVCState::IVVC_CONTROLLED_LOOP:
+        {
+            //Verify if we controlled
+            if (/*controlled*/true)
+            {
+                p->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
+            }
+            else
+            {
+                if (/*timedout*/true) {
+                    //update Bank state. (failed or questionable)
+                    p->setState(IVVCState::IVVC_WAIT);
+                }
+                break;
+            }
+        }
         case IVVCState::IVVC_POST_CONTROL_WAIT:
         {
             if (/*If NOW > CPARM + CAPBANKOPTIME*/true)
             {
-                p->setState(IVVCState::IVVC_CONTROLLED_LOOP);
+                //Create Group Request
+                //Send Scans
+                p->setState(IVVCState::IVVC_POSTSCAN_LOOP);
             }
             else
             {
                 break;
             }
         }
-        case IVVCState::IVVC_CONTROLLED_LOOP:
-        {
-            //Verify if we controlled
-            //Create Group Request
-            //Send Scans
-            break;
-        }
+
         case IVVCState::IVVC_POSTSCAN_LOOP:
         {
-            //timeout on this?
+            //timeout on this? scan_wait_expire
             if (/*GroupRequest.isComplete()*/true)
             {
                 //record data
                 p->setState(IVVCState::IVVC_WAIT);
             }
-            else
+            else if (/*scan_wait_expire*/true)
             {
-                break;//still waiting.
+                p->setState(IVVCState::IVVC_WAIT);
             }
+
             break;//never fall through past this
         }
     }//switch
