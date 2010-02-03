@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,9 +105,12 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append(selectHardwareSummarySql);
         sql.append("WHERE ib.InventoryID = ").appendArgument(inventoryId);
 
-        HardwareSummary hardware = jdbcTemplate.queryForObject(sql.getSql(),
-                                                               hardwareSummaryRowMapper,
-                                                               sql.getArguments());
+        HardwareSummary hardware = null;
+        try {
+            hardware = jdbcTemplate.queryForObject(sql.getSql(),
+                                                   hardwareSummaryRowMapper,
+                                                   sql.getArguments());
+        } catch (EmptyResultDataAccessException e) {}
 
         return hardware;
     }    
