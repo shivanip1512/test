@@ -280,12 +280,11 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AccountId, AccountSiteId, AccountNumber, CA.CustomerId,");
         sql.append("       BillingAddressId, AccountNotes ");
-        sql.append("FROM CustomerAccount CA, Contact Cont, "); 
-        sql.append("     YukonUser YU, CustomerAdditionalContact CAC ");
-        sql.append("WHERE CA.CustomerId = CAC.CustomerId ");
-        sql.append("AND CAC.ContactId = Cont.ContactId ");
-        sql.append("AND YU.UserId = Cont.LoginId ");
-        sql.append("AND YU.UserId = ? ");
+        sql.append("FROM CustomerAccount CA ");
+        sql.append("JOIN CustomerAdditionalContact CAC ON CA.CustomerId = CAC.CustomerId ");
+        sql.append("JOIN Contact Cont ON CAC.ContactId = Cont.ContactId ");
+        sql.append("JOIN YukonUser YU ON YU.UserId = Cont.LoginId ");
+        sql.append("WHERE YU.UserId = ? ");
         sql.append("ORDER BY CA.AccountId");
 
         List<CustomerAccount> list = simpleJdbcTemplate.query(sql.getSql(), rowMapper, user.getUserID());
