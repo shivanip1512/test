@@ -35,6 +35,14 @@ ALTER TABLE ExtraPaoPointAssignment
 GO 
 /* End YUK-8315 */
 
+/* Start YUK-8342 */
+ALTER TABLE CapControlSubstationBus ADD DisableBusPointId NUMERIC;
+GO
+UPDATE CapControlSubstationBus SET DisableBusPointId = 0;
+GO
+ALTER TABLE CapControlSubstationBus ALTER COLUMN DisableBusPointId NUMERIC NOT NULL; 
+/* End YUK-8342 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/29/2010 10:13:37 AM                        */
+/* Created on:     2/3/2010 11:31:17 AM                         */
 /*==============================================================*/
 
 
@@ -4063,6 +4063,7 @@ create table CAPCONTROLSUBSTATIONBUS (
    phasec               numeric              not null,
    ControlFlag          char(1)              not null,
    VoltReductionPointId numeric              not null,
+   DisableBusPointId    numeric              not null,
    constraint SYS_C0013476 primary key (SubstationBusID)
 )
 go

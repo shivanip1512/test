@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/29/2010 10:19:16 AM                        */
+/* Created on:     2/3/2010 11:32:49 AM                         */
 /*==============================================================*/
 
 
@@ -1480,6 +1480,7 @@ create table CAPCONTROLSUBSTATIONBUS  (
    phasec               NUMBER                          not null,
    ControlFlag          CHAR(1)                         not null,
    VoltReductionPointId NUMBER                          not null,
+   DisableBusPointId    NUMBER                          not null,
    constraint SYS_C0013476 primary key (SubstationBusID)
 );
 

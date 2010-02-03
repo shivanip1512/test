@@ -32,6 +32,12 @@ ALTER TABLE ExtraPaoPointAssignment
             ON DELETE CASCADE;
 /* End YUK-8315 */
 
+/* Start YUK-8342 */
+ALTER TABLE CapControlSubstationBus ADD DisableBusPointId NUMBER;
+UPDATE CapControlSubstationBus SET DisableBusPointId = 0;
+ALTER TABLE CapControlSubstationBus MODIFY DisableBusPointId NOT NULL; 
+/* End YUK-8342 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
