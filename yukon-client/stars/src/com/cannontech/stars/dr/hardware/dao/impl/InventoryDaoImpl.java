@@ -98,15 +98,15 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
-    public HardwareSummary getHardwareSummaryById(int inventoryId) {
+    public HardwareSummary findHardwareSummaryById(int inventoryId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectHardwareSummarySql);
         sql.append("WHERE ib.InventoryID = ").appendArgument(inventoryId);
 
         HardwareSummary hardware = jdbcTemplate.queryForObject(sql.getSql(),
-                                                                  hardwareSummaryRowMapper,
-                                                                  sql.getArguments());
+                                                               hardwareSummaryRowMapper,
+                                                               sql.getArguments());
 
         return hardware;
     }    

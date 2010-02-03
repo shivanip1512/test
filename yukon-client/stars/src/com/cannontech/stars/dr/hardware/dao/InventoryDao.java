@@ -20,7 +20,7 @@ public interface InventoryDao {
 
     public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId);
     
-    public HardwareSummary getHardwareSummaryById(int inventoryId);
+    public HardwareSummary findHardwareSummaryById(int inventoryId);
     
     /**
      * Method to get a list of thermostat summary based on an account id
