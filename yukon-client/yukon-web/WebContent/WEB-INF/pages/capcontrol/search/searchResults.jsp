@@ -26,15 +26,10 @@
                 <th nowrap="nowrap">Item Type</th>
                 <th>Description</th>
                 <th>Parent</th>
-                <th/>
             </tr>
             <c:forEach items="${rows}" var="row">
                 <tr height="18px" valign="middle" style="vertical-align : middle;"  class="<ct:alternateRow odd="tableCell" even="altTableCell"/>">
-	                <td nowrap="nowrap">${row.name}</td>
-	                <td nowrap="nowrap">${row.itemType}</td>
-	                <td nowrap="nowrap">${row.itemDescription}</td>
-	                <td>${row.parentString}</td>
-	                <td width="80px" nowrap="nowrap">
+	                <td nowrap="nowrap">
                         <c:choose>
                             <c:when test="${row.paobject}">
                                 <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
@@ -62,7 +57,11 @@
                                 <a href="/editor/copyBase.jsf?itemid=${row.itemId}&type=1>"><img src="/WebConfig/yukon/Icons/copy.gif" border="0" height="16" width="16"/></a>
                             </cti:checkProperty>
                         </c:if>
+                        ${row.name}
                     </td>
+	                <td nowrap="nowrap">${row.itemType}</td>
+	                <td nowrap="nowrap">${row.itemDescription}</td>
+	                <td>${row.parentString}</td>
 	            </tr>
 	        </c:forEach>
 	    </table>
