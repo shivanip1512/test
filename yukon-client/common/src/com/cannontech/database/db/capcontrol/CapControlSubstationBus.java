@@ -32,12 +32,15 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     private Integer phaseC = new Integer(CtiUtilities.NONE_ZERO_ID);
     private String controlFlag = "N";
     private Integer voltReductionPointId = 0;
-    private Integer ltcId = 0;
+    private Integer disableBusPointId = 0;
+    
+
+	private Integer ltcId = 0;
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID", 
 		"CurrentVoltLoadPointID", "AltSubId", "SwitchPointId",
 		"DualBusEnabled", "MultiMonitorControl", "UsePhaseData",
-		"PhaseB", "PhaseC", "ControlFlag", "VoltReductionPointId"};
+		"PhaseB", "PhaseC", "ControlFlag", "VoltReductionPointId", "DisableBusPointId"};
 	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID"};
 	public static final String TABLE_NAME = "CapControlSubstationBus";
 
@@ -65,7 +68,8 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     		getSubstationBusID(), getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
     		getMapLocationID(), getCurrentVoltLoadPointID(), getAltSubPAOId(),
     		getSwitchPointID(), getDualBusEnabled(), getMultiMonitorControl(),
-            getUsePhaseData(), getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId()};
+            getUsePhaseData(), getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId(),
+            getDisableBusPointId()};
     
     	add( TABLE_NAME, addValues );
     	handleLtcAssignment(getLtcId());
@@ -138,6 +142,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             setPhaseC((Integer) results[10]);
             setControlFlag((String) results[11]);
             setVoltReductionPointId((Integer) results[12]);
+            setDisableBusPointId((Integer) results[13]);
 
             SqlStatementBuilder sql = new SqlStatementBuilder("select ltcId from CCSubstationBusToLTC where substationBusId = ").appendArgument(substationBusID);
             JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
@@ -197,7 +202,8 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), getMapLocationID(),
     		getCurrentVoltLoadPointID(), getAltSubPAOId(), getSwitchPointID(),
             getDualBusEnabled(), getMultiMonitorControl(), getUsePhaseData(),
-            getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId()};
+            getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId(), 
+            getDisableBusPointId()};
     
     	Object constraintValues[] = { getSubstationBusID()};
     
@@ -412,7 +418,15 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     public void setVoltReductionPointId(Integer voltReductionPointId) {
         this.voltReductionPointId = voltReductionPointId;
     }
-    
+ 
+    public Integer getDisableBusPointId() {
+		return disableBusPointId;
+	}
+
+	public void setDisableBusPointId(Integer disableBusPointId) {
+		this.disableBusPointId = disableBusPointId;
+	}
+	
     public static int[] getUnassignedSubBusIDs() {
 		NativeIntVector intVect = new NativeIntVector(16);
 		java.sql.Connection conn = null;

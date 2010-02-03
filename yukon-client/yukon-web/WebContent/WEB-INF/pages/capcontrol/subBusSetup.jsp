@@ -5,8 +5,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var substationBusVoltReductionPointPicker = new PointPicker('subReductionPointValue','com.cannontech.common.search.criteria.VoltReductionCriteria','pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice','substationBusVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
-        var sub_Var_PointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_Point;deviceName:sub_Var_Device','sub_Var_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+   		var substationBusDisableBusPointPicker = new PointPicker('subDisablePointValue','com.cannontech.common.search.criteria.VoltReductionCriteria','pointName:disableBusPoint;deviceName:disableBusDevice','substationBusDisableBusPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+    	var substationBusVoltReductionPointPicker = new PointPicker('subReductionPointValue','com.cannontech.common.search.criteria.VoltReductionCriteria','pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice','substationBusVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+    	var sub_Var_PointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_Point;deviceName:sub_Var_Device','sub_Var_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
         var sub_Var_PhaseB_PointPicker = new PointPicker('var_phase_b_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device','sub_Var_PhaseB_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
         var sub_Var_PhaseC_PointPicker = new PointPicker('var_phase_c_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device','sub_Var_PhaseC_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
 		var subWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice','subWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
@@ -75,6 +76,39 @@
                         </x:commandLink>
                     </x:div>
                 </x:htmlTag>
+                
+                 <x:htmlTag value="br"/>
+	
+                <x:htmlTag value="fieldset" styleClass="fieldSet">
+                    <x:htmlTag value="legend"><x:outputText value="Substation Bus Disable Point Setup"/></x:htmlTag>
+    
+                    <x:div id="subDisablePointDiv" forceId="true">
+                        <x:inputHidden id="subDisablePointValue" forceId="true" value="#{capControlForm.PAOBase.capControlSubstationBus.disableBusPointId}"/>
+                        <x:outputLabel for="disableBusDevice" value="Selected Point: " title="Point used for auto disable of control." styleClass="medStaticLabel"/>
+                        <x:outputText id="disableBusDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.disableBusPointId]}"/> 
+                        <x:outputText id="disableBusDevicePointSeperator" forceId="true" value=" : " />
+                        <x:outputText id="disableBusPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.disableBusPointId]}" /> 
+	    
+                        <x:htmlTag value="br"/>
+	    
+                        <h:outputLink  value="javascript:substationBusDisableBusPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                            <h:outputText value="Select point"/>
+                        </h:outputLink>
+	
+                        <x:htmlTag value="br"/>
+                        <x:htmlTag value="br"/>
+	    
+                        <x:commandLink id="substationBusDisableBusPoint_setNone" 
+                            rendered="#{capControlForm.editingAuthorized}"
+                            title="Do not use a point for control." 
+                            styleClass="medStaticLabel"
+                            value="No Disable Point" 
+                            actionListener="#{capControlForm.substationBusNoDisablePointClicked}">
+                            <f:param name="disablePtId" value="0"/>
+                        </x:commandLink>
+                    </x:div>
+                </x:htmlTag>
+                
 
                 <x:panelGroup>
                     <x:htmlTag value="br"/>

@@ -352,12 +352,21 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
 	
 	public void substationBusNoVoltReductionPointClicked(ActionEvent ae) {
-        String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
+        String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("disablePtId");
         if (val == null) {
             return;
         }
         CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
         sub.setVoltReductionPointId(new Integer(val));
+    }
+	
+	public void substationBusNoDisablePointClicked(ActionEvent ae) {
+        String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("disablePtId");
+        if (val == null) {
+            return;
+        }
+        CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
+        sub.setDisableBusPointId(new Integer(val));
     }
 	
 	public void substationNoVoltReductionPointClicked(ActionEvent ae) {
@@ -1745,10 +1754,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 int phaseBPoint = subBus.getPhaseB();
                 int phaseCPoint = subBus.getPhaseC();
                 int voltReductionPoint = subBus.getVoltReductionPointId();
+                int disableBusPoint = subBus.getDisableBusPointId();
                 pointNameMap.put(switchPoint, pointDao.getPointName(switchPoint));
                 pointNameMap.put(phaseBPoint, pointDao.getPointName(phaseBPoint));
                 pointNameMap.put(phaseCPoint, pointDao.getPointName(phaseCPoint));
                 pointNameMap.put(voltReductionPoint, pointDao.getPointName(voltReductionPoint));
+                pointNameMap.put(disableBusPoint, pointDao.getPointName(disableBusPoint));
             }else if(getDbPersistent() instanceof CapControlFeeder) {
                 CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
                 com.cannontech.database.db.capcontrol.CapControlFeeder feederthinger = feeder.getCapControlFeeder();
@@ -1801,11 +1812,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 int phaseBPoint = subBus.getPhaseB();
                 int phaseCPoint = subBus.getPhaseC();
                 int voltReductionPointId = subBus.getVoltReductionPointId();
+                int disableBusPointId = subBus.getDisableBusPointId();
                 int switchPoint = subBus.getSwitchPointID();
                 paoNameMap.put(switchPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(switchPoint).getPaobjectID()));
                 paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
                 paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
                 paoNameMap.put(voltReductionPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(voltReductionPointId).getPaobjectID()));
+                paoNameMap.put(disableBusPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(disableBusPointId).getPaobjectID()));
             }else if(getDbPersistent() instanceof CapControlFeeder) {
                 CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
                 com.cannontech.database.db.capcontrol.CapControlFeeder feederthinger = feeder.getCapControlFeeder();
