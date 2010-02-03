@@ -9265,7 +9265,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::verifyControlledStatusFlags()
     return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::list<int>& pointAddMsg)
+CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::list<long>& pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )

@@ -2,53 +2,64 @@
 
 #include "DispatchConnection.h"
 #include "msg_ptreg.h"
+#include "msg_cmd.h"
 #include "collectable.h"
 
 
-DispatchConnection::DispatchConnection() : _registered(false)
+DispatchConnection::DispatchConnection()
 {
 
 }
 
 DispatchConnection::DispatchConnection( const string& connectionName, const int &port, const string &host, Que_t *inQ, int tt) :
-    CtiConnection(port,host,inQ,tt),
-    _registered(false)
+    CtiConnection(port,host,inQ,tt)
 {
     Inherited::setName(connectionName);
 }
 
-void DispatchConnection::registerForPoint(int pointId)
+void DispatchConnection::registerForPoint(MessageListener* listener, long pointId)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
-    _addList.push_back(pointId);
-}
-
-void DispatchConnection::registerForPoints(const std::list<int>& pointIds)
-{
-    CtiLockGuard< CtiMutex > guard(_regListMux);
-
-    for each( int pointId in pointIds)
+    if (_registeredPoints.find(pointId) == _registeredPoints.end())
     {
-        _addList.push_back(pointId);
+        _addList.insert(pointId);
     }
+
     return;
 }
 
-void DispatchConnection::unRegisterForPoint(int pointId)
+void DispatchConnection::registerForPoints(MessageListener* listener, const std::list<long>& pointIds)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
-    _removeList.push_back(pointId);
+    for each (int pointId in pointIds)
+    {
+        if (_registeredPoints.find(pointId) == _registeredPoints.end())
+        {
+            _addList.insert(pointId);
+        }
+    }
+
+    return;
 }
 
-void DispatchConnection::unRegisterForPoints(const std::list<int>& pointIds)
+void DispatchConnection::unRegisterForPoint(MessageListener* listener, long pointId)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
-    for each( int pointId in pointIds)
+    _registeredPoints.erase(pointId);
+    _removeList.insert(pointId);
+}
+
+void DispatchConnection::unRegisterForPoints(MessageListener* listener, const std::list<long>& pointIds)
+{
+    CtiLockGuard< CtiMutex > guard(_regListMux);
+
+    for each (int pointId in pointIds)
     {
-        _removeList.push_back(pointId);
+        _registeredPoints.erase(pointId);
+        _removeList.insert(pointId);
     }
 
     return;
@@ -62,36 +73,96 @@ void DispatchConnection::preWork()
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
-    if (_addList.size() > 0)
-    {
-        int flag = REG_ADD_POINTS;//By default we will register as an add
-        if (!_registered)
-        {
-            //This is a first time registration.
-            flag = REG_NOTHING;
-            _registered = true;
-        }
-
-        CtiPointRegistrationMsg* msg = new CtiPointRegistrationMsg(flag);
-        for each(int pointId in _addList)
-        {
-            msg->insert(pointId);
-        }
-        _addList.clear();
-
-        //If REG_ADD_POINTS follow up with point request message
-        WriteConnQue(msg);
-    }
-
     if (_removeList.size() > 0)
     {
         CtiPointRegistrationMsg* msg = new CtiPointRegistrationMsg(REG_REMOVE_POINTS);
-        for each(int pointId in _removeList)
+        for each (long pointId in _removeList)
         {
             msg->insert(pointId);
+            _registeredPoints.erase(pointId);
         }
-        _removeList.clear();
 
         WriteConnQue(msg);
     }
+
+    if (_addList.size() > 0)
+    {
+        int flag = REG_ADD_POINTS;//By default we will register as an add
+        if (_registeredPoints.size() == 0)
+        {
+            //This is a first time registration.
+            flag = REG_NOTHING;
+        }
+
+        CtiPointRegistrationMsg* msg = new CtiPointRegistrationMsg(flag);
+        for each (long pointId in _addList)
+        {
+            msg->insert(pointId);
+            _registeredPoints.insert(pointId);
+        }
+
+        WriteConnQue(msg);
+
+        //If REG_ADD_POINTS follow up with point request message
+        if (flag == REG_ADD_POINTS)
+        {
+            CtiCommandMsg* cmdMsg = new CtiCommandMsg();
+            cmdMsg->setOperation(CtiCommandMsg::PointDataRequest);
+
+            CtiCommandMsg::CtiOpArgList_t points;
+            for each (int pointId in _addList)
+            {
+                points.push_back(pointId);
+            }
+
+            cmdMsg->setOpArgList(points);
+            WriteConnQue(cmdMsg);
+        }
+    }
+
+    _removeList.clear();
+    _addList.clear();
+}
+
+void DispatchConnection::writeIncomingMessageToQueue(CtiMessage* msgPtr)
+{
+    if (msgPtr == NULL)
+    {
+        return;
+    }
+
+    if (msgPtr->isA() == MSG_MULTI)
+    {
+        CtiMultiMsg* multi = (CtiMultiMsg*)msgPtr;
+        for each (RWCollectable* rwcol in multi->getData())
+        {
+            //These are all messages.
+            CtiMessage* msg = (CtiMessage*)rwcol;
+            writeIncomingMessageToQueue(msg->replicateMessage());
+        }
+    }
+    else
+    {
+        for each (MessageListener* listener in _messageListeners)
+        {
+            if (listener != NULL)
+            {
+                //Listener is now responsible for the memory.
+                listener->processNewMessage(msgPtr->replicateMessage());
+            }
+        }
+    }
+
+    delete msgPtr;
+    msgPtr = NULL;
+}
+
+void DispatchConnection::addMessageListener(MessageListener* messageListener)
+{
+    _messageListeners.insert(messageListener);
+}
+
+void DispatchConnection::removeMessageListener(MessageListener* messageListener)
+{
+    _messageListeners.erase(messageListener);
 }

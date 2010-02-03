@@ -5779,6 +5779,9 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         ltcPtr = findLtcById(ltcId);
         if (ltcPtr != NULL)
         {
+            //Cleanup Point Registration maps/listeners
+            _pointDataHandler.removeAllPointsForPao(ltcId);
+
             deleteLtcById(ltcId);
         }
     }
@@ -9127,7 +9130,6 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
-
         }
     }
     catch(...)
@@ -9158,9 +9160,6 @@ void CtiCCSubstationBusStore::deleteLtcById(long ltcId)
         _ltc_subbus_map.erase(ltcId);
     }
 
-    //Cleanup Point Registration maps/listeners
-    _pointDataHandler.removeAllPointsForPao(ltcId);
-
     //delete and remove from ltc Map
     delete ltcptr;
     ltcptr = NULL;
@@ -9172,7 +9171,9 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
     CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId);
 
     if( subToDelete == NULL )
+    {
         return;
+    }
 
     try
     {
@@ -9993,8 +9994,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(CtiMultiMsg_set &modif
    try
    {
        CtiMultiMsg_set::iterator it;
-       //CtiPointRegistrationMsg *pointAddMsg = CTIDBG_new CtiPointRegistrationMsg();
-       std::list<int> pointList;
+       std::list<long> pointList;
 
        for(it = modifiedSubsSet.begin(); it != modifiedSubsSet.end();it++)
        {
@@ -10020,9 +10020,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(CtiMultiMsg_set &modif
        }
 
        getPointDataHandler().getAllPointIds(pointList);
-
-       CtiCapController::getInstance()->getDispatchConnection()->registerForPoints(pointList);
-       //CtiCapController::getInstance()->sendMessageToDispatch(pointAddMsg);
+       CtiCapController::getInstance()->getDispatchConnection()->registerForPoints(CtiCapController::getInstance(),pointList);
    }
    catch(...)
    {

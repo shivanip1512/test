@@ -3,8 +3,12 @@
 
 #include "connection.h"
 #include "message.h"
+#include "MessageListener.h"
 
+#include <boost/shared_ptr.hpp>
 #include <list>
+#include <set>
+#include <map>
 #include <string>
 
 /**
@@ -18,12 +22,16 @@
 class IM_EX_MSG DispatchConnection : public CtiConnection
 {
     private:
-        bool _registered;
-
-        std::list<int> _addList;
-        std::list<int> _removeList;
 
         mutable CtiMutex _regListMux;
+
+        std::set<long> _addList;
+        std::set<long> _removeList;
+        std::set<long> _registeredPoints;
+
+        std::set<MessageListener*> _messageListeners;
+        //typedef std::map<MessageListener*,std::set<long> > MessageListenerMap;
+        //MessageListenerMap _messageListeners;
 
         //Hidden
         DispatchConnection();
@@ -33,10 +41,16 @@ class IM_EX_MSG DispatchConnection : public CtiConnection
 
         DispatchConnection( const string &connectionName, const int &port, const string &host, Que_t *inQ = NULL, int tt = 3);
 
-        void registerForPoints(const std::list<int>& pointIds);
-        void registerForPoint(int pointId);
-        void unRegisterForPoints(const std::list<int>& pointIds);
-        void unRegisterForPoint(int pointId);
-
         virtual void preWork();
+        virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
+
+        void registerForPoints(MessageListener* listener, const std::list<long>& pointIds);
+        void registerForPoint(MessageListener* listener, long pointId);
+        void unRegisterForPoints(MessageListener* listener, const std::list<long>& pointIds);
+        void unRegisterForPoint(MessageListener* listener, long pointId);
+
+        void addMessageListener(MessageListener* messageListener);
+        void removeMessageListener(MessageListener* messageListener);
 };
+
+typedef boost::shared_ptr<DispatchConnection> DispatchConnectionPtr;

@@ -1373,11 +1373,6 @@ CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(BOOL flag)
 }
 
 
-/*---------------------------------------------------------------------------
-    findCapBankToDecreaseVars
-
-    .
----------------------------------------------------------------------------*/
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMultiMsg_vec& pointChanges, double leadLevel, double lagLevel, double currentVarValue,
                                                    BOOL checkLimits)
 {
@@ -5959,7 +5954,7 @@ BOOL CtiCCFeeder::scanAllMonitorPoints()
     return retVal;
 }
 
-CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(std::list<int>& pointAddMsg)
+CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(std::list<long>& pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )

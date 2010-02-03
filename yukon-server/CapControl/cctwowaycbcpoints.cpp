@@ -2196,7 +2196,7 @@ BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG v
 
 
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::list<int>& pointList)
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::list<long>& pointList)
 {
 
     if( getCapacitorBankStateId()  > 0 )

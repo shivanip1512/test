@@ -24,9 +24,6 @@ bool PointDataHandler::addPoint(int pointId, int paoId)
         newSet.insert(paoId);
 
         _pointIdMap[pointId] = newSet;
-
-        //First Time: Register for the point.
-        registerForPoint(pointId);
     }
     else
     {
@@ -47,6 +44,8 @@ bool PointDataHandler::addPoint(int pointId, int paoId)
         //Do we care if it fails? Means we re-regitered..
         paoItr->second.insert(pointId);
     }
+
+    registerForPoint(pointId);
 
     return true;
 }
@@ -163,11 +162,21 @@ bool PointDataHandler::processIncomingPointData(CtiPointDataMsg* message)
 }
 
 /**
+ *
+ *
+ * @param message
+ */
+void PointDataHandler::processNewMessage(CtiMessage* message)
+{
+
+}
+
+/**
  * Returns a list of all point id's being tracked.
  *
  * @return std::list<int>
  */
-void PointDataHandler::getAllPointIds(std::list<int>& pointIds)
+void PointDataHandler::getAllPointIds(std::list<long>& pointIds)
 {
     for (PointIdMapItr itr = _pointIdMap.begin(); itr != _pointIdMap.end(); itr++)
     {

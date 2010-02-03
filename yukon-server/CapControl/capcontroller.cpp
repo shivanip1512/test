@@ -144,7 +144,7 @@ void CtiCapController::setInstance(CtiCapController* controller)
 ---------------------------------------------------------------------------*/
 CtiCapController::CtiCapController() : control_loop_delay(500), control_loop_inmsg_delay(0), control_loop_outmsg_delay(0)
 {
-    _dispatchConnection = NULL;
+    _dispatchConnection.reset();
     _pilConnection = NULL;
 }
 
@@ -157,7 +157,7 @@ CtiCapController::CtiCapController() : control_loop_delay(500), control_loop_inm
 CtiCapController::~CtiCapController()
 {
 
-    _dispatchConnection = NULL;
+    _dispatchConnection.reset();
     _pilConnection = NULL;
     if( _instance != NULL )
     {
@@ -268,7 +268,7 @@ void CtiCapController::stop()
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
+        if( _dispatchConnection != NULL && _dispatchConnection->valid() )
         {
             _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
@@ -394,18 +394,16 @@ void CtiCapController::messageSender()
         while(TRUE)
         {
             CtiTime currentDateTime;
-            CtiTime registerTimeElapsed;
             BOOL waitToBroadCastEverything = FALSE;
-            currentDateTime = CtiTime();
-            ULONG secondsFrom1901 = currentDateTime.seconds();
 
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
                 if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - ~~~~~~~~~ Point Updater Start ~~~~~~~~~~~~ " << endl;
+                    dout << CtiTime() << " - ~~~~~~~~~ Message Sender Start ~~~~~~~~~~~~ " << endl;
                 }
+
                 try
                 {
 
@@ -414,8 +412,6 @@ void CtiCapController::messageSender()
                         registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
                         store->setReregisterForPoints(FALSE);
                         waitToBroadCastEverything = TRUE;
-                        registerTimeElapsed.now();
-
                     }
                 }
                 catch(...)
@@ -424,11 +420,10 @@ void CtiCapController::messageSender()
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
-
                 try
                 {
-                    checkDispatch(secondsFrom1901);
-                    checkPIL(secondsFrom1901);
+                    checkPIL();
+
                     store->checkUnsolicitedList();
                     store->checkRejectedList();
                     store->checkUnexpectedUnsolicitedList();
@@ -443,14 +438,13 @@ void CtiCapController::messageSender()
                      (store->getLinkStatusFlag() == CLOSED) &&
                      store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds())
                 {
-                     updateAllPointQualities(NonUpdatedQuality, secondsFrom1901);
+                     updateAllPointQualities(NonUpdatedQuality);
                      store->setLinkDropOutTime(currentDateTime);
                      {
                          CtiLockGuard<CtiLogger> logger_guard(dout);
                          dout << CtiTime() << " - store->getLinkDropOutTime() " << store->getLinkDropOutTime().asString()<< endl;
                      }
                 }
-
 
                 readClientMsgQueue();
                 CtiCCSubstationBus_vec subStationBusChanges;
@@ -487,17 +481,22 @@ void CtiCapController::messageSender()
                     }
                 }
 
-
                 if (subStationBusChanges.size() > 0)
+                {
                     getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified));
+                }
                 if (areaChanges.size() > 0)
+                {
                     getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg((CtiCCArea_set&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
+                }
                 if (stationChanges.size() > 0)
+                {
                     getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg((CtiCCSubstation_set&)stationChanges,CtiCCSubstationsMsg::SubModified));
+                }
                 if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - ~~~~~~~~~ Point Updater END ~~~~~~~~~~~~ " << endl;
+                    dout << CtiTime() << " - ~~~~~~~~~ Message Sender End ~~~~~~~~~~~~ " << endl;
                 }
             }
 
@@ -542,6 +541,19 @@ void CtiCapController::messageSender()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         dout << CtiTime() << " - Message Sender thread terminated unexpectedly." << endl;
+    }
+}
+
+void CtiCapController::processNewMessage(CtiMessage* message)
+{
+    if (message != NULL)
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Processing New Message" << endl;
+        }
+        parseMessage(message);
+        delete message;
     }
 }
 
@@ -1083,75 +1095,32 @@ void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCC
     }
 }
 
-
 void CtiCapController::readClientMsgQueue()
 {
-    try
-    {
-        CtiTime tempTime;
-        RWCollectable* clientMsg = NULL;
+    CtiTime tempTime;
+    RWCollectable* clientMsg = NULL;
 
-        try
+    tempTime.now();
+    while(_inClientMsgQueue.canRead())
+    {
+        clientMsg = _inClientMsgQueue.read();
+        if( clientMsg != NULL )
         {
-            tempTime.now();
-            while(_inClientMsgQueue.canRead())
+            try
             {
-                try
-                {
-                    clientMsg = _inClientMsgQueue.read();
-                    try
-                    {
-                        if( clientMsg != NULL )
-                        {
-                            try
-                            {
-                                try
-                                {
-                                    CtiCCExecutorFactory::createExecutor( (CtiMessage*) clientMsg )->execute();
-                                }
-                                catch(...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                        if (CtiTime::now().seconds() - tempTime.seconds() <= 1)
-                        {
-                            break;
-                        }
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-            };
-            //delete clientMsg;
-
+                CtiCCExecutorFactory::createExecutor( (CtiMessage*) clientMsg )->execute();
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
         }
-        catch(...)
+
+        if (CtiTime::now().seconds() - tempTime.seconds() <= 1)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            break;
         }
-
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1557,7 +1526,7 @@ void CtiCapController::processCCEventMsgs()
 
     Returns a connection to Dispatch, initializes if isn't created yet.
 ---------------------------------------------------------------------------*/
-DispatchConnection* CtiCapController::getDispatchConnection()
+DispatchConnectionPtr CtiCapController::getDispatchConnection()
 {
     try
     {
@@ -1608,14 +1577,13 @@ DispatchConnection* CtiCapController::getDispatchConnection()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Dispatch Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-                delete _dispatchConnection;
-                _dispatchConnection = NULL;
+                _dispatchConnection.reset();
             }
 
             if( _dispatchConnection == NULL )
             {
                 //Connect to Dispatch
-                _dispatchConnection = new DispatchConnection( "CC to Dispatch", dispatch_port, dispatch_host );
+                _dispatchConnection = DispatchConnectionPtr(new DispatchConnection( "CC to Dispatch", dispatch_port, dispatch_host ));
 
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
@@ -1623,6 +1591,7 @@ DispatchConnection* CtiCapController::getDispatchConnection()
             }
         }
 
+        _dispatchConnection->addMessageListener(this);
         return _dispatchConnection;
     }
     catch(...)
@@ -1630,7 +1599,7 @@ DispatchConnection* CtiCapController::getDispatchConnection()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
-        return NULL;
+        return DispatchConnectionPtr();
     }
 }
 
@@ -1639,7 +1608,7 @@ DispatchConnection* CtiCapController::getDispatchConnection()
 
     Returns a connection to PIL, initializes if isn't created yet.
 ---------------------------------------------------------------------------*/
-CtiConnection* CtiCapController::getPILConnection()
+CtiConnectionPtr CtiCapController::getPILConnection()
 {
     try
     {
@@ -1722,11 +1691,11 @@ CtiConnection* CtiCapController::getPILConnection()
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkDispatch(ULONG secondsFrom1901)
+void CtiCapController::checkDispatch()
 {
     BOOL done = FALSE;
     CtiTime tempTime;
-    CtiConnection* tempPtrDispatchConn = getDispatchConnection();
+    DispatchConnectionPtr tempPtrDispatchConn = getDispatchConnection();
     tempTime.now();
 
     int sizeOfQueue = tempPtrDispatchConn->getInQueueHandle().size();
@@ -1741,11 +1710,11 @@ void CtiCapController::checkDispatch(ULONG secondsFrom1901)
     {
         try
         {
-            CtiMessage* in = (CtiMessage*) tempPtrDispatchConn->ReadConnQue(100);
-            if ( in != NULL )
+            CtiMessage* inMsg = (CtiMessage*) tempPtrDispatchConn->ReadConnQue(100);
+            if ( inMsg != NULL )
             {
-                parseMessage(in,secondsFrom1901);
-                delete in;
+                parseMessage(inMsg);
+                delete inMsg;
             }
             else
                 done = TRUE;
@@ -1772,7 +1741,7 @@ void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 
     Reads off the PIL connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkPIL(ULONG secondsFrom1901)
+void CtiCapController::checkPIL()
 {
     BOOL done = FALSE;
     CtiConnection* tempPtrPorterConn = getPILConnection();
@@ -1780,12 +1749,12 @@ void CtiCapController::checkPIL(ULONG secondsFrom1901)
     {
         try
         {
-            CtiMessage* in = (CtiMessage*) tempPtrPorterConn->ReadConnQue(0);
+            CtiMessage* inMsg = (CtiMessage*) tempPtrPorterConn->ReadConnQue(0);
 
-            if ( in != NULL )
+            if ( inMsg != NULL )
             {
-                parseMessage(in,secondsFrom1901);
-                delete in;
+                parseMessage(inMsg);
+                delete inMsg;
             }
             else
                 done = TRUE;
@@ -1805,14 +1774,14 @@ void CtiCapController::checkPIL(ULONG secondsFrom1901)
 
     Registers for all points of the substations buses.
 ---------------------------------------------------------------------------*/
-void CtiCapController::updateAllPointQualities(long quality, ULONG secondsFrom1901)
+void CtiCapController::updateAllPointQualities(long quality)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Updating CapControl Point Qualities to " << quality<< endl;
     }
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
@@ -1872,7 +1841,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
     {
         CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
-        std::list<int> registrationIds;
+        std::list<long> registrationIds;
         //This is left here as there is no other documentation of this cparm ever existing!
         /*string simple_registration = gConfigParms.getValueAsString("CAP_CONTROL_SIMPLE_REGISTRATION", "false");
         if(simple_registration == "true" || simple_registration == "TRUE")
@@ -2202,12 +2171,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             }
 
         }
-        /***************************************************************************************************************************/
-        //Add the handler points here!
 
-        //store->getPointDataHandler().getAllPointIds(registrationIds);
-
-        /***************************************************************************************************************************/
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - End Registering for point changes." << endl;
@@ -2215,7 +2179,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
         try
         {
-            getDispatchConnection()->registerForPoints(registrationIds);
+            getDispatchConnection()->registerForPoints(this,registrationIds);
         }
         catch(...)
         {
@@ -2230,7 +2194,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
+void CtiCapController::parseMessage(RWCollectable *message)
 {
     try
     {
@@ -2417,13 +2381,13 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
             case MSG_POINTDATA:
                 {
                     pData = (CtiPointDataMsg*) message;
-                    pointDataMsg( pData, secondsFrom1901 );
+                    pointDataMsg(pData);
                 }
                 break;
             case MSG_PCRETURN:
                 {
                     pcReturn = (CtiReturnMsg *)message;
-                    porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString(), secondsFrom1901 );
+                    porterReturnMsg(pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString());
                 }
                 break;
             case MSG_COMMAND:
@@ -2479,14 +2443,14 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                     }
                     for(i=0;i<temp.size( );i++)
                     {
-                        parseMessage(temp[i],secondsFrom1901);
+                        parseMessage(temp[i]);
                     }
                 }
                 break;
             case MSG_SIGNAL:
                 {
                     signal = (CtiSignalMsg *)message;
-                    signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo(), secondsFrom1901 );
+                    signalMsg(signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo());
                 }
                 break;
             case MSG_TAG:
@@ -2783,7 +2747,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
 
     Handles point data messages and updates substation bus point values.
 ---------------------------------------------------------------------------*/
-void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
 {
     int pointID = message->getId();
     double value = message->getValue();
@@ -2817,17 +2781,17 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
 
         if (!handled)
         {
-            pointDataMsgBySubBus(pointID, value, quality, tags, timestamp, secondsFrom1901);
+            pointDataMsgBySubBus(pointID, value, quality, timestamp);
 
-            pointDataMsgByFeeder(pointID, value, quality, tags, timestamp, secondsFrom1901);
+            pointDataMsgByFeeder(pointID, value, quality, timestamp);
 
-            pointDataMsgByCapBank(pointID, value, quality, tags, timestamp, secondsFrom1901);
+            pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
 
-            pointDataMsgBySubstation(pointID, value, quality, tags, timestamp, secondsFrom1901);
+            pointDataMsgBySubstation(pointID, value, quality, timestamp);
 
-            pointDataMsgByArea(pointID, value, quality, tags, timestamp, secondsFrom1901);
+            pointDataMsgByArea(pointID, value, quality, timestamp);
 
-            pointDataMsgBySpecialArea(pointID, value, quality, tags, timestamp, secondsFrom1901);
+            pointDataMsgBySpecialArea(pointID, value, quality, timestamp);
 
             if (store->getLinkStatusPointId() > 0)
             {
@@ -2889,7 +2853,7 @@ void CtiCapController::pointDataMsg( CtiPointDataMsg* message, ULONG secondsFrom
     return;
 }
 
-void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2939,7 +2903,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
         areaIter++;
     }
 }
-void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2988,7 +2952,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
         saIter++;
     }
 }
-void CtiCapController::pointDataMsgBySubstation( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3052,9 +3016,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
     }
 }
 
-
-
-void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3367,7 +3329,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
 }
 
-void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigned quality, CtiTime& timestamp )
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3605,7 +3567,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 }
 
 
-void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -3945,7 +3907,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
     Handles porter return messages and updates the status of substation bus
     cap bank controls.
 ---------------------------------------------------------------------------*/
-void CtiCapController::porterReturnMsg( long deviceId, const string& _commandString, int status, const string& _resultString, ULONG secondsFrom1901 )
+void CtiCapController::porterReturnMsg( long deviceId, const string& _commandString, int status, const string& _resultString )
 {
     string commandString = _commandString;
     if( !stringCompareIgnoreCase(commandString, "scan general") ||
@@ -3962,7 +3924,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
 
     int bankid = store->findCapBankIDbyCbcID(deviceId);
@@ -4324,7 +4286,7 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
 
     Handles signal messages and updates substation bus tags.
 ---------------------------------------------------------------------------*/
-void CtiCapController::signalMsg( long pointID, unsigned tags, const string& text, const string& additional, ULONG secondsFrom1901 )
+void CtiCapController::signalMsg(long pointID, unsigned tags, const string& text, const string& additional)
 {
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
@@ -4340,8 +4302,6 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, const string& tex
         dout << CtiTime() << " - " << outString << "  Text: "
                       << text << " Additional Info: " << additional << endl;
     }
-
-
 
     return;
 }

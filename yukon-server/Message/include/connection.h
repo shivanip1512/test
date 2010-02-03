@@ -162,4 +162,6 @@ public:
 
 };
 
+typedef CtiConnection* CtiConnectionPtr;
+
 #endif // #ifndef __CONNECTION_H__

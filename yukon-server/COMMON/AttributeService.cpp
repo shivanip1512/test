@@ -62,7 +62,7 @@ LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttr
     string attributeName = attribute.name();
 
     {
-        string sql("SELECT pointId FROM ExtraPaoPointAssignment WHERE paoId = ");
+        string sql("SELECT pointId FROM ExtraPaoPointAssignment WHERE paobjectid = ");
         sql += CtiNumStr(paoId);
         sql += " AND Attribute = '" + attributeName + "'";
 

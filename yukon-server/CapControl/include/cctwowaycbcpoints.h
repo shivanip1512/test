@@ -250,7 +250,7 @@ public:
     BOOL isLastControlReasonUpdated(LONG pointID, LONG reason );
 
 
-    CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::list<int>& pointList);
+    CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::list<long>& pointList);
     BOOL isDirty();
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);

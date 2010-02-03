@@ -28,6 +28,7 @@
 #include "dbaccess.h"
 #include "connection.h"
 #include "DispatchConnection.h"
+#include "MessageListener.h"
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"
@@ -44,93 +45,96 @@
 #include "ctdpcptrq.h"
 //#include "CtiPCPtrQueue.h"
 
-class CtiCapController
+class CtiCapController : public MessageListener
 {
-public:
+    public:
 
-    CtiCapController();
-    virtual ~CtiCapController();
-    static CtiCapController* getInstance();
-    static void setInstance(CtiCapController* controller);
-    static void deleteInstance();
+        CtiCapController();
+        virtual ~CtiCapController();
+        static CtiCapController* getInstance();
+        static void setInstance(CtiCapController* controller);
+        static void deleteInstance();
 
-    void start();
-    void stop();
+        void start();
+        void stop();
 
-    virtual void sendMessageToDispatch(CtiMessage* message);
-    void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
-    void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
-    CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
-    CtiPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
-    CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
+        virtual void sendMessageToDispatch(CtiMessage* message);
+        void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
+        void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
+        CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
+        CtiPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
+        CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
 
-    void loadControlLoopCParms();
-    void refreshCParmGlobals(bool force);
-    void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                    CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
-    void handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                    CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
-    void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                    CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+        void loadControlLoopCParms();
+        void refreshCParmGlobals(bool force);
+        void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+        void handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+        void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
 
-    void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
-                            CtiMultiMsg_vec& capMessages);
+        void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+                                CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
+                                CtiMultiMsg_vec& capMessages);
 
-    void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
-                                   CtiCCArea_vec& areaChanges, long broadCastMask);
-    void readClientMsgQueue();
-    void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+        void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
+                                       CtiCCArea_vec& areaChanges, long broadCastMask);
+        void readClientMsgQueue();
+        void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
+                                CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
 
-    DispatchConnection* getDispatchConnection();
-    CtiConnection* getPILConnection();
-private:
+        DispatchConnectionPtr getDispatchConnection();
+        CtiConnectionPtr getPILConnection();
 
+        void processNewMessage(CtiMessage* message);
 
-    //Thread Functions
-    void controlLoop();
-    void messageSender();
-    void outClientMsgs();
-    void processCCEventMsgs();
-    void ivvcKeepAlive();
-
-    void checkDispatch(ULONG secondsFrom1901);
-    void checkPIL(ULONG secondsFrom1901);
-    void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
-    void updateAllPointQualities(long quality, ULONG secondsFrom1901);
-    void adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr currentBus);
-    void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
-    void parseMessage(RWCollectable* message, ULONG secondsFrom1901);
-    void pointDataMsg(CtiPointDataMsg* message, unsigned long secondsFrom1901);
-    void pointDataMsgBySubBus(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
-    void pointDataMsgByFeeder(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
-    void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
-    void pointDataMsgByArea(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
-    void pointDataMsgBySpecialArea(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
-    void pointDataMsgBySubstation( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 );
-    void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString, ULONG secondsFrom1901);
-    void signalMsg(long pointID, unsigned tags, const string& text, const string& additional, ULONG secondsFrom1901);
-
-    static CtiCapController* _instance;
-    RWThread _substationBusThread;
-    RWThread _outClientMsgThread;
-    RWThread _messageSenderThread;
-    RWThread _ivvcKeepAliveThread;
-
-    CtiConnection* _pilConnection;
-    DispatchConnection* _dispatchConnection;
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
-    CtiPCPtrQueue< RWCollectable > _inClientMsgQueue;
-    CtiPCPtrQueue< RWCollectable > _outClientMsgQueue;
-
-    CtiPCPtrQueue< RWCollectable > _ccEventMsgQueue;
-
-    int control_loop_delay;
-    int control_loop_inmsg_delay;
-    int control_loop_outmsg_delay;
+    private:
 
 
+        //Thread Functions
+        void controlLoop();
+        void messageSender();
+        void outClientMsgs();
+        void processCCEventMsgs();
+        void ivvcKeepAlive();
+
+        void checkDispatch();
+        void checkPIL();
+
+        void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
+        void updateAllPointQualities(long quality);
+        void adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr currentBus);
+        void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
+
+        void parseMessage(RWCollectable* message);
+        void pointDataMsg(CtiPointDataMsg* message);
+        void pointDataMsgBySubBus(long pointID, double value, unsigned quality, CtiTime& timestamp);
+        void pointDataMsgByFeeder(long pointID, double value, unsigned quality, CtiTime& timestamp);
+        void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp);
+        void pointDataMsgByArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
+        void pointDataMsgBySpecialArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
+        void pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp);
+        void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString);
+        void signalMsg(long pointID, unsigned tags, const string& text, const string& additional);
+
+        static CtiCapController* _instance;
+        RWThread _substationBusThread;
+        RWThread _outClientMsgThread;
+        RWThread _messageSenderThread;
+        RWThread _ivvcKeepAliveThread;
+
+        CtiConnectionPtr _pilConnection;
+        DispatchConnectionPtr _dispatchConnection;
+
+        mutable RWRecursiveLock<RWMutexLock> _mutex;
+        CtiPCPtrQueue< RWCollectable > _inClientMsgQueue;
+        CtiPCPtrQueue< RWCollectable > _outClientMsgQueue;
+
+        CtiPCPtrQueue< RWCollectable > _ccEventMsgQueue;
+
+        int control_loop_delay;
+        int control_loop_inmsg_delay;
+        int control_loop_outmsg_delay;
 };
 #endif

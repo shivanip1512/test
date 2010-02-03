@@ -3,12 +3,13 @@
 
 #include "yukon.h"
 #include "PointDataListener.h"
+#include "MessageListener.h"
 #include "msg_pdata.h"
 
 #include <map>
 #include <list>
 
-class IM_EX_MSG PointDataHandler
+class IM_EX_MSG PointDataHandler : public MessageListener
 {
     public:
         PointDataHandler();
@@ -21,9 +22,11 @@ class IM_EX_MSG PointDataHandler
         bool removeAllPointsForPao(int paoId);
         bool removePointId(int pointId);
 
+        //Change this one to use the new one (processNewMessage) and not be called from the store.
         bool processIncomingPointData(CtiPointDataMsg* message);
+        void processNewMessage(CtiMessage* message);
 
-        void getAllPointIds(std::list<int>& pointIds);
+        void getAllPointIds(std::list<long>& pointIds);
 
         void setPointDataListener(PointDataListener* pointDataListener);
 

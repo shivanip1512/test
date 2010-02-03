@@ -1987,7 +1987,7 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
 }
 
 
-CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::list<int>& pointAddMsg)
+CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::list<long>& pointAddMsg)
 {
 
     if( getStatusPointId() > 0 )

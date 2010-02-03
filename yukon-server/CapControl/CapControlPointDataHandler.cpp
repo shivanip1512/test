@@ -11,10 +11,10 @@ CapControlPointDataHandler::CapControlPointDataHandler() : Inherited()
 
 void CapControlPointDataHandler::registerForPoint(int pointId)
 {
-    CtiCapController::getInstance()->getDispatchConnection()->registerForPoint(pointId);
+    CtiCapController::getInstance()->getDispatchConnection()->registerForPoint(this, pointId);
 }
 
 void CapControlPointDataHandler::unRegisterForPoint(int pointId)
 {
-    CtiCapController::getInstance()->getDispatchConnection()->unRegisterForPoint(pointId);
+    CtiCapController::getInstance()->getDispatchConnection()->unRegisterForPoint(this, pointId);
 }

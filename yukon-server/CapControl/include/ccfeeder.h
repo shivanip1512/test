@@ -347,7 +347,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                                          LONG failurePercent, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
     BOOL capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                  LONG minConfirmPercent, LONG failPercent);
-    CtiCCFeeder& addAllFeederPointsToMsg(std::list<int>& pointAddMsg);
+    CtiCCFeeder& addAllFeederPointsToMsg(std::list<long>& pointAddMsg);
     CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPoint* point);
 
     bool isDataOldAndFallBackNecessary(string controlUnits);

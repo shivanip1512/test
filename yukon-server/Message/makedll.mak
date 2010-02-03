@@ -33,6 +33,7 @@ OBJS=\
 connection.obj \
 PointDataHandler.obj \
 DispatchConnection.obj \
+GroupPointDataRequest.obj \
 dll_msg.obj \
 message.obj \
 msg_cmd.obj \
