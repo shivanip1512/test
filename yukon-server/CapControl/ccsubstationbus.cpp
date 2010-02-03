@@ -918,6 +918,10 @@ LONG CtiCCSubstationBus::getVoltReductionControlId() const
 {
     return _voltReductionControlId;
 }
+LONG CtiCCSubstationBus::getDisableBusPointId() const
+{
+    return _disableBusPointId;
+}
 
 
 LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
@@ -5584,6 +5588,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVoltReductionControlId(LONG pointid)
     return *this;
 }
 
+CtiCCSubstationBus& CtiCCSubstationBus::setDisableBusPointId(LONG pointid)
+{
+    _disableBusPointId = pointid;
+    return *this;
+}
+
 CtiCCSubstationBus& CtiCCSubstationBus::setVoltReductionFlag(BOOL flag)
 {
     if (_voltReductionFlag != flag)
@@ -9312,6 +9322,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::list<long>& po
     {
         pointAddMsg.push_back(getVoltReductionControlId());
     }
+    if (getDisableBusPointId() > 0)
+    {
+        pointAddMsg.push_back(getDisableBusPointId());
+    }
     if (getOperationStats().getUserDefOpSuccessPercentId() > 0)
     {
         pointAddMsg.push_back(getOperationStats().getUserDefOpSuccessPercentId());
@@ -9528,6 +9542,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _likeDayControlFlag = right._likeDayControlFlag;
         _voltReductionFlag = right._voltReductionFlag;
         _voltReductionControlId = right._voltReductionControlId;
+        _disableBusPointId = right._disableBusPointId;
         _sendMoreTimeControlledCommandsFlag = right._sendMoreTimeControlledCommandsFlag;
 
         _altDualSubId = right._altDualSubId;
@@ -9633,6 +9648,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     _totalizedControlFlag = (tempBoolString=="y"?TRUE:FALSE);
 
     rdr["voltreductionpointid"] >> _voltReductionControlId;
+    rdr["disablebuspointid"] >> _disableBusPointId;
 
     _parentId =  0;
     _decimalplaces = 2;
@@ -9825,7 +9841,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         {
             setVoltReductionFlag(FALSE);
         }
-
+        
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;
         rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;

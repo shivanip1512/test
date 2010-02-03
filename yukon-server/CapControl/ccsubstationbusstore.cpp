@@ -6031,7 +6031,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         << capControlSubstationBusTable["phaseb"]
                         << capControlSubstationBusTable["phasec"]
                         << capControlSubstationBusTable["controlflag"]
-                        << capControlSubstationBusTable["voltreductionpointid"];
+                        << capControlSubstationBusTable["voltreductionpointid"]
+                        << capControlSubstationBusTable["disablebuspointid"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
@@ -6105,6 +6106,12 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                             {
                                 pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getVoltReductionControlId(), currentCCSubstationBus));
                                 currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getVoltReductionControlId());
+                            }
+                            if (currentCCSubstationBus->getDisableBusPointId() > 0)
+                            {
+                                pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getDisableBusPointId(), currentCCSubstationBus));
+                                currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getDisableBusPointId());
+
                             }
 
 

@@ -2174,6 +2174,9 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         else
             _twoWayPoints = NULL;
 
+        _insertDynamicDataFlag = rightObj._insertDynamicDataFlag;
+        _dirty = rightObj._dirty;
+
     }
     return *this;
 }

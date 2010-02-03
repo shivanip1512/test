@@ -26,8 +26,8 @@ CtiCCOriginalParent::CtiCCOriginalParent()
     _originalSwitchingOrder = 0;
     _originalCloseOrder     = 0;
     _originalTripOrder      = 0;
-    _dirty = false;
-    _insertDynamicDataFlag = false;
+    _dirty = true;
+    _insertDynamicDataFlag = true;
 };
 
 
@@ -142,7 +142,7 @@ void CtiCCOriginalParent::restore(RWDBReader& rdr)
     rdr["originalcloseorder"] >>  _originalCloseOrder;
     rdr["originaltriporder"] >>  _originalTripOrder;
 
-    _insertDynamicDataFlag = FALSE;
+    _insertDynamicDataFlag = false;
     _dirty = false;
 
 }

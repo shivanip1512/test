@@ -2015,6 +2015,11 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     registrationIds.push_back(currentSubstationBus->getVoltReductionControlId());
                     regMsg->insert(currentSubstationBus->getVoltReductionControlId());
                 }
+                if (currentSubstationBus->getDisableBusPointId() > 0 )
+                {
+                    registrationIds.push_back(currentSubstationBus->getDisableBusPointId());
+                    regMsg->insert(currentSubstationBus->getDisableBusPointId());
+                }
                 if ( currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
                     registrationIds.push_back(currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
@@ -3316,6 +3321,18 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         }
                     }
 
+                }
+                if (currentSubstationBus->getDisableBusPointId() == pointID)
+                {
+                    if (value > 0 && !currentSubstationBus->getDisableFlag())
+                    {
+                       CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
+                       currentSubstationBus->setReEnableBusFlag(TRUE);
+                    }
+                    if (value == 0 && currentSubstationBus->getDisableFlag() && currentSubstationBus->getReEnableBusFlag())
+                    {
+                       CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
+                    }
                 }
             }
         }

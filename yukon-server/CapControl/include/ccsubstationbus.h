@@ -138,6 +138,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getLikeDayControlFlag() const;
     BOOL getVoltReductionFlag() const;
     LONG getVoltReductionControlId() const;
+    LONG getDisableBusPointId() const;
     BOOL getSendMoreTimeControlledCommandsFlag() const;
 
 
@@ -234,6 +235,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLikeDayControlFlag(BOOL flag);
     CtiCCSubstationBus& setVoltReductionFlag(BOOL flag);
     CtiCCSubstationBus& setVoltReductionControlId(LONG pointid);
+    CtiCCSubstationBus& setDisableBusPointId(LONG pointid);
     CtiCCSubstationBus& setSendMoreTimeControlledCommandsFlag(BOOL flag);
 
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
@@ -452,6 +454,7 @@ private:
     BOOL _sendMoreTimeControlledCommandsFlag;
 
     LONG _voltReductionControlId;
+    LONG _disableBusPointId;
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
     BOOL _disableOvUvVerificationFlag;
