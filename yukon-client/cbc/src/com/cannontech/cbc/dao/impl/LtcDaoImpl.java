@@ -30,16 +30,12 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class LtcDaoImpl implements LtcDao {
     
-//    private Logger log = YukonLogManager.getLogger(LtcDao.class);
-    
-//    private PaoDefinitionService paoDefinitionService;
     private YukonJdbcTemplate yukonJdbcTemplate;
 
     private NextValueHelper nextValueHelper;
 
     @Override
     public int add(LoadTapChanger ltc) {
-        /* TODO Add the ltc and ltc points as one multidbpersistent so its all in one transaction? */
         int newId = nextValueHelper.getNextValue("YukonPaObject");
         
         YukonPAObject persistentLtc = new YukonPAObject();
@@ -58,14 +54,6 @@ public class LtcDaoImpl implements LtcDao {
             throw new DataIntegrityViolationException("Insert of LTC, " + ltc.getName() + ", failed.", e);
         }
         
-//        List<PointBase> points = paoDefinitionService.createAllPointsForDevice(new SimpleDevice(persistentLtc.getPAObjectID(), PAOGroups.getDeviceType(persistentLtc.getPAOType())));
-//        MultiDBPersistent pointMulti = new MultiDBPersistent();
-//        pointMulti.getDBPersistentVector().addAll(points);
-//        try {
-//            PointUtil.insertIntoDB(pointMulti);
-//        } catch (TransactionException e) {
-//            log.error("Failed on Inserting Points for Load Tap Changer, " + name +".");
-//        }
         return newId;
     }
 
@@ -184,11 +172,6 @@ public class LtcDaoImpl implements LtcDao {
         PaoIdentifier paoIdentifier = new PaoIdentifier(ltcId, PaoType.LOAD_TAP_CHANGER);
         return paoIdentifier;
     }
-    
-//    @Autowired
-//    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
-//        this.paoDefinitionService = paoDefinitionService;
-//    }
     
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
