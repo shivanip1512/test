@@ -2,6 +2,7 @@ package com.cannontech.web.util;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
@@ -25,6 +26,7 @@ import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Maps;
 
 /**
  * A set of selection list used for many GUI's
@@ -193,7 +195,40 @@ public class CBCSelectionLists {
 		new SelectItem(new Integer(1100), "1100 kVar"),
 		new SelectItem(new Integer(1200), "1200 kVar")
 	};
+	
+	public static final Map<Integer, String> intervalGroupDisplayValues = Maps.newHashMap();
+    static {
+        intervalGroupDisplayValues.put(0, "Default");
+        intervalGroupDisplayValues.put(1, "First");
+        intervalGroupDisplayValues.put(2, "Second");
+    }
 
+	public static final Map<Integer, String> timeIntervalDisplayValues = Maps.newHashMap();
+    static {
+        timeIntervalDisplayValues.put(1, "1 seconds");
+        timeIntervalDisplayValues.put(2, "2 seconds");
+        timeIntervalDisplayValues.put(5, "5 seconds");
+        timeIntervalDisplayValues.put(10, "10 seconds");
+        timeIntervalDisplayValues.put(15, "15 seconds");
+        timeIntervalDisplayValues.put(30, "30 seconds");
+        timeIntervalDisplayValues.put(60, "1 minute");
+        timeIntervalDisplayValues.put(120, "2 minute");
+        timeIntervalDisplayValues.put(180, "3 minute");
+        timeIntervalDisplayValues.put(240, "4 minute");
+        timeIntervalDisplayValues.put(300, "5 minute");
+        timeIntervalDisplayValues.put(420, "7 minute");
+        timeIntervalDisplayValues.put(600, "10 minute");
+        timeIntervalDisplayValues.put(720, "12 minute");
+        timeIntervalDisplayValues.put(900, "15 minute");
+        timeIntervalDisplayValues.put(1200, "20 minute");
+        timeIntervalDisplayValues.put(1500, "25 minute");
+        timeIntervalDisplayValues.put(1800, "30 minute");
+        timeIntervalDisplayValues.put(3600, "1 hour");
+        timeIntervalDisplayValues.put(7200, "2 hours");
+        timeIntervalDisplayValues.put(21600, "6 hours");
+        timeIntervalDisplayValues.put(43200, "12 hours");
+        timeIntervalDisplayValues.put(86400, "1 day");
+    }
 
 	//generic time list in seconds for a many fields
 	public static final SelectItem[] TIME_INTERVAL = {

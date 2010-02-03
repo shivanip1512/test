@@ -120,6 +120,7 @@
                       </td>
                       <td>
                       	<xsl:if test="basicLookup">basicLookup</xsl:if>
+                      	<xsl:if test="mappedLookup">mappedLookup</xsl:if>
                       	<xsl:if test="mct4xxLookup">mct4xxLookup</xsl:if>
                       	<xsl:if test="mctIedTouLookup">mctIedTouLookup</xsl:if>
                       </td>
@@ -127,6 +128,9 @@
                       	<xsl:if test="basicLookup">
                       		Point=<xsl:value-of select="basicLookup/@point"/>
                       	</xsl:if>
+                      	<xsl:if test="mappedLookup">
+                            Point=<xsl:value-of select="mappedLookup/@point"/>
+                        </xsl:if>
                       	<xsl:if test="mct4xxLookup">
 		                  <xsl:for-each select="mct4xxLookup/mapping">
 							Type=<xsl:value-of select="@type"/>

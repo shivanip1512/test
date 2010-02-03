@@ -130,17 +130,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private List<LiteYukonPAObject> unassignedBanks = null;
 	private List<LiteYukonPAObject> unassignedFeeders = null;
 	private List<LiteYukonPAObject> unassignedSubBuses = null;
-	// possible selection types for every wizard panel
 	private CapControlCreationModel wizData = null;
-	// possible editor for the CBC a CapBank belongs to
 	private ICBControllerModel cbControllerEditor = null;
 	private PointTreeForm pointTreeForm = null;
-	// selectable items that appear in lists on the GUI
 	private List<SelectItem> cbcStrategies = null;
-	// variables that hold sub bus info
 	protected List<LiteYukonPAObject> subBusList = null;
     private Integer oldSubBus = null;
-	// Boolean to keep track of the disable dual subbus status
     private Boolean enableDualBus = Boolean.FALSE;
 	private boolean isDualSubBusEdited;
     private SelectItem[] controlMethods = null;
@@ -352,7 +347,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
 	
 	public void substationBusNoVoltReductionPointClicked(ActionEvent ae) {
-        String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("disablePtId");
+        String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
         if (val == null) {
             return;
         }
@@ -1964,8 +1959,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         String name = "(none)";
         if(getDbPersistent() instanceof CapControlSubBus) {
             CapControlSubstationBus bus = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus();
+            if(bus.getLtcId() <= 0){
+                return name;
+            }
             LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
-            name =ltcDao.getLtcName(bus.getSubstationBusID());
+            name = ltcDao.getLtcName(bus.getSubstationBusID());
         }
         return name;
     }
@@ -2004,14 +2002,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         this.holidayScheduleId = id;
     }
     
-    public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
-        this.seasonScheduleDao = seasonScheduleDao;
-    }
-    
-    public void setHolidayScheduleDao(HolidayScheduleDao holidayScheduleDao) {
-        this.holidayScheduleDao = holidayScheduleDao;
-    }
-
 	public List<LiteYukonPAObject> getUnassignedSubBuses() {
 		return unassignedSubBuses;
 	}
@@ -2020,26 +2010,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		this.unassignedSubBuses = unassignedSubBuses;
 	}
 	
-	public void setCapControlCreationService(CapControlCreationService capControlCreationService) {
-        this.capControlCreationService = capControlCreationService;
-    }
-	
-	public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
-        this.capbankControllerDao = capbankControllerDao;
-    }
-
-    public void setSelectionLists(CBCSelectionLists selectionLists) {
-        this.selectionLists = selectionLists;
-    }
-
-    public CBCSelectionLists getSelectionLists() {
-        return selectionLists;
-    }
-    
-    public void setStrategyDao (StrategyDao strategyDao) {
-        this.strategyDao = strategyDao;
-    }
-    
     public CapControlStrategy getStrategy() {
         return getCbcStrategiesMap().get(getCurrentStrategyID());
     }
@@ -2073,6 +2043,34 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     public void controlMethodChanged(ValueChangeEvent e){
         getStrategy().controlMethodChanged(e.getNewValue().toString());
+    }
+    
+    public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
+        this.seasonScheduleDao = seasonScheduleDao;
+    }
+    
+    public void setHolidayScheduleDao(HolidayScheduleDao holidayScheduleDao) {
+        this.holidayScheduleDao = holidayScheduleDao;
+    }
+    
+    public void setCapControlCreationService(CapControlCreationService capControlCreationService) {
+        this.capControlCreationService = capControlCreationService;
+    }
+    
+    public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
+        this.capbankControllerDao = capbankControllerDao;
+    }
+
+    public void setSelectionLists(CBCSelectionLists selectionLists) {
+        this.selectionLists = selectionLists;
+    }
+
+    public CBCSelectionLists getSelectionLists() {
+        return selectionLists;
+    }
+    
+    public void setStrategyDao (StrategyDao strategyDao) {
+        this.strategyDao = strategyDao;
     }
     
 }

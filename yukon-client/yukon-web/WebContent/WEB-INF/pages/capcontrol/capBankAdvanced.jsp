@@ -157,44 +157,48 @@
 	<x:htmlTag value="br"/>
 
 	<x:htmlTag value="fieldset" styleClass="fieldSet">
-	   <x:htmlTag value="legend"><x:outputText value="Point Configuration"/></x:htmlTag>
-	
-		<h:panelGrid id="assignedPointsConfig" columns="1"
-			styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell"
-			rendered="#{not empty capBankEditor.assignedPoints}">
-			<x:panelGroup>
-				<h:dataTable id="pointConfig" var="point"
-					styleClass="bigScrollerTable" headerClass="scrollerTableHeader"
-					footerClass="scrollerTableHeader" rowClasses="tableRow,altTableRow"
-					value="#{capBankEditor.assignedPoints}"
-					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" rows="25">
-					<h:column>
-						<x:outputText value="#{point.pointName}"
-							styleClass="scrollerTableHeader" />
-						<f:verbatim>
-							<br>
-						</f:verbatim>
-						<x:outputText value="Override feeder limits:" />
-						<x:selectBooleanCheckbox id="inheritFdr1"
-							value="#{point.overrideFdrLimits}" onclick="submit();" disabled="#{!capControlForm.editingAuthorized}"/>
-						<x:outputText value="Upper Bandwidth: " />
-						<x:inputText value="#{point.upperBandwidth}"
-							disabled="#{!point.overrideFdrLimits}" />
-						<x:outputText value="Lower Bandwidth: " />
-						<x:inputText value="#{point.lowerBandwidth}"
-							disabled="#{!point.overrideFdrLimits}" />
-						<x:outputText value="Initiate scan on unsolicited: " />
-						<x:selectBooleanCheckbox id="scanable1" value="#{point.initScan}" disabled="#{!capControlForm.editingAuthorized}"
-							onclick="submit();" />
-						<x:outputText value="Adaptive Count: " />
-						<x:inputText value="#{point.NINAvg}"
-							onchange="checkAdaptiveCount(this);" />
-					</h:column>
-	
-				</h:dataTable>
-			</x:panelGroup>
-		</h:panelGrid>
+        <x:htmlTag value="legend"><x:outputText value="Point Configuration"/></x:htmlTag>
+	   
+        <x:div rendered="#{not empty capBankEditor.assignedPoints}">
+			<h:dataTable id="pointConfig" var="point" value="#{capBankEditor.assignedPoints}">
+            
+				<h:column>
+                    <h:panelGrid columns="3" styleClass="pointConfigSectionTable">
+                        
+                        <x:outputText value="#{point.pointName}" styleClass="nameValueLabel"/>
+                        <x:outputText value=""/>
+                        <x:outputText value=""/>
+                        
+                        <x:outputText value="Adaptive Count: "/>
+                        <x:inputText value="#{point.NINAvg}" onchange="checkAdaptiveCount(this);" />
+                        <x:outputText value=""/>
+                        
+                        <h:panelGroup>
+                            <x:selectBooleanCheckbox id="scanable1" value="#{point.initScan}" disabled="#{!capControlForm.editingAuthorized}" onclick="submit();" />
+                            <x:outputText value="Initiate scan on unsolicited" styleClass="padCheckBoxLabel"/>
+                        </h:panelGroup>
+                        <x:outputText value=""/>
+                        <x:outputText value=""/>
+                        
+                        <h:panelGroup>
+        					<x:selectBooleanCheckbox id="inheritFdr1" value="#{point.overrideFdrLimits}" onclick="submit();" disabled="#{!capControlForm.editingAuthorized}"/>
+        					<x:outputText value="Override feeder limits" styleClass="padCheckBoxLabel"/>
+                        </h:panelGroup>
+                        <x:outputText value="Upper Bandwidth: "/>
+    					<x:inputText value="#{point.upperBandwidth}" disabled="#{!point.overrideFdrLimits}" />
+    					
+                        <x:outputText value=""/>
+                        <x:outputText value="Lower Bandwidth: "/>
+                        <x:inputText value="#{point.lowerBandwidth}" disabled="#{!point.overrideFdrLimits}" />
+    					
+                    </h:panelGrid>
+                    
+                    <x:htmlTag value="hr"/>
+                    
+				</h:column>
 
+			</h:dataTable>
+        </x:div>
 	</x:htmlTag>
 
 </f:subview>

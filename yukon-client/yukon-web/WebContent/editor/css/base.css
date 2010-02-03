@@ -223,7 +223,15 @@ legend, .legendLikeLabel{
     padding: 3px;
     text-align: center;
     border: none;
+    border-bottom: 1px solid gray;
 	font-weight: bold;
+}
+
+.scrollerTableHeaderLeft {
+    padding: 3px;
+    text-align: left;
+    border-bottom: 1px solid gray;
+    font-weight: bold;
 }
 
 .peakSettingsTableHeader {
@@ -346,6 +354,27 @@ legend, .legendLikeLabel{
 .nameValueLabel {
 	font-weight: bold;
 	padding-right: 5px;
+}
+
+.pointConfigSectionTable {
+	padding-bottom: 20px;
+}
+
+.pointPickerRows {}
+
+.ltcPointCell {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+}
+
+.ltcColumnHeader {
+	font-weight: bold;
+	border-bottom: 1px solid #cccccc;
+}
+
+.ltcPointTable {
+	border-collapse: collapse;
 }
 
 .myFaces_panelTabbedPane {

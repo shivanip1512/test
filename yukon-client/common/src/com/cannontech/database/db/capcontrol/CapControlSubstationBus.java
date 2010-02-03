@@ -33,9 +33,8 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     private String controlFlag = "N";
     private Integer voltReductionPointId = 0;
     private Integer disableBusPointId = 0;
-    
-
 	private Integer ltcId = 0;
+	
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID", 
 		"CurrentVoltLoadPointID", "AltSubId", "SwitchPointId",
@@ -208,7 +207,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     	Object constraintValues[] = { getSubstationBusID()};
     
     	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-    	
+    	handleLtcAssignment(ltcId);
     }
     
     private void handleLtcAssignment(int ltcId) throws SQLException{

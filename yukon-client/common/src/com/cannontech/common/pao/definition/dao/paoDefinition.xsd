@@ -96,7 +96,6 @@
 	    </xs:sequence>
     </xs:complexType>
     
-    
     <!-- ATTRIBUTES -->
     <xs:attributeGroup name="attributeAttributes">
         <xs:attribute name="name" type="xs:string" use="required"/> <!-- Attribute name is the unique identifier for the parser. -->
@@ -108,12 +107,23 @@
             <xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                 	<xs:sequence>
-                		<xs:choice>
+                		<xs:choice >
                 			<xs:element name="basicLookup" maxOccurs="1">
                 				<xs:complexType>
                 					<xs:attribute name="point" type="xs:string" use="required" />
                 				</xs:complexType>
                 			</xs:element>
+                			<xs:element name="mappedLookup" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:choice>
+		                                <xs:element name="typeFilter" maxOccurs="1">
+			                                <xs:complexType>
+			                                    <xs:attribute name="type" type="xs:string" use="required" />
+			                                </xs:complexType>
+		                                </xs:element>
+	                                </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
                 		</xs:choice>
                 	</xs:sequence>
                 	<xs:attributeGroup ref="attributeAttributes" />

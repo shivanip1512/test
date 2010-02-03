@@ -352,9 +352,8 @@ public class CBCDisplay {
             }
             
             final StringBuilder sb = new StringBuilder();
-            sb.append("<table align='center'><tr><td>");
-            sb.append("<b>kVAR</b></td><td><b>PhaseA</b></td><td><b>PhaseB</b></td><td><b>PhaseC</b></td><td><b>Total</b></td></tr>");
-            sb.append("<tr><td colspan='5'><hr></td></tr>");
+            sb.append("<table class='tierTable'><tr><th>");
+            sb.append("kVAR</th><th>PhaseA</th><th>PhaseB</th><th>PhaseC</th><th>Total</th></tr>");
             sb.append(beforeRow);
             sb.append(afterRow);
             sb.append(changeRow);
@@ -993,9 +992,11 @@ public class CBCDisplay {
         Color retColor = defColor;
         int status = capBank.getControlStatus().intValue();
 
-        if (status >= 0 && status < CBCUtils.getCBCStateNames().length)
+        if (status >= 0 && status < CBCUtils.getCBCStateNames().length) {
             retColor = Colors.getColor(CBCUtils.getCBCStateNames()[status].getFgColor());
-
+            if(retColor.equals(Colors.getColor(Colors.GREEN_ID))) retColor = _DEFAULT_COLORS[0];
+        }
+        
         return retColor;
     }
 

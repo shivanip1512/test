@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
@@ -55,22 +56,21 @@ public class AttributeServiceImpl implements AttributeService {
         return litePoint;
     }
 
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonDevice device, Attribute attribute) {
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) {
 
         // if "extra device" functionality exists, look up attribute based on that
-        
         // otherwise, fallback to the type-based device definition lookup
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(device.getPaoIdentifier().getPaoType(), builtInAttribute);
-        PaoPointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(device);
+        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
+        PaoPointIdentifier devicePointIdentifier = attributeDefinition.getPointIdentifier(pao);
         return devicePointIdentifier;
     }
     
-    public Set<Attribute> getAvailableAttributes(YukonDevice device) {
+    public Set<Attribute> getAvailableAttributes(YukonPao pao) {
         Set<Attribute> result = Sets.newHashSet();
         
         // first add type-based attributes
-        Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(device.getPaoIdentifier().getPaoType());
+        Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(pao.getPaoIdentifier().getPaoType());
         for (AttributeDefinition attributeDefinition : definedAttributes) {
             result.add(attributeDefinition.getAttribute());
         }

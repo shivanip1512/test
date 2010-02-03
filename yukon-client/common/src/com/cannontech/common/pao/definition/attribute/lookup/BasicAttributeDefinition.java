@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
@@ -24,8 +25,8 @@ public class BasicAttributeDefinition extends AttributeDefinition {
 	
 	
 	@Override
-	public PaoPointIdentifier getPointIdentifier(YukonDevice device) {
-	    return new PaoPointIdentifier(device.getPaoIdentifier(), pointTemplate.getPointIdentifier());
+	public PaoPointIdentifier getPointIdentifier(YukonPao pao) {
+	    return new PaoPointIdentifier(pao.getPaoIdentifier(), pointTemplate.getPointIdentifier());
 	}
 	
 	@Override

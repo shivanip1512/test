@@ -12,7 +12,7 @@
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <!-- DIV element for the non flyover type popups -->
-<ct:simplePopup onClose="closeTierPopup()" title="Comments:" id="tierPopup" styleClass="thinBorder">
+<ct:simplePopup id="tierPopup" onClose="closeTierPopup()" title="Comments:" styleClass="thinBorder">
     <div id="popupBody"></div>
 </ct:simplePopup>
 <cti:standardMenu/>
@@ -548,7 +548,7 @@
                     </c:otherwise>
                 </c:choose>
                 <c:set var="bankRowCount" value="${bankRowCount + 1}"/>
-    			<tr id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)" class="${bankRowClass}">
+    			<tr id="tr_cap_${thisCapBankId}" class="${bankRowClass}">
                     <td>
                         <span style="display: none"><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/></span>
                         <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}">

@@ -10,7 +10,7 @@
 	
 	<div style="overflow: auto;">
 
-        <table width="95%" border="0" cellspacing="0" cellpadding="0">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 4px;">
 			<tr style="text-align: left;">
 				<th>Point Name</th>
 				<th>Value</th>

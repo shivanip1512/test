@@ -426,9 +426,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         ModelAndView mav = new ModelAndView("cbcPointTimestamps.jsp");
         int cbcId = ServletRequestUtils.getRequiredIntParameter(request, "cbcID");
         
-        LiteYukonPAObject cbc = paoDao.getLiteYukonPAO(cbcId);
-        
-        String paoName = cbc.getPaoName();
+        String paoName = paoDao.getYukonPAOName(cbcId);
         mav.addObject("paoName", paoName);
         
         Map<String, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);

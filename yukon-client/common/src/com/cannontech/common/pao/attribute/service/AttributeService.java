@@ -3,6 +3,7 @@ package com.cannontech.common.pao.attribute.service;
 import java.util.Set;
 
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
@@ -20,18 +21,18 @@ public interface AttributeService {
 
     /**
      * Method to get the paoPointIdentifier for the given deivce for the given attribute.
-     * @param device - Device to get point for
+     * @param pao - Device to get point for
      * @param attribute - Attribute to get point for
      * @return The paoPointIdentifier for the given attribute and device
      */
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonDevice device, Attribute attribute);
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute);
 
     /**
      * Method to get a set of attributes available for the given device
-     * @param device - The device to get attributes for
+     * @param pao - The pao to get attributes for
      * @return An immutable set of all attributes available for this device
      */
-    public Set<Attribute> getAvailableAttributes(YukonDevice device);
+    public Set<Attribute> getAvailableAttributes(YukonPao pao);
 
     /**
      * Method to get a set of all attributes for which points exist for a given

@@ -204,4 +204,6 @@
   <bean id="favoritesService" class="com.cannontech.common.favorites.service.impl.FavoritesServiceImpl"/>
   
   <bean id="paoPropertyDao" class="com.cannontech.core.dao.impl.PaoPropertyDaoImpl"/>
+  
+  <bean id="extraPaoPointAssignmentDao" class="com.cannontech.core.dao.impl.ExtraPaoPointAssignmentDaoImpl"/>
 </beans>

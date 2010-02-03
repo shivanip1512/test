@@ -306,142 +306,103 @@
 		
 					</x:panelGroup>
 						
-					<x:outputLabel for="cntrlSerNumEd" value="Serial Number: "
-						title="Serial number of the controller device"
+					<x:outputLabel for="cntrlSerNumEd" value="Serial Number: " title="Serial number of the controller device" styleClass="padlabel"
 						rendered="#{capBankEditor.capBank.capBank.controlPointID != 0 && capBankEditor.oneWayController}" />
-					<x:inputText id="cntrlSerNumEd" styleClass="staticLabel"
-						disabled="true"
-						rendered="#{capBankEditor.capBank.capBank.controlPointID != 0 && capBankEditor.oneWayController}"
-						value="#{capBankEditor.controller.deviceCBC.serialNumber}"
-						maxlength="9" size="9">
-						<f:validateLongRange minimum="0" maximum="9999999999" />
-					</x:inputText>
-	
-					<x:outputLabel for="cntrlRoute" value="Control Route: "
-						title="Communication route the conroller uses"
-						rendered="#{capBankEditor.capBank.capBank.controlPointID != 0 && capBankEditor.oneWayController}" />
-					<x:selectOneMenu id="cntrlRoute"
-						value="#{capBankEditor.controller.deviceCBC.routeID}"
-						disabled="true"
-						rendered="#{capBankEditor.capBank.capBank.controlPointID != 0 && capBankEditor.oneWayController}">
-						<f:selectItem itemLabel="(none)" itemValue="0" />
-						<f:selectItems value="#{selLists.routes}" />
-					</x:selectOneMenu>
+                        
+					<x:outputText id="cntrlSerNumEd" value="#{capBankEditor.controller.deviceCBC.serialNumber}" 
+                        rendered="#{capBankEditor.capBank.capBank.controlPointID != 0 && capBankEditor.oneWayController}"/>
 						
-					<x:outputLabel for="cntrlSerNumEd2" value="Serial Number: " title="Serial number of the controller device"
-                           rendered="#{capBankEditor.twoWayController}"/>
-					<x:inputText id="cntrlSerNumEd2" styleClass="staticLabel" disabled="true"
-						value="#{capBankEditor.controller.deviceCBC.serialNumber}" rendered="#{capBankEditor.twoWayController}">
-						<f:validateLongRange minimum="0" maximum="9999999999" />
-					</x:inputText>
+					<x:outputLabel for="cntrlRoute" value="Control Route: " title="Communication route the conroller uses"  styleClass="padlabel"
+						rendered="#{capBankEditor.capBank.capBank.controlPointID != 0 && capBankEditor.oneWayController}" />
 					
-					<x:outputLabel for="cntrlMast" value="Master Address: " rendered="#{capBankEditor.twoWayController}" 
-                           title="Integer address of the controller device in the field" />
-					<x:inputText id="cntrlMast" styleClass="staticLabel" disabled="true" rendered="#{capBankEditor.twoWayController}" 
-                           value="#{capBankEditor.controller.deviceAddress.masterAddress}">
-						<f:validateLongRange minimum="0" maximum="9999999999" />
-					</x:inputText>
+                    <x:outputText id="cntrlRoute" value="#{capBankEditor.controllerRouteName}"
+						rendered="#{capBankEditor.capBank.capBank.controlPointID != 0 && capBankEditor.oneWayController}"/>
+						
+					<x:outputLabel for="cntrlSerNumEd2" value="Serial Number: " title="Serial number of the controller device"  styleClass="padlabel"
+                        rendered="#{capBankEditor.twoWayController}"/>
+                           
+					<x:outputText id="cntrlSerNumEd2" value="#{capBankEditor.controller.deviceCBC.serialNumber}" 
+                        rendered="#{capBankEditor.twoWayController}"/>
+					
+					<x:outputLabel for="cntrlMast" value="Master Address: " title="Integer address of the controller device in the field"  styleClass="padlabel" 
+                        rendered="#{capBankEditor.twoWayController}"/>
+                        
+					<x:outputText id="cntrlMast" value="#{capBankEditor.controller.deviceAddress.masterAddress}"
+                        rendered="#{capBankEditor.twoWayController}"/> 
+                           
+					<x:outputLabel for="cntrlMSlav" value="Slave Address: " title="Integer address of the controller device in the field"  styleClass="padlabel" 
+                        rendered="#{capBankEditor.twoWayController}"/>
+                        
+					<x:outputText id="cntrlMSlav" value="#{capBankEditor.controller.deviceAddress.slaveAddress}"
+                        rendered="#{capBankEditor.twoWayController}"/>
 	
-					<x:outputLabel for="cntrlMSlav" value="Slave Address: " rendered="#{capBankEditor.twoWayController}" 
-                           title="Integer address of the controller device in the field" />
-					<x:inputText id="cntrlMSlav" styleClass="staticLabel" disabled="true" rendered="#{capBankEditor.twoWayController}"
-						value="#{capBankEditor.controller.deviceAddress.slaveAddress}">
-						<f:validateLongRange minimum="0" maximum="9999999999" />
-					</x:inputText>
+					<x:outputLabel for="cntrlComChann" value="Comm. Channel: " title="Communication channel the conroller uses"  styleClass="padlabel"
+                        rendered="#{capBankEditor.twoWayController}"/>
+                           
+					<x:outputText id="cntrlComChann" value="#{capBankEditor.commChannelName}"
+                        rendered="#{capBankEditor.twoWayController}"/>
 	
-					<x:outputLabel for="cntrlComChann" value="Comm. Channel: " title="Communication channel the conroller uses"
-                           rendered="#{capBankEditor.twoWayController}"/>
-					<x:selectOneMenu id="cntrlComChann" rendered="#{capBankEditor.twoWayController}" 
-					    value="#{capBankEditor.controller.deviceDirectCommSettings.portID}" disabled="true">
-						<f:selectItem itemLabel="(none)" itemValue="0" />
-						<f:selectItems value="#{selLists.commChannels}" />
-					</x:selectOneMenu>
-	
-					<x:outputLabel for="cntrlCommW" value="Post Comm. Wait: " rendered="#{capBankEditor.twoWayController}" 
-                           title="How long to wait after communications" />
-					<x:inputText id="cntrlCommW" styleClass="staticLabel" disabled="true" rendered="#{capBankEditor.twoWayController}" 
-                           value="#{capBankEditor.controller.deviceAddress.postCommWait}">
-						<f:validateLongRange minimum="0" maximum="99999" />
-					</x:inputText>
+					<x:outputLabel for="cntrlCommW" value="Post Comm. Wait: " title="How long to wait after communications"  styleClass="padlabel"
+                        rendered="#{capBankEditor.twoWayController}"/>
+                           
+					<x:outputText id="cntrlCommW" value="#{capBankEditor.controller.deviceAddress.postCommWait}" 
+                        rendered="#{capBankEditor.twoWayController}"/>
 					
 				</x:panelGrid>
+                
+                <x:htmlTag value="br" />
 
 				<x:panelGrid id="scanGrid" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell" rendered="#{capBankEditor.twoWayController}">
-					<x:column>
-
-						<x:htmlTag value="br" />
+					
+                    <x:column>
 						
 						<x:selectBooleanCheckbox id="scanIntegrityChk" value="#{capBankEditor.editingIntegrity}" immediate="true" disabled="true" />
-						<x:outputLabel for="scanIntegrityChk" value="Class 0,1,2,3 Scan" title="Integrity scan type" />
-						
-						<x:htmlTag value="br" />
+						<x:outputLabel for="scanIntegrityChk" value="Class 0,1,2,3 Scan" title="Integrity scan type" styleClass="padCheckBoxLabel nameValueLabel"/>
 						
 						<x:panelGrid columns="2">
 						
-							<x:outputLabel for="integrityInterval" value="Interval: " title="How often this scan should occur"
+							<x:outputLabel for="integrityInterval" value="Interval: " title="How often this scan should occur"  styleClass="padlabel"
 								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}" />
-							<x:selectOneMenu id="integrityInterval"
-								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"
-								value="#{capBankEditor.controller.deviceScanRateMap['Integrity'].intervalRate}"
-								disabled="true">
-								<f:selectItems value="#{selLists.timeInterval}" />
-							</x:selectOneMenu>
-							
-							<x:outputLabel for="integrityAltInterval" value="Alt. Interval: "
+							<x:outputText id="integrityInterval" value="#{capBankEditor.integrityInterval}"
+								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"/>
+								
+							<x:outputLabel for="integrityAltInterval" value="Alt. Interval: "  styleClass="padlabel"
 								title="An alternate scan rate that can be less or more than the primary scan rate"
 								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}" />
-							<x:selectOneMenu id="integrityAltInterval" disabled="true"
-								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"
-								value="#{capBankEditor.controller.deviceScanRateMap['Integrity'].alternateRate}">
-								<f:selectItems value="#{selLists.timeInterval}" />
-							</x:selectOneMenu>
+							<x:outputText id="integrityAltInterval" value="#{capBankEditor.alternateIntegrityInterval}"
+								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"/>
 							
-							<x:outputLabel for="integrityGrp" value="Scan Group: " title="A way to group scans into a common collection"
+							<x:outputLabel for="integrityGrp" value="Scan Group: " title="A way to group scans into a common collection"  styleClass="padlabel"
 								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}" />
-							<x:selectOneMenu id="integrityGrp" disabled="true" rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"
-								value="#{capBankEditor.controller.deviceScanRateMap['Integrity'].scanGroup}">
-								<f:selectItem itemLabel="Default" itemValue="0" />
-								<f:selectItem itemLabel="First" itemValue="1" />
-								<f:selectItem itemLabel="Second" itemValue="2" />
-							</x:selectOneMenu>
+							<x:outputText id="integrityGrp" value="#{capBankEditor.integrityScanGroup}"
+                                 rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Integrity']}"/>
+								
 						</x:panelGrid>
 					</x:column>
 
 					<x:column>
 						
-						<x:htmlTag value="br" />
-						
-						<x:selectBooleanCheckbox id="scanExceptionChk" value="#{capBankEditor.editingException}" immediate="true" disabled="true" />
-						<x:outputLabel for="scanExceptionChk" value="Class 1,2,3 Scan" title="Exception scan type" />
-						
-						<x:htmlTag value="br" />
+						<x:selectBooleanCheckbox id="scanExceptionChk" value="#{capBankEditor.editingException}" immediate="true" disabled="true"/>
+						<x:outputLabel for="scanExceptionChk" value="Class 1,2,3 Scan" title="Exception scan type" styleClass="padCheckBoxLabel nameValueLabel"/>
 						
 						<x:panelGrid columns="2">
 						
-							<x:outputLabel for="exceptionInterval" value="Interval: " title="How often this scan should occur"
+							<x:outputLabel for="exceptionInterval" value="Interval: " title="How often this scan should occur"  styleClass="padlabel"
 								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}" />
-							<x:selectOneMenu id="exceptionInterval" disabled="true" rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"
-								value="#{capBankEditor.controller.deviceScanRateMap['Exception'].intervalRate}">
-								<f:selectItems value="#{selLists.timeInterval}" />
-							</x:selectOneMenu>
+							<x:outputText id="exceptionInterval" value="#{capBankEditor.exceptionInterval}"
+								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"/>
 							
-							<x:outputLabel for="exceptionAltInterval" value="Alt. Interval: "
-								title="An alternate scan rate that can be less or more than the primary scan rate"
+							<x:outputLabel for="exceptionAltInterval" value="Alt. Interval: " title="An alternate scan rate that can be less or more than the primary scan rate"
+                                 styleClass="padlabel"
 								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}" />
-							<x:selectOneMenu id="exceptionAltInterval" disabled="true" rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"
-								value="#{capBankEditor.controller.deviceScanRateMap['Exception'].alternateRate}">
-								<f:selectItems value="#{selLists.timeInterval}" />
-							</x:selectOneMenu>
+							<x:outputText id="exceptionAltInterval" value="#{capBankEditor.alternateExceptionInterval}"
+                                rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"/>
 							
-							<x:outputLabel for="exceptionGrp" value="Scan Group: " title="A way to group scans into a common collection"
+							<x:outputLabel for="exceptionGrp" value="Scan Group: " title="A way to group scans into a common collection"  styleClass="padlabel"
 								rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}" />
-							<x:selectOneMenu id="exceptionGrp" disabled="true" rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"
-								value="#{capBankEditor.controller.deviceScanRateMap['Exception'].scanGroup}">
-								<f:selectItem itemLabel="Default" itemValue="0" />
-								<f:selectItem itemLabel="First" itemValue="1" />
-								<f:selectItem itemLabel="Second" itemValue="2" />
-							</x:selectOneMenu>
-						
+							<x:outputText id="exceptionGrp" value="#{capBankEditor.exceptionScanGroup}"
+                                rendered="#{not empty capBankEditor.controller.deviceScanRateMap['Exception']}"/>
+								
 						</x:panelGrid>
 						
 					</x:column>

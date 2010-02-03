@@ -176,6 +176,41 @@ public class AttributeDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
+        //-- _mappedLookup
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.MappedLookup.class, "_mappedLookup", "mappedLookup", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Attribute target = (Attribute) object;
+                return target.getMappedLookup();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Attribute target = (Attribute) object;
+                    target.setMappedLookup( (com.cannontech.common.pao.definition.model.castor.MappedLookup) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new com.cannontech.common.pao.definition.model.castor.MappedLookup();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _mappedLookup
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
     } //-- com.cannontech.common.pao.definition.model.castor.AttributeDescriptor()
 
 

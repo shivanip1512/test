@@ -43,10 +43,12 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
+import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
@@ -57,18 +59,21 @@ import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.model.castor.BasicLookup;
 import com.cannontech.common.pao.definition.model.castor.Cmd;
 import com.cannontech.common.pao.definition.model.castor.Command;
+import com.cannontech.common.pao.definition.model.castor.MappedLookup;
 import com.cannontech.common.pao.definition.model.castor.Pao;
 import com.cannontech.common.pao.definition.model.castor.PaoDefinitions;
 import com.cannontech.common.pao.definition.model.castor.Point;
 import com.cannontech.common.pao.definition.model.castor.PointRef;
 import com.cannontech.common.pao.definition.model.castor.Tag;
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.castor.TypeFilter;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
@@ -98,6 +103,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<PaoType, Set<CommandDefinition>> paoCommandMap = null;
     private Map<PaoType, Set<PaoTagDefinition>> paoFeatureMap = null;
     private List<String> fileIdOrder = null;
+    private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
@@ -710,6 +716,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             }
             
             attributeDefinition = new BasicAttributeDefinition(attribute, pointTemplate);
+        } else if(choiceLookup instanceof MappedLookup) {
+            MappedLookup lookup = (MappedLookup) choiceLookup;
+            TypeFilter pointTypeFilter = lookup.getTypeFilter();
+            String pointTypeString = pointTypeFilter.getType();
+            PointType pointType = PointType.getForString(pointTypeString);
+            attributeDefinition = new MappedAttributeDefinition(attribute, pointType, extraPaoPointAssignmentDao);
         }
 
         if (attributeDefinition != null) {
@@ -824,5 +836,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         template.setStateGroupId(stateGroupId);
 
         return template;
+    }
+    
+    @Autowired
+    public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
+        this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
     }
 }

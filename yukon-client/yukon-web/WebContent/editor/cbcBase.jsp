@@ -19,6 +19,7 @@
 <cti:includeScript link="/JavaScript/itemPicker.js"/>
 <cti:includeScript link="/JavaScript/pointPicker.js"/>
 <cti:includeScript link="/JavaScript/paoPicker.js"/>
+<cti:includeScript link="/JavaScript/prototype.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>

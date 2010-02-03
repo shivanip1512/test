@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.LoadTapChanger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.database.TransactionException;
 
 public interface LtcDao {
@@ -63,5 +64,7 @@ public interface LtcDao {
      */
     public int getLtcIdForSub(int subBusId);
 
-    public List<Integer> getUnassignedLtcIds(); 
+    public List<Integer> getUnassignedLtcIds();
+
+    public PaoIdentifier getLtcPaoIdentifierForSubBus(int busId); 
 }

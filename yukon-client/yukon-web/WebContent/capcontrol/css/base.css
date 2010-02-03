@@ -193,9 +193,10 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 }
 
 .flyover {
-	color: white;
-	background-color: #888888;
-	padding: 2px;
+	color: black;
+    background-color: white;
+    padding: 2px;
+    border: 2px solid #666666;
 }
 
 .popupMenu {

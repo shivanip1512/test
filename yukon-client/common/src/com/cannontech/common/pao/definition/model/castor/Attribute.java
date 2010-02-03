@@ -53,6 +53,11 @@ public class Attribute implements java.io.Serializable {
      */
     private com.cannontech.common.pao.definition.model.castor.BasicLookup _basicLookup;
 
+    /**
+     * Field _mappedLookup
+     */
+    private com.cannontech.common.pao.definition.model.castor.MappedLookup _mappedLookup;
+
 
       //----------------/
      //- Constructors -/
@@ -102,6 +107,17 @@ public class Attribute implements java.io.Serializable {
     {
         return this._enabled;
     } //-- java.lang.Boolean getEnabled() 
+
+    /**
+     * Returns the value of field 'mappedLookup'.
+     * 
+     * @return MappedLookup
+     * @return the value of field 'mappedLookup'.
+     */
+    public com.cannontech.common.pao.definition.model.castor.MappedLookup getMappedLookup()
+    {
+        return this._mappedLookup;
+    } //-- com.cannontech.common.pao.definition.model.castor.MappedLookup getMappedLookup() 
 
     /**
      * Returns the value of field 'name'.
@@ -180,6 +196,17 @@ public class Attribute implements java.io.Serializable {
     {
         this._enabled = enabled;
     } //-- void setEnabled(java.lang.Boolean) 
+
+    /**
+     * Sets the value of field 'mappedLookup'.
+     * 
+     * @param mappedLookup the value of field 'mappedLookup'.
+     */
+    public void setMappedLookup(com.cannontech.common.pao.definition.model.castor.MappedLookup mappedLookup)
+    {
+        this._mappedLookup = mappedLookup;
+        this._choiceValue = mappedLookup;
+    } //-- void setMappedLookup(com.cannontech.common.pao.definition.model.castor.MappedLookup) 
 
     /**
      * Sets the value of field 'name'.

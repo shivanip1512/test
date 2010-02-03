@@ -22,12 +22,17 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.*;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.*;
+import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -417,7 +422,53 @@ public class CapBankEditorForm extends DBEditorForm {
     public CapBank getCapBank() {
         return capBank;
     }
-
+    
+    public String getControllerRouteName() {
+        CapBankController deviceBaseController = (CapBankController) controller;
+        return paoDao.getYukonPAOName(deviceBaseController.getDeviceCBC().getRouteID());
+    }
+    
+    public String getCommChannelName() {
+        RemoteBase twoWayController = (RemoteBase) controller;
+        return paoDao.getYukonPAOName(twoWayController.getDeviceDirectCommSettings().getPortID());
+    }
+    
+    public String getIntegrityInterval() {
+        TwoWayDevice twoWayDevice = (TwoWayDevice) controller;
+        DeviceScanRate integrityScanRate = twoWayDevice.getDeviceScanRateMap().get(DeviceScanRate.TYPE_INTEGRITY);
+        return CBCSelectionLists.timeIntervalDisplayValues.get(integrityScanRate.getIntervalRate());
+    }
+    
+    public String getAlternateIntegrityInterval() {
+        TwoWayDevice twoWayDevice = (TwoWayDevice) controller;
+        DeviceScanRate integrityScanRate = twoWayDevice.getDeviceScanRateMap().get(DeviceScanRate.TYPE_INTEGRITY);
+        return CBCSelectionLists.timeIntervalDisplayValues.get(integrityScanRate.getAlternateRate());
+    }
+    
+    public String getIntegrityScanGroup() {
+        TwoWayDevice twoWayDevice = (TwoWayDevice) controller;
+        DeviceScanRate integrityScanRate = twoWayDevice.getDeviceScanRateMap().get(DeviceScanRate.TYPE_INTEGRITY);
+        return CBCSelectionLists.intervalGroupDisplayValues.get(integrityScanRate.getScanGroup());
+    }
+    
+    public String getExceptionInterval() {
+        TwoWayDevice twoWayDevice = (TwoWayDevice) controller;
+        DeviceScanRate exceptionScanRate = twoWayDevice.getDeviceScanRateMap().get(DeviceScanRate.TYPE_EXCEPTION);
+        return CBCSelectionLists.timeIntervalDisplayValues.get(exceptionScanRate.getIntervalRate());
+    }
+    
+    public String getAlternateExceptionInterval() {
+        TwoWayDevice twoWayDevice = (TwoWayDevice) controller;
+        DeviceScanRate exceptionScanRate = twoWayDevice.getDeviceScanRateMap().get(DeviceScanRate.TYPE_EXCEPTION);
+        return CBCSelectionLists.timeIntervalDisplayValues.get(exceptionScanRate.getAlternateRate());
+    }
+    
+    public String getExceptionScanGroup() {
+        TwoWayDevice twoWayDevice = (TwoWayDevice) controller;
+        DeviceScanRate exceptionScanRate = twoWayDevice.getDeviceScanRateMap().get(DeviceScanRate.TYPE_EXCEPTION);
+        return CBCSelectionLists.intervalGroupDisplayValues.get(exceptionScanRate.getScanGroup());
+    }
+    
     public boolean isEditingIntegrity() {
 
         return isTwoWayController() && ((TwoWayDevice) controller).getDeviceScanRateMap()

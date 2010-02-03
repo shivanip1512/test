@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.cbc.dao.LtcDao;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.LoadTapChanger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
@@ -22,6 +22,7 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -32,7 +33,7 @@ public class LtcDaoImpl implements LtcDao {
 //    private Logger log = YukonLogManager.getLogger(LtcDao.class);
     
 //    private PaoDefinitionService paoDefinitionService;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     private NextValueHelper nextValueHelper;
 
@@ -76,13 +77,13 @@ public class LtcDaoImpl implements LtcDao {
     @Override
     public void unassignBus(int id) {
         String sql = "delete from CCSubstationBusToLTC where SubstationBusId = ?";
-        simpleJdbcTemplate.update(sql, id);
+        yukonJdbcTemplate.update(sql, id);
     }
     
     @Override
     public void unassignLtc(int id) {
         String sql = "delete from CCSubstationBusToLTC where ltcId = ?";
-        simpleJdbcTemplate.update(sql, id);
+        yukonJdbcTemplate.update(sql, id);
     }
     
     @Override
@@ -91,7 +92,7 @@ public class LtcDaoImpl implements LtcDao {
         sql.append("join CCSubstationBusToLTC ltc on ltc.ltcId = pao.PAObjectID");
         sql.append("where ltc.substationBusId = ").appendArgument(subBusId);
         try {
-            String name = simpleJdbcTemplate.queryForObject(sql.getSql(), String.class, sql.getArguments());
+            String name = yukonJdbcTemplate.queryForObject(sql.getSql(), String.class, sql.getArguments());
             return name;
         } catch (EmptyResultDataAccessException e){
             return CtiUtilities.STRING_NONE;
@@ -103,11 +104,11 @@ public class LtcDaoImpl implements LtcDao {
         if(getLtcIdForSub(substationBusID) > 0) {
             SqlStatementBuilder sql = new SqlStatementBuilder("update CCSubstationBusToLTC set ltcId = ").appendArgument(ltcId);
             sql.append("where substationbusId = ").appendArgument(substationBusID);
-            simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+            yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         } else {
             SqlStatementBuilder sql = new SqlStatementBuilder("insert into CCSubstationBusToLTC values(");
             sql.appendArgument(substationBusID).append(",").appendArgument(ltcId).append(")");
-            simpleJdbcTemplate.update(sql.getSql(), substationBusID, ltcId);
+            yukonJdbcTemplate.update(sql.getSql(), substationBusID, ltcId);
         }
     }
     
@@ -115,7 +116,7 @@ public class LtcDaoImpl implements LtcDao {
     public int getLtcIdForSub(int subBusId) {
         try {
             String sql = "select ltcId from CCSubstationBusToLTC where substationBusId = ?";
-            return simpleJdbcTemplate.queryForInt(sql, subBusId);
+            return yukonJdbcTemplate.queryForInt(sql, subBusId);
         } catch (EmptyResultDataAccessException e) {
             return 0;
         }
@@ -136,7 +137,7 @@ public class LtcDaoImpl implements LtcDao {
             }
         };
         
-        List<Integer> ltcIds = simpleJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+        List<Integer> ltcIds = yukonJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
         
         return ltcIds;
     }
@@ -158,7 +159,7 @@ public class LtcDaoImpl implements LtcDao {
         
         List<Integer> ltcIds = getUnassignedLtcIds();
         
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
         final List<LiteCapControlObject> unassignedLtcs = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {
@@ -174,14 +175,24 @@ public class LtcDaoImpl implements LtcDao {
         return unassignedLtcs;
     }
     
+    @Override
+    public PaoIdentifier getLtcPaoIdentifierForSubBus(int busId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder("select LtcId from CCSubstationBusToLTC");
+        sql.append("where SubstationBusId = ").append(busId);
+        int ltcId = yukonJdbcTemplate.queryForInt(sql);
+        
+        PaoIdentifier paoIdentifier = new PaoIdentifier(ltcId, PaoType.LOAD_TAP_CHANGER);
+        return paoIdentifier;
+    }
+    
 //    @Autowired
 //    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
 //        this.paoDefinitionService = paoDefinitionService;
 //    }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Autowired

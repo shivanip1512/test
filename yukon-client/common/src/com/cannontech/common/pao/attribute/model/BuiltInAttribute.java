@@ -1,21 +1,27 @@
 package com.cannontech.common.pao.attribute.model;
 
 public enum BuiltInAttribute implements Attribute {
+    /* Keep this ordered alphabetically by description */
+    AUTO_REMOTE_CONTROL("Auto/Remote Control"),
     BLINK_COUNT("Blink Count"), 
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
+    KEEP_ALIVE("Keep Alive"),
     KVAR("kVAr"),
     KVARH("kVArh"),
-    LOAD_PROFILE("Load Profile"), 
+    LOAD_PROFILE("Load Profile"),
+    TAP_DOWN("Lower Tap Position"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
     OUTAGE_LOG("Outage Log"),
     PEAK_DEMAND("Peak Demand"),
     PHASE("Phase"),
     POWER_FAIL_FLAG("Power Fail Flag"),
+    TAP_UP("Raise Tap Position"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
     TAMPER_FLAG("Tamper Flag"),
+    TAP_POSITION("Tap Position"),
     TOU_RATE_A_PEAK_DEMAND("Tou Rate A Peak"),
     TOU_RATE_B_PEAK_DEMAND("Tou Rate B Peak"),
     TOU_RATE_C_PEAK_DEMAND("Tou Rate C Peak"),
