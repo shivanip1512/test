@@ -102,13 +102,7 @@ struct EmetconWordA : public EmetconWord, public EmetconWordDescriptor<0x08, 30>
 
 struct EmetconWordB : public EmetconWord, public EmetconWordDescriptor<0x0a, 52>
 {
-    EmetconWordB() : repeater_fixed(0),
-                     repeater_variable(0),
-                     dlc_address(0),
-                     words_to_follow(0),
-                     function_code(0)
-    {};
-
+    EmetconWordB();
     EmetconWordB(unsigned repeater_fixed_,
                  unsigned repeater_variable_,
                  unsigned dlc_address_,
