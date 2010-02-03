@@ -9,6 +9,8 @@ namespace Simulator {
 
 struct EmetconWord
 {
+    EmetconWord() : bch(0) {};
+
     enum
     {
         BitLength_Bch = 6
@@ -100,7 +102,13 @@ struct EmetconWordA : public EmetconWord, public EmetconWordDescriptor<0x08, 30>
 
 struct EmetconWordB : public EmetconWord, public EmetconWordDescriptor<0x0a, 52>
 {
-    EmetconWordB();
+    EmetconWordB() : repeater_fixed(0),
+                     repeater_variable(0),
+                     dlc_address(0),
+                     words_to_follow(0),
+                     function_code(0)
+    {};
+
     EmetconWordB(unsigned repeater_fixed_,
                  unsigned repeater_variable_,
                  unsigned dlc_address_,
@@ -159,6 +167,10 @@ struct EmetconWordDPayload
 
 struct EmetconWordD1 : public EmetconWordD, public EmetconWordDPayload<3>
 {
+    EmetconWordD1() : repeater_variable(0),
+                      echo_address(0)
+    {};
+
     EmetconWordD1(unsigned repeater_variable,
                   unsigned echo_address,
                   unsigned char data0,
@@ -218,6 +230,10 @@ struct EmetconWordD3 : public EmetconWordD, public EmetconWordDPayload<5>
 
 struct EmetconWordE : public EmetconWord, public EmetconWordDescriptor<0x0e, 52>
 {
+    EmetconWordE() : repeater_variable(0),
+                     echo_address(0)
+    {};
+
     unsigned repeater_variable;
     unsigned echo_address;
 

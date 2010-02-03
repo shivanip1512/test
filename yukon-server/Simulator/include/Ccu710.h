@@ -97,6 +97,12 @@ private:
 
     struct feeder_operation_t
     {
+        feeder_operation_t() : bus(0),
+                               amp(0),
+                               repeater_count(0),
+                               length(0)
+        {};
+
         unsigned bus;
         unsigned amp;
         unsigned repeater_count;
@@ -107,6 +113,8 @@ private:
 
     struct request_t
     {
+        request_t() : address(0) {};
+
         bytes message;
 
         unsigned address;
