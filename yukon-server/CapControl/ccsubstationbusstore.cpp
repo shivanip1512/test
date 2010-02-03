@@ -11975,11 +11975,9 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
                         CtiCCSubstationBus* currentCCSubstationBus = findSubBusByPAObjectID(subBusId);
                         if (currentCCSubstationBus != NULL)
                         {
-                            if (!station->getSaEnabledFlag() && (currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None ||
-                                currentCCSubstationBus->isParentOverride() ) )
+                            if (!station->getSaEnabledFlag() && (currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None))
                             {
                                 currentCCSubstationBus->setStrategy(currentCCStrategy);
-                                currentCCSubstationBus->setParentOverride(true);
 
                                 if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
                                 {

@@ -36,9 +36,9 @@ using std::list;
 #include "ControlStrategy.h"
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
-#include "CapControlPao.h"
+#include "Controllable.h"
 
-class CtiCCSpecial : public RWCollectable, public CapControlPao
+class CtiCCSpecial : public RWCollectable, public Controllable
 {
 
 public:
@@ -82,12 +82,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     CtiCCSpecial* replicate() const;
 
-    void setStrategy(StrategyPtr strategy);
-    StrategyPtr getStrategy() const;
-
 private:
-
-    StrategyPtr    _strategy;
 
     LONG _voltReductionControlPointId;
     BOOL _voltReductionControlValue;

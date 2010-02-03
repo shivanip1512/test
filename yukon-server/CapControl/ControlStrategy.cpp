@@ -521,6 +521,18 @@ void ControlStrategy::setEndDaySettings(const std::string &settings)
 }
 
 
+void ControlStrategy::registerUser(const int paoid)
+{
+    // empty!
+}
+
+
+void ControlStrategy::unregisterUser(const int paoid)
+{
+    // empty!
+}
+
+
 void ControlStrategy::printError(const char *function) const
 {
     static bool _printOnce = true;

@@ -36,22 +36,23 @@ RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCArea::CtiCCArea() :
-_voltReductionControlPointId(0),
-_voltReductionControlValue(0),
-_pfactor(0),
-_estPfactor(0),
-_ovUvDisabledFlag(false),
-_reEnableAreaFlag(false),
-_childVoltReductionFlag(false),
-_insertDynamicDataFlag(false),
-_dirty(false),
-_areaUpdatedFlag(false)
+CtiCCArea::CtiCCArea()
+    : Controllable(),
+      _voltReductionControlPointId(0),
+      _voltReductionControlValue(0),
+      _pfactor(0),
+      _estPfactor(0),
+      _ovUvDisabledFlag(false),
+      _reEnableAreaFlag(false),
+      _childVoltReductionFlag(false),
+      _insertDynamicDataFlag(false),
+      _dirty(false),
+      _areaUpdatedFlag(false)
 {
 }
 
 CtiCCArea::CtiCCArea(RWDBReader& rdr, StrategyPtr strategy)
-    :_strategy(strategy)
+    : Controllable(rdr, strategy)
 {
     restore(rdr);
     _operationStats.setPAOId(getPaoId());
@@ -59,6 +60,7 @@ CtiCCArea::CtiCCArea(RWDBReader& rdr, StrategyPtr strategy)
 }
 
 CtiCCArea::CtiCCArea(const CtiCCArea& area)
+    : Controllable(area)
 {
     operator=(area);
 }
@@ -95,8 +97,6 @@ CtiCCConfirmationStats& CtiCCArea::getConfirmationStats()
 void CtiCCArea::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
-
-    //CapControlPao
     CapControlPao::saveGuts(ostrm);
 
     ostrm <<  _ovUvDisabledFlag;
@@ -118,14 +118,13 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
 {
+    Controllable::operator=(right);
+
     if( this != &right )
     {
-        CapControlPao::operator=(right);
         _voltReductionControlPointId = right._voltReductionControlPointId;
         _voltReductionControlValue = right._voltReductionControlValue;
         _childVoltReductionFlag = right._childVoltReductionFlag;
-
-        _strategy = right._strategy;
 
         _pfactor = right._pfactor;
         _estPfactor = right._estPfactor;
@@ -160,8 +159,6 @@ CtiCCArea* CtiCCArea::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCArea::restore(RWDBReader& rdr)
 {
-    CapControlPao::restore(rdr);
-
     rdr["voltreductionpointid"] >> _voltReductionControlPointId;
     if (_voltReductionControlPointId <= 0)
     {
@@ -553,17 +550,5 @@ CtiCCArea& CtiCCArea::checkAndUpdateChildVoltReductionFlags()
     }
 
     return *this;
-}
-
-
-void CtiCCArea::setStrategy(StrategyPtr strategy)
-{
-    _strategy = strategy;
-}
-
-
-StrategyPtr CtiCCArea::getStrategy() const
-{
-    return _strategy;
 }
 

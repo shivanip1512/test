@@ -38,12 +38,12 @@ using std::list;
 #include "msg_cmd.h"
 #include "ControlStrategy.h"
 #include "ccmonitorpoint.h"
-#include "CapControlPao.h"
+#include "Controllable.h"
 
 typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
 
 
-class CtiCCArea : public RWCollectable, public CapControlPao
+class CtiCCArea : public RWCollectable, public Controllable
 {
 
 public:
@@ -97,12 +97,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     CtiCCArea* replicate() const;
 
-    void setStrategy(StrategyPtr strategy);
-    StrategyPtr getStrategy() const;
-
 private:
-
-    StrategyPtr    _strategy;
 
     LONG _voltReductionControlPointId;
     BOOL _voltReductionControlValue;

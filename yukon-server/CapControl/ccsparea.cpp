@@ -38,20 +38,21 @@ RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSpecial::CtiCCSpecial() :
-_voltReductionControlPointId(0),
-_voltReductionControlValue(0),
-_pfactor(0),
-_estPfactor(0),
-_ovUvDisabledFlag(false),
-_isSpecial(true),
-_insertDynamicDataFlag(false),
-_dirty(false)
+CtiCCSpecial::CtiCCSpecial()
+    : Controllable(),
+      _voltReductionControlPointId(0),
+      _voltReductionControlValue(0),
+      _pfactor(0),
+      _estPfactor(0),
+      _ovUvDisabledFlag(false),
+      _isSpecial(true),
+      _insertDynamicDataFlag(false),
+      _dirty(false)
 {
 }
 
 CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr, StrategyPtr strategy)
-    :_strategy(strategy)
+    : Controllable(rdr, strategy)
 {
     restore(rdr);
     _operationStats.setPAOId(getPaoId());
@@ -59,6 +60,7 @@ CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr, StrategyPtr strategy)
 }
 
 CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
+    : Controllable(special)
 {
     operator=(special);
 }
@@ -117,14 +119,13 @@ void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
 {
+    Controllable::operator=(right);
+
     if( this != &right )
     {
-        CapControlPao::operator=(right);
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _pfactor = right._pfactor;
         _estPfactor = right._estPfactor;
-
-        _strategy = right._strategy;
 
         _voltReductionControlPointId = right._voltReductionControlPointId;
         _voltReductionControlValue = right._voltReductionControlValue;
@@ -160,8 +161,6 @@ CtiCCSpecial* CtiCCSpecial::replicate() const
 void CtiCCSpecial::restore(RWDBReader& rdr)
 {
     string tempBoolString;
-
-    CapControlPao::restore(rdr);
 
     rdr["voltreductionpointid"] >> _voltReductionControlPointId;
 
@@ -430,17 +429,5 @@ CtiCCSpecial& CtiCCSpecial::setEstPFactor(DOUBLE estpfactor)
 {
     _estPfactor = estpfactor;
     return *this;
-}
-
-
-void CtiCCSpecial::setStrategy(StrategyPtr strategy)
-{
-    _strategy = strategy;
-}
-
-
-StrategyPtr CtiCCSpecial::getStrategy() const
-{
-    return _strategy;
 }
 

@@ -56,71 +56,72 @@ RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCFeeder::CtiCCFeeder() :
-_parentId(0),
-_multiMonitorFlag(false),
-_currentvarloadpointid(0),
-_currentvarloadpointvalue(0),
-_currentwattloadpointid(0),
-_currentwattloadpointvalue(0),
-_currentvoltloadpointid(0),
-_currentvoltloadpointvalue(0),
-_displayorder(0),
-_newpointdatareceivedflag(false),
-_estimatedvarloadpointid(0),
-_estimatedvarloadpointvalue(0),
-_dailyoperationsanalogpointid(0),
-_powerfactorpointid(0),
-_estimatedpowerfactorpointid(0),
-_currentdailyoperations(0),
-_recentlycontrolledflag(false),
-_varvaluebeforecontrol(0),
-_lastcapbankcontrolleddeviceid(0),
-_busoptimizedvarcategory(0),
-_busoptimizedvaroffset(0),
-_powerfactorvalue(0),
-_kvarsolution(0),
-_estimatedpowerfactorvalue(0),
-_currentvarpointquality(0),
-_currentwattpointquality(0),
-_currentvoltpointquality(0),
-_waivecontrolflag(false),
-_decimalPlaces(0),
-_peakTimeFlag(false),
-_verificationFlag(false),
-_performingVerificationFlag(false),
-_verificationDoneFlag(false),
-_preOperationMonitorPointScanFlag(false),
-_operationSentWaitFlag(false),
-_postOperationMonitorPointScanFlag(false),
-_waitForReCloseDelayFlag(false),
-_maxDailyOpsHitFlag(false),
-_ovUvDisabledFlag(false),
-_correctionNeededNoBankAvailFlag(false),
-_lastVerificationMsgSentSuccessful(false),
-_eventSeq(0),
-_currentVerificationCapBankId(0),
-_currentCapBankToVerifyAssumedOrigState(0),
-_targetvarvalue(0),
-_iVControlTot(0),
-_iVCount(0),
-_iWControlTot(0),
-_iWCount(0),
-_iVControl(0),
-_iWControl(0),
-_usePhaseData(0),
-_phaseBid(0),
-_phaseCid(0),
-_totalizedControlFlag(false),
-_phaseAvalue(0),
-_phaseBvalue(0),
-_phaseCvalue(0),
-_phaseAvalueBeforeControl(0),
-_phaseBvalueBeforeControl(0),
-_phaseCvalueBeforeControl(0),
-_retryIndex(0),
-_insertDynamicDataFlag(false),
-_dirty(false)
+CtiCCFeeder::CtiCCFeeder()
+    : Controllable(),
+      _parentId(0),
+      _multiMonitorFlag(false),
+      _currentvarloadpointid(0),
+      _currentvarloadpointvalue(0),
+      _currentwattloadpointid(0),
+      _currentwattloadpointvalue(0),
+      _currentvoltloadpointid(0),
+      _currentvoltloadpointvalue(0),
+      _displayorder(0),
+      _newpointdatareceivedflag(false),
+      _estimatedvarloadpointid(0),
+      _estimatedvarloadpointvalue(0),
+      _dailyoperationsanalogpointid(0),
+      _powerfactorpointid(0),
+      _estimatedpowerfactorpointid(0),
+      _currentdailyoperations(0),
+      _recentlycontrolledflag(false),
+      _varvaluebeforecontrol(0),
+      _lastcapbankcontrolleddeviceid(0),
+      _busoptimizedvarcategory(0),
+      _busoptimizedvaroffset(0),
+      _powerfactorvalue(0),
+      _kvarsolution(0),
+      _estimatedpowerfactorvalue(0),
+      _currentvarpointquality(0),
+      _currentwattpointquality(0),
+      _currentvoltpointquality(0),
+      _waivecontrolflag(false),
+      _decimalPlaces(0),
+      _peakTimeFlag(false),
+      _verificationFlag(false),
+      _performingVerificationFlag(false),
+      _verificationDoneFlag(false),
+      _preOperationMonitorPointScanFlag(false),
+      _operationSentWaitFlag(false),
+      _postOperationMonitorPointScanFlag(false),
+      _waitForReCloseDelayFlag(false),
+      _maxDailyOpsHitFlag(false),
+      _ovUvDisabledFlag(false),
+      _correctionNeededNoBankAvailFlag(false),
+      _lastVerificationMsgSentSuccessful(false),
+      _eventSeq(0),
+      _currentVerificationCapBankId(0),
+      _currentCapBankToVerifyAssumedOrigState(0),
+      _targetvarvalue(0),
+      _iVControlTot(0),
+      _iVCount(0),
+      _iWControlTot(0),
+      _iWCount(0),
+      _iVControl(0),
+      _iWControl(0),
+      _usePhaseData(0),
+      _phaseBid(0),
+      _phaseCid(0),
+      _totalizedControlFlag(false),
+      _phaseAvalue(0),
+      _phaseBvalue(0),
+      _phaseCvalue(0),
+      _phaseAvalueBeforeControl(0),
+      _phaseBvalueBeforeControl(0),
+      _phaseCvalueBeforeControl(0),
+      _retryIndex(0),
+      _insertDynamicDataFlag(false),
+      _dirty(false)
 {
     _porterRetFailFlag = false;
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -130,7 +131,7 @@ _dirty(false)
 }
 
 CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr, StrategyPtr strategy)
-    :_strategy(strategy)
+    : Controllable(rdr, strategy)
 {
     restore(rdr);
 
@@ -144,6 +145,7 @@ CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr, StrategyPtr strategy)
 }
 
 CtiCCFeeder::CtiCCFeeder(const CtiCCFeeder& feeder)
+    : Controllable(feeder)
 {
     operator=(feeder);
 }
@@ -1521,12 +1523,12 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
                         pointChanges.push_back(pSig);
                     }
 
-                    if (!_strategy->getEndDaySettings().compare("Trip") && (solution == Open))
+                    if (!getStrategy()->getEndDaySettings().compare("Trip") && (solution == Open))
                     {
                         // We need this to return this bank (since we disabled it).
                         endDayFlag = true;
                     }
-                    else if (!_strategy->getEndDaySettings().compare("Close") && (solution == Close))
+                    else if (!getStrategy()->getEndDaySettings().compare("Close") && (solution == Close))
                     {
                         // We need this to return this bank (since we disabled it).
                         endDayFlag = true;
@@ -2169,7 +2171,7 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 BOOL CtiCCFeeder::isPeakTime(const CtiTime& currentDateTime)
 {
     unsigned secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-    if( isPeakDay() && _strategy->getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= _strategy->getPeakStopTime() )
+    if( isPeakDay() && getStrategy()->getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getStrategy()->getPeakStopTime() )
     {
         setPeakTimeFlag(TRUE);
     }
@@ -2197,8 +2199,8 @@ BOOL CtiCCFeeder::isPeakDay()
 
     now.extract(&start_tm);
 
-    if( _strategy->getDaysOfWeek()[start_tm.tm_wday] == 'Y' &&
-        ( _strategy->getDaysOfWeek()[7] == 'Y' ||
+    if( getStrategy()->getDaysOfWeek()[start_tm.tm_wday] == 'Y' &&
+        ( getStrategy()->getDaysOfWeek()[7] == 'Y' ||
           !CtiHolidayManager::getInstance().isHoliday(CtiDate()) ) )
         return TRUE;
     else
@@ -2209,15 +2211,15 @@ BOOL CtiCCFeeder::isControlPoint(LONG pointid)
 {
     BOOL retVal = FALSE;
 
-    if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit)  &&
+        if (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)  &&
             getCurrentVoltLoadPointId() == pointid )
             retVal = TRUE;
-        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit)  &&
+        else if (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)  &&
             getCurrentVarLoadPointId() == pointid)
             retVal = TRUE;
-        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) &&
+        else if (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) &&
                  (getCurrentVarLoadPointId() == pointid || getCurrentWattLoadPointId() == pointid) )
             retVal = TRUE;
         else
@@ -2230,12 +2232,12 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
 {
     DOUBLE controlVvalue = 0;
 
-    if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
-        if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) )
+        if (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
             controlVvalue = getCurrentVoltLoadPointValue();
-        else if (!stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::KVarControlUnit)||
-                 !stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
+        else if (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit)||
+                 !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
             controlVvalue = getCurrentVarLoadPointValue();
         else
         {
@@ -2247,9 +2249,9 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
             }
         }
 
-        if (_strategy->getControlInterval() > 0)
+        if (getStrategy()->getControlInterval() > 0)
         {
-            if (nextCheckTime - _strategy->getIntegratePeriod() <= currentDateTime)
+            if (nextCheckTime - getStrategy()->getIntegratePeriod() <= currentDateTime)
             {
                 if (nextCheckTime > currentDateTime)
                 {
@@ -2288,12 +2290,12 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
 {
     DOUBLE controlWvalue = 0;
 
-    if (!stringCompareIgnoreCase(_strategy->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+    if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         controlWvalue = getCurrentWattLoadPointValue();
-        if (_strategy->getControlInterval() > 0)
+        if (getStrategy()->getControlInterval() > 0)
         {
-            if (nextCheckTime - _strategy->getIntegratePeriod() <= currentDateTime)
+            if (nextCheckTime - getStrategy()->getIntegratePeriod() <= currentDateTime)
             {
 
                 if (getIWCount() == 0)
@@ -2364,22 +2366,22 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
     {
         string feederControlUnits = controlUnits;
         //DON'T ADD !... Supposed to be !=none
-        if (stringCompareIgnoreCase(_strategy->getStrategyName(),"(none)"))
+        if (stringCompareIgnoreCase(getStrategy()->getStrategyName(),"(none)"))
         {
-            feederControlUnits = _strategy->getControlUnits();
+            feederControlUnits = getStrategy()->getControlUnits();
         }
         if (!stringCompareIgnoreCase(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
             !stringCompareIgnoreCase(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit ))
         {
-            DOUBLE setpoint = (peakTimeFlag?_strategy->getPeakPFSetPoint():_strategy->getOffPeakPFSetPoint());
+            DOUBLE setpoint = (peakTimeFlag?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
             setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
             setTargetVarValue( getKVARSolution() + getCurrentVarLoadPointValue());
         }
         else
         {
 
-            DOUBLE lagLevel = (peakTimeFlag?_strategy->getPeakLag():_strategy->getOffPeakLag());
-            DOUBLE leadLevel = (peakTimeFlag?_strategy->getPeakLead():_strategy->getOffPeakLead());
+            DOUBLE lagLevel = (peakTimeFlag?getStrategy()->getPeakLag():getStrategy()->getOffPeakLag());
+            DOUBLE leadLevel = (peakTimeFlag?getStrategy()->getPeakLead():getStrategy()->getOffPeakLead());
             DOUBLE setpoint = (lagLevel + leadLevel)/2;
             setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
             if( !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::VoltsControlUnit) )
@@ -2408,20 +2410,20 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     BOOL returnBoolean = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    DOUBLE lagLevel = (peakTimeFlag?_strategy->getPeakLag():_strategy->getOffPeakLag());
-    DOUBLE leadLevel = (peakTimeFlag?_strategy->getPeakLead():_strategy->getOffPeakLead());
+    DOUBLE lagLevel = (peakTimeFlag?getStrategy()->getPeakLag():getStrategy()->getOffPeakLag());
+    DOUBLE leadLevel = (peakTimeFlag?getStrategy()->getPeakLead():getStrategy()->getOffPeakLead());
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
-    BOOL maxOpsDisableFlag = _strategy->getMaxOperationDisableFlag();
+    BOOL maxOpsDisableFlag = getStrategy()->getMaxOperationDisableFlag();
     string feederControlUnits = controlUnits;
     //DON'T ADD !... Supposed to be !=none
-    if (stringCompareIgnoreCase(_strategy->getStrategyName(),"(none)"))
+    if (stringCompareIgnoreCase(getStrategy()->getStrategyName(),"(none)"))
     {
-        feederControlUnits = _strategy->getControlUnits();
-        maxOpsDisableFlag = _strategy->getMaxOperationDisableFlag();
+        feederControlUnits = getStrategy()->getControlUnits();
+        maxOpsDisableFlag = getStrategy()->getMaxOperationDisableFlag();
     }
     if( !stringCompareIgnoreCase(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
        !stringCompareIgnoreCase(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit) )
-        setpoint = (peakTimeFlag?_strategy->getPeakPFSetPoint():_strategy->getOffPeakPFSetPoint());
+        setpoint = (peakTimeFlag?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
 
     //Integration Control Point setting...
     setIWControl(getCurrentWattLoadPointValue());
@@ -2429,7 +2431,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         setIVControl(getCurrentVoltLoadPointValue());
     else
         setIVControl(getCurrentVarLoadPointValue());
-    if (_strategy->getIntegrateFlag() && _strategy->getIntegratePeriod() > 0)
+    if (getStrategy()->getIntegrateFlag() && getStrategy()->getIntegratePeriod() > 0)
     {
         if (getIVCount() > 0)
             setIVControl(getIVControlTot() / getIVCount());
@@ -2467,7 +2469,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         !getWaiveControlFlag() &&
         ( !_IGNORE_NOT_NORMAL_FLAG || ( getCurrentVarPointQuality() == NormalQuality &&
             getCurrentWattPointQuality() == NormalQuality && getCurrentVoltPointQuality() == NormalQuality ) ) &&
-        ( currentDateTime.seconds() >= getLastOperationTime().seconds() + _strategy->getControlDelayTime() ) )
+        ( currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() ) )
     {
         if( (!stringCompareIgnoreCase(feederControlUnits, ControlStrategy::KVarControlUnit) &&
              getCurrentVarLoadPointId() > 0) ||
@@ -4134,8 +4136,8 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
     else
     {
         //check capbank reclose delay here...
-        DOUBLE controlValue = (!stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-        string text = createTextString(_strategy->getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
+        DOUBLE controlValue = (!stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+        string text = createTextString(getStrategy()->getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
         bool flipFlag = FALSE;
         if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
                 _USE_FLIP_FLAG == TRUE )
@@ -4293,8 +4295,8 @@ CtiCCFeeder& CtiCCFeeder::getNextCapBankToVerify()
 void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
 {
     setPeakTimeFlag(peakTimeFlag);
-    DOUBLE lagLevel = (peakTimeFlag?_strategy->getPeakLag():_strategy->getOffPeakLag());
-    DOUBLE leadLevel = (peakTimeFlag?_strategy->getPeakLead():_strategy->getOffPeakLead());
+    DOUBLE lagLevel = (peakTimeFlag?getStrategy()->getPeakLag():getStrategy()->getOffPeakLag());
+    DOUBLE leadLevel = (peakTimeFlag?getStrategy()->getPeakLead():getStrategy()->getOffPeakLead());
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
 
     //if current var load is less than the set point minus the bandwidth
@@ -4534,9 +4536,9 @@ BOOL CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxC
 {
     BOOL returnBoolean = FALSE;
 
-    if (_strategy->getUnitType() != ControlStrategy::None && _strategy->getControlSendRetries() > feederRetries)
+    if (getStrategy()->getUnitType() != ControlStrategy::None && getStrategy()->getControlSendRetries() > feederRetries)
     {
-        feederRetries = _strategy->getControlSendRetries();
+        feederRetries = getStrategy()->getControlSendRetries();
     }
 
     if( ((getLastOperationTime().seconds() + ((maxConfirmTime/_SEND_TRIES) * (_retryIndex + 1))) <= currentDateTime.seconds()) ||
@@ -5392,8 +5394,8 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Close))
                             {
-                                DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                string text = createTextString(_strategy->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
+                                DOUBLE controlValue = (stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                 request = createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                 updatePointResponsePreOpValues(parentBank);
@@ -5444,8 +5446,8 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Close))
                                     {
-                                        DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                        string text = createTextString(_strategy->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
                                         request = createDecreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                         updatePointResponsePreOpValues(currentCapBank);
@@ -5505,8 +5507,8 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Open))
                             {
-                                DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                string text = createTextString(_strategy->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                                DOUBLE controlValue = (stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
                                 request = createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                 updatePointResponsePreOpValues(parentBank);
@@ -5557,8 +5559,8 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point->getPointId(), currentCapBank, CtiCCCapBank::Open))
                                     {
-                                        DOUBLE controlValue = (stringCompareIgnoreCase(_strategy->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                                        string text = createTextString(_strategy->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                                        DOUBLE controlValue = (stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                        string text = createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
                                         request = createIncreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                         updatePointResponsePreOpValues(currentCapBank);
@@ -6320,8 +6322,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     }
 
     ostrm   << _parentId
-            << _strategy->getMaxDailyOperation()
-            << _strategy->getMaxOperationDisableFlag()
+            << getStrategy()->getMaxDailyOperation()
+            << getStrategy()->getMaxOperationDisableFlag()
             << _currentvarloadpointid
             << _currentvarloadpointvalue
             << _currentwattloadpointid
@@ -6343,13 +6345,13 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
             << tempestimatedpowerfactorvalue
             << _currentvarpointquality
             << _waivecontrolflag
-            << _strategy->getControlUnits()
+            << getStrategy()->getControlUnits()
             << _decimalPlaces
             << _peakTimeFlag
-            << _strategy->getPeakLag()
-            << _strategy->getOffPeakLag()
-            << _strategy->getPeakLead()
-            << _strategy->getOffPeakLead()
+            << getStrategy()->getPeakLag()
+            << getStrategy()->getOffPeakLag()
+            << getStrategy()->getPeakLead()
+            << getStrategy()->getOffPeakLead()
             << _currentvoltloadpointid
             << _currentvoltloadpointvalue
             << _currentwattpointquality
@@ -6357,9 +6359,9 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
             << _targetvarvalue
             << _solution
             << _ovUvDisabledFlag
-            << _strategy->getPeakPFSetPoint()
-            << _strategy->getOffPeakPFSetPoint()
-            << _strategy->getControlMethod()
+            << getStrategy()->getPeakPFSetPoint()
+            << getStrategy()->getOffPeakPFSetPoint()
+            << getStrategy()->getControlMethod()
             << _phaseAvalue
             << _phaseBvalue
             << _phaseCvalue
@@ -6380,13 +6382,11 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
 {
+    Controllable::operator=(right);
+
     if( this != &right )
     {
-        CapControlPao::operator=(right);
-
         _parentId = right._parentId;
-
-        _strategy = right._strategy;
 
         _currentvarloadpointid = right._currentvarloadpointid;
         _currentvarloadpointvalue = right._currentvarloadpointvalue;
@@ -6503,8 +6503,6 @@ CtiCCFeeder* CtiCCFeeder::replicate() const
 
 void CtiCCFeeder::restore(RWDBReader& rdr)
 {
-    CapControlPao::restore(rdr);
-
     RWDBNullIndicator isNull;
     CtiTime currentDateTime;
     CtiTime dynamicTimeStamp;
@@ -6611,8 +6609,6 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setLastVoltPointTime(gInvalidCtiTime);
     setRetryIndex(0);
     _originalParent.setPAOId(getPaoId());
-
-    // NOTE: this doesn't set up the strategy...
 }
 
 void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
@@ -6726,9 +6722,9 @@ void CtiCCFeeder::deleteCCCapBank(long capBankId)
 BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
 {
     BOOL retVal = FALSE;
-    if( _strategy->getMaxDailyOperation() > 0 &&
-        ( _currentdailyoperations == _strategy->getMaxDailyOperation()  ||
-         (!getMaxDailyOpsHitFlag() && _currentdailyoperations > _strategy->getMaxDailyOperation()) ) )//only send once
+    if( getStrategy()->getMaxDailyOperation() > 0 &&
+        ( _currentdailyoperations == getStrategy()->getMaxDailyOperation()  ||
+         (!getMaxDailyOpsHitFlag() && _currentdailyoperations > getStrategy()->getMaxDailyOperation()) ) )//only send once
     {
 
         string text = ("Feeder Exceeded Max Daily Operations");
@@ -6755,15 +6751,15 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
         retVal = TRUE;
     }
 
-    if( _strategy->getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
+    if( getStrategy()->getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
     {
         bool endOfDayOverride = false;
 
-        if (_strategy->getEndDaySettings().compare("Trip") == 0)
+        if (getStrategy()->getEndDaySettings().compare("Trip") == 0)
         {
             endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),Feeder);
         }
-        else if (_strategy->getEndDaySettings().compare("Close") == 0)
+        else if (getStrategy()->getEndDaySettings().compare("Close") == 0)
         {
             endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),Feeder);
         }
@@ -7123,14 +7119,14 @@ bool CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
     string feederControlUnits = controlUnits;
 
     //DON'T ADD !... Supposed to be !=none
-    if (stringCompareIgnoreCase(_strategy->getStrategyName(),"(none)"))
+    if (stringCompareIgnoreCase(getStrategy()->getStrategyName(),"(none)"))
     {
-        feederControlUnits = _strategy->getControlUnits();
+        feederControlUnits = getStrategy()->getControlUnits();
     }
 
     if (!getDisableFlag())
     {
-        if (_strategy->getLikeDayFallBack())
+        if (getStrategy()->getLikeDayFallBack())
         {
             if ( !stringCompareIgnoreCase(feederControlUnits, ControlStrategy::VoltsControlUnit))
             {
@@ -7399,16 +7395,5 @@ void CtiCCFeeder::resetVerificationFlags()
         //wouldn't hurt to set this.
         currentCapBank->setVCtrlIndex(0);
     }
-}
-
-
-void CtiCCFeeder::setStrategy(StrategyPtr strategy)
-{
-    _strategy = strategy;
-}
-
-StrategyPtr CtiCCFeeder::getStrategy() const
-{
-    return _strategy;
 }
 

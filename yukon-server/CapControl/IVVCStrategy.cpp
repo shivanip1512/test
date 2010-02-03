@@ -170,8 +170,112 @@ const std::string IVVCStrategy::getControlUnits() const
 }
 
 
+const double IVVCStrategy::getUpperVoltLimit(const bool isPeak) const
+{
+    return isPeak ? _peakUpperVoltLimit : _offpeakUpperVoltLimit;
+}
+
+
+const double IVVCStrategy::getLowerVoltLimit(const bool isPeak) const
+{
+    return isPeak ? _peakLowerVoltLimit : _offpeakLowerVoltLimit;
+}
+
+
+const double IVVCStrategy::getTargetPF(const bool isPeak) const
+{
+    return isPeak ? _peakTargetPF : _offpeakTargetPF;
+}
+
+
+const double IVVCStrategy::getMinBankOpen(const bool isPeak) const
+{
+    return isPeak ? _peakMinBankOpen : _offpeakMinBankOpen;
+}
+
+
+const double IVVCStrategy::getMinBankClose(const bool isPeak) const
+{
+    return isPeak ? _peakMinBankClose : _offpeakMinBankClose;
+}
+
+
+const double IVVCStrategy::getVoltWeight(const bool isPeak) const
+{
+    return isPeak ? _peakVoltWeight : _offpeakVoltWeight;
+}
+
+
+const double IVVCStrategy::getPFWeight(const bool isPeak) const
+{
+    return isPeak ? _peakPFWeight : _offpeakPFWeight;
+}
+
+
+const double IVVCStrategy::getDecisionWeight(const bool isPeak) const
+{
+    return isPeak ? _peakDecisionWeight : _offpeakDecisionWeight;
+}
+
+
+void IVVCStrategy::registerUser(const int paoid)
+{
+    CtiLockGuard<CtiMutex> guard(_mapMutex);
+
+    PaoToStateMap::iterator iter = _paoStateMap.find(paoid);
+
+    if ( iter != _paoStateMap.end() )
+    {
+        iter->second.first++;       // increment reference count
+    }
+    else
+    {
+        _paoStateMap.insert(std::make_pair(paoid, std::make_pair(1, IVVCStatePtr(new IVVCState))));    
+    }
+}
+
+
+void IVVCStrategy::unregisterUser(const int paoid)
+{
+    CtiLockGuard<CtiMutex> guard(_mapMutex);
+
+    PaoToStateMap::iterator iter = _paoStateMap.find(paoid);
+
+    if ( iter != _paoStateMap.end() )
+    {
+        iter->second.first--;           // decrement reference count
+
+        if (iter->second.first == 0)    // if noone refers to me
+        {
+            _paoStateMap.erase(iter);   // remove from map
+        }
+    }
+}
+
+
 void IVVCStrategy::execute()
 {
-    // empty for now....
+    std::list<IVVCStatePtr>     runList;
+
+    {
+        CtiLockGuard<CtiMutex> guard(_mapMutex);
+
+        for (PaoToStateMap::iterator b = _paoStateMap.begin(), e = _paoStateMap.end(); b != e; ++b)
+        {
+            if ( true )     // if we are a CtiCCSubstationBus object - needs condition obviously!
+            {
+                runList.push_back( b->second.second );  // add our IVVCState object to the list of objects to execute.
+            }
+        }
+    }
+    // mutex unlocked
+
+    for (std::list<IVVCStatePtr>::iterator b = runList.begin(), e = runList.end(); b != e; ++b)
+    {
+
+        IVVCAlgorithm::execute( *b );
+
+    }
+
 }
 

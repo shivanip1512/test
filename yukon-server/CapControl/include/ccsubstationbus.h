@@ -38,7 +38,7 @@ using boost::shared_ptr;
 #include "ControlStrategy.h"
 #include "TimeOfDayStrategy.h"
 #include "ccmonitorpoint.h"
-#include "CapControlPao.h"
+#include "Controllable.h"
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 //For Sorted Vector, the vector will use this to determine position in the vector.
@@ -62,7 +62,7 @@ enum CtiCCMultiBusState
     RECORD_ADAPTIVE_VOLTAGE,
 };
 
-class CtiCCSubstationBus : public RWCollectable, public CapControlPao
+class CtiCCSubstationBus : public RWCollectable, public Controllable
 {
 
 public:
@@ -383,17 +383,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     //static int PeakState;
     //static int OffPeakState;
 
-
-    void setStrategy(StrategyPtr strategy);
-    StrategyPtr getStrategy() const;
-
-    bool isParentOverride() const;
-    void setParentOverride(const bool flag);
-
 private:
-
-    StrategyPtr     _strategy;
-    bool            _parentOverride;
 
     LONG _parentId;
     LONG _currentvarloadpointid;

@@ -142,6 +142,9 @@ public:
 
     virtual void setControlMethod(const std::string & method) = 0;
 
+    virtual void registerUser(const int paoid);
+    virtual void unregisterUser(const int paoid);
+
 private:
 
     long        _strategyID;

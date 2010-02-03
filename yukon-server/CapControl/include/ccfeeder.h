@@ -36,7 +36,7 @@
 #include "ControlStrategy.h"
 #include "sorted_vector.h"
 #include "regression.h"
-#include "CapControlPao.h"
+#include "Controllable.h"
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
@@ -84,7 +84,7 @@ struct FeederVARComparison
     }
 };
 
-class CtiCCFeeder : public RWCollectable, public CapControlPao
+class CtiCCFeeder : public RWCollectable, public Controllable
 {
 
 public:
@@ -382,12 +382,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     string getQuestionablePhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
     string getFailedPhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
 
-    void setStrategy(StrategyPtr strategy);
-    StrategyPtr getStrategy() const;
-
 private:
-
-    StrategyPtr    _strategy;
 
     LONG _parentId; //subBusId
     BOOL _multiMonitorFlag;

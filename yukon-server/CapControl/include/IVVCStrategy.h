@@ -2,8 +2,49 @@
 #pragma once
 
 #include <string>
+#include <map>
+#include <utility>
+#include <list>
 
+#include <boost/shared_ptr.hpp>
+
+#include "guard.h"
+#include "mutex.h"
 #include "ControlStrategy.h"
+
+
+class IVVCState
+{
+
+public:
+    
+    enum State
+    {
+        IDLE
+    };
+
+    IVVCState() : _state(IDLE) { }
+
+private:
+
+    State _state;
+};
+
+
+class IVVCAlgorithm
+{
+
+public:
+
+    typedef boost::shared_ptr<IVVCState>    IVVCStatePtr;
+
+    IVVCAlgorithm() {}
+
+    static void execute(IVVCStatePtr p)
+    {
+        // do stuff!
+    }
+};
 
 
 class IVVCStrategy : public ControlStrategy
@@ -29,6 +70,18 @@ public:
 
     virtual const std::string getControlUnits() const;
 
+    const double getUpperVoltLimit(const bool isPeak) const;
+    const double getLowerVoltLimit(const bool isPeak) const;
+    const double getTargetPF(const bool isPeak) const;
+    const double getMinBankOpen(const bool isPeak) const;
+    const double getMinBankClose(const bool isPeak) const;
+    const double getVoltWeight(const bool isPeak) const;
+    const double getPFWeight(const bool isPeak) const;
+    const double getDecisionWeight(const bool isPeak) const;
+
+    virtual void registerUser(const int paoid);
+    virtual void unregisterUser(const int paoid);
+
 private:
 
     double _peakUpperVoltLimit;
@@ -47,5 +100,12 @@ private:
     double _offpeakPFWeight;
     double _peakDecisionWeight;
     double _offpeakDecisionWeight;
+
+    typedef IVVCAlgorithm::IVVCStatePtr     IVVCStatePtr;
+    typedef std::map<int, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;
+
+    PaoToStateMap   _paoStateMap;
+
+    CtiMutex    _mapMutex;
 };
 
