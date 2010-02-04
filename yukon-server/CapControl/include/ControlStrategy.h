@@ -145,6 +145,9 @@ public:
     virtual void registerUser(const int paoid);
     virtual void unregisterUser(const int paoid);
 
+    void       setPeakTimeFlag(const bool flag);
+    const bool getPeakTimeFlag() const;
+
 private:
 
     long        _strategyID;
@@ -164,6 +167,8 @@ private:
     long        _integratePeriod;
     bool        _likeDayFallBack;
     std::string _endDaySettings;
+
+    bool _isPeakTime;
 
     void printError(const char *function) const;
 };

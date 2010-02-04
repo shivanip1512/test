@@ -48,6 +48,12 @@ public:
     virtual void registerUser(const int paoid);
     virtual void unregisterUser(const int paoid);
 
+    virtual double getPeakLag() const;
+    virtual double getOffPeakLag() const;
+    virtual double getPeakLead() const;
+    virtual double getOffPeakLead() const;
+    virtual double getPeakPFSetPoint() const;
+
 private:
 
     double _peakUpperVoltLimit;

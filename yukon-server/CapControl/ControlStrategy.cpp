@@ -547,6 +547,25 @@ void ControlStrategy::printError(const char *function) const
     }
 }
 
+/** 
+ *  This flag exists for the sole purpose of allowing the IVVC
+ *  strategy to return the appropriate data in the subbus and
+ *  feeder messaging.  They set the flag in the messaging
+ *  function and rely on the overloads to return the data.
+ * 
+ *  It's ugly and needs to be rethought, but for now....
+ */ 
+void ControlStrategy::setPeakTimeFlag(const bool flag)
+{
+    _isPeakTime = flag;
+}
+
+
+const bool ControlStrategy::getPeakTimeFlag() const
+{
+    return _isPeakTime;
+}
+
 
 const std::string ControlStrategy::NoControlMethod                  = "(none)";
 const std::string ControlStrategy::IndividualFeederControlMethod    = "IndividualFeeder";

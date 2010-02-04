@@ -9395,6 +9395,9 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
         tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue - 2;
     }
 
+    // make strategy values returned through getPeak...()/getOffPeak...() good for IVVC too.
+    getStrategy()->setPeakTimeFlag(_peaktimeflag);
+
     ostrm   << _parentId
             << getStrategy()->getMaxDailyOperation()
             << getStrategy()->getMaxOperationDisableFlag()

@@ -218,6 +218,42 @@ const double IVVCStrategy::getDecisionWeight(const bool isPeak) const
 }
 
 
+/**
+ * These five are overloaded to return the proper messaging 
+ * values.  It depends on the _isPeakTime flag being set to the 
+ * proper value. 
+ */
+double IVVCStrategy::getPeakLag() const
+{
+    return getLowerVoltLimit(getPeakTimeFlag());
+}
+
+
+double IVVCStrategy::getOffPeakLag() const
+{
+    return getMinBankClose(getPeakTimeFlag());
+}
+
+
+double IVVCStrategy::getPeakLead() const
+{
+    return getUpperVoltLimit(getPeakTimeFlag());
+}
+
+
+double IVVCStrategy::getOffPeakLead() const
+{
+    return getMinBankOpen(getPeakTimeFlag());
+}
+
+
+double IVVCStrategy::getPeakPFSetPoint() const
+{
+    return getTargetPF(getPeakTimeFlag());
+}
+
+/*********/
+
 void IVVCStrategy::registerUser(const int paoid)
 {
     CtiLockGuard<CtiMutex> guard(_mapMutex);
