@@ -37,7 +37,8 @@ TEST_OBJS=\
 test_prot_klondike.obj \
 test_prot_xml.obj \
 test_prot_expresscom.obj \
-test_prot_dnp.obj
+test_prot_dnp.obj \
+test_dnp_transport.obj
 
 PROTLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
@@ -775,6 +776,11 @@ std_ansi_tbl_base.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h sorted_vector.h std_ansi_tbl_base.h \
 		ctidate.h
+test_dnp_transport.obj:	yukon.h precompiled.h ctidbgmem.h \
+		dnp_transport.h dnp_datalink.h xfer.h dsm2.h mutex.h \
+		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		dnp_datalink_packet.h boostutil.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h
 test_prot_dnp.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_internalindications.h dnp_objects.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \

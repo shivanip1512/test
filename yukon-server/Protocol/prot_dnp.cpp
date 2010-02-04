@@ -189,7 +189,7 @@ int DNPInterface::generate( CtiXfer &xfer )
 
                 time_now->setSeconds(Now.seconds() );
 
-                _app_layer.setCommand(Application::RequestWrite);
+                _app_layer.setCommand(ApplicationLayer::RequestWrite);
 
                 ObjectBlock *dob = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_ByteQty);
 
@@ -201,7 +201,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
             case Command_ReadTime:
             {
-                _app_layer.setCommand(Application::RequestRead);
+                _app_layer.setCommand(ApplicationLayer::RequestRead);
 
                 ObjectBlock *dob = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate);
 
@@ -211,7 +211,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
             case Command_Loopback:
             {
-                _app_layer.setCommand(Application::RequestRead);
+                _app_layer.setCommand(ApplicationLayer::RequestRead);
 
                 break;
             }
@@ -223,19 +223,19 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
             case Command_UnsolicitedEnable:
             {
-                _app_layer.setCommand(Application::RequestEnableUnsolicited);
+                _app_layer.setCommand(ApplicationLayer::RequestEnableUnsolicited);
 
                 break;
             }
             case Command_UnsolicitedDisable:
             {
-                _app_layer.setCommand(Application::RequestDisableUnsolicited);
+                _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited);
 
                 break;
             }
             case Command_Class1230Read:
             {
-                _app_layer.setCommand(Application::RequestRead);
+                _app_layer.setCommand(ApplicationLayer::RequestRead);
 
                 ObjectBlock *time = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate),
                             *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
@@ -253,7 +253,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
             case Command_Class123Read:
             {
-                _app_layer.setCommand(Application::RequestRead);
+                _app_layer.setCommand(ApplicationLayer::RequestRead);
 
                 ObjectBlock *time = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate),
                             *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
@@ -271,7 +271,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 if( _command_parameters.size() == 1 && _command_parameters[0].type == AnalogOutput )
                 {
-                    _app_layer.setCommand(Application::RequestDirectOp);
+                    _app_layer.setCommand(ApplicationLayer::RequestDirectOp);
 
                     ObjectBlock       *dob  = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
                     AnalogOutputBlock *aout = CTIDBG_new AnalogOutputBlock(AnalogOutputBlock::AOB_16Bit);
@@ -303,15 +303,15 @@ int DNPInterface::generate( CtiXfer &xfer )
                 {
                     if( _command == Command_SetDigitalOut_Direct )
                     {
-                        _app_layer.setCommand(Application::RequestDirectOp);
+                        _app_layer.setCommand(ApplicationLayer::RequestDirectOp);
                     }
                     else if( _command == Command_SetDigitalOut_SBO_SelectOnly || _command == Command_SetDigitalOut_SBO_Select )
                     {
-                        _app_layer.setCommand(Application::RequestSelect);
+                        _app_layer.setCommand(ApplicationLayer::RequestSelect);
                     }
                     else if( _command == Command_SetDigitalOut_SBO_Operate )
                     {
-                        _app_layer.setCommand(Application::RequestOperate);
+                        _app_layer.setCommand(ApplicationLayer::RequestOperate);
                     }
 
                     ObjectBlock         *dob;
@@ -860,7 +860,7 @@ const char *DNPInterface::getControlResultString( int result_status ) const
 }
 
 
-DNP::Application& DNPInterface::getApplicationLayer() 
+DNP::ApplicationLayer& DNPInterface::getApplicationLayer()
 {
     return _app_layer;
 }
@@ -898,7 +898,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
             case Command_Class1230Read:
             case Command_Class123Read:
             {
-                getApplicationLayer().setCommand(Application::ResponseResponse);
+                getApplicationLayer().setCommand(ApplicationLayer::ResponseResponse);
                 getApplicationLayer().setOptions(0x40);
                    ObjectBlock         *dob1;
                    ObjectBlock         *dob2;

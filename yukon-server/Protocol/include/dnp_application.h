@@ -33,7 +33,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-class Application
+class ApplicationLayer
 {
 public:
     enum FunctionCode;
@@ -139,7 +139,7 @@ private:
     void eraseInboundObjectBlocks( void );
 
 protected:
-    Transport _transport;
+    TransportLayer _transport;
 
     enum
     {
@@ -150,13 +150,13 @@ protected:
 
 
 public:
-    Application();
+    ApplicationLayer();
 
-    Application(const Application &aRef);
+    ApplicationLayer(const ApplicationLayer &aRef);
 
-    virtual ~Application();
+    virtual ~ApplicationLayer();
 
-    Application &operator=(const Application &aRef);
+    ApplicationLayer &operator=(const ApplicationLayer &aRef);
 
 
     //  initialization functions

@@ -531,7 +531,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
 
 bool UdpPortHandler::validatePacket(packet *&p) const
 {
-    if( Protocol::DNP::Datalink::isPacketValid(p->data, p->len) )
+    if( Protocol::DNP::DatalinkLayer::isPacketValid(p->data, p->len) )
     {
         p->protocol = packet::ProtocolTypeDnp;
     }
@@ -543,7 +543,7 @@ bool UdpPortHandler::validatePacket(packet *&p) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::validatePacket() - incoming packet from " << ip_to_string(p->ip) <<  ":" << p->port << " is invalid";
+            dout << CtiTime() << " " << __FUNCTION__ << "() - incoming packet from " << ip_to_string(p->ip) <<  ":" << p->port << " is invalid " << __FILE__ << "(" << __LINE__ << ")" << endl;
         }
 
         delete p->data;

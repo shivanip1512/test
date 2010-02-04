@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_datalink
-*
-* Date:   5/6/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/02/15 21:10:25 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dllbase.h"
@@ -25,7 +10,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-Datalink::Datalink() :
+DatalinkLayer::DatalinkLayer() :
     _io_state(State_IO_Uninitialized),
     _control_state(State_Control_Ready),
     _src(0),
@@ -52,14 +37,14 @@ Datalink::Datalink() :
     memset( &_control_packet, 0, sizeof(packet_t) );
 }
 
-Datalink::Datalink(const Datalink &aRef)
+DatalinkLayer::DatalinkLayer(const DatalinkLayer &aRef)
 {
     *this = aRef;
 }
 
-Datalink::~Datalink()   {}
+DatalinkLayer::~DatalinkLayer()   {}
 
-Datalink &Datalink::operator=(const Datalink &aRef)
+DatalinkLayer &DatalinkLayer::operator=(const DatalinkLayer &aRef)
 {
     if( this != &aRef )
     {
@@ -73,14 +58,14 @@ Datalink &Datalink::operator=(const Datalink &aRef)
 }
 
 
-void Datalink::setAddresses( unsigned short dst, unsigned short src)
+void DatalinkLayer::setAddresses( unsigned short dst, unsigned short src)
 {
     _dst = dst;
     _src = src;
 }
 
 
-void Datalink::setOptions(int options)
+void DatalinkLayer::setOptions(int options)
 {
     if( options & DNPInterface::Options_DatalinkConfirm )
     {
@@ -93,7 +78,7 @@ void Datalink::setOptions(int options)
 }
 
 
-void Datalink::resetLink( void )
+void DatalinkLayer::resetLink( void )
 {
     _reset_sent = false;
 /*    _fcb_in     = false;
@@ -101,7 +86,7 @@ void Datalink::resetLink( void )
 }
 
 
-void Datalink::setToOutput( unsigned char *buf, unsigned int len )
+void DatalinkLayer::setToOutput( unsigned char *buf, unsigned int len )
 {
     //  if it's too big or there's nothing to copy, set our buffer to zip
     if( len > DatalinkPacket::PayloadLengthMax || buf == NULL )
@@ -139,7 +124,7 @@ void Datalink::setToOutput( unsigned char *buf, unsigned int len )
 }
 
 
-void Datalink::setToInput( void )
+void DatalinkLayer::setToInput( void )
 {
     _io_state       = State_IO_Input;
 
@@ -156,7 +141,7 @@ void Datalink::setToInput( void )
 }
 
 
-int Datalink::generate( CtiXfer &xfer )
+int DatalinkLayer::generate( CtiXfer &xfer )
 {
     int retVal = NoError;
 
@@ -218,7 +203,7 @@ int Datalink::generate( CtiXfer &xfer )
 }
 
 
-int Datalink::decode( CtiXfer &xfer, int status )
+int DatalinkLayer::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
     int toCopy, srcLen, packetSize;
@@ -400,7 +385,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
 }
 
 
-void Datalink::constructDataPacket( Datalink::packet_t &packet, unsigned char *buf, unsigned long len )
+void DatalinkLayer::constructDataPacket( DatalinkLayer::packet_t &packet, unsigned char *buf, unsigned long len )
 {
     int pos, block_len, num_blocks;
     unsigned short block_crc;
@@ -462,7 +447,7 @@ void Datalink::constructDataPacket( Datalink::packet_t &packet, unsigned char *b
 }
 
 
-void Datalink::constructPrimaryControlPacket( Datalink::packet_t &packet, PrimaryControlFunction function, bool fcv, bool fcb )
+void DatalinkLayer::constructPrimaryControlPacket( DatalinkLayer::packet_t &packet, PrimaryControlFunction function, bool fcv, bool fcb )
 {
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
@@ -484,7 +469,7 @@ void Datalink::constructPrimaryControlPacket( Datalink::packet_t &packet, Primar
 }
 
 
-void Datalink::constructSecondaryControlPacket( Datalink::packet_t &packet, SecondaryControlFunction function, bool dfc )
+void DatalinkLayer::constructSecondaryControlPacket( DatalinkLayer::packet_t &packet, SecondaryControlFunction function, bool dfc )
 {
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
@@ -506,7 +491,7 @@ void Datalink::constructSecondaryControlPacket( Datalink::packet_t &packet, Seco
 }
 
 
-void Datalink::sendPacket( Datalink::packet_t &packet, CtiXfer &xfer )
+void DatalinkLayer::sendPacket( DatalinkLayer::packet_t &packet, CtiXfer &xfer )
 {
     xfer.setOutBuffer((unsigned char *)&packet);
     xfer.setOutCount(calcPacketLength(packet.header.fmt.len));
@@ -518,7 +503,7 @@ void Datalink::sendPacket( Datalink::packet_t &packet, CtiXfer &xfer )
 }
 
 
-void Datalink::recvPacket( Datalink::packet_t &packet, CtiXfer &xfer )
+void DatalinkLayer::recvPacket( DatalinkLayer::packet_t &packet, CtiXfer &xfer )
 {
     if( _in_recv < DatalinkPacket::HeaderLength )
     {
@@ -541,13 +526,13 @@ void Datalink::recvPacket( Datalink::packet_t &packet, CtiXfer &xfer )
 }
 
 
-bool Datalink::isControlPending( void ) const
+bool DatalinkLayer::isControlPending( void ) const
 {
     return (_control_state != State_Control_Ready);
 }
 
 
-bool Datalink::processControl( const Datalink::packet_t &packet )
+bool DatalinkLayer::processControl( const DatalinkLayer::packet_t &packet )
 {
     bool retVal = false;
 
@@ -697,7 +682,7 @@ bool Datalink::processControl( const Datalink::packet_t &packet )
 }
 
 
-int Datalink::generateControl( CtiXfer &xfer )
+int DatalinkLayer::generateControl( CtiXfer &xfer )
 {
     int retVal = NoError;
 
@@ -785,7 +770,7 @@ int Datalink::generateControl( CtiXfer &xfer )
 }
 
 
-int Datalink::decodeControl( CtiXfer &xfer, int status )
+int DatalinkLayer::decodeControl( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
 
@@ -924,7 +909,7 @@ int Datalink::decodeControl( CtiXfer &xfer, int status )
 }
 
 
-int Datalink::decodePacket( CtiXfer &xfer, packet_t &p, unsigned long received )
+int DatalinkLayer::decodePacket( CtiXfer &xfer, packet_t &p, unsigned long received )
 {
     unsigned long in_actual = xfer.getInCountActual();
 
@@ -966,7 +951,7 @@ int Datalink::decodePacket( CtiXfer &xfer, packet_t &p, unsigned long received )
 }
 
 
-bool Datalink::isValidDataPacket( const Datalink::packet_t &packet ) const
+bool DatalinkLayer::isValidDataPacket( const DatalinkLayer::packet_t &packet ) const
 {
     bool retVal = false;
 
@@ -991,7 +976,7 @@ bool Datalink::isValidDataPacket( const Datalink::packet_t &packet ) const
 }
 
 
-bool Datalink::isValidAckPacket( const Datalink::packet_t &packet ) const
+bool DatalinkLayer::isValidAckPacket( const DatalinkLayer::packet_t &packet ) const
 {
     bool retVal = false;
 
@@ -1011,7 +996,7 @@ bool Datalink::isValidAckPacket( const Datalink::packet_t &packet ) const
 }
 
 
-bool Datalink::isTransactionComplete( void )
+bool DatalinkLayer::isTransactionComplete( void )
 {
     bool retVal = false;
 
@@ -1034,18 +1019,18 @@ bool Datalink::isTransactionComplete( void )
     return retVal;
 }
 
-void Datalink::setIoStateComplete()
+void DatalinkLayer::setIoStateComplete()
 {
     _io_state = State_IO_Complete;
 }
 
-bool Datalink::errorCondition( void )
+bool DatalinkLayer::errorCondition( void )
 {
     return _io_state == State_IO_Failed;
 }
 
 
-unsigned Datalink::calcPacketLength( unsigned headerLen )
+unsigned DatalinkLayer::calcPacketLength( unsigned headerLen )
 {
     unsigned packetLength = 0;
 
@@ -1069,7 +1054,7 @@ unsigned Datalink::calcPacketLength( unsigned headerLen )
 }
 
 
-bool Datalink::isEntirePacket( const Datalink::packet_t &packet, unsigned long in_recv )
+bool DatalinkLayer::isEntirePacket( const DatalinkLayer::packet_t &packet, unsigned long in_recv )
 {
     bool retVal = false;
 
@@ -1085,27 +1070,14 @@ bool Datalink::isEntirePacket( const Datalink::packet_t &packet, unsigned long i
 }
 
 
-int Datalink::getInPayloadLength( void )
+vector<unsigned char> DatalinkLayer::getInPayload( void ) const
 {
-    return _in_data_len;
+    return vector<unsigned char>(_in_data,
+                                 _in_data + _in_data_len);
 }
 
 
-bool Datalink::getInPayload( unsigned char *buf )
-{
-    bool retval = false;
-
-    if( buf )
-    {
-        memcpy(buf, _in_data, _in_data_len);
-        retval = true;
-    }
-
-    return retval;
-}
-
-
-bool Datalink::isHeaderCRCValid( const DatalinkPacket::dlp_header &header )
+bool DatalinkLayer::isHeaderCRCValid( const DatalinkPacket::dlp_header &header )
 {
     unsigned length = DatalinkPacket::HeaderLength - DatalinkPacket::CRCLength;
 
@@ -1113,7 +1085,7 @@ bool Datalink::isHeaderCRCValid( const DatalinkPacket::dlp_header &header )
 }
 
 
-bool Datalink::isDataBlockCRCValid( const unsigned char *block, unsigned length )
+bool DatalinkLayer::isDataBlockCRCValid( const unsigned char *block, unsigned length )
 {
     unsigned short block_crc = *(reinterpret_cast<const unsigned short *>(block + length));
 
@@ -1121,7 +1093,7 @@ bool Datalink::isDataBlockCRCValid( const unsigned char *block, unsigned length 
 }
 
 
-bool Datalink::arePacketCRCsValid( const Datalink::packet_t &packet )
+bool DatalinkLayer::arePacketCRCsValid( const DatalinkLayer::packet_t &packet )
 {
     bool crcs_valid = isHeaderCRCValid(packet.header);
 
@@ -1151,7 +1123,7 @@ bool Datalink::arePacketCRCsValid( const Datalink::packet_t &packet )
 }
 
 
-void Datalink::putPacketPayload( const Datalink::packet_t &packet, unsigned char *buf, int *len )
+void DatalinkLayer::putPacketPayload( const DatalinkLayer::packet_t &packet, unsigned char *buf, int *len )
 {
     unsigned const char *current_block;
     int payload_len, block_len, pos;
@@ -1194,7 +1166,7 @@ void Datalink::putPacketPayload( const Datalink::packet_t &packet, unsigned char
 }
 
 
-IM_EX_PROT bool Datalink::isPacketValid( const unsigned char *buf, const size_t len )
+IM_EX_PROT bool DatalinkLayer::isPacketValid( const unsigned char *buf, const size_t len )
 {
     if( len < DatalinkPacket::HeaderLength )
     {
@@ -1224,7 +1196,7 @@ IM_EX_PROT bool Datalink::isPacketValid( const unsigned char *buf, const size_t 
 
 
 //  export it for the DNP UDP port and other general uses
-IM_EX_PROT unsigned short Datalink::crc( const unsigned char *buf, const int len )
+IM_EX_PROT unsigned short DatalinkLayer::crc( const unsigned char *buf, const int len )
 {
     //  this table and code taken from the DNP docs.
     //    original author Jim McFadyen

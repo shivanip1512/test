@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_application
-*
-* Date:   5/7/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2008/01/15 22:14:39 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
@@ -27,7 +12,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-Application::Application() :
+ApplicationLayer::ApplicationLayer() :
     _dstAddr(0),
     _srcAddr(0),
     _request_function(RequestConfirm),
@@ -46,18 +31,18 @@ Application::Application() :
     _iin.raw = 0;
 }
 
-Application::Application(const Application &aRef)
+ApplicationLayer::ApplicationLayer(const ApplicationLayer &aRef)
 {
     *this = aRef;
 }
 
-Application::~Application()
+ApplicationLayer::~ApplicationLayer()
 {
     eraseOutboundObjectBlocks();
     eraseInboundObjectBlocks();
 }
 
-Application &Application::operator=(const Application &aRef)
+ApplicationLayer &ApplicationLayer::operator=(const ApplicationLayer &aRef)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -68,7 +53,7 @@ Application &Application::operator=(const Application &aRef)
 }
 
 
-void Application::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
+void ApplicationLayer::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 {
     _dstAddr = dstAddr;
     _srcAddr = srcAddr;
@@ -77,20 +62,20 @@ void Application::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 }
 
 
-void Application::setOptions( int options )
+void ApplicationLayer::setOptions( int options )
 {
     _transport.setOptions(options);
     if( options & DNPInterface::Options_SlaveResponse )
-    {     
+    {
         _iin.all_stations=1;
         _iin.class_1=1;
         _iin.class_2=1;
-        _iin.class_3=1; 
+        _iin.class_3=1;
     }
 }
 
 
-void Application::setCommand( FunctionCode fc )
+void ApplicationLayer::setCommand( FunctionCode fc )
 {
     eraseInboundObjectBlocks();
     eraseOutboundObjectBlocks();
@@ -108,7 +93,7 @@ void Application::setCommand( FunctionCode fc )
 }
 
 
-void Application::initUnsolicited( void )
+void ApplicationLayer::initUnsolicited( void )
 {
     eraseInboundObjectBlocks();
     eraseOutboundObjectBlocks();
@@ -124,13 +109,13 @@ void Application::initUnsolicited( void )
 }
 
 
-void Application::addObjectBlock( const ObjectBlock *objBlock )
+void ApplicationLayer::addObjectBlock( const ObjectBlock *objBlock )
 {
     _out_object_blocks.push(objBlock);
 }
 
 
-void Application::processInput( void )
+void ApplicationLayer::processInput( void )
 {
     if( gDNPVerbose )
     {
@@ -196,7 +181,7 @@ void Application::processInput( void )
 }
 
 
-void Application::initForOutput( void )
+void ApplicationLayer::initForOutput( void )
 {
     unsigned pos = 0;
 
@@ -226,7 +211,7 @@ void Application::initForOutput( void )
     _request_buf_len = pos;
 }
 
-void Application::initForSlaveOutput( void )
+void ApplicationLayer::initForSlaveOutput( void )
 {
     unsigned pos = 0;
 
@@ -243,8 +228,8 @@ void Application::initForSlaveOutput( void )
     _response.ind.class_2 = 1;
     _response.ind.class_3 = 1;
     _response.ctrl.seq = _seqno;
-    
-    _response.func_code = DNP::Application::ResponseResponse;
+
+    _response.func_code = DNP::ApplicationLayer::ResponseResponse;
 
     while( !_out_object_blocks.empty() )
     {
@@ -260,14 +245,14 @@ void Application::initForSlaveOutput( void )
     _response_buf_len = pos;
 }
 
-void Application::completeSlave( void )
+void ApplicationLayer::completeSlave( void )
 {
     _ioState = Complete;
     _transport.setIoStateComplete();
 }
 
 
-void Application::eraseInboundObjectBlocks( void )
+void ApplicationLayer::eraseInboundObjectBlocks( void )
 {
     while( !_in_object_blocks.empty() )
     {
@@ -278,7 +263,7 @@ void Application::eraseInboundObjectBlocks( void )
 }
 
 
-void Application::eraseOutboundObjectBlocks( void )
+void ApplicationLayer::eraseOutboundObjectBlocks( void )
 {
     while( !_out_object_blocks.empty() )
     {
@@ -289,7 +274,7 @@ void Application::eraseOutboundObjectBlocks( void )
 }
 
 
-void Application::getObjects( object_block_queue &ob_queue )
+void ApplicationLayer::getObjects( object_block_queue &ob_queue )
 {
     while( !_in_object_blocks.empty() )
     {
@@ -300,7 +285,7 @@ void Application::getObjects( object_block_queue &ob_queue )
 }
 
 
-string Application::getInternalIndications( void ) const
+string ApplicationLayer::getInternalIndications( void ) const
 {
     string iin = "Internal indications:\n";
 
@@ -324,19 +309,19 @@ string Application::getInternalIndications( void ) const
 }
 
 
-void Application::resetLink( void )
+void ApplicationLayer::resetLink( void )
 {
     _transport.resetLink();
 }
 
 
-bool Application::isTransactionComplete( void ) const
+bool ApplicationLayer::isTransactionComplete( void ) const
 {
     return _ioState == Complete || _ioState == Uninitialized || _ioState == Failed;
 }
 
 
-bool Application::isOneWay( void ) const
+bool ApplicationLayer::isOneWay( void ) const
 {
     bool retVal;
 
@@ -363,14 +348,14 @@ bool Application::isOneWay( void ) const
 }
 
 
-bool Application::errorCondition( void ) const
+bool ApplicationLayer::errorCondition( void ) const
 {
     //  make this return decent error codes, not just a bool
     return _ioState == Failed;
 }
 
 
-int Application::generate( CtiXfer &xfer )
+int ApplicationLayer::generate( CtiXfer &xfer )
 {
     int retVal = NoError;
 
@@ -434,7 +419,7 @@ int Application::generate( CtiXfer &xfer )
 }
 
 
-int Application::decode( CtiXfer &xfer, int status )
+int ApplicationLayer::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
 
@@ -545,7 +530,7 @@ int Application::decode( CtiXfer &xfer, int status )
 }
 
 
-void Application::generateAck( acknowledge_t *ack_packet, unsigned char seq )
+void ApplicationLayer::generateAck( acknowledge_t *ack_packet, unsigned char seq )
 {
     memset( ack_packet, 0, sizeof(*ack_packet) );
 

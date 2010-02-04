@@ -409,7 +409,7 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnect
         buffer[7] = data[5];
 
         BYTEUSHORT crc;
-        crc.sh = DNP::Datalink::crc((const unsigned char*) buffer, 8);
+        crc.sh = DNP::DatalinkLayer::crc((const unsigned char*) buffer, 8);
         buffer[8] = crc.ch[0];
         buffer[9] = crc.ch[1];
 

@@ -8,7 +8,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-class Datalink
+class DatalinkLayer
 {
 private:
 
@@ -132,12 +132,12 @@ private:
 
 public:
 
-    Datalink();
-    Datalink(const Datalink &aRef);
+    DatalinkLayer();
+    DatalinkLayer(const DatalinkLayer &aRef);
 
-    virtual ~Datalink();
+    virtual ~DatalinkLayer();
 
-    Datalink &operator=(const Datalink &aRef);
+    DatalinkLayer &operator=(const DatalinkLayer &aRef);
 
     void setAddresses( unsigned short dst, unsigned short src);
     void setOptions  ( int options );
@@ -153,8 +153,7 @@ public:
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    bool getInPayload( unsigned char *buf );
-    int  getInPayloadLength( void );
+    std::vector<unsigned char> getInPayload() const;
 
     IM_EX_PROT static bool isPacketValid(const unsigned char *buf, const size_t len);
 

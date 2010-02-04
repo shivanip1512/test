@@ -42,7 +42,7 @@ class IM_EX_PROT DNPInterface : public Interface
 
 private:
 
-    DNP::Application _app_layer;  //  be explicit to ensure Slick doesn't confuse it with anything else :rolleyes:
+    DNP::ApplicationLayer _app_layer;  //  be explicit to ensure Slick doesn't confuse it with anything else :rolleyes:
     unsigned short   _masterAddress, _slaveAddress;
     int              _options;
     unsigned long    _last_complaint;
@@ -50,7 +50,7 @@ private:
     Command              _command;
     vector<output_point> _command_parameters;
 
-    DNP::Application::object_block_queue _object_blocks;
+    DNP::ApplicationLayer::object_block_queue _object_blocks;
 
     stringlist_t _string_results;
     pointlist_t  _point_results;
@@ -93,7 +93,7 @@ protected:
     static const char * const ControlResultStr_HardwareError;
     static const char * const ControlResultStr_InvalidStatus;
 
-    DNP::Application& getApplicationLayer();
+    DNP::ApplicationLayer& getApplicationLayer();
     Command getCommand();
     void addStringResults(string *s);
 
@@ -278,7 +278,7 @@ struct DnpPacketFinder : public Protocols::PacketFinder
 public:
 
     DnpPacketFinder() :
-        PacketFinder(0x05, 0x64, Datalink::isPacketValid)
+        PacketFinder(0x05, 0x64, DatalinkLayer::isPacketValid)
     { };
 };
 

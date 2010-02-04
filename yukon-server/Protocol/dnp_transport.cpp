@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_transport
-*
-* Date:   5/7/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/02/15 21:12:45 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dllbase.h"
@@ -23,32 +8,30 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-Transport::Transport() :
-    _current_packet_length(0),
+using Transport::TransportPacket;
+
+TransportLayer::TransportLayer() :
+    _current_payload_length(0),
     _sequence_in(0),
     _sequence_out(0),
     _source_address(0),
     _destination_address(0),
-    _ioState(Uninitialized),
-    _complete(false)
+    _ioState(Uninitialized)
 {
     memset( &_payload_in,  0, sizeof(payload_t) );
     memset( &_payload_out, 0, sizeof(payload_t) );
-
-    memset( &_in_packet,  0, sizeof(packet_t) );
-    memset( &_out_packet, 0, sizeof(packet_t) );
 }
 
-Transport::Transport(const Transport &aRef)
+TransportLayer::TransportLayer(const TransportLayer &aRef)
 {
     *this = aRef;
 }
 
-Transport::~Transport()
+TransportLayer::~TransportLayer()
 {
 }
 
-Transport &Transport::operator=(const Transport &aRef)
+TransportLayer &TransportLayer::operator=(const TransportLayer &aRef)
 {
     if( this != &aRef )
     {
@@ -62,46 +45,45 @@ Transport &Transport::operator=(const Transport &aRef)
 }
 
 
-void Transport::setAddresses(unsigned short dst, unsigned short src)
+void TransportLayer::setAddresses(unsigned short dst, unsigned short src)
 {
     _datalink.setAddresses(dst, src);
 }
 
 
-void Transport::setOptions(int options)
+void TransportLayer::setOptions(int options)
 {
     _datalink.setOptions(options);
 }
 
 
-void Transport::resetLink( void )
+void TransportLayer::resetLink( void )
 {
     _datalink.resetLink();
 }
 
 
-int Transport::initForOutput(unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr)
+int TransportLayer::initForOutput(unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr)
 {
     int retVal = NoError;
 
     _source_address      = srcAddr;
     _destination_address = dstAddr;
 
+    _payload_out.data   = buf;
+    _payload_out.length = len;
+    _payload_out.used = 0;
+
+    _sequence_out = 0;
+
     if( len > 0 && buf )
     {
-        _payload_out.data   = buf;
-        _payload_out.length = len;
-        _payload_out.sent   = 0;
-
-        _sequence_out = 0;
-
         _ioState = Output;
     }
     else
     {
         _payload_out.data   = NULL;
         _payload_out.length = 0;
-        _payload_out.sent   = 0;
 
         _ioState = Uninitialized;
 
@@ -117,14 +99,13 @@ int Transport::initForOutput(unsigned char *buf, unsigned len, unsigned short ds
 }
 
 
-int Transport::initForInput(unsigned char *buf, unsigned max_len)
+int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 {
     int retVal = NoError;
 
-    _payload_in.data       = buf;
-    _payload_in.length_max = max_len;
-    _payload_in.length     = 0;
-    _payload_in.received   = 0;
+    _payload_in.data   = buf;
+    _payload_in.length = max_len;
+    _payload_in.used = 0;
 
     _ioState = Input;
 
@@ -132,10 +113,9 @@ int Transport::initForInput(unsigned char *buf, unsigned max_len)
 }
 
 
-int Transport::generate( CtiXfer &xfer )
+int TransportLayer::generate( CtiXfer &xfer )
 {
     int retVal = NoError;
-    int dataLen, packetLen, first, final;
 
     if( _datalink.isTransactionComplete() )
     {
@@ -143,36 +123,17 @@ int Transport::generate( CtiXfer &xfer )
         {
             case Output:
             {
-                //  prepare transport layer buffer
+                TransportPacket out_packet(_payload_out.used == 0,
+                                           _sequence_out,
+                                           _payload_out.data + _payload_out.used,
+                                           _payload_out.length - _payload_out.used);
 
-                first = !(_payload_out.sent > 0);
+                _current_payload_length = out_packet.payloadLength();
 
-                _current_packet_length = _payload_out.length - _payload_out.sent;
-
-                if( _current_packet_length > MaxPayloadLen )
-                {
-                    _current_packet_length = MaxPayloadLen;
-
-                    final = 0;
-                }
-                else
-                {
-                    final = 1;
-                }
-
-                //  add on the header byte
-                packetLen = _current_packet_length + HeaderLen;
-
-                //  set up the transport header
-                _out_packet.header.first = first;
-                _out_packet.header.final = final;
-                _out_packet.header.seq   = _sequence_out;
-
-                //  copy the app layer chunk into the outbound packet
-                memcpy( (void *)_out_packet.data, (void *)&(_payload_out.data[_payload_out.sent]), _current_packet_length );
+                vector<unsigned char> serialized = out_packet;
 
                 //  do we need to observe a return value to handle any errors, or can we let it explode in generate()?
-                _datalink.setToOutput((unsigned char *)&_out_packet, packetLen);
+                _datalink.setToOutput(&serialized.front(), serialized.size());
 
                 break;
             }
@@ -205,7 +166,7 @@ int Transport::generate( CtiXfer &xfer )
 }
 
 
-int Transport::decode( CtiXfer &xfer, int status )
+int TransportLayer::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
 
@@ -220,17 +181,15 @@ int Transport::decode( CtiXfer &xfer, int status )
         {
             case Output:
             {
-                int transportPayloadLen;
-
                 _sequence_out = (_sequence_out + 1) & 0x3f;
 
-                _payload_out.sent += _current_packet_length;
+                _payload_out.used += _current_payload_length;
 
-                if( _payload_out.length <= _payload_out.sent )
+                if( _payload_out.length <= _payload_out.used )
                 {
                     _ioState = Complete;
 
-                    if( _payload_out.length < _payload_out.sent )
+                    if( _payload_out.length < _payload_out.used )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -246,47 +205,38 @@ int Transport::decode( CtiXfer &xfer, int status )
             {
                 unsigned dataLen;
 
+                std::vector<unsigned char> inbound = _datalink.getInPayload();
+
                 //  copy out the data
-                if( _datalink.getInPayloadLength() >= HeaderLen )
+                if( inbound.size() >= TransportPacket::HeaderLen )
                 {
-                    dataLen = _datalink.getInPayloadLength() - HeaderLen;
-                    _datalink.getInPayload((unsigned char *)&_in_packet);
+                    TransportPacket packet(inbound.front(), ++inbound.begin(), inbound.end());
 
-                    if( _payload_in.received + dataLen >= _payload_in.length_max )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - (" << _payload_in.received + dataLen << ") >= (" << _payload_in.length_max << ") in Cti::Protocol::DNP::Transport::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    else
-                    {
-                        memcpy(&_payload_in.data[_payload_in.received], _in_packet.data, dataLen);
-                        _payload_in.received += dataLen;
-                    }
+                    _inbound_packets.insert(packet);
 
-                    if( _in_packet.header.first )
+                    if( isPacketSequenceValid(_inbound_packets) )
                     {
-                        _sequence_in = _in_packet.header.seq;
-                    }
+                        std::vector<unsigned char> payload = extractPayload(_inbound_packets);
 
-                    if( _sequence_in == _in_packet.header.seq )
-                    {
-                        if( _in_packet.header.final )
+                        if( payload.size() >= _payload_in.length )
                         {
-                            _ioState = Complete;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - (" << payload.size() << ") >= (" << _payload_in.length << ") in Cti::Protocol::DNP::Transport::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-                        else
-                        {
-                            _sequence_in++;
-                            _sequence_in &= 0x3f;
-                        }
-                    }
-                    else
-                    {
-                        _ioState = Failed;
+
+                        _payload_in.used = std::min(_payload_in.length, payload.size());
+
+                        memcpy(_payload_in.data, &payload.front(), _payload_in.used);
+
+                        _inbound_packets.clear();
+
+                        _ioState = Complete;
                     }
                 }
                 else
                 {
+                    _inbound_packets.clear();
+
                     _ioState = Failed;
                 }
 
@@ -309,24 +259,109 @@ int Transport::decode( CtiXfer &xfer, int status )
 }
 
 
-bool Transport::isTransactionComplete( void )
+bool TransportLayer::isPacketSequenceValid(const packet_sequence_t &packet_sequence)
+{
+    bool first_found = false;
+    bool final_found = false;
+
+    unsigned counter      = 0;
+    unsigned wrap_counter = 0;
+
+    for each( const TransportPacket &packet in packet_sequence )
+    {
+        //  make sure we only find one first and final packet
+        if( (first_found && packet.isFirst()) ||
+            (final_found && packet.isFinal()) )
+        {
+            return false;
+        }
+
+        //  if we found a final packet, the next one must be a first packet
+        if( final_found && !packet.isFirst() )
+        {
+            return false;
+        }
+
+        if( packet.isFirst() )
+        {
+            counter = packet.sequence();
+        }
+
+        first_found |= packet.isFirst();
+        final_found |= packet.isFinal();
+
+        if( first_found )
+        {
+            if( packet.sequence() != counter )
+            {
+                return false;
+            }
+
+            counter++;
+        }
+        else
+        {
+            if( packet.sequence() != wrap_counter )
+            {
+                return false;
+            }
+
+            wrap_counter++;
+        }
+    }
+
+    return first_found &&
+           final_found &&
+           (wrap_counter ==  0||  //  normal case, wrap_counter untouched
+            counter      == 64);  //  wraparound condition
+}
+
+
+std::vector<unsigned char> TransportLayer::extractPayload(const packet_sequence_t &packet_sequence)
+{
+    std::list<std::vector<unsigned char> > ordered_packets;
+
+    std::list<std::vector<unsigned char> >::iterator insert_point = ordered_packets.end();
+
+    for each( const TransportPacket &packet in packet_sequence )
+    {
+        if( packet.isFirst() )
+        {
+            insert_point = ordered_packets.begin();
+        }
+
+        ordered_packets.insert(insert_point, packet.payload());
+    }
+
+    std::vector<unsigned char> payload;
+
+    for each( const std::vector<unsigned char> &v in ordered_packets )
+    {
+        payload.insert(payload.end(), v.begin(), v.end());
+    }
+
+    return payload;
+}
+
+
+bool TransportLayer::isTransactionComplete( void )
 {
     return _ioState == Complete || _ioState == Failed || _ioState == Uninitialized;
 }
 
 
-bool Transport::errorCondition( void )
+bool TransportLayer::errorCondition( void )
 {
     return _ioState == Failed;
 }
 
 
-int Transport::getInputSize( void )
+int TransportLayer::getInputSize( void )
 {
-    return _payload_in.received;
+    return _payload_in.used;
 }
 
-void Transport::setIoStateComplete()
+void TransportLayer::setIoStateComplete()
 {
     _ioState = Complete;
     _datalink.setIoStateComplete();
