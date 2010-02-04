@@ -549,6 +549,8 @@ void CtiCapController::processNewMessage(CtiMessage* message)
 {
     if (message != NULL)
     {
+
+        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Processing New Message" << endl;

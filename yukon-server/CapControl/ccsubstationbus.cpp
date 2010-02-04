@@ -3628,13 +3628,9 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
         else if( !stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
                  !stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
         {
-            LONG currentFeedPos = 0;
-            if (getLastFeederControlledPosition() >= 0)
-                currentFeedPos = getLastFeederControlledPosition();
+            CtiCCFeeder* currentFeeder = CtiCCSubstationBusStore::getInstance()->findFeederByPAObjectID(getLastFeederControlledPosition());
 
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(currentFeedPos);
-
-            if( currentFeeder->getPaoId() == getLastFeederControlledPAOId() )
+            if( currentFeeder != NULL)
             {
                 currentFeeder->setEventSequence(getEventSequence());
 
@@ -3683,47 +3679,10 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
             }
             else
             {
-                for(LONG i=0;i<_ccfeeders.size();i++)
-                {
-                    currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                    if (stringCompareIgnoreCase(currentFeeder->getStrategy()->getStrategyName(),"(none)"))
-                    {
-                        minConfirmPercent = currentFeeder->getStrategy()->getMinConfirmPercent();
-                        maxConfirmTime = currentFeeder->getStrategy()->getMaxConfirmTime();
-                        sendRetries = currentFeeder->getStrategy()->getControlSendRetries();
-                        failPercent = currentFeeder->getStrategy()->getFailurePercent();
-                    }
-
-                    if( currentFeeder->getPaoId() == getLastFeederControlledPAOId() )
-                    {
-                        currentFeeder->setEventSequence(getEventSequence());
-                        if (getUsePhaseData() && !getTotalizedControlFlag())
-                        {
-                            currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
-                                                               failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
-                                                               getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(),
-                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC);
-
-                        }
-                        else
-                        {
-                            currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,
-                                                                      getVarValueBeforeControl(),getCurrentVarLoadPointValue(),
-                                                                      getCurrentVarPointQuality(), getPhaseAValue(),
-                                                                      getPhaseBValue(), getPhaseCValue(), regression);
-                        }
-                        setRecentlyControlledFlag(FALSE);
-                        figureEstimatedVarLoadPointValue();
-                        found = TRUE;
-                        break;
-                    }
-                }
-                if (found == FALSE)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Last Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
-                    returnBoolean = TRUE;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Last Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                returnBoolean = TRUE;
+               
             }
         }
         else if( !stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
