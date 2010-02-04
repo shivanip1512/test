@@ -364,6 +364,9 @@ public class OnelinePopupMenuController extends MultiActionController {
         int verifyStop = CapControlCommand.CMD_DISABLE_VERIFY;
         mav.addObject("verifyStop", verifyStop);
         
+        int verifyEmergencyStop = CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY;
+        mav.addObject("verifyEmergencyStop", verifyEmergencyStop);
+        
         mav.addObject("controlType", CapControlType.SUBBUS);
         mav.setViewName("oneline/popupmenu/subMenu.jsp");
         return mav;
