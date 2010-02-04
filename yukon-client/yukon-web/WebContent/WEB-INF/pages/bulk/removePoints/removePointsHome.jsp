@@ -122,26 +122,19 @@
             
             <%-- SHARED POINTS --%>
             <div id="sharedPointsDiv" style="display:none;">
-	            <tags:deviceTypePointsSection deviceType="0" paoTypeMasks="${sharedPaoTypeMasks}" columnCount="4" title="${sharedPointsOptionLabel}" />
+	            <tags:deviceTypePointsSection paoTypeMasks="${sharedPaoTypeMasks}" columnCount="4" />
             </div>
             
             <%-- TYPES --%>
             <div id="allPointsDiv">
             	<c:forEach var="paoTypeMasks" items="${paoTypeMasksList}" varStatus="status">
 	            	<c:set var="deviceType" value="${paoTypeMasks.paoType}"/>
-	            	<c:set var="deviceTypeName" value="${paoTypeMasks.paoType}"/>
-	            	
-	            	<c:forEach var="paoTypeMasks" items="${paoTypeMasksList}" >
-	            		<c:if test="${paoTypeMasks.paoType eq deviceType}">
-	            			<c:set var="pointTemplateMaskMap" value="${paoTypeMasks.pointTemplateMaskMap}" />
-
-		            		<tags:deviceTypePointsSection deviceType="${deviceType.deviceTypeId}" 
-		            									  deviceTypeDeviceCollection="${deviceTypeDeviceCollectionMap[deviceType]}" 
-		            									  paoTypeMasks="${paoTypeMasks}" 
-		            									  columnCount="4" 
-		            									  title="${deviceTypeName}" />
-	            		</c:if>
-	            	</c:forEach>
+            		<c:if test="${paoTypeMasks.paoType eq deviceType}">
+            			<tags:deviceTypePointsSection deviceType="${deviceType}" 
+	            									  deviceTypeDeviceCollection="${deviceTypeDeviceCollectionMap[deviceType]}" 
+	            									  paoTypeMasks="${paoTypeMasks}" 
+	            									  columnCount="4" />
+            		</c:if>
 	            </c:forEach>
             </div>
                     

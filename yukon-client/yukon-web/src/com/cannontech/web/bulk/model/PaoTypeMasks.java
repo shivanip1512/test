@@ -51,7 +51,7 @@ public class PaoTypeMasks {
         return results;
     }
     
-    public class PointTemplateMask {
+    public static class PointTemplateMask {
         private PointTemplate pointTemplate;
         private Boolean masked;
         

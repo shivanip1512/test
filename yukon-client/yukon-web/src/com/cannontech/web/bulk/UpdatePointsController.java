@@ -136,6 +136,20 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         return mav;
     }
     
+    @Override
+    /**
+     *  Creates a set that handles the shared points and 
+     *  also handles the masking for that remove points set.
+     */
+    protected boolean isSharedPointTemplateMasked(Iterable<Boolean> pointTemplateMaskSet){
+        for (Boolean pointTemplateMask : pointTemplateMaskSet) {
+            if (pointTemplateMask == true) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private String validateInput(UpdatePointsFieldType updateField, String setValue, YukonUserContext userContext) {
         String errorMsg = null;
         switch (updateField) {

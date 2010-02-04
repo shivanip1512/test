@@ -1,6 +1,5 @@
 package com.cannontech.web.bulk;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +26,8 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 
 public class RemovePointsController extends AddRemovePointsControllerBase {
 
@@ -76,20 +73,6 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         return mav;
     }
     
-    @Override
-    /**
-     *  Creates a set that handles the shared points and 
-     *  also handles the masking for that remove points set.
-     */
-    protected boolean isSharedPointTemplateMasked(Iterable<Boolean> pointTemplateMaskSet){
-        for (Boolean pointTemplateMask : pointTemplateMaskSet) {
-            if (pointTemplateMask == false) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     @Override
     /**
      * @param maskIfExistOnAllDevices

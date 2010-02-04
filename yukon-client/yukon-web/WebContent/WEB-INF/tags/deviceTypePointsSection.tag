@@ -1,6 +1,5 @@
-<%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="paoTypeMasks" required="true" type="com.cannontech.web.bulk.model.PaoTypeMasks"%>
-<%@ attribute name="deviceType" required="true" type="java.lang.Integer"%>
+<%@ attribute name="deviceType" required="false" type="com.cannontech.common.pao.PaoType"%>
 <%@ attribute name="deviceTypeDeviceCollection" required="false" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
 <%@ attribute name="columnCount" required="true" type="java.lang.Integer"%>
 
@@ -15,8 +14,17 @@
 
     <div class="titleBar sectionContainer_titleBar">
         <div class="titleBar sectionContainer_title">
-            ${title} 
-			<c:if test="${deviceType > 0}">
+        	
+			<c:choose>
+				<c:when test="${not empty deviceType}">
+		            ${deviceType}
+				</c:when>
+				<c:otherwise>
+			        <cti:msg key="yukon.common.device.bulk.addPointsHome.sharedPointsOptionLabel"/>
+				</c:otherwise>
+			</c:choose>
+
+			<c:if test="${not empty deviceType}">
             	<cti:msg var="viewDefinitionDetailPopupTitle" key="yukon.common.device.bulk.addRemovePointsHome.viewDefinitionDetailPopupTitle"/>
             	<cti:url var="definitionUrl" value="/spring/common/deviceDefinition.xml">	
             		<cti:param name="deviceType" value="${pageScope.deviceType}"/>
@@ -40,8 +48,14 @@
 		
 			<span class="smallBoldLabel"><cti:msg key="${pointType}"/></span>
 			<br>
-			<tags:pointsCheckboxTable deviceType="${deviceType}" pointTemplates="${pointTypesMapEntry.value}" columnCount="${columnCount}"></tags:pointsCheckboxTable>
-		
+			<c:choose>
+				<c:when test="${not empty deviceType}">
+					<tags:pointsCheckboxTable deviceType="${deviceType.deviceTypeId}" pointTemplates="${pointTypesMapEntry.value}" columnCount="${columnCount}"></tags:pointsCheckboxTable>
+				</c:when>
+				<c:otherwise>
+					<tags:pointsCheckboxTable deviceType="0" pointTemplates="${pointTypesMapEntry.value}" columnCount="${columnCount}"></tags:pointsCheckboxTable>
+				</c:otherwise>
+			</c:choose>
 		</c:forEach>
 	
     </div>    
