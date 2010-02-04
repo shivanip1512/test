@@ -7,11 +7,12 @@
 class IVVCAlgorithm
 {
     public:
-        static void execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy);
+        static void execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning = true);
 
     private:
         static bool checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow);
         static std::list<long> determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan);
+        static bool verifyBankOperation(CtiCCSubstationBusPtr subbus, CtiCCCapBankPtr bank, IVVCStrategy* strategy);
 
         static double calculateVf(const PointValueMap &voltages);
         static int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax);
@@ -19,4 +20,3 @@ class IVVCAlgorithm
         static double calculatePowerFactor(const double KWattBus, const double KVarBus, const double bankSize);
 
 };
-

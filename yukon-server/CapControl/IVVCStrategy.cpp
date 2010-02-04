@@ -219,9 +219,9 @@ const double IVVCStrategy::getDecisionWeight(const bool isPeak) const
 
 
 /**
- * These five are overloaded to return the proper messaging 
- * values.  It depends on the _isPeakTime flag being set to the 
- * proper value. 
+ * These five are overloaded to return the proper messaging
+ * values.  It depends on the _isPeakTime flag being set to the
+ * proper value.
  */
 double IVVCStrategy::getPeakLag() const
 {
@@ -310,7 +310,7 @@ void IVVCStrategy::execute()
     {
         CtiCCSubstationBusPtr busPtr = NULL;
 
-        IVVCAlgorithm::execute( *b, busPtr, this);
+        IVVCAlgorithm::execute( *b, busPtr, this, true);
 
     }
 

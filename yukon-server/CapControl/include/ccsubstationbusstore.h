@@ -484,6 +484,7 @@ public:
     std::vector<CtiCCSubstationBusPtr> getSubBusesByFeederId(int feederId);
     std::vector<CtiCCSubstationBusPtr> getSubBusesByCapControlByIdAndType(int paoId, CapControlType type);
 
+    CtiCCCapBankPtr getCapBankByPaoId(int paoId);
     std::vector<CtiCCCapBankPtr> getCapBanksByPaoId(int paoId);
     std::vector<CtiCCCapBankPtr> getCapBanksByPaoIdAndType(int paoId, CapControlType type);
     CapControlType determineTypeById(int paoId);

@@ -18,7 +18,7 @@ extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
 extern ULONG _POST_CONTROL_WAIT;
 
-void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy)
+void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
     //check state and do stuff based on that.
     IVVCState::State currentState = state->getState();
@@ -80,7 +80,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     if (stale == true)
                     {
-                        determineWatchPoints(subbus, conn, true);
+                        // If allowScanning is false. we will not scan here even though we are supposed to. (Unit testing)
+                        determineWatchPoints(subbus, conn, allowScanning);
                         state->setScannedRequest(true);
                         state->setState(IVVCState::IVVC_WAIT);
                         break;
@@ -164,7 +165,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             double PFBus = calculatePowerFactor( 2500.0 , 626.55 , 0 );     // FIX: need these numbers!!!
 
             double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf, strategy->getPFWeight(isPeakTime), PFBus);
-            
+
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
             // for each paoid in PointValueMap ...
@@ -219,13 +220,16 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 //  dout << "operate CBC: "<< operatePaoID << endl;
 
                 //send cap bank command
-                state->setState(IVVCState::IVVC_CONTROLLED_LOOP);
+                CtiTime now;
+                state->setTimeStamp(now);
+                state->setControlledBankId(1/*update*/);
+                state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
             }
             else
             {
                 // calculate Vte
 
-                int tapOp = calculateVte(pointValues, 
+                int tapOp = calculateVte(pointValues,
                                          strategy->getLowerVoltLimit(isPeakTime),
                                                 strategy->getLowerVoltLimit(isPeakTime) + 3.0, // FIX: where do we get this value from
                                          strategy->getUpperVoltLimit(isPeakTime));
@@ -248,30 +252,45 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             //  send command to raise tap
 
                         }
-                    }    
+                    }
                 }
                 state->setState(IVVCState::IVVC_WAIT);
                 break;
             }
         }
-        case IVVCState::IVVC_CONTROLLED_LOOP:
+        case IVVCState::IVVC_VERIFY_CONTROL_LOOP:
         {
-            //Verify if we controlled
-            if (/*controlled*/true)
-            {
+            CtiCCSubstationBusStore* bus = CtiCCSubstationBusStore::getInstance();
+            int bankId = state->getControlledBankId();
 
-                //Set Timestamp to cap bank operation time.
+
+            CtiCCCapBankPtr bank = bus->getCapBankByPaoId(bankId);
+            if (bank == NULL)
+            {
+                //Log Error
+                state->setState(IVVCState::IVVC_WAIT);
+                break;
+            }
+
+            //Are we passed Max confirmtime?
+            CtiTime now;
+            CtiTime controlTime = state->getTimeStamp();
+            long maxConfirmTime = strategy->getMaxConfirmTime();
+            if (now > (controlTime+maxConfirmTime))
+            {
+                //update Bank state. (failed or questionable)
+                state->setState(IVVCState::IVVC_WAIT);
+                break;
+            }
+
+            //Verify if we controlled
+            bool bankIsVerified = verifyBankOperation(subbus,bank,strategy);
+
+            if (bankIsVerified == true)
+            {
                 CtiTime now;
                 state->setTimeStamp(now);
                 state->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
-            }
-            else
-            {
-                if (/*timedout*/true) {
-                    //update Bank state. (failed or questionable)
-                    state->setState(IVVCState::IVVC_WAIT);
-                }
-                break;
             }
         }
         case IVVCState::IVVC_POST_CONTROL_WAIT:
@@ -280,9 +299,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             CtiTime now;
             if (now > (capBankOpTime + _POST_CONTROL_WAIT/*seconds*/))
             {
-                //Create Group Request
                 GroupRequestPtr request(new GroupPointDataRequest(conn));
-                std::list<long> pointIds = determineWatchPoints(subbus,conn,true);
+                std::list<long> pointIds = determineWatchPoints(subbus,conn,allowScanning);
                 request->watchPoints(pointIds);
 
                 state->setTimeStamp(now);
@@ -334,7 +352,7 @@ bool IVVCAlgorithm::checkForStaleData(const PointValueMap& pointValues, CtiTime 
     return false;
 }
 
-//Executors make unit testing impossible. Consider changing
+//sendScan must be false for unit tests.
 std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan)
 {
     std::list<long> pointIds;
@@ -358,6 +376,26 @@ std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus
         pointIds.push_back(point.getPointId());
     }
 
+    //SubBus voltage point.
+    int busVoltageId = subbus->getCurrentVoltLoadPointId();
+    if (busVoltageId > 0)
+    {
+        //No scan available. In Case of Duke, this will come from the LTC scan anyways.
+        pointIds.push_back(busVoltageId);
+    }
+
+    //Feeder voltage points.
+    CtiFeeder_vec feeders = subbus->getCCFeeders();
+    for each (CtiCCFeederPtr feeder in feeders)
+    {
+        int feederVoltageId = feeder->getCurrentVoltLoadPointId();
+        if (feederVoltageId > 0)
+        {
+            //No scan available. In Case of Duke, this will come from the LTC scan anyways.
+            pointIds.push_back(feederVoltageId);
+        }
+    }
+
     //All two way cbc's
     std::vector<CtiCCCapBankPtr> banks = bus->getCapBanksByPaoIdAndType(subbus->getPaoId(),SubBus);
     for each (CtiCCCapBankPtr bank in banks)
@@ -374,6 +412,11 @@ std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus
     return pointIds;
 }
 
+bool IVVCAlgorithm::verifyBankOperation(CtiCCSubstationBusPtr subbus, CtiCCCapBankPtr bank, IVVCStrategy* strategy)
+{
+    //strategy->getFailurePercent();
+    return false;
+}
 
 double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
 {
@@ -394,7 +437,7 @@ double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
         totalCount++;
     }
 
-    return ( ( totalSum / totalCount ) - minimum  ); 
+    return ( ( totalSum / totalCount ) - minimum  );
 }
 
 
@@ -446,4 +489,3 @@ double IVVCAlgorithm::calculatePowerFactor(const double KWattBus, const double K
 
     return ( adjKWatt / std::sqrt( std::pow(adjKWatt, 2.0) + std::pow(KVarBus, 2.0) ) );
 }
-

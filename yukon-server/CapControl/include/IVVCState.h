@@ -6,6 +6,11 @@
 
 #include <boost/shared_ptr.hpp>
 
+/**
+ * Holds the current state and needed information for the object
+ * being controlled.
+ *
+ */
 class IVVCState
 {
     public:
@@ -16,7 +21,7 @@ class IVVCState
             IVVC_PRESCAN_LOOP,
             IVVC_ANALYZE_DATA,
             IVVC_POST_CONTROL_WAIT,
-            IVVC_CONTROLLED_LOOP,
+            IVVC_VERIFY_CONTROL_LOOP,
             IVVC_POSTSCAN_LOOP
         };
 
@@ -37,6 +42,9 @@ class IVVCState
         const GroupRequestPtr& getGroupRequest();
         void setGroupRequest(const GroupRequestPtr& groupRequest);
 
+        int getControlledBankId();
+        void setControlledBankId(int bankId);
+
         const CtiTime& getLastTapOpTime();
         void setLastTapOpTime(const CtiTime& opTime);
 
@@ -48,6 +56,7 @@ class IVVCState
 
         GroupRequestPtr _groupRequest;
 
+        int _controlledBankId;
         bool _scannedRequest;
         State _state;
 

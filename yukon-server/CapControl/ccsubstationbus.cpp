@@ -3553,11 +3553,6 @@ void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
 
 }
 
-/*---------------------------------------------------------------------------
-    capBankControlStatusUpdate
-
-    Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
 {
     BOOL returnBoolean = TRUE;
@@ -9844,7 +9839,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         {
             setVoltReductionFlag(FALSE);
         }
-        
+
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;
         rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;

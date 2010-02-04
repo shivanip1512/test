@@ -691,6 +691,12 @@ std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByCapCont
     return subBuses;
 }
 
+CtiCCCapBankPtr CtiCCSubstationBusStore::getCapBankByPaoId(int paoId)
+{
+    CtiCCCapBankPtr bank = findCapBankByPAObjectID(paoId);
+    return bank;
+}
+
 std::vector<CtiCCCapBankPtr> CtiCCSubstationBusStore::getCapBanksByPaoId(int paoId)
 {
     CapControlType type = determineTypeById(paoId);
