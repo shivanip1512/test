@@ -2694,10 +2694,10 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Feeder already has a bank in a pending state." << endl;
+                dout << CtiTime() << " - Feeder already has bank: "<<currentCapBank->getPaoName() <<" in a pending state." << endl;
             }
 
-            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Another bank is already in a Pending State.");
+            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, string("Command Refused: " + currentCapBank->getPaoName() + " is already in a Pending State."));
             msg->setUser(_command->getUser());
             CtiCCExecutorFactory::createExecutor(msg)->execute();
 
