@@ -18,6 +18,5 @@ class IVVCAlgorithm
         static double calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor);
         static double calculatePowerFactor(const double KWattBus, const double KVarBus, const double bankSize);
 
-
 };
 

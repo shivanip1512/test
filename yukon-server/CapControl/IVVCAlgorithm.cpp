@@ -155,33 +155,104 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::IVVC_ANALYZE_DATA:
         {
-            // Check for all data
-            // Check timestamps and quality
-            // If all data present and ok Crunch numbers!
+            bool isPeakTime = true;     // we need to calculate this
 
-            if (/*Is an operation needed*/true)
+            PointValueMap pointValues = state->getGroupRequest()->getPointValues();     // don't like repeating this here since we got them above
+
+            double Vf = calculateVf(pointValues);
+
+            double PFBus = calculatePowerFactor( 2500.0 , 626.55 , 0 );     // FIX: need these numbers!!!
+
+            double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf, strategy->getPFWeight(isPeakTime), PFBus);
+            
+            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+            // for each paoid in PointValueMap ...
+            for ( PointValueMap::const_iterator b = pointValues.begin(), e = pointValues.end(); b != e; ++b )
             {
-                if (/*CapBank Op*/true)
-                {
-                    //send cap bank command
-                    state->setState(IVVCState::IVVC_CONTROLLED_LOOP);
-                }
-                else
-                {
-                    // Operate LTC. Check Delay
+                // is there a better way to get capbank ptrs than using the store?
+                CtiCCCapBankPtr pCapBank = store->findCapBankByPAObjectID( b->first );
 
-                    // No Verify, No Post Scan
-                    state->setState(IVVCState::IVVC_WAIT);
-                    break;
+                if ( pCapBank != NULL )     // is a capbank
+                {
+                    // is this the right function for this?
+                    bool isCapBankOpen = ( pCapBank->getAssumedOrigVerificationState() == CtiCCCapBank::Open );
+
+
+                    // retreive the voltage deltas etc
+                    // calc estimated bus weights
+
+                    // pick a bank
+                    PointValueMap   deltas;                 // FIX: no this isn't true of course!
+                    double estVf = calculateVf(deltas);
+
+
+
+                    double bankSize = pCapBank->getBankSize();
+
+                    double estPFBus = calculatePowerFactor( 2500.0 , 626.55 , isCapBankOpen ? -bankSize : bankSize );     // FIX: need these numbers!!!
+
+                    double estCurrentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), estVf, strategy->getPFWeight(isPeakTime), estPFBus);
+
+                    // store off these values for later reference in some kind of map.....
+
                 }
+            }
+
+            long    operatePaoID = -1;
+            double  minimumEstVf = std::numeric_limits<double>::max();
+
+            // find the minimum : estVf
+            for ( ; 0 ; )                   // for each measurement set
+            {
+                double myEstVf = 1.0;       // delta lookup
+
+                if ( myEstVf < minimumEstVf )
+                {
+                    minimumEstVf = myEstVf;
+                    operatePaoID = 1;       // paoID lookup
+                }
+            }
+
+            if ( ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > 0.0 /* estBw[operatePaoID] */ )   // outside of the window.
+            {
+                //  dout << "operate CBC: "<< operatePaoID << endl;
+
+                //send cap bank command
+                state->setState(IVVCState::IVVC_CONTROLLED_LOOP);
             }
             else
             {
-                // No Op?
+                // calculate Vte
+
+                int tapOp = calculateVte(pointValues, 
+                                         strategy->getLowerVoltLimit(isPeakTime),
+                                                strategy->getLowerVoltLimit(isPeakTime) + 3.0, // FIX: where do we get this value from
+                                         strategy->getUpperVoltLimit(isPeakTime));
+
+                CtiTime now;
+
+                if ( tapOp != 0 )
+                {
+                    if (  ( now.seconds() - state->getLastTapOpTime().seconds()  )  >   300    )    // 300 comes from a CPARM...
+                    {
+                        state->setLastTapOpTime(now);
+
+                        if ( tapOp == -1 )
+                        {
+                            //  send command to lower tap
+
+                        }
+                        else
+                        {
+                            //  send command to raise tap
+
+                        }
+                    }    
+                }
                 state->setState(IVVCState::IVVC_WAIT);
                 break;
             }
-
         }
         case IVVCState::IVVC_CONTROLLED_LOOP:
         {

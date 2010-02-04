@@ -57,3 +57,16 @@ void IVVCState::setGroupRequest(const GroupRequestPtr& groupRequest)
     _groupRequest.reset();
     _groupRequest = groupRequest;
 }
+
+
+const CtiTime& IVVCState::getLastTapOpTime()
+{
+    return _lastTapOpTime;
+}
+
+
+void IVVCState::setLastTapOpTime(const CtiTime& opTime)
+{
+    _lastTapOpTime = opTime;
+}
+

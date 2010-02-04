@@ -37,9 +37,15 @@ class IVVCState
         const GroupRequestPtr& getGroupRequest();
         void setGroupRequest(const GroupRequestPtr& groupRequest);
 
+        const CtiTime& getLastTapOpTime();
+        void setLastTapOpTime(const CtiTime& opTime);
+
     private:
+
         CtiTime _timeStamp;
         CtiTime _nextControlTime;
+        CtiTime _lastTapOpTime;
+
         GroupRequestPtr _groupRequest;
 
         bool _scannedRequest;
