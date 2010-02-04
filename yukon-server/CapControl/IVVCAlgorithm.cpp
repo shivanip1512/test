@@ -10,6 +10,9 @@
 #include "ccsubstationbusstore.h"
 
 #include <list>
+#include <limits>
+#include <algorithm>
+#include <cmath>
 
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
@@ -299,3 +302,77 @@ std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus
 
     return pointIds;
 }
+
+
+double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
+{
+
+    double   totalSum   = 0.0;
+    double   minimum    = std::numeric_limits<double>::max();
+    unsigned totalCount = 0;
+
+    if ( voltages.empty() )
+    {
+        return std::numeric_limits<double>::max();
+    }
+
+    for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
+    {
+        totalSum += b->second.value;
+        minimum = std::min( minimum, b->second.value );
+        totalCount++;
+    }
+
+    return ( ( totalSum / totalCount ) - minimum  ); 
+}
+
+
+int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax)
+{
+    bool lowerTap = false;
+    bool raiseTap = false;
+    bool marginTap = true;
+
+    if ( voltages.empty() )
+    {
+        return 0;
+    }
+
+    for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
+    {
+        if ( b->second.value > Vmax ) { lowerTap = true; }
+        if ( b->second.value < Vmin ) { raiseTap = true; }
+        if ( b->second.value <= Vrm ) { marginTap = false; }
+    }
+
+    return (( lowerTap || marginTap ) ? -1 : raiseTap ? 1 : 0);
+}
+
+
+double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor)
+{
+    const double Pf = (100.0 * ( 1.0 - powerFactor ) );
+
+    const double a = 1.0;
+    const double b = 1.0;
+    const double c = 0.0;
+
+    const double voltageWeight     = (Kv * (b * std::pow( Vf, a ) + c));
+
+    const double e = 1.0;
+    const double f = 1.0;
+    const double g = 0.0;
+
+    const double powerFactorWeight = (Kp * (e * std::pow( Pf, f ) + g));
+
+    return (voltageWeight + powerFactorWeight);
+}
+
+
+double IVVCAlgorithm::calculatePowerFactor(const double KWattBus, const double KVarBus, const double bankSize)
+{
+    double adjKWatt = KWattBus + bankSize;
+
+    return ( adjKWatt / std::sqrt( std::pow(adjKWatt, 2.0) + std::pow(KVarBus, 2.0) ) );
+}
+
