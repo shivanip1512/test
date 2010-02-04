@@ -51,13 +51,13 @@
         <table cellspacing="10">
             <tr>
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.name"/>
-                <td>${fieldName}:</td>
+                <td>${fieldName}</td>
                 <td>
                     <form:input path="name" size="40"/>
                 </td>
                 <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
                     <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.state"/>
-                    <td>${fieldName}:</td>
+                    <td>${fieldName}</td>
                     <td>
                         <form:select path="state">
                             <form:option value="all">
@@ -78,7 +78,7 @@
                 <tr>
                     <cti:checkRolesAndProperties value="LOAD_GROUP_LAST_ACTION">
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupList.filter.lastAction"/>
-                        <td>${fieldName}:</td>
+                        <td>${fieldName}</td>
                         <td>
                             <tags:dateInputCalendar springInput="true" fieldName="lastAction.min"/>
                             &nbsp;${toStr}&nbsp;

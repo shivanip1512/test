@@ -57,13 +57,13 @@ function clearFilter() {
         <table cellspacing="10">
             <tr>
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.name"/>
-                <td>${fieldName}:</td>
+                <td>${fieldName}</td>
                 <td>
                     <form:input path="name" size="40"/>
                 </td>
                 <cti:checkRolesAndProperties value="PROGRAM_STATE">
                     <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.state"/>
-                    <td>${fieldName}:</td>
+                    <td>${fieldName}</td>
                     <td>
                         <form:select path="state">
                             <form:option value="all">
@@ -84,7 +84,7 @@ function clearFilter() {
                 <tr>
                     <cti:checkRolesAndProperties value="PROGRAM_START">
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.start"/>
-                        <td>${fieldName}:</td>
+                        <td>${fieldName}</td>
                         <td>
                             <tags:dateInputCalendar springInput="true" fieldName="start.min"/>
                             &nbsp;${toStr}&nbsp;
@@ -94,7 +94,7 @@ function clearFilter() {
       
                     <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.priority"/>
-                        <td>${fieldName}:</td>
+                        <td>${fieldName}</td>
                         <td>
                             <form:input path="priority.min" size="5"/>&nbsp;${minStr}&nbsp;&nbsp;
                             <form:input path="priority.max" size="5"/>&nbsp;${maxStr}
@@ -107,7 +107,7 @@ function clearFilter() {
                 <tr>
                     <cti:checkRolesAndProperties value="PROGRAM_STOP">
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.stop"/>
-                        <td>${fieldName}:</td>
+                        <td>${fieldName}</td>
                         <td>
                             <tags:dateInputCalendar springInput="true" fieldName="stop.min"/>
                             &nbsp;${toStr}&nbsp;

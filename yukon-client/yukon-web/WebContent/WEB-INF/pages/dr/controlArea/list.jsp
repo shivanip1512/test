@@ -65,12 +65,12 @@
         <table cellspacing="10">
             <tr>
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.name"/>
-                <td>${fieldName}:</td>
+                <td>${fieldName}</td>
                 <td><form:input path="name" size="40"/></td>
                 
                 <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
                     <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.state"/>
-                    <td>${fieldName}:</td>
+                    <td>${fieldName}</td>
                     <td>
                         <form:select path="state">
                             <form:option value="all">
@@ -91,7 +91,7 @@
                 <tr>
                     <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaList.filter.priority"/>
-                        <td>${fieldName}:</td>
+                        <td>${fieldName}</td>
                         <td>
                             <form:input path="priority.min" size="5"/>&nbsp;${minStr}&nbsp;&nbsp;
                             <form:input path="priority.max" size="5"/>&nbsp;${maxStr}

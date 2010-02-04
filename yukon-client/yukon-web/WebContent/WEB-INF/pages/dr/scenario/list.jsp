@@ -61,7 +61,7 @@
         <table cellspacing="10">
             <tr>
                 <cti:msg var="fieldName" key="yukon.web.modules.dr.scenarioList.filter.name"/>
-                <td>${fieldName}:</td>
+                <td>${fieldName}</td>
                 <td><form:input path="name" size="40"/></td>
             </tr>
         </table>
