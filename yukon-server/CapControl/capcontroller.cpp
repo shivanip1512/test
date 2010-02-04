@@ -1000,7 +1000,8 @@ void CtiCapController::controlLoop()
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            store->executeAllStrategies();
+            //Lets not execute these just yet.
+            //store->executeAllStrategies();
 
             rwnow = rwnow.now();
             if(rwnow.seconds() > tickleTime.seconds())

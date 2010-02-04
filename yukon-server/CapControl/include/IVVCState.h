@@ -1,6 +1,9 @@
 #pragma once
 
 #include "yukon.h"
+#include "ctitime.h"
+#include "GroupPointDataRequest.h"
+
 #include <boost/shared_ptr.hpp>
 
 class IVVCState
@@ -17,14 +20,31 @@ class IVVCState
             IVVC_POSTSCAN_LOOP
         };
 
-        IVVCState() : _state(IVVC_WAIT) { }
+        IVVCState();
 
-        State getState() {return _state;}
-        void setState(State state) {_state = state;}
+        State getState();
+        void setState(State state);
+
+        bool isScannedRequest();
+        void setScannedRequest(bool scannedRequest);
+
+        const CtiTime& getTimeStamp();
+        void setTimeStamp(const CtiTime& time);
+
+        const CtiTime& getNextControlTime();
+        void setNextControlTime(const CtiTime& time);
+
+        const GroupRequestPtr& getGroupRequest();
+        void setGroupRequest(const GroupRequestPtr& groupRequest);
 
     private:
+        CtiTime _timeStamp;
+        CtiTime _nextControlTime;
+        GroupRequestPtr _groupRequest;
 
+        bool _scannedRequest;
         State _state;
+
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;

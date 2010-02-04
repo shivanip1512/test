@@ -84,7 +84,8 @@ StrategyLoader.obj \
 StrategyManager.obj \
 CapControlPointDatahandler.obj \
 ccutil.obj \
-IVVCAlgorithm.obj
+IVVCAlgorithm.obj \
+IVVCState.obj
 
 
 TARGS = capcontrol.exe

@@ -12,12 +12,15 @@
 #include <list>
 #include <set>
 #include <map>
+#include <boost/shared_ptr.hpp>
 
 struct PointValue{
     double value;
     unsigned quality;
     CtiTime timestamp;
 };
+
+typedef std::map<long,PointValue> PointValueMap;
 
 class IM_EX_MSG GroupPointDataRequest : public MessageListener
 {
@@ -27,7 +30,7 @@ class IM_EX_MSG GroupPointDataRequest : public MessageListener
 
         bool watchPoints(std::list<long> points);
         bool isComplete();
-        std::map<long,PointValue> getPointValues();
+        PointValueMap getPointValues();
 
         //MessageListener
         virtual void processNewMessage(CtiMessage* message);
@@ -36,8 +39,10 @@ class IM_EX_MSG GroupPointDataRequest : public MessageListener
         DispatchConnectionPtr _connection;
 
         std::set<long> _points;
-        std::map<long,PointValue> _values;
+        PointValueMap _values;
 
         bool _complete;
         bool _pointsSet;
 };
+
+typedef boost::shared_ptr<GroupPointDataRequest> GroupRequestPtr;
