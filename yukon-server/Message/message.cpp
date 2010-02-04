@@ -18,7 +18,7 @@
 #include "collectable.h"
 #include "dllbase.h"
 #include "logger.h"
-#include "numstr.h"
+#include "numstr.h" 
 
 
 #define DEFAULT_SYSTEM_USER "(yukon system)"

@@ -186,7 +186,7 @@ public:
 private:
 
     void EnableSubstationBusVerification();
-    void DisableSubstationBusVerification();
+    void DisableSubstationBusVerification(bool forceStopImmediately = false);
 
     CtiCCSubstationVerificationMsg* _subVerificationMsg;
 };

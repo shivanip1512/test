@@ -401,7 +401,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
 /*---------------------------------------------------------------------------
     DisableSubstationVerification
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
+void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification(bool forceStopImmediately)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -412,7 +412,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
 
     if( currentSubstationBus != NULL && subID == currentSubstationBus->getPaoId() )
     {
-        if (currentSubstationBus->getPerformingVerificationFlag())
+        if (!forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
         {
             CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
@@ -470,6 +470,11 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
         }
         else
         {
+            if (forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Emergency Verification Stop Message received from client. Current Cap Bank Verification will not complete."<< endl;
+            }
             currentSubstationBus->setVerificationFlag(FALSE);
             currentSubstationBus->setPerformingVerificationFlag(FALSE);
             currentSubstationBus->setOverlappingVerificationFlag( FALSE );
@@ -509,6 +514,11 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
             LONG stationId, areaId, spAreaId;
             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+
+            if (forceStopImmediately)
+            {
+                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
+            }
         }
     }
 
@@ -7256,8 +7266,12 @@ void CtiCCSubstationVerificationExecutor::execute()
 
     switch (action)
     {
+        case CtiCCSubstationVerificationMsg::FORCE_DISABLE_SUBSTATION_BUS_VERIFICATION:
+        DisableSubstationBusVerification(true); //true force substation bus verification to stop immediately
+        break;
+            
         case CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION:
-        DisableSubstationBusVerification();
+        DisableSubstationBusVerification(); //default false = don't force immediate stop
         break;
 
         case CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION:

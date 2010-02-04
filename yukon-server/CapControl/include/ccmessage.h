@@ -247,7 +247,8 @@ public:
     enum
     {
         ENABLE_SUBSTATION_BUS_VERIFICATION, //0
-        DISABLE_SUBSTATION_BUS_VERIFICATION //1
+        DISABLE_SUBSTATION_BUS_VERIFICATION, //1
+        FORCE_DISABLE_SUBSTATION_BUS_VERIFICATION //2
     };
 
     virtual ~CtiCCSubstationVerificationMsg();
