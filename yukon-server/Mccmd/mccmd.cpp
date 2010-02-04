@@ -25,6 +25,7 @@
 #include "connection.h"
 #include "cparms.h"
 
+#include "ctitokenizer.h"
 #include "configparms.h"
 #include "netports.h"
 #include "msg_pcrequest.h"
@@ -1866,6 +1867,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     Tcl_SetVar2Ex(interp, BadStatusVariable, NULL, status_list, 0);
 
     PILReturnMap::iterator m_iter;
+    string next_line;
     string dev_name;
 
     if( !good_map.empty() )
@@ -1883,7 +1885,8 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             }
 
             GetDeviceName(m_iter->first,dev_name);
-            Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name.c_str(), -1));
+            next_line = dev_name + ", " + CtiNumStr(m_iter->first);
+            Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(next_line.c_str(), -1));
         }
 
         if( count % 10000 )
@@ -1908,8 +1911,9 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             }
 
             GetDeviceName(m_iter->first,dev_name);
+            next_line = dev_name + ", " + CtiNumStr(m_iter->first);
 
-            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
+            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
             Tcl_ListObjAppendElement(interp, status_list,
             Tcl_NewIntObj(m_iter->second.status));
         }
@@ -1939,8 +1943,9 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             CtiTableMeterReadLog result(0, m_iter->first, 0, ErrorMACSTimeout, m_iter->second.time);
             resultQueue.push_back(result);
             GetDeviceName(m_iter->first,dev_name);
+            next_line = dev_name + ", " + CtiNumStr(m_iter->first);
 
-            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
+            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
             Tcl_ListObjAppendElement(interp, status_list,
             Tcl_NewIntObj(m_iter->second.status));
         }
@@ -2277,12 +2282,31 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
                 Tcl_ListObjIndex(interp, sel_list, i, &elem);
 
                 string cmd(cmd_line.c_str());
-                cmd += "select name '";
-                cmd += Tcl_GetString(elem);
-                cmd += "'";
+                string tempString = Tcl_GetString(elem);
+                CtiTokenizer token(tempString);
+
+                string devName = token(",");
+                string paoIdStr = token(",");
+                int paoId = INT_MIN;
+                if( paoIdStr.size() > 0 )
+                {
+                    paoId = atoi(paoIdStr.c_str()); // This can give INT_MIN or INT_MAX
+                }
 
                 CtiRequestMsg *msg = new CtiRequestMsg();
-                msg->setDeviceId(0);
+
+                if( paoId == INT_MIN || paoId == INT_MAX )
+                {
+                    cmd += "select name '";
+                    cmd += devName;
+                    cmd += "'";
+                    msg->setDeviceId(0);
+                }
+                else 
+                {
+                    msg->setDeviceId(paoId);
+                }
+                
                 msg->setCommandString(cmd);
                 msg->setMessagePriority(priority);
                 req_set.insert(msg);

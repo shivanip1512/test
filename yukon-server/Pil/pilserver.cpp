@@ -161,7 +161,7 @@ void CtiPILServer::mainThread()
     {
         try
         {
-            if( (MainQueue_.isEmpty() || (++groupBypass > 10))
+            if( (MainQueue_.isEmpty() || (++groupBypass > 1))
                 && !_groupQueue.empty() )
             {
                 groupBypass = 0;
