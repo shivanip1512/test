@@ -72,6 +72,8 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
     public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
     public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
+    public static final int CMD_EMERGENCY_DISABLE_VERIFY = VERIFY_OFFSET + 5;
+    
     public static final int CMD_STANDALONE_VERIFY = VERIFY_OFFSET + 6;
     public static final int CONFIRM_SUBSTATION = VERIFY_OFFSET + 7;
     
@@ -148,7 +150,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
         "Verify Failed Banks",
         "Verify Questionable Banks", //63
         "Verify Disabled Banks", //64
-        "",
+        "Verify Banks Stopped",
         "VerifyStandaloneBanks",
         "Confirm Substation",
         "",

@@ -1,6 +1,7 @@
 package com.cannontech.cbc.web;
 
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -13,7 +14,9 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.TempMoveCapBank;
 import com.cannontech.yukon.cbc.CCVerifySubBus;
 import com.cannontech.yukon.cbc.CCVerifySubStation;
@@ -101,16 +104,20 @@ public class CapControlCommandExecutor
     }
     
     private void executeSubAreaCommand(int cmdId, int paoId) {
-        CapControlCommand cmd = new CapControlCommand (cmdId, paoId);
-        cmd.setUserName(getUserName());
-        capControlCache.getConnection().write(cmd);
+		if (cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY){
+			executeVerifyStopArea (paoId, cmdId);
+		} else {
+	        CapControlCommand cmd = new CapControlCommand (cmdId, paoId);
+	        cmd.setUserName(getUserName());
+	        capControlCache.getConnection().write(cmd);	
+		}
     }
     
     private void executeSubStationCommand(int cmdId, int paoId) {
-        if( cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
+        if( cmdId == CapControlCommand.CONFIRM_SUBSTATION) {
             executeConfirmSubstation( paoId );
         }
-        if ((cmdId == CapControlCommand.CMD_ALL_BANKS) ||
+        else if ((cmdId == CapControlCommand.CMD_ALL_BANKS) ||
             (cmdId == CapControlCommand.CMD_FQ_BANKS) ||
             (cmdId == CapControlCommand.CMD_FAILED_BANKS) ||
             (cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS) ||
@@ -131,6 +138,7 @@ public class CapControlCommandExecutor
 			(cmdId == CapControlCommand.CMD_FAILED_BANKS) ||
 			(cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS) ||
 			(cmdId == CapControlCommand.CMD_DISABLE_VERIFY)	||
+			(cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY)	||
             (cmdId == CapControlCommand.CMD_STANDALONE_VERIFY))
 		{
 			executeVerifySub (paoId, cmdId);
@@ -156,10 +164,26 @@ public class CapControlCommandExecutor
         capControlCache.getConnection().write(msg);
     }
 
+	private void executeVerifyStopArea(int paoId, int cmdId) {
+		if (cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY){
+			int action = 2;
+	        int strat = cmdId - CapControlCommand.VERIFY_OFFSET;
+	        List<SubBus> subBusList = capControlCache.getSubBusesByArea(paoId);
+	        Multi<CCVerifySubBus> multi = new Multi<CCVerifySubBus>();
+			
+	        for (final SubBus bus : subBusList) {
+	        	multi.getVector().add(new CCVerifySubBus (action, bus.getCcId(), strat, CCVerifySubBus.DEFAULT_CB_INACT_TIME, false));
+	        }
+			capControlCache.getConnection().write(multi);
+		}
+	}
+	
 	private void executeVerifySub(int paoId, int cmdId) {
 		int action = 0;
 		if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)
 			action = 1;
+		if (cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY)
+			action = 2;
 		int strat = cmdId - CapControlCommand.VERIFY_OFFSET;	
 		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, CCVerifySubBus.DEFAULT_CB_INACT_TIME, false);
 		capControlCache.getConnection().write(msg);
@@ -365,7 +389,7 @@ public class CapControlCommandExecutor
 	
     private void executeConfirmSubstation(int paoId) {
         Multi<CapControlCommand> multi = new Multi<CapControlCommand>();
-        CapControlCommand command = new CapControlCommand (CapControlCommand.CONFIRM_SUBSTATION, paoId);
+        CapControlCommand command = new CapControlCommand (CapControlCommand.CONFIRM_AREA, paoId);
         command.setUserName(getUserName());
         multi.getVector().add(command);
         if (multi.getVector().size() > 0) {

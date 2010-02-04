@@ -46,6 +46,7 @@
 					    </c:when>
     					<c:otherwise>
 	       					<option  value="${verifyStop}" style="color:white;">Verify Stop</option>
+	       					<option  value="${verifyEmergencyStop}" style="color:white;">Verify Emergency Stop</option>
 			     		</c:otherwise>
                     </c:choose>
                 </select>

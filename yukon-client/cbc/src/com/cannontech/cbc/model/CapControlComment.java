@@ -135,7 +135,8 @@ public class CapControlComment {
                 cmdId == CapControlCommand.CMD_FQ_BANKS || 
                 cmdId == CapControlCommand.CMD_FAILED_BANKS || 
                 cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS || 
-                cmdId == CapControlCommand.CMD_DISABLE_VERIFY || 
+                cmdId == CapControlCommand.CMD_DISABLE_VERIFY ||
+                cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY || 
                 cmdId == CapControlCommand.CMD_STANDALONE_VERIFY){ 
             action = CommentAction.VERIFY_CONTROL; 
         } else if (cmdId == CapControlCommand.SYNC_CBC_CAPBANK_STATE ||

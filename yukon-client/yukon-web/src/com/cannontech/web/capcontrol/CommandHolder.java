@@ -38,6 +38,7 @@ public enum CommandHolder {
     RESET_OP_COUNTS(CapControlCommand.RESET_OPCOUNT, "Reset Op Counts", false),
     
     VERIFY_STOP(CapControlCommand.CMD_DISABLE_VERIFY, "Verify Stop", false),
+    VERIFY_EMERGENCY_STOP(CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY, "Verify Emergency Stop", false),
     VERIFY_ALL_BANKS(CapControlCommand.CMD_ALL_BANKS, "Verify All Banks", false),
     VERIFY_FQ_BANKS(CapControlCommand.CMD_FQ_BANKS, "Verify Failed And Questionable Banks", false),
     VERIFY_FAILED_BANKS(CapControlCommand.CMD_FAILED_BANKS, "Verify Failed Banks", false),

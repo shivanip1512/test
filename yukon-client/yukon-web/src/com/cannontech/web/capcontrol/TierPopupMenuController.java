@@ -162,6 +162,7 @@ public class TierPopupMenuController extends MultiActionController {
             list.add(CommandHolder.VERIFY_SA_BANKS);
         } else {
             list.add(CommandHolder.VERIFY_STOP);
+            list.add(CommandHolder.VERIFY_EMERGENCY_STOP);
         }
         mav.addObject("list", list);
         
@@ -496,6 +497,7 @@ public class TierPopupMenuController extends MultiActionController {
         
         list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
+        list.add(CommandHolder.VERIFY_EMERGENCY_STOP);
         mav.addObject("list", list);
         
         mav.addObject("controlType", controlType);
