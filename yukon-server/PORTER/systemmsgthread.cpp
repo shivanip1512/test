@@ -346,6 +346,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
                 }
             }
 
+            entries += msg->OptionsField(); // set by Pil.
             response = CTIDBG_new CtiQueueDataMsg(0, 0, 0, requestID, entries, msg->UserMessageId());
         }
         else

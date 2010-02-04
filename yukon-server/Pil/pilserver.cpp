@@ -1022,6 +1022,26 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             _inQueue.erase_if(boost::bind(inmess_user_message_id_equal, _1, group_message_id));
         }
 
+        //  first, count the yet to be processed items
+        //  This does not count items still in the MainQueue_, only group processed items.
+        if( _currentParse.isKeyValid("request_count") )
+        {
+            int unProcessedCount = 0;
+            group_queue_t::iterator itr     = _groupQueue.begin(),
+                                    itr_end = _groupQueue.end();
+            int group_message_id = pReq->GroupMessageId();
+
+            for each(CtiRequestMsg * msg in _groupQueue)
+            {
+                if( msg->GroupMessageId() == group_message_id )
+                {
+                    unProcessedCount++;
+                }
+            }
+
+            pReq->setOptionsField(unProcessedCount);
+        }
+
         //This message is a system request for porter, send it to the porter system thread, not a device.
         CtiMessage* tempReqMsg = pReq->replicateMessage();
         tempReqMsg->setConnectionHandle(pReq->getConnectionHandle());

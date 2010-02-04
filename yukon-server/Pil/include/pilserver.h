@@ -45,7 +45,7 @@ private:
    CtiCommandParser     _currentParse;
    long                 _currentUserMessageId;
 
-   typedef fifo_multiset<CtiMessage *, std::greater<CtiMessage *> > group_queue_t;
+   typedef fifo_multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
 
    group_queue_t _groupQueue;
 

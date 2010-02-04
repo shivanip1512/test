@@ -60,6 +60,7 @@
 unsigned gMccmdDebugLevel = 0x00000000;
 bool gDoNotSendCancel = false;
 bool gIgnoreQueueCount = false;
+bool gUseOldStyleMissed = false;
 
 const boost::regex   re_num("[0-9]+");
 const boost::regex   re_timeout("timeout[= ]+[0-9]+");
@@ -584,6 +585,7 @@ int Mccmd_Init(Tcl_Interp* interp)
     gMccmdDebugLevel = gConfigParms.getValueAsULong(MCCMD_DEBUG_LEVEL, 0x00000000);
     gDoNotSendCancel = gConfigParms.isTrue(MACS_DISABLE_CANCEL);
     gIgnoreQueueCount = gConfigParms.isTrue(MACS_IGNORE_QUEUES, true);
+    gUseOldStyleMissed = gConfigParms.isTrue(MACS_USE_OLD_MISSED_LIST);
 
     if( gMccmdDebugLevel > 0 )
     {
@@ -1667,7 +1669,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     bool interrupted = false;
     bool timed_out = false;
     UINT jobId = 0;
-    UINT const PORT_COUNT_REQUEST_SECONDS = 5*60;
+    UINT const PORT_COUNT_REQUEST_SECONDS = 10;
     long requestLogId = 0;
     unsigned long porterCount = 0;
     CtiTime lastReturnMessageReceived;
@@ -1885,7 +1887,11 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             }
 
             GetDeviceName(m_iter->first,dev_name);
-            next_line = dev_name + ", " + CtiNumStr(m_iter->first);
+            next_line = dev_name;
+            if( !gUseOldStyleMissed )
+            {
+                next_line += ", " + CtiNumStr(m_iter->first);
+            }
             Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(next_line.c_str(), -1));
         }
 
@@ -1911,7 +1917,11 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             }
 
             GetDeviceName(m_iter->first,dev_name);
-            next_line = dev_name + ", " + CtiNumStr(m_iter->first);
+            next_line = dev_name;
+            if( !gUseOldStyleMissed )
+            {
+                next_line += ", " + CtiNumStr(m_iter->first);
+            }
 
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
             Tcl_ListObjAppendElement(interp, status_list,
@@ -1943,7 +1953,11 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             CtiTableMeterReadLog result(0, m_iter->first, 0, ErrorMACSTimeout, m_iter->second.time);
             resultQueue.push_back(result);
             GetDeviceName(m_iter->first,dev_name);
-            next_line = dev_name + ", " + CtiNumStr(m_iter->first);
+            next_line = dev_name;
+            if( !gUseOldStyleMissed )
+            {
+                next_line += ", " + CtiNumStr(m_iter->first);
+            }
 
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
             Tcl_ListObjAppendElement(interp, status_list,
