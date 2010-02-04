@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ColorUtil;
 import com.cannontech.yukon.cbc.CCArea;
@@ -496,27 +497,44 @@ public class CBCDisplay {
                 return "TOD";
             } else if (subBus.getControlMethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 return CtiUtilities.STRING_NONE;
-            } else if (subBus.getPeakTimeFlag().booleanValue()) {
-
-                if (subBus.isPowerFactorControlled()) {
-
-                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + "%C | " 
-                    + num.format(subBus.getPeakPFSetPoint() ) + " | " 
-                    + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + "%O";
-                } else
-                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
-                    + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
+            } 
+            
+            if(subBus.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName())) {
+                /* Peak and off peak values are just holders for data */
+                String span = "<span style='font-weight:bold;font-size:11px;'>";
+                String endSpan = "</span>";
+                String upperVoltLimit = span + "U:" + endSpan + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + " ";
+                String lowerVoltLimit = span + "L:" + endSpan + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + span + " PF:" + endSpan;
+                String closePercent = CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + "%C | ";
+                String target = num.format(subBus.getPeakPFSetPoint() ) + " | ";
+                String openPercent = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%O ";
+                
+                String ivvcTarget = upperVoltLimit + lowerVoltLimit + closePercent + target + openPercent;
+                return ivvcTarget;
             } else {
-                if (subBus.isPowerFactorControlled()) {
-
-                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
-                    + "%C | " + num.format(subBus.getOffpeakPFSetPoint()) 
-                    + " | " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%O";
-                } else
-                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) 
-                    + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
+                /* Treat peak and off peak normally */
+                if (subBus.getPeakTimeFlag().booleanValue()) { /* Currently in peak operating hours */
+    
+                    if (subBus.isPowerFactorControlled()) {
+    
+                        return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + "%C | " 
+                        + num.format(subBus.getPeakPFSetPoint() ) + " | " 
+                        + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + "%O";
+                    } else
+                        return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
+                        + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
+                } else {
+                    /* Currently in off peak operating hours */
+                    if (subBus.isPowerFactorControlled()) {
+    
+                        return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
+                        + "%C | " + num.format(subBus.getOffpeakPFSetPoint()) 
+                        + " | " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%O";
+                    } else
+                        return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) 
+                        + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
+                }
             }
-
         }
 
         case SUB_TARGET_POPUP: {
@@ -701,34 +719,48 @@ public class CBCDisplay {
                 return "TOD";
             } else if (feeder.getControlmethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 return CtiUtilities.STRING_NONE;
-            } else if (feeder.getPeakTimeFlag().booleanValue()) {
-                if (feeder.isPowerFactorControlled()) {
-                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
-                    + "%C | " 
-                    + num.format( feeder.getPeakPFSetPoint() ) 
-                    + " | " 
-                    + CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
-                    + "%O";
-                } else
-                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
-                    + " to " 
-                    + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
-                    + " Pk";
+            } 
+            if(feeder.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName())) {
+                /* Peak and off peak values are just holders for data */
+                String span = "<span style='font-weight:bold;font-size:11px;'>";
+                String endSpan = "</span>";
+                String upperVoltLimit = span + "U:" + endSpan + CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(),0) + " ";
+                String lowerVoltLimit = span + "L:" + endSpan + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(),0) + span + " PF:" + endSpan;
+                String closePercent = CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(),0) + "%C | ";
+                String target = num.format(feeder.getPeakPFSetPoint() ) + " | ";
+                String openPercent = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(),0) + "%O ";
+                
+                String ivvcTarget = upperVoltLimit + lowerVoltLimit + closePercent + target + openPercent;
+                return ivvcTarget;
             } else {
-                if (feeder.isPowerFactorControlled()) {
-                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
-                    + "%C | " 
-                    + num.format( feeder.getOffpeakPFSetPoint() ) 
-                    + " | " 
-                    + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
-                    + "%O";
-                } else
-                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
-                    + " to " 
-                    + CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
-                    + " OffPk";
+                if (feeder.getPeakTimeFlag().booleanValue()) {
+                    if (feeder.isPowerFactorControlled()) {
+                        return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
+                        + "%C | " 
+                        + num.format( feeder.getPeakPFSetPoint() ) 
+                        + " | " 
+                        + CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
+                        + "%O";
+                    } else
+                        return CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
+                        + " to " 
+                        + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
+                        + " Pk";
+                } else {
+                    if (feeder.isPowerFactorControlled()) {
+                        return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
+                        + "%C | " 
+                        + num.format( feeder.getOffpeakPFSetPoint() ) 
+                        + " | " 
+                        + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
+                        + "%O";
+                    } else
+                        return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
+                        + " to " 
+                        + CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
+                        + " OffPk";
+                }
             }
-
         }
         case FDR_TARGET_POPUP: {
             NumberFormat num = NumberFormat.getNumberInstance();
