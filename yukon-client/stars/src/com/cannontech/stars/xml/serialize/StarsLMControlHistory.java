@@ -170,6 +170,18 @@ public class StarsLMControlHistory {
     } //-- ControlHistory removeControlHistory(int) 
 
     /**
+     * 
+     * 
+     * @param index
+    **/
+    public ControlHistory removeControlHistory(ControlHistory controlHistory)
+    {
+        _controlHistoryList.remove(controlHistory);
+        return controlHistory;
+    } //-- ControlHistory removeControlHistory(ControlHistory) 
+
+    
+    /**
      * Sets the value of field 'beingControlled'.
      * 
      * @param beingControlled the value of field 'beingControlled'.

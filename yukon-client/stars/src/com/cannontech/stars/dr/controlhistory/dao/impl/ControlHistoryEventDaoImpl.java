@@ -116,7 +116,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                                                        Holder holder) {
         Date enrollmentStartDate = enrollmentDao.getCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
 
-        List<Integer> removeControlHistoryList = Lists.newArrayList();
+        List<ControlHistory> removeControlHistoryList = Lists.newArrayList();
         for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
             ControlHistory controlHistoryEntry = controlHistory.getControlHistory(i);
             Date controlHistoryStartDate = controlHistoryEntry.getStartDateTime();
@@ -125,7 +125,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
 
                 // Remove any control history that was before the hardware was ever enrolled
                 if (controlHistoryEndDate.before(enrollmentStartDate)) {
-                    removeControlHistoryList.add(i);
+                    removeControlHistoryList.add(controlHistoryEntry);
                     
                 // Update any control history that was already started when the hardware was enrolled
                 } else {
@@ -136,8 +136,8 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             }
         }
 
-        for (Integer removeIndex : removeControlHistoryList) {
-            controlHistory.removeControlHistory(removeIndex);
+        for (ControlHistory removeControlHistoryEntry : removeControlHistoryList) {
+            controlHistory.removeControlHistory(removeControlHistoryEntry);
         }
     }
 
