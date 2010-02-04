@@ -21,11 +21,11 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -77,7 +77,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
             mav.addObject("stateGroups",liteStates);
             
-        } catch(NotFoundException e) {
+        } catch(IllegalUseOfAttribute e) {
             isConfigured = false;
         }
         
@@ -139,7 +139,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             int stateGroupId = litePoint.getStateGroupID();
             LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
             mav.addObject("stateGroups",liteStates);
-        } catch(NotFoundException e) {
+        } catch(IllegalUseOfAttribute e) {
             isConfigured = false;
         }
         

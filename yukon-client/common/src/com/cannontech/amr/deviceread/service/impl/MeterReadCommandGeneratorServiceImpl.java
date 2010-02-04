@@ -19,11 +19,11 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -102,7 +102,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
                 
     		} catch (IllegalArgumentException e) {
     			log.debug("Device does not have point for attribute, it will not be read. device = " + device + ", attribute=" + attribute, e);
-    		} catch (NotFoundException e) {
+    		} catch (IllegalUseOfAttribute e) {
     			log.debug("Device does not have point for attribute, it will not be read. device = " + device + ", attribute=" + attribute, e);
     		}
         }

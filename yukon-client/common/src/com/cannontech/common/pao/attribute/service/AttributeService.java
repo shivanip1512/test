@@ -2,9 +2,10 @@ package com.cannontech.common.pao.attribute.service;
 
 import java.util.Set;
 
-import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.MappableAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.database.data.lite.LitePoint;
@@ -12,63 +13,73 @@ import com.cannontech.database.data.lite.LitePoint;
 public interface AttributeService {
 
     /**
-     * Method to get the lite point for the given device for the given attribute
-     * @param device - Device to get point for
+     * Method to get the lite point for the given pao for the given attribute
+     * @param pao - Pao to get point for
      * @param attribute - Attribute to get point for
      * @return The point for the given attribute
+     * @throws IllegalUseOfAttribute
      */
-    public LitePoint getPointForAttribute(YukonDevice device, Attribute attribute);
+    public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
     /**
      * Method to get the paoPointIdentifier for the given deivce for the given attribute.
-     * @param pao - Device to get point for
+     * @param pao - Pao to get point for
      * @param attribute - Attribute to get point for
-     * @return The paoPointIdentifier for the given attribute and device
+     * @return The paoPointIdentifier for the given attribute and pao
+     * @throws IllegalUseOfAttribute
      */
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute);
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
     /**
-     * Method to get a set of attributes available for the given device
+     * Method to get a set of attributes available for the given pao
      * @param pao - The pao to get attributes for
-     * @return An immutable set of all attributes available for this device
+     * @return An immutable set of all attributes available for this pao
      */
     public Set<Attribute> getAvailableAttributes(YukonPao pao);
 
     /**
      * Method to get a set of all attributes for which points exist for a given
-     * device
-     * @param device - Device to get points for
+     * pao
+     * @param pao - Pao to get points for
      * @return A set of attributes (returns a new copy each time the method is
      *         called)
      */
-    public Set<Attribute> getAllExistingAttributes(YukonDevice device);
+    public Set<Attribute> getAllExistingAttributes(YukonPao pao);
+    
+    /**
+     * Returns the set of Mappable Attributes defined for the given 
+     * PaoType 
+     * @param paoType
+     * @return
+     */
+    public Set<MappableAttribute> getMappableAttributes(PaoType paoType);
     
     public Attribute resolveAttributeName(String name);
     
     /**
-     * Method used to determine if a device supports a given attribute
-     * @param device - Device in question
+     * Method used to determine if a pao supports a given attribute
+     * @param pao - Pao in question
      * @param attribute - Attribute to determine support for
-     * @return True if the device supports the attribute
+     * @return True if the pao supports the attribute
      */
-    public boolean isAttributeSupported(YukonDevice device, Attribute attribute);
+    public boolean isAttributeSupported(YukonPao pao, Attribute attribute);
 
     /**
-     * Method used to determine if a point exists on a device for a given attribute
-     * @param device - Device in question
+     * Method used to determine if a point exists on a pao for a given attribute
+     * @param pao - Pao in question
      * @param attribute - Attribute to determine if point exists
-     * @return True if the point exists on the device
+     * @return True if the point exists on the pao
      */
-    public boolean pointExistsForAttribute(YukonDevice device, Attribute attribute);
+    public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute);
     
-    public PaoPointTemplate getDevicePointTemplateForAttribute(YukonDevice device, Attribute attribute);
+    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute);
     
     /**
-     * Method used to create a point for the device and given attribute
-     * @param device - Device to create point for
+     * Method used to create a point for the pao and given attribute
+     * @param pao - Pao to create point for
      * @param attribute - Attribute the point will represent
      */
-    public void createPointForAttribute(YukonDevice device, Attribute attribute);
+    public void createPointForAttribute(YukonPao pao, Attribute attribute);
 
     public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute usage);
 }

@@ -18,7 +18,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class PointServiceImplTest extends TestCase {
 
     private PointService service = null;
-    private SimpleDevice device = null;
+    private SimpleDevice pao = null;
 
     protected void setUp() throws Exception {
 
@@ -32,7 +32,7 @@ public class PointServiceImplTest extends TestCase {
 
         service = impl;
 
-        device = new SimpleDevice(1,PaoType.MCT310);
+        pao = new SimpleDevice(1,PaoType.MCT310);
     }
 
     /**
@@ -44,14 +44,14 @@ public class PointServiceImplTest extends TestCase {
         LitePoint expectedPoint = new LitePoint(1, "analog1", 1, 1, 1, 0, 0, 1);
 
         PointIdentifier testTemplate = new PointIdentifier(1, 0);
-        LitePoint actualPoint = service.getPointForDevice(device, testTemplate);
+        LitePoint actualPoint = service.getPointForPao(pao, testTemplate);
 
         this.compareLitePoints("Existing point for device:", expectedPoint, actualPoint);
 
         // Test for point that doesn't exist for the device
         testTemplate = new PointIdentifier(4, 0);
         try {
-            service.getPointForDevice(device, testTemplate);
+            service.getPointForPao(pao, testTemplate);
         } catch (NotFoundException e) {
             // expected exception
         } catch (Exception e) {
@@ -66,12 +66,12 @@ public class PointServiceImplTest extends TestCase {
 
         // Test for point that exists for the device
         PointIdentifier testTemplate = new PointIdentifier(1, 0);
-        assertTrue("The point should exist", service.pointExistsForDevice(device, testTemplate));
+        assertTrue("The point should exist", service.pointExistsForPao(pao, testTemplate));
 
         // Test for point that doesn't exist for the device
         testTemplate = new PointIdentifier(4, 0);
         assertTrue("The point should not exist",
-                   !service.pointExistsForDevice(device, testTemplate));
+                   !service.pointExistsForPao(pao, testTemplate));
     }
 
     /**

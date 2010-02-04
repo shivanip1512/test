@@ -4,8 +4,8 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -38,7 +38,7 @@ public abstract class BlockBase implements Block{
 		    }
 		} catch (IllegalArgumentException e) {
 		    CTILogger.debug(e);
-		} catch (NotFoundException e){
+		} catch (IllegalUseOfAttribute e){
 		    CTILogger.error(e);
 		}
 	}

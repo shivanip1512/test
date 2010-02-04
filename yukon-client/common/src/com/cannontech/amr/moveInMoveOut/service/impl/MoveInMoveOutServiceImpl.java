@@ -40,6 +40,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
@@ -181,9 +182,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                     removeServiceDeviceGroups(moveInResult);
                     logger.info("Move in for " + moveInResult.getPreviousMeter()
                                                                 .toString() + " successful.");
+                } catch (IllegalUseOfAttribute e) {
+                    logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
+                    moveInResult.setErrorMessage("Point was not found.\n" + e.toString());
+                    CTILogger.info(e);
                 } catch (NotFoundException e) {
                     logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
-                    moveInResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
+                    moveInResult.setErrorMessage("Meter was not found.\n" + e.toString());
                     CTILogger.info(e);
                 } catch (MeterReadRequestException e) {
                     logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
@@ -332,9 +337,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                     addServiceDeviceGroups(moveOutResult);
                     logger.info("Move out for " + moveOutResult.getPreviousMeter()
                                                                   .toString() + " successful.");
+                } catch (IllegalUseOfAttribute e) {
+                    logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
+                    moveOutResult.setErrorMessage("Point was not found.\n" + e.toString());
+                    CTILogger.info(e);
                 } catch (NotFoundException e) {
                     logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
-                    moveOutResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
+                    moveOutResult.setErrorMessage("Meter was not found.\n" + e.toString());
                     CTILogger.info(e);
                 } catch (MeterReadRequestException e) {
                     logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");

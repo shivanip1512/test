@@ -308,7 +308,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         SimpleDevice meter = deviceDao.getYukonDeviceForDevice(device);
 
         for (PointIdentifier identifier : removeTemplates) {
-            LitePoint litePoint = pointService.getPointForDevice(meter, identifier);
+            LitePoint litePoint = pointService.getPointForPao(meter, identifier);
 
             log.debug("Remove point: deviceId=" + device.getPAObjectID() + litePoint.getPointName() + " type=" + litePoint.getPointType() + " offset=" + litePoint.getPointOffset());
             
@@ -366,7 +366,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         			" new type=" + pair.newDefinitionTemplate.getType() +
         			" new offset=" + pair.newDefinitionTemplate.getOffset());
             
-            LitePoint litePoint = pointService.getPointForDevice(meter, pair.oldDefinitionTemplate);
+            LitePoint litePoint = pointService.getPointForPao(meter, pair.oldDefinitionTemplate);
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
 
             Transaction<PointBase> t = Transaction.createTransaction(Transaction.RETRIEVE, point);

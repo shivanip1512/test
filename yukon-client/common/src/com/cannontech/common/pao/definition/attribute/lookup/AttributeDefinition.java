@@ -3,7 +3,6 @@ package com.cannontech.common.pao.definition.attribute.lookup;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -38,5 +37,5 @@ public abstract class AttributeDefinition implements Comparable<AttributeDefinit
 
     public abstract PaoPointIdentifier getPointIdentifier(YukonPao pao);
     public abstract boolean isPointTemplateAvailable();
-    public abstract PaoPointTemplate getPointTemplate(YukonDevice device);
+    public abstract PaoPointTemplate getPointTemplate(YukonPao pao);
 }

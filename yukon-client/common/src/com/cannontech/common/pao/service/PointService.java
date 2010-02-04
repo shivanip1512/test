@@ -43,8 +43,8 @@ public interface PointService {
      * @param template - Template of point to get
      * @return - Existing point
      */
-    public abstract LitePoint getPointForDevice(YukonPao pao, PointIdentifier pointIdentifier)throws NotFoundException;
-    public abstract LitePoint getPointForDevice(PaoPointIdentifier devicePointIdentifier)throws NotFoundException;
+    public abstract LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier)throws NotFoundException;
+    public abstract LitePoint getPointForPao(PaoPointIdentifier paoPointIdentifier)throws NotFoundException;
 
     /**
      * Method to determine if a point exists for the given device
@@ -52,8 +52,8 @@ public interface PointService {
      * @param template - Template of point to determine existence
      * @return True if point exists for the device
      */
-    public abstract boolean pointExistsForDevice(YukonPao pao, PointIdentifier pointIdentifier);
-    public abstract boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier);
+    public abstract boolean pointExistsForPao(YukonPao pao, PointIdentifier pointIdentifier);
+    public abstract boolean pointExistsForPao(PaoPointIdentifier devicePointIdentifier);
     
     
     public PreviousReadings getPreviousReadings(LitePoint lp);

@@ -68,8 +68,8 @@
 					<x:inputText id="capMapLocID"
 						value="#{capBankEditor.capBank.capBank.mapLocationID}"
 						required="true" maxlength="64" />
-	
-					<x:outputLabel for="bankMan" value="Switch Manufacture: "
+                    
+					<x:outputLabel for="bankMan" value="Switch Manufacturer: "
 						title="What company manufactured this item" />
 					<x:selectOneMenu id="bankMan"
 						value="#{capBankEditor.capBank.capBank.switchManufacture}">

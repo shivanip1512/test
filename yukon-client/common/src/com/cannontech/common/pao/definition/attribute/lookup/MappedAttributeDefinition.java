@@ -1,6 +1,5 @@
 package com.cannontech.common.pao.definition.attribute.lookup;
 
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -26,7 +25,7 @@ public class MappedAttributeDefinition extends AttributeDefinition {
     }
 
     @Override
-    public PaoPointTemplate getPointTemplate(YukonDevice device) {
+    public PaoPointTemplate getPointTemplate(YukonPao pao) {
         return null;
     }
 

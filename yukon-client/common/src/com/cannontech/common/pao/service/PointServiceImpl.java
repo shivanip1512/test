@@ -119,7 +119,7 @@ public class PointServiceImpl implements PointService {
                                 template.getDecimalPlaces());
     }
 
-    public LitePoint getPointForDevice(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
+    public LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
 
         LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(pao.getPaoIdentifier().getPaoId(),
 																        		pointIdentifier.getOffset(),
@@ -129,14 +129,14 @@ public class PointServiceImpl implements PointService {
     }
     
     @Override
-    public LitePoint getPointForDevice(PaoPointIdentifier paoPointIdentifier) throws NotFoundException {
-        return getPointForDevice(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getPointIdentifier());
+    public LitePoint getPointForPao(PaoPointIdentifier paoPointIdentifier) throws NotFoundException {
+        return getPointForPao(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getPointIdentifier());
     }
 
-    public boolean pointExistsForDevice(YukonPao pao, PointIdentifier pointIdentifier) {
+    public boolean pointExistsForPao(YukonPao pao, PointIdentifier pointIdentifier) {
 
         try {
-            LitePoint point = this.getPointForDevice(pao, pointIdentifier);
+            LitePoint point = this.getPointForPao(pao, pointIdentifier);
             if (point.getPointType() == PointTypes.SYSTEM_POINT) {
                 return false;
             }
@@ -148,8 +148,8 @@ public class PointServiceImpl implements PointService {
     }
     
     @Override
-    public boolean pointExistsForDevice(PaoPointIdentifier devicePointIdentifier) {
-        return pointExistsForDevice(devicePointIdentifier.getPaoIdentifier(), devicePointIdentifier.getPointIdentifier());
+    public boolean pointExistsForPao(PaoPointIdentifier paoPointIdentifier) {
+        return pointExistsForPao(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getPointIdentifier());
     }
     
     /**

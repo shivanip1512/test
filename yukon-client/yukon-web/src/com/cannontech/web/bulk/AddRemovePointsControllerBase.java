@@ -320,7 +320,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
             boolean allDevicesHavePoint = true;
             for (SimpleDevice device : paoTypeToSimpleDeviceMultiMap.get(paoType)) {
                 boolean pointExistsForDevice = 
-                    pointService.pointExistsForDevice(device, pointTemplate.getPointIdentifier());
+                    pointService.pointExistsForPao(device, pointTemplate.getPointIdentifier());
                 if (!pointExistsForDevice) {
                     allDevicesHavePoint = false;
                     break;

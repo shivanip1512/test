@@ -92,7 +92,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
             boolean noneHavePoint = true;
             for (SimpleDevice device : paoTypeToSimpleDeviceMultiMap.get(paoType)) {
                 boolean pointExistsForDevice = 
-                    pointService.pointExistsForDevice(device, pointTemplate.getPointIdentifier());
+                    pointService.pointExistsForPao(device, pointTemplate.getPointIdentifier());
                 if (pointExistsForDevice) {
                     noneHavePoint = false;
                     break;
@@ -162,10 +162,10 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
 	            	Set<PointTemplate> pointSet = pointTemplatesMap.get(paoType);
 					for (PointTemplate pointTemplate : pointSet) {
 						
-						boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplate.getPointIdentifier());
+						boolean pointExistsForDevice = pointService.pointExistsForPao(device, pointTemplate.getPointIdentifier());
 						if (pointExistsForDevice) {
 							
-							LitePoint liteDeletePoint = pointService.getPointForDevice(device, pointTemplate.getPointIdentifier());
+							LitePoint liteDeletePoint = pointService.getPointForPao(device, pointTemplate.getPointIdentifier());
 				            PointBase deletePoint = (PointBase)LiteFactory.convertLiteToDBPers(liteDeletePoint);
 				            
 				            log.debug("Removing point from device: deletePointId=" + liteDeletePoint.getLiteID() + " point=" + pointTemplate + " deviceId=" + device.getPaoIdentifier().getPaoId());

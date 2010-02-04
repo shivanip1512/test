@@ -118,10 +118,10 @@ public class UpdatePointsProcessorFactory {
                 Set<PointTemplate> pointSet = pointTemplatesMap.get(deviceType);
                 for (PointTemplate pointTemplate : pointSet) {
 
-                	boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplate.getPointIdentifier());
+                	boolean pointExistsForDevice = pointService.pointExistsForPao(device, pointTemplate.getPointIdentifier());
                 	if (pointExistsForDevice) {
                 	
-	                    LitePoint litePoint = pointService.getPointForDevice(device, pointTemplate.getPointIdentifier());
+	                    LitePoint litePoint = pointService.getPointForPao(device, pointTemplate.getPointIdentifier());
 	
 	                    PointBase pointBase = (PointBase)dbPersistentDao.retrieveDBPersistent(litePoint);
 	

@@ -136,7 +136,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 	            	Set<PointTemplate> pointSet = pointTemplatesMap.get(paoType);
 					for (PointTemplate pointTemplate : pointSet) {
 						
-						boolean pointExistsForDevice = pointService.pointExistsForDevice(device, pointTemplate.getPointIdentifier());
+						boolean pointExistsForDevice = pointService.pointExistsForPao(device, pointTemplate.getPointIdentifier());
 						
 						// add new point
 						if (!pointExistsForDevice) {
@@ -154,7 +154,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 								
 								log.debug("Point already exists for device, updatePoints=true, will attempt update: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
 								
-								LitePoint litePoint = pointService.getPointForDevice(device, pointTemplate.getPointIdentifier());
+								LitePoint litePoint = pointService.getPointForPao(device, pointTemplate.getPointIdentifier());
 					            //PointBase pointBase = (PointBase)LiteFactory.convertLiteToDBPers(litePoint);
 					            
 					            PointBase pointBase = (PointBase)dbPersistentDao.retrieveDBPersistent(litePoint);

@@ -20,6 +20,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -165,12 +166,10 @@ public class LtcDaoImpl implements LtcDao {
     
     @Override
     public PaoIdentifier getLtcPaoIdentifierForSubBus(int busId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("select LtcId from CCSubstationBusToLTC");
-        sql.append("where SubstationBusId = ").append(busId);
-        int ltcId = yukonJdbcTemplate.queryForInt(sql);
-        
-        PaoIdentifier paoIdentifier = new PaoIdentifier(ltcId, PaoType.LOAD_TAP_CHANGER);
-        return paoIdentifier;
+        SqlStatementBuilder sql = new SqlStatementBuilder("select ypo.PaobjectId, ypo.type from CCSubstationBusToLTC ltc");
+        sql.append("join YukonPaobject ypo on ypo.PaobjectId = ltc.LtcId");
+        sql.append("where ltc.SubstationBusId = ").append(busId);
+        return yukonJdbcTemplate.queryForObject(sql, new YukonPaoRowMapper());
     }
     
     @Autowired
