@@ -52,3 +52,4 @@ WHERE SettingName = 'KVOLT Weight';
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '03-FEB-2010', 'Latest Update', 2);
