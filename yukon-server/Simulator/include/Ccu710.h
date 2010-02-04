@@ -97,10 +97,11 @@ private:
 
     struct feeder_operation_t
     {
-        feeder_operation_t() : bus(0),
-                               amp(0),
-                               repeater_count(0),
-                               length(0)
+        feeder_operation_t() :
+            bus(0),
+            amp(0),
+            repeater_count(0),
+            length(0)
         {};
 
         unsigned bus;

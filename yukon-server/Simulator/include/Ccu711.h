@@ -80,10 +80,11 @@ private:
 
     struct idlc_header
     {
-        idlc_header() : control_command(IdlcLink_Invalid),
-                        address(0),
-                        control_sequence(0),
-                        control_sequence_expected(0)
+        idlc_header() : 
+            control_command(IdlcLink_Invalid),
+            address(0),
+            control_sequence(0),
+            control_sequence_expected(0)
         { };
 
         int address;
@@ -96,8 +97,9 @@ private:
 
     struct queue_entry
     {
-        queue_entry() : entry_id(0),
-                        priority(0)
+        queue_entry() :
+            entry_id(0),
+            priority(0)
         {};
 
         unsigned entry_id;
@@ -105,14 +107,17 @@ private:
 
         struct request_info
         {
-            request_info() : word_type(EmetconWord::WordType_Invalid),
-                             address(0),
-                             bus(0),
-                             repeater_fixed(0),
-                             repeater_variable(0),
-                             repeater_count(0),
-                             function_code(0),
-                             length(0)
+            request_info() : 
+                word_type(EmetconWord::WordType_Invalid),
+                address(0),
+                bus(0),
+                repeater_fixed(0),
+                repeater_variable(0),
+                repeater_count(0),
+                function_code(0),
+                length(0),
+                write(false),
+                function(false)
             {};
 
             CtiTime arrival;
@@ -184,8 +189,9 @@ private:
 
     struct request_info
     {
-        request_info() : command(Command_Invalid),
-                         reply_length(0){ };
+        request_info() : 
+            command(Command_Invalid),
+            reply_length(0){ };
 
         CommandOctets command;
 
@@ -193,11 +199,12 @@ private:
 
         struct xtime_info
         {
-            xtime_info() : year(0),
-                           day(0),
-                           day_of_week(0),
-                           period(0),
-                           seconds(0)
+            xtime_info() : 
+                year(0),
+                day(0),
+                day_of_week(0),
+                period(0),
+                seconds(0)
             {};
 
             unsigned year, day, day_of_week, period, seconds;

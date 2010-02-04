@@ -9,8 +9,6 @@ namespace Simulator {
 
 struct EmetconWord
 {
-    EmetconWord() : bch(0) {};
-
     enum
     {
         BitLength_Bch = 6
@@ -80,6 +78,14 @@ struct EmetconWordDescriptor
 
 struct EmetconWordA : public EmetconWord, public EmetconWordDescriptor<0x08, 30>
 {
+    EmetconWordA() :
+        repeater_fixed(0),
+        repeater_variable(0),
+        group_address(0),
+        shed_time(0),
+        function_code(0)
+    {};
+
     enum ShedTimes
     {
         ShedTime_0450,
@@ -154,6 +160,11 @@ struct EmetconWordD : public EmetconWord, public EmetconWordDescriptor<0x0d, 52>
 template<unsigned payload_length=0>
 struct EmetconWordDPayload
 {
+    EmetconWordDPayload()  
+    { 
+        memset(data, 0, sizeof(data)); 
+    };
+
     enum { PayloadLength = payload_length };
 
     unsigned char data[payload_length];
@@ -161,8 +172,11 @@ struct EmetconWordDPayload
 
 struct EmetconWordD1 : public EmetconWordD, public EmetconWordDPayload<3>
 {
-    EmetconWordD1() : repeater_variable(0),
-                      echo_address(0)
+    EmetconWordD1() :
+        repeater_variable(0),
+        echo_address(0),
+        power_fail(false),
+        alarm(false)
     {};
 
     EmetconWordD1(unsigned repeater_variable,
@@ -186,6 +200,11 @@ struct EmetconWordD1 : public EmetconWordD, public EmetconWordDPayload<3>
 
 struct EmetconWordD2 : public EmetconWordD, public EmetconWordDPayload<5>
 {
+    EmetconWordD2() :
+        time_sync_loss(false),
+        spare(false)
+    {};
+    
     EmetconWordD2(unsigned char data0,
                   unsigned char data1,
                   unsigned char data2,
@@ -205,6 +224,11 @@ struct EmetconWordD2 : public EmetconWordD, public EmetconWordDPayload<5>
 
 struct EmetconWordD3 : public EmetconWordD, public EmetconWordDPayload<5>
 {
+    EmetconWordD3() :
+        spare1(false),
+        spare2(false)
+    {};
+    
     EmetconWordD3(unsigned char data0,
                   unsigned char data1,
                   unsigned char data2,
@@ -224,10 +248,15 @@ struct EmetconWordD3 : public EmetconWordD, public EmetconWordDPayload<5>
 
 struct EmetconWordE : public EmetconWord, public EmetconWordDescriptor<0x0e, 52>
 {
-    EmetconWordE() : repeater_variable(0),
-                     echo_address(0)
-    {};
-
+    EmetconWordE() :
+        repeater_variable(0),
+        echo_address(0),
+        power_fail(false),
+        alarm(false)
+    { 
+        memset(diagnostic_data, 0, sizeof(diagnostic_data)); 
+    };
+    
     unsigned repeater_variable;
     unsigned echo_address;
 
