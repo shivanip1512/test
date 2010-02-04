@@ -5,11 +5,15 @@
 #include "capcontroller.h"
 #include "IVVCState.h"
 #include "msg_cmd.h"
+#include "LitePoint.h"
+#include "AttributeService.h"
+#include "ccsubstationbusstore.h"
 
 #include <list>
 
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
+extern ULONG _POST_CONTROL_WAIT;
 
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy)
 {
@@ -17,6 +21,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     IVVCState::State currentState = state->getState();
 
     CtiTime timeNow;
+    //Note: Overload DispatchConnection::WriteConnQue for unit testing.
+    DispatchConnectionPtr conn = CtiCapController::getInstance()->getDispatchConnection();
 
     switch (currentState)
     {
@@ -26,11 +32,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp(timeNow);
 
             // What points are we wanting?
-            std::list<long> pointIds;
-            //TODO: figure out what points.
+            std::list<long> pointIds = determineWatchPoints(subbus, conn, false);
 
             // Make GroupRequest Here
-            DispatchConnectionPtr conn = CtiCapController::getInstance()->getDispatchConnection();
             GroupRequestPtr request(new GroupPointDataRequest(conn));
             request->watchPoints(pointIds);
 
@@ -68,22 +72,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (request->isComplete() == true)
                 {
                     //Check for stale data.
-                    bool stale = false;
                     PointValueMap pointValues = request->getPointValues();
-                    for each (const PointValueMap::value_type& pv in pointValues)
-                    {
-                        //Tie in % online here later
-                        if (pv.second.timestamp < (timeNow - (_SCAN_WAIT_EXPIRE/*minutes*/*60)))
-                        {
-                            stale = true;
-                            break;//from loop
-                        }
-                    }
+                    bool stale = checkForStaleData(pointValues,timeNow);
 
                     if (stale == true)
                     {
-                        //TODO: Send scans here
-
+                        determineWatchPoints(subbus, conn, true);
                         state->setScannedRequest(true);
                         state->setState(IVVCState::IVVC_WAIT);
                         break;
@@ -115,7 +109,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
             else
             {
-                //Time to control? (Analysis Interval)
+                //Is it time to control? (Analysis Interval)
                 if (timeNow > state->getNextControlTime())
                 {
                     //set next control time.
@@ -125,19 +119,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     if (request->isComplete() == true/*Tie in % online here later*/)
                     {
-                        /*****************WARNING COPY PASTED CODE: FIX ME*****************/
                         //Check for stale data.
-                        bool stale = false;
                         PointValueMap pointValues = request->getPointValues();
-                        for each (const PointValueMap::value_type& pv in pointValues)
-                        {
-                            //Tie in % online here later
-                            if (pv.second.timestamp < (timeNow - (_SCAN_WAIT_EXPIRE/*minutes*/*60)))
-                            {
-                                stale = true;
-                                break;//from loop
-                            }
-                        }
+                        bool stale = checkForStaleData(pointValues,timeNow);
 
                         if (stale == true)
                         {
@@ -161,6 +145,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
                 else
                 {
+                    //Not time to control yet.
                     break;
                 }
             }
@@ -200,6 +185,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             //Verify if we controlled
             if (/*controlled*/true)
             {
+
+                //Set Timestamp to cap bank operation time.
+                CtiTime now;
+                state->setTimeStamp(now);
                 state->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
             }
             else
@@ -213,10 +202,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::IVVC_POST_CONTROL_WAIT:
         {
-            if (/*If NOW > CPARM + CAPBANKOPTIME*/true)
+            CtiTime capBankOpTime = state->getTimeStamp();
+            CtiTime now;
+            if (now > (capBankOpTime + _POST_CONTROL_WAIT/*seconds*/))
             {
                 //Create Group Request
-                //Send Scans
+                GroupRequestPtr request(new GroupPointDataRequest(conn));
+                std::list<long> pointIds = determineWatchPoints(subbus,conn,true);
+                request->watchPoints(pointIds);
+
+                state->setTimeStamp(now);
+                state->setGroupRequest(request);
                 state->setState(IVVCState::IVVC_POSTSCAN_LOOP);
             }
             else
@@ -224,17 +220,20 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 break;
             }
         }
-
         case IVVCState::IVVC_POSTSCAN_LOOP:
         {
-            //timeout on this? scan_wait_expire
-            if (/*GroupRequest.isComplete()*/true)
+            GroupRequestPtr request = state->getGroupRequest();
+            CtiTime scanTime = state->getTimeStamp();
+            CtiTime now;
+
+            if (request->isComplete() == true)
             {
-                //record data
+                //TODO: record data
                 state->setState(IVVCState::IVVC_WAIT);
             }
-            else if (/*scan_wait_expire*/true)
+            else if ((scanTime + (_SCAN_WAIT_EXPIRE/*minutes*/*60)) < now)
             {
+                //scan timed out.
                 state->setState(IVVCState::IVVC_WAIT);
             }
 
@@ -246,3 +245,57 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
     }//switch
 }//execute
+
+bool IVVCAlgorithm::checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow)
+{
+    for each (const PointValueMap::value_type& pv in pointValues)
+    {
+        //Tie in % online here later
+        if (pv.second.timestamp < (timeNow - (_POINT_AGE/*minutes*/*60)))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//Executors make unit testing impossible. Consider changing
+std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan)
+{
+    std::list<long> pointIds;
+    AttributeService attributeService;
+    CtiCCSubstationBusStore* bus = CtiCCSubstationBusStore::getInstance();
+
+    //the ltc.
+    LitePoint point = attributeService.getPointByPaoAndAttribute(subbus->getLtcId(),PointAttribute::LtcVoltage);
+    if (point.getPointType() == InvalidPointType)
+    { //Continue or fail here?
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << "  LTC Voltage point not found for LTC id: " << subbus->getLtcId() << endl;
+    }
+    else
+    {
+        if (sendScan == true)
+        {
+            CtiCCCommand* ltcScan = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY,point.getPaoId());//RTU id?
+            CtiCCExecutorFactory::createExecutor(ltcScan)->execute();
+        }
+        pointIds.push_back(point.getPointId());
+    }
+
+    //All two way cbc's
+    std::vector<CtiCCCapBankPtr> banks = bus->getCapBanksByPaoIdAndType(subbus->getPaoId(),SubBus);
+    for each (CtiCCCapBankPtr bank in banks)
+    {
+        //TODO: Check disabled (failed?) on bank and feeder (and sub?)
+        if (sendScan == true)
+        {
+            CtiCCCommand* cbcScan = new CtiCCCommand(CtiCCCommand::SCAN_2WAY_DEVICE,bank->getControlDeviceId());
+            CtiCCExecutorFactory::createExecutor(cbcScan)->execute();
+        }
+        pointIds.push_back(bank->getPaoId());
+    }
+
+    return pointIds;
+}

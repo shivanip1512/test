@@ -87,6 +87,7 @@ extern BOOL _USE_PHASE_INDICATORS;
 extern ULONG _MSG_PRIORITY;
 extern ULONG _IVVC_KEEPALIVE;
 extern BOOL CC_TERMINATE_THREAD_TEST;
+extern ULONG _POST_CONTROL_WAIT;
 
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -4617,6 +4618,23 @@ void CtiCapController::refreshCParmGlobals(bool force)
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
+        _POST_CONTROL_WAIT = 30;//seconds
+
+        strcpy(var, "CAP_CONTROL_POST_CONTROL_WAIT");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _POST_CONTROL_WAIT = atoi(str.data())+1;
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
 
         _POINT_AGE = 3;  //3 minute
 
