@@ -49,6 +49,7 @@ string _MAXOPS_ALARM_CAT;
 LONG _MAXOPS_ALARM_CATID;
 ULONG _REFUSAL_TIMEOUT;
 BOOL CC_TERMINATE_THREAD_TEST;
+BOOL _ENABLE_IVVC;
 
 ULONG _OP_STATS_USER_DEF_PERIOD;
 ULONG _OP_STATS_REFRESH_RATE;
@@ -262,6 +263,25 @@ void CtiCCService::Init()
     {
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         _USE_FLIP_FLAG = (str=="true"?TRUE:FALSE);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _ENABLE_IVVC = FALSE;
+
+    strcpy(var, "CAP_CONTROL_ENABLE_IVVC");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _ENABLE_IVVC = (str=="true"?TRUE:FALSE);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

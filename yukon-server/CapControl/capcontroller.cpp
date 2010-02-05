@@ -88,8 +88,8 @@ extern ULONG _MSG_PRIORITY;
 extern ULONG _IVVC_KEEPALIVE;
 extern BOOL CC_TERMINATE_THREAD_TEST;
 extern ULONG _POST_CONTROL_WAIT;
+extern BOOL _ENABLE_IVVC;
 extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
-
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
 
@@ -338,7 +338,7 @@ void CtiCapController::ivvcKeepAlive()
             }
 
             rwnow = rwnow.now();
-            if(rwnow.seconds() > tickleTime.seconds())
+            if (rwnow.seconds() > tickleTime.seconds())
             {
                 tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
                 if( rwnow.seconds() > announceTime.seconds() )
@@ -1005,8 +1005,10 @@ void CtiCapController::controlLoop()
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            //Lets not execute these just yet.
-            //store->executeAllStrategies();
+            if (_ENABLE_IVVC == TRUE)
+            {
+                store->executeAllStrategies();
+            }
 
             rwnow = rwnow.now();
             if(rwnow.seconds() > tickleTime.seconds())
@@ -4610,6 +4612,25 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             std::transform(str.begin(), str.end(), str.begin(), ::tolower);
             _USE_FLIP_FLAG = (str=="true"?TRUE:FALSE);
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _ENABLE_IVVC = FALSE;
+
+        strcpy(var, "CAP_CONTROL_ENABLE_IVVC");
+        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            _ENABLE_IVVC = (str=="true"?TRUE:FALSE);
             if ( _CC_DEBUG & CC_DEBUG_STANDARD)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
