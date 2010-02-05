@@ -191,6 +191,12 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         return result;
     }
     
+    /**
+     * This method handles the masking used for the shared functionality of the add/remove point sets.
+     * 
+     * @param pointTemplateMaskSet
+     * @return
+     */
     protected boolean isSharedPointTemplateMasked(Iterable<Boolean> pointTemplateMaskSet){
         for (Boolean pointTemplateMask : pointTemplateMaskSet) {
             if (pointTemplateMask == false) {

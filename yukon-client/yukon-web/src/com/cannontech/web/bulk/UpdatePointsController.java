@@ -138,8 +138,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     
     @Override
     /**
-     *  Creates a set that handles the shared points and 
-     *  also handles the masking for that remove points set.
+     *  This method handles the special masking used for the shared update points set.
      */
     protected boolean isSharedPointTemplateMasked(Iterable<Boolean> pointTemplateMaskSet){
         for (Boolean pointTemplateMask : pointTemplateMaskSet) {
