@@ -214,7 +214,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
         if(ltcId > 0) {
             delete("CCSubstationBusToLTC", "substationBusId", substationBusID);
             SqlStatementBuilder sql = new SqlStatementBuilder("insert into CCSubstationBusToLTC values (");
-            sql.appendArgument(ltcId).append(", ").appendArgument(substationBusID).append(")");
+            sql.appendArgument(substationBusID).append(", ").appendArgument(ltcId).append(")");
             
             JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
             yukonTemplate.update(sql.getSql(), sql.getArguments());
