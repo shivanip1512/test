@@ -761,8 +761,9 @@ void CtiCapController::controlLoop()
                                                 {
                                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                                 }
-                                                else if( currentSubstationBus->capBankControlStatusUpdate(pointChanges, ccEvents) )
+                                                else
                                                 {
+                                                    currentSubstationBus->capBankControlStatusUpdate(pointChanges, ccEvents);
                                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                                 }
                                             }

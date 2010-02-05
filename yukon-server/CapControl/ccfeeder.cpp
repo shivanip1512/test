@@ -2720,19 +2720,13 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     return returnBoolean;
 }
 
-/*---------------------------------------------------------------------------
-    capBankControlStatusUpdate
-
-    Returns a boolean if the current day of the week can be a peak day
----------------------------------------------------------------------------*/
-
 BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent,
                                              DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality,
                                              DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, const CtiRegression& reg)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    BOOL returnBoolean = TRUE;
+    BOOL returnBoolean = FALSE;
     BOOL found = FALSE;
     DOUBLE change = 0;
     DOUBLE ratio = 0;
@@ -2758,6 +2752,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getPaoId() == getLastCapBankControlledDeviceId() )
         {
+            returnBoolean = TRUE;
             if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
             {
                 removeMaxKvar(currentCapBank->getPaoId());
@@ -2963,6 +2958,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
             }
             else
             {
+                returnBoolean = FALSE;
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
@@ -2973,6 +2969,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 text += currentCapBank->getControlStatusText();
                 currentCapBank->setControlStatusQuality(CC_Fail);
             }
+
             if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  &&
                 (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail))
             {
@@ -2980,17 +2977,14 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 currentCapBank->setRetryCloseFailedFlag(FALSE);
             }
 
-
             if( currentCapBank->getStatusPointId() > 0 )
             {
-
                 CtiCCSubstationBusPtr sub = store->findSubBusByPAObjectID(getParentId());
                 if( sub != NULL )
                 {
                    sub->createStatusUpdateMessages(pointChanges, ccEvents, currentCapBank, this, text, additional, false,
                                                                   varValueBC, currentVarLoadPointValue, change,  varAValue, varBValue, varCValue);
                 }
-
             }
             else
             {
@@ -2998,11 +2992,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
                 << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
             }
+
             found = TRUE;
             currentCapBank->setControlRecentlySentFlag(FALSE);
             currentCapBank->setIgnoreFlag(FALSE);
             break;
-
         }
     }
 
@@ -3010,7 +3004,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
-        returnBoolean = TRUE;
+        returnBoolean = FALSE;
     }
 
     setRetryIndex(0);
@@ -3032,7 +3026,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    BOOL returnBoolean = TRUE;
+    BOOL returnBoolean = FALSE;
     BOOL found = FALSE;
     DOUBLE change = 0;
     DOUBLE changeA = 0;
@@ -3064,6 +3058,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getPaoId() == getLastCapBankControlledDeviceId() )
         {
+            returnBoolean = TRUE;
             if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
             {
                 if( !_IGNORE_NOT_NORMAL_FLAG || currentVarPointQuality == NormalQuality )
@@ -3273,6 +3268,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
             }
             else
             {
+                returnBoolean = FALSE;
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
@@ -3320,7 +3316,6 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
-        returnBoolean = TRUE;
     }
 
     setRecentlyControlledFlag(FALSE);

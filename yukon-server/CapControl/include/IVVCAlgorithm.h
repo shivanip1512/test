@@ -12,7 +12,6 @@ class IVVCAlgorithm
     private:
         static bool checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow);
         static std::list<long> determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan);
-        static bool verifyBankOperation(CtiCCSubstationBusPtr subbus, CtiCCCapBankPtr bank, IVVCStrategy* strategy);
 
         static double calculateVf(const PointValueMap &voltages);
         static int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax);

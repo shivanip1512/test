@@ -31,6 +31,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         case IVVCState::IVVC_WAIT:
         {
+            //Check to make sure the points are setup correctly
+            //Make sure we have all the data we need.
+            int varPointId = subbus->getCurrentVarLoadPointId();
+            int voltPointId = subbus->getCurrentVoltLoadPointId();
+            int wattPointId = subbus->getCurrentWattLoadPointId();
+            if (varPointId == 0 || voltPointId == 0 || wattPointId == 0)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " IVVC Algorithm cannot execute. Check to make sure the Var, Volt, and Watt points are setup for Subbus: " << subbus->getPaoName() << endl;
+                return;
+            }
+
             //save away start time.
             state->setTimeStamp(timeNow);
 
@@ -283,14 +295,21 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 break;
             }
 
+            CtiMultiMsg_vec pointChangeVec;
+            CtiMultiMsg_vec ccEventVec;
+
             //Verify if we controlled
-            bool bankIsVerified = verifyBankOperation(subbus,bank,strategy);
+            bool bankIsVerified = subbus->capBankControlStatusUpdate(pointChangeVec,ccEventVec);
 
             if (bankIsVerified == true)
             {
                 CtiTime now;
                 state->setTimeStamp(now);
                 state->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
+            }
+            else
+            {
+                break;
             }
         }
         case IVVCState::IVVC_POST_CONTROL_WAIT:
@@ -410,12 +429,6 @@ std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus
     }
 
     return pointIds;
-}
-
-bool IVVCAlgorithm::verifyBankOperation(CtiCCSubstationBusPtr subbus, CtiCCCapBankPtr bank, IVVCStrategy* strategy)
-{
-    //strategy->getFailurePercent();
-    return false;
 }
 
 double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)

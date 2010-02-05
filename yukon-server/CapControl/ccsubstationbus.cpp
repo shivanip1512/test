@@ -3555,7 +3555,7 @@ void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
 
 BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
 {
-    BOOL returnBoolean = TRUE;
+    BOOL returnBoolean = FALSE;
     BOOL found = FALSE;
     char tempchar[64] = "";
     string text = "";
@@ -3596,7 +3596,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 
                         if (currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag())
                         {
-                            currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
+                            returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                                failPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(),
                                                                currentFeeder->getPhaseBValueBeforeControl(),currentFeeder->getPhaseCValueBeforeControl(),
                                                                currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(),
@@ -3605,7 +3605,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                         }
                         else
                         {
-                            currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, minConfirmPercent,failPercent,currentFeeder->getVarValueBeforeControl(),
+                            returnBoolean = currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, minConfirmPercent,failPercent,currentFeeder->getVarValueBeforeControl(),
                                                                       currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValue(),
                                                                       currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(),
                                                                       currentFeeder->getRegression());
@@ -3643,7 +3643,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 }
                 if (getUsePhaseData() && !getTotalizedControlFlag() && !getPrimaryBusFlag())
                 {
-                    currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
+                    returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                        failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                        getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(),
                                                        getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC);
@@ -3654,7 +3654,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                    if( !stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) &&
                         currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() )
                    {
-                       currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
+                       returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                                          failPercent,  currentFeeder->getCurrentVarPointQuality(),
                                                                          currentFeeder->getPhaseAValueBeforeControl(),
                                                                          currentFeeder->getPhaseBValueBeforeControl(),
@@ -3668,7 +3668,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                    }
                    else
                    {
-                       currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
+                       returnBoolean = currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
                                                               getCurrentVarLoadPointValue(), getCurrentVarPointQuality(), getPhaseAValue(),
                                                               getPhaseBValue(), getPhaseCValue(), regression);
                    }
@@ -3681,8 +3681,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Last Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
-                returnBoolean = TRUE;
-               
+                returnBoolean = FALSE;
             }
         }
         else if( !stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::ManualOnlyControlMethod) )
@@ -3715,7 +3714,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                         {
                             if (currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag())
                             {
-                                currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
+                                returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                                    failPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(),
                                                                    currentFeeder->getPhaseBValueBeforeControl(),currentFeeder->getPhaseCValueBeforeControl(),
                                                                    currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(),
@@ -3724,7 +3723,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                             }
                             else
                             {
-                                currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,
+                                returnBoolean = currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,
                                                                           currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(),
                                                                           currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValue(),
                                                                           currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), currentFeeder->getRegression());
@@ -3739,7 +3738,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                     {
                         if (getUsePhaseData() && !getTotalizedControlFlag())
                         {
-                            currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
+                            returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                                failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                                getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(),
                                                                getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC);
@@ -3747,7 +3746,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                         }
                         else
                         {
-                            currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
+                            returnBoolean = currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
                                                                       getCurrentVarLoadPointValue(), getCurrentVarPointQuality(), getPhaseAValue(),
                                                                       getPhaseBValue(), getPhaseCValue(), regression);
                         }
@@ -7802,8 +7801,9 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
                     {
                         setLastOperationTime(currentDateTime);
                     }
-                    else if (capBankControlStatusUpdate(pointChanges, ccEvents))
+                    else
                     {
+                        capBankControlStatusUpdate(pointChanges, ccEvents);
                         scanAllMonitorPoints();
                         if (getOperationSentWaitFlag())
                             setOperationSentWaitFlag(FALSE);
