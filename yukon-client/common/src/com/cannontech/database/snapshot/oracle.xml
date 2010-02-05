@@ -31705,7 +31705,7 @@
         <columnList>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>LTCID</i__columnName>
+            <i__columnName>SUBSTATIONBUSID</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -31721,7 +31721,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>SUBSTATIONBUSID</i__columnName>
+            <i__columnName>LTCID</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -31747,7 +31747,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>CCSUBSTATIONBUSTOLTC</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>LTCID</i__columnName>
+                  <i__columnName>SUBSTATIONBUSID</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>

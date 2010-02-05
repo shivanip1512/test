@@ -11408,7 +11408,7 @@
         <columnList>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>LtcId</i__columnName>
+            <i__columnName>SubstationBusId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -11424,7 +11424,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>SubstationBusId</i__columnName>
+            <i__columnName>LtcId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -11450,7 +11450,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>CCSubstationBusToLTC</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>LtcId</i__columnName>
+                  <i__columnName>SubstationBusId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
