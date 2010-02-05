@@ -49,18 +49,18 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     static {
             insertSql = "INSERT INTO CAPCONTROLSUBSTATIONBUS (SubstationBusID,CurrentVarLoadPointID," +
             " CurrentWattLoadPointID,MapLocationID,CurrentVoltLoadPointID,AltSubID,SwitchPointID," + 
-            "DualBusEnabled,MultiMonitorControl,usephasedata,phaseb,phasec,ControlFlag,VoltReductionPointId) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            "DualBusEnabled,MultiMonitorControl,usephasedata,phaseb,phasec,ControlFlag,VoltReductionPointId,DisableBusPointId) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             
             removeSql = "DELETE FROM CAPCONTROLSUBSTATIONBUS WHERE SubstationBusID = ?";
             
             updateSql = "UPDATE CAPCONTROLSUBSTATIONBUS SET CurrentVarLoadPointID = ?," + 
             "CurrentWattLoadPointID = ?,MapLocationID = ?,CurrentVoltLoadPointID = ?,AltSubID = ?, " + 
             "SwitchPointID = ?,DualBusEnabled = ?,MultiMonitorControl = ?,usephasedata = ?,phaseb = ?, " + 
-            "phasec = ?, ControlFlag = ?, VoltReductionPointId = ? WHERE SubstationBusID = ?";
+            "phasec = ?, ControlFlag = ?, VoltReductionPointId = ?, DisableBusPointId = ? WHERE SubstationBusID = ?";
             
             selectAllSql = "SELECT yp.PAOName, SubstationBusID,CurrentVarLoadPointID,CurrentWattLoadPointID," + 
             "MapLocationID,CurrentVoltLoadPointID,AltSubID,SwitchPointID,DualBusEnabled," + 
-            "MultiMonitorControl,usephasedata,phaseb,phasec,ControlFlag,VoltReductionPointId " + 
+            "MultiMonitorControl,usephasedata,phaseb,phasec,ControlFlag,VoltReductionPointId, DisableBusPointId " + 
             "FROM CapControlSubstationBus, YukonPAObject yp ";
             
             selectByIdSql = selectAllSql + " WHERE SubstationBusID = yp.PAObjectID AND SubstationBusID = ?";
@@ -95,6 +95,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
                 Validator.isNotNull(data);
                 bus.setControlFlag(data);
                 bus.setVoltReductionPointId(rs.getInt("VoltReductionPointId"));
+                bus.setDisabledPointId(rs.getInt("DisableBusPointId"));
                 
                 return bus;
             }
@@ -136,7 +137,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
                                                      bus.getPhaseb(),
                                                      bus.getPhasec(),
                                                      bus.getControlFlag(),
-                                                     bus.getVoltReductionPointId());
+                                                     bus.getVoltReductionPointId(),
+                                                     bus.getDisabledPointId());
         boolean result = (rowsAffected == 1);
         
 		if (result == false) {
@@ -206,6 +208,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
                                                      bus.getPhasec(),
                                                      bus.getControlFlag(),
                                                      bus.getVoltReductionPointId(),
+                                                     bus.getDisabledPointId(),
                                                      bus.getId());
         boolean result = (rowsAffected == 1);
         
