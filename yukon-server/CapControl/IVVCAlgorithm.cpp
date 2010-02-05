@@ -169,23 +169,22 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::IVVC_ANALYZE_DATA:
         {
-            bool isPeakTime = true;     // we need to calculate this
+            bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
 
             PointValueMap pointValues = state->getGroupRequest()->getPointValues();     // don't like repeating this here since we got them above
 
             /* calculate current power factor of the bus */
 
-            // if we are here these IDs exist...
+            // Can't get here if these IDs don't exist
+
             long wattPointID = subbus->getCurrentWattLoadPointId();
             long varPointID = subbus->getCurrentVarLoadPointId();
 
             PointValueMap::iterator iter = pointValues.find(wattPointID);
+            double wattValue = iter->second.value;
 
-            // what do we do if the var or watt point is stale / missing, etc.
-
-            double wattValue = (iter != pointValues.end()) ? iter->second.value : 1.0;
             iter = pointValues.find(varPointID);
-            double varValue = (iter != pointValues.end()) ? iter->second.value : 1.0;
+            double varValue = iter->second.value;
 
             double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
 
@@ -227,34 +226,46 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     PointValueMap deltas(pointValues);  // copy our pointValues map
 
-                    bool isCapBankOpen = ( currentBank->getAssumedOrigVerificationState() == CtiCCCapBank::Open );
+                    bool isCapBankOpen = (currentBank->getControlStatus() == CtiCCCapBank::Open ||
+                                          currentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable);
 
-                    std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
+                    bool isCapBankClosed = (currentBank->getControlStatus() == CtiCCCapBank::Close ||
+                                            currentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable);
 
-                    for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                    // if banks operational state isn't switched or if disabled
+                    // or not in one of the above 4 states we aren't eligible for control.
+
+                    if ( !stringCompareIgnoreCase(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+                         !currentBank->getDisableFlag() &&
+                         (isCapBankOpen || isCapBankClosed) )
                     {
-                        CtiCCPointResponsePtr currentResponse = *prb;
-
-                        deltas[ currentResponse->getBankId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                        std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
+    
+                        for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                        {
+                            CtiCCPointResponsePtr currentResponse = *prb;
+    
+                            deltas[ currentResponse->getBankId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                        }
+    
+                        state->_estimated[currentBank->getPaoId()].capbank = currentBank;
+    
+                        /* calculate estimated flatness of the bus if current bank switches state */
+    
+                        state->_estimated[currentBank->getPaoId()].flatness = 
+                            calculateVf(deltas, varPointID, wattPointID);  // need to remove watt and var points
+    
+                        /* calculate estimated power factor of the bus if current bank switches state */
+    
+                        state->_estimated[currentBank->getPaoId()].powerFactor = 
+                            subbus->calculatePowerFactor(varValue, wattValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) );
+    
+                        /* calculate estimated weight of the bus if current bank switches state */
+    
+                        state->_estimated[currentBank->getPaoId()].busWeight = 
+                            calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
+                                               strategy->getPFWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].powerFactor);
                     }
-
-                    state->_estimated[currentBank->getPaoId()].capbank = currentBank;
-
-                    /* calculate estimated flatness of the bus if current bank switches state */
-
-                    state->_estimated[currentBank->getPaoId()].flatness = 
-                        calculateVf(deltas, varPointID, wattPointID);  // need to remove watt and var points
-
-                    /* calculate estimated power factor of the bus if current bank switches state */
-
-                    state->_estimated[currentBank->getPaoId()].powerFactor = 
-                        subbus->calculatePowerFactor(varValue, wattValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) );
-
-                    /* calculate estimated weight of the bus if current bank switches state */
-
-                    state->_estimated[currentBank->getPaoId()].busWeight = 
-                        calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
-                                           strategy->getPFWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].powerFactor);
                 }
             }
 
