@@ -147,7 +147,7 @@
 	                    </a>
                     </c:if>
                 	<a title="Bank Locations" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&amp;specialArea=${isSpecialArea}" class="tierIconLink">
-                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/find.gif">
+                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
                     </a>
                     ${substation.ccName}
                     <font color="red">
@@ -230,7 +230,7 @@
     	                    </a>
     	                </c:if>
                        	<a title="Bank Locations" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&amp;specialArea=${isSpecialArea}" class="tierIconLink">
-                            <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/find.gif">
+                            <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
                         </a>
                         <a 
                             <c:if test="${!hideOneLine}">
@@ -437,7 +437,7 @@
 	                        </a>
                         </c:if>
                     	<a title="Bank Locations"href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&amp;specialArea=${isSpecialArea}" class="tierIconLink">
-	                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/find.gif">
+	                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
 	                    </a>
 						<span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
 							${viewfeeder.feeder.ccName}
