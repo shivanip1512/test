@@ -96,8 +96,8 @@ public class LtcDaoImpl implements LtcDao {
             yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         } else {
             SqlStatementBuilder sql = new SqlStatementBuilder("insert into CCSubstationBusToLTC values(");
-            sql.appendArgument(substationBusID).append(",").appendArgument(ltcId).append(")");
-            yukonJdbcTemplate.update(sql.getSql(), substationBusID, ltcId);
+            sql.appendArgument(ltcId).append(",").appendArgument(substationBusID).append(")");
+            yukonJdbcTemplate.update(sql.getSql());
         }
     }
     
