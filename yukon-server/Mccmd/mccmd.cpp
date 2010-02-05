@@ -1669,7 +1669,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     bool interrupted = false;
     bool timed_out = false;
     UINT jobId = 0;
-    UINT const PORT_COUNT_REQUEST_SECONDS = 10;
+    UINT const PORT_COUNT_REQUEST_SECONDS = 5*60;
     long requestLogId = 0;
     unsigned long porterCount = 0;
     CtiTime lastReturnMessageReceived;
@@ -2302,14 +2302,16 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
                 string devName = token(",");
                 string paoIdStr = token(",");
                 int paoId = INT_MIN;
-                if( paoIdStr.size() > 0 )
+                if( !paoIdStr.empty() )
                 {
-                    paoId = atoi(paoIdStr.c_str()); // This can give INT_MIN or INT_MAX
+                    paoId = atoi(paoIdStr.c_str()); // This can give INT_MIN or INT_MAX or 0 as errors.
                 }
 
                 CtiRequestMsg *msg = new CtiRequestMsg();
 
-                if( paoId == INT_MIN || paoId == INT_MAX )
+                // Note that yes, 0 could be valid, but we are excluding it as it can also be an error
+                // and the select name will work properly.
+                if( paoId == INT_MIN || paoId == INT_MAX || paoId == 0)
                 {
                     cmd += "select name '";
                     cmd += devName;
