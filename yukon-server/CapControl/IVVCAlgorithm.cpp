@@ -18,6 +18,7 @@
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
 extern ULONG _POST_CONTROL_WAIT;
+extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
@@ -236,6 +237,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     // or not in one of the above 4 states we aren't eligible for control.
 
                     if ( !stringCompareIgnoreCase(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+                         !currentBank->getLocalControlFlag() &&
                          !currentBank->getDisableFlag() &&
                          (isCapBankOpen || isCapBankClosed) )
                     {
@@ -274,14 +276,15 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             for ( IVVCState::EstimatedDataMap::iterator eb = state->_estimated.begin(), ee = state->_estimated.end(); eb != ee; ++eb )
             {
-                if ( eb->second.flatness < minimumEstVf )
+                if ( eb->second.flatness <= minimumEstVf )
                 {
                     minimumEstVf = eb->second.flatness;
                     operatePaoID = eb->first;
                 }
             }
 
-            if ( ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoID].flatness )   // outside of the window.
+            if ( ( operatePaoID != -1 ) && 
+                 ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoID].flatness )   // outside of the window.
             {
                 CtiTime now;
                 state->setTimeStamp(now);
@@ -311,7 +314,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 if ( tapOp != 0 )
                 {
-                    if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) > 300 )    // which CPARM for the '300'?
+                    if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) > (_IVVC_MIN_TAP_PERIOD_MINUTES * 60) )
                     {
                         state->setLastTapOpTime(now);
 

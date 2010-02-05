@@ -88,6 +88,7 @@ extern ULONG _MSG_PRIORITY;
 extern ULONG _IVVC_KEEPALIVE;
 extern BOOL CC_TERMINATE_THREAD_TEST;
 extern ULONG _POST_CONTROL_WAIT;
+extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -4886,6 +4887,14 @@ void CtiCapController::refreshCParmGlobals(bool force)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_IVVC_KEEPALIVE: " << _IVVC_KEEPALIVE << endl;
         }
+
+        _IVVC_MIN_TAP_PERIOD_MINUTES = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES", 15);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES: " << _IVVC_MIN_TAP_PERIOD_MINUTES << endl;
+        }
+
     }
     catch(RWxmsg& msg )
     {
