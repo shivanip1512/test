@@ -127,7 +127,7 @@
             
             <%-- TYPES --%>
             <div id="allPointsDiv">
-            	<c:forEach var="paoTypeMasks" items="${paoTypeMasksList}" varStatus="status">
+            	<c:forEach var="paoTypeMasks" items="${paoTypeMasksList}">
 	            	<c:set var="deviceType" value="${paoTypeMasks.paoType}"/>
             		<c:if test="${paoTypeMasks.paoType eq deviceType}">
             			<tags:deviceTypePointsSection deviceType="${deviceType}" 
