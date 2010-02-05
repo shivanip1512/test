@@ -82,7 +82,7 @@ public class LoadTapChanger extends CapControlYukonPAOBase {
     public List<LtcPointMapping> getLtcPointMappings(){
         if(pointMappings == null){
             LtcService ltcService = YukonSpringHook.getBean("ltcService", LtcService.class);
-            List<LtcPointMapping> pointMappings = ltcService.getLtcPointMappings(getCapControlPAOID());
+            pointMappings = ltcService.getLtcPointMappings(getCapControlPAOID());
             Collections.sort(pointMappings);
             int index = 0;
             for(LtcPointMapping mapping : pointMappings) {
