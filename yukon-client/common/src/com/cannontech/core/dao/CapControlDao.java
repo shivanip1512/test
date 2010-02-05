@@ -28,4 +28,5 @@ public interface CapControlDao {
     public List<OrphanCBC> getOrphanedCBCs();
     
     public List<LiteCapBankAdditional> getCapBankAdditional (List<Integer> deviceIds);
+
 }

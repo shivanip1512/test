@@ -7,11 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
+import com.cannontech.capcontrol.service.LtcService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
@@ -19,6 +21,7 @@ import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.capcontrol.LtcPointMapping;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -27,9 +30,9 @@ import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
@@ -41,6 +44,7 @@ public class TierPopupMenuController extends MultiActionController {
     private PaoDao paoDao;
     private AuthDao authDao;
     private CapControlCommentService capControlCommentService;
+    private LtcService ltcService;
     private static final CapBankOperationalState[] allowedOperationStates;
     
     static {
@@ -199,6 +203,17 @@ public class TierPopupMenuController extends MultiActionController {
         return mav;
     }
     
+    public ModelAndView ltcPointList(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final int ltcId = ServletRequestUtils.getRequiredIntParameter(request, "ltcId");
+        
+        String ltcName = paoDao.getYukonPAOName(ltcId);
+        List<LtcPointMapping> pointMappings = ltcService.getLtcPointMappings(ltcId);
+        mav.addObject("mappings", pointMappings);
+        mav.addObject("ltcName", ltcName);
+        mav.setViewName("tier/popupmenu/ltcPointList.jsp");
+        return mav;
+    }
     
     public ModelAndView feederMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
@@ -515,5 +530,10 @@ public class TierPopupMenuController extends MultiActionController {
     
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
+    }
+    
+    @Autowired
+    public void setLtcService(LtcService ltcService) {
+        this.ltcService = ltcService;
     }
 }

@@ -15,6 +15,11 @@
 <ct:simplePopup id="tierPopup" onClose="closeTierPopup()" title="Comments:" styleClass="thinBorder">
     <div id="popupBody"></div>
 </ct:simplePopup>
+
+<ct:simplePopup id="ltcPointPopup" onClose="closeLtcPointPopup()" title="LTC Points">
+    <div id="ltcPopupBody"></div>
+</ct:simplePopup>
+
 <cti:standardMenu/>
 
 <cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
@@ -316,6 +321,10 @@
                                 <a href="javascript:void(0);" ${popupEvent}="getLtcMenu('${viewableSubBus.ltcId}', event);">
                                 ${viewableSubBus.ltcName}
                                 </a>
+                                <a href="#" onclick="getLtcPointsList(${viewableSubBus.ltcId})" class="tierIconLink">
+                                    <img alt="" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
+                                        onmouseover="statusMsgAbove(this,'Click here to see the point values for the ltc device.');">
+                               </a>
                             </c:when>
                             <c:otherwise>
                                 ---

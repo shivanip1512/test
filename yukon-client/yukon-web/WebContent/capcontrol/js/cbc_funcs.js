@@ -60,6 +60,23 @@ function getLtcMenu(id, event) {
     getMenuFromUrlLeft(url, event); 
 }
 
+function getLtcPointsList(id) {
+	var url = '/spring/capcontrol/tier/popupmenu?menu=ltcPointList&ltcId=' +id;
+	new Ajax.Request(url, {
+        method: 'POST',
+        onSuccess: function(transport) {
+            var html = transport.responseText;
+            var body = $('ltcPopupBody');
+        	body.innerHTML = html;
+        	var popupDiv = $('ltcPointPopup');
+        	var ltcName = $('ltcName');
+        	var titleDiv = popupDiv.getElementsByClassName('boxContainer_title')[0];
+        	titleDiv.innerHTML = ltcName.value;
+        	popupDiv.show();
+        }
+    });
+}
+
 function getLocalControlMenu(id, capBankType, objectType, event) {
 	if(!capBankType) {
 		capBankType = false;
@@ -215,8 +232,13 @@ function showMenuPopup(html, up, left, x, y) {
 }
 
 function closeTierPopup() {
-	var reasonDiv = $('tierPopup');
-	reasonDiv.hide();
+	var tierPopup = $('tierPopup');
+	tierPopup.hide();
+}
+
+function closeLtcPointPopup() {
+	var ltcPointPopup = $('ltcPointPopup');
+	ltcPointPopup.hide();
 }
 
 function updateStateColorGenerator(id) {
