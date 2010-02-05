@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/3/2010 11:45:46 AM                         */
+/* Created on:     2/5/2010 3:03:54 PM                          */
 /*==============================================================*/
 
 
@@ -4276,9 +4276,9 @@ go
 /* Table: CCSubstationBusToLTC                                  */
 /*==============================================================*/
 create table CCSubstationBusToLTC (
-   LtcId                numeric              not null,
    SubstationBusId      numeric              not null,
-   constraint PK_CCSubBusToLtc primary key (LtcId)
+   LtcId                numeric              not null,
+   constraint PK_CCSubBusToLtc primary key (SubstationBusId)
 )
 go
 

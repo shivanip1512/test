@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2010 11:43:20 AM                         */
+/* Created on:     2/5/2010 3:02:22 PM                          */
 /*==============================================================*/
 
 
@@ -1674,9 +1674,9 @@ create table CCStrategyTargetSettings  (
 /* Table: CCSubstationBusToLTC                                  */
 /*==============================================================*/
 create table CCSubstationBusToLTC  (
-   LtcId                NUMBER                          not null,
    SubstationBusId      NUMBER                          not null,
-   constraint PK_CCSubBusToLtc primary key (LtcId)
+   LtcId                NUMBER                          not null,
+   constraint PK_CCSubBusToLtc primary key (SubstationBusId)
 );
 
 /*==============================================================*/
