@@ -3804,7 +3804,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                 RWDBTable capControlObjectTable = capControlSubstationBusTable;
 
 
-                if (strategyId > 0)
+                if (strategyId >= 0)
                 {
                     LONG paObjectId;
                     //Update Area Strategy Values with dbChanged/editted strategy values
@@ -3972,7 +3972,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 
                                                  if (currentCCFeeder != NULL)
                                                  {
-                                                     long strategyID = 0;   // defaults to no strategy
+                                                     long strategyID = _strategyManager.getDefaultId();   // default NoStrategy
 
                                                      currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
                                                      if (currentSubBus != NULL)
@@ -4079,7 +4079,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                 RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
                 RWDBTable capControlObjectTable = capControlSubstationBusTable ;
 
-                if (strategyId > 0)
+                if (strategyId >= 0)
                 {
                     LONG paObjectId;
                     //Update Area Strategy Values with dbChanged/editted strategy values
@@ -4245,7 +4245,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 
                                                  if (currentCCFeeder != NULL)
                                                  {
-                                                     long strategyID = 0;
+                                                     long strategyID = _strategyManager.getDefaultId();     // default to NoStrategy
 
                                                      currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
                                                      if (currentSubBus != NULL)
@@ -4326,7 +4326,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                 RWDBTable capControlObjectTable = capControlSubstationBusTable;
 
 
-                if (strategyId > 0)
+                if (strategyId >= 0)
                 {
                     //Update Area Strategy Values with dbChanged/editted strategy values
                     for (int objectType = Feeder; objectType <= SpecialArea; objectType++)
@@ -4485,7 +4485,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
 
                                                if (currentCCFeeder != NULL)
                                                {
-                                                   long strategyID = 0;
+                                                   long strategyID = _strategyManager.getDefaultId();   // default to NoStrategy
 
                                                    currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
                                                    if (currentSubBus != NULL)
@@ -7056,7 +7056,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                  }
                                  if (currentCCFeeder != NULL)
                                  {
-                                     long strategyID = 0;
+                                     long strategyID = _strategyManager.getDefaultId();     // default to NoStrategy
 
                                      if (paobject_subbus_map->find(currentCCFeeder->getParentId()) != paobject_subbus_map->end())
                                      {
@@ -7078,7 +7078,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                              }
                                              else
                                              {
-                                                 strategyID = (stratId != 0) ? stratId : currentSubBus->getStrategy()->getStrategyId();
+                                                 // if the supplied strategy is NoStrategy - use the subbus strategy
+                                                 strategyID = stratId;
+                                                 if ( _strategyManager.getStrategy(strategyID)->getUnitType() == ControlStrategy::None )
+                                                 {
+                                                     strategyID = currentSubBus->getStrategy()->getStrategyId();
+                                                 }
                                              }
                                          }
                                      }
@@ -7156,7 +7161,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
                                  if (currentCCFeeder != NULL)
                                  {
-                                     long strategyID = 0;
+                                     long strategyID = _strategyManager.getDefaultId();     // default to NoStrategy
 
                                      currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
                                      if (currentSubBus != NULL)
