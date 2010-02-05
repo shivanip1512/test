@@ -3,14 +3,10 @@
 #include "yukon.h"
 #include "ctitime.h"
 #include "GroupPointDataRequest.h"
+#include "cccapbank.h"
 
 #include <boost/shared_ptr.hpp>
 
-/**
- * Holds the current state and needed information for the object
- * being controlled.
- *
- */
 class IVVCState
 {
     public:
@@ -21,6 +17,7 @@ class IVVCState
             IVVC_PRESCAN_LOOP,
             IVVC_ANALYZE_DATA,
             IVVC_POST_CONTROL_WAIT,
+            IVVC_CONTROLLED_LOOP,
             IVVC_VERIFY_CONTROL_LOOP,
             IVVC_POSTSCAN_LOOP
         };
@@ -42,11 +39,26 @@ class IVVCState
         const GroupRequestPtr& getGroupRequest();
         void setGroupRequest(const GroupRequestPtr& groupRequest);
 
-        int getControlledBankId();
-        void setControlledBankId(int bankId);
-
         const CtiTime& getLastTapOpTime();
         void setLastTapOpTime(const CtiTime& opTime);
+
+        struct EstimatedData
+        {
+            bool            operated;
+            double          flatness;
+            double          powerFactor;
+            double          busWeight;
+            CtiCCCapBankPtr capbank;
+
+            EstimatedData() : operated(false), flatness(0.0), powerFactor(0.0), busWeight(0.0), capbank(0) {  }
+        };
+
+        typedef std::map<long, EstimatedData> EstimatedDataMap;
+
+        EstimatedDataMap    _estimated;
+
+        void setControlledBankId(long id);
+        long getControlledBankId() const;
 
     private:
 
@@ -56,9 +68,10 @@ class IVVCState
 
         GroupRequestPtr _groupRequest;
 
-        int _controlledBankId;
         bool _scannedRequest;
         State _state;
+
+        long _controlledId;
 
 };
 

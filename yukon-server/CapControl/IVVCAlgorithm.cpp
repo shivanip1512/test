@@ -13,6 +13,7 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
@@ -172,85 +173,134 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointValueMap pointValues = state->getGroupRequest()->getPointValues();     // don't like repeating this here since we got them above
 
-            double Vf = calculateVf(pointValues);
+            /* calculate current power factor of the bus */
 
-            double PFBus = calculatePowerFactor( 2500.0 , 626.55 , 0 );     // FIX: need these numbers!!!
+            // if we are here these IDs exist...
+            long wattPointID = subbus->getCurrentWattLoadPointId();
+            long varPointID = subbus->getCurrentVarLoadPointId();
 
-            double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf, strategy->getPFWeight(isPeakTime), PFBus);
+            PointValueMap::iterator iter = pointValues.find(wattPointID);
 
-            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+            // what do we do if the var or watt point is stale / missing, etc.
 
-            // for each paoid in PointValueMap ...
-            for ( PointValueMap::const_iterator b = pointValues.begin(), e = pointValues.end(); b != e; ++b )
+            double wattValue = (iter != pointValues.end()) ? iter->second.value : 1.0;
+            iter = pointValues.find(varPointID);
+            double varValue = (iter != pointValues.end()) ? iter->second.value : 1.0;
+
+            double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
+
+            /* calculate potential tap operation */
+
+            int tapOp = calculateVte(pointValues,
+                                     strategy->getLowerVoltLimit(isPeakTime),
+                                            strategy->getLowerVoltLimit(isPeakTime) + 3.0, // FIX: where do we get this value from
+                                     strategy->getUpperVoltLimit(isPeakTime),
+                                     varPointID, wattPointID);
+
+            /* calculate current flatness of the bus */
+
+            double Vf = calculateVf(pointValues, varPointID, wattPointID);  // need to remove watt and var points
+
+            /* calculate current weight of the bus */
+
+            double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf,
+                                                         strategy->getPFWeight(isPeakTime), PFBus);
+
+            /* calculate estimated bus weights etc from historical data */
+
+
+            CtiFeeder_vec& feeders = subbus->getCCFeeders();
+
+            // for each feeder
+
+            for ( CtiFeeder_vec::iterator fb = feeders.begin(), fe = feeders.end(); fb != fe; ++fb )
             {
-                // is there a better way to get capbank ptrs than using the store?
-                CtiCCCapBankPtr pCapBank = store->findCapBankByPAObjectID( b->first );
+                CtiCCFeederPtr currentFeeder = *fb;
 
-                if ( pCapBank != NULL )     // is a capbank
+                CtiCCCapBank_SVector& capbanks =  currentFeeder->getCCCapBanks();
+
+                // for each capbank
+
+                for ( CtiCCCapBank_SVector::iterator cb = capbanks.begin(), ce = capbanks.end(); cb != ce; ++cb )
                 {
-                    // is this the right function for this?
-                    bool isCapBankOpen = ( pCapBank->getAssumedOrigVerificationState() == CtiCCCapBank::Open );
+                    CtiCCCapBankPtr currentBank = *cb;
 
+                    PointValueMap deltas(pointValues);  // copy our pointValues map
 
-                    // retreive the voltage deltas etc
-                    // calc estimated bus weights
+                    bool isCapBankOpen = ( currentBank->getAssumedOrigVerificationState() == CtiCCCapBank::Open );
 
-                    // pick a bank
-                    PointValueMap   deltas;                 // FIX: no this isn't true of course!
-                    double estVf = calculateVf(deltas);
+                    std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
 
+                    for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                    {
+                        CtiCCPointResponsePtr currentResponse = *prb;
 
+                        deltas[ currentResponse->getBankId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                    }
 
-                    double bankSize = pCapBank->getBankSize();
+                    state->_estimated[currentBank->getPaoId()].capbank = currentBank;
 
-                    double estPFBus = calculatePowerFactor( 2500.0 , 626.55 , isCapBankOpen ? -bankSize : bankSize );     // FIX: need these numbers!!!
+                    /* calculate estimated flatness of the bus if current bank switches state */
 
-                    double estCurrentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), estVf, strategy->getPFWeight(isPeakTime), estPFBus);
+                    state->_estimated[currentBank->getPaoId()].flatness = 
+                        calculateVf(deltas, varPointID, wattPointID);  // need to remove watt and var points
 
-                    // store off these values for later reference in some kind of map.....
+                    /* calculate estimated power factor of the bus if current bank switches state */
 
+                    state->_estimated[currentBank->getPaoId()].powerFactor = 
+                        subbus->calculatePowerFactor(varValue, wattValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) );
+
+                    /* calculate estimated weight of the bus if current bank switches state */
+
+                    state->_estimated[currentBank->getPaoId()].busWeight = 
+                        calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
+                                           strategy->getPFWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].powerFactor);
                 }
             }
 
             long    operatePaoID = -1;
             double  minimumEstVf = std::numeric_limits<double>::max();
 
-            // find the minimum : estVf
-            for ( ; 0 ; )                   // for each measurement set
+            for ( IVVCState::EstimatedDataMap::iterator eb = state->_estimated.begin(), ee = state->_estimated.end(); eb != ee; ++eb )
             {
-                double myEstVf = 1.0;       // delta lookup
-
-                if ( myEstVf < minimumEstVf )
+                if ( eb->second.flatness < minimumEstVf )
                 {
-                    minimumEstVf = myEstVf;
-                    operatePaoID = 1;       // paoID lookup
+                    minimumEstVf = eb->second.flatness;
+                    operatePaoID = eb->first;
                 }
             }
 
-            if ( ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > 0.0 /* estBw[operatePaoID] */ )   // outside of the window.
+            if ( ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoID].flatness )   // outside of the window.
             {
-                //  dout << "operate CBC: "<< operatePaoID << endl;
-
-                //send cap bank command
                 CtiTime now;
                 state->setTimeStamp(now);
-                state->setControlledBankId(1/*update*/);
+
+                // record preoperation voltage values for the feeder our capbank is on
+
+                std::vector <CtiCCPointResponsePtr>& responses = state->_estimated[operatePaoID].capbank->getPointResponse();
+
+                for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                {
+                    (*prb)->setPreOpValue( pointValues[ (*prb)->getBankId() ].value );
+                }
+
+                state->_estimated[operatePaoID].operated = true;
+
+                state->setControlledBankId( operatePaoID );
+
+                //send cap bank command
+
                 state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
             }
             else
             {
-                // calculate Vte
-
-                int tapOp = calculateVte(pointValues,
-                                         strategy->getLowerVoltLimit(isPeakTime),
-                                                strategy->getLowerVoltLimit(isPeakTime) + 3.0, // FIX: where do we get this value from
-                                         strategy->getUpperVoltLimit(isPeakTime));
+                // TAP operation - use precalculated value from above
 
                 CtiTime now;
 
                 if ( tapOp != 0 )
                 {
-                    if (  ( now.seconds() - state->getLastTapOpTime().seconds()  )  >   300    )    // 300 comes from a CPARM...
+                    if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) > 300 )    // which CPARM for the '300'?
                     {
                         state->setLastTapOpTime(now);
 
@@ -396,18 +446,32 @@ std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus
     }
 
     //SubBus voltage point.
-    int busVoltageId = subbus->getCurrentVoltLoadPointId();
-    if (busVoltageId > 0)
+    long busId = subbus->getCurrentVoltLoadPointId();
+    if (busId > 0)
     {
         //No scan available. In Case of Duke, this will come from the LTC scan anyways.
-        pointIds.push_back(busVoltageId);
+        pointIds.push_back(busId);
+    }
+
+    //SubBus watt point to calc power factor.
+    busId = subbus->getCurrentWattLoadPointId();
+    if (busId > 0)
+    {
+        pointIds.push_back(busId);
+    }
+
+    //SubBus var point to calc power factor.
+    busId = subbus->getCurrentVarLoadPointId();
+    if (busId > 0)
+    {
+        pointIds.push_back(busId);
     }
 
     //Feeder voltage points.
     CtiFeeder_vec feeders = subbus->getCCFeeders();
     for each (CtiCCFeederPtr feeder in feeders)
     {
-        int feederVoltageId = feeder->getCurrentVoltLoadPointId();
+        long feederVoltageId = feeder->getCurrentVoltLoadPointId();
         if (feederVoltageId > 0)
         {
             //No scan available. In Case of Duke, this will come from the LTC scan anyways.
@@ -431,9 +495,8 @@ std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus
     return pointIds;
 }
 
-double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
+double IVVCAlgorithm::calculateVf(const PointValueMap &voltages, const long varPointID, const long wattPointID)
 {
-
     double   totalSum   = 0.0;
     double   minimum    = std::numeric_limits<double>::max();
     unsigned totalCount = 0;
@@ -445,16 +508,22 @@ double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
 
     for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
     {
-        totalSum += b->second.value;
-        minimum = std::min( minimum, b->second.value );
-        totalCount++;
+        // Need to ignore the watt and var points that are passed in.
+
+        if ( b->first != varPointID && b->first != wattPointID)
+        {
+            totalSum += b->second.value;
+            minimum = std::min( minimum, b->second.value );
+            totalCount++;
+        }
     }
 
     return ( ( totalSum / totalCount ) - minimum  );
 }
 
 
-int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax)
+int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax,
+                                const long varPointID, const long wattPointID)
 {
     bool lowerTap = false;
     bool raiseTap = false;
@@ -467,9 +536,14 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const double Vmin
 
     for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
     {
-        if ( b->second.value > Vmax ) { lowerTap = true; }
-        if ( b->second.value < Vmin ) { raiseTap = true; }
-        if ( b->second.value <= Vrm ) { marginTap = false; }
+        // Need to ignore the watt and var points that are passed in.
+
+        if ( b->first != varPointID && b->first != wattPointID)
+        {
+            if ( b->second.value > Vmax ) { lowerTap = true; }
+            if ( b->second.value < Vmin ) { raiseTap = true; }
+            if ( b->second.value <= Vrm ) { marginTap = false; }
+        }
     }
 
     return (( lowerTap || marginTap ) ? -1 : raiseTap ? 1 : 0);
@@ -478,7 +552,7 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const double Vmin
 
 double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor)
 {
-    const double Pf = (100.0 * ( 1.0 - powerFactor ) );
+    const double Pf = std::abs(100.0 * ( 1.0 - powerFactor ) );
 
     const double a = 1.0;
     const double b = 1.0;
@@ -495,10 +569,3 @@ double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const
     return (voltageWeight + powerFactorWeight);
 }
 
-
-double IVVCAlgorithm::calculatePowerFactor(const double KWattBus, const double KVarBus, const double bankSize)
-{
-    double adjKWatt = KWattBus + bankSize;
-
-    return ( adjKWatt / std::sqrt( std::pow(adjKWatt, 2.0) + std::pow(KVarBus, 2.0) ) );
-}
