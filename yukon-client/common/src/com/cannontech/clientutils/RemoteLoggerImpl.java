@@ -66,13 +66,13 @@ public class RemoteLoggerImpl implements RemoteLogger {
         
         String fileName = applicationName + "[" + clientId + "]";
         
-        //get the file path based on yukonbase for this system
-        String directory = YukonFileAppender.getLogDirectory();
-        
         //see if the appender for this clientId already exists
         if (appenderIPAddresses.containsKey(fileName)) {
             dailyRollingFileAppender = appenderIPAddresses.get(fileName);
         } else {
+            //get the file path based on yukonbase for this system
+            String directory = YukonFileAppender.getLogDirectory();
+            
             // one doesn't exist so create an appender and put it in the map
             //Use DatedFileAppender to take over the actual appending, rollover, and timing issues
             dailyRollingFileAppender = new DatedFileAppender(directory, fileName, ".log");
