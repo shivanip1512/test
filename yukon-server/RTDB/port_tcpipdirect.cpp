@@ -30,7 +30,8 @@ CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
 _dialable(0),
 _socket(INVALID_SOCKET),
 _open(false),
-_connected(false)
+_connected(false),
+_lastConnect(CtiTime::neg_infin)
 {
 }
 
@@ -38,7 +39,8 @@ CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialable *dial) :
 _dialable(dial),
 _socket(INVALID_SOCKET),
 _open(false),
-_connected(false)
+_connected(false),
+_lastConnect(CtiTime::neg_infin)
 {
     if(_dialable != 0)
     {
@@ -130,6 +132,21 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             }
             else
             {
+                //  this delay is here for ports that allow connections but then immediately disconnect;
+                //    if we connected more than 15 seconds ago, we can connect immediately
+                CtiTime nextConnect = _lastConnect + 15;
+
+                int connect_delay = nextConnect.seconds() - CtiTime::now().seconds();
+
+                if( connect_delay > 0 )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Port " << getName() << " next connect at " << nextConnect << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    CTISleep(connect_delay * 1000);
+                }
+
                 if( connect(_socket, (const struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
                 {
                     {
@@ -182,6 +199,8 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 }
 
                 _connected   = true;
+
+                _lastConnect = CtiTime::now();
             }
 
             if((status = reset(true)) != NORMAL)
