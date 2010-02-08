@@ -18,7 +18,7 @@ Controllable::Controllable(RWDBReader& rdr, StrategyPtr strategy)
     : CapControlPao(rdr),
       _strategy(strategy)
 {
-    _strategy->registerUser(getPaoId());
+    _strategy->registerControllable(getPaoId());
 }
 
 
@@ -26,13 +26,13 @@ Controllable::Controllable(const Controllable & rhs)
     : CapControlPao(rhs),
       _strategy(rhs.getStrategy())
 {
-    _strategy->registerUser(getPaoId());
+    _strategy->registerControllable(getPaoId());
 }
 
 
 Controllable::~Controllable()
 {
-    _strategy->unregisterUser(getPaoId());
+    _strategy->unregisterControllable(getPaoId());
 }
 
 
@@ -57,8 +57,8 @@ StrategyPtr Controllable::getStrategy() const
 
 void Controllable::setStrategy(StrategyPtr strategy)
 {
-    _strategy->unregisterUser(getPaoId());
+    _strategy->unregisterControllable(getPaoId());
     _strategy = strategy;
-    _strategy->registerUser(getPaoId());
+    _strategy->registerControllable(getPaoId());
 }
 

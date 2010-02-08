@@ -44,9 +44,10 @@ public:
     const double getVoltWeight(const bool isPeak) const;
     const double getPFWeight(const bool isPeak) const;
     const double getDecisionWeight(const bool isPeak) const;
+    const double getVoltageRegulationMargin(const bool isPeak) const;
 
-    virtual void registerUser(const int paoid);
-    virtual void unregisterUser(const int paoid);
+    virtual void registerControllable(const long paoid);
+    virtual void unregisterControllable(const long paoid);
 
     virtual double getPeakLag() const;
     virtual double getOffPeakLag() const;
@@ -72,8 +73,10 @@ private:
     double _offpeakPFWeight;
     double _peakDecisionWeight;
     double _offpeakDecisionWeight;
+    double _peakVoltageRegulationMargin;
+    double _offpeakVoltageRegulationMargin;
 
-    typedef std::map<int, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;
+    typedef std::map<long, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;     // PaoID -> { reference count, state }
 
     PaoToStateMap   _paoStateMap;
 

@@ -9,22 +9,24 @@
 
 IVVCStrategy::IVVCStrategy()
     : ControlStrategy(),
-    _peakUpperVoltLimit(0.0),
-    _offpeakUpperVoltLimit(0.0),
-    _peakLowerVoltLimit(0.0),
-    _offpeakLowerVoltLimit(0.0),
-    _peakTargetPF(0.0),
-    _offpeakTargetPF(0.0),
-    _peakMinBankOpen(0.0),
-    _offpeakMinBankOpen(0.0),
-    _peakMinBankClose(0.0),
-    _offpeakMinBankClose(0.0),
-    _peakVoltWeight(0.0),
-    _offpeakVoltWeight(0.0),
-    _peakPFWeight(0.0),
-    _offpeakPFWeight(0.0),
-    _peakDecisionWeight(0.0),
-    _offpeakDecisionWeight(0.0)
+    _peakUpperVoltLimit(130.0),
+    _offpeakUpperVoltLimit(130.0),
+    _peakLowerVoltLimit(110.0),
+    _offpeakLowerVoltLimit(110.0),
+    _peakTargetPF(100.0),
+    _offpeakTargetPF(100.0),
+    _peakMinBankOpen(80.0),
+    _offpeakMinBankOpen(80.0),
+    _peakMinBankClose(80.0),
+    _offpeakMinBankClose(80.0),
+    _peakVoltWeight(1.0),
+    _offpeakVoltWeight(1.0),
+    _peakPFWeight(1.0),
+    _offpeakPFWeight(1.0),
+    _peakDecisionWeight(1.0),
+    _offpeakDecisionWeight(1.0),
+    _peakVoltageRegulationMargin(1.0),
+    _offpeakVoltageRegulationMargin(1.0)
 {
     // empty!
 }
@@ -137,6 +139,17 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
             _offpeakDecisionWeight = newValue;
         }
     }
+    else if (name == "Voltage Regulation Margin")
+    {
+        if (type == "PEAK")
+        {
+            _peakVoltageRegulationMargin = newValue;
+        }
+        else
+        {
+            _offpeakVoltageRegulationMargin = newValue;
+        }
+    }
 }
 
 
@@ -218,6 +231,12 @@ const double IVVCStrategy::getDecisionWeight(const bool isPeak) const
 }
 
 
+const double IVVCStrategy::getVoltageRegulationMargin(const bool isPeak) const
+{
+    return isPeak ? _peakVoltageRegulationMargin : _offpeakVoltageRegulationMargin;
+}
+
+
 /**
  * These five are overloaded to return the proper messaging 
  * values.  It depends on the _isPeakTime flag being set to the 
@@ -254,7 +273,7 @@ double IVVCStrategy::getPeakPFSetPoint() const
 
 /*********/
 
-void IVVCStrategy::registerUser(const int paoid)
+void IVVCStrategy::registerControllable(const long paoid)
 {
     CtiLockGuard<CtiMutex> guard(_mapMutex);
 
@@ -271,7 +290,7 @@ void IVVCStrategy::registerUser(const int paoid)
 }
 
 
-void IVVCStrategy::unregisterUser(const int paoid)
+void IVVCStrategy::unregisterControllable(const long paoid)
 {
     CtiLockGuard<CtiMutex> guard(_mapMutex);
 

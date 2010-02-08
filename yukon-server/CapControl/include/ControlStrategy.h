@@ -142,8 +142,8 @@ public:
 
     virtual void setControlMethod(const std::string & method) = 0;
 
-    virtual void registerUser(const int paoid);
-    virtual void unregisterUser(const int paoid);
+    virtual void registerControllable(const long paoid);
+    virtual void unregisterControllable(const long paoid);
 
     void       setPeakTimeFlag(const bool flag);
     const bool getPeakTimeFlag() const;

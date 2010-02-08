@@ -521,13 +521,13 @@ void ControlStrategy::setEndDaySettings(const std::string &settings)
 }
 
 
-void ControlStrategy::registerUser(const int paoid)
+void ControlStrategy::registerControllable(const long paoid)
 {
     // empty!
 }
 
 
-void ControlStrategy::unregisterUser(const int paoid)
+void ControlStrategy::unregisterControllable(const long paoid)
 {
     // empty!
 }
