@@ -1,36 +1,14 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_klondike
-*
-* Namespace: Cti::Protocol
-* Class:     Klondike
-* Date:      2006-aug-08
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/31 20:31:22 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_KLONDIKE_H__
-#define __PROT_KLONDIKE_H__
-#pragma warning( disable : 4786)
-
-
-#include <queue>
-#include <set>
-#include <functional>
+#pragma once
 
 #include "prot_wrap.h"
 #include "prot_idlc.h"
 //#include "dnp_datalink.h"  //  DNP should be reimplemented as a wrapper protocol
 
-#include "rte_ccu.h"  //  so we can add knowledge of CCU routes
-
 #include "fifo_multiset.h"
+#include "critical_section.h"
+
+#include <queue>
+#include <functional>
 
 namespace Cti       {
 namespace Protocol  {
@@ -73,7 +51,7 @@ private:
 
     enum CommandCode;
 
-    struct command_state_map_t : public map<Command, vector<CommandCode> >
+    struct command_state_map_t : public std::map<Command, vector<CommandCode> >
     {
         command_state_map_t();
     };
@@ -392,8 +370,7 @@ public:
     string queueReport() const;
 
     void clearRoutes();
-    void addRoute(const CtiRouteCCUSPtr &route);
-    // --
+    void addRoute(unsigned bus, unsigned fixed, unsigned variable, unsigned stages);
 
     enum PLCProtocols
     {
@@ -455,5 +432,3 @@ public:
 }
 }
 
-
-#endif // #ifndef __PROT_KLONDIKE_H__

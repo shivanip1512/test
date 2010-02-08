@@ -279,11 +279,17 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 
                 for( itr = _routeMgr->begin(); itr != _routeMgr->end(); CtiRouteManager::nextPos(itr) )
                 {
+                    CtiRouteSPtr &ccu_route = itr->second;
+
                     //  routes for which this device is the transmitter
-                    if( itr->second &&
-                        itr->second->getCommRoute().getTrxDeviceID() == getID() )
+                    if( ccu_route && ccu_route->getCommRoute().getTrxDeviceID() == getID() )
                     {
-                        _klondike.addRoute(boost::static_pointer_cast<CtiRouteCCU>(itr->second));
+                        //  if( ccu_route->getType() == RouteTypeCCU )  ?
+
+                        _klondike.addRoute(ccu_route->getBus(),
+                                           ccu_route->getCCUFixBits(),
+                                           ccu_route->getCCUVarBits(),
+                                           ccu_route->getStages());
                     }
                 }
 

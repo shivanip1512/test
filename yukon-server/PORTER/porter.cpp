@@ -70,6 +70,7 @@
 #include "msg_trace.h"
 
 #include "rte_macro.h"
+#include "rte_xcu.h"
 
 #include "eventlog.h"
 #include "cparms.h"

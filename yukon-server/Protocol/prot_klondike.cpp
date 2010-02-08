@@ -457,7 +457,7 @@ void Klondike::doOutput(CommandCode command_code)
 
         case CommandCode_RoutingTableWrite:
         {
-            outbound.push_back(min((unsigned)_routes.size(), (unsigned)32));
+            outbound.push_back(min<size_t>(_routes.size(), RoutesMaximum));
 
             route_list_t::iterator itr = _routes.begin();
             int route = 0;
@@ -465,7 +465,7 @@ void Klondike::doOutput(CommandCode command_code)
             while( itr != _routes.end() && route <= RoutesMaximum )
             {
                 outbound.push_back(route);
-                outbound.push_back((itr->fixed  << 5) | itr->variable);
+                outbound.push_back((itr->fixed  << 3) | itr->variable);
                 outbound.push_back((itr->stages << 3) | itr->bus);
 
                 route++;
@@ -1314,14 +1314,14 @@ unsigned Klondike::getWaitingWorkPriority() const
 }
 
 
-void Klondike::addRoute(const CtiRouteCCUSPtr &new_route)
+void Klondike::addRoute(unsigned bus, unsigned fixed, unsigned variable, unsigned stages)
 {
     route_entry_t route;
 
-    route.bus      = new_route->getBus();
-    route.fixed    = new_route->getCCUFixBits();
-    route.variable = new_route->getCCUVarBits();
-    route.stages   = new_route->getStages();
+    route.bus      = bus;
+    route.fixed    = fixed;
+    route.variable = variable;
+    route.stages   = stages;
 
     _routes.push_back(route);
 }

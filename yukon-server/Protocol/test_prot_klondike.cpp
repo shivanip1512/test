@@ -96,7 +96,7 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, string outbound, s
 
     // check what was assigned into our Test_Wrap object
     BOOST_CHECK_EQUAL(tw.sent.size(), outbound.size());
-    BOOST_CHECK(!memcmp( &*(tw.sent.begin()), &*outbound.begin(), outbound.size()));  //  the remaining 4 bytes are the time, which can vary
+    BOOST_CHECK(!memcmp( &*(tw.sent.begin()), &*outbound.begin(), outbound.size()));
 
     BOOST_CHECK_EQUAL(tk.decode(xfer, 0), NoError);
     BOOST_CHECK(!tk.errorCondition());
@@ -171,6 +171,46 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
     //  then loads the queued request
     do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x13, 0x37, 0x00, 0x01, 0x0f, 0x10, 0x00, 0x03, 0x12, 0x34, 0x56),
                                             (nice_buffer() << 0x81, 0x13, 0x08, 0x00, 0x01, 0x03));
+    cout << "Transaction " << ++transactions << endl;
+}
+
+
+BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
+{
+    Test_Klondike  test_klondike;
+    Test_Wrap test_wrap;
+    CtiXfer xfer;
+    int transactions = 0;
+
+    test_klondike.setWrap(&test_wrap);
+
+    cout.setf(ios::hex, ios::basefield);
+    cout.width(2);
+
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadRoutes), NoError);
+
+    test_klondike.addRoute(1, 27, 3, 6);
+
+    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x34, 0x00),
+                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    cout << "Transaction " << ++transactions << endl;
+
+    //  fixed, variable, stages, bus
+
+    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x31, 0x01, 0x00, 0xdb, 0x31),
+                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    cout << "Transaction " << ++transactions << endl;
+
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadRoutes), NoError);
+
+    test_klondike.addRoute(2, 16, 5, 2);
+
+    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x34, 0x00),
+                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    cout << "Transaction " << ++transactions << endl;
+
+    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x31, 0x02, 0x00, 0xdb, 0x31, 0x01, 0x85, 0x12),
+                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 }
 
