@@ -2179,7 +2179,7 @@ INT CtiDeviceMCT470::executePutConfig( CtiRequestMsg         *pReq,
         if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
             OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-            OutMessage->Buffer.BSt.Message[1] = (parse.getiValue("read_interval", 120) + 14) / 15;  //  count of 15 second increments
+            OutMessage->Buffer.BSt.Message[1] = (parse.getiValue("read_interval", 300) + 14) / 15;  //  count of 15 second increments
             OutMessage->Buffer.BSt.Message[2] = 0;
             OutMessage->Buffer.BSt.Message[3] = parse.getiValue("precanned_table");
 
