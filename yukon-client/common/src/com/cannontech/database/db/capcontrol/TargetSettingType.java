@@ -11,6 +11,7 @@ public enum TargetSettingType {
     VOLT_WEIGHT("Volt Weight", "1.0", ""),
     PF_WEIGHT("PF Weight", "1.0", ""),
     DECISION_WEIGHT("Decision Weight", "1.0", ""),
+    VOLTAGE_REGULATION_MARGIN("Voltage Regulation Margin","1.0","Volts"),
     HOUR_ZERO("00:00", "0", "%"),
     HOUR_ONE("01:00", "0", "%"),
     HOUR_TWO("02:00", "0", "%"),

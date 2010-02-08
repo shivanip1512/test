@@ -136,9 +136,6 @@
     <bean id="tierPopupMenuController" class="com.cannontech.web.capcontrol.TierPopupMenuController">
         <property name="methodNameResolver" ref="menuMethodNameResolver"/>
         <property name="capControlCache" ref="capControlCache"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="authDao" ref="authDao"/>
-        <property name="capControlCommentService" ref="capControlCommentService"/>
     </bean>
     
 	<!-- Method name resolvers -->

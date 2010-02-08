@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,15 +19,14 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.LtcPointMapping;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.CCArea;
@@ -42,7 +42,7 @@ import com.cannontech.yukon.cbc.SubStation;
 public class TierPopupMenuController extends MultiActionController {
     private CapControlCache capControlCache;
     private PaoDao paoDao;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private CapControlCommentService capControlCommentService;
     private LtcService ltcService;
     private static final CapBankOperationalState[] allowedOperationStates;
@@ -54,11 +54,6 @@ public class TierPopupMenuController extends MultiActionController {
                                                                  CapBankOperationalState.Switched};
     }
     
-    public void setCapControlCommentService(
-            CapControlCommentService capControlCommentService) {
-        this.capControlCommentService = capControlCommentService;
-    }
-
     public ModelAndView specialAreaMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -96,8 +91,8 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = subStation.getCcDisableFlag();
-        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
-        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
+        boolean allowAddComments = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_COMMENTS, user);
         mav.addObject("allowAddComments", allowAddComments);
         mav.addObject("allowLocalControl", allowLocalControl);
         
@@ -136,9 +131,9 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = subBus.getCcDisableFlag();
-        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
         boolean isVerify = subBus.getVerificationFlag();
-        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        boolean allowAddComments = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_COMMENTS, user);
         mav.addObject("allowAddComments", allowAddComments);
         mav.addObject("allowLocalControl", allowLocalControl);
         
@@ -209,6 +204,7 @@ public class TierPopupMenuController extends MultiActionController {
         
         String ltcName = paoDao.getYukonPAOName(ltcId);
         List<LtcPointMapping> pointMappings = ltcService.getLtcPointMappings(ltcId);
+        Collections.sort(pointMappings);
         mav.addObject("mappings", pointMappings);
         mav.addObject("ltcName", ltcName);
         mav.setViewName("tier/popupmenu/ltcPointList.jsp");
@@ -228,8 +224,8 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = feeder.getCcDisableFlag();
-        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
-        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
+        boolean allowAddComments = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_COMMENTS, user);
         mav.addObject("allowAddComments", allowAddComments);
         mav.addObject("allowLocalControl", allowLocalControl);
         
@@ -274,9 +270,9 @@ public class TierPopupMenuController extends MultiActionController {
         boolean isTwoWay = CBCUtils.isTwoWay(cbcPaoObject);
         boolean is702xDevice = CBCUtils.is702xDevice(cbcPaoObject.getType());
         boolean is701xDevice = CBCUtils.is701xDevice(cbcPaoObject);
-        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
-        boolean allowFlip = authDao.checkRoleProperty(user, CBCSettingsRole.SHOW_FLIP_COMMAND);
-        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        boolean allowFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
+        boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
+        boolean allowAddComments = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_COMMENTS, user);
         mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
@@ -371,7 +367,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = capBank.getCcDisableFlag();
-        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        boolean allowAddComments = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_COMMENTS, user);
         mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
@@ -409,7 +405,7 @@ public class TierPopupMenuController extends MultiActionController {
         String paoName = capBank.getCcName();
         mav.addObject("paoName", paoName);
         
-        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        boolean allowAddComments = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_COMMENTS, user);
         mav.addObject("allowAddComments", allowAddComments);
         
         List<String> comments = capControlCommentService.getLastTenCommentsForActionAndType(paoId, CapControlCommand.OPERATIONAL_STATECHANGE);
@@ -493,8 +489,8 @@ public class TierPopupMenuController extends MultiActionController {
         String paoName = capObject.getCcName();
         mav.addObject("paoName", paoName);
         
-        boolean allowLocalControl = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
-        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
+        boolean allowAddComments = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_COMMENTS, user);
         mav.addObject("allowAddComments", allowAddComments);
         mav.addObject("allowLocalControl", allowLocalControl);
         
@@ -524,16 +520,23 @@ public class TierPopupMenuController extends MultiActionController {
         this.capControlCache = capControlCache;
     }
 
+    @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
-    }
-    
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
     }
     
     @Autowired
     public void setLtcService(LtcService ltcService) {
         this.ltcService = ltcService;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setCapControlCommentService(CapControlCommentService capControlCommentService) {
+        this.capControlCommentService = capControlCommentService;
     }
 }

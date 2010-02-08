@@ -48,6 +48,7 @@ public class StrategyPeakSettingsHelper {
                 settings.add(TargetSettingType.PF_WEIGHT.getPeakTargetSetting());
                 
                 settings.add(TargetSettingType.DECISION_WEIGHT.getPeakTargetSetting());
+                settings.add(TargetSettingType.VOLTAGE_REGULATION_MARGIN.getPeakTargetSetting());
                 break;
                 
             case TIME_OF_DAY :

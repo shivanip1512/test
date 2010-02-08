@@ -375,6 +375,13 @@ legend, .legendLikeLabel{
 
 .ltcPointTable {
 	border-collapse: collapse;
+	width: 100%;
+}
+
+div.ltcPointDiv {
+	width: 50%;
+	padding-left: 10px;
+	padding-bottom: 10px;
 }
 
 .myFaces_panelTabbedPane {
