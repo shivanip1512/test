@@ -68,9 +68,13 @@ public class DeviceRequestDetailController extends ReportControllerBase{
         sb.append("    <tr>" + LINE_SEPARATOR);
         
         sb.append("        <td style='padding-left: 30px;vertical-align: middle;'>");
-        sb.append("            <input type='radio' name='resultType' value='daterange' title='Get the request statistics within the date range. Only recorded up to the past 120 days.' checked='checked' onclick='enableDates(true)'>"); 
+        sb.append("            <input type='radio' name='resultType' value='daterange' ");
+        sb.append("                title='Get the request statistics within the date range. Only recorded up to the past 120 days.' ");
+        sb.append("                checked='checked' onclick='enableDates(true)'>");
+        
         sb.append(" Get Statistics For Date Range <span style='font-weight: bold;''> (Only the last 120 days are recorded.)</span>");
-        sb.append("            <span style='padding-left: 10px;'<input type='radio' name='resultType' value='lifetime' title='Get the lifetime request statistics.' onclick='enableDates(false)'></span>"); 
+        sb.append("            <span style='padding-left: 10px;'><input type='radio' name='resultType' value='lifetime' ");
+        sb.append("                title='Get the lifetime request statistics.' onclick='enableDates(false)'></span> ");
         sb.append(" Get Lifetime Statistics ");
         sb.append("        </td>");
         

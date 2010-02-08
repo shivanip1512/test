@@ -157,7 +157,7 @@ public class DeviceRequestDetailModel extends BareDatedReportModelBase<DeviceReq
                     row.success = "---";
                 }
                 row.numberOfSuccesses = completions;
-                double successPercent = completions / requests;
+                double successPercent = new Double(completions) / new Double(requests);
                 successPercent = successPercent * 100.0;
                 DecimalFormat df = new DecimalFormat("###.##");
                 row.successPercent = df.format(successPercent) + "%";
