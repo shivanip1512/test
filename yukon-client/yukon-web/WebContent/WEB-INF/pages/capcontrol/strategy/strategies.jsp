@@ -1,6 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+
 <cti:standardPage title="Strategies" module="capcontrol">
     <script type="text/javascript" language="JavaScript">
     var firstRun = true;
@@ -74,7 +76,7 @@
                                 <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyID}" class="imgLink">
                                     <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
                                 </a>
-                                <a href="javascript:removeStrategy(${item.strategyID}, '${item.strategyName}');" class="imgLink">
+                                <a href="javascript:removeStrategy(${item.strategyID}, '<spring:escapeBody javaScriptEscape="true">${item.strategyName}</spring:escapeBody>');" class="imgLink">
                                     <img class="rAlign editImg pointer" src="/WebConfig/yukon/Icons/delete.gif">
                                 </a>
                             </c:when>
