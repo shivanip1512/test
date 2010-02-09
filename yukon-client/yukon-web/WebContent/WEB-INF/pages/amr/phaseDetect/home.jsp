@@ -6,6 +6,8 @@
 <cti:msg key="yukon.web.modules.amr.phaseDetect.step1.sectionTitle" var="sectionTitle"/>
 <cti:msg key="yukon.web.modules.amr.phaseDetect.step1.noteLabel" var="noteLabel"/>
 <cti:msg key="yukon.web.modules.amr.phaseDetect.step1.noteText" var="noteText"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.error.noRouteSelected" var="noRouteSelected"/>
+<cti:msg key="yukon.web.modules.amr.phaseDetect.error.subWithNoRoutesSelected" var="subWithNoRoutesSelected"/>
 
 <cti:standardPage title="Phase Detection" module="amr">
     <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
@@ -31,7 +33,45 @@
 		    	button.enable();
 		    }
 		    var params = {'substationId': selection};
-            new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', evalScripts: true, parameters: params});
+		    
+		    new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', evalScripts: true, parameters: params,
+                onSuccess: function(resp, json) {
+            		var numOfRoutes = json.numOfRoutes;
+            		if(numOfRoutes > 0) {
+            			button.enable();
+            			$('errorDiv').hide();
+            		} else {
+            			button.disable();
+            			var selection = $F('substations'); 
+            			if(selection == '-1'){
+		    				$('errorDiv').hide();
+            			} else {
+            				$('errorSpan').innerHTML = '${subWithNoRoutesSelected}';
+	        				$('errorDiv').show();
+            			}
+            		}
+                }
+            });
+        }
+
+        function checkRoutes(){
+        	var button = $('nextButton');
+			var checkBoxes = $$('input[type="checkbox"]');
+			var checkedCount = 0;
+			for (i = 0; i < checkBoxes.length; i++) {
+				var checkBox = checkBoxes[i];
+				if(checkBox.checked){
+					checkedCount++;
+				}
+			}
+			if(checkedCount < 1) {
+				button.disable();
+				$('errorSpan').innerHTML = '${noRouteSelected}';
+				$('errorDiv').show();
+			} else {
+				$('errorDiv').hide();
+				button.enable();
+			}
         }
 	</script>
 	
@@ -50,6 +90,9 @@
                 </tr>
             </table>
             <input type="hidden" name="selectedSub" id="selectedSub" value="-1">
+            <div id="errorDiv" style="display: none;">
+		        <span id="errorSpan" class="errorRed">${noRouteSelected}</span>
+            </div>
 		    <table style="padding-right: 20px;padding-bottom: 10px;">
 		        <tr valign="top">
 		            <td style="padding-top: 3px;">

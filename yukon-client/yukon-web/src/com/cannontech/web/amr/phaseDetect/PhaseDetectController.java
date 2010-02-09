@@ -38,6 +38,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.dao.DeviceDao;
@@ -47,6 +48,9 @@ import com.cannontech.core.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Lists;
@@ -70,9 +74,10 @@ public class PhaseDetectController {
     private DeviceGroupService deviceGroupService;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private CommandRequestExecutionDao commandRequestExecutionDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping
-    public String home(ModelMap model) throws ServletException {
+    public String home(ModelMap model, String errorMsg) throws ServletException {
         if(phaseDetectService.getPhaseDetectData() != null){
             return "redirect:testPage";
         }
@@ -80,14 +85,19 @@ public class PhaseDetectController {
         List<Substation> substations = substationDao.getAll();
         model.addAttribute("substations", substations);
         
+        if(StringUtils.isNotBlank(errorMsg)){
+            model.addAttribute("errorMsg", errorMsg);
+        }
         return "phaseDetect/home.jsp";
     }
     
     @RequestMapping
-    public String routes(ModelMap model, int substationId) throws ServletException {
+    public String routes(ModelMap model, int substationId, HttpServletResponse response) throws ServletException {
+        int numOfRoutes = 0;
         try {
             Substation currentSubstation = substationDao.getById(substationId);
             List<Route> routes = strmDao.getRoutesBySubstationId(substationId);
+            numOfRoutes = routes.size();
             Map<Integer, Integer> routeSizeMap = Maps.newHashMap();
             
             int deviceCount = 0;
@@ -106,6 +116,11 @@ public class PhaseDetectController {
             model.addAttribute("show", false);
         }
         
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("numOfRoutes", numOfRoutes);
+        String jsonStr = jsonObject.toString();
+        response.addHeader("X-JSON", jsonStr);
+        
         return "phaseDetect/routes.jsp";
     }
     
@@ -119,6 +134,13 @@ public class PhaseDetectController {
             if(StringUtils.isNotBlank(value) && value.equalsIgnoreCase("on")){
                 readRoutes.add(route);
             }
+        }
+        if(readRoutes.isEmpty()){
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.phaseDetect.error.noRouteSelected");
+            model.addAttribute("errorMsg", errorMsg);
+            return "redirect:home";
         }
         Substation substation = substationDao.getById(selectedSub);
         PhaseDetectData data = new PhaseDetectData();
@@ -633,4 +655,8 @@ public class PhaseDetectController {
         this.commandRequestExecutionDao = commandRequestExecutionDao;
     }
     
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
 }
