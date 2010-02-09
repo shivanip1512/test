@@ -514,6 +514,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			return;
         }
         scheduleId = -1000;
+        holidayScheduleId = -1000;
+        holidayStrategyId = -1000;
 		// decide what editor type should be used
 		if (getDbPersistent() instanceof YukonPAObject) {
 			YukonPAObject pao = (YukonPAObject) getDbPersistent();
@@ -589,6 +591,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         isDualSubBusEdited = false;
 		pointTreeForm = null; 
 		scheduleId = -1000;
+		holidayScheduleId = -1000;
+	    holidayStrategyId = -1000;
 		unassignedBanks = null;
 		unassignedFeeders = null;
 		unassignedSubBuses = null;
