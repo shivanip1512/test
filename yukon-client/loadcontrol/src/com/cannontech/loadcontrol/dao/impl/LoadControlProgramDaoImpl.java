@@ -143,18 +143,17 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 		sql.append("lmpgh1.EventTime AS startTime,");
 		sql.append("lmpgh2.EventTime AS stopTime");
 		sql.append("FROM LMProgramGearHistory lmpgh1");
-		sql.append("LEFT JOIN LMProgramGearHistory lmpgh2 ON (lmpgh1.LMProgramHistoryId = lmpgh2.LMProgramHistoryId)");
+		sql.append("LEFT JOIN LMProgramGearHistory lmpgh2 ON (lmpgh1.LMProgramHistoryId = lmpgh2.LMProgramHistoryId AND lmpgh2.Action = 'Stop')");
 		sql.append("JOIN LMProgramHistory ph ON ((lmpgh1.LMProgramHistoryId = ph.LMProgramHistoryId))");
 		sql.append("JOIN YukonPAObject ypo ON (ph.programId = ypo.PAObjectId)");
 		sql.append("WHERE lmpgh1.Action = 'Start'");
-		sql.append("AND lmpgh2.Action = 'Stop'");
 		sql.append("AND lmpgh1.EventTime <=").appendArgument(stopDateTime);
-		sql.append("AND lmpgh2.EventTime >=").appendArgument(startDateTime);
+		sql.append("AND (lmpgh2.EventTime >=").appendArgument(startDateTime).append("OR lmpgh2.EventTime IS NULL)");
 		if (programId != null) {
     		sql.append("AND ph.ProgramId").eq(programId);
     	}
 		sql.append("ORDER BY lmpgh1.LMProgramHistoryId");
-    	
+		
 		List<ProgramControlHistory> programControlHistory = yukonJdbcOperations.query(sql, new ProgramControlHistoryMapper());
     	return programControlHistory;
     }
