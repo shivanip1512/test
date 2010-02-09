@@ -35,6 +35,7 @@ extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 extern ULONG _SEND_TRIES;
 extern BOOL _USE_FLIP_FLAG;
 extern BOOL _LOG_MAPID_INFO;
+extern ULONG _IVVC_KEEPALIVE;
 
 /*===========================================================================
     CtiCCCommandExecutor
@@ -7269,7 +7270,7 @@ void CtiCCSubstationVerificationExecutor::execute()
         case CtiCCSubstationVerificationMsg::FORCE_DISABLE_SUBSTATION_BUS_VERIFICATION:
         DisableSubstationBusVerification(true); //true force substation bus verification to stop immediately
         break;
-            
+
         case CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION:
         DisableSubstationBusVerification(); //default false = don't force immediate stop
         break;
@@ -8370,8 +8371,8 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
     }
 
     int pointId = point.getPointId();
-    //Arbitrary number. Just the act of a value being sent resets the no comms timer.
-    double value = 1.0;
+
+    double value = _IVVC_KEEPALIVE*2;//This is the time til remote mode expires.
 
     CtiMessage* msg = new CtiPointDataMsg (pointId,value,NormalQuality,AnalogPointType);
     msg->setMessagePriority(15);

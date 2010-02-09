@@ -143,6 +143,7 @@ void DispatchConnection::writeIncomingMessageToQueue(CtiMessage* msgPtr)
     }
     else
     {
+        CtiLockGuard< CtiMutex > guard(_listenerMux);
         for each (MessageListener* listener in _messageListeners)
         {
             if (listener != NULL)
@@ -159,10 +160,12 @@ void DispatchConnection::writeIncomingMessageToQueue(CtiMessage* msgPtr)
 
 void DispatchConnection::addMessageListener(MessageListener* messageListener)
 {
+    CtiLockGuard< CtiMutex > guard(_listenerMux);
     _messageListeners.insert(messageListener);
 }
 
 void DispatchConnection::removeMessageListener(MessageListener* messageListener)
 {
+    CtiLockGuard< CtiMutex > guard(_listenerMux);
     _messageListeners.erase(messageListener);
 }

@@ -42,6 +42,12 @@ class IVVCState
         const CtiTime& getLastTapOpTime();
         void setLastTapOpTime(const CtiTime& opTime);
 
+        void setControlledBankId(long bankId);
+        long getControlledBankId() const;
+
+        void setPaoId(long paoId);
+        long getPaoId() const;
+
         struct EstimatedData
         {
             bool            operated;
@@ -57,9 +63,6 @@ class IVVCState
 
         EstimatedDataMap    _estimated;
 
-        void setControlledBankId(long id);
-        long getControlledBankId() const;
-
     private:
 
         CtiTime _timeStamp;
@@ -72,6 +75,7 @@ class IVVCState
         State _state;
 
         long _controlledId;
+        long _paoId;
 
 };
 

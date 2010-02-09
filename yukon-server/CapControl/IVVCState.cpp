@@ -1,10 +1,11 @@
 #include "yukon.h"
 #include "IVVCState.h"
 
-IVVCState::IVVCState()
-    : _state(IVVC_WAIT),
-      _scannedRequest(false),
-      _controlledId(-1)
+IVVCState::IVVCState() :
+    _state(IVVC_WAIT),
+    _scannedRequest(false),
+    _controlledId(-1),
+    _paoId(0)
 {
 }
 
@@ -72,14 +73,25 @@ void IVVCState::setLastTapOpTime(const CtiTime& opTime)
 }
 
 
-void IVVCState::setControlledBankId(long id)
+void IVVCState::setControlledBankId(long bankId)
 {
-    _controlledId = id;
+    _controlledId = bankId;
 }
 
 
 long IVVCState::getControlledBankId() const
 {
     return _controlledId;
+}
+
+void IVVCState::setPaoId(long paoId)
+{
+    _paoId = paoId;
+}
+
+
+long IVVCState::getPaoId() const
+{
+    return _paoId;
 }
 

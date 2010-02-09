@@ -6,6 +6,8 @@
 
 #include "IVVCStrategy.h"
 #include "IVVCAlgorithm.h"
+#include "ccutil.h"
+#include "ccsubstationbusstore.h"
 
 IVVCStrategy::IVVCStrategy()
     : ControlStrategy(),
@@ -238,9 +240,9 @@ const double IVVCStrategy::getVoltageRegulationMargin(const bool isPeak) const
 
 
 /**
- * These five are overloaded to return the proper messaging 
- * values.  It depends on the _isPeakTime flag being set to the 
- * proper value. 
+ * These five are overloaded to return the proper messaging
+ * values.  It depends on the _isPeakTime flag being set to the
+ * proper value.
  */
 double IVVCStrategy::getPeakLag() const
 {
@@ -311,15 +313,25 @@ void IVVCStrategy::unregisterControllable(const long paoid)
 void IVVCStrategy::execute()
 {
     std::list<IVVCStatePtr>     runList;
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    CtiCCSubstationBusPtr busPtr = NULL;
 
     {
         CtiLockGuard<CtiMutex> guard(_mapMutex);
 
         for (PaoToStateMap::iterator b = _paoStateMap.begin(), e = _paoStateMap.end(); b != e; ++b)
         {
-            if ( true )     // if we are a CtiCCSubstationBus object - needs condition obviously!
+            int paoId = b->first;
+            CapControlType type = store->determineTypeById(paoId);
+
+            if ( type == SubBus )     // if we are a CtiCCSubstationBus object - needs condition obviously!
             {
+                b->second.second->setPaoId(paoId);
                 runList.push_back( b->second.second );  // add our IVVCState object to the list of objects to execute.
+            }
+            else
+            {
+                //Warning bad things attached to this strategy
             }
         }
     }
@@ -327,10 +339,16 @@ void IVVCStrategy::execute()
 
     for (std::list<IVVCStatePtr>::iterator b = runList.begin(), e = runList.end(); b != e; ++b)
     {
-        CtiCCSubstationBusPtr busPtr = NULL;
 
-        IVVCAlgorithm::execute( *b, busPtr, this, true);
-
+        busPtr = store->findSubBusByPAObjectID( (*b)->getPaoId());
+        if (busPtr != NULL)
+        {
+            IVVCAlgorithm::execute( *b, busPtr, this, true);
+        }
+        else
+        {
+            //debug
+        }
     }
 
 }

@@ -1005,9 +1005,17 @@ void CtiCapController::controlLoop()
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            if (_ENABLE_IVVC == TRUE)
+            try
             {
-                store->executeAllStrategies();
+                if (_ENABLE_IVVC == TRUE)
+                {
+                    store->executeAllStrategies();
+                }
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Execute Strategies choked! " << endl;
             }
 
             rwnow = rwnow.now();

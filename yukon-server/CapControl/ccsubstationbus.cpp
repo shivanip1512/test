@@ -2374,6 +2374,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
 {
     BOOL keepGoing = TRUE;
 
+    if (getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar)
+    {
+        keepGoing = FALSE;
+    }
+
     checkForMaxDailyOpsHit();
     if( getStrategy()->getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
     {

@@ -24,6 +24,7 @@ class IM_EX_MSG DispatchConnection : public CtiConnection
     private:
 
         mutable CtiMutex _regListMux;
+        mutable CtiMutex _listenerMux;
 
         std::set<long> _addList;
         std::set<long> _removeList;

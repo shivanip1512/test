@@ -12,7 +12,7 @@ GroupPointDataRequest::GroupPointDataRequest(DispatchConnectionPtr connection) :
 
 GroupPointDataRequest::~GroupPointDataRequest()
 {
-    if (_connection->valid() == 1)
+    if (_connection.get() != NULL)
     {
         std::list<long> points;
         for each (long pointId in _points)
