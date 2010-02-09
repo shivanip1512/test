@@ -30,6 +30,7 @@ private:
 
    BOOL                 bServerClosing;
    BOOL                 ListenerAvailable;
+   RWSocket             _listenerSocket;
 
    CtiDeviceManager    *DeviceManager;
    CtiPointManager     *PointManager;

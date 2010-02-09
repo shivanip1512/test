@@ -1099,6 +1099,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     PortShareManager.erase(PortShareManager.begin(), PortShareManager.end());
 
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+    _sysMsgThread.interrupt(CtiThread::SHUTDOWN);
 
     if(_gwThread.isValid())                 _gwThread.requestCancellation(200);
     if(_pilThread.isValid())                _pilThread.requestCancellation(200);
@@ -1115,6 +1116,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     if(PorterVerificationThread.isRunning())    PorterVerificationThread.interrupt(CtiPorterVerification::SHUTDOWN);
 
     ThreadMonitor.join();
+    _sysMsgThread.join();
 
     if(_connThread.isValid())
     {

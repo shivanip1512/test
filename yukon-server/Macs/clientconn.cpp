@@ -183,7 +183,12 @@ void CtiMCConnection::_sendthr()
             }
         }
         while ( isValid() && oStream->good() );
-    } catch ( RWxmsg& msg )
+    }
+    catch(RWCancellation& )
+    {
+        throw;
+    } 
+    catch ( RWxmsg& msg )
     {
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
@@ -254,6 +259,10 @@ void CtiMCConnection::_recvthr()
         }
         while ( isValid()  && iStream->good() );
     }
+    catch(RWCancellation& )
+    {
+        throw;
+    }
     catch ( RWxmsg& msg )
     {
         if( gMacsDebugLevel & MC_DEBUG_CONN )
@@ -316,6 +325,14 @@ void CtiMCConnection::_close()
         _closed = true;
     }
 
+    // Note this is similar to connection.cpp. First we tell the thread to stop
+    // then we delete the stream that should unblock the thread.
+    if( !_recvrunnable.isSelf() )
+        _recvrunnable.requestCancellation(1);
+
+    if( !_sendrunnable.isSelf() )
+        _sendrunnable.requestCancellation(1);
+
     delete _portal;
     delete sinbuf;
     delete soubuf;
@@ -333,11 +350,11 @@ void CtiMCConnection::_close()
     _out.write(unblocker);
 
     if( !_recvrunnable.isSelf() )
-       _recvrunnable.requestCancellation();
+       _recvrunnable.join(2000);
 
 
     if( !_sendrunnable.isSelf() )
-        _sendrunnable.requestCancellation();
+        _sendrunnable.join(2000);
 
 
     try

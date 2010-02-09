@@ -288,7 +288,24 @@ void CtiPILServer::mainThread()
 
                 // Force the inherited Listener socket to close!
                 Inherited::shutdown();                   // Should cause the ConnThread_ to be closed!
-                ConnThread_.join();                      // Wait for the Conn thread to die.
+                                                         //
+                try
+                {
+                    // This forces the listener thread to exit on shutdown.
+                    _listenerSocket.close();
+                } 
+                catch(...)
+                {
+                    // Dont really care, we are shutting down.
+                }
+                if( ConnThread_.join(10000) == RW_THR_TIMEOUT) // Wait for the Conn thread to die.
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " PIL Server shutting down the ConnThread_: FAILED " << endl;
+                    }
+                    ConnThread_.terminate();
+                }
 
                 ResultThread_.requestCancellation(750);
 
@@ -380,7 +397,6 @@ void CtiPILServer::connectionThread()
     BOOL              bQuit = FALSE;
 
     CtiCommandMsg     *CmdMsg = NULL;
-    RWSocket           socket;
 
     CtiExchange       *XChg;
 
@@ -394,9 +410,9 @@ void CtiPILServer::connectionThread()
         NetPort  = RWInetPort(PORTERINTERFACENEXUS);
         NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
-        socket.listen(NetAddr);
+        _listenerSocket.listen(NetAddr);
         
-        if(!socket.valid())
+        if(!_listenerSocket.valid())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -413,11 +429,11 @@ void CtiPILServer::connectionThread()
         throw;
     }
 
-    for(;!bQuit;)
+    for(;!bQuit && !bServerClosing;)
     {
         try
         { // It seems necessary to make this copy. RW does this and now so do we.
-            RWSocket tempSocket = socket;
+            RWSocket tempSocket = _listenerSocket;
             RWSocket newSocket = tempSocket.accept();
             RWSocketPortal sock;
 
@@ -497,7 +513,7 @@ void CtiPILServer::connectionThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ConnThread: " << rwThreadId() << " is terminating... " << endl;
+        dout << CtiTime() << " ConnThread: " << rwThreadId() << " is properly shutdown... " << endl;
     }
 
     _broken = true;
@@ -759,6 +775,7 @@ void CtiPILServer::nexusThread()
 {
     INT i = 0;
     INT status = NORMAL;
+    int err;
     /* Time variable for decode */
     CtiTime      TimeNow;
 
@@ -806,29 +823,6 @@ void CtiPILServer::nexusThread()
             }
         }
 
-        if(bServerClosing)
-        {
-            continue;
-        }
-
-        InMessage = CTIDBG_new INMESS;
-        ::memset(InMessage, 0, sizeof(*InMessage));
-
-        /* get a result off the port pipe */
-        if(PilToPorter.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " NexusThread : " << rwThreadId() << " just failed to read a full InMessage." << endl;
-            }
-
-            Sleep(500); // No runnaway loops allowed.
-
-            delete InMessage;
-            InMessage = 0;
-            continue;
-        }
-
         try
         {
             rwServiceCancellation();
@@ -841,6 +835,31 @@ void CtiPILServer::nexusThread()
 
             continue;
             // throw;
+        }
+
+        if(bServerClosing)
+        {
+            continue;
+        }
+
+        InMessage = CTIDBG_new INMESS;
+        ::memset(InMessage, 0, sizeof(*InMessage));
+
+        /* get a result off the port pipe */
+        err = PilToPorter.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, 5);
+        if(err || BytesRead < sizeof(*InMessage))
+        {
+            if(err != ERR_CTINEXUS_READTIMEOUT)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " NexusThread : " << rwThreadId() << " just failed to read a full InMessage." << endl;
+            }
+
+            Sleep(500); // No runnaway loops allowed.
+
+            delete InMessage;
+            InMessage = 0;
+            continue;
         }
 
         // Enqueue the INMESS into the appropriate list
