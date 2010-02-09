@@ -40,6 +40,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
@@ -253,9 +254,19 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
 	@Override
 	public boolean assignController(int capbankId, int controllerId) {
-    	String assignedController = "UPDATE CAPBANK SET CONTROLDEVICEID=? WHERE DEVICEID = ?";
+	    List<PointBase> cbcPoints = getPointsForPao(controllerId);
+	    PointBase controlPoint = null;
+	    for(PointBase pointBase : cbcPoints){
+	        if(pointBase.getPoint().getPointOffset() == 1 && PointType.getForString(pointBase.getPoint().getPointType()) == PointType.Status){
+	            controlPoint = pointBase;
+	            break;
+	        }
+	    }
+	    if(controlPoint == null) return false;
+	    
+    	String assignedController = "UPDATE CAPBANK SET CONTROLDEVICEID = ?, CONTROLPOINTID = ? WHERE DEVICEID = ?";
     	
-		int rowsAffected = simpleJdbcTemplate.update(assignedController,controllerId,capbankId);
+		int rowsAffected = simpleJdbcTemplate.update(assignedController,controllerId, controlPoint.getPoint().getPointID(), capbankId);
 		
 		boolean result = (rowsAffected == 1);
 		return result;
