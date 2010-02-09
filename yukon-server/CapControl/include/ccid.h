@@ -84,7 +84,7 @@ class CtiTime;
 #define CC_DEBUG_TIMEOFDAY         0x02000000
 #define CC_DEBUG_UNSOLICITED       0x04000000
 #define CC_DEBUG_PERFORMANCE       0x08000000
-#define CC_DEBUG_IVVC              0x08000100
+#define CC_DEBUG_IVVC              0x00000100
 
 extern CtiTime gInvalidCtiTime;
 extern ULONG gInvalidCtiTimeSeconds;
