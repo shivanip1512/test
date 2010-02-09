@@ -123,7 +123,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
 	private static final String EXTENSION_POSITION_NUMBER_STRING = "positionNumber";
 	private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
-	
+
+	// Strings to represent MultiSpeak method calls, generally used for logging.
+    private static final String METER_REMOVE_STRING = "MeterRemoveNotification";
+    private static final String METER_CHANGED_STRING = "MeterChangedNotification";
+    private static final String METER_ADD_STRING = "MeterAddNotification";
+    private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationChangedNotification";
+    
     /**
      * Get the static instance of Multispeak (this) object.
      * Adds a message listener to the pil connection instance. 
@@ -544,7 +550,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     @Override
                     protected void doInTransactionWithoutResult(TransactionStatus status){
                        
-                        ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, "meterAddNotification");
+                        ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, METER_ADD_STRING);
                         if( errorObject == null) {
                             try {
                                 com.cannontech.amr.meter.model.Meter meterToAdd = getMeterToAdd(mspMeter, paoAlias, mspVendor);
@@ -564,14 +570,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // Transactional code threw application exception -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                                  "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", "MeterAddNotification", mspVendor.getCompanyName());
+                                                                 "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
                 CTILogger.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                                  "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", "MeterAddNotification", mspVendor.getCompanyName());
+                                                                 "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
                 CTILogger.error(ex);
             }
@@ -624,14 +630,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             	//Meter exists if no exception was thrown
                 if( !meter.isDisabled()) {//enabled
                     // Added meter to Inventory
-                    addToGroup(meter, SystemGroupEnum.INVENTORY, "MeterRemovedNotification", mspVendor);
+                    addToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
 
                     LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
                     YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                     if (yukonPaobject instanceof MCTBase){
                             yukonPaobject.setDisabled(true);
                             dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
-                            mspObjectDao.logMSPActivity("MeterRemoveNotification",
+                            mspObjectDao.logMSPActivity(METER_REMOVE_STRING,
                                            "MeterNumber(" + meterNo + ") - Meter Disabled.",
                                            mspVendor.getCompanyName());
                     }
@@ -639,14 +645,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 else {
                     ErrorObject err = mspObjectDao.getErrorObject(meterNo,
                                                                      "Warning: MeterNumber(" + meterNo + ") - Meter is already disabled. No updates were made.",
-                                                                     "Meter", "MeterRemoveNotification", mspVendor.getCompanyName());
+                                                                     "Meter", METER_REMOVE_STRING, mspVendor.getCompanyName());
                     errorObjects.add(err);
                 }
             } 
             catch (NotFoundException e) {
  	               
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNo, "MeterNumber", "Meter",
-                										"MeterRemoveNotification", mspVendor.getCompanyName());
+                										METER_REMOVE_STRING, mspVendor.getCompanyName());
 				errorObjects.add(err);
             } 
         }
@@ -674,18 +680,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         		String meterNumber = mspMeter.getMeterNo();
                         		com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
                         		
-                        		//TODO - can/should we possibly compare to see if paoName needs to be updated too?                        		
+                        		changeMeter(mspMeter, meter, mspVendor, paoAlias, SERV_LOC_CHANGED_STRING);
                         		
                                 //Update billing cycle information
                                 String billingCycle = mspServiceLocation.getBillingCycle();
-                                updateBillingCyle(billingCycle, meterNumber, meter, "ServiceLocationChangedNotification", mspVendor);
+                                updateBillingCyle(billingCycle, meterNumber, meter, SERV_LOC_CHANGED_STRING, mspVendor);
                         	}
                                
                         } else {
                             ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
                             		paoAliasStr + "ServiceLocation(" + mspServiceLocation.getObjectID()+ ") - No meters returned from vendor for location.",
                             		"ServiceLocation",
-                            		"ServiceLocationChangedNotification",
+                            		SERV_LOC_CHANGED_STRING,
                             		mspVendor.getCompanyName());
                             errorObjects.add(err);
                         }
@@ -696,7 +702,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(), 
                                                                  "X Exception: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(), 
                                                                  "ServiceLocation",
-                                                                 "ServiceLocationChangedNotification",
+                                                                 SERV_LOC_CHANGED_STRING,
                                                                  mspVendor.getCompanyName());
                 errorObjects.add(err);
                 CTILogger.error(ex);
@@ -705,7 +711,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(), 
                                                                  "X Error: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(), 
                                                                  "ServiceLocation",
-                                                                 "ServiceLocationChangedNotification",
+                                                                 SERV_LOC_CHANGED_STRING,
                                                                  mspVendor.getCompanyName());
                 errorObjects.add(err);
                 CTILogger.error(ex);
@@ -726,16 +732,16 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     protected void doInTransactionWithoutResult(TransactionStatus status){
                         String mspAddress;
                         
-                        ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor, "meterChangedNotification");
+                        ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor, METER_CHANGED_STRING);
                         if( invalidMeterError == null) {
                             mspAddress = mspMeter.getNameplate().getTransponderID().trim();
                             try {
                                 com.cannontech.amr.meter.model.Meter meter = meterDao.getForPhysicalAddress(mspAddress);
-                                changeMeter(mspMeter, meter, mspVendor, paoAlias);
+                                changeMeter(mspMeter, meter, mspVendor, paoAlias, METER_CHANGED_STRING);
                             } 
                             catch (NotFoundException e) {
                                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo(), "Address: " + mspAddress, "Meter",
-                                		"MeterChangedNotification", mspVendor.getCompanyName());
+                                                                                      METER_CHANGED_STRING, mspVendor.getCompanyName());
                                 errorObjects.add(err);              
                             }
                         } else {
@@ -747,14 +753,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // Transactional code threw application exception -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                                  "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", "MeterChangedNotification", mspVendor.getCompanyName());
+                                                                 "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
                 CTILogger.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                                  "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
-                                                                 "Meter", "MeterChangedNotification", mspVendor.getCompanyName());
+                                                                 "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
                 CTILogger.error(ex);
             }
@@ -853,33 +859,26 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         // CREATE DEVICE - new device is automatically added to template's device groups
         SimpleDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
-        mspObjectDao.logMSPActivity("MeterAddNotification", "DeviceName(" + paoName + ") - Meter created.", mspVendor.getCompanyName());
+        mspObjectDao.logMSPActivity(METER_ADD_STRING, "DeviceName(" + paoName + ") - Meter created.", mspVendor.getCompanyName());
         
         // UPDATE DEVICE METERNUMBER, ADDRESS
         deviceUpdateService.changeAddress(newDevice, Integer.valueOf(address));
         deviceUpdateService.changeMeterNumber(newDevice, meterNumber);
-        mspObjectDao.logMSPActivity("MeterAddNotification", "DeviceName(" + paoName+ ") - Set Meter number (" + meterNumber + ") and Address (" + address + ").", mspVendor.getCompanyName());
+        mspObjectDao.logMSPActivity(METER_ADD_STRING, "DeviceName(" + paoName+ ") - Set Meter number (" + meterNumber + ") and Address (" + address + ").", mspVendor.getCompanyName());
         
         // UPDATE BILLING GROUP
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
         String cycleGroupName = mspServiceLocation.getBillingCycle();
-        updateBillingCyle(cycleGroupName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
+        updateBillingCyle(cycleGroupName, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
         
         // UPDATE SubstationName GROUP
-        updateSubstationGroup(substationName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
+        updateSubstationGroup(substationName, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
         
         // ROUTES
         updateMeterRouteForSubstation(newDevice, mspVendor, substationName, meterNumber);
     }
     
-    
-    private void updateMeterRouteForSubstation(int paoId, MultispeakVendor mspVendor, String substationName, String meterNumber) {
-    	
-    	SimpleDevice meterDevice = deviceDao.getYukonDevice(paoId);
-    	updateMeterRouteForSubstation(meterDevice, mspVendor, substationName, meterNumber);
-    }
-    
-    private void updateMeterRouteForSubstation(SimpleDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
+    private void updateMeterRouteForSubstation(YukonDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
     	
     	try {
     		
@@ -897,22 +896,22 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
 	            // initally set route to first sub mapping
 	            deviceUpdateService.changeRoute(meterDevice, routeIds.get(0));
-	            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route initially set to " + routeNames.get(0) + ", will run route discovery.", mspVendor.getCompanyName());
+	            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - Route initially set to " + routeNames.get(0) + ", will run route discovery.", mspVendor.getCompanyName());
 	        
 	            // run route discovery
 	            LiteYukonUser liteYukonUser = UserUtils.getYukonUser(); 
 	            deviceUpdateService.routeDiscovery(meterDevice, routeIds, liteYukonUser);
 	            
-	            mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor.getCompanyName());
+	            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor.getCompanyName());
 	        
 	        // no routes for sub
 	        } else {
-	        	mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from template device.", mspVendor.getCompanyName());
+	        	mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from template device.", mspVendor.getCompanyName());
 	        }
         
 	     // bad sub name
 	    } catch(NotFoundException e) {
-	        mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", Bad substation name.", mspVendor.getCompanyName());
+	        mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - " + e.getMessage() + ", Bad substation name.", mspVendor.getCompanyName());
 	    }
     	
     }
@@ -990,9 +989,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     /**
      * Removes the Meter from all Substation group memberships (all children under Substation).
      * Adds the Meter to 'substationName' Substation child group.  If the substation group does not already
-     * exist, then a new Substation sub group is created. 
+     * exist, then a new Substation sub group is created.
+     * @return true if added to a new substation group.  
      */
-    private void updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice,
+    private boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice,
             String logActionStr, MultispeakVendor mspVendor) {
 
         if (!StringUtils.isBlank(substationName)) {
@@ -1000,8 +1000,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             //Remove from all substation membership groups
             DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.SUBSTATION_NAME);
             StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(substationNameDeviceGroup);
-            updatePrefixGroup(substationName, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
+            return updatePrefixGroup(substationName, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
         }
+        return false;
     }
 
     /**
@@ -1014,8 +1015,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param logActionStr
      * @param mspVendor
      * @param deviceGroupParent
+     * @return true if added to new prefix group.
      */
-    private void updatePrefixGroup(String groupName, String meterNumber,
+    private boolean updatePrefixGroup(String groupName, String meterNumber,
                              YukonDevice yukonDevice, String logActionStr,
                              MultispeakVendor mspVendor,
                              StoredDeviceGroup deviceGroupParent) {
@@ -1024,7 +1026,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, yukonDevice);
         for (StoredDeviceGroup deviceGroup : deviceGroups) {
             if( deviceGroup.getName().equalsIgnoreCase(groupName) ) {
-                System.out.println("Already in group:  " + groupName);
+                CTILogger.debug("MeterNumber(" + meterNumber + ") - Already in group:  " + groupName);
                 alreadyInGroup = true;
             } else {
                 deviceGroupMemberEditorDao.removeDevices(deviceGroup, yukonDevice);
@@ -1041,6 +1043,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                            "MeterNumber(" + meterNumber+ ") - Added to Group: " + deviceGroup.getFullName() + ".",
                            mspVendor.getCompanyName());
         }
+        return !alreadyInGroup;
     }
 
     /**
@@ -1359,7 +1362,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
                                                           "Error: MeterNumber(" + meterNumber + ") - SubstationName(" + 
                                                           substationName + ") - " + errorReason + ".  Meter was NOT added or updated",
-                                                          "Meter", "MeterAddNotification", mspVendor.getCompanyName());
+                                                          "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
              return err;
         }
         
@@ -1381,7 +1384,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         } catch (NotFoundException e) {
             ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
                                                           "Error: MeterNumber(" + meterNumber + ")- AMRMeterType(" + templateName + ") NOT found in Yukon.",
-                                                          "Meter", "MeterAddNotification", mspVendor.getCompanyName());
+                                                          "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
             return err;
         }
         return null;
@@ -1400,7 +1403,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             ErrorObject err = mspObjectDao.getErrorObject(meter.getMeterNumber(), 
                                                              "Error: MeterNumber(" + meter.getMeterNumber()+ ") - Meter is already active." + 
                                                              "DeviceName: " + meter.getName() + "; Address: " + meter.getAddress() + ". No updates were made.",
-                                                             "Meter", "MeterAddNotification", mspVendor.getCompanyName());
+                                                             "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
             return err;
         }
         return null;
@@ -1480,11 +1483,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         // Verify substation name
         String substationName = getMeterSubstationName(mspMeter);
         if (StringUtils.isBlank(substationName)) {
-        	mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meter.getMeterNumber() + ") - substation name not provided, route locate will not happen.", mspVendor.getCompanyName());
+        	mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meter.getMeterNumber() + ") - substation name not provided, route locate will not happen.", mspVendor.getCompanyName());
         } else {
         	err = isValidSubstation(substationName, meter.getMeterNumber(), mspVendor);
         	if (err != null) {
-        		mspObjectDao.logMSPActivity("MeterAddNotification", "MeterNumber(" + meter.getMeterNumber() + ") - substation name is invalid.", mspVendor.getCompanyName());
+        		mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meter.getMeterNumber() + ") - substation name is invalid.", mspVendor.getCompanyName());
         		return err;
         	}
         }
@@ -1495,10 +1498,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String billingCycle = mspServiceLocation.getBillingCycle();
         
         //Enable Meter and update applicable fields.
-        removeFromGroup(meter, SystemGroupEnum.INVENTORY, "MeterAddNotification", mspVendor);
+        removeFromGroup(meter, SystemGroupEnum.INVENTORY, METER_ADD_STRING, mspVendor);
     
         //update the billing group from CIS billingCyle
-        updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, "MeterAddNotification", mspVendor);
+        updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, METER_ADD_STRING, mspVendor);
         
         LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
@@ -1538,30 +1541,29 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             logString += "(Addr-" + currentAddress + " to " + newAddress + ");";
         }
         
-        //Update route
-        if (!StringUtils.isBlank(substationName)) {
-            //update the substation group
-            updateSubstationGroup(substationName, meter.getMeterNumber(), meter, "MeterAddNotification", mspVendor);
-            
-        	updateMeterRouteForSubstation(yukonPaobject.getPAObjectID(), mspVendor, substationName, meter.getMeterNumber());
-        }
-        
         //Enable the meter
         yukonPaobject.setDisabled(false);
         //Update the meter
         dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
-        mspObjectDao.logMSPActivity("MeterAddNotification",
+        mspObjectDao.logMSPActivity(METER_ADD_STRING,
                        "MeterNo(" + meter.getMeterNumber()+ ");Enabled;" + logString,
                        mspVendor.getCompanyName());
 
-        changeDeviceType(mspMeter, meter, mspVendor, "MeterAddNotification");
+        changeDeviceType(mspMeter, meter, mspVendor, METER_ADD_STRING);
+        
+        if (!StringUtils.isBlank(substationName)) {
+            //update the substation group
+            updateSubstationGroup(substationName, meter.getMeterNumber(), meter, METER_ADD_STRING, mspVendor);
+            //Update route (_after_ meter is enabled).
+            updateMeterRouteForSubstation(meter, mspVendor, substationName, meter.getMeterNumber());
+        }
         //TODO Read the Meter.
         return null;
     }
 
     /** Helper method to update meter based on the mspMeter.
      * PaoName and MeterNumber will be updated if changed.
-     * Device will be enabled.
+     * Substation group information will be updated.
      * @param mspMeter
      * @param meter
      * @param mspVendor
@@ -1570,7 +1572,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private void changeMeter(Meter mspMeter, 
             com.cannontech.amr.meter.model.Meter meter, 
             MultispeakVendor mspVendor,
-            int paoAlias) {
+            int paoAlias, String logActionStr) {
         
         final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
         boolean dbChange = false;
@@ -1610,17 +1612,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
         }
         
-        // Verify substation name
+        //update the substation group
         String substationName = getMeterSubstationName(mspMeter);
-        if (!StringUtils.isBlank(substationName)) {
-            //update the substation group
-            updateSubstationGroup(substationName, meter.getMeterNumber(), meter, "MeterAddNotification", mspVendor);
+        boolean addedToGroup = updateSubstationGroup(substationName, meter.getMeterNumber(), meter, logActionStr, mspVendor);
+        if (addedToGroup) {
+            //If the substation changed, we should attempt to update the route info too.
+            updateMeterRouteForSubstation(meter, mspVendor, substationName, meter.getMeterNumber());
         }
 
-        mspObjectDao.logMSPActivity("MeterChangedNotification",
+        mspObjectDao.logMSPActivity(logActionStr,
                        paoNameLog,
                        mspVendor.getCompanyName());
-        mspObjectDao.logMSPActivity("MeterChangedNotification",
+        mspObjectDao.logMSPActivity(logActionStr,
                        meterNumberLog,
                        mspVendor.getCompanyName());
 
