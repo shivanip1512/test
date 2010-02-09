@@ -31,7 +31,7 @@ _dialable(0),
 _socket(INVALID_SOCKET),
 _open(false),
 _connected(false),
-_lastConnect(0)
+_lastConnect(0UL)
 {
 }
 
@@ -40,7 +40,7 @@ _dialable(dial),
 _socket(INVALID_SOCKET),
 _open(false),
 _connected(false),
-_lastConnect(0)
+_lastConnect(0UL)
 {
     if(_dialable != 0)
     {
