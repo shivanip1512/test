@@ -31,7 +31,7 @@ _dialable(0),
 _socket(INVALID_SOCKET),
 _open(false),
 _connected(false),
-_lastConnect(CtiTime::neg_infin)
+_lastConnect(0)
 {
 }
 
@@ -40,7 +40,7 @@ _dialable(dial),
 _socket(INVALID_SOCKET),
 _open(false),
 _connected(false),
-_lastConnect(CtiTime::neg_infin)
+_lastConnect(0)
 {
     if(_dialable != 0)
     {
