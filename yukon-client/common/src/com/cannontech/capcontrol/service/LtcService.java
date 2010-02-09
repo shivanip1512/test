@@ -27,7 +27,6 @@ public class LtcService {
     public List<LtcPointMapping> getLtcPointMappings(int ltcId) {
         List<LtcPointMapping> pointMappings = Lists.newArrayList();
         YukonPao ltc = paoDao.getYukonPao(ltcId);
-        pointMappings = Lists.newArrayList();
         Set<MappableAttribute> ltcAttributes = attributeService.getMappableAttributes(PaoType.LOAD_TAP_CHANGER);
         
         for(MappableAttribute mappableAttribute : ltcAttributes) {
