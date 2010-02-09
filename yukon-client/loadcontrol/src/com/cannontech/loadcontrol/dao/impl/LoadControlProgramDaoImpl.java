@@ -143,15 +143,35 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 		sql.append("lmpgh1.EventTime AS startTime,");
 		sql.append("lmpgh2.EventTime AS stopTime");
 		sql.append("FROM LMProgramGearHistory lmpgh1");
-		sql.append("LEFT JOIN LMProgramGearHistory lmpgh2 ON (lmpgh1.LMProgramHistoryId = lmpgh2.LMProgramHistoryId AND lmpgh2.Action = 'Stop')");
+		sql.append("LEFT JOIN LMProgramGearHistory lmpgh2 ON (lmpgh1.LMProgramHistoryId = lmpgh2.LMProgramHistoryId AND lmpgh1.LMProgramGearHistoryId != lmpgh2.LMProgramGearHistoryId)");
 		sql.append("JOIN LMProgramHistory ph ON ((lmpgh1.LMProgramHistoryId = ph.LMProgramHistoryId))");
 		sql.append("JOIN YukonPAObject ypo ON (ph.programId = ypo.PAObjectId)");
-		sql.append("WHERE lmpgh1.Action = 'Start'");
-		sql.append("AND lmpgh1.EventTime <=").appendArgument(stopDateTime);
-		sql.append("AND (lmpgh2.EventTime >=").appendArgument(startDateTime).append("OR lmpgh2.EventTime IS NULL)");
+		
+		// start
+		sql.append("WHERE");
+		sql.append("(");
+		sql.append("	lmpgh1.Action = 'Start'");
+		sql.append("	AND");
+		sql.append("	lmpgh1.EventTime <=").appendArgument(stopDateTime);
+		sql.append(")");
+		
+		// stop
+		sql.append("AND");
+		sql.append("(");
+		sql.append("	lmpgh2.LMProgramGearHistoryId IS NULL"); // control without a stop will return NULL for all lmpgh2 columns due to the left join
+		sql.append("	OR");
+		sql.append("	(");
+		sql.append("		lmpgh2.Action = 'Stop'");
+		sql.append("		AND");
+		sql.append("		lmpgh2.EventTime >=").appendArgument(startDateTime);
+		sql.append("	)");
+		sql.append(")");
+		
+		// program
 		if (programId != null) {
     		sql.append("AND ph.ProgramId").eq(programId);
     	}
+		
 		sql.append("ORDER BY lmpgh1.LMProgramHistoryId");
 		
 		List<ProgramControlHistory> programControlHistory = yukonJdbcOperations.query(sql, new ProgramControlHistoryMapper());
