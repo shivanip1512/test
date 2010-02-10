@@ -405,7 +405,7 @@ error_t Ccu711::extractQueueEntry(const bytes &command_data, int index, int setl
         }
 
         request.write      = !(command_data[index + 13] & 0x08 );
-        request.function   = !(command_data[index + 13] & 0x10 );
+        request.function   = (command_data[index + 13] & 0x10 );
 
         //  index + 14 is not used for B words, but we may need to add back in for G word support
 
@@ -428,13 +428,13 @@ error_t Ccu711::extractQueueEntry(const bytes &command_data, int index, int setl
 
         unsigned word_count = request.write ? EmetconWordC::words_needed(request.length) : EmetconWordD::words_needed(request.length);
 
-        request.b_word = EmetconWordB(request.address,
-                                      request.repeater_fixed,
+        request.b_word = EmetconWordB(request.repeater_fixed,
                                       request.repeater_variable,
-                                      request.write,
-                                      request.function,
+                                      request.address,
+                                      word_count,
                                       request.function_code,
-                                      word_count);
+                                      request.function,
+                                      request.write);
 
         if( request.write && request.length )
         {
@@ -734,8 +734,8 @@ void Ccu711::processQueue(PortLogger &logger)
         _queue.last_transmit = now;
     }
 
-    _status.statd.ncsets = 0x20 - _queue.pending.size() - _queue.completed.size();
-    _status.statd.readyn = _queue.completed.size();
+    _status.statd.ncsets = _queue.completed.size();
+    _status.statd.readyn = 0x20 - _queue.pending.size() - _queue.completed.size();
 
     queue_info::completed_set::const_iterator completed_itr = _queue.completed.begin(),
                                               completed_end = _queue.completed.end();
@@ -744,11 +744,11 @@ void Ccu711::processQueue(PortLogger &logger)
 
     for( ; completed_itr != completed_end; ++completed_itr )
     {
-        _status.statd.ncocts += (completed_itr->request.write)?(15):(17 + completed_itr->result.data.size());
+        _status.statd.ncocts += (completed_itr->request.write)?(15):(16 + completed_itr->result.data.size());
     }
 }
 
-
+// This function returns seconds
 unsigned Ccu711::queue_request_dlc_time(const queue_entry::request_info &request)
 {
     unsigned bits_out = 0,
@@ -768,7 +768,7 @@ unsigned Ccu711::queue_request_dlc_time(const queue_entry::request_info &request
         bits_in  += EmetconWordD::BitLength * EmetconWordD::words_needed(request.length);
     }
 
-    return dlc_time(bits_out, bits_in) * (request.repeater_count + 1);
+    return dlc_time(bits_out, bits_in) * (request.repeater_count + 1) / 1000;
 }
 
 
@@ -1017,15 +1017,17 @@ error_t Ccu711::processGeneralRequest(const idlc_request &request, idlc_reply &r
                 const queue_entry &entry = *(_queue.completed.begin());
 
                 //  Refer to Section 2 EMETCON Protocols, 4-86, pdf page 123
-                unsigned entry_length = (entry.request.write)?(15):(17 + entry.result.data.size());
+                unsigned entry_length = (entry.request.write)?(15):(16 + entry.result.data.size());
 
-                if( (length_used + entry_length) <= request.info.reply_length )
+                if( (length_used + entry_length) <= (request.info.reply_length + 14) )
                 {
                     _queue.returned.insert(entry);
 
                     reply.info.collected_queue_entries.push_back(entry);
 
                     _queue.completed.erase(_queue.completed.begin());
+
+                    length_used += entry_length;
                 }
                 else
                 {
@@ -1255,7 +1257,7 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                 completed_entry_buf.push_back(completed_itr->entry_id >>  0);
 
                 //  ENSTA
-                completed_entry_buf.push_back(15);  //  only valid value for completed entries
+                completed_entry_buf.push_back(0xF0);  //  only valid value for completed entries
 
                 unsigned period = completed_itr->result.completion_time.date().weekDay() * 3 +
                                   completed_itr->result.completion_time.hour() / 8;
@@ -1270,7 +1272,7 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                 completed_entry_buf.push_back(within_period >> 0);
 
                 //  ROUTE
-                completed_entry_buf.push_back(0);
+                completed_entry_buf.push_back(0xFF);
 
                 //  NFUNC
                 completed_entry_buf.push_back(1);
@@ -1281,6 +1283,11 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
 
                 if( !completed_itr->request.write )
                 {
+
+                    //  L1
+                    
+                    completed_entry_buf.push_back(completed_itr->result.data.size());
+                    
                     //  TS
 
                     //  b0 = D1.alarm
@@ -1292,8 +1299,8 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                     //  b6 = E word occurred
                     //  b7 = last request timed out
 
-                    completed_entry_buf.push_back(0);
-                    completed_entry_buf.push_back(0);
+                    completed_entry_buf.push_back(0x03);
+                    completed_entry_buf.push_back(0x00);
 
                     //  D1
                     completed_entry_buf.insert(completed_entry_buf.end(),
@@ -1436,8 +1443,8 @@ error_t Ccu711::writeReplyStatus(const status_info &status, byte_appender &out_i
     *out_itr++ = status.statd.readyn;
     *out_itr++ = status.statd.ncsets;
 
-    *out_itr++ = (status.statd.ncocts >> 0) & 0xff;
     *out_itr++ = (status.statd.ncocts >> 8) & 0xff;
+    *out_itr++ = (status.statd.ncocts >> 0) & 0xff;
 
 //  TODO-P3: do we want statp for the individual ddddd algorithms?
     *out_itr++ = 0x00;  //  StatP
