@@ -64,6 +64,7 @@ import com.cannontech.stars.dr.event.dao.EventAccountDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.user.UserUtils;
 
@@ -96,6 +97,7 @@ public class AccountServiceImpl implements AccountService {
     private StarsDatabaseCache starsDatabaseCache;
     private SystemDateFormattingService systemDateFormattingService;
     private AuthenticationService authenticationService;
+    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     
     // ADD ACCOUNT
     @Override
@@ -380,10 +382,14 @@ public class AccountServiceImpl implements AccountService {
         
         /*
          * Delete Hardware info
+         * This also handles unenrolling inventory as well.
+         * clearLMHardwareInfo clears the operator side enrollment and the unenrollHardware method
+         * cleans up the consumer side enrollment
          */
         List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
         for(Integer inventoryId : inventoryIds) {
             hardwareBaseDao.clearLMHardwareInfo(inventoryId);
+            lmHardwareControlGroupDao.unenrollHardware(inventoryId);
         }
         
         /*
@@ -1084,5 +1090,10 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
     }
 }
