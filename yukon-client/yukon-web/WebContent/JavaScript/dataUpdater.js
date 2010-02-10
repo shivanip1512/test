@@ -22,7 +22,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             var id = it.readAttribute('cannonUpdater');
             // use the cannonUpdater "id" to look up value in response
             var newData = responseStruc.data[id];
-            if (newData && newData != it.innerHTML) {
+            if (newData != null && newData != it.innerHTML) {
                 // data was sent and is different than current
                 it.innerHTML = newData;
                 someValueHasUpdated = true;
