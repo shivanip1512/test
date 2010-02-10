@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_valueOf)
     attributeTest = PointAttribute::valueOf("TAP_DOWN");
     BOOST_CHECK_EQUAL(PointAttribute::TapDown.name(), attributeTest.name());
 
-    attributeTest = PointAttribute::valueOf("LTC_VOLTAGE");
+    attributeTest = PointAttribute::valueOf("VOLTAGE");
     BOOST_CHECK_EQUAL(PointAttribute::LtcVoltage.name(), attributeTest.name());
 
     attributeTest = PointAttribute::valueOf("AUTO_REMOTE_CONTROL");
