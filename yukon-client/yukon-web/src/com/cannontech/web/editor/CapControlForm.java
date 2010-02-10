@@ -969,6 +969,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         int portId = wizard.getPortID();
 
         try {
+            
             if(type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested()) {
                 /* Create the cbc, then the cap bank, then assign cbc to cap bank */
                 CBCWizardModel cbcWizard = wizard.getNestedWizard();
@@ -982,9 +983,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             } else {
                 itemID = capControlCreationService.create(type, name, disabled, portId);
             }
+            
+            /* Redirect to the editor after creation */
             facesMsg.setDetail("Database add was SUCCESSFUL");
-            JSFUtil.redirect("/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemID);
-        }catch (DataIntegrityViolationException e) { //TODO do something smarter with this
+            String url = "/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemID;
+            
+            /* Sets the navigation history so the return buttons work */
+            HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+            CBCNavigationUtil.redirect(url, session);
+            
+            /* Does the actually redirection to the editor url */
+            JSFUtil.redirect(url);
+            
+        } catch (DataIntegrityViolationException e) { //TODO do something smarter with this
             facesMsg.setDetail(e.getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
             return "";
