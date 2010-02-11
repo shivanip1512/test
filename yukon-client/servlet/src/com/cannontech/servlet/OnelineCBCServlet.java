@@ -20,12 +20,11 @@ import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.LoginController;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.cbc.SubBus;
@@ -41,7 +40,7 @@ public class OnelineCBCServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
         ServletContext config = req.getSession().getServletContext();
-        LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
         Integer currentSubId = ParamUtil.getInteger(req, "id");
         String redirectURL = ParamUtil.getString(req, "redirectURL", null);
         String subStationId = ParamUtil.getString(req, "subStationId", null);
@@ -52,7 +51,7 @@ public class OnelineCBCServlet extends HttpServlet {
         SubBus subBusMsg = cache.getSubBus(currentSubId);
         String absPath = config.getRealPath(CBCWebUtils.ONE_LINE_DIR);
 
-        String subName = createSubBusDrawing(redirectURL, subBusMsg, absPath, user);
+        String subName = createSubBusDrawing(redirectURL, subBusMsg, absPath, userContext);
         String busHTML = subName + ".html";
         //remember the location
         String subOnelineURL = "/capcontrol/oneline/" + busHTML;
@@ -61,7 +60,7 @@ public class OnelineCBCServlet extends HttpServlet {
         resp.sendRedirect(busHTML);
     }
 
-    private String createSubBusDrawing(String redirectURL, SubBus subBusMsg, String absPath, LiteYukonUser user) {
+    private String createSubBusDrawing(String redirectURL, SubBus subBusMsg, String absPath, YukonUserContext userContext) {
         String subName = subBusMsg.getCcName();
         
         for (int count = 0; count < MAX_RETRY; count++) {
@@ -72,11 +71,11 @@ public class OnelineCBCServlet extends HttpServlet {
                 int height = (int)d.getHeight();
                 int width = (int)d.getWidth();
                 OneLineParams param = new OneLineParams(height, width, isSingleFeeder);
-                param.setUser(user);
+                param.setYukonUserContext(userContext);
                 param.setRedirectURL(redirectURL);
                 //create drawing
                 CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
-                emptyCanvas.setUser(user);
+                emptyCanvas.setYukonUserContext(userContext);
                 emptyCanvas.setLayoutParams(param);
                 emptyCanvas.createDrawing(subBusMsg, CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
                 
@@ -104,7 +103,7 @@ public class OnelineCBCServlet extends HttpServlet {
         Integer currentSubId = ParamUtil.getInteger(req, "id");
         String redirectURL = req.getParameter("redirectURL");
         
-        LiteYukonUser user = ServletUtil.getYukonUser(req);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
 
         SubBus msg = cache.getSubBus(currentSubId);
 
@@ -122,12 +121,12 @@ public class OnelineCBCServlet extends HttpServlet {
             	SubBus bus = cache.getSubBus(currentSubId);
             	Dimension dim = OnelineUtil.getDrawingDimension(bus);
                 CapControlOnelineCanvas view = new CapControlOnelineCanvas(dim);
-                view.setUser(user);
+                view.setYukonUserContext(userContext);
                 boolean isSingleFeeder = msg.getCcFeeders().size() == 1;
                 int height = (int)dim.getHeight();
                 int width = (int)dim.getWidth();
                 OneLineParams param = new OneLineParams(height, width, isSingleFeeder);
-                param.setUser(user);
+                param.setYukonUserContext(userContext);
                 param.setRedirectURL(redirectURL);
                 view.setLayoutParams(param);
                 Drawing d = view.createDrawing(msg, CBCWebUtils.ONE_LINE_DIR + htmlFile);

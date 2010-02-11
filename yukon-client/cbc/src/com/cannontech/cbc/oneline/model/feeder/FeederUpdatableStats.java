@@ -11,9 +11,9 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.Feeder;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
@@ -46,7 +46,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
     
     private LxGraph graph;
     private OnelineFeeder parent;
-    private LiteYukonUser user;
+    private YukonUserContext userContext;
     private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
     private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
     private List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
@@ -54,7 +54,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
     public FeederUpdatableStats(LxGraph graph, OnelineFeeder parent) {
         this.graph = graph;
         this.parent = parent;
-        this.user = parent.getUser();
+        this.userContext = parent.getYukonUserContext();
         initPropColumnMap();
         initPropLabelMap();
         initAllStats();
@@ -153,7 +153,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
                                                             prevComp,
                                                             0,
                                                             getStreamable(),
-                                                            user);
+                                                            userContext);
             copy.add(pair);
 
         }
@@ -164,7 +164,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
                                                                 prevEl.getFirstElement(),
                                                                 i,
                                                                 getStreamable(),
-                                                                user);
+                                                                userContext);
                 copy.add(pair);
             }
         }

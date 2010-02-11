@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.OnelineDisplayManager;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
@@ -31,7 +30,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     private UpdatableTextList totalMaxDailyOpCount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, this);
     private LxAbstractGraph graph;
     private OnelineCap parentCap;
-    private LiteYukonUser user;
+    private YukonUserContext userContext;
     private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
     private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
     private List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
@@ -39,7 +38,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     public CapBankUpdatableStats(LxAbstractGraph g, OnelineObject p) {
         graph = g;
         parentCap = (OnelineCap) p;
-        user = p.getUser();
+        userContext = p.getYukonUserContext();
         initPropColumnMap();
         initPropLabelMap();
         initAllStats();
@@ -120,22 +119,14 @@ public class CapBankUpdatableStats extends LxAbstractView implements
             StaticText dummy = new StaticText();
             dummy.setX(prevComp.getX());
             dummy.setY(prevComp.getY() + 30);
-            UpdatableTextList pair = manager.adjustPosition(allStats,
-                                                            dummy,
-                                                            0,
-                                                            getStreamable(),
-                                                            user);
+            UpdatableTextList pair = manager.adjustPosition(allStats, dummy, 0, getStreamable(), userContext);
             copy.add(pair);
 
         }
         if (allStats.size() > 1) {
             for (int i = 1; i < allStats.size(); i++) {
                 UpdatableTextList prevEl = copy.get(i - 1);
-                UpdatableTextList pair = manager.adjustPosition(allStats,
-                                                                prevEl.getFirstElement(),
-                                                                i,
-                                                                getStreamable(),
-                                                                user);
+                UpdatableTextList pair = manager.adjustPosition(allStats, prevEl.getFirstElement(), i, getStreamable(), userContext);
                 copy.add(pair);
             }
         }

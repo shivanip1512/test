@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.capcontrol.CapControlFormattingService.Format;
@@ -28,7 +27,6 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
         
         String idStr = m.group(1);
         String format = m.group(2);
-        LiteYukonUser user = userContext.getYukonUser();
         
         int paoId = Integer.parseInt(idStr);
         StreamableCapObject latestValue = doGetLatestValue(paoId, afterDate);
@@ -36,7 +34,7 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
         if (latestValue == null) return null;
         
         Format formatEnum = Format.valueOf(format);
-        String valueString = formattingService.getValueString(latestValue, formatEnum, user);
+        String valueString = formattingService.getValueString(latestValue, formatEnum, userContext);
         return valueString;
     }
     

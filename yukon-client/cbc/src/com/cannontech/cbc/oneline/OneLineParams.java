@@ -1,6 +1,7 @@
 package com.cannontech.cbc.oneline;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
+
 
 public class OneLineParams {
 
@@ -9,7 +10,7 @@ public class OneLineParams {
     private int rgbColor;
     private boolean isSingleFeeder = false;
     private String redirectURL;
-    private LiteYukonUser user;
+    private YukonUserContext userContext;
 
     public OneLineParams(int h, int w, boolean singleFdr) {
         height = h;
@@ -97,8 +98,6 @@ public class OneLineParams {
         this.width = width;
     }
 
-    
-
     public String getRedirectURL() {
         return redirectURL;
     }
@@ -108,20 +107,20 @@ public class OneLineParams {
             this.redirectURL = redirectURL;
     }
 
-    public void setUser(LiteYukonUser u) {
-        user = u;
-    }
-
-    public LiteYukonUser getUser() {
-        return user;
-    }
-
     public int getRgbColor() {
         return rgbColor;
     }
 
     public void setRgbColor(int rgbColor) {
         this.rgbColor = rgbColor;
+    }
+
+    public void setYukonUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
+    }
+
+    public YukonUserContext getYukonUserContext() {
+        return userContext;
     }
 
 }

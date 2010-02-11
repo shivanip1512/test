@@ -2,15 +2,15 @@ package com.cannontech.web.updater.capcontrol;
 
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public abstract class AbstractFormattingService<E extends StreamableCapObject> implements CapControlFormattingService<E> {
     protected FilterCacheFactory filterCacheFactory;
 
     @Override
-    public String getValueString(final E latestValue, final Format format, final LiteYukonUser user) {
-        final CBCDisplay cbcDisplay = new CBCDisplay(user);
+    public String getValueString(final E latestValue, final Format format, final YukonUserContext userContext) {
+        final CBCDisplay cbcDisplay = new CBCDisplay(userContext);
         
         String value;
         switch (format) {

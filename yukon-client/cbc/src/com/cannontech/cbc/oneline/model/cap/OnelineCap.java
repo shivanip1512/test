@@ -8,19 +8,19 @@ import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
 import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
-import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -169,7 +169,7 @@ public class OnelineCap extends OnelineObject {
         CapBankDevice capBank = getCurrentCapFromMessage();
         
         /* Choose which warning image to use */
-        CBCDisplay cbcDisplay = new CBCDisplay(user);
+        CBCDisplay cbcDisplay = new CBCDisplay(userContext);
         String type = (String) cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_TEXT);
         String color = (String) cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_COLOR);
         String image;
@@ -322,12 +322,12 @@ public class OnelineCap extends OnelineObject {
         return cap;
     }
     
-    public void setUser(final LiteYukonUser user) {
-        this.user = user;
+    public void setYukonUserContext(final YukonUserContext userContext) {
+        this.userContext = userContext;
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-        commandsFlag = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
-        editFlag = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        additionalInfoFlag = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CB_ADDINFO, user);
+        commandsFlag = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, userContext.getYukonUser());
+        editFlag = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
+        additionalInfoFlag = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CB_ADDINFO, userContext.getYukonUser());
     }
     
     public boolean isEditFlag() {

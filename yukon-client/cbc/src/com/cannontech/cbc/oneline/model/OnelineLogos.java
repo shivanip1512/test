@@ -8,12 +8,12 @@ import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.common.alert.service.AlertService;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxGraph;
 
 public class OnelineLogos {
@@ -26,16 +26,16 @@ public class OnelineLogos {
     private StaticImage ccLogo;
     private StaticImage yukonLogo;
     private StaticText alerts;
-    private LiteYukonUser user;
+    private YukonUserContext userContext;
     
     public OnelineLogos() {
         super();
     }
 
-    public void addDrawing(OneLineDrawing old, LiteYukonUser user) {
+    public void addDrawing(OneLineDrawing old, YukonUserContext userContext) {
         drawing = old.getDrawing();
         layoutParams = old.getLayoutParams();
-        this.user = user;
+        this.userContext = userContext;
         draw();
     }
 
@@ -54,7 +54,7 @@ public class OnelineLogos {
 
     public StaticText getAlerts() {
         AlertService alertService = YukonSpringHook.getBean("alertService",AlertService.class);
-        int num = alertService.getCountForUser(user);
+        int num = alertService.getCountForUser(userContext.getYukonUser());
 
 		alerts = new StaticText();
 		alerts.setName(CommandPopups.ALERTS_POPUP);

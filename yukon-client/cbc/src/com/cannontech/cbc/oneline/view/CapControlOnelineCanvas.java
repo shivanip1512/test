@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.cbc.oneline.OneLineParams;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 
@@ -24,10 +24,7 @@ public class CapControlOnelineCanvas {
     private int drawingWidth = 1200;
     private OneLineParams layoutParams;
     private OneLineDrawing drawing;
-    private LiteYukonUser user;
-
-//    public CapControlOnelineCanvas() {
-//    }
+    private YukonUserContext userContext;
 
     public CapControlOnelineCanvas(Dimension d) {
         drawingHeight = (int) d.getHeight();
@@ -42,14 +39,11 @@ public class CapControlOnelineCanvas {
     public Drawing createDrawing(SubBus subBusMessage, String fileName) {
         boolean isSingleFeeder = subBusMessage.getCcFeeders().size() == 1;
         if (layoutParams == null) {
-            layoutParams = new OneLineParams(drawingHeight,
-                                             drawingWidth,
-                                             isSingleFeeder);
-            layoutParams.setUser (user);
+            layoutParams = new OneLineParams(drawingHeight, drawingWidth, isSingleFeeder);
+            layoutParams.setYukonUserContext(userContext);
         }
         
-        drawing = (fileName != null) ? 
-                new OneLineDrawing(layoutParams, user, fileName) : new OneLineDrawing(layoutParams, user);
+        drawing = (fileName != null) ? new OneLineDrawing(layoutParams, userContext, fileName) : new OneLineDrawing(layoutParams, userContext);
 
         drawing.addLogos();
         drawing.addSub(subBusMessage);
@@ -91,10 +85,8 @@ public class CapControlOnelineCanvas {
         this.layoutParams = layoutParams;
     }
 
-    public void setUser(LiteYukonUser user) {
-        this.user = user;        
+    public void setYukonUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;        
     }
-
-
 
 }

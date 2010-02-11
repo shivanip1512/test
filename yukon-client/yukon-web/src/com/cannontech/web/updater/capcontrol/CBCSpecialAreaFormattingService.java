@@ -22,7 +22,7 @@ public class CBCSpecialAreaFormattingService extends AbstractAreaFormatingServic
     @Override
     protected String getPFactor(final CCSpecialArea latestValue, final CBCDisplay cbcDisplay) {
         int paoId = latestValue.getCcId();
-        List<SubStation> areaStations = getAreaStations(paoId, cbcDisplay.getUser());
+        List<SubStation> areaStations = getAreaStations(paoId, cbcDisplay.getYukonUserContext().getYukonUser());
         String currPF = cbcDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
         String estPF = cbcDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
         String result = currPF + " / " +  estPF;

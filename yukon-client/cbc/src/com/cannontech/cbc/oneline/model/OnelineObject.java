@@ -1,14 +1,15 @@
 package com.cannontech.cbc.oneline.model;
 
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.capcontrol.CBCSettingsRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxLine;
 
 public abstract class OnelineObject {
-    protected LiteYukonUser user;
+    protected YukonUserContext userContext;
     protected Integer paoId;
     protected SubBus subBus;
     protected OneLineDrawing drawing;
@@ -39,14 +40,15 @@ public abstract class OnelineObject {
         this.paoId = paoId;
     }
 
-    public void setUser(final LiteYukonUser user) {
-        this.user = user;
+    public void setYukonUserContext(final YukonUserContext userContext) {
+        this.userContext = userContext;
         commandsFlag = false;
-        editFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.CBC_DATABASE_EDIT);
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        editFlag = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
     }
     
-    public final LiteYukonUser getUser() {
-        return user;
+    public final YukonUserContext getYukonUserContext() {
+        return userContext;
     }
 
 	public boolean isEditFlag() {

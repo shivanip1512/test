@@ -17,6 +17,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.web.capcontrol.models.MovedBank;
 import com.cannontech.web.capcontrol.models.NavigableArea;
@@ -102,11 +104,12 @@ public class BankMoveController {
     }
     
     @RequestMapping
-    public ModelAndView movedCapBanks(HttpServletRequest request, LiteYukonUser user) {
+    public ModelAndView movedCapBanks(HttpServletRequest request) {
         final ModelAndView mav = new ModelAndView();
-        final CBCDisplay cbcDisplay = new CBCDisplay(user);
-        CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
-        String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, user);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        final CBCDisplay cbcDisplay = new CBCDisplay(userContext);
+        CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(userContext.getYukonUser());
+        String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, userContext.getYukonUser());
         if (popupEvent == null) {
             popupEvent = "onclick";
         }

@@ -2,7 +2,6 @@ package com.cannontech.web.updater.point;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.DataType;
 import com.cannontech.web.updater.DataUpdaterService;

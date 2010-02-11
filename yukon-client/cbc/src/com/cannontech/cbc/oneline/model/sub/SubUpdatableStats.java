@@ -11,10 +11,10 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
@@ -54,7 +54,7 @@ public class SubUpdatableStats extends LxAbstractView implements
     private OnelineSub parent;
     private LxGraph graph;
     private SubBus subBus;
-    private LiteYukonUser user;
+    private YukonUserContext userContext;
     public static Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
     public static Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();;
     public List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
@@ -63,7 +63,7 @@ public class SubUpdatableStats extends LxAbstractView implements
         super();
         this.parent = parent;
         this.graph = graph;
-        this.user = parent.getUser();
+        this.userContext = parent.getYukonUserContext();
         this.subBus = subBus;
         initPropColumnMap();
         initPropLabelMap();
@@ -128,14 +128,14 @@ public class SubUpdatableStats extends LxAbstractView implements
         OnelineDisplayManager manager = OnelineDisplayManager.getInstance();
         if (allStats.size() > 0) {
             StaticText prevComp = parent.getName();
-            UpdatableTextList pair = manager.adjustPosition(allStats, prevComp, 0, subBus, user);
+            UpdatableTextList pair = manager.adjustPosition(allStats, prevComp, 0, subBus, userContext);
             copy.add(pair);
         }
         
         if (allStats.size() > 1) {
             for (int i = 1; i < allStats.size(); i++) {
                 UpdatableTextList prevEl = copy.get(i - 1);
-                UpdatableTextList pair = manager.adjustPosition(allStats, prevEl.getFirstElement(), i, subBus, user);
+                UpdatableTextList pair = manager.adjustPosition(allStats, prevEl.getFirstElement(), i, subBus, userContext);
                 copy.add(pair);
             }
         }

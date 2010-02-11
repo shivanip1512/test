@@ -8,7 +8,6 @@ import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.SubStation;
-import com.cannontech.core.dao.DaoFactory;;
 
 public class SubStationFormattingService extends AbstractAreaFormatingService<SubStation> {
 
@@ -42,7 +41,7 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
     
     @Override
     protected String getKVarsAvailable(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         SubStation subStation = getSubStation(latestValue.getCcId(), user);
         String varsAvailable = CBCUtils.format(CBCUtils.calcVarsAvailableForSubStation(subStation, user));
         return varsAvailable;
@@ -50,7 +49,7 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
     
     @Override
     protected String getKVarsUnavailable(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         SubStation subStation = getSubStation(latestValue.getCcId(), user);
         String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStation(subStation, user) );
         return varsUnavailable;
@@ -58,7 +57,7 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
     
     @Override
     protected String getKVarsClosed(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         List<CapBankDevice> capBankList = getCapBankList(latestValue.getCcId(), user);
         String closedVars = CBCUtils.format(CBCUtils.calcVarsClosedForCapBanks(capBankList, user));
         return closedVars;
@@ -66,7 +65,7 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
     
     @Override
     protected String getKVarsTripped(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         List<CapBankDevice> capBankList = getCapBankList(latestValue.getCcId(), user);
         String trippedVars = CBCUtils.format(CBCUtils.calcVarsTrippedForCapBanks(capBankList, user));
         return trippedVars;

@@ -1,6 +1,6 @@
 package com.cannontech.web.updater.capcontrol;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface CapControlFormattingService<E> {
     
@@ -34,6 +34,6 @@ public interface CapControlFormattingService<E> {
         DUALBUS
     }
     
-    public String getValueString(E latestValue, Format format, LiteYukonUser user);
+    public String getValueString(E latestValue, Format format, YukonUserContext userContext);
 
 }

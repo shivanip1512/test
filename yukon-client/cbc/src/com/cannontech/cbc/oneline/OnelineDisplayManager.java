@@ -10,11 +10,12 @@ import com.cannontech.cbc.oneline.util.ExtraUpdatableTextElement;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -44,13 +45,10 @@ public class OnelineDisplayManager {
     public boolean isVisible(int roleProperty, UpdatableStats stats) {
         OnelineObject parentOnelineObject = stats.getParentOnelineObject();
         if (parentOnelineObject != null) {
-            LiteYukonUser user = parentOnelineObject.getDrawing()
-                                                    .getLayoutParams()
-                                                    .getUser();
-            if (user != null) {
-                AuthDao authDao = DaoFactory.getAuthDao();
-                String rolePropertyValue = authDao.getRolePropertyValue(user,
-                                                                        roleProperty);
+            YukonUserContext userContext = parentOnelineObject.getDrawing().getLayoutParams().getYukonUserContext();
+            if (userContext != null) {
+                RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+                String rolePropertyValue = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(roleProperty), userContext.getYukonUser());
                 Boolean isTarget = Boolean.valueOf(rolePropertyValue);
                 if (isTarget.booleanValue())
                     return true;
@@ -59,10 +57,9 @@ public class OnelineDisplayManager {
         return false;
     }
 
-    public String getDisplayValue(StreamableCapObject stream, int rolePropID,
-            UpdatableStats stats, LiteYukonUser user) {
+    public String getDisplayValue(StreamableCapObject stream, int rolePropID, UpdatableStats stats, YukonUserContext userContext) {
         
-        CBCDisplay oldWebDisplay = new CBCDisplay(user);
+        CBCDisplay oldWebDisplay = new CBCDisplay(userContext);
         Integer dispCol = stats.getPropColumnMap().get(rolePropID);
 
         if (stream instanceof SubBus) {
@@ -81,7 +78,7 @@ public class OnelineDisplayManager {
         }    
     }
 
-    public UpdatableTextList adjustPosition(List<UpdatableTextList> allStats, LxComponent prevComp, int pos, StreamableCapObject stream, LiteYukonUser user) {
+    public UpdatableTextList adjustPosition(List<UpdatableTextList> allStats, LxComponent prevComp, int pos, StreamableCapObject stream, YukonUserContext userContext) {
         UpdatableTextList temp = allStats.get(pos);
 
         UpdatableStats stats = temp.getStats();
@@ -90,7 +87,7 @@ public class OnelineDisplayManager {
                                                              OnelineUtil.getStartPoint(prevComp),
                                                              null,
                                                              new Integer((int) prevComp.getHeight() + 10));
-        String text = getDisplayValue(stream, temp.getRolePropID(), stats, user);
+        String text = getDisplayValue(stream, temp.getRolePropID(), stats, userContext);
         String displayableText = new String(text);
         if(stats.getPropColumnMap().get(temp.getRolePropID()) == CBCDisplay.CB_CONTROLLER) {
             if(text.length() > 13) {

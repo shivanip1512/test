@@ -106,7 +106,7 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
         int subbusId = latestValue.getAlternateBusId();
         
         if (subbusId > 0) {
-            LiteYukonUser user = cbcDisplay.getUser();
+            LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
             CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
             SubBus otherBus = cache.getSubBus(subbusId);
             

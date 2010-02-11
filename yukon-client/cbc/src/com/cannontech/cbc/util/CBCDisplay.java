@@ -2,13 +2,13 @@ package com.cannontech.cbc.util;
 
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -16,13 +16,15 @@ import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ColorUtil;
 import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -40,8 +42,6 @@ public class CBCDisplay {
     public static final String STR_NA = "NA";
     public static final String DASH_LINE = "----";
     public static final String STR_UNKNOWN = "Unknown";
-    public short dateTimeFormat = ModifiedDate.FRMT_DEFAULT;
-    public short shortTimeFormat = ModifiedDate.FRMT_NOSECS_NOYR;
 
     // Column numbers for the CabBank display
     public static final int CB_NAME_COLUMN = 0;
@@ -130,14 +130,16 @@ public class CBCDisplay {
         // Pending subbus (Yellow like color)
         new Color(240, 145, 0) };
 
-    private final LiteYukonUser user;
+    private final YukonUserContext userContext;
+    private DateFormattingService dateFormattingService;
 
-    public CBCDisplay(final LiteYukonUser user) {
-        this.user = user;
+    public CBCDisplay(final YukonUserContext userContext) {
+        this.userContext = userContext;
+        dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
     }
 
-    public LiteYukonUser getUser() {
-        return user;
+    public YukonUserContext getYukonUserContext() {
+        return userContext;
     }
         
     /**
@@ -161,7 +163,7 @@ public class CBCDisplay {
             String fixedCapbankLabel = "Fixed";
             RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
             try{
-                fixedCapbankLabel = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, user);
+                fixedCapbankLabel = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, userContext.getYukonUser());
             }catch(UserNotInRoleException e){
                 CTILogger.warn("User not in Cap Bank Display role, using default Fixed text.");
             }
@@ -219,17 +221,18 @@ public class CBCDisplay {
         }
 
         case CB_TIME_STAMP_COLUMN: {
-            if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+            Date date = capBank.getLastStatusChangeTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
-
-            return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), dateTimeFormat).toString();
+            return dateFormattingService.format(date, DateFormatEnum.BOTH, userContext);
         }
 
         case CB_SHORT_TIME_STAMP_COLUMN: {
-            if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+            Date date = capBank.getLastStatusChangeTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
 
-            return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), shortTimeFormat).toString();
+            return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, userContext);
         }
 
         case CB_PARENT_COLUMN: {
@@ -631,17 +634,19 @@ public class CBCDisplay {
         }
 
         case SUB_TIME_STAMP_COLUMN: {
-            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+            Date date = subBus.getLastCurrentVarPointUpdateTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat).toString();
+                return dateFormattingService.format(date, DateFormatEnum.BOTH, userContext);
         }
 
         case SUB_SHORT_TIME_STAMP_COLUMN: {
-            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+            Date date = subBus.getLastCurrentVarPointUpdateTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
+                return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, userContext);
         }
 
         case SUB_WARNING_POPUP: {
@@ -849,18 +854,18 @@ public class CBCDisplay {
         }
 
         case FDR_TIME_STAMP_COLUMN: {
-            if (feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
-                CtiUtilities.get1990GregCalendar().getTime().getTime())
+            Date date = feeder.getLastCurrentVarPointUpdateTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat).toString();
+                return dateFormattingService.format(date, DateFormatEnum.BOTH, userContext);
         }
         case FDR_SHORT_TIME_STAMP_COLUMN: {
-            if (feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
-                CtiUtilities.get1990GregCalendar().getTime().getTime() )
+            Date date = feeder.getLastCurrentVarPointUpdateTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime() )
                 return DASH_LINE;
             else
-                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
+                return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, userContext);
         }        
 
         case FDR_ONELINE_WATTS_COLUMN: {
@@ -952,7 +957,7 @@ public class CBCDisplay {
         int decPlaces;
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
         try {
-            String propertyValue = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.PFACTOR_DECIMAL_PLACES, user);
+            String propertyValue = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.PFACTOR_DECIMAL_PLACES, userContext.getYukonUser());
             decPlaces = Integer.parseInt(propertyValue);
         } catch (UnknownRolePropertyException e) {
             CTILogger.warn(e);
@@ -1187,22 +1192,23 @@ public class CBCDisplay {
             return retVal;
         }
         case SUB_TIME_STAMP_COLUMN: {
-            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+            Date date = subBus.getLastCurrentVarPointUpdateTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat).toString();
+                return dateFormattingService.format(date, DateFormatEnum.BOTH, userContext);
         }
         case SUB_SHORT_TIME_STAMP_COLUMN: {
-            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+            Date date = subBus.getLastCurrentVarPointUpdateTime();
+            if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
+                return dateFormattingService.format(date, DateFormatEnum.VERY_SHORT, userContext);
         }
         default:
             return "---";
         }
 
     }
-
 
 }

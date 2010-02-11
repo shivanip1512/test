@@ -9,14 +9,14 @@ import com.cannontech.cbc.oneline.model.OnelineLogos;
 import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.SubBus;
 
 public class OneLineDrawing {
     private final Drawing drawing;
     private final OneLineParams layoutParams;
-    private final LiteYukonUser user;
+    private final YukonUserContext userContext;
     private String fileName;
     //3-tier
     private OnelineSub sub;
@@ -25,14 +25,14 @@ public class OneLineDrawing {
     private OnelineLogos logos;
     private OnelineControlPanel controlPanel;
 
-    public OneLineDrawing(OneLineParams layoutParams, LiteYukonUser user) {
+    public OneLineDrawing(OneLineParams layoutParams, YukonUserContext userContext) {
         this.drawing = new Drawing();
         this.layoutParams = layoutParams;
-        this.user = user;
+        this.userContext = userContext;
     }
     
-    public OneLineDrawing (OneLineParams layoutParams, LiteYukonUser user, String fileName) {
-        this(layoutParams, user);
+    public OneLineDrawing (OneLineParams layoutParams, YukonUserContext userContext, String fileName) {
+        this(layoutParams, userContext);
         setFileName(fileName);
     }
 
@@ -46,18 +46,18 @@ public class OneLineDrawing {
 
     public void addSub(SubBus subBusMessage) {
         sub = new OnelineSub(subBusMessage);
-        sub.setUser(user);
+        sub.setYukonUserContext(userContext);
         sub.addDrawing(this);
     }
 
     public void addLogos() {
         logos = new OnelineLogos();
-        logos.addDrawing(this,user);
+        logos.addDrawing(this,userContext);
     }
 
     public void addCap(SubBus subBusMessage, int curIdx) {
         OnelineCap c = new OnelineCap(subBusMessage);
-        c.setUser(user);
+        c.setYukonUserContext(userContext);
         c.setCurrentCapIdx(curIdx);
         c.addDrawing(this);
         caps.add(c);
@@ -85,7 +85,7 @@ public class OneLineDrawing {
 
     public void addFeeder(SubBus subBus) {
         OnelineFeeder onelineFeeder = new OnelineFeeder(subBus);
-        onelineFeeder.setUser(user);
+        onelineFeeder.setYukonUserContext(userContext);
         onelineFeeder.addDrawing(this);
         feeders.add(onelineFeeder);
     }

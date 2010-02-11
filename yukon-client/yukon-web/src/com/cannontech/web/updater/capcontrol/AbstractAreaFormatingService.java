@@ -23,14 +23,14 @@ public abstract class AbstractAreaFormatingService<E extends StreamableCapObject
     
     @Override
     protected String getSetup(E latestValue, CBCDisplay cbcDisplay) {
-        List<SubStation> areaStations = getAreaStations(latestValue.getCcId(), cbcDisplay.getUser());
+        List<SubStation> areaStations = getAreaStations(latestValue.getCcId(), cbcDisplay.getYukonUserContext().getYukonUser());
         String setup = Integer.toString(areaStations.size());
         return setup;
     }
 
     @Override
     protected String getKVarsAvailable(E latestValue, CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         List<SubStation> areaStations = getAreaStations(latestValue.getCcId(), user);
         String varsAvailable = CBCUtils.format(CBCUtils.calcVarsAvailableForSubStations(areaStations, user));
         return varsAvailable;
@@ -38,7 +38,7 @@ public abstract class AbstractAreaFormatingService<E extends StreamableCapObject
     
     @Override
     protected String getKVarsUnavailable(E latestValue, CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         List<SubStation> areaStations = getAreaStations(latestValue.getCcId(), user);
         String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStations(areaStations, user) );
         return varsUnavailable;
@@ -46,7 +46,7 @@ public abstract class AbstractAreaFormatingService<E extends StreamableCapObject
     
     @Override
     protected String getKVarsClosed(E latestValue, CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         List<CapBankDevice> areaCapBanks = getAreaCapBanks(latestValue.getCcId(), user);
         String closedVars = CBCUtils.format(CBCUtils.calcVarsClosedForCapBanks(areaCapBanks, user));
         return closedVars;
@@ -54,7 +54,7 @@ public abstract class AbstractAreaFormatingService<E extends StreamableCapObject
     
     @Override
     protected String getKVarsTripped(E latestValue, CBCDisplay cbcDisplay) {
-        LiteYukonUser user = cbcDisplay.getUser();
+        LiteYukonUser user = cbcDisplay.getYukonUserContext().getYukonUser();
         List<CapBankDevice> areaCapBanks = getAreaCapBanks(latestValue.getCcId(), user);
         String trippedVars = CBCUtils.format(CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user));
         return trippedVars;

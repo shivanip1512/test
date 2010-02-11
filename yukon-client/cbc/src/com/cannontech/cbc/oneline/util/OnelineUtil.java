@@ -247,7 +247,6 @@ public class OnelineUtil {
         return link;
     }
     
-    @SuppressWarnings("static-access")
     public static int getYukonType (StreamableCapObject obj) {
         if (obj instanceof SubBus)
         {
