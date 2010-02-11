@@ -748,7 +748,6 @@ void Ccu711::processQueue(PortLogger &logger)
     }
 }
 
-// This function returns seconds
 unsigned Ccu711::queue_request_dlc_time(const queue_entry::request_info &request)
 {
     unsigned bits_out = 0,
@@ -1019,7 +1018,7 @@ error_t Ccu711::processGeneralRequest(const idlc_request &request, idlc_reply &r
                 //  Refer to Section 2 EMETCON Protocols, 4-86, pdf page 123
                 unsigned entry_length = (entry.request.write)?(15):(16 + entry.result.data.size());
 
-                if( (length_used + entry_length) <= (request.info.reply_length + 14) )
+                if( (length_used + entry_length) <= (request.info.reply_length + CCU_ReplyLength) )
                 {
                     _queue.returned.insert(entry);
 
@@ -1257,7 +1256,10 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                 completed_entry_buf.push_back(completed_itr->entry_id >>  0);
 
                 //  ENSTA
-                completed_entry_buf.push_back(0xF0);  //  only valid value for completed entries
+                /* Refer to Section 2 EMETCON Protocols, 4-86, pdf page 123 -
+                   ENSTA field is 1 nibble in length, so the first 4 bits 
+                   are the significant bits.                                */
+                completed_entry_buf.push_back(0xF0);
 
                 unsigned period = completed_itr->result.completion_time.date().weekDay() * 3 +
                                   completed_itr->result.completion_time.hour() / 8;
@@ -1272,7 +1274,7 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                 completed_entry_buf.push_back(within_period >> 0);
 
                 //  ROUTE
-                completed_entry_buf.push_back(0xFF);
+                completed_entry_buf.push_back(0);
 
                 //  NFUNC
                 completed_entry_buf.push_back(1);
@@ -1299,7 +1301,7 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                     //  b6 = E word occurred
                     //  b7 = last request timed out
 
-                    completed_entry_buf.push_back(0x03);
+                    completed_entry_buf.push_back(0x00);
                     completed_entry_buf.push_back(0x00);
 
                     //  D1

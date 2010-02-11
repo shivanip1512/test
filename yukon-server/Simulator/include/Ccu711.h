@@ -34,11 +34,12 @@ public:
 
 private:
 
-    enum Miscellaneous
+    enum IDLCSizes
     {
         Idlc_HeaderLength = 3,
         Info_HeaderLength = 3,
-        Idlc_CrcLength    = 2
+        Idlc_CrcLength    = 2,
+        CCU_ReplyLength   = 14  // Refer to Section 2 EMETCON Protocols, 4-86, pdf page 123
     };
 
     enum HdlcLinkCommandOctets
@@ -346,6 +347,7 @@ private:
 
     error_t extractData(const words_t &reply_words, byte_appender &output);
 
+    // This function returns seconds.
     static unsigned queue_request_dlc_time(const queue_entry::request_info &request);
 
     error_t readRequest(Comms &comms, idlc_request &request) const;
