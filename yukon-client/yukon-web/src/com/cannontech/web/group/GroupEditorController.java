@@ -33,12 +33,11 @@ import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.device.groups.service.NotEqualToOrDecendantOfGroupsPredicate;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.predicate.AggregateAndPredicate;
+import com.cannontech.common.util.predicate.NullPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -125,12 +124,14 @@ public class GroupEditorController extends MultiActionController {
         }
                 
         // ALL GROUPS HIERARCHY
-        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
+        DeviceGroupHierarchy everythingHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NullPredicate<DeviceGroup>());
+        
+        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(everythingHierarchy, new NonHiddenDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node for selected group
         // This one has been given an additional responsibility of recording the node path of the selected node,
         // this path will be used to expand the tree to the selected node and ensure it is visible.
-        DeviceGroup selectedDeviceGroup = group;
+        final DeviceGroup selectedDeviceGroup = group;
         
         // ALL GROUPS TREE JSON
         HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
@@ -145,34 +146,30 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
         // MOVE GROUPS TREE JSON
-        Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(group);
-        String moveGroupDataJson = makeNonhiddenPlusHierarchyJson(Collections.singletonList(canMoveUnderPredicate));
-        mav.addObject("moveGroupDataJson", moveGroupDataJson); 
+        Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
+        DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
+        ExtTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(moveGroupHierarchy, "Groups", null);
+        
+        JSONObject moveGroupJsonObj = new JSONObject(moveGroupRoot.toMap());
+        mav.addObject("moveGroupDataJson", moveGroupJsonObj.toString()); 
         
         // COPY GROUPS TREE JSON
-        NotEqualToOrDecendantOfGroupsPredicate notEqualToOrDecendantOfGroupsPredicate = new NotEqualToOrDecendantOfGroupsPredicate(group);
-        String copyGroupDataJson = makeNonhiddenPlusHierarchyJson(Collections.singletonList(notEqualToOrDecendantOfGroupsPredicate));
-        mav.addObject("copyGroupDataJson", copyGroupDataJson); 
+        Predicate<DeviceGroup> canCopyIntoPredicate = new Predicate<DeviceGroup>() {
+            public boolean evaluate(DeviceGroup receivingGroup) {
+                return !receivingGroup.isEqualToOrDescendantOf(selectedDeviceGroup) && receivingGroup.isModifiable();
+            }
+        };
+        DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
+        ExtTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(copyGroupHierarchy, "Groups", null);
+        
+        JSONObject copyGroupJson = new JSONObject(copyExtRoot.toMap());
+        mav.addObject("copyGroupDataJson", copyGroupJson.toString()); 
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
         mav.addObject("deviceCollection", deviceCollection);
         
         return mav;
-    }
-    
-    private String makeNonhiddenPlusHierarchyJson(List<? extends Predicate<DeviceGroup>> additionalPredicates) {
-        
-        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
-        predicates.add(new NonHiddenDeviceGroupPredicate());
-        predicates.addAll(additionalPredicates);
-        AggregateAndPredicate<DeviceGroup> nonHiddenPlusPredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
-        
-        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(), nonHiddenPlusPredicate);
-        ExtTreeNode groupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
-        
-        JSONObject groupJsonObj = new JSONObject(groupRoot.toMap());
-        return groupJsonObj.toString();
     }
     
     public ModelAndView getDevicesForGroup(HttpServletRequest request, HttpServletResponse response)

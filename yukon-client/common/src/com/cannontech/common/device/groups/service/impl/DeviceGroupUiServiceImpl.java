@@ -16,6 +16,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.service.PaoLoadingService;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class DeviceGroupUiServiceImpl implements DeviceGroupUiService {
 
@@ -27,15 +30,33 @@ public class DeviceGroupUiServiceImpl implements DeviceGroupUiService {
 
         DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
         hierarchy.setGroup(root);
+        
+        List<DeviceGroup> allGroupsList = deviceGroupDao.getGroups(root);
+        Multimap<DeviceGroup, DeviceGroup> childOfLookup = ArrayListMultimap.create(50, 50);
+        for (DeviceGroup deviceGroup : allGroupsList) {
+            childOfLookup.put(deviceGroup.getParent(), deviceGroup);
+        }
 
-        setChildHierarchy(hierarchy, deviceGroupPredicate);
+        setChildHierarchy(hierarchy, root, childOfLookup, deviceGroupPredicate);
 
         return hierarchy;
     }
     
     public DeviceGroupHierarchy getFilteredDeviceGroupHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
+        // recurse through children
+        List<DeviceGroupHierarchy> childGroupList = Lists.newArrayListWithExpectedSize(hierarchy.getChildGroupList().size());
+        DeviceGroupHierarchy tempResult = new DeviceGroupHierarchy();
+        tempResult.setGroup(hierarchy.getGroup());
+        tempResult.setChildGroupList(childGroupList);
         
-        return getDeviceGroupHierarchy(hierarchy.getGroup(), deviceGroupPredicate);
+        for (DeviceGroupHierarchy childHierarchy : hierarchy.getChildGroupList()) {
+            if (deviceGroupPredicate.evaluate(childHierarchy.getGroup())) {
+                DeviceGroupHierarchy filteredChildHierarchy = getFilteredDeviceGroupHierarchy(childHierarchy, deviceGroupPredicate);
+                childGroupList.add(filteredChildHierarchy);
+            }
+        }
+        
+        return tempResult;
     }
     
     public List<DeviceGroup> getGroups(Predicate<DeviceGroup> deviceGroupPredicate) {
@@ -55,11 +76,13 @@ public class DeviceGroupUiServiceImpl implements DeviceGroupUiService {
     /**
      * Helper method to recursively set child hierarchy
      * @param hierarchy - parent hierarchy to set children on
+     * @param childOfLookup 
+     * @param root 
      */
-    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
+    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, DeviceGroup root, Multimap<DeviceGroup, DeviceGroup> childOfLookup, Predicate<DeviceGroup> deviceGroupPredicate) {
 
         List<DeviceGroupHierarchy> childGroupList = new ArrayList<DeviceGroupHierarchy>();
-        List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(hierarchy.getGroup());
+        Iterable<DeviceGroup> childGroups = childOfLookup.get(root);
         for (DeviceGroup childGroup : childGroups) {
             
             if (deviceGroupPredicate.evaluate(childGroup)) {
@@ -67,7 +90,7 @@ public class DeviceGroupUiServiceImpl implements DeviceGroupUiService {
                 DeviceGroupHierarchy childHierarchy = new DeviceGroupHierarchy();
                 childHierarchy.setGroup(childGroup);
     
-                setChildHierarchy(childHierarchy, deviceGroupPredicate);
+                setChildHierarchy(childHierarchy, childGroup, childOfLookup, deviceGroupPredicate);
     
                 childGroupList.add(childHierarchy);
             }
