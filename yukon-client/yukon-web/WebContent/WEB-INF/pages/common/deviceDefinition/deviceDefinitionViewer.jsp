@@ -173,6 +173,7 @@
 							<tr>
 								<th>Points</th>
 								<th>Type</th>
+								<th>Init</th>
 								<th>Offset</th>
 								<th>Multiplier</th>
 								<th>UofM</th>
@@ -182,6 +183,12 @@
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
 									<td>${point.pointTemplate.name}</td>
 									<td><cti:msg key="${point.pointType}"/></td>
+									<td>
+										<c:choose>
+											<c:when test="${point.init}">Init</c:when>
+											<c:otherwise></c:otherwise>
+										</c:choose>
+									</td>
 									<td>${point.pointTemplate.pointIdentifier.offset}</td>
 									<td>${point.pointTemplate.multiplier}</td>
 									<td>${point.uomString}</td>

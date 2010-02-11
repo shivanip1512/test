@@ -33,6 +33,7 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
+import com.google.common.collect.Maps;
 
 public class DeviceDefinitionViewerController extends AbstractController {
 
@@ -41,6 +42,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	private StateDao stateDao;
 	
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "Two Way LCR", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", ""};
+	
+	private Map<PaoDefinition, Set<PointTemplate>> initPointTemplatesMap = Maps.newHashMap();
 	
 	@Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -66,6 +69,10 @@ public class DeviceDefinitionViewerController extends AbstractController {
         
         // all
         for (PaoDefinition deviceDefiniton : allDefinitions) {
+        	
+        	// init points
+			Set<PointTemplate> initPointTemplates = paoDefinitionDao.getInitPointTemplates(deviceDefiniton);
+			initPointTemplatesMap.put(deviceDefiniton, initPointTemplates);
         	
         	// allDeviceTypes
         	String displayGroup = deviceDefiniton.getDisplayGroup();
@@ -221,14 +228,14 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			
 			this.points = new ArrayList<PointTemplateWrapper>();
 			for (PointTemplate pointTemplate : pointTemplates) {
-				this.points.add(new PointTemplateWrapper(pointTemplate));
+				this.points.add(new PointTemplateWrapper(deviceDefiniton, pointTemplate));
 			}
 			
 			// attributes
 			List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
 			this.attributes = new ArrayList<AttributeWrapper>();
 			for (AttributeDefinition attribute : attributes) {
-				this.attributes.add(new AttributeWrapper(attribute));
+				this.attributes.add(new AttributeWrapper(deviceDefiniton, attribute));
 			}
 			
 			// commands
@@ -266,8 +273,9 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		private PointType pointType;
 		private String uomString;
 		private String stateGroup;
+		private boolean init;
 		
-		public PointTemplateWrapper(PointTemplate pointTemplate) {
+		public PointTemplateWrapper(PaoDefinition deviceDefiniton, PointTemplate pointTemplate) {
 			
 			this.pointTemplate = pointTemplate;
 			this.pointType = pointTemplate.getPointIdentifier().getPointType();
@@ -281,6 +289,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 				LiteStateGroup liteStateGroup = stateDao.getLiteStateGroup(stateGroupId);
 				this.stateGroup = liteStateGroup.getStateGroupName();
 			}
+			this.init = initPointTemplatesMap.get(deviceDefiniton).contains(pointTemplate);
 		}
 
 		public PointTemplate getPointTemplate() {
@@ -295,6 +304,9 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public String getStateGroup() {
 			return stateGroup;
 		}
+		public boolean isInit() {
+			return init;
+		}
 	}
 	
 	public class AttributeWrapper {
@@ -302,13 +314,13 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		private AttributeDefinition attribute;
 		private PointTemplateWrapper pointTemplateWrapper;
 		
-		public AttributeWrapper(AttributeDefinition attribute) {
+		public AttributeWrapper(PaoDefinition deviceDefiniton, AttributeDefinition attribute) {
 			
 			this.attribute = attribute;
 			if (attribute instanceof BasicAttributeDefinition) {
                 BasicAttributeDefinition basicAttributeLookup = (BasicAttributeDefinition) attribute;
                 
-                this.pointTemplateWrapper = new PointTemplateWrapper(basicAttributeLookup.getPointTemplate());
+                this.pointTemplateWrapper = new PointTemplateWrapper(deviceDefiniton, basicAttributeLookup.getPointTemplate());
             }
 		}
 		
