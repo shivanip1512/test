@@ -21,7 +21,7 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
 
     /**
      * Method to get the temperature based on the current temperature unit
-     * @return Tempurature in correct units
+     * @return Temperature in correct units
      */
     public Integer getPreviousTemperatureForUnit() {
 
@@ -35,7 +35,7 @@ public class ThermostatManualEvent extends CustomerThermostatEventBase {
 
     /**
      * Method to get the temperature in celsius
-     * @return Tempuratre in celsius
+     * @return Temperature in celsius
      */
     public Integer getPreviousTemperatureCelsius() {
 

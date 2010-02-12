@@ -107,7 +107,7 @@
     function convertFieldTemp(fieldId, currentUnit, newUnit){
         
         var field = $(fieldId);
-        var currentTemp = actualCurrentTemp;
+        var currentTemp = field.value;
         
         if(!isNaN(currentTemp) && currentTemp != '') {
             currentTemp = getRawFahrenheitTemp(currentTemp, currentUnit);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
@@ -43,6 +45,7 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
     private InventoryDao inventoryDao;
     private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
+    private CustomerDao customerDao;
     
     @RequestMapping(value = "/operator/thermostat/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
@@ -73,6 +76,10 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
 
             event = new ThermostatManualEvent();
         }
+        
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        String temperatureUnit = customer.getTemperatureUnit();
+        event.setTemperatureUnit(temperatureUnit);
 
         map.addAttribute("event", event);
 
@@ -82,7 +89,7 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
     @RequestMapping(value = "/operator/thermostat/manual", method = RequestMethod.POST)
     public String manual(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
     		@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		String mode, String fan, String temperatureUnit, LiteYukonUser user,
+    		String mode, String fan, String temperatureUnit, YukonUserContext userContext,
             HttpServletRequest request, ModelMap map) throws Exception {
 
     	this.checkInventoryAgainstAccount(thermostatIds, customerAccount);
@@ -90,6 +97,12 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
         ThermostatManualEventResult message = null;
         boolean failed = false;
 
+        //Update the temperature unit for this customer
+        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
+        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
+            customerDao.setTempForCustomer(customerAccount.getCustomerId(), escapedTempUnit);
+        }
+        
         for (Integer thermostatId : thermostatIds) {
 
             boolean hold = ServletRequestUtils.getBooleanParameter(request,
@@ -132,7 +145,6 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
                 event.setFanState(fanState);
             }
 
-            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
             // Execute manual event and get result
             message = thermostatService.executeManualEvent(customerAccount,
                                                            event,
@@ -209,5 +221,10 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
     public void setThermostatService(ThermostatService thermostatService) {
         this.thermostatService = thermostatService;
     }
+    
+    @Autowired
+    public void setCustomerDao(CustomerDao customerDao) {
+		this.customerDao = customerDao;
+	}
 
 }
