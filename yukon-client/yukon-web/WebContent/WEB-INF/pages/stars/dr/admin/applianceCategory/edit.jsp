@@ -36,10 +36,12 @@
     <br>
 
     <%-- criteria needs to include only programs which are not already assigned and are in a control area --%>
+    <%--
     <cti:drPicker pickerId="programPicker"
         constraint="com.cannontech.common.search.criteria.LMProgramOrScenarioCriteria"
         paoIdField="programsToAssign" finalTriggerAction="selectDevices"
         selectionLinkName="Next"/>
+    --%>
 
     <table class="widgetColumns">
         <tr>

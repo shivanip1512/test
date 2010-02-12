@@ -29,10 +29,12 @@
     </form>
 
     <%-- criteria needs to include only programs which assigned to an appliance category and are in a control area --%>
+    <%--
     <cti:drPicker pickerId="programPicker"
         constraint="com.cannontech.common.search.criteria.LMProgramOrScenarioCriteria"
         paoIdField="programsToAssign" finalTriggerAction="selectDevices"
         selectionLinkName="Next"/>
+    --%>
 
     <table width="100%" style="margin-bottom: 20px;">
         <tr valign="top">
