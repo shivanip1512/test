@@ -767,7 +767,7 @@ unsigned Ccu711::queue_request_dlc_time(const queue_entry::request_info &request
         bits_in  += EmetconWordD::BitLength * EmetconWordD::words_needed(request.length);
     }
 
-    return dlc_time(bits_out, bits_in) * (request.repeater_count + 1) / 1000;
+    return ( dlc_time(bits_out, bits_in) * (request.repeater_count + 1) + 999 )/ 1000;
 }
 
 
