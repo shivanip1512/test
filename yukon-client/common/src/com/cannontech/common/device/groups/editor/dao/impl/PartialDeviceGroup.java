@@ -57,5 +57,10 @@ public class PartialDeviceGroup {
             return false;
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "id=" + storedDeviceGroup.getId() + ", parentId=" + parentGroupId;
+    }
 
 }

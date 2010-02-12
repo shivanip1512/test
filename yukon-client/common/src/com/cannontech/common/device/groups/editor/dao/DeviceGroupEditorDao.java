@@ -32,6 +32,13 @@ public interface DeviceGroupEditorDao {
     public List<StoredDeviceGroup> getStaticGroups(StoredDeviceGroup group);
     
     /**
+     * Find all groups that are descendants of group.
+     * @param group
+     * @return
+     */
+    public List<StoredDeviceGroup> getAllGroups(StoredDeviceGroup group);
+    
+    /**
      * This find all non STATIC groups that are descendants of group.
      * @param group
      * @return

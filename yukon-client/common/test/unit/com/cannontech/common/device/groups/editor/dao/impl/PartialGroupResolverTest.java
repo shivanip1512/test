@@ -89,9 +89,9 @@ public class PartialGroupResolverTest {
         PartialGroupResolver partialGroupResolver = new PartialGroupResolver(new PartialDeviceGroupDao() {
             @Override
             public Set<PartialDeviceGroup> getPartialGroupsById(Set<Integer> neededIds) {
-                throw new RuntimeException("All parent's were supplied, this shouldn't be called");
+                throw new RuntimeException("All parents were supplied, this shouldn't be called");
             }
-        });
+        }, root);
         
         Set<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
         
@@ -123,7 +123,7 @@ public class PartialGroupResolverTest {
             public Set<PartialDeviceGroup> getPartialGroupsById(Set<Integer> neededIds) {
                 throw new RuntimeException("All parent's were supplied, this shouldn't be called");
             }
-        });
+        }, root);
         
         Set<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
         
@@ -162,7 +162,7 @@ public class PartialGroupResolverTest {
                 }
                 return result;
             }
-        });
+        }, root);
         
         Set<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
         
@@ -209,7 +209,7 @@ public class PartialGroupResolverTest {
                 }
                 return result;
             }
-        });
+        }, root);
         
         Set<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
         
@@ -246,9 +246,9 @@ public class PartialGroupResolverTest {
                 }
                 return result;
             }
-        });
+        }, root);
         
-        partialGroupResolver.addKnownGroups(root, a1, a2, b1, c1);
+        partialGroupResolver.addKnownGroups(a1, a2, b1, c1);
         
         Set<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
         

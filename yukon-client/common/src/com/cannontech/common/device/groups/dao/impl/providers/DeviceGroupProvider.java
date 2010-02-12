@@ -66,6 +66,14 @@ public interface DeviceGroupProvider {
     public Set<SimpleDevice> getDevices(DeviceGroup group);
     
     /**
+     * A helper method to allow simple optimizations for groups that, by definition,
+     * will contain all devices.
+     * @param group
+     * @return
+     */
+    public boolean doesGroupDefinitelyContainAllDevices(DeviceGroup group);
+    
+    /**
      * Adds unique YukonDevices to deviceSet for each device that is a descendant of the given
      * group. Only adds devices while deviceSet size <= maxSize.
      * 

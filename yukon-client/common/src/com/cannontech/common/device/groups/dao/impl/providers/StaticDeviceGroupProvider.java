@@ -9,20 +9,23 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.google.common.collect.Lists;
 
 public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    
     @Override
     public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
         StoredDeviceGroup sdg = getStoredGroup(group);
@@ -42,23 +45,26 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     @Override
     public List<DeviceGroup> getGroups(DeviceGroup group) {
         List<DeviceGroup> result = new ArrayList<DeviceGroup>();
-        StoredDeviceGroup sdg = getStoredGroup(group);
-        List<StoredDeviceGroup> staticGroups = deviceGroupEditorDao.getStaticGroups(sdg);
-        result.addAll(staticGroups);
-
-        // now get the non static ones
-        List<StoredDeviceGroup> nonStaticGroups = deviceGroupEditorDao.getNonStaticGroups(sdg);
-        result.addAll(nonStaticGroups);
-        for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
-            List<DeviceGroup> tempGroups = getMainDelegator().getGroups(nonStaticGroup);
-            result.addAll(tempGroups);
-        }
         
+        StoredDeviceGroup sdg = getStoredGroup(group);
+        List<StoredDeviceGroup> allGroups = deviceGroupEditorDao.getAllGroups(sdg);
+        
+        // add in this group to ensure that its direct children are included
+        allGroups.add(sdg); 
+        
+        for (StoredDeviceGroup deviceGroup : allGroups) {
+            result.add(deviceGroup);
+            if (deviceGroup.getType() != DeviceGroupType.STATIC) {
+              List<DeviceGroup> tempGroups = getMainDelegator().getGroups(deviceGroup);
+              result.addAll(tempGroups);
+            }
+        }
+
         // because the base implementation of this method returns everything
         // in a pretty nice order, we should try to do the same
         Collections.sort(result);
         
-        return Collections.unmodifiableList(result);
+        return result;
     }
     
     @Override
@@ -75,31 +81,46 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     @Override
     public SqlFragmentSource getDeviceGroupSqlWhereClause(DeviceGroup group,
             String identifier) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        if (doesGroupDefinitelyContainAllDevices(group)) {
+            return new SimpleSqlFragment("1 = 1");
+        }
+        
+        SqlFragmentCollection sqlCollection = SqlFragmentCollection.newOrCollection();
+        
         // find all static groups
         StoredDeviceGroup sdg = getStoredGroup(group);
-        List<StoredDeviceGroup> staticGroups = deviceGroupEditorDao.getStaticGroups(sdg);
+        List<StoredDeviceGroup> allGroups = deviceGroupEditorDao.getAllGroups(sdg);
         
         // add in this group to ensure that its direct children are included
-        staticGroups.add(sdg); 
-
-        // build one SQL to handle
-        List<Integer> idList = new MappingList<StoredDeviceGroup, Integer>(staticGroups, new ObjectMapper<StoredDeviceGroup, Integer>() {
-            public Integer map(StoredDeviceGroup from) {
-                return from.getId();
+        allGroups.add(sdg); 
+        
+        List<Integer> idList = Lists.newArrayListWithExpectedSize(allGroups.size()); // good enough guess
+        
+        for (StoredDeviceGroup deviceGroup : allGroups) {
+            if (deviceGroup.getType() == DeviceGroupType.STATIC) {
+                // collect its id
+                idList.add(deviceGroup.getId());
+            } else {
+                if (getMainDelegator().doesGroupDefinitelyContainAllDevices(deviceGroup)) {
+                    return new SimpleSqlFragment("1 = 1");
+                }
+                SqlFragmentSource whereFragment = getMainDelegator().getDeviceGroupSqlWhereClause(deviceGroup, identifier);
+                sqlCollection.add(whereFragment);
             }
-        });
-        
-        sql.append(identifier, "in (select yukonpaoid from devicegroupmember where devicegroupid in (", idList, "))");
-        
-        // now handle the dynamic ones by delegating back to main
-        List<StoredDeviceGroup> nonStaticGroups = deviceGroupEditorDao.getNonStaticGroups(sdg);
-        for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
-            SqlFragmentSource whereFragment = getMainDelegator().getDeviceGroupSqlWhereClause(nonStaticGroup, identifier);
-            sql.append("OR", whereFragment);
         }
 
-        return sql;
+        SqlStatementBuilder staticSqlClause = new SqlStatementBuilder();
+        staticSqlClause.append(identifier, "in (select yukonpaoid from devicegroupmember where devicegroupid in (", idList, "))");
+        sqlCollection.add(staticSqlClause);
+        
+        return sqlCollection;
+    }
+    
+    @Override
+    public boolean doesGroupDefinitelyContainAllDevices(DeviceGroup group) {
+        // the root group can be assumed to contain everything
+        return group.getParent() == null;
     }
     
     private StoredDeviceGroup getStoredGroup(DeviceGroup group) {

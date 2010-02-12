@@ -65,6 +65,11 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getDevices(group);
     }
     
+    @Override
+    public boolean doesGroupDefinitelyContainAllDevices(DeviceGroup group) {
+        return getProvider(group).doesGroupDefinitelyContainAllDevices(group);
+    }
+    
     public void collectDevices(DeviceGroup group, Set<SimpleDevice> deviceSet, int maxSize) {
         getProvider(group).collectDevices(group, deviceSet, maxSize);
     }

@@ -3,14 +3,14 @@ package com.cannontech.common.device.groups.editor.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.util.MapSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 /**
  * The purpose of this class is to efficiently resolve a collection of PartialDeviceGroups
@@ -24,13 +24,16 @@ import com.cannontech.common.util.MapSet;
 public class PartialGroupResolver {
     private PartialDeviceGroupDao partialDeviceGroupDao;
     
-    private Map<Integer, StoredDeviceGroup> knownGroupLookup = new HashMap<Integer, StoredDeviceGroup>();
-    private MapSet<Integer, PartialDeviceGroup> waitingPartials = new MapSet<Integer, PartialDeviceGroup>();
-    private Set<Integer> allSeendIds = new HashSet<Integer>();
+    private Map<Integer, StoredDeviceGroup> knownGroupLookup = Maps.newHashMapWithExpectedSize(1);
 
-    
-    public PartialGroupResolver(PartialDeviceGroupDao partialDeviceGroupDao) {
+    /**
+     * Instantiates the resolver. 
+     * @param partialDeviceGroupDao
+     * @param base provides a starting point for the resolver; all groups to be resolved must be a descendent of this group
+     */
+    public PartialGroupResolver(PartialDeviceGroupDao partialDeviceGroupDao, StoredDeviceGroup base) {
         this.partialDeviceGroupDao = partialDeviceGroupDao;
+        addKnownGroups(base);
     }
 
     /**
@@ -41,39 +44,8 @@ public class PartialGroupResolver {
      */
     public void addKnownGroups(StoredDeviceGroup... knownGroups) {
         for (StoredDeviceGroup known : knownGroups) {
-            StoredDeviceGroup group = known;
-            while (group != null) {
-                knownGroupLookup.put(group.getId(), group);
-                group = (StoredDeviceGroup) group.getParent(); // a stored parent is always stored
-            }
+            knownGroupLookup.put(known.getId(), known);
         }
-    }
-    
-    private void recordKnownGroup(StoredDeviceGroup group) {
-        knownGroupLookup.put(group.getId(), group);
-    }
-    
-    private boolean processPartial(PartialDeviceGroup partialGroup) {
-        boolean foundSomething = false;
-        StoredDeviceGroup group = partialGroup.getStoredDeviceGroup();
-        allSeendIds.add(group.getId());
-        StoredDeviceGroup parentGroup = knownGroupLookup.get(partialGroup.getParentGroupId());
-        if (partialGroup.getParentGroupId() == null || parentGroup != null) {
-            group.setParent(parentGroup);
-            recordKnownGroup(group);
-            waitingPartials.removeValue(partialGroup.getParentGroupId(), partialGroup);
-            foundSomething = true;
-            // since we found something, let's see if anyone's waiting on it
-            // use a copy to prevent concurrent modification (although, this is the slowest part
-            // of the whole algorithm)
-            Set<PartialDeviceGroup> somePartials = new HashSet<PartialDeviceGroup>(waitingPartials.get(group.getId()));
-            for (PartialDeviceGroup partialDeviceGroup : somePartials) {
-                processPartial(partialDeviceGroup);
-            }
-        } else {
-            waitingPartials.add(partialGroup.getParentGroupId(), partialGroup);
-        }
-        return foundSomething;
     }
     
     /**
@@ -86,36 +58,70 @@ public class PartialGroupResolver {
      * @param input - A collection of PartialDeviceGroups to be processed
      * @param output - A collection (typically empty) which the output will be placed in
      */
-    public void resolvePartials(Collection<PartialDeviceGroup> input,
-                                Collection<StoredDeviceGroup> output) {
-        // loop over input collection once
-        // after this, everything will either be waiting or known
-        for (PartialDeviceGroup partial : input) {
-            processPartial(partial);
-        }
-
-        // request anything we haven't seen, but are waiting on
-        while (!waitingPartials.isEmpty()) {
-            Set<Integer> neededIds = new HashSet<Integer>(waitingPartials.keySet());
-            neededIds.removeAll(allSeendIds);
-
-            Set<PartialDeviceGroup> newGroups =
-                partialDeviceGroupDao.getPartialGroupsById(neededIds);
-            for (PartialDeviceGroup partial : newGroups) {
-                processPartial(partial);
+    public void collectMissingPartials(Collection<PartialDeviceGroup> input,
+            Set<Integer> neededParentIds,
+            Map<Integer, PartialDeviceGroup> lookupById) {
+         
+        for (PartialDeviceGroup partialDeviceGroup : input) {
+            lookupById.put(partialDeviceGroup.getStoredDeviceGroup().getId(), partialDeviceGroup);
+            if (partialDeviceGroup.getParentGroupId() != null) {
+                // we don't want null to be a key
+                neededParentIds.add(partialDeviceGroup.getParentGroupId());
             }
         }
         
-        // we must resist the temptation to just return knownGroupLookup.values() because
-        // that includes other items we've cached but don't want to return, if this ends up
-        // sucking, we could just account for things better...
-        for (PartialDeviceGroup partial : input) {
-            StoredDeviceGroup storedDeviceGroup = knownGroupLookup.get(partial.getStoredDeviceGroup().getId());
-            output.add(storedDeviceGroup);
+        SetView<Integer> missing = Sets.difference(neededParentIds, lookupById.keySet());
+        missing = Sets.difference(missing, knownGroupLookup.keySet());
+        // missing now represents all of the ids we know we need to load at
+        // this point, there may be other ids that are required, but we won't
+        // know about them until we load these (the recursive call will
+        // handle them)
+        if (missing.isEmpty()) {
+            return;
         }
+        
+        Set<PartialDeviceGroup> nextInput = partialDeviceGroupDao.getPartialGroupsById(missing);
+        collectMissingPartials(nextInput, neededParentIds, lookupById);
+    }
 
+    public void resolvePartials(Collection<PartialDeviceGroup> input,
+            Collection<StoredDeviceGroup> output) {
+        Set<Integer> neededParentIds = Sets.newHashSet();
+        Map<Integer, PartialDeviceGroup> lookupById = Maps.newHashMap();
+        // collect any intermediary partials (groups between root and the
+        // groups represented by input)
+        collectMissingPartials(input, neededParentIds, lookupById);
+        
+        // using lookupById as a repository of all required groups,
+        // build StoredDeviceGroups for everything in input and add to output
+        for (PartialDeviceGroup partialDeviceGroup : input) {
+            StoredDeviceGroup group = connectPartial(partialDeviceGroup, lookupById);
+            output.add(group);
+        }
     }
     
+    private StoredDeviceGroup connectPartial(
+            PartialDeviceGroup partialDeviceGroup,
+            Map<Integer, PartialDeviceGroup> lookupById) {
+        Integer parentGroupId = partialDeviceGroup.getParentGroupId();
+        if (parentGroupId == null) {
+            return partialDeviceGroup.getStoredDeviceGroup();
+        }
+        // look in knownGroup cache for parent
+        StoredDeviceGroup parent = knownGroupLookup.get(parentGroupId);
+        if (parent == null) {
+            // not already cached, get the partial that represents
+            // our parent and recurse to build entire chain
+            PartialDeviceGroup parentPartial = lookupById.get(parentGroupId);
+            parent = connectPartial(parentPartial, lookupById);
+            knownGroupLookup.put(parent.getId(), parent); // cache known parents
+        }
+        // construct the resulting StoredDeviceGroup and return
+        StoredDeviceGroup group = partialDeviceGroup.getStoredDeviceGroup();
+        group.setParent(parent);
+        return group;
+    }
+
     /**
      * This is a shortcut method for processing a single PartialDeviceGroup.
      * 

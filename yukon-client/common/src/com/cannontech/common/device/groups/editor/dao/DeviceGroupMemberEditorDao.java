@@ -57,7 +57,7 @@ public interface DeviceGroupMemberEditorDao {
     public void addDevicesById(StoredDeviceGroup group, Iterator<Integer> deviceIds);
 
     /**
-     * Remove devices under group that are contained in the devices collection.
+     * Remove child devices under group that are contained in the devices collection.
      * Devices that exist in the collection put are not a member of the group are
      * silently ignored.
      * @param group
@@ -66,7 +66,7 @@ public interface DeviceGroupMemberEditorDao {
     public void removeDevices(StoredDeviceGroup group, YukonDevice... device);
     
     /**
-     * Remove devices from the given group by device id (yukon pao id). Devices that 
+     * Remove child devices from the given group by device id (yukon pao id). Devices that 
      * exist in the collection put are not a member of the group are silently ignored.
      * @param group
      * @param deviceIds
@@ -74,7 +74,7 @@ public interface DeviceGroupMemberEditorDao {
     public void removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds);
     
     /**
-     * Remove devices under group that are contained in the devices collection.
+     * Remove child devices under group that are contained in the devices collection.
      * Devices that exist in the collection put are not a member of the group are
      * silently ignored.
      * @param group

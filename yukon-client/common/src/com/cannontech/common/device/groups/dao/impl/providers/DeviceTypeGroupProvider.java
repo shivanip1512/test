@@ -15,7 +15,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<String> {
+public class DeviceTypeGroupProvider extends CompleteBinningDeviceGroupProviderBase<String> {
     private PaoDao paoDao;
     
     @Override
@@ -46,15 +46,6 @@ public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<Stri
         return sql;
     }
     
-    @Override
-    protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        return sql;
-    }
-
     @Override
     protected Set<String> getBinsForDevice(YukonDevice device) {
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());

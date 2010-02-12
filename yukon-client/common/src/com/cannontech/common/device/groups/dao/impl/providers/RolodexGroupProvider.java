@@ -10,13 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public class RolodexGroupProvider extends BinningDeviceGroupProviderBase<Character> {
+public class RolodexGroupProvider extends CompleteBinningDeviceGroupProviderBase<Character> {
     private PaoDao paoDao;
 
     @Override
@@ -43,11 +42,6 @@ public class RolodexGroupProvider extends BinningDeviceGroupProviderBase<Charact
         sql.append("where upper(SUBSTRING(ypo.PAOName, 1, 1)) = ");
         sql.appendArgument(String.valueOf(bin)); // get JDBC error if this is passed in as a Character
         return sql;
-    }
-    
-    @Override
-    protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
-        return new SimpleSqlFragment("SELECT ypo.paobjectid FROM YukonPaObject ypo");
     }
     
     @Override

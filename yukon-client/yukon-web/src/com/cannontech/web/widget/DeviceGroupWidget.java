@@ -75,23 +75,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         // Make a list of all the groups the device is not in and that are
         // modifiable
 
-        // Get all groups
-        List<? extends DeviceGroup> allGroups = deviceGroupDao.getAllGroups();
-        
-        // Remove the groups the device is already in
-        allGroups.removeAll(currentGroupsSet);
-
-        // Iterate the list and take the modifiable groups
-        List<DeviceGroup> groupList = new ArrayList<DeviceGroup>();
-        for (DeviceGroup group : allGroups) {
-            // parent check enforces no-devices-under-root rule
-            if (group.isModifiable() && group.getParent() != null) {
-                groupList.add(group);
-            }
-        }
-
         mav.addObject("currentGroups", currentGroups);
-        mav.addObject("addableGroups", groupList);
         mav.addObject("meter", meter);
         mav.addObject("deviceId", deviceId);
         

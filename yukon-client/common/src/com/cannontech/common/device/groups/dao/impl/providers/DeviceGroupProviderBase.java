@@ -69,6 +69,11 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
         return getChildDevices(group).size();
     }
     
+    @Override
+    public boolean doesGroupDefinitelyContainAllDevices(DeviceGroup group) {
+        return false;
+    }
+    
     public SqlFragmentSource getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         SqlFragmentCollection whereClause = SqlFragmentCollection.newOrCollection();
         whereClause.add(getChildDeviceGroupSqlWhereClause(group, identifier));
@@ -172,12 +177,10 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
         
         Predicate<DeviceGroup> canMoveUnderPredicate = new Predicate<DeviceGroup>(){
             @Override
-            public boolean evaluate(DeviceGroup deviceGroup) {
+            public boolean evaluate(DeviceGroup newParentGroup) {
                 
-                if (!groupToMove.isEditable() 
-                    || !deviceGroup.isModifiable()
-                    || groupToMove.isEqualToOrDescendantOf(deviceGroup)
-                    || deviceGroup.equals(groupToMove.getParent())) {
+                if (!newParentGroup.isModifiable()
+                    || newParentGroup.isEqualToOrDescendantOf(groupToMove)) {
                     return false;
                 }
                 
