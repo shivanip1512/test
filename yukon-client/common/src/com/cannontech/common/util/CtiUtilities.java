@@ -139,10 +139,15 @@ public final class CtiUtilities
 		/** Init end of time **/
 		gc2035 = new java.util.GregorianCalendar();
 		gc2035.set( Calendar.YEAR, 2035 );
-		gc2035.set( Calendar.DAY_OF_YEAR, 1 );
-		gc2035.set( Calendar.HOUR, 0 );
+		gc2035.set( Calendar.MONTH, Calendar.JANUARY);
+		gc2035.set( Calendar.DAY_OF_MONTH, 1 );
+		gc2035.set( Calendar.AM_PM, Calendar.AM );
+		gc2035.set( Calendar.HOUR_OF_DAY, 0 );
 		gc2035.set( Calendar.MINUTE, 0 );
 		gc2035.set( Calendar.SECOND, 0 );
+		gc2035.set( Calendar.MILLISECOND, 0 );
+		gc2035.set( Calendar.WEEK_OF_YEAR, 1 );
+		gc2035.set( Calendar.DAY_OF_YEAR, 1 );
 		
 		try
 		{
