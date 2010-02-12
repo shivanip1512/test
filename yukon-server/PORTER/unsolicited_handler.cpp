@@ -524,6 +524,11 @@ void UnsolicitedHandler::generateDnpKeepalive(om_queue &local_queue, const devic
 
     dr.device->ExecuteRequest(&msg, parse, vg_list, ret_list, om_list);
 
+    for each(OUTMESS *om in om_list )
+    {
+        statisticsNewRequest(om->Port, om->DeviceID, om->TargetID, om->MessageFlags);
+    }
+
     delete_container(vg_list);
     delete_container(ret_list);
 
@@ -925,11 +930,11 @@ bool UnsolicitedHandler::processDnpInbound(device_record &dr)
 
         processCommStatus(status, dr.id, dr.id, om_retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr.device));
 
-        if( status && !dr.device->isTransactionComplete() )
+        if( status && !dr.device->isTransactionComplete() && dr.work.outbound.front() )
         {
             //  error, but we're going to keep going
             //    this is the equivalent of a "retry" in the old school code
-            statisticsNewAttempt(dr.device->getPortID(), dr.id, dr.id, status, MessageFlag_StatisticsRequested);
+            statisticsNewAttempt(dr.device->getPortID(), dr.id, dr.id, status, dr.work.outbound.front()->MessageFlags);
         }
     }
 
