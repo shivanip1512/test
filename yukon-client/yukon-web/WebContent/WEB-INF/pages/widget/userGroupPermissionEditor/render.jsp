@@ -10,14 +10,16 @@
 <c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 <c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 
-<cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
-<cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/>
-<cti:uniqueIdentifier var="newPaoId" prefix="newPao_"/>
+<c:set var="pickerId" value="${widgetParameters.widgetId}_${widgetParameters.pickerType}"/>
+<c:set var="addPao" value="addPao_${pickerId}"/>
+<c:set var="addPaoSpanId" value="addPaoSpan_${pickerId}"/>
+<c:set var="newPaoId" value="newPao_${pickerId}"/>
 
 <script type="text/javascript">
-  ${addPao} = function() {
+${addPao} = function() {
     ${widgetParameters.jsWidget}.doActionRefresh("addPao", "${addPaoSpanId}", "Adding");
-  }
+    return true;
+}
 </script>
     <tags:widgetState paoIdsList="${paoIds}"/>
     
@@ -30,17 +32,17 @@
 				<th>Name</th>
 				<th>Type</th>
 				<th style="text-align:center">
-                          <span id="${addPaoSpanId}">
-                            <span class="widgetActionLink">
-            <cti:paoPicker paoIdField="${newPaoId}" constraint="${widgetParameters.constraint}" finalTriggerAction="${addPao}">
-                              Add
-                        </cti:paoPicker>
-                            </span>
-                          <span class="widgetAction_waiting" style="display:none">
-                          <img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
-                          </span>
-                          </span>
-            <input id="${newPaoId}" name="newPaoId" type="hidden">
+                <span class="widgetActionLink">
+                    <tags:pickerDialog type="${widgetParameters.pickerType}" id="${pickerId}"
+                       destinationFieldId="${newPaoId}" endAction="${addPao}"
+                       immediateSelectMode="true">Add</tags:pickerDialog>
+                    <input id="${newPaoId}" name="newPaoId" type="hidden">
+                </span>
+                <span id="${addPaoSpanId}">
+                    <span class="widgetAction_waiting" style="display:none">
+                        <img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
+                    </span>
+                </span>
             </th>
 			</tr>
 			<c:forEach var="pao" items="${paoList}">

@@ -24,18 +24,18 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
     resultTable.appendChild(resultTableHead);
     var headRow = document.createElement("tr");
     resultTableHead.appendChild(headRow);
-    for (col = 0; col < outputCols.length; col++) {
+    for (var col = 0; col < outputCols.length; col++) {
         var headCell = document.createElement("th");
         headCell.appendChild(document.createTextNode(outputCols[col].title));
         headRow.appendChild(headCell);
     }
     var resultTableBody = document.createElement("tbody");
     resultTable.appendChild(resultTableBody);
-    for (i=0; i < dataArray.length; i++) {
+    for (var i=0; i < dataArray.length; i++) {
       var tableRow = document.createElement("tr");
       (rowCallback || Prototype.emptyFunction)(tableRow, dataArray[i]);
       resultTableBody.appendChild(tableRow);
-      for (col = 0; col < outputCols.length; col++) {
+      for (var col = 0; col < outputCols.length; col++) {
           var tableCell = document.createElement("td");
           var node = tableCell;
           tableRow.appendChild(tableCell);

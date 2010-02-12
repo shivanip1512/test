@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage title="User Assignment for Load Management Visibility" module="userlm">
 <cti:standardMenu/>
@@ -15,24 +15,30 @@
 
 <script language="JavaScript">
 
-	function forwardToUserEdit(selectedItem) {
-		window.location = "/spring/editor/user/editUser?userId=" + selectedItem.userId;
+	function forwardToUserEdit(selectedItems) {
+		window.location = "/spring/editor/user/editUser?userId=" +
+		    $('userIdSelected').value;
 		window.event.returnValue = false;
+		return true;
 	}
 
-	function forwardToGroupEdit(selectedItem) {
-		window.location = "/spring/editor/group/editGroup?groupId=" + selectedItem.groupId;
+	function forwardToGroupEdit(selectedItems) {
+		window.location = "/spring/editor/group/editGroup?groupId=" +
+		    $('loginGroupIdSelected').value;
 		window.event.returnValue = false;
+		return true;
 	}
 	
 </script>
 
-	<input id="userSelectedId" type="hidden" value="0"> 
+	<input id="userIdSelected" type="hidden" value="0"> 
 	<div>
 		Select user to edit:
-		<cti:userPicker pickerId="lmUserPicker" userIdField="userSelectedId" constraint="" userNameElement="userSelectedName" finalTriggerAction="forwardToUserEdit">
-			<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif"> 
-		</cti:userPicker>
+	    <tags:pickerDialog type="userPicker" id="userPicker"
+	        destinationFieldId="userIdSelected" endAction="forwardToUserEdit"
+	        immediateSelectMode="true">
+            <img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif">
+	    </tags:pickerDialog>
 		<span style="display:none" id="userSelectedName"></span> 
 	</div>
 	
@@ -40,12 +46,14 @@
 	OR
 	<br/><br/>
 
-	<input id="groupSelectedId" type="hidden" value="0"> 
 	<div>
 		Select group to edit:
-		<cti:loginGroupPicker pickerId="lmGroupPicker" loginGroupIdField="groupSelectedId" constraint="" loginGroupNameElement="groupSelectedName" finalTriggerAction="forwardToGroupEdit">
-			<img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif"> 
-		</cti:loginGroupPicker>
+	    <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker"
+	        destinationFieldId="loginGroupIdSelected" endAction="forwardToGroupEdit"
+	        immediateSelectMode="true">
+            <img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif">
+	    </tags:pickerDialog>
+	    <input id="loginGroupIdSelected" type="hidden" value="0"> 
 		<span style="display:none" id="groupSelectedName"></span> 
 	</div>
 

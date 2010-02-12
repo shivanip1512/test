@@ -1210,4 +1210,52 @@
     <bean id="deviceReconfigProgramSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigProgramSelectionTypeHandler"/>
     
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
+
+    <bean name="paoPicker" class="com.cannontech.web.picker.v2.PaoPicker"/>
+    <bean name="programPicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.LMProgramCriteria"/>
+    </bean>
+    <bean name="cbcSubBusPicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.CBCSubBusCriteria"/>
+    </bean>
+    <bean name="cbcDevicePicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.CBCDeviceCriteria"/>
+    </bean>
+    <bean name="lmDevicePicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.LMDeviceCriteria"/>
+    </bean>
+    <bean name="devicePicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.DeviceCriteria"/>
+    </bean>
+    <bean name="meterPicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.MeterCriteria"/>
+    </bean>
+    <bean name="ltcPicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.LtcTypeCriteria"/>
+    </bean>
+
+    <bean name="pointPicker" class="com.cannontech.web.picker.v2.PointPicker"/>
+    <bean name="voltReductionPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.VoltReductionCriteria"/>
+    </bean>
+    <bean name="varPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.CCVarCriteria"/>
+    </bean>
+    <bean name="wattPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.CCWattCriteria"/>
+    </bean>
+    <bean name="voltPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.CCVoltCriteria"/>
+    </bean>
+    <bean name="twoStatePointPicker" class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria" value="com.cannontech.common.search.criteria.CCTwoStatePointCriteria"/>
+    </bean>
+
+    <bean name="userPicker" class="com.cannontech.web.picker.v2.UserPicker"/>
+    <bean name="loginGroupPicker" class="com.cannontech.web.picker.v2.LoginGroupPicker"/>
+
+    <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
+        <property name="serviceLocatorInterface"
+            value="com.cannontech.web.picker.v2.service.PickerService" />
+    </bean>
 </beans>

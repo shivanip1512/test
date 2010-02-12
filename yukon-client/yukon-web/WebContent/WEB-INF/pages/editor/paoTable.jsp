@@ -13,7 +13,10 @@
 				</td>
 				<td align="right">
 					<span class="pickerLink">
-						<cti:paoPicker pickerId="${pickerId}" paoIdField="newPaoId" constraint="com.cannontech.common.search.criteria.LMDeviceCriteria" finalTriggerAction="addPao">Add</cti:paoPicker>
+						<cti:paoPicker pickerId="${pickerId}"
+						  paoIdField="newPaoId"
+						  constraint="com.cannontech.common.search.criteria.LMDeviceCriteria"
+						  finalTriggerAction="addPao">Add</cti:paoPicker>
 						<input id="newPaoId" type="hidden" />
 					</span>
 				</td>

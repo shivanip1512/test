@@ -23,14 +23,15 @@
                     <c:if test="${!empty pageScope.filterDialog}">
                         <tags:filterLink popupId="${pageScope.filterDialog}"/>
                         <c:if test="${pageScope.isFiltered}">
-                            &nbsp;&nbsp;<a href="${showAllUrl}">
+                            &nbsp;&nbsp;<a href="${pageScope.showAllUrl}">
                             <cti:msg key="yukon.common.paging.showAll"/>
                         </a>
                         </c:if>
                     </c:if>
                 </td>
 
-                <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${baseUrl}"/>
+                <tags:nextPrevLinks searchResult="${pageScope.searchResult}"
+                    baseUrl="${pageScope.baseUrl}" mode="jsp"/>
             </tr>
         </table>
     </div>
@@ -45,17 +46,18 @@
                 <td class="perPageArea">
                     <cti:msg key="yukon.common.paging.itemsPerPage"/>&nbsp;&nbsp;
                     <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="10"
-                        baseUrl="${baseUrl}"/>&nbsp;
+                        baseUrl="${pageScope.baseUrl}"/>&nbsp;
                     <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25"
-                        baseUrl="${baseUrl}"/>&nbsp;
+                        baseUrl="${pageScope.baseUrl}"/>&nbsp;
                     <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50"
-                        baseUrl="${baseUrl}"/>&nbsp;
-                    <c:if test="${pageByHundereds}">
+                        baseUrl="${pageScope.baseUrl}"/>&nbsp;
+                    <c:if test="${pageScope.pageByHundereds}">
                         <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="100"
-                            baseUrl="${baseUrl}"/>
+                            baseUrl="${pageScope.baseUrl}"/>
                     </c:if>
                 </td>
-                <tags:nextPrevLinks searchResult="${pageScope.searchResults}" baseUrl="${baseUrl}"/>
+                <tags:nextPrevLinks searchResult="${pageScope.searchResults}"
+                    baseUrl="${pageScope.baseUrl}" mode="jsp"/>
             </tr>
         </table>
     </div>

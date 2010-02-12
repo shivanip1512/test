@@ -52,6 +52,10 @@ div.simplePopup {
   top: 15%;
 }
 
+div.pickerDialog {
+  width: 700px;
+}
+
 div.thinBorder {
   border: 1px solid #666 !important;
 }
@@ -649,26 +653,50 @@ div.pagedBox table .filterArea {
     text-align: right;
 }
 
-div.pagedBox table .pagingArea {
+.pagingArea {
+    text-align: right;
+}
+
+.pagingArea .previousLink {
 	text-align: right;
+}
+
+.pagingArea .pageNumText {
+	white-space: nowrap;
+	text-align: center;
+}
+
+.pagingArea .nextLink {
+    text-align: left;
+}
+
+.pagingArea table {
+	width: 100%;
+}
+
+.pagingArea table td {
+	padding: 0px 5px;
+}
+
+div.pagedBox .pagingArea {
     width: 30%;
 }
 
-div.pagedBox table .perPageArea {
+table .perPageArea {
     text-align: right;
     width: 70%;
 }
 
-div.pagedBox .filterArea,
-div.pagedBox .pagingArea,
-div.pagedBox .perPageArea {
+.filterArea,
+.pagingArea,
+.perPageArea {
    color: #06C;
    font-weight: normal;
 }
 
-div.pagedBox .filterArea a,
-div.pagedBox .pagingArea a,
-div.pagedBox .perPageArea a {
+.filterArea a,
+.pagingArea a,
+.perPageArea a {
    color: #06C;
    text-decoration: none;
 }
@@ -679,6 +707,39 @@ div.pagedBox .selectedItem {
 
 div.pagedBox table.boxTable {
     height: 100%;
+}
+
+.pickerHeader {
+	display: block;
+	font-size: 12px;
+/*	background-color: #d6d6d6; */
+	padding: 5px 0px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.pickerHeader table .queryStringArea {
+    width: 40%;
+}
+
+.pickerHeader table .filterArea {
+    width: 25%;
+}
+
+.pickerHeader .pagingArea {
+    width: 35%;
+}
+
+.pickerResults {
+    min-height: 405px;
+}
+
+.pickerResults table.compactResultsTable th {
+    font-size: 13px;
+}
+
+.pickerResults table.compactResultsTable td {
+    font-size: 12px;
 }
 
 .logoImage {
@@ -781,33 +842,8 @@ h3.indentedElementHeading + * {
     margin: 0 0 0 12px;
 }
 
-table.pagingArea {
-	font-size: .75em;
-	width: 100%;
-}
-
-table.pagingArea td.viewing {
-    text-align: left;
-    width: 20%;
-}
-
-table.pagingArea td.resultsPerPage {
-    text-align: center;
-    width: 30%;
-}
-
-table.pagingArea td.filter {
-    text-align: center;
-    width: 0%;
-}
-
-table.pagingArea td.pages {
-	text-align: right;
-    width: 50%;
-}
-
 div.actionArea {
-	margin-top: 10px;
+	margin-top: 15px;
 	text-align: right;
 }
 
@@ -915,3 +951,19 @@ div.padded {
     padding: 4px;
 }
 
+.busyBox {
+	position: absolute;
+	left: 50%;
+    margin-left: -16px;
+    margin-top: -16px;
+    top: 50%;
+	width: 90px;
+	height: 90px;
+    z-index: 101;
+    background-image: url('/WebConfig/yukon/Icons/busy_rotation.gif');
+    background-repeat: no-repeat;
+}
+
+.disabledAction {
+	color: gray;
+}

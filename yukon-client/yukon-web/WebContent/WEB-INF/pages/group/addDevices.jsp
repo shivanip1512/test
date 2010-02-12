@@ -31,11 +31,11 @@
 	<div style="width: 700px">
 		
 		<tags:boxContainer title="Add Multiple Devices" hideEnabled="false">
-            
-            <tags:deviceSelection   action="/spring/group/editor/addDevicesByCollection" 
-                                    groupDataJson="${groupDataJson}"
-                                    groupName="${groupName}"
-                                    pickerConstraint="com.cannontech.common.search.criteria.DeviceCriteria"/>
+
+            <tags:deviceSelection action="/spring/group/editor/addDevicesByCollection" 
+                groupDataJson="${groupDataJson}"
+                groupName="${groupName}"
+                pickerType="devicePicker"/>
 		</tags:boxContainer>
 	
 	</div>

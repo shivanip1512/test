@@ -421,66 +421,6 @@
     </attribute>
   </tag>
   <tag>
-    <name>userPicker</name>
-    <tag-class>com.cannontech.web.taglib.UserPickerTag</tag-class>
-    <body-content>scriptless</body-content>
-    <attribute>
-      <name>pickerId</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>userIdField</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-   <attribute>
-      <name>constraint</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-   <attribute>
-      <name>userNameElement</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>finalTriggerAction</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-  </tag>
-  <tag>
-    <name>loginGroupPicker</name>
-    <tag-class>com.cannontech.web.taglib.LoginGroupPickerTag</tag-class>
-    <body-content>scriptless</body-content>
-    <attribute>
-      <name>pickerId</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>loginGroupIdField</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-   <attribute>
-      <name>constraint</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-   <attribute>
-      <name>loginGroupNameElement</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>finalTriggerAction</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-  </tag>
-  <tag>
     <name>paoPicker</name>
     <tag-class>com.cannontech.web.taglib.PaoPickerTag</tag-class>
     <body-content>scriptless</body-content>
@@ -566,52 +506,6 @@
     </attribute>
     <attribute>
       <name>asButton</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-
-  <tag>
-    <name>drPicker</name>
-    <tag-class>com.cannontech.web.taglib.DemandResponsePickerTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>pickerId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>paoIdField</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-   <attribute>
-      <name>constraint</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-   <attribute>
-      <name>paoNameElement</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-   <attribute>
-      <name>typeElement</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>finalTriggerAction</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>selectionLinkName</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>excludeIds</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>

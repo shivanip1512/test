@@ -29,6 +29,7 @@ var firstRun = true;
 function addPao(paos) {
 	hideErrors();
 	$('myForm').submit();
+	return true;
 }
 
 function removeScheduleCommand(eventId) {
@@ -154,12 +155,9 @@ Event.observe(window, 'load', function() {
 			<span id="pickerDisabled">Select a Schedule and Command to continue.</span>
 			<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
 				<span id="pickerEnabled">
-					<cti:multiPaoPicker 
-					     paoIdField="paoIdList"
-					     constraint="com.cannontech.common.search.criteria.CBCSubBusCriteria"
-					     finalTriggerAction="addPao" 
-					     >Choose Devices</cti:multiPaoPicker> to add this Schedule/Command.
-		            <input id="paoIdList" name="paoIdList" type="hidden">
+                    <tags:pickerDialog id="cbcSubBusPicker" type="cbcSubBusPicker"
+                        destinationFieldName="paoIdList" multiSelectMode="true" endAction="addPao">
+                        Choose Devices</tags:pickerDialog> to add this Schedule/Command.
 	            </span>
             </cti:checkProperty>
 			<br>

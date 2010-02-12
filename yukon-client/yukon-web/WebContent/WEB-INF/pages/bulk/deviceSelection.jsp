@@ -33,7 +33,9 @@
     <tags:boxContainer title="${headerTitle}" id="updateConfirmContainer" hideEnabled="false">
         
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-        <tags:deviceSelection action="/spring/bulk/deviceSelectionGetDevices" groupDataJson="${groupDataJson}" pickerConstraint="com.cannontech.common.search.criteria.MeterCriteria"/>
+        <tags:deviceSelection action="/spring/bulk/deviceSelectionGetDevices"
+            groupDataJson="${groupDataJson}"
+            pickerType="meterPicker"/>
     
     </tags:boxContainer>
     
