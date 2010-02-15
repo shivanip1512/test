@@ -23,7 +23,7 @@
     <script type="text/javascript">
         function checkRoutes(){
         	var button = $('nextButton');
-			var checkBoxes = $$('input[type="checkbox"]');
+			var checkBoxes = $$('input[id^="read_route_"]');
 			var checkedCount = 0;
 			for (i = 0; i < checkBoxes.length; i++) {
 				var checkBox = checkBoxes[i];
@@ -33,7 +33,6 @@
 			}
 			if(checkedCount < 1) {
 				button.disable();
-				$('errorSpan').innerHTML = '${noRouteSelected}';
 				$('errorDiv').show();
 			} else {
 				$('errorDiv').hide();

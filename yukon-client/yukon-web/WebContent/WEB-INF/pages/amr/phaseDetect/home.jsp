@@ -27,50 +27,49 @@
 		    var selection = $F('substations');
 		    $("selectedSub").value = selection;
 		    var button = $('nextButton');
-		    if(selection == '-1'){
-		    	button.disable();
-		    }else{
-		    	button.enable();
-		    }
 		    var params = {'substationId': selection};
 		    
 		    new Ajax.Updater('routesDiv', '${routesUrl}', {method: 'get', evalScripts: true, parameters: params,
-                onSuccess: function(resp, json) {
-            		var numOfRoutes = json.numOfRoutes;
-            		if(numOfRoutes > 0) {
-            			button.enable();
-            			$('errorDiv').hide();
-            		} else {
-            			button.disable();
-            			var selection = $F('substations'); 
-            			if(selection == '-1'){
-		    				$('errorDiv').hide();
-            			} else {
-            				$('errorSpan').innerHTML = '${subWithNoRoutesSelected}';
-	        				$('errorDiv').show();
-            			}
-            		}
+		    	onComplete: function(resp, json) {
+                    checkRoutes();
                 }
             });
         }
 
         function checkRoutes(){
         	var button = $('nextButton');
-			var checkBoxes = $$('input[type="checkbox"]');
+			var checkBoxes = $$('input[id^="read_route_"]');
 			var checkedCount = 0;
-			for (i = 0; i < checkBoxes.length; i++) {
-				var checkBox = checkBoxes[i];
-				if(checkBox.checked){
-					checkedCount++;
-				}
-			}
-			if(checkedCount < 1) {
-				button.disable();
-				$('errorSpan').innerHTML = '${noRouteSelected}';
-				$('errorDiv').show();
+
+			var numOfRoutes = checkBoxes.length;
+			if(numOfRoutes > 0) { 
+                /* Check to see if they have any selected */
+    			for (i = 0; i < checkBoxes.length; i++) {
+    				var checkBox = checkBoxes[i];
+    				if(checkBox.checked){
+    					checkedCount++;
+    				}
+    			}
+    			if(checkedCount < 1) {
+    				button.disable();
+    				$('subWithNoRoutesSelectedErrorDiv').hide();
+    				$('noRouteSelectedErrorDiv').show();
+    			} else {
+    				$('noRouteSelectedErrorDiv').hide();
+    				$('subWithNoRoutesSelectedErrorDiv').hide();
+    				button.enable();
+    			}
 			} else {
-				$('errorDiv').hide();
-				button.enable();
+			    /* If they have a sub selected show error msg */
+				button.disable();
+                var selection = $F('substations'); 
+                if(selection == '-1'){
+                    $('noRouteSelectedErrorDiv').hide();
+                    $('subWithNoRoutesSelectedErrorDiv').hide();
+                } else {
+                	$('noRouteSelectedErrorDiv').hide();
+                    $('subWithNoRoutesSelectedErrorDiv').show();
+                }
 			}
         }
 	</script>
@@ -90,9 +89,15 @@
                 </tr>
             </table>
             <input type="hidden" name="selectedSub" id="selectedSub" value="-1">
-            <div id="errorDiv" style="display: none;">
+            
+            <%-- Error Divs --%>
+            <div id="noRouteSelectedErrorDiv" style="display: none;">
 		        <span id="errorSpan" class="errorRed">${noRouteSelected}</span>
             </div>
+            <div id="subWithNoRoutesSelectedErrorDiv" style="display: none;">
+                <span id="errorSpan" class="errorRed">${subWithNoRoutesSelected}</span>
+            </div>
+            
 		    <table style="padding-right: 20px;padding-bottom: 10px;">
 		        <tr valign="top">
 		            <td style="padding-top: 3px;">
