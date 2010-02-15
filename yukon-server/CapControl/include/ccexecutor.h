@@ -139,7 +139,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void sendLtcKeepAlive    (const LONG commandType, std::vector<CtiMessage*> &toDispatch);
 
     private:
-        void ltcKeepAliveHelper(const int paoId, const int keepAliveTime, std::vector<CtiMessage*> &toDispatch);
+        void ltcKeepAliveHelper(const int paoId, const int keepAliveTime, const string& paoName, std::vector<CtiMessage*> &toDispatch);
 
         //Helper Functions
         void setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);

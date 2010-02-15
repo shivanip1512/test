@@ -8226,7 +8226,7 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
     {
         text = string("Disable Remote Control");
         //sends a 0 to kill the keep alive
-        ltcKeepAliveHelper(paoId,0,toDispatch);
+        ltcKeepAliveHelper(paoId,0,paoName,toDispatch);
     }
 
     CtiMessage* msg = new CtiSignalMsg(point.getPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
@@ -8364,20 +8364,21 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
     }
 
     double time = _IVVC_KEEPALIVE*2;//This is the time til remote mode expires.
-    ltcKeepAliveHelper(paoId,time,toDispatch);
+    ltcKeepAliveHelper(paoId,time,paoName,toDispatch);
 
     return;
 }
 
 void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,
-                                            const int keepAliveTime,
-                                            std::vector<CtiMessage*> &toDispatch)
+                                              const int keepAliveTime,
+                                              const string& paoName,
+                                              std::vector<CtiMessage*> &toDispatch)
 {
     LitePoint point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::KeepAlive);
     if (point.getPointType() == InvalidPointType)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command failed. Point not found on LTC: " << paoId << endl;
+        dout << CtiTime() << "Keep Alive command failed. Point not found on LTC: " << paoId << endl;
 
         return;
     }
