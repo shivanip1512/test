@@ -20,172 +20,100 @@ extern ULONG _POINT_AGE;
 extern ULONG _POST_CONTROL_WAIT;
 extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 extern ULONG _CC_DEBUG;
+extern bool _IVVC_ANALYZE_BYPASS;
 
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
-    //check state and do stuff based on that.
-    IVVCState::State currentState = state->getState();
 
-    CtiTime timeNow;
-    //Note: Overload DispatchConnection::WriteConnQue for unit testing.
-    DispatchConnectionPtr conn = CtiCapController::getInstance()->getDispatchConnection();
-
-    switch (currentState)
+    if (subbus->getDisableFlag() == false)
     {
-        case IVVCState::IVVC_WAIT:
+
+        //check state and do stuff based on that.
+        IVVCState::State currentState = state->getState();
+
+        CtiTime timeNow;
+        //Note: Overload DispatchConnection::WriteConnQue for unit testing.
+        DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
+
+        switch (currentState)
         {
-            //Check to make sure the points are setup correctly
-            //Make sure we have all the data we need.
-            int varPointId = subbus->getCurrentVarLoadPointId();
-            int voltPointId = subbus->getCurrentVoltLoadPointId();
-            int wattPointId = subbus->getCurrentWattLoadPointId();
-            if (varPointId == 0 || voltPointId == 0 || wattPointId == 0)
+            case IVVCState::IVVC_WAIT:
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " IVVC Algorithm cannot execute. Check to make sure the Var, Volt, and Watt points are setup for Subbus: " << subbus->getPaoName() << endl;
-                return;
-            }
-
-            //save away start time.
-            state->setTimeStamp(timeNow);
-
-            // What points are we wanting?
-            std::list<long> pointIds = determineWatchPoints(subbus, conn, false);
-
-            // Make GroupRequest Here
-            GroupRequestPtr request(new GroupPointDataRequest(conn));
-            request->watchPoints(pointIds);
-
-            //save away this request for later.
-            state->setGroupRequest(request);
-
-            if (state->isScannedRequest() == false)
-            {
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                //Check to make sure the points are setup correctly
+                //Make sure we have all the data we need.
+                int varPointId = subbus->getCurrentVarLoadPointId();
+                int voltPointId = subbus->getCurrentVoltLoadPointId();
+                int wattPointId = subbus->getCurrentWattLoadPointId();
+                if (varPointId == 0 || voltPointId == 0 || wattPointId == 0)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " IVVC Algorithm: Group Request made in IVVC State" << endl;
+                    dout << CtiTime() << " IVVC Algorithm cannot execute. Check to make sure the Var, Volt, and Watt points are setup for Subbus: " << subbus->getPaoName() << endl;
+                    return;
                 }
 
-                //We did not Scan for these points. Ask dispatch for them instead.
-                CtiCommandMsg* cmdMsg = new CtiCommandMsg();
-                cmdMsg->setOperation(CtiCommandMsg::PointDataRequest);
+                //save away start time.
+                state->setTimeStamp(timeNow);
 
-                CtiCommandMsg::CtiOpArgList_t points;
-                for each (long pointId in pointIds)
-                {
-                    points.push_back(pointId);
-                }
+                // What points are we wanting?
+                std::list<long> pointIds = determineWatchPoints(subbus, dispatchConnection, (allowScanning && state->isScannedRequest()));
 
-                cmdMsg->setOpArgList(points);
-                conn->WriteConnQue(cmdMsg);
-            }
-            else
-            {
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " IVVC Algorithm: Scanned Group Request made in IVVC State" << endl;
-                }
-            }
-            //reset this flag.
-            state->setScannedRequest(false);
-            //fall through to IVVC_PRESCAN_LOOP (no break)
-            state->setState(IVVCState::IVVC_PRESCAN_LOOP);
-        }
-        case IVVCState::IVVC_PRESCAN_LOOP:
-        {
-            long controlInterval = strategy->getControlInterval();
+                // Make GroupRequest Here
+                GroupRequestPtr request(new GroupPointDataRequest(dispatchConnection));
+                request->watchPoints(pointIds);
 
-            if (controlInterval == 0)
-            {//On new data
-                GroupRequestPtr request = state->getGroupRequest();
-                if (request->isComplete() == true)
+                //save away this request for later.
+                state->setGroupRequest(request);
+
+                if (state->isScannedRequest())
                 {
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " IVVC Algorithm: On New Data: Request Complete" << endl;
-                    }
-                    //Check for stale data.
-                    PointValueMap pointValues = request->getPointValues();
-                    bool stale = checkForStaleData(pointValues,timeNow);
-
-                    if (stale == true)
-                    {
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC Algorithm: On New Data: Stale data, resetting for scan" << endl;
-                        }
-                        // If allowScanning is false. we will not scan here even though we are supposed to. (Unit testing)
-                        determineWatchPoints(subbus, conn, allowScanning);
-                        state->setScannedRequest(true);
-                        state->setState(IVVCState::IVVC_WAIT);
-                        break;
-                    }
-                    else
-                    {
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC Algorithm: On New Data: Data ok, moving on" << endl;
-                        }
-                        state->setState(IVVCState::IVVC_ANALYZE_DATA);
+                        dout << CtiTime() << " IVVC Algorithm: Scanned Group Request made in IVVC State" << endl;
                     }
                 }
                 else
                 {
-                    CtiTime startTime = state->getTimeStamp();
-
-                    if ((startTime + (_SCAN_WAIT_EXPIRE/*minutes*/*60)) < timeNow)
-                    {
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC Algorithm: On New Data: Request complete." << endl;
-                        }
-                        if (false)
-                        {
-                            //Tie in % online here later (if enough, go IVVC_ANALYZE_DATA)
-                        }
-                        else
-                        {
-                            //TODO: Kill Heartbeat and flip to Automode.
-                            //waiting on confirmation on how to do this exactly...
-                            state->setState(IVVCState::IVVC_WAIT);
-                        }
-                    }
-                    else
-                    {
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC Algorithm: On New Data: Request not complete." << endl;
-                        }
-                    }
-                    break;//still waiting for complete
-                }
-            }
-            else
-            {
-
-                //Is it time to control? (Analysis Interval)
-                if (timeNow > state->getNextControlTime())
-                {
+                    //Regular request. Ask dispatch for the current points values.
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Control attempt." << endl;
+                        dout << CtiTime() << " IVVC Algorithm: Group Request made in IVVC State" << endl;
                     }
 
-                    //set next control time.
-                    state->setNextControlTime(timeNow + strategy->getControlInterval());
+                    //We did not Scan for these points. Ask dispatch for them instead.
+                    CtiCommandMsg* cmdMsg = new CtiCommandMsg();
+                    cmdMsg->setOperation(CtiCommandMsg::PointDataRequest);
 
-                    GroupRequestPtr request = state->getGroupRequest();
-
-                    if (request->isComplete() == true/*Tie in % online here later*/)
+                    CtiCommandMsg::CtiOpArgList_t points;
+                    for each (long pointId in pointIds)
                     {
+                        points.push_back(pointId);
+                    }
+
+                    cmdMsg->setOpArgList(points);
+                    dispatchConnection->WriteConnQue(cmdMsg);
+                }
+
+                //reset this flag.
+                state->setScannedRequest(false);
+                //fall through to IVVC_PRESCAN_LOOP (no break)
+                state->setState(IVVCState::IVVC_PRESCAN_LOOP);
+            }
+            case IVVCState::IVVC_PRESCAN_LOOP:
+            {
+                long controlInterval = strategy->getControlInterval();
+
+                if (controlInterval == 0)
+                {//On new data
+                    GroupRequestPtr request = state->getGroupRequest();
+                    if (request->isComplete())
+                    {
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " IVVC Algorithm: On New Data: Request Complete" << endl;
+                        }
                         //Check for stale data.
                         PointValueMap pointValues = request->getPointValues();
                         bool stale = checkForStaleData(pointValues,timeNow);
@@ -195,9 +123,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Stale Date resetting to WAIT." << endl;
+                                dout << CtiTime() << " IVVC Algorithm: On New Data: Stale data, resetting for scan" << endl;
                             }
-                            //To be considered. Initiate scan if stale? like in 'on new data'
+                            state->setScannedRequest(true);
                             state->setState(IVVCState::IVVC_WAIT);
                             break;
                         }
@@ -206,281 +134,481 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Data ok moving on to Analyze." << endl;
+                                dout << CtiTime() << " IVVC Algorithm: On New Data: Data ok, moving on" << endl;
                             }
                             state->setState(IVVCState::IVVC_ANALYZE_DATA);
                         }
                     }
                     else
                     {
-                        //scan did not complete in the analysis interval... start over.
-                        //Do we flip to auto and kill heartbeat like above?
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        CtiTime startTime = state->getTimeStamp();
+
+                        if ((startTime + (_SCAN_WAIT_EXPIRE/*minutes*/*60)) < timeNow)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Scan never completed in time. Resetting to WAIT." << endl;
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " IVVC Algorithm: On New Data: Request did not complete." << endl;
+                            }
+                            if (false)
+                            {
+                                //Tie in % online here later (if enough, go IVVC_ANALYZE_DATA)
+                            }
+                            else
+                            {
+                                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " IVVC Algorithm: On New Data: Setting Comms Lost. " << endl;
+                                }
+                                state->setState(IVVCState::IVVC_COMMS_LOST);
+                                break;
+                            }
                         }
-                        state->setState(IVVCState::IVVC_WAIT);
+                        else
+                        {
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " IVVC Algorithm: On New Data: Waiting for Request to complete." << endl;
+                            }
+                        }
                         break;
                     }
                 }
                 else
                 {
-                    //Not time to control yet.
-                    break;
-                }
-            }
-        }
-        case IVVCState::IVVC_ANALYZE_DATA:
-        {
-            bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
-
-            PointValueMap pointValues = state->getGroupRequest()->getPointValues();     // don't like repeating this here since we got them above
-
-            /* calculate current power factor of the bus */
-
-            // Can't get here if these IDs don't exist
-
-            long wattPointID = subbus->getCurrentWattLoadPointId();
-            long varPointID = subbus->getCurrentVarLoadPointId();
-
-            PointValueMap::iterator iter = pointValues.find(wattPointID);
-            double wattValue = iter->second.value;
-
-            iter = pointValues.find(varPointID);
-            double varValue = iter->second.value;
-
-            double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
-
-            /* calculate potential tap operation */
-
-            int tapOp = calculateVte(pointValues,
-                                     strategy->getLowerVoltLimit(isPeakTime),
-                                            strategy->getLowerVoltLimit(isPeakTime) + 3.0, // FIX: where do we get this value from
-                                     strategy->getUpperVoltLimit(isPeakTime),
-                                     varPointID, wattPointID);
-
-            /* calculate current flatness of the bus */
-
-            double Vf = calculateVf(pointValues, varPointID, wattPointID);  // need to remove watt and var points
-
-            /* calculate current weight of the bus */
-
-            double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf,
-                                                         strategy->getPFWeight(isPeakTime), PFBus);
-
-            /* calculate estimated bus weights etc from historical data */
-
-
-            CtiFeeder_vec& feeders = subbus->getCCFeeders();
-
-            // for each feeder
-
-            for ( CtiFeeder_vec::iterator fb = feeders.begin(), fe = feeders.end(); fb != fe; ++fb )
-            {
-                CtiCCFeederPtr currentFeeder = *fb;
-
-                CtiCCCapBank_SVector& capbanks =  currentFeeder->getCCCapBanks();
-
-                // for each capbank
-
-                for ( CtiCCCapBank_SVector::iterator cb = capbanks.begin(), ce = capbanks.end(); cb != ce; ++cb )
-                {
-                    CtiCCCapBankPtr currentBank = *cb;
-
-                    PointValueMap deltas(pointValues);  // copy our pointValues map
-
-                    bool isCapBankOpen = (currentBank->getControlStatus() == CtiCCCapBank::Open ||
-                                          currentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable);
-
-                    bool isCapBankClosed = (currentBank->getControlStatus() == CtiCCCapBank::Close ||
-                                            currentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable);
-
-                    // if banks operational state isn't switched or if disabled
-                    // or not in one of the above 4 states we aren't eligible for control.
-
-                    if ( !stringCompareIgnoreCase(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
-                         !currentBank->getLocalControlFlag() &&
-                         !currentBank->getDisableFlag() &&
-                         (isCapBankOpen || isCapBankClosed) )
+                    //Is it time to control? (Analysis Interval)
+                    if (timeNow > state->getNextControlTime())
                     {
-                        std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
-
-                        for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
-                            CtiCCPointResponsePtr currentResponse = *prb;
-
-                            deltas[ currentResponse->getBankId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Control attempt." << endl;
                         }
 
-                        state->_estimated[currentBank->getPaoId()].capbank = currentBank;
+                        //set next control time.
+                        state->setNextControlTime(timeNow + strategy->getControlInterval());
 
-                        /* calculate estimated flatness of the bus if current bank switches state */
+                        GroupRequestPtr request = state->getGroupRequest();
 
-                        state->_estimated[currentBank->getPaoId()].flatness =
-                            calculateVf(deltas, varPointID, wattPointID);  // need to remove watt and var points
-
-                        /* calculate estimated power factor of the bus if current bank switches state */
-
-                        state->_estimated[currentBank->getPaoId()].powerFactor =
-                            subbus->calculatePowerFactor(varValue, wattValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) );
-
-                        /* calculate estimated weight of the bus if current bank switches state */
-
-                        state->_estimated[currentBank->getPaoId()].busWeight =
-                            calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
-                                               strategy->getPFWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].powerFactor);
-                    }
-                }
-            }
-
-            long    operatePaoID = -1;
-            double  minimumEstVf = std::numeric_limits<double>::max();
-
-            for ( IVVCState::EstimatedDataMap::iterator eb = state->_estimated.begin(), ee = state->_estimated.end(); eb != ee; ++eb )
-            {
-                if ( eb->second.flatness <= minimumEstVf )
-                {
-                    minimumEstVf = eb->second.flatness;
-                    operatePaoID = eb->first;
-                }
-            }
-
-            if ( ( operatePaoID != -1 ) &&
-                 ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoID].flatness )   // outside of the window.
-            {
-                CtiTime now;
-                state->setTimeStamp(now);
-
-                // record preoperation voltage values for the feeder our capbank is on
-
-                std::vector <CtiCCPointResponsePtr>& responses = state->_estimated[operatePaoID].capbank->getPointResponse();
-
-                for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
-                {
-                    (*prb)->setPreOpValue( pointValues[ (*prb)->getBankId() ].value );
-                }
-
-                state->_estimated[operatePaoID].operated = true;
-
-                state->setControlledBankId( operatePaoID );
-
-                //send cap bank command
-
-                state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
-            }
-            else
-            {
-                // TAP operation - use precalculated value from above
-
-                CtiTime now;
-
-                if ( tapOp != 0 )
-                {
-                    if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) > (_IVVC_MIN_TAP_PERIOD_MINUTES * 60) )
-                    {
-                        state->setLastTapOpTime(now);
-
-                        if ( tapOp == -1 )
+                        // Tie in % online here later
+                        if (request->isComplete())
                         {
-                            //  send command to lower tap
+                            //Check for stale data.
+                            PointValueMap pointValues = request->getPointValues();
+                            bool stale = checkForStaleData(pointValues,timeNow);
 
+                            if (stale == true)
+                            {
+                                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Stale Data Setting Comms lost." << endl;
+                                }
+                                //To be considered. Initiate scan if stale? like in 'on new data'
+                                state->setState(IVVCState::IVVC_COMMS_LOST);
+                                break;
+                            }
+                            else
+                            {
+                                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Data ok moving on to Analyze." << endl;
+                                }
+                                state->setState(IVVCState::IVVC_ANALYZE_DATA);
+                            }
                         }
                         else
                         {
-                            //  send command to raise tap
-
+                            //scan did not complete in the analysis interval... start over.
+                            //Do we flip to auto and kill heartbeat like above?
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Scan never completed in time. Resetting to WAIT." << endl;
+                            }
+                            state->setState(IVVCState::IVVC_WAIT);
+                            break;
                         }
                     }
+                    else
+                    {
+                        //Not time to control yet.
+                        break;
+                    }
+                }
+            }
+            case IVVCState::IVVC_ANALYZE_DATA:
+            {
+                //We have good data. Make sure we are in remote mode
+                if (state->isRemoteMode() == false)
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Analyze: Setting remote mode." << endl;
+                    }
+                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE,subbus->getLtcId()))->execute();
+                    state->setRemoteMode(true);
+                }
+
+                //NOT REAL CODE REMOVE THIS BEFORE Release
+                //This is here to bypass the data analysis and pick the first open bank to control.
+                if (_IVVC_ANALYZE_BYPASS == true)
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Analyze: operating first bank not controlled. DEBUG MODE." << endl;
+                    }
+                    long operatePaoId = 0;
+
+                    for each(CtiCCFeederPtr feeder in subbus->getCCFeeders())
+                    {
+                        for each(CtiCCCapBankPtr bank in feeder->getCCCapBanks())
+                        {
+                            if (bank->getControlStatus() == CtiCCCapBank::Open)
+                            {
+                                operatePaoId = bank->getPaoId();
+                                break;
+                            }
+                        }
+
+                        if (operatePaoId != 0)
+                        {
+                            break;
+                        }
+                    }
+                    state->setControlledBankId(operatePaoId);
+                    operateBank(operatePaoId,subbus,dispatchConnection);
+                    state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+                    break;
+                }
+                else
+                {
+                    bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
+
+                    PointValueMap pointValues = state->getGroupRequest()->getPointValues();     // don't like repeating this here since we got them above
+
+                    //calculate current power factor of the bus
+
+                    // Can't get here if these IDs don't exist
+
+                    long wattPointID = subbus->getCurrentWattLoadPointId();
+                    long varPointID = subbus->getCurrentVarLoadPointId();
+
+                    PointValueMap::iterator iter = pointValues.find(wattPointID);
+                    double wattValue = iter->second.value;
+
+                    iter = pointValues.find(varPointID);
+                    double varValue = iter->second.value;
+
+                    double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
+
+                    //calculate potential tap operation
+
+                    int tapOp = calculateVte(pointValues,
+                                             strategy->getLowerVoltLimit(isPeakTime),
+                                                    strategy->getLowerVoltLimit(isPeakTime) + 3.0, // FIX: where do we get this value from
+                                             strategy->getUpperVoltLimit(isPeakTime),
+                                             varPointID, wattPointID);
+
+                    //calculate current flatness of the bus
+
+                    double Vf = calculateVf(pointValues, varPointID, wattPointID);  // need to remove watt and var points
+
+                    //calculate current weight of the bus
+
+                    double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf,
+                                                                 strategy->getPFWeight(isPeakTime), PFBus);
+
+                    //calculate estimated bus weights etc from historical data
+
+
+                    CtiFeeder_vec& feeders = subbus->getCCFeeders();
+
+                    // for each feeder
+
+                    for ( CtiFeeder_vec::iterator fb = feeders.begin(), fe = feeders.end(); fb != fe; ++fb )
+                    {
+                        CtiCCFeederPtr currentFeeder = *fb;
+
+                        CtiCCCapBank_SVector& capbanks =  currentFeeder->getCCCapBanks();
+
+                        // for each capbank
+
+                        for ( CtiCCCapBank_SVector::iterator cb = capbanks.begin(), ce = capbanks.end(); cb != ce; ++cb )
+                        {
+                            CtiCCCapBankPtr currentBank = *cb;
+
+                            PointValueMap deltas(pointValues);  // copy our pointValues map
+
+                            bool isCapBankOpen = (currentBank->getControlStatus() == CtiCCCapBank::Open ||
+                                                  currentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable);
+
+                            bool isCapBankClosed = (currentBank->getControlStatus() == CtiCCCapBank::Close ||
+                                                    currentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable);
+
+                            // if banks operational state isn't switched or if disabled
+                            // or not in one of the above 4 states we aren't eligible for control.
+
+                            if ( !stringCompareIgnoreCase(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+                                 !currentBank->getLocalControlFlag() &&
+                                 !currentBank->getDisableFlag() &&
+                                 (isCapBankOpen || isCapBankClosed) )
+                            {
+                                std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
+
+                                for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                                {
+                                    CtiCCPointResponsePtr currentResponse = *prb;
+
+                                    deltas[ currentResponse->getBankId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                                }
+
+                                state->_estimated[currentBank->getPaoId()].capbank = currentBank;
+
+                                //calculate estimated flatness of the bus if current bank switches state
+
+                                state->_estimated[currentBank->getPaoId()].flatness =
+                                    calculateVf(deltas, varPointID, wattPointID);  // need to remove watt and var points
+
+                                //calculate estimated power factor of the bus if current bank switches state
+
+                                state->_estimated[currentBank->getPaoId()].powerFactor =
+                                    subbus->calculatePowerFactor(varValue, wattValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) );
+
+                                //calculate estimated weight of the bus if current bank switches state
+
+                                state->_estimated[currentBank->getPaoId()].busWeight =
+                                    calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
+                                                       strategy->getPFWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].powerFactor);
+                            }
+                        }
+                    }
+
+                    long    operatePaoId = -1;
+                    double  minimumEstVf = std::numeric_limits<double>::max();
+
+                    for ( IVVCState::EstimatedDataMap::iterator eb = state->_estimated.begin(), ee = state->_estimated.end(); eb != ee; ++eb )
+                    {
+                        if ( eb->second.flatness <= minimumEstVf )
+                        {
+                            minimumEstVf = eb->second.flatness;
+                            operatePaoId = eb->first;
+                        }
+                    }
+
+                    if ( ( operatePaoId != -1 ) &&
+                         ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoId].flatness )   // outside of the window.
+                    {
+                        CtiTime now;
+                        state->setTimeStamp(now);
+
+                        // record preoperation voltage values for the feeder our capbank is on
+
+                        std::vector <CtiCCPointResponsePtr>& responses = state->_estimated[operatePaoId].capbank->getPointResponse();
+
+                        for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                        {
+                            (*prb)->setPreOpValue( pointValues[ (*prb)->getBankId() ].value );
+                        }
+
+                        state->_estimated[operatePaoId].operated = true;
+                        state->setControlledBankId(operatePaoId);
+
+                        //send cap bank command
+                        operateBank(operatePaoId,subbus,dispatchConnection);
+
+                        state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+                        break;
+                    }
+                    else
+                    {
+                        // TAP operation - use precalculated value from above
+
+                        CtiTime now;
+
+                        if ( tapOp != 0 )
+                        {
+                            if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) > (_IVVC_MIN_TAP_PERIOD_MINUTES * 60) )
+                            {
+                                state->setLastTapOpTime(now);
+
+                                if ( tapOp == -1 )
+                                {
+                                    //  send command to lower tap
+                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_LOWER,subbus->getLtcId()))->execute();
+                                }
+                                else
+                                {
+                                    //  send command to raise tap
+                                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE,subbus->getLtcId()))->execute();
+                                }
+                            }
+                        }
+                        state->setState(IVVCState::IVVC_WAIT);
+                        break;
+                    }
+                }
+
+            }
+            case IVVCState::IVVC_VERIFY_CONTROL_LOOP:
+            {
+                CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+                int bankId = state->getControlledBankId();
+
+                CtiCCCapBankPtr bank = store->getCapBankByPaoId(bankId);
+                if (bank == NULL)
+                {
+                    //Log Error
+                    state->setState(IVVCState::IVVC_WAIT);
+                    break;
+                }
+
+                //Are we passed Max confirmtime?
+                CtiTime now;
+                CtiTime controlTime = state->getTimeStamp();
+                long maxConfirmTime = strategy->getMaxConfirmTime();
+                if (now > (controlTime+maxConfirmTime))
+                {
+                    //update Bank state. (failed or questionable)
+                    state->setState(IVVCState::IVVC_WAIT);
+                    break;
+                }
+
+                if (subbus->isVarCheckNeeded(CtiTime()))
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: isVarCheckNeeded() false." << endl;
+                    }
+
+                    CtiMultiMsg_vec pointChanges;
+                    CtiMultiMsg_vec ccEvents;
+
+                    //Verify if we controlled
+                    bool bankIsVerified = subbus->capBankControlStatusUpdate(pointChanges,ccEvents);
+                    sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+
+                    if (bankIsVerified == true)
+                    {
+                        subbus->setBusUpdatedFlag(true);
+                        CtiTime now;
+                        state->setTimeStamp(now);
+                        state->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: isVarCheckNeeded() false." << endl;
+                    }
+                    break;
+                }
+            }
+            case IVVCState::IVVC_POST_CONTROL_WAIT:
+            {
+                CtiTime capBankOpTime = state->getTimeStamp();
+                CtiTime now;
+                if (now > (capBankOpTime + _POST_CONTROL_WAIT/*seconds*/))
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Post control wait. Creating Post Scan " << endl;
+                    }
+                    GroupRequestPtr request(new GroupPointDataRequest(dispatchConnection));
+                    std::list<long> pointIds = determineWatchPoints(subbus,dispatchConnection,allowScanning);
+                    request->watchPoints(pointIds);
+
+                    state->setTimeStamp(now);
+                    state->setGroupRequest(request);
+                    state->setState(IVVCState::IVVC_POSTSCAN_LOOP);
+                }
+                else
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Post control wait. Waiting." << endl;
+                    }
+                    break;
+                }
+            }
+            case IVVCState::IVVC_POSTSCAN_LOOP:
+            {
+                GroupRequestPtr request = state->getGroupRequest();
+                CtiTime scanTime = state->getTimeStamp();
+                CtiTime now;
+
+                if (request->isComplete())
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Post Scan Complete. " << endl;
+                    }
+                    //TODO: record data
+                    state->setState(IVVCState::IVVC_WAIT);
+                }
+                else if ((scanTime + (_SCAN_WAIT_EXPIRE/*minutes*/*60)) < now)
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Post Scan Timed out. " << endl;
+                    }
+                    //scan timed out.
+                    state->setState(IVVCState::IVVC_WAIT);
+                }
+
+                break;//never fall through past this
+            }
+            case IVVCState::IVVC_COMMS_LOST:
+            {
+                //Switch to LTC to automode.
+                //save state so we know to re-enable remote when we start up again.
+                if (state->isRemoteMode())
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Comms lost, sending remote control disable. " << endl;
+                    }
+                    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE,subbus->getLtcId()))->execute();
+                    state->setRemoteMode(false);
                 }
                 state->setState(IVVCState::IVVC_WAIT);
                 break;
             }
-        }
-        case IVVCState::IVVC_VERIFY_CONTROL_LOOP:
+            default:
+            {
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " IVVC Algorithm: default. " << endl;
+                }
+            }
+        }//switch
+    }
+    else
+    {
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiCCSubstationBusStore* bus = CtiCCSubstationBusStore::getInstance();
-            int bankId = state->getControlledBankId();
-
-            CtiCCCapBankPtr bank = bus->getCapBankByPaoId(bankId);
-            if (bank == NULL)
-            {
-                //Log Error
-                state->setState(IVVCState::IVVC_WAIT);
-                break;
-            }
-
-            //Are we passed Max confirmtime?
-            CtiTime now;
-            CtiTime controlTime = state->getTimeStamp();
-            long maxConfirmTime = strategy->getMaxConfirmTime();
-            if (now > (controlTime+maxConfirmTime))
-            {
-                //update Bank state. (failed or questionable)
-                state->setState(IVVCState::IVVC_WAIT);
-                break;
-            }
-
-            CtiMultiMsg_vec pointChangeVec;
-            CtiMultiMsg_vec ccEventVec;
-
-            //Verify if we controlled
-            bool bankIsVerified = subbus->capBankControlStatusUpdate(pointChangeVec,ccEventVec);
-
-            if (bankIsVerified == true)
-            {
-                CtiTime now;
-                state->setTimeStamp(now);
-                state->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
-            }
-            else
-            {
-                break;
-            }
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " IVVC Algorithm: Subus is disabled." << endl;
         }
-        case IVVCState::IVVC_POST_CONTROL_WAIT:
-        {
-            CtiTime capBankOpTime = state->getTimeStamp();
-            CtiTime now;
-            if (now > (capBankOpTime + _POST_CONTROL_WAIT/*seconds*/))
-            {
-                GroupRequestPtr request(new GroupPointDataRequest(conn));
-                std::list<long> pointIds = determineWatchPoints(subbus,conn,allowScanning);
-                request->watchPoints(pointIds);
-
-                state->setTimeStamp(now);
-                state->setGroupRequest(request);
-                state->setState(IVVCState::IVVC_POSTSCAN_LOOP);
-            }
-            else
-            {
-                break;
-            }
-        }
-        case IVVCState::IVVC_POSTSCAN_LOOP:
-        {
-            GroupRequestPtr request = state->getGroupRequest();
-            CtiTime scanTime = state->getTimeStamp();
-            CtiTime now;
-
-            if (request->isComplete() == true)
-            {
-                //TODO: record data
-                state->setState(IVVCState::IVVC_WAIT);
-            }
-            else if ((scanTime + (_SCAN_WAIT_EXPIRE/*minutes*/*60)) < now)
-            {
-                //scan timed out.
-                state->setState(IVVCState::IVVC_WAIT);
-            }
-
-            break;//never fall through past this
-        }
-        default:
-        {
-            //zomg
-        }
-    }//switch
+    }
 }//execute
 
 bool IVVCAlgorithm::checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow)
@@ -515,7 +643,7 @@ std::list<long> IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus
     {
         if (sendScan == true)
         {
-            CtiCCCommand* ltcScan = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY,point.getPaoId());//RTU id?
+            CtiCCCommand* ltcScan = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY,subbus->getLtcId());
             CtiCCExecutorFactory::createExecutor(ltcScan)->execute();
         }
         pointIds.push_back(point.getPointId());
@@ -651,3 +779,72 @@ double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const
     return (voltageWeight + powerFactorWeight);
 }
 
+void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    CtiCCCapBankPtr bank = store->getCapBankByPaoId(bankId);
+    if (bank != NULL)
+    {
+        long feederId = bank->getParentId();
+        CtiCCFeederPtr feeder = store->findFeederByPAObjectID(feederId);
+        if (feeder != NULL)
+        {
+            bool isCapBankOpen = (bank->getControlStatus() == CtiCCCapBank::Open ||
+                                  bank->getControlStatus() == CtiCCCapBank::OpenQuestionable);
+
+
+            CtiMultiMsg_vec pointChanges;
+            CtiMultiMsg_vec ccEvents;
+
+            double beforeKvar = subbus->getCurrentVarLoadPointValue();
+            double varValueA = subbus->getPhaseAValue();
+            double varValueB = subbus->getPhaseBValue();
+            double varValueC = subbus->getPhaseCValue();
+
+            CtiRequestMsg* request = NULL;
+
+            if (isCapBankOpen)
+            {
+                string text = feeder->createTextString(ControlStrategy::IntegratedVoltVarControlUnit,CtiCCCapBank::Open,feeder->getIVControl(),beforeKvar);
+                request = feeder->createDecreaseVarRequest(bank,pointChanges,ccEvents,text,beforeKvar,varValueA,varValueB,varValueC);
+            }
+            else
+            {
+                string text = feeder->createTextString(ControlStrategy::IntegratedVoltVarControlUnit,CtiCCCapBank::Close,feeder->getIVControl(),beforeKvar);
+                request = feeder->createIncreaseVarRequest(bank,pointChanges,ccEvents,text,beforeKvar,varValueA,varValueB,varValueC);
+            }
+
+            CtiTime time = request->getMessageTime();
+            CtiConnectionPtr pilConn = CtiCapController::getInstance()->getPILConnection();
+            pilConn->WriteConnQue(request);
+
+            subbus->setLastOperationTime(time);
+            subbus->setLastFeederControlled(feeder->getPaoId());
+            feeder->setLastOperationTime(time);
+            subbus->setCurrentDailyOperationsAndSendMsg(subbus->getCurrentDailyOperations() + 1, pointChanges);
+            subbus->figureEstimatedVarLoadPointValue();
+            subbus->setBusUpdatedFlag(true);
+            subbus->setVarValueBeforeControl(beforeKvar);
+
+            if( subbus->getEstimatedVarLoadPointId() > 0 )
+            {
+                pointChanges.push_back(new CtiPointDataMsg(subbus->getEstimatedVarLoadPointId(),subbus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+            }
+
+            sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+        }
+    }
+}
+
+void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
+{
+    CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
+    ccEventMsg->setData(ccEvents);
+    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(ccEventMsg);
+    //Not calling processCCEventMsgs(). The control loop will end up calling this.
+
+    CtiMultiMsg* pointChangeMsg = new CtiMultiMsg();
+    pointChangeMsg->setData(pointChanges);
+    dispatchConnection->WriteConnQue(pointChangeMsg);
+}

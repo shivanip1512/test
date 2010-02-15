@@ -1667,7 +1667,9 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
+    {
         return reqMsg;
+    }
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
@@ -1681,8 +1683,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     //capBank->setControlStatus(CtiCCCapBank::OpenPending);
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending,
-                                                                       capBank, TRUE);
+    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending,capBank, TRUE);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     setCurrentDailyOperationsAndSendMsg(_currentdailyoperations+1, pointChanges);
@@ -1957,7 +1958,9 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
+    {
         return reqMsg;
+    }
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
@@ -2870,8 +2873,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             //currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
                             store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::OpenFail, currentCapBank);
                             if (currentCapBank->getControlStatusQuality() != CC_CommFail)
-                                currentCapBank->setControlStatusQuality(CC_Fail);
                             {
+                                currentCapBank->setControlStatusQuality(CC_Fail);
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - CapBank Control Status: OpenFail: "<<currentCapBank->getPaoName() << endl;
                             }

@@ -17,5 +17,8 @@ class IVVCAlgorithm
         static int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax,
                                 const long varPointID, const long wattPointID);
         static double calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor);
+
+        static void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);
+        static void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
 };
 

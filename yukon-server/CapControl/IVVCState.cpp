@@ -95,3 +95,12 @@ long IVVCState::getPaoId() const
     return _paoId;
 }
 
+bool IVVCState::isRemoteMode()
+{
+    return _remoteMode;
+}
+
+void IVVCState::setRemoteMode(bool remoteMode)
+{
+    _remoteMode = remoteMode;
+}

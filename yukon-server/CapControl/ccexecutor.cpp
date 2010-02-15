@@ -8225,6 +8225,8 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
     else
     {
         text = string("Disable Remote Control");
+        //sends a 0 to kill the keep alive
+        ltcKeepAliveHelper(paoId,0,toDispatch);
     }
 
     CtiMessage* msg = new CtiSignalMsg(point.getPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
@@ -8361,6 +8363,16 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
         paoName = ltcPtr->getPaoName();
     }
 
+    double time = _IVVC_KEEPALIVE*2;//This is the time til remote mode expires.
+    ltcKeepAliveHelper(paoId,time,toDispatch);
+
+    return;
+}
+
+void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,
+                                            const int keepAliveTime,
+                                            std::vector<CtiMessage*> &toDispatch)
+{
     LitePoint point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::KeepAlive);
     if (point.getPointType() == InvalidPointType)
     {
@@ -8372,9 +8384,7 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
 
     int pointId = point.getPointId();
 
-    double value = _IVVC_KEEPALIVE*2;//This is the time til remote mode expires.
-
-    CtiMessage* msg = new CtiPointDataMsg (pointId,value,NormalQuality,AnalogPointType);
+    CtiMessage* msg = new CtiPointDataMsg (pointId,keepAliveTime,NormalQuality,AnalogPointType);
     msg->setMessagePriority(15);
     toDispatch.push_back(msg);
 
@@ -8388,3 +8398,4 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
 
     return;
 }
+

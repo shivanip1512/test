@@ -2471,29 +2471,31 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
     {
         keepGoing = FALSE;
     }
-
-    checkForMaxDailyOpsHit();
-    if( getStrategy()->getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
+    else
     {
-        if (getStrategy()->getEndDaySettings().compare("Trip") == 0)
+        checkForMaxDailyOpsHit();
+        if( getStrategy()->getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
         {
-            bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),SubBus);
-            if (flag == false)
+            if (getStrategy()->getEndDaySettings().compare("Trip") == 0)
+            {
+                bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),SubBus);
+                if (flag == false)
+                {
+                    keepGoing = maxOperationsHitDisableBus();
+                }
+            }
+            else if (getStrategy()->getEndDaySettings().compare("Close") == 0)
+            {
+                bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),SubBus);
+                if (flag == false)
+                {
+                    keepGoing = maxOperationsHitDisableBus();
+                }
+            }
+            else
             {
                 keepGoing = maxOperationsHitDisableBus();
             }
-        }
-        else if (getStrategy()->getEndDaySettings().compare("Close") == 0)
-        {
-            bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),SubBus);
-            if (flag == false)
-            {
-                keepGoing = maxOperationsHitDisableBus();
-            }
-        }
-        else
-        {
-            keepGoing = maxOperationsHitDisableBus();
         }
     }
 
@@ -3726,7 +3728,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
         else if( !stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) ||
                  !stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod))
         {
-            CtiCCFeeder* currentFeeder = CtiCCSubstationBusStore::getInstance()->findFeederByPAObjectID(getLastFeederControlledPosition());
+            CtiCCFeeder* currentFeeder = CtiCCSubstationBusStore::getInstance()->findFeederByPAObjectID(getLastFeederControlledPAOId());
 
             if( currentFeeder != NULL)
             {

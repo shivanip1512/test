@@ -19,7 +19,8 @@ class IVVCState
             IVVC_POST_CONTROL_WAIT,
             IVVC_CONTROLLED_LOOP,
             IVVC_VERIFY_CONTROL_LOOP,
-            IVVC_POSTSCAN_LOOP
+            IVVC_POSTSCAN_LOOP,
+            IVVC_COMMS_LOST
         };
 
         IVVCState();
@@ -47,6 +48,9 @@ class IVVCState
 
         void setPaoId(long paoId);
         long getPaoId() const;
+
+        bool isRemoteMode();
+        void setRemoteMode(bool remoteMode);
 
         struct EstimatedData
         {
@@ -77,6 +81,7 @@ class IVVCState
         long _controlledId;
         long _paoId;
 
+        bool _remoteMode;
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;
