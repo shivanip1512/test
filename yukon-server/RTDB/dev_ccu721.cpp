@@ -674,7 +674,7 @@ int CCU721::processInbound(const OUTMESS *om, INMESS *im)
 }
 
 
-int CCU721::decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt) const
+int CCU721::decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt) const
 {
     int status = NoError;
     unsigned short unused;
@@ -689,16 +689,58 @@ int CCU721::decodeDWords(const unsigned char *input, unsigned input_length, unsi
 
     for( int i = 1; (i * DWORDLEN) <= input_length && !status; i++ )
     {
+        unsigned char *word_buf = &input_buffer.front();
+
+        word_buf += DWORDLEN * (i - 1);
+
         switch( i )
         {
             //  old code is stuck in its non-const ways
-            case 1:  status = D1_Word ( &* input_buffer.begin(),                  &DSt->Message[0], &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm);  break;
-            case 2:  status = D23_Word( &* (input_buffer.begin() + DWORDLEN),     &DSt->Message[3], &DSt->TSync, &unused);  break;
-            case 3:  status = D23_Word( &* (input_buffer.begin() + DWORDLEN * 2), &DSt->Message[8], &unused, &unused);  break;
+            case 1:  status = D1_Word (word_buf, &DSt->Message[0], &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm);  break;
+            case 2:  status = D23_Word(word_buf, &DSt->Message[3], &DSt->TSync, &unused);  break;
+            case 3:  status = D23_Word(word_buf, &DSt->Message[8], &unused, &unused);  break;
+        }
+
+        if( status == EWORDRCV )
+        {
+            status = decodeEWord(word_buf, EWORDLEN);
         }
     }
 
     return status;
+}
+
+
+int CCU721::decodeEWord(const unsigned char *input, const unsigned input_length)
+{
+    ESTRUCT ESt;
+
+    byte_buffer_t input_buffer(input, input + input_length);
+
+    int error = E_Word(&input_buffer.front(), &ESt);
+
+    if( error )
+    {
+        return error;
+    }
+
+    //  Was this the CCU?
+    if( !ESt.echo_address )
+    {
+        if( ESt.diagnostics.incoming_bch_error )        return BADBCH;
+
+        //  these all indicate no response
+        if( ESt.diagnostics.incoming_no_response )      return NACKPAD1;
+        if( ESt.diagnostics.listen_ahead_bch_error )    return NACKPAD1;
+        if( ESt.diagnostics.listen_ahead_no_response )  return NACKPAD1;
+        if( ESt.diagnostics.repeater_code_mismatch )    return NACKPAD1;
+
+        //  this means the signal dropped out
+        if( ESt.diagnostics.weak_signal )               return NACK1;
+    }
+
+    //  just pass along the E word like we used to
+    return EWORDRCV;
 }
 
 

@@ -27,16 +27,19 @@ private:
 public:
     typedef Inherited::byte_buffer_t byte_buffer_t;
 
-    void writeBWord(byte_buffer_t &buf, const BSTRUCT &BSt)
+    static void writeBWord(byte_buffer_t &buf, const BSTRUCT &BSt)
     {
         Inherited::writeBWord(buf, BSt);
+    }
+
+    static int decodeEWord(const unsigned char *input, const unsigned input_length)
+    {
+        return Inherited::decodeEWord(input, input_length);
     }
 };
 
 BOOST_AUTO_TEST_CASE(test_ccu721_bword)
 {
-    Test_CCU721 dev;
-
     BSTRUCT BSt;
 
     BSt.Address = 12345;
@@ -67,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_bword)
     {
         Test_CCU721::byte_buffer_t buf, expected;
 
-        dev.writeBWord(buf, BSt);
+        Test_CCU721::writeBWord(buf, BSt);
 
         char *result = "\xa2\x10\x0c\x0e\x70\x10\x00"
                        "\xc1\x22\x33\x44\x55\x62\xb0"
@@ -90,7 +93,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_bword)
     {
         Test_CCU721::byte_buffer_t buf, expected;
 
-        dev.writeBWord(buf, BSt);
+        Test_CCU721::writeBWord(buf, BSt);
 
         char *result = "\xa2\x10\x0c\x0e\x40\x13\x50";
 
@@ -103,6 +106,34 @@ BOOST_AUTO_TEST_CASE(test_ccu721_bword)
         {
             BOOST_CHECK_INDEXED_EQUAL(i, buf[i], expected[i]);
         }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_ccu721_decode_eword)
+{
+    {
+        const char *e_word = "\xee\x00\x00\x20\x00\x02\xb0";
+
+        BOOST_CHECK_EQUAL(NACKPAD1, Test_CCU721::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
+    }
+
+    {
+        const char *e_word = "\xee\x00\x00\x20\x00\x02\xc0";
+
+        BOOST_CHECK_EQUAL(BADBCH, Test_CCU721::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
+    }
+
+    {
+        const char *e_word = "\xfe\x00\x00\x20\x00\x02\x60";
+
+        BOOST_CHECK_EQUAL(BADTYPE, Test_CCU721::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
+    }
+
+    {
+        const char *e_word = "\xed\x11\x23\x45\x00\x03\xc0";
+
+        BOOST_CHECK_EQUAL(EWORDRCV, Test_CCU721::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
     }
 }
 

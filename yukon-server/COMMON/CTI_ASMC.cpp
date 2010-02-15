@@ -1,16 +1,6 @@
 #include "yukon.h"
 
-#include <iostream>
-#include <iomanip>
-using namespace std;
-
-#ifndef  EXPORT
-   #define  EXPORT      // Makes all cticall includes exported
-#endif
-#include "cticalls.h"
-
 #include "cti_asmc.h"
-#include "os2_2w32.h"
 
 
 USHORT  IM_EX_CTIBASE CrcCalc_C(BYTE* pStr, ULONG cnt)
@@ -81,7 +71,6 @@ USHORT  IM_EX_CTIBASE NCrcCalc_C(const BYTE* pStr, ULONG cnt)
       accum ^= table[index];
    }
 
-// printf("Accum = 0x%04X\n",accum);
    accum = ~accum;
 
    t1 = 0x00FF & (accum >> 8);
@@ -100,17 +89,9 @@ USHORT  IM_EX_CTIBASE  SCrcCalc_C(BYTE* pStr, ULONG cnt)
    BYTE    ch;
 
 
-//   CHAR  oldFill = cout.fill();
-//   cout.fill('0');
-
-//   RWMutexLock::LockGuard guard(coutMux);
-
-//   cout << hex;
    while(cnt--)
    {
       ch = *pStr++;     // get char increment pointer
-
-//      cout << setw(2) << (USHORT)ch << " ";
 
       accum ^= ((USHORT)ch);
       for(i=0; i < 8; i++)
@@ -126,8 +107,6 @@ USHORT  IM_EX_CTIBASE  SCrcCalc_C(BYTE* pStr, ULONG cnt)
          }
       }
    }
-//   cout << dec << endl;;
-//    cout.fill(oldFill);
 
    return(accum);
 }

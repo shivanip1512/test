@@ -156,11 +156,6 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                          */
                         ::memset(&OutMessage->Buffer.VSt, 0, sizeof(VSTRUCT));
 
-                        OutMessage->Buffer.VSt.DlcRoute.Amp      = Versacom.getAmp();
-                        OutMessage->Buffer.VSt.DlcRoute.Bus      = Versacom.getBus();
-                        OutMessage->Buffer.VSt.DlcRoute.RepFixed = 31;
-                        OutMessage->Buffer.VSt.DlcRoute.RepVar   = 7;
-
                         // Addressing is always fully defined and elements are omitted only if zero in the nibble builder
                         OutMessage->Buffer.VSt.UtilityID         = Versacom.getUtilityID();
                         OutMessage->Buffer.VSt.Section           = Versacom.getSection();

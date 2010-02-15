@@ -25,7 +25,7 @@
 #include "prot_klondike.h"
 
 namespace Cti       {
-namespace Devices    {
+namespace Devices   {
 
 class IM_EX_DEVDB CCU721 : public CtiDeviceRemote
 {
@@ -60,7 +60,8 @@ protected:
     static void writeAWord      (byte_buffer_t &buf, const ASTRUCT &ASt);
     static void writeBWord      (byte_buffer_t &buf, const BSTRUCT &BSt);
 
-    int decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt) const;
+    int decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt) const;
+    static int decodeEWord(const unsigned char *input, const unsigned input_length);
 
     Protocol::Klondike _klondike;
     Protocol::IDLC     _idlc_wrap;

@@ -1,50 +1,8 @@
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        WORDS.C
-
-    Purpose:
-        Build and decode power line carrier messages
-
-    The following procedures are contained in this module:
-        A_Word                  B_Word
-        C_Word                  C_Words
-        D1_Word                 D23_Word
-        D_Words                 E_Word
-        BCHCheck                PadTst
-        NackTst                 APreamble
-        BPreamble               LPreamble
-        G_Word                  H_Word
-        H_Words                 I_BCHCheck
-        I1_Word                 I23_Word
-        I_Words                 J_Word
-
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        9-7-93   Converted to 32 bit                                WRO
-
-
-   -------------------------------------------------------------------- */
 #include "yukon.h"
 
-#include <process.h>
-#include "os2_2w32.h"
-#include "cticalls.h"
+#include "words.h"
 #include "cti_asmc.h"
-
-#include <stdlib.h>
-#include "queues.h"
-#include "dsm2.h"
 #include "dsm2err.h"
-#include "porter.h"
 #include "logger.h"
 
 using std::endl;
@@ -350,17 +308,23 @@ INT IM_EX_CTIBASE E_Word (PBYTE EWord,            /* E word to be decoded */
       return(BADBCH);
 
    /* Check to be sure type is right */
-   if(EWord[0] & 0xf0 != 0xe0)
+   if((EWord[0] & 0xf0) != 0xe0)
       return(BADTYPE);
 
    /* decode the information and place it in the e word structure */
-   ESt->RepVar = EWord[0] >> 1 & 0x07;
-   ESt->Address = EWord[0] << 12 | EWord[1] << 4 | EWord[2] >> 4;
-   ESt->Power = (USHORT)(EWord[5] & 0x04 >> 3);
-   ESt->Alarm = (USHORT)(EWord[5] & 0x03 >> 2);
+   ESt->repeater_variable = EWord[0] >> 1 & 0x07;
+   ESt->echo_address = EWord[0] << 12 | EWord[1] << 4 | EWord[2] >> 4;
+   ESt->power_fail   = (USHORT)(EWord[5] & 0x04 >> 3);
+   ESt->alarm        = (USHORT)(EWord[5] & 0x03 >> 2);
 
-   for(i = 0; i < 3; i++)
-      ESt->Message[i] = EWord[i+2] << 4 | EWord[i+3] >> 4;
+   unsigned char diagnostic_data = EWord[2] << 4 | EWord[3] >> 4;
+
+   ESt->diagnostics.incoming_bch_error       = diagnostic_data & 0x01;
+   ESt->diagnostics.incoming_no_response     = diagnostic_data & 0x02;
+   ESt->diagnostics.listen_ahead_bch_error   = diagnostic_data & 0x04;
+   ESt->diagnostics.listen_ahead_no_response = diagnostic_data & 0x08;
+   ESt->diagnostics.repeater_code_mismatch   = diagnostic_data & 0x10;
+   ESt->diagnostics.weak_signal              = diagnostic_data & 0x20;
 
    return(NORMAL);
 }
@@ -567,7 +531,7 @@ INT IM_EX_CTIBASE LPreamble (PBYTE Pre, USHORT Remote)             /* A word str
 
 /* G_Word is Routine to create a "G" type word */
 
-INT IM_EX_CTIBASE G_Word (PBYTE GWord, const BSTRUCT &GSt, CtiDeviceBase* Dev, INT dwordCount, BOOL Double)
+INT IM_EX_CTIBASE G_Word (PBYTE GWord, const BSTRUCT &GSt, INT dwordCount, BOOL Double)
 
 {
    // extern USHORT Double;
@@ -821,7 +785,7 @@ INT IM_EX_CTIBASE I_Words (PBYTE IWords,      /* IWords to decode */
 /* Routine to decode "J" Word */
 
 INT IM_EX_CTIBASE J_Word (PBYTE JWord,             /* J Word to be decoded */
-                          ESTRUCT *JSt)            /* J word structure */
+                          JSTRUCT *JSt)            /* J word structure */
 {
    SHORT i;
 
