@@ -419,6 +419,10 @@ public final static String getPAOTypeString(int type)
 			return STRING_TERM_SERVER_DIALUP;
 		case DIALOUT_POOL:
 			return STRING_DIALOUT_POOL;
+		case TCPPORT:
+		    return STRING_TCPPORT;
+		case UDPPORT:
+		    return STRING_UDPPORT;
 
 
 	  	//devices
