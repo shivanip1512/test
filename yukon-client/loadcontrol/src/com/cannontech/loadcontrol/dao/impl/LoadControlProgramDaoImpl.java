@@ -5,6 +5,10 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -18,6 +22,7 @@ import com.cannontech.loadcontrol.dao.ProgramControlHistoryMapper;
 import com.cannontech.loadcontrol.dao.ProgramIdMapper;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
+import com.google.common.collect.Lists;
 
 public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 
@@ -174,8 +179,83 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 		
 		sql.append("ORDER BY lmpgh1.LMProgramHistoryId");
 		
+		// all results list
 		List<ProgramControlHistory> programControlHistory = yukonJdbcOperations.query(sql, new ProgramControlHistoryMapper());
-    	return programControlHistory;
+		
+		// keepers list
+		List<ProgramControlHistory> keeperProgramControlHistory = Lists.newArrayListWithExpectedSize(programControlHistory.size());
+
+		// some basic dateTimes
+		DateTime now = new DateTime();
+		DateTime start = new DateTime(startDateTime.getTime());
+		DateTime stop = new DateTime(stopDateTime.getTime());
+		
+		// validStartInterval [midnight on startDateTime, stopDateTime]
+		Interval validStartInterval = new Interval(start.toDateMidnight(), stop);
+		
+		// loop over all results to find keepers
+		for (ProgramControlHistory hist : programControlHistory) {
+
+			DateTime histStart = new DateTime(hist.getStartDateTime().getTime());
+			
+			// (0) has stop, keeper
+			if (hist.getStopDateTime() != null) {
+				keeperProgramControlHistory.add(hist);
+				continue;
+			}
+			
+			// --- EVERYTHING BELOW HERE IS KNOWN TO NOT HAVE A STOP DATETIME ---
+			
+			// (1) if hist did not start within validStartInterval, we know it is not a keeper
+			// validStartInterval begins at midnight of startDateTime and ends at stopDateTime
+			// so any records before this interval cannot be valid because they would have stopped at midnight
+			// and any records after this interval are simply beyond the range we are interested in.
+			if (!validStartInterval.contains(histStart)) {
+				continue;
+			}
+			
+			// (2) need to determine if...
+			// - started today (keep)
+			// - gear change (keep)
+			// - orphaned (exclude)
+			
+			// (2.1)
+			// - started today
+			// it is either going to have a gear change Start or it is currently being controlled
+			// don't bother looking for gear change Start... it is valid either way because even if one doesn't exist its is still plausible that it is being controlled right now
+			Interval validInProgressStartInterval = new Interval(now.toDateMidnight(), now);
+			if (validInProgressStartInterval.contains(histStart)) {
+				keeperProgramControlHistory.add(hist);
+				continue;
+			}
+			
+			// (2.2)
+			// - gear change?
+			// if we can find another 'Start' for this program that happened after this start but before the end of the day on which it started we can call it a gear change
+			DateMidnight endOfStartDay = histStart.plus(Period.days(1)).toDateMidnight();
+			
+			SqlStatementBuilder histStopSql = new SqlStatementBuilder();
+			histStopSql.append("SELECT COUNT(lmpgh.LMProgramGearHistoryId)");
+			histStopSql.append("FROM LMProgramGearHistory lmpgh");
+			histStopSql.append("JOIN LMProgramHistory ph ON ((lmpgh.LMProgramHistoryId = ph.LMProgramHistoryId))");
+			histStopSql.append("WHERE ph.ProgramId").eq(hist.getProgramId());
+			histStopSql.append("AND lmpgh.Action = 'Start'");
+			histStopSql.append("AND lmpgh.EventTime").gt(histStart);
+			histStopSql.append("AND lmpgh.EventTime").lt(endOfStartDay);
+			boolean foundStart = yukonJdbcOperations.queryForInt(histStopSql) > 0;
+			
+			if (foundStart) {
+				keeperProgramControlHistory.add(hist);
+				continue;
+			}
+			
+			// (2.3)
+			// orphaned
+			// does not pass the tests, can only assume this record has no stop because it wasn't properly cleaned up after a server reboot or something
+		}
+		
+		
+    	return keeperProgramControlHistory;
     }
     
     @Override
