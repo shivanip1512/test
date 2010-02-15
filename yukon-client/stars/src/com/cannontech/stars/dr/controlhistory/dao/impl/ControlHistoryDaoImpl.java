@@ -119,6 +119,7 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                                                                                                  StarsCtrlHistPeriod.PASTDAY,
                                                                                                  yukonUserContext.getTimeZone(),
                                                                                                  yukonUserContext.getYukonUser());
+            controlHistoryEventDao.removeInvalidEnrollmentControlHistory(controlHistory, request.inventoryId, groupId);
             currentControlHistory.put(groupId, controlHistory);
         }
         

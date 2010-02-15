@@ -47,7 +47,7 @@ public final class ControlGroupUtil {
         
         for (final LMHardwareControlGroup controlGroup : controlGroupList) {
             StarsLMControlHistory controlHistory = controlHistoryMap.get(controlGroup.getLmGroupId());
-            if (controlHistory == null) continue;
+            if (controlHistory == null || controlHistory.getControlHistoryCount() == 0) continue;
             boolean result = controlHistory.getControlSummary().getDailyTime() != 0;
             if (result) return true;
         }
@@ -60,7 +60,7 @@ public final class ControlGroupUtil {
         
         for (final LMHardwareControlGroup controlGroup : controlGroupList) {
             StarsLMControlHistory controlHistory = controlHistoryMap.get(controlGroup.getLmGroupId());
-            if (controlHistory == null) continue;
+            if (controlHistory == null || controlHistory.getControlHistoryCount() == 0) continue;
             boolean result = controlHistory.getBeingControlled();
             if (result) return true;    
         }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
@@ -216,7 +217,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		return programIdCountMap;
 	}
     
-	public Date getCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
+	public Date findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
 	    
 	    Date now = new Date();
         
@@ -228,15 +229,18 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append("AND LMHCG.GroupEnrollStart <= ?");
         sql.append("AND LMHCG.GroupEnrollStop IS NULL");
 
-        Date startDate = yukonJdbcTemplate.queryForObject(sql.toString(), 
-                                                          new DateRowMapper(), 
-                                                          inventoryId,
-                                                          lmGroupId,
-                                                          now);
-        return startDate;
+        try {
+        	Date startDate = yukonJdbcTemplate.queryForObject(sql.toString(), 
+                                                              new DateRowMapper(), 
+                                                              inventoryId,
+                                                              lmGroupId,
+                                                              now);
+        	return startDate;
+        } catch (EmptyResultDataAccessException e){
+        	return null;
+        }
     }
-
-	private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {
+    private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {
         final ParameterizedRowMapper<ProgramEnrollment> oldConfigInfoRowMapper = new ParameterizedRowMapper<ProgramEnrollment>() {
             public ProgramEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
                 ProgramEnrollment programEnrollment = new ProgramEnrollment();

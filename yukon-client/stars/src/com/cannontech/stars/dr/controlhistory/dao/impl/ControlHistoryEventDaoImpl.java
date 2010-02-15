@@ -112,10 +112,34 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
      * @param controlHistory
      * @param holder
      */
+    public void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
+                                                      int inventoryId,
+                                                      int groupId) {
+    	
+    	Holder holder = new Holder();
+    	holder.inventoryId = inventoryId;
+    	holder.groupId = groupId;
+    	
+    	removeInvalidEnrollmentControlHistory(controlHistory, holder);
+    }
+
+    
+    
+    /**
+     * This method removes any invalid control history in regards to enrollment.
+     * 
+     * @param controlHistory
+     * @param holder
+     */
     private void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
                                                        Holder holder) {
-        Date enrollmentStartDate = enrollmentDao.getCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
+        Date enrollmentStartDate = enrollmentDao.findCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
 
+        // The device is not currently enrolled and therefore does not have any control history.
+        if (enrollmentStartDate == null) {
+        	controlHistory.removeAllControlHistory();
+        }
+        
         List<ControlHistory> removeControlHistoryList = Lists.newArrayList();
         for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
             ControlHistory controlHistoryEntry = controlHistory.getControlHistory(i);

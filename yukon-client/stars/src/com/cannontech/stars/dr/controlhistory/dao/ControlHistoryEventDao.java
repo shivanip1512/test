@@ -39,4 +39,14 @@ public interface ControlHistoryEventDao {
     
     public List<ControlHistoryEvent> toEventList(StarsLMControlHistory controlHistory);
     
+    /**
+     * This method removes any invalid control history in regards to enrollment.
+     * 
+     * @param controlHistory
+     * @param holder
+     */
+    public void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
+                                                      int inventoryId,
+                                                      int groupId);
+
 }
