@@ -33,7 +33,7 @@
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategy.h"
+#include "StrategyManager.h"
 #include "sorted_vector.h"
 #include "regression.h"
 #include "Controllable.h"
@@ -92,7 +92,8 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCFeeder();
-    CtiCCFeeder(RWDBReader& rdr, StrategyPtr strategy);
+    CtiCCFeeder(StrategyManager * strategyManager);
+    CtiCCFeeder(RWDBReader& rdr, StrategyManager * strategyManager);
     CtiCCFeeder(const CtiCCFeeder& feeder);
 
     virtual ~CtiCCFeeder();

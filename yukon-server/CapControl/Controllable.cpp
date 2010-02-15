@@ -8,57 +8,94 @@
 
 Controllable::Controllable()
     : CapControlPao(),
-      _strategy(StrategyPtr(new NoStrategy))        // NOTE: this is an unmanaged strategy!
+      _strategyManager(0),
+      _strategyID(-1)
 {
 
 }
 
 
-Controllable::Controllable(RWDBReader& rdr, StrategyPtr strategy)
-    : CapControlPao(rdr),
-      _strategy(strategy)
+Controllable::Controllable(StrategyManager * strategyManager)
+    : CapControlPao(),
+      _strategyManager(strategyManager),
+      _strategyID(-1)
 {
-    _strategy->registerControllable(getPaoId());
+    getStrategy()->registerControllable( getPaoId() );
+}
+
+
+Controllable::Controllable(RWDBReader & rdr, StrategyManager * strategyManager)
+    : CapControlPao(rdr),
+      _strategyManager(strategyManager),
+      _strategyID(-1)
+{
+    getStrategy()->registerControllable( getPaoId() );
 }
 
 
 Controllable::Controllable(const Controllable & rhs)
     : CapControlPao(rhs),
-      _strategy(rhs.getStrategy())
+      _strategyManager(rhs._strategyManager),
+      _strategyID(rhs._strategyID)
+
 {
-    _strategy->registerControllable(getPaoId());
+    getStrategy()->registerControllable( getPaoId() );
 }
 
 
 Controllable::~Controllable()
 {
-    _strategy->unregisterControllable(getPaoId());
+    getStrategy()->unregisterControllable( getPaoId() );
 }
 
 
 Controllable & Controllable::operator=(const Controllable & rhs)
 {
-    CapControlPao::operator=(rhs);
+    CapControlPao::operator=( rhs );
 
-    if (this != &rhs)
+    if ( this != &rhs )
     {
-        setStrategy(rhs.getStrategy());
+        getStrategy()->unregisterControllable( getPaoId() );
+
+        _strategyManager = rhs._strategyManager;
+        _strategyID      = rhs.getStrategyID();
+
+        getStrategy()->registerControllable( getPaoId() );
     }
 
     return *this;
 }
 
 
-StrategyPtr Controllable::getStrategy() const
+StrategyManager::SharedPtr Controllable::getStrategy() const
 {
-    return _strategy;
+    if ( _strategyManager )
+    {
+        return _strategyManager->getStrategy( _strategyID );
+    }
+    
+    return StrategyManager::getDefaultStrategy();
 }
 
 
-void Controllable::setStrategy(StrategyPtr strategy)
+const long Controllable::getStrategyID() const
 {
-    _strategy->unregisterControllable(getPaoId());
-    _strategy = strategy;
-    _strategy->registerControllable(getPaoId());
+    return _strategyID;
+}
+
+
+void Controllable::setStrategy(const long strategyID)
+{
+    getStrategy()->unregisterControllable( getPaoId() );
+
+    _strategyID = strategyID;
+
+    getStrategy()->registerControllable( getPaoId() );
+}
+
+
+void Controllable::setStrategyManager(StrategyManager * strategyManager)
+{
+    _strategyManager = strategyManager;
 }
 

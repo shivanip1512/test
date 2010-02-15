@@ -35,7 +35,7 @@ using boost::shared_ptr;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategy.h"
+#include "StrategyManager.h"
 #include "TimeOfDayStrategy.h"
 #include "ccmonitorpoint.h"
 #include "Controllable.h"
@@ -70,7 +70,8 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     CtiCCSubstationBus();
-    CtiCCSubstationBus(RWDBReader& rdr, StrategyPtr strategy);
+    CtiCCSubstationBus(StrategyManager * strategyManager);
+    CtiCCSubstationBus(RWDBReader& rdr, StrategyManager * strategyManager);
     CtiCCSubstationBus(const CtiCCSubstationBus& bus);
 
     virtual ~CtiCCSubstationBus();

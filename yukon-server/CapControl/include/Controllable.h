@@ -4,8 +4,7 @@
 
 
 #include "CapControlPao.h"
-#include "ControlStrategy.h"
-
+#include "StrategyManager.h"
 
 
 class Controllable : public CapControlPao
@@ -15,7 +14,9 @@ public:
 
     Controllable();
 
-    Controllable(RWDBReader& rdr, StrategyPtr strategy);
+    Controllable(StrategyManager * strategyManager);
+
+    Controllable(RWDBReader & rdr, StrategyManager * strategyManager);
 
     Controllable(const Controllable & rhs);
 
@@ -23,13 +24,18 @@ public:
 
     Controllable & operator=(const Controllable & rhs);
 
-    StrategyPtr getStrategy() const;
+    StrategyManager::SharedPtr getStrategy() const;
 
-    void setStrategy(StrategyPtr strategy);
+    const long getStrategyID() const;
+
+    void setStrategy(const long strategyID);
+
+    void setStrategyManager(StrategyManager * strategyManager);
 
 private:
 
-    StrategyPtr _strategy;
+    long _strategyID;
 
+    StrategyManager * _strategyManager;
 };
 

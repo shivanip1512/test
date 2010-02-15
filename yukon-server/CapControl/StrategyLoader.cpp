@@ -7,17 +7,37 @@
 
 #include "ccid.h"
 #include "logger.h"
-#include "rwutil.h"
+
+#include "ControlStrategy.h"
 #include "StrategyLoader.h"
+#include "IVVCStrategy.h"
+#include "KVarStrategy.h"
+#include "MultiVoltStrategy.h"
+#include "MultiVoltVarStrategy.h"
+#include "NoStrategy.h"
+#include "PFactorKWKVarStrategy.h"
+#include "PFactorKWKQStrategy.h"
+#include "TimeOfDayStrategy.h"
+#include "VoltStrategy.h"
 
 
 extern ULONG _CC_DEBUG;
 
 
-void StrategyDBLoader::loadCore(const long ID, StrategyMap &strategies)
+StrategyManager::StrategyMap StrategyDBLoader::load(const long ID)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _dbMutex );
-    CtiLockGuard<CtiSemaphore>              cg( gDBAccessSema );
+    StrategyManager::StrategyMap    loaded;
+
+    loadCore(ID, loaded);
+    loadParameters(ID, loaded);
+
+    return loaded;
+}
+
+
+void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &strategies)
+{
+    CtiLockGuard<CtiSemaphore>  semLock( gDBAccessSema );
 
     RWDBConnection conn = getConnection();
     if ( conn.isValid() )
@@ -68,47 +88,47 @@ void StrategyDBLoader::loadCore(const long ID, StrategyMap &strategies)
         while ( rdr() )
         {
             std::string controlUnits;
-            StrategyMap::mapped_type strategy;
-
             rdr["controlunits"]  >> controlUnits;
 
             if ( rdr.isValid() )
             {
+                StrategyManager::SharedPtr strategy;
+
                 if ( controlUnits == ControlStrategy::NoControlUnit )
                 {
-                    strategy.reset( new NoStrategy() );
+                    strategy.reset( new NoStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::KVarControlUnit )
                 {
-                    strategy.reset( new KVarStrategy() );
+                    strategy.reset( new KVarStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::VoltsControlUnit )
                 {
-                    strategy.reset( new VoltStrategy() );
+                    strategy.reset( new VoltStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::MultiVoltControlUnit )
                 {
-                    strategy.reset( new MultiVoltStrategy() );
+                    strategy.reset( new MultiVoltStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::MultiVoltVarControlUnit )
                 {
-                    strategy.reset( new MultiVoltVarStrategy() );
+                    strategy.reset( new MultiVoltVarStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::PFactorKWKVarControlUnit )
                 {
-                    strategy.reset( new PFactorKWKVarStrategy() );
+                    strategy.reset( new PFactorKWKVarStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::PFactorKWKQControlUnit )
                 {
-                    strategy.reset( new PFactorKWKQStrategy() );
+                    strategy.reset( new PFactorKWKQStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::TimeOfDayControlUnit )
                 {
-                    strategy.reset( new TimeOfDayStrategy() );
+                    strategy.reset( new TimeOfDayStrategy );
                 }
                 else if ( controlUnits == ControlStrategy::IntegratedVoltVarControlUnit )
                 {
-                    strategy.reset( new IVVCStrategy() );
+                    strategy.reset( new IVVCStrategy );
                 }
                 else
                 {
@@ -189,11 +209,9 @@ void StrategyDBLoader::loadCore(const long ID, StrategyMap &strategies)
 }
 
 
-
-void StrategyDBLoader::loadParameters(const long ID, StrategyMap &strategies)
+void StrategyDBLoader::loadParameters(const long ID, StrategyManager::StrategyMap &strategies)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _dbMutex );
-    CtiLockGuard<CtiSemaphore>              cg( gDBAccessSema );
+    CtiLockGuard<CtiSemaphore>  semLock( gDBAccessSema );
 
     RWDBConnection conn = getConnection();
     if ( conn.isValid() )
@@ -229,18 +247,16 @@ void StrategyDBLoader::loadParameters(const long ID, StrategyMap &strategies)
 
         while ( rdr() )
         {
-            long strategyID  = 0;
-            StrategyMap::mapped_type strategy;
-
+            long strategyID  = -1;
             rdr["strategyid"] >> strategyID;
 
             if ( rdr.isValid() )
             {
-                StrategyMap::iterator iter = strategies.find(strategyID);
+                StrategyManager::StrategyMap::const_iterator iter = strategies.find(strategyID);
 
                 if ( iter != strategies.end() )
                 {
-                    strategy = iter->second;
+                    StrategyManager::SharedPtr strategy(iter->second);
 
                     std::string name;
                     std::string type;

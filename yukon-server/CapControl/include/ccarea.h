@@ -36,7 +36,7 @@ using std::list;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategy.h"
+#include "StrategyManager.h"
 #include "ccmonitorpoint.h"
 #include "Controllable.h"
 
@@ -51,7 +51,8 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCArea )
 
     CtiCCArea();
-    CtiCCArea(RWDBReader& rdr, StrategyPtr strategy);
+    CtiCCArea(StrategyManager * strategyManager);
+    CtiCCArea(RWDBReader& rdr, StrategyManager * strategyManager);
     CtiCCArea(const CtiCCArea& area);
 
     virtual ~CtiCCArea();

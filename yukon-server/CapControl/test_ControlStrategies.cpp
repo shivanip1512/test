@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(test_NoStrategy_default_creation)
     BOOST_CHECK_EQUAL( noStrategy.getUnitType(),                ControlStrategy::None );
     BOOST_CHECK_EQUAL( noStrategy.getMethodType(),              ControlStrategy::NoMethod );
 
-    BOOST_CHECK_EQUAL( noStrategy.getStrategyId(),              0 );
+    BOOST_CHECK_EQUAL( noStrategy.getStrategyId(),              -1 );
     BOOST_CHECK_EQUAL( noStrategy.getStrategyName(),            "(none)" );
     BOOST_CHECK_EQUAL( noStrategy.getControlMethod(),           ControlStrategy::NoControlMethod );
     BOOST_CHECK_EQUAL( noStrategy.getControlInterval(),         0 );

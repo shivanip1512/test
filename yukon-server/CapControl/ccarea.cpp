@@ -37,7 +37,7 @@ RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCArea::CtiCCArea()
-    : Controllable(),
+    : Controllable(0),
       _voltReductionControlPointId(0),
       _voltReductionControlValue(0),
       _pfactor(0),
@@ -51,8 +51,23 @@ CtiCCArea::CtiCCArea()
 {
 }
 
-CtiCCArea::CtiCCArea(RWDBReader& rdr, StrategyPtr strategy)
-    : Controllable(rdr, strategy)
+CtiCCArea::CtiCCArea(StrategyManager * strategyManager)
+    : Controllable(strategyManager),
+      _voltReductionControlPointId(0),
+      _voltReductionControlValue(0),
+      _pfactor(0),
+      _estPfactor(0),
+      _ovUvDisabledFlag(false),
+      _reEnableAreaFlag(false),
+      _childVoltReductionFlag(false),
+      _insertDynamicDataFlag(false),
+      _dirty(false),
+      _areaUpdatedFlag(false)
+{
+}
+
+CtiCCArea::CtiCCArea(RWDBReader& rdr, StrategyManager * strategyManager)
+    : Controllable(rdr, strategyManager)
 {
     restore(rdr);
     _operationStats.setPAOId(getPaoId());

@@ -2,9 +2,7 @@
 #pragma once
 
 #include <string>
-#include <map>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
 
 
@@ -172,9 +170,4 @@ private:
 
     void printError(const char *function) const;
 };
-
-
-typedef boost::shared_ptr<ControlStrategy>  StrategyPtr;
-
-typedef std::map<long, StrategyPtr>         StrategyMap;
 

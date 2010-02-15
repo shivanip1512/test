@@ -2,15 +2,31 @@
 #pragma once
 
 #include <memory>
+#include <map>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+
+#include "readers_writer_lock.h"
 #include "ControlStrategy.h"
-#include "StrategyLoader.h"
+
+
+class StrategyLoader;
+
 
 
 class StrategyManager
 {
 
 public:
+
+    typedef boost::shared_ptr<ControlStrategy>  SharedPtr;
+    typedef boost::weak_ptr<ControlStrategy>    WeakPtr;
+    typedef std::map<long, SharedPtr>           StrategyMap;
+
+    typedef Cti::readers_writer_lock_t          Lock;
+    typedef Lock::reader_lock_guard_t           ReaderGuard;
+    typedef Lock::writer_lock_guard_t           WriterGuard;
 
     StrategyManager( std::auto_ptr<StrategyLoader> loader );
 
@@ -20,15 +36,19 @@ public:
     void unload(const long ID);
     void unloadAll();
 
-    StrategyPtr getStrategy(const long ID) const;
+    SharedPtr getStrategy(const long ID) const;
 
     const long getDefaultId() const;
+
+    static const SharedPtr getDefaultStrategy();
 
     void executeAll() const;
 
 private:
 
-    static const long   _defaultID;
+    mutable Lock    _lock;
+
+    static const SharedPtr    _defaultStrategy;
 
     StrategyMap _strategies;
 

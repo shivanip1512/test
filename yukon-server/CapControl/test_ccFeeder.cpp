@@ -21,6 +21,9 @@
 #include "ccsubstationbusstore.h"
 
 #include "ccUnitTestUtil.h"
+#include "StrategyManager.h"
+#include "PFactorKWKVarStrategy.h"
+
 
 extern BOOL _RETRY_FAILED_BANKS;
 
@@ -42,6 +45,81 @@ void initialize_bank(CtiCCCapBank* bank, int closeOrder = 0, int tripOrder = 0)
     bank->setMaxDailyOperation(0);
     bank->setMaxDailyOpsHitFlag(false);
 }
+
+class StrategyUnitTestLoader : public StrategyLoader
+{
+
+public:
+
+    // default construction and destruction is OK
+
+    virtual StrategyManager::StrategyMap load(const long ID)
+    {
+        StrategyManager::StrategyMap loaded;
+
+        if (ID < 0)
+        {
+            long IDs[] = { 100 };
+    
+            for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
+            {
+                loadSingle(IDs[i], loaded);
+            }
+        }
+        else
+        {
+            loadSingle(ID, loaded);
+        }
+
+        return loaded;
+    }
+
+private:
+
+    void loadSingle(const long ID, StrategyManager::StrategyMap &strategies)
+    {
+        bool doInsertion = true;
+
+        StrategyManager::SharedPtr  newStrategy;
+
+        switch (ID)
+        {
+            case 100:
+            {
+                newStrategy.reset( new PFactorKWKVarStrategy );
+
+                newStrategy->setStrategyName("StrategyIndvlFdr");
+                newStrategy->setControlInterval(0);
+                newStrategy->setControlMethod(ControlStrategy::IndividualFeederControlMethod);
+                newStrategy->setMaxConfirmTime(60);
+                newStrategy->setMinConfirmPercent(75);
+                newStrategy->setFailurePercent(25);
+                newStrategy->setControlSendRetries(0);
+                newStrategy->setPeakLag(80);
+                newStrategy->setPeakLead(80);
+                newStrategy->setOffPeakLag(80);
+                newStrategy->setOffPeakLead(80);
+                newStrategy->setPeakPFSetPoint(100);
+                newStrategy->setOffPeakPFSetPoint(100);
+                newStrategy->setEndDaySettings("(none)");       //_END_DAY_ON_TRIP = false;
+                break;
+            }
+            default:
+            {
+                doInsertion = false;
+                break;
+            }
+        }
+
+        if (doInsertion)
+        {
+            newStrategy->setStrategyId(ID);
+            strategies[ID] = newStrategy;
+        }
+    }
+};
+
+
 
 BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
 {
@@ -71,24 +149,14 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(4, feeder->getCCCapBanks().size());
 
     CtiMultiMsg_vec pointChanges;
-    StrategyPtr strat( new PFactorKWKVarStrategy );
 
-    strat->setStrategyId(100);
-    strat->setStrategyName("StrategyIndvlFdr");
-    strat->setControlInterval(0);
-    strat->setControlMethod(ControlStrategy::IndividualFeederControlMethod);
-    strat->setMaxConfirmTime(60);
-    strat->setMinConfirmPercent(75);
-    strat->setFailurePercent(25);
-    strat->setControlSendRetries(0);
-    strat->setPeakLag(80);
-    strat->setPeakLead(80);
-    strat->setOffPeakLag(80);
-    strat->setOffPeakLead(80);
-    strat->setPeakPFSetPoint(100);
-    strat->setOffPeakPFSetPoint(100);
-    feeder->setStrategy(strat);
-    feeder->getStrategy()->setEndDaySettings("(none)");//_END_DAY_ON_TRIP = false;
+    // Create the strategy manager and load the strategies.
+    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+
+    _strategyManager.reloadAll();
+
+    // attach strategy id 100 to our feeder.
+    feeder->setStrategy(100);
 
     //Simulate a close, should be the first bank.
     CtiCCCapBank * bank = feeder->findCapBankToChangeVars(0.0,pointChanges,-500,500,600);

@@ -2,25 +2,33 @@
 #include "yukon.h"
 
 #include "StrategyManager.h"
+#include "StrategyLoader.h"
+#include "NoStrategy.h"
 
 
-const long StrategyManager::_defaultID = -10;       // client supplies strategy IDs >= 0
+const StrategyManager::SharedPtr StrategyManager::_defaultStrategy( new NoStrategy );
 
 
 StrategyManager::StrategyManager( std::auto_ptr<StrategyLoader> loader )
     : _loader( loader )
 {
-    StrategyPtr none( new NoStrategy );
 
-    none->setStrategyId(_defaultID);
-
-    _strategies.insert( std::make_pair( none->getStrategyId(), none ) );        // a sane default for get() to use...
 }
 
 
 void StrategyManager::reload(const long ID)
 {
-    _loader->load(ID, _strategies);
+    StrategyMap results = _loader->load(ID);
+
+    // update the mapping with the results of the loading
+    {
+        WriterGuard guard(_lock);
+
+        for ( StrategyMap::const_iterator b = results.begin(), e =  results.end(); b != e; ++b )
+        {
+            _strategies[ b->first ] = results[ b->first ];
+        }
+    }
 }
 
 
@@ -32,40 +40,48 @@ void StrategyManager::reloadAll()
 
 void StrategyManager::unload(const long ID)
 {
-    if (ID != _defaultID)               // do NOT erase the default
-    {
-        _strategies.erase(ID);
-    }
+    WriterGuard guard(_lock);
+
+    _strategies.erase(ID);
 }
 
 
 void StrategyManager::unloadAll()
 {
-    StrategyPtr     none = getStrategy(_defaultID);                             // grab the default
+    WriterGuard guard(_lock);
 
-    _strategies.clear();                                                        // clear the map
-    _strategies.insert( std::make_pair( none->getStrategyId(), none ) );        // re-insert the default
+    _strategies.clear();
 }
 
 
-StrategyPtr StrategyManager::getStrategy(const long ID) const
+StrategyManager::SharedPtr StrategyManager::getStrategy(const long ID) const
 {
+    ReaderGuard guard(_lock);
+
     StrategyMap::const_iterator iter = _strategies.find(ID);
 
     return iter != _strategies.end()
                     ? iter->second
-                    : _strategies.find(_defaultID)->second;
+                    : getDefaultStrategy();
 }
 
 
 const long StrategyManager::getDefaultId() const
 {
-    return _defaultID;
+    return getDefaultStrategy()->getStrategyId();
+}
+
+
+const StrategyManager::SharedPtr StrategyManager::getDefaultStrategy()
+{
+    return _defaultStrategy;
 }
 
 
 void StrategyManager::executeAll() const
 {
+    ReaderGuard guard(_lock);
+
     for ( StrategyMap::const_iterator b = _strategies.begin(), e = _strategies.end(); b != e; ++b )
     {
         b->second->execute();

@@ -39,7 +39,7 @@ RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCSpecial::CtiCCSpecial()
-    : Controllable(),
+    : Controllable(0),
       _voltReductionControlPointId(0),
       _voltReductionControlValue(0),
       _pfactor(0),
@@ -51,8 +51,21 @@ CtiCCSpecial::CtiCCSpecial()
 {
 }
 
-CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr, StrategyPtr strategy)
-    : Controllable(rdr, strategy)
+CtiCCSpecial::CtiCCSpecial(StrategyManager * strategyManager)
+    : Controllable(strategyManager),
+      _voltReductionControlPointId(0),
+      _voltReductionControlValue(0),
+      _pfactor(0),
+      _estPfactor(0),
+      _ovUvDisabledFlag(false),
+      _isSpecial(true),
+      _insertDynamicDataFlag(false),
+      _dirty(false)
+{
+}
+
+CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr, StrategyManager * strategyManager)
+    : Controllable(rdr, strategyManager)
 {
     restore(rdr);
     _operationStats.setPAOId(getPaoId());

@@ -6,10 +6,13 @@
 #include <string>
 
 #include "StrategyManager.h"
+#include "StrategyLoader.h"
+#include "KVarStrategy.h"
+#include "NoStrategy.h"
+#include "PFactorKWKVarStrategy.h"
+
 
 using boost::unit_test_framework::test_suite;
-
-
 
 
 class StrategyUnitTestLoader : public StrategyLoader
@@ -19,9 +22,11 @@ public:
 
     // default construction and destruction is OK
 
-    virtual void load(const long ID, StrategyMap &strategies)
+    virtual StrategyManager::StrategyMap load(const long ID)
     {
-        if (ID == -1)
+        StrategyManager::StrategyMap strategies;
+
+        if (ID < 0)
         {
             long IDs[] = { 100, 110, 125 };
     
@@ -34,15 +39,17 @@ public:
         {
             loadSingle(ID, strategies);
         }
+
+        return strategies;
     }
 
 private:
 
-    void loadSingle(const long ID, StrategyMap &strategies)
+    void loadSingle(const long ID, StrategyManager::StrategyMap &strategies)
     {
         bool doInsertion = true;
 
-        StrategyPtr newStrategy;
+        StrategyManager::SharedPtr newStrategy;
 
         switch (ID)
         {
@@ -85,30 +92,10 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_default_initialization)
 {
     StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
-    // Check them - would expect that they all return the default strategy
+    // Check them - would expect that they all return NoStrategy
 
-    StrategyPtr strategy = _strategyManager.getStrategy( 100 );
+    StrategyManager::SharedPtr strategy = _strategyManager.getStrategy( 100 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
-    BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
-
-    strategy = _strategyManager.getStrategy( 110 );
-
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
-    BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
-
-    strategy = _strategyManager.getStrategy( 125 );
-
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
-    BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
-
-    strategy = _strategyManager.getStrategy( _strategyManager.getDefaultId() );
-
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 }
 
@@ -119,11 +106,9 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll)
 
     _strategyManager.reloadAll();
 
-    // OK - we should have 4 strategies loaded, one each at ID == 100, 110 and 125 and the default one
+    // OK - we should have 3 strategies loaded, one each at ID == 100, 110 and 125
 
-    // Check them
-
-    StrategyPtr strategy = _strategyManager.getStrategy( 100 );
+    StrategyManager::SharedPtr strategy = _strategyManager.getStrategy( 100 );
 
     BOOST_CHECK_EQUAL( strategy->getStrategyId(),   100 );
     BOOST_CHECK_EQUAL( strategy->getStrategyName(), "Test kVAr Strategy" );
@@ -140,12 +125,6 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll)
     BOOST_CHECK_EQUAL( strategy->getStrategyId(),   125 );
     BOOST_CHECK_EQUAL( strategy->getStrategyName(), "Test Power Factor Strategy #2" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::PFactorKWKVar );
-
-    strategy = _strategyManager.getStrategy( _strategyManager.getDefaultId() );
-
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
-    BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 }
 
 
@@ -155,14 +134,12 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_get_nonexistent_strategy)
 
     _strategyManager.reloadAll();
 
-    // OK - we should have 4 strategies loaded, one each at ID == 100, 110 and 125 and the default one
+    // OK - we should have 3 strategies loaded, one each at ID == 100, 110 and 125
 
-    // Get a strategy that doesn't exist - would expect it to return the default strategy
+    // Get a strategy that doesn't exist - would expect it to return NoStrategy
 
-    StrategyPtr strategy = _strategyManager.getStrategy( 200 );
+    StrategyManager::SharedPtr strategy = _strategyManager.getStrategy( 200 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 }
 
@@ -173,34 +150,22 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unloadAll)
 
     _strategyManager.reloadAll();
 
-    // OK - we should have 4 strategies loaded, one each at ID == 100, 110 and 125 and the default one
+    // OK - we should have 3 strategies loaded, one each at ID == 100, 110 and 125
 
     _strategyManager.unloadAll();
 
-    // Check them - would expect that they all return the default strategy
+    // Check them - would expect that they all return NoStrategy
 
-    StrategyPtr strategy = _strategyManager.getStrategy( 100 );
+    StrategyManager::SharedPtr strategy = _strategyManager.getStrategy( 100 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 
     strategy = _strategyManager.getStrategy( 110 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 
     strategy = _strategyManager.getStrategy( 125 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
-    BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
-
-    strategy = _strategyManager.getStrategy( _strategyManager.getDefaultId() );
-
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 }
 
@@ -211,13 +176,13 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unload_single)
 
     _strategyManager.reloadAll();
 
-    // OK - we should have 4 strategies loaded, one each at ID == 100, 110 and 125 and the default one
+    // OK - we should have 3 strategies loaded, one each at ID == 100, 110 and 125
 
     _strategyManager.unload(110);
 
-    // Check them - would expect that ID == 110 will return the default strategy
+    // Check them - would expect that ID == 110 will return NoStrategy
 
-    StrategyPtr strategy = _strategyManager.getStrategy( 100 );
+    StrategyManager::SharedPtr strategy = _strategyManager.getStrategy( 100 );
 
     BOOST_CHECK_EQUAL( strategy->getStrategyId(),   100 );
     BOOST_CHECK_EQUAL( strategy->getStrategyName(), "Test kVAr Strategy" );
@@ -225,8 +190,6 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unload_single)
 
     strategy = _strategyManager.getStrategy( 110 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 
     strategy = _strategyManager.getStrategy( 125 );
@@ -234,12 +197,6 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unload_single)
     BOOST_CHECK_EQUAL( strategy->getStrategyId(),   125 );
     BOOST_CHECK_EQUAL( strategy->getStrategyName(), "Test Power Factor Strategy #2" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::PFactorKWKVar );
-
-    strategy = _strategyManager.getStrategy( _strategyManager.getDefaultId() );
-
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
-    BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 }
 
 
@@ -249,18 +206,14 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reload_single)
 
     _strategyManager.reload(125);
 
-    // Check them - would expect that that all return default strategy except ID == 125
+    // Check them - would expect that that all return NoStrategy except ID == 125
 
-    StrategyPtr strategy = _strategyManager.getStrategy( 100 );
+    StrategyManager::SharedPtr strategy = _strategyManager.getStrategy( 100 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 
     strategy = _strategyManager.getStrategy( 110 );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
 
     strategy = _strategyManager.getStrategy( 125 );
@@ -268,11 +221,21 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reload_single)
     BOOST_CHECK_EQUAL( strategy->getStrategyId(),   125 );
     BOOST_CHECK_EQUAL( strategy->getStrategyName(), "Test Power Factor Strategy #2" );
     BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::PFactorKWKVar );
+}
 
-    strategy = _strategyManager.getStrategy( _strategyManager.getDefaultId() );
 
-    BOOST_CHECK_EQUAL( strategy->getStrategyId(),   _strategyManager.getDefaultId() );
-    BOOST_CHECK_EQUAL( strategy->getStrategyName(), "(none)" );
-    BOOST_CHECK_EQUAL( strategy->getUnitType(),     ControlStrategy::None );
+BOOST_AUTO_TEST_CASE(test_StrategyManager_reload_single_weak_pointer_invalidation_check)
+{
+    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+
+    _strategyManager.reloadAll();
+
+    StrategyManager::WeakPtr   weak( _strategyManager.getStrategy( 110 ) );
+
+    BOOST_CHECK_EQUAL( weak.expired(), false );
+
+    _strategyManager.reload( 110 );
+
+    BOOST_CHECK_EQUAL( weak.expired(), true );
 }
 

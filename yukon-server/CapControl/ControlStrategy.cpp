@@ -11,7 +11,7 @@ extern ULONG _CC_DEBUG;
 
 
 ControlStrategy::ControlStrategy() :
-    _strategyID(0),
+    _strategyID(-1),
     _strategyName("(none)"),
     _maxDailyOperation(0),
     _maxOperationDisableFlag(false),

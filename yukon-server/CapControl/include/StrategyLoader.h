@@ -1,18 +1,7 @@
 
 #pragma once
 
-#include "dbaccess.h"
-
-#include "ControlStrategy.h"
-#include "IVVCStrategy.h"
-#include "KVarStrategy.h"
-#include "MultiVoltStrategy.h"
-#include "MultiVoltVarStrategy.h"
-#include "NoStrategy.h"
-#include "PFactorKWKVarStrategy.h"
-#include "PFactorKWKQStrategy.h"
-#include "TimeOfDayStrategy.h"
-#include "VoltStrategy.h"
+#include "StrategyManager.h"
 
 
 class StrategyLoader
@@ -24,14 +13,12 @@ public:
 
     ~StrategyLoader()   {  }
 
-
-    virtual void load(const long ID, StrategyMap &strategies) = 0;
-
+    virtual StrategyManager::StrategyMap load(const long ID) = 0;
 
 private:
 
-
 };
+
 
 
 class StrategyDBLoader : public StrategyLoader
@@ -43,18 +30,12 @@ public:
 
     ~StrategyDBLoader()   {  }
 
-    virtual void load(const long ID, StrategyMap &strategies)
-    {
-        loadCore(ID, strategies);
-        loadParameters(ID, strategies);
-    }
+    virtual StrategyManager::StrategyMap load(const long ID);
 
 private:
 
-    void loadCore(const long ID, StrategyMap &strategies);
+    void loadCore(const long ID, StrategyManager::StrategyMap &strategies);
 
-    void loadParameters(const long ID, StrategyMap &strategies);
-
-    RWRecursiveLock<RWMutexLock>    _dbMutex;
+    void loadParameters(const long ID, StrategyManager::StrategyMap &strategies);
 };
 

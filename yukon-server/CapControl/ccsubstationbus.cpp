@@ -54,7 +54,7 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus::CtiCCSubstationBus()
-    : Controllable(),
+    : Controllable(0),
       _ltcId(0),
       _parentId(0),
       _currentvarloadpointid(0),
@@ -146,8 +146,101 @@ CtiCCSubstationBus::CtiCCSubstationBus()
     regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr, StrategyPtr strategy)
-    : Controllable(rdr, strategy)
+CtiCCSubstationBus::CtiCCSubstationBus(StrategyManager * strategyManager)
+    : Controllable(strategyManager),
+      _ltcId(0),
+      _parentId(0),
+      _currentvarloadpointid(0),
+      _currentvarloadpointvalue(0),
+      _currentwattloadpointid(0),
+      _currentwattloadpointvalue(0),
+      _currentvoltloadpointid(0),
+      _currentvoltloadpointvalue(0),
+      _altDualSubId(0),
+      _altSubControlValue(0),
+      _switchOverPointId(0),
+      _switchOverStatus(false),
+      _primaryBusFlag(false),
+      _dualBusEnable(false),
+      _eventSeq(0),
+      _multiMonitorFlag(false),
+      _decimalplaces(0),
+      _newpointdatareceivedflag(false),
+      _busupdatedflag(false),
+      _estimatedvarloadpointid(0),
+      _estimatedvarloadpointvalue(0),
+      _dailyoperationsanalogpointid(0),
+      _powerfactorpointid(0),
+      _estimatedpowerfactorpointid(0),
+      _currentdailyoperations(0),
+      _peaktimeflag(false),
+      _recentlycontrolledflag(false),
+      _varvaluebeforecontrol(0),
+      _lastfeedercontrolledpaoid(0),
+      _lastfeedercontrolledposition(0),
+      _powerfactorvalue(0),
+      _kvarsolution(0),
+      _estimatedpowerfactorvalue(0),
+      _currentvarpointquality(0),
+      _currentwattpointquality(0),
+      _currentvoltpointquality(0),
+      _waivecontrolflag(false),
+      _currentVerificationCapBankId(0),
+      _currentVerificationFeederId(0),
+      _percentToClose(0),
+      _verificationFlag(false),
+      _performingVerificationFlag(false),
+      _verificationDoneFlag(false),
+      _overlappingSchedulesVerificationFlag(false),
+      _preOperationMonitorPointScanFlag(false),
+      _operationSentWaitFlag(false),
+      _postOperationMonitorPointScanFlag(false),
+      _reEnableBusFlag(false),
+      _waitForReCloseDelayFlag(false),
+      _waitToFinishRegularControlFlag(false),
+      _maxDailyOpsHitFlag(false),
+      _ovUvDisabledFlag(false),
+      _correctionNeededNoBankAvailFlag(false),
+      _likeDayControlFlag(false),
+      _voltReductionFlag(false),
+      _sendMoreTimeControlledCommandsFlag(false),
+      _voltReductionControlId(0),
+      _currentCapBankToVerifyAssumedOrigState(0),
+      _verificationStrategy(0),
+      _disableOvUvVerificationFlag(false),
+      _capBankToVerifyInactivityTime(0),
+      _targetvarvalue(0),
+      _displayOrder(0),
+      _altSubVoltVal(0),
+      _altSubVarVal(0),
+      _altSubWattVal(0),
+      _iVControlTot(0),
+      _iVCount(0),
+      _iWControlTot(0),
+      _iWCount(0),
+      _iVControl(0),
+      _iWControl(0),
+      _usePhaseData(false),
+      _phaseBid(0),
+      _phaseCid(0),
+      _totalizedControlFlag(false),
+      _phaseAvalue(0),
+      _phaseBvalue(0),
+      _phaseCvalue(0),
+      _phaseAvalueBeforeControl(0),
+      _phaseBvalueBeforeControl(0),
+      _phaseCvalueBeforeControl(0),
+      _insertDynamicDataFlag(false),
+      _dirty(false)
+{
+    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+}
+
+CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr, StrategyManager * strategyManager)
+    : Controllable(rdr, strategyManager)
 {
     restore(rdr);
 

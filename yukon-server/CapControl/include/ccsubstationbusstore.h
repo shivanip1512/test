@@ -39,6 +39,7 @@
 #include "ccutil.h"
 
 #include "StrategyManager.h"
+#include "StrategyLoader.h"
 #include "AttributeService.h"
 
 

@@ -37,6 +37,7 @@
 #include "ccoriginalparent.h"
 #include "ccUnitTestUtil.h"
 
+#include "StrategyManager.h"
 #include "PFactorKWKVarStrategy.h"
 
 using boost::unit_test_framework::test_suite;
@@ -44,6 +45,78 @@ using namespace std;
 
 extern ULONG _MAX_KVAR;
 extern ULONG _SEND_TRIES;
+
+class StrategyUnitTestLoader : public StrategyLoader
+{
+
+public:
+
+    // default construction and destruction is OK
+
+    virtual StrategyManager::StrategyMap load(const long ID)
+    {
+        StrategyManager::StrategyMap loaded;
+
+        if (ID < 0)
+        {
+            long IDs[] = { 100 };
+    
+            for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
+            {
+                loadSingle(IDs[i], loaded);
+            }
+        }
+        else
+        {
+            loadSingle(ID, loaded);
+        }
+
+        return loaded;
+    }
+
+private:
+
+    void loadSingle(const long ID, StrategyManager::StrategyMap &strategies)
+    {
+        bool doInsertion = true;
+
+        StrategyManager::SharedPtr  newStrategy;
+
+        switch (ID)
+        {
+            case 100:
+            {
+                newStrategy.reset( new PFactorKWKVarStrategy );
+
+                newStrategy->setStrategyName("StrategyIndvlFdr");
+                newStrategy->setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+                newStrategy->setControlInterval(0);
+                newStrategy->setMaxConfirmTime(60);
+                newStrategy->setMinConfirmPercent(75);
+                newStrategy->setFailurePercent(25);
+                newStrategy->setControlSendRetries(0);
+                newStrategy->setPeakLag(80);
+                newStrategy->setPeakLead(80);
+                newStrategy->setOffPeakLag(80);
+                newStrategy->setOffPeakLead(80);
+                newStrategy->setPeakPFSetPoint(100);
+                newStrategy->setOffPeakPFSetPoint(100);
+                break;
+            }
+            default:
+            {
+                doInsertion = false;
+                break;
+            }
+        }
+
+        if (doInsertion)
+        {
+            newStrategy->setStrategyId(ID);
+            strategies[ID] = newStrategy;
+        }
+    }
+};
 
 
 void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCArea* area)
@@ -79,7 +152,6 @@ void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus
 }
 void initialize_feeder(Test_CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
 {
-    StrategyPtr noStrategy( new NoStrategy );
 
     long feederId = feed->getPaoId();
     long busId = parentBus->getPaoId();
@@ -93,7 +165,7 @@ void initialize_feeder(Test_CtiCCSubstationBusStore* store, CtiCCFeeder* feed, C
     feed->setPerformingVerificationFlag(FALSE);
     feed->setVerificationDoneFlag(FALSE);
 
-    feed->setStrategy(noStrategy);
+    feed->setStrategy( -1 );        // init to NoStrategy
 
     feed->setCurrentVarPointQuality(NormalQuality);
     feed->setWaitForReCloseDelayFlag(false);
@@ -129,8 +201,7 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     CtiCCSubstation *station = new CtiCCSubstation();
     CtiCCArea *area = new CtiCCArea();
 
-    StrategyPtr strategy( new NoStrategy );
-    bus->setStrategy( strategy );
+    bus->setStrategy( -1 );         // init to NoStrategy
 
     area->setPaoId(3);
     station->setPaoId(2);
@@ -249,6 +320,9 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     _MAX_KVAR = 20000;
     _SEND_TRIES = 1;
 
+    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    _strategyManager.reloadAll();
+
     CtiTime currentDateTime;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
@@ -259,26 +333,8 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
     CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
-
     CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");
-
-    StrategyPtr strat( new PFactorKWKVarStrategy );
-
-    strat->setStrategyId(100);
-    strat->setStrategyName("StrategyIndvlFdr");
-    strat->setControlInterval(0);
-    strat->setControlMethod(ControlStrategy::IndividualFeederControlMethod);
-    strat->setMaxConfirmTime(60);
-    strat->setMinConfirmPercent(75);
-    strat->setFailurePercent(25);
-    strat->setControlSendRetries(0);
-    strat->setPeakLag(80);
-    strat->setPeakLead(80);
-    strat->setOffPeakLag(80);
-    strat->setOffPeakLead(80);
-    strat->setPeakPFSetPoint(100);
-    strat->setOffPeakPFSetPoint(100);
 
     CtiCCSubstationBus *bus1 = create_object<CtiCCSubstationBus>(3, "SubBus-A1");
     CtiCCFeeder *feed11 = create_object<CtiCCFeeder>(11, "Feeder11");
@@ -304,14 +360,14 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     initialize_capbank(store, cap11b, feed11, 2);
     initialize_capbank(store, cap11c, feed11, 3);
 
+    bus1->setStrategyManager( &_strategyManager );
+    bus1->setStrategy(100);
     bus1->setVerificationDisableOvUvFlag(false);
 
     feed11->setUsePhaseData(false);
     cap11a->setControlStatus(CtiCCCapBank::Open);
     cap11b->setControlStatus(CtiCCCapBank::OpenQuestionable);
     cap11c->setControlStatus(CtiCCCapBank::OpenFail);
-
-    bus1->setStrategy(strat);
 
     feed11->setCurrentVarLoadPointId(1);
     feed11->setCurrentWattLoadPointId(1);

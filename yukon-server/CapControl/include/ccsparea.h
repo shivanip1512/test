@@ -33,7 +33,7 @@ using std::list;
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-#include "ControlStrategy.h"
+#include "StrategyManager.h"
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
 #include "Controllable.h"
@@ -46,7 +46,8 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     CtiCCSpecial();
-    CtiCCSpecial(RWDBReader& rdr, StrategyPtr strategy);
+    CtiCCSpecial(StrategyManager * strategyManager);
+    CtiCCSpecial(RWDBReader& rdr, StrategyManager * strategyManager);
     CtiCCSpecial(const CtiCCSpecial& area);
 
     virtual ~CtiCCSpecial();

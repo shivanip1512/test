@@ -57,7 +57,7 @@ RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCFeeder::CtiCCFeeder()
-    : Controllable(),
+    : Controllable(0),
       _parentId(0),
       _multiMonitorFlag(false),
       _currentvarloadpointid(0),
@@ -130,8 +130,82 @@ CtiCCFeeder::CtiCCFeeder()
     regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr, StrategyPtr strategy)
-    : Controllable(rdr, strategy)
+CtiCCFeeder::CtiCCFeeder(StrategyManager * strategyManager)
+    : Controllable(strategyManager),
+      _parentId(0),
+      _multiMonitorFlag(false),
+      _currentvarloadpointid(0),
+      _currentvarloadpointvalue(0),
+      _currentwattloadpointid(0),
+      _currentwattloadpointvalue(0),
+      _currentvoltloadpointid(0),
+      _currentvoltloadpointvalue(0),
+      _displayorder(0),
+      _newpointdatareceivedflag(false),
+      _estimatedvarloadpointid(0),
+      _estimatedvarloadpointvalue(0),
+      _dailyoperationsanalogpointid(0),
+      _powerfactorpointid(0),
+      _estimatedpowerfactorpointid(0),
+      _currentdailyoperations(0),
+      _recentlycontrolledflag(false),
+      _varvaluebeforecontrol(0),
+      _lastcapbankcontrolleddeviceid(0),
+      _busoptimizedvarcategory(0),
+      _busoptimizedvaroffset(0),
+      _powerfactorvalue(0),
+      _kvarsolution(0),
+      _estimatedpowerfactorvalue(0),
+      _currentvarpointquality(0),
+      _currentwattpointquality(0),
+      _currentvoltpointquality(0),
+      _waivecontrolflag(false),
+      _decimalPlaces(0),
+      _peakTimeFlag(false),
+      _verificationFlag(false),
+      _performingVerificationFlag(false),
+      _verificationDoneFlag(false),
+      _preOperationMonitorPointScanFlag(false),
+      _operationSentWaitFlag(false),
+      _postOperationMonitorPointScanFlag(false),
+      _waitForReCloseDelayFlag(false),
+      _maxDailyOpsHitFlag(false),
+      _ovUvDisabledFlag(false),
+      _correctionNeededNoBankAvailFlag(false),
+      _lastVerificationMsgSentSuccessful(false),
+      _eventSeq(0),
+      _currentVerificationCapBankId(0),
+      _currentCapBankToVerifyAssumedOrigState(0),
+      _targetvarvalue(0),
+      _iVControlTot(0),
+      _iVCount(0),
+      _iWControlTot(0),
+      _iWCount(0),
+      _iVControl(0),
+      _iWControl(0),
+      _usePhaseData(0),
+      _phaseBid(0),
+      _phaseCid(0),
+      _totalizedControlFlag(false),
+      _phaseAvalue(0),
+      _phaseBvalue(0),
+      _phaseCvalue(0),
+      _phaseAvalueBeforeControl(0),
+      _phaseBvalueBeforeControl(0),
+      _phaseCvalueBeforeControl(0),
+      _retryIndex(0),
+      _insertDynamicDataFlag(false),
+      _dirty(false)
+{
+    _porterRetFailFlag = false;
+    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+}
+
+CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr, StrategyManager * strategyManager)
+    : Controllable(rdr, strategyManager)
 {
     restore(rdr);
 
