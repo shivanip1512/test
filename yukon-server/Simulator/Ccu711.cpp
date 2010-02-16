@@ -72,7 +72,7 @@ error_t Ccu711::peekAddress(Comms &comms, unsigned &address)
 }
 
 
-bool Ccu711::handleRequest(Comms &comms, PortLogger &logger)
+bool Ccu711::handleRequest(MessageProcessor processor, Comms &comms, PortLogger &logger)
 {
     idlc_request request;
     idlc_reply   reply;
@@ -104,7 +104,7 @@ bool Ccu711::handleRequest(Comms &comms, PortLogger &logger)
 
     logger.log(describeReply(reply), reply.message);
 
-    if( error = sendReply(comms, reply) )
+    if( error = sendReply(processor, comms, reply) )
     {
         logger.log("Error sending reply / " + error);
         return false;
@@ -1174,8 +1174,9 @@ string Ccu711::describeStatuses(const status_info &statuses) const
 }
 
 
-error_t Ccu711::sendReply(Comms &comms, const idlc_reply &reply) const
+error_t Ccu711::sendReply(MessageProcessor processor, Comms &comms, idlc_reply &reply) const
 {
+    processor.ProcessMessage(reply.message);
     if( !comms.write(reply.message) )
     {
         return "Error writing reply to comms";

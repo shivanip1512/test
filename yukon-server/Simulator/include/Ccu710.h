@@ -3,6 +3,7 @@
 #include "portlogger.h"
 #include "emetconwords.h"
 #include "PlcTransmitter.h"
+#include "MessageProcessor.h"
 
 #include "CommInterface.h"
 #include "types.h"
@@ -24,7 +25,7 @@ public:
     static bool    addressAvailable(Comms &comms);
     static error_t peekAddress     (Comms &comms, unsigned &address);
 
-    bool handleRequest(Comms &comms, PortLogger &logger);
+    bool handleRequest(MessageProcessor processor, Comms &comms, PortLogger &logger);
 
     template<class T>
     class holder
@@ -44,7 +45,7 @@ public:
 
     error_t readRequest(CommsIn &comms, request_holder &external_request_holder) const;
     error_t processRequest(const request_holder &request, reply_holder &external_reply_holder);
-    error_t sendReply(CommsOut &comms, const reply_holder &external_reply_holder) const;
+    error_t sendReply(MessageProcessor processor, CommsOut &comms, const reply_holder &external_reply_holder) const;
 
 private:
 
@@ -178,7 +179,7 @@ private:
 
     std::string describeReply(const reply_t &reply) const;
 
-    error_t sendReply(CommsOut &comms, const reply_t &reply) const;
+    error_t sendReply(MessageProcessor processor, CommsOut &comms, const reply_t &reply) const;
 };
 
 }

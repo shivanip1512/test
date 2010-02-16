@@ -45,6 +45,8 @@ PlcTransmitter.obj \
 Ccu710.obj \
 Ccu711.obj \
 Mct410.obj \
+MessageProcessor.obj \
+FilterImpl.obj \
 
 CCU_SIMULATOR_LIBS=\
 $(COMPILEBASE)\lib\cticparms.lib \

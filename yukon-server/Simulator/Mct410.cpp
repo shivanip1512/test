@@ -347,12 +347,23 @@ double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &c
     const double year_period_reciprocal = 1.0 / year_period;
     const double day_period_reciprocal  = 1.0 / day_period;
 
-    const double amp_year = 1000.0;
+    /*  Introduced an offset value to be added to the value of the curve
+        based  on the value of the address passed in to the function. This
+        offset allows for a range of 0-7350 to be added to the kWh reading
+        that is returned to the device, thus providing a better way of
+        distinguishing meter readings whose addresses are similar or near
+        each other in value. Meters whose addresses are within one of each
+        other will now have a 7.35 kWh difference between them for easier
+        distinguishing.                                                     */
+    const double offset = (address % 1000) * 7.35 * 3600000;
+
+    const double amp_year =  1000.0;
     const double amp_day  =  500.0;
 
 //  TODO-P3: move all value computation into policy classes
     return amp_year * (duration + year_period_reciprocal * (sin(begin_seconds * year_period) - sin(end_seconds * year_period))) +
-           amp_day  * (duration + day_period_reciprocal  * (sin(begin_seconds * day_period)  - sin(end_seconds * day_period)));
+           amp_day  * (duration + day_period_reciprocal  * (sin(begin_seconds * day_period)  - sin(end_seconds * day_period))) +
+           offset;
 }
 
 //  Generate output using two cosine waves - 1 year period and 1 day period.

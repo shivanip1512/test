@@ -111,7 +111,7 @@ error_t Ccu710::extractAddress(const bytes &address_buf, unsigned &address)
 }
 
 
-bool Ccu710::handleRequest(Comms &comms, PortLogger &logger)
+bool Ccu710::handleRequest(MessageProcessor processor, Comms &comms, PortLogger &logger)
 {
     request_t ccu_request;
     reply_t   ccu_reply;
@@ -139,7 +139,7 @@ bool Ccu710::handleRequest(Comms &comms, PortLogger &logger)
         return true;
     }
 
-    if( error = sendReply(comms, ccu_reply) )
+    if( error = sendReply(processor, comms, ccu_reply) )
     {
         logger.log("Error sending reply / " + error + "\n" + ccu_reply.description, ccu_reply.message);
         return false;
@@ -620,19 +620,20 @@ string Ccu710::describeReply(const reply_t &reply) const
 }
 
 
-error_t Ccu710::sendReply(CommsOut &comms_out, const reply_holder &external_reply_holder) const
+error_t Ccu710::sendReply(MessageProcessor processor, CommsOut &comms_out, const reply_holder &external_reply_holder) const
 {
     /*if( !external_reply_holder )
     {
         return "(no reply)";
     }*/
 
-    return sendReply(comms_out, *external_reply_holder);
+    return sendReply(processor, comms_out, *external_reply_holder);
 }
 
 
-error_t Ccu710::sendReply(CommsOut &comms_out, const reply_t &reply) const
+error_t Ccu710::sendReply(MessageProcessor processor, CommsOut &comms_out, const reply_t &reply) const
 {
+    // PROCESS THE MESSAGE WITH processor HERE!
     if( !comms_out.write(reply.message) )
     {
         return error_t("Error writing reply to comms");
