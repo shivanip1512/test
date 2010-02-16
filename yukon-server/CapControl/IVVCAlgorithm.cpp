@@ -311,7 +311,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     int tapOp = calculateVte(pointValues,
                                              strategy->getLowerVoltLimit(isPeakTime),
-                                                    strategy->getLowerVoltLimit(isPeakTime) + 3.0, // FIX: where do we get this value from
+                                             strategy->getLowerVoltLimit(isPeakTime) + strategy->getVoltageRegulationMargin(isPeakTime),
                                              strategy->getUpperVoltLimit(isPeakTime),
                                              varPointID, wattPointID);
 
