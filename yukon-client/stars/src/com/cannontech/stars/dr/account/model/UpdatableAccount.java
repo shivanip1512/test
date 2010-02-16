@@ -1,4 +1,5 @@
-package com.cannontech.common.bulk.field.impl;
+package com.cannontech.stars.dr.account.model;
+
 
 public class UpdatableAccount {
 

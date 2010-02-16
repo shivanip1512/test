@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.core.dao.AddressDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
@@ -42,11 +43,11 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         
         int rows = simpleJdbcTemplate.update(sql, accountSiteId,
                                                   accountSite.getSiteInformationId(),
-                                                  accountSite.getSiteNumber(),
+                                                  SqlUtils.convertStringToDbValue(accountSite.getSiteNumber()),
                                                   accountSite.getStreetAddressId(),
                                                   accountSite.getPropertyNotes(),
-                                                  accountSite.getCustomerStatus(),
-                                                  accountSite.getCustAtHome());
+                                                  SqlUtils.convertStringToDbValue(accountSite.getCustomerStatus()),
+                                                  SqlUtils.convertStringToDbValue(accountSite.getCustAtHome()));
         boolean result = (rows == 1);
         return result;
     }
@@ -59,11 +60,11 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         String sql = "UPDATE AccountSite SET SiteInformationID = ?, SiteNumber = ?, StreetAddressID = ?, PropertyNotes = ?, CustomerStatus = ?, CustAtHome = ? WHERE AccountSiteID = ?";
         
         int rows = simpleJdbcTemplate.update(sql, accountSite.getSiteInformationId(),
-                                                  accountSite.getSiteNumber(),
+        										  SqlUtils.convertStringToDbValue(accountSite.getSiteNumber()),
                                                   accountSite.getStreetAddressId(),
                                                   accountSite.getPropertyNotes(),
-                                                  accountSite.getCustomerStatus(),
-                                                  accountSite.getCustAtHome(),
+                                                  SqlUtils.convertStringToDbValue(accountSite.getCustomerStatus()),
+                                                  SqlUtils.convertStringToDbValue(accountSite.getCustAtHome()),
                                                   accountSite.getAccountSiteId());
         
         boolean result = (rows == 1);
@@ -119,11 +120,11 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
             public AccountSite mapRow(ResultSet rs, int rowNum) throws SQLException {
                 AccountSite accountSite = new AccountSite();
                 accountSite.setAccountSiteId(rs.getInt("AccountSiteID"));
-                accountSite.setCustAtHome(rs.getString("CustAtHome"));
-                accountSite.setCustomerStatus(rs.getString("CustomerStatus"));
+                accountSite.setCustAtHome(SqlUtils.convertDbValueToString(rs, "CustAtHome"));
+                accountSite.setCustomerStatus(SqlUtils.convertDbValueToString(rs, "CustomerStatus"));
                 accountSite.setPropertyNotes(rs.getString("PropertyNotes"));
                 accountSite.setSiteInformationId(rs.getInt("SiteInformationID"));
-                accountSite.setSiteNumber(rs.getString("SiteNumber"));
+                accountSite.setSiteNumber(SqlUtils.convertDbValueToString(rs, "SiteNumber"));
                 accountSite.setStreetAddressId(rs.getInt("StreetAddressID"));
                 return accountSite;
             }

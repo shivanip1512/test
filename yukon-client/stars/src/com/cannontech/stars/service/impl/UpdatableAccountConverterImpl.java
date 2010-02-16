@@ -3,14 +3,14 @@ package com.cannontech.stars.service.impl;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.bulk.field.impl.AccountDto;
-import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.SiteInformationDao;
+import com.cannontech.stars.dr.account.model.AccountDto;
+import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.web.util.ImportManagerUtil;

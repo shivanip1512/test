@@ -4,4 +4,12 @@
 
 <entry key="yukon.web.defaults.pageTitle">Energy Services Operations Center</entry>
 
+<entry key="yukon.web.defaults.save">Save</entry>
+<entry key="yukon.web.defaults.add">Add</entry>
+<entry key="yukon.web.defaults.delete">Delete</entry>
+<entry key="yukon.web.defaults.search">Search</entry>
+<entry key="yukon.web.defaults.reset">Reset</entry>
+<entry key="yukon.web.defaults.yes">Yes</entry>
+<entry key="yukon.web.defaults.no">No</entry>
+
 </properties>

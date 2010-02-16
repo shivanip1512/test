@@ -1617,8 +1617,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return starsList;
     }
     
-    public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
-        if (StarsUtils.isOperator( starsUser.getYukonUser() )) {
+    public StarsCustomerSelectionLists getStarsCustomerSelectionLists(LiteYukonUser yukonUser) {
+    	
+    	if (StarsUtils.isOperator(yukonUser)) {
             StarsCustomerSelectionLists starsOperSelLists = new StarsCustomerSelectionLists();
             
             for (int i = 0; i < OPERATOR_SELECTION_LISTS.length; i++) {
@@ -1628,7 +1629,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             
             return starsOperSelLists;
         }
-        else if (StarsUtils.isResidentialCustomer( starsUser.getYukonUser() )) {
+        else if (StarsUtils.isResidentialCustomer(yukonUser)) {
             StarsCustomerSelectionLists starsCustSelLists = new StarsCustomerSelectionLists();
             // Currently the consumer side only need chance of control and opt out period list
             StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
@@ -1637,6 +1638,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         return null;
+    }
+    
+    public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
+
+    	return getStarsCustomerSelectionLists(starsUser.getYukonUser());
     }
     
     public StarsEnrollmentPrograms getStarsEnrollmentPrograms() {

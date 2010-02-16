@@ -70,11 +70,11 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         public void extractValues(MapSqlParameterSource p, LiteCustomer o) {
             p.addValue("PrimaryContactId", o.getPrimaryContactID());
             p.addValue("CustomerTypeId", o.getCustomerTypeID());
-            p.addValue("TimeZone", o.getTimeZone());
-            p.addValue("CustomerNumber", o.getCustomerNumber());
+            p.addValue("TimeZone", SqlUtils.convertStringToDbValue(o.getTimeZone()));
+            p.addValue("CustomerNumber", SqlUtils.convertStringToDbValue(o.getCustomerNumber()));
             p.addValue("RateScheduleId", o.getRateScheduleID());
-            p.addValue("AltTrackNum", o.getAltTrackingNumber());
-            p.addValue("TemperatureUnit", o.getTemperatureUnit());
+            p.addValue("AltTrackNum", SqlUtils.convertStringToDbValue(o.getAltTrackingNumber()));
+            p.addValue("TemperatureUnit", SqlUtils.convertStringToDbValue(o.getTemperatureUnit()));
         }
 
         @Override
@@ -96,7 +96,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
             p.addValue("CustomerDemandLevel", o.getDemandLevel());
             p.addValue("CurtailmentAgreement", CtiUtilities.STRING_NONE);
             p.addValue("CurtailAmount", o.getCurtailAmount());
-            p.addValue("CompanyName", o.getCompanyName());
+            p.addValue("CompanyName", SqlUtils.convertStringToDbValue(o.getCompanyName()));
             p.addValue("CICustType", o.getCICustType());
         }
 
@@ -373,11 +373,11 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         throws SQLException {
             customer.setPrimaryContactID(rs.getInt("PrimaryContactId"));
             customer.setCustomerTypeID(rs.getInt("CustomerTypeId"));
-            customer.setTimeZone(rs.getString("TimeZone"));
-            customer.setCustomerNumber(rs.getString("CustomerNumber"));
+            customer.setTimeZone(SqlUtils.convertDbValueToString(rs.getString("TimeZone")));
+            customer.setCustomerNumber(SqlUtils.convertDbValueToString(rs.getString("CustomerNumber")));
             customer.setRateScheduleID(rs.getInt("RateScheduleId"));
-            customer.setTemperatureUnit(rs.getString("TemperatureUnit"));
-            customer.setAltTrackingNumber(rs.getString("AltTrackNum"));
+            customer.setTemperatureUnit(SqlUtils.convertDbValueToString(rs.getString("TemperatureUnit")));
+            customer.setAltTrackingNumber(SqlUtils.convertDbValueToString(rs.getString("AltTrackNum")));
             int energyCompanyId = rs.getInt("energyCompanyId");
             if (!rs.wasNull())
             {
@@ -400,7 +400,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
             final LiteCICustomer ciCustomer = (LiteCICustomer) customer;
             ciCustomer.setMainAddressID(rs.getInt("MainAddressID"));            
-            ciCustomer.setCompanyName(rs.getString("CompanyName"));   
+            ciCustomer.setCompanyName(SqlUtils.convertDbValueToString(rs, "CompanyName"));   
             ciCustomer.setDemandLevel(rs.getDouble("CustomerDemandLevel"));
             ciCustomer.setCurtailAmount(rs.getDouble("CurtailAmount"));
             ciCustomer.setCICustType(rs.getInt("CICustType"));

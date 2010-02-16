@@ -1090,6 +1090,30 @@
   </tag>
   
   <tag>
+  	<name>yukonListEntryList</name>
+  	<tag-class>com.cannontech.web.taglib.YukonListEntryListTag</tag-class>
+  	<body-content>empty</body-content>
+	<attribute>
+ 		<name>var</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>var where List of YukonListEntry will be placed</description>
+	</attribute>
+ 	<attribute>
+ 		<name>accountId</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>Customer account ID</description>
+	</attribute>
+	<attribute>
+ 		<name>listName</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>String. See YukonSelectionListEnum. Example: "YUK_LIST_NAME_LM_CUSTOMER_EVENT".</description>
+	</attribute>
+  </tag>
+  
+  <tag>
     <name>verifyRolesAndProperties</name>
     <tag-class>com.cannontech.web.util.VerifyRolesAndPropertiesTag</tag-class>
     <body-content>empty</body-content>

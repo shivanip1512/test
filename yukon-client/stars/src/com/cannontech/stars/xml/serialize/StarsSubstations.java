@@ -9,6 +9,10 @@ public class StarsSubstations {
 
     public StarsSubstations() {
     }
+    
+    public Vector<StarsSubstation> getStarsSubstationList() {
+		return starsSubstationList;
+	}
 
     public void addStarsSubstation(StarsSubstation vStarsSubstation) {
         starsSubstationList.addElement(vStarsSubstation);

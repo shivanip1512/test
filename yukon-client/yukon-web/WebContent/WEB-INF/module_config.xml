@@ -878,7 +878,57 @@
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/operationsStyles.css" />
   </module>
-
+  
+  <module name="operator">
+    <skin name="STANDARD"/>
+    <menu>
+	   	<options>
+	   		<option name="general">
+	          <link>/spring/stars/operator/home</link>
+	   		  <options>
+		          <option name="accounts">
+		   		    <link>/spring/stars/operator/general/account/accountList</link>
+		          </option>
+	          </options>	
+	   		</option>
+	  	</options>  
+    </menu>
+    
+    <pages>
+    	<page name="home" type="LANDING">
+    		<menu>general</menu>
+           	<link>/spring/stars/operator/home</link>
+    	</page>
+    	<page name="accountList" type="BASIC">
+    		<menu>general</menu>
+    		<link>/spring/stars/operator/general/account/accountList</link>
+    	</page>
+    	<page name="accountEdit" type="DETAIL">
+    		<menu>general</menu>
+           	<link>/spring/stars/operator/general/account/accountEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+           	<labelArgument>${accountNumber}</labelArgument>
+           	<pages>
+           		<page name="contactList" type="DETAIL_CHILD">
+		    		<menu>general</menu>
+		           	<link>/spring/stars/operator/general/contacts/"contactList"?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<labelArgument>${accountNumber}</labelArgument>
+		    	</page>
+           		<page name="contactEdit" type="DETAIL_CHILD">
+		    		<menu>general</menu>
+		           	<link>/spring/stars/operator/general/contacts/contactEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;contactId=${contactId}</link>
+		           	<labelArgument>${accountNumber}</labelArgument>
+		    	</page>
+		    	<page name="residence" type="DETAIL_CHILD">
+		    		<menu>general</menu>
+		           	<link>/spring/stars/operator/general/residence/residenceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<labelArgument>${accountNumber}</labelArgument>
+		    	</page>
+           	</pages>
+    	</page>
+    	
+    </pages>
+  </module>
+  
   <module name="userlm">
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/YukonGeneralStyles.css" />

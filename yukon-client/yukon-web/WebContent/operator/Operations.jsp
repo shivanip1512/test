@@ -96,6 +96,7 @@
 					</div>
 				</form>
 			</div>
+			
         </c:if>
 	</tags:operationSection>
 	
@@ -210,6 +211,10 @@
 	        </tags:sectionLink>
 	    </cti:checkProperty>
 	     --%>
+	     
+	     <tags:sectionLink>
+	        	<a href="/spring/stars/operator/home"><cti:msg key="yukon.web.modules.operator.moduleName"/></a>
+        </tags:sectionLink>
         
         <!-- Hardware search form -->
         <c:if test="${showStarsList}">

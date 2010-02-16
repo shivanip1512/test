@@ -39,7 +39,7 @@ body {
 
 #CopyRight {
     text-align: center;
-    margin-top: 4em;
+    margin-top: 2em;
     margin-bottom: .5em;
     font-size: .7em;
     color: #666;
@@ -159,3 +159,116 @@ img.graycssicon, input.graycssicon {
   border: none;
   vertical-align: middle;
 }
+
+table.standardPageContent {
+
+	width:100%;	
+	border-collapse:collapse;
+	margin-top:10px;
+	border-bottom:1px solid #BBB;
+}
+
+table.standardPageContent td {
+
+	vertical-align:top;
+}
+
+table.standardPageContent td.leftSideContextualMenuTopper {
+
+	background-color:#F9F9F9;
+	border-bottom:1px solid #BBB;
+	border-top:1px solid #DFDFDF;
+	border-right:1px solid #DFDFDF;
+	padding-top:5px;
+	padding-bottom:10px;
+	padding-left:5px;
+	height: 1%;
+	width: 180px;
+}
+
+table.standardPageContent td.leftSideContextualMenu {
+
+	padding-top:0px;
+	background-color:#DDD;
+	border-right:1px solid #BBB;
+}
+
+table.standardPageContent td.leftSideContextualMenuBottom {
+
+	background-color:#DDD;
+	border-right:1px solid #BBB;
+}
+
+table.standardPageContent td.mainContent {
+
+	padding-left:10px;
+}
+
+table.standardPageContent ul {
+
+	
+}
+
+
+table.standardPageContent li {
+
+	padding-top:4px;
+	padding-bottom:4px;
+	height:20px;
+	
+}
+
+table.standardPageContent li a {
+
+	color:#000;
+	text-decoration: none;
+	
+}
+
+table.standardPageContent li:hover {
+
+	background-color:#BBB;
+	cursor:pointer;
+}
+
+table.standardPageContent li:hover span{
+
+	font-weight:bold;
+}
+
+table.standardPageContent li span {
+
+	padding-left:8px;
+	font-size:13px;
+}
+
+table.standardPageContent li.selected {
+
+	background-color:#FFF;
+	border-right:none;
+	border-left:2px solid #4C83AF;
+	border-top:1px dashed #4C83AF;
+	border-bottom:1px dashed #4C83AF;
+	background-image: url(/WebConfig/yukon/Icons/resultset_next.gif);
+	background-position:left center;
+	background-repeat:no-repeat;
+}
+
+table.standardPageContent li.selected span{
+
+	font-weight:bold;
+	padding-left:20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -171,6 +171,8 @@
                <value>classpath:com/cannontech/yukon/web/modules/amr/metering</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/demandResponse</value>
                <value>classpath:com/cannontech/yukon/web/modules/stars/drAdmin</value>
+               <value>classpath:com/cannontech/yukon/web/modules/operator/root</value>
+               <value>classpath:com/cannontech/yukon/web/modules/operator/general</value>
                <value>classpath:com/cannontech/yukon/web/modules/multispeak/lmMappings</value>
                <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                <value>classpath:com/cannontech/yukon/web/modules/trending</value>

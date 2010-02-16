@@ -1,13 +1,13 @@
 package com.cannontech.stars.dr.account.service;
 
-import com.cannontech.common.bulk.field.impl.AccountDto;
-import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
+import com.cannontech.stars.dr.account.model.AccountDto;
+import com.cannontech.stars.dr.account.model.UpdatableAccount;
 
 public interface AccountService {
 
@@ -45,6 +45,8 @@ public interface AccountService {
     
     public void deleteAccount(String accountNumber, LiteStarsEnergyCompany ec);
     
+    public void deleteAccount(int accountId, int energyCompanyId);
+    
     /**
      * Method to return an account dto for an account number and energy company.
      * The energy company is for the user is retrieved, then getAccountDto(String accountNumber, LiteStarsEnergyCompany ec) is called. 
@@ -55,4 +57,6 @@ public interface AccountService {
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser);
 
     public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec);
+    
+    public AccountDto getAccountDto(int accountId, int energyCompanyId);
 }

@@ -1,5 +1,7 @@
 package com.cannontech.common.model;
 
+import com.cannontech.database.data.lite.LiteAddress;
+
 public class Address {
     private String cityName;
     private String stateCode;
@@ -7,6 +9,19 @@ public class Address {
     private String locationAddress1;
     private String locationAddress2;
     private String country;
+    
+    public Address() {
+    }
+    
+    public Address(LiteAddress liteAddress) {
+    	
+    	this.setLocationAddress1(liteAddress.getLocationAddress1());
+    	this.setLocationAddress2(liteAddress.getLocationAddress2());
+    	this.setCityName(liteAddress.getCityName());
+    	this.setStateCode(liteAddress.getStateCode());
+    	this.setZipCode(liteAddress.getZipCode());
+    	this.setCounty(liteAddress.getCounty());
+    }
 
     public String getCityName() {
         return cityName;

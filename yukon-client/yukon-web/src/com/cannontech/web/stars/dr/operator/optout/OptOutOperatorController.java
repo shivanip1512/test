@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator;
+package com.cannontech.web.stars.dr.operator.optout;
 
 import java.text.ParseException;
 import java.util.Calendar;

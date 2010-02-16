@@ -2,12 +2,12 @@ package com.cannontech.yukon.api.account.endpoint;
 
 import org.jdom.Element;
 
-import com.cannontech.common.bulk.field.impl.AccountDto;
-import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.stars.dr.account.model.AccountDto;
+import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 

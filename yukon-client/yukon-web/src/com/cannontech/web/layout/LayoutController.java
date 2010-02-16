@@ -17,7 +17,6 @@ import javax.servlet.jsp.tagext.BodyContent;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,10 +36,12 @@ import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.PageInfo;
+import com.cannontech.web.menu.option.producer.LeftSideContextualMenuOptionsProducer;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
 import com.cannontech.web.menu.renderer.MenuRenderer;
+import com.cannontech.web.menu.renderer.SelectMenuConfiguration;
+import com.cannontech.web.menu.renderer.SelectMenuOptionRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
-import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.Writable;
@@ -79,8 +80,8 @@ public class LayoutController {
         StandardPageInfo tagInfo = StandardPageTag.getStandardPageInfo(request);
         map.addAttribute("info", tagInfo);
         
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
         map.addAttribute("module", moduleBase);
@@ -134,6 +135,24 @@ public class LayoutController {
         finalScriptList.addAll(moduleBase.getScriptFiles());
         finalScriptList.addAll(tagInfo.getScriptFiles());
         map.addAttribute("javaScriptFiles", finalScriptList);
+        
+        // action menu
+        final SelectMenuConfiguration selectMenuConfiguration = (SelectMenuConfiguration)request.getAttribute("selectMenuConfiguration");
+        if (selectMenuConfiguration != null) {
+        	map.addAttribute("standardPageActionsSelectMenu", new Writable() {
+                public void write(Writer out) throws IOException {
+                	
+                	SelectMenuOptionRenderer selectMenuOptionRenderer = new SelectMenuOptionRenderer();
+                	selectMenuOptionRenderer.renderSelect(selectMenuConfiguration, out, messageSourceAccessor, userContext);
+                }
+            });
+        }
+        
+        LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = (LeftSideContextualMenuOptionsProducer)request.getAttribute("leftSideContextualMenuOptionsProducer");
+        map.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
+        
+        
+        map.addAttribute("heading", pageDetail.getPageHeading());
         
         LayoutSkinEnum skin = moduleBase.getSkin();
         

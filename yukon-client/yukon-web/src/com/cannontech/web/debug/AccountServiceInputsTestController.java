@@ -13,12 +13,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.bulk.field.impl.AccountDto;
-import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.account.model.AccountDto;
+import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.util.ServletUtil;

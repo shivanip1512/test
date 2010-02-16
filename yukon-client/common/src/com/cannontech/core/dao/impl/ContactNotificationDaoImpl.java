@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -29,6 +31,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     private IDatabaseCache databaseCache;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcOperations yukonJdbcOperations;
     private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
     private NextValueHelper nextValueHelper;
     
@@ -52,9 +55,6 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
 		super();
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactNotificationDao#getContactNotification(int)
-     */
 	public LiteContactNotification getContactNotification( int contactNotifID ) 
 	{
 		synchronized( databaseCache )
@@ -63,9 +63,6 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
 		}
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactNotificationDao#getAllContactNotifications()
-     */
 	public List<LiteContactNotification> getAllContactNotifications() 
 	{
 		synchronized( databaseCache )		
@@ -173,6 +170,20 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
                                                                                   contactId);
 
         return notificationList;
+    }
+    
+    @Override
+    public LiteContactNotification getNotificationForContact(int contactId, int notificationId) {
+
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT cn.*");
+    	sql.append("FROM ContactNotification cn");
+    	sql.append("WHERE ContactId").eq(contactId);
+    	sql.append("AND ContactNotifId").eq(notificationId);
+
+        LiteContactNotification notification = yukonJdbcOperations.queryForObject(sql, new LiteContactNotificationRowMapper());
+
+        return notification;
     }
     
     @Override
@@ -351,5 +362,9 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     public void afterPropertiesSet() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
     }
-
+    
+    @Autowired
+    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
+		this.yukonJdbcOperations = yukonJdbcOperations;
+	}
 }

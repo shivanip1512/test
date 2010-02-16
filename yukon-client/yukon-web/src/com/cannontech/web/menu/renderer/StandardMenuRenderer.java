@@ -13,8 +13,6 @@ import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Form;
 import org.apache.ecs.html.Input;
-import org.apache.ecs.html.OptGroup;
-import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
@@ -271,42 +269,14 @@ public class StandardMenuRenderer implements MenuRenderer {
             String moduleMsg = messageSource.getMessage("yukon.web.menu.module");
             right.addElement(new Span(moduleMsg).setClass("stdhdr_menu"));
             MenuBase portalLinks = moduleBase.getPortalLinks();
-            Iterator<MenuOption> portalLinkIterator = portalLinks.getMenuOptions(userContext).iterator();
-            Select select = new Select();
-            select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
-            String locationSelectMsg = messageSource.getMessage("yukon.web.menu.locationSelect");
-            select.addElement(new Option("").addElement(e(locationSelectMsg)).setSelected(true));
-            OptGroup optGroup = null;
-
-            while (portalLinkIterator.hasNext()) {
-                MenuOption menuOption = portalLinkIterator.next();
-
-                if (menuOption instanceof SubMenuOption) {
-                    SubMenuOption parentOption = (SubMenuOption) menuOption;
-                    List<MenuOption> subMenuOptions = parentOption.getMenuOptions(userContext);
-                    if (subMenuOptions.isEmpty()) {
-                        // we don't want useless headers
-                    } else {
-                        optGroup = new OptGroup();
-                        String menuName = messageSource.getMessage(parentOption.getMenuText());
-                        optGroup.addAttribute("label", e(menuName));
-
-                        for (MenuOption subMenuOption : subMenuOptions) {
-                            if (subMenuOption instanceof SimpleMenuOption) {
-                                Option portalOption = createPortalOption((SimpleMenuOption) subMenuOption);
-                                optGroup.addElement(portalOption);
-                            } else {
-                                // multiple menu levels aren't supported here
-                                throw new CommonMenuException("StandardMenuRenderer quick links only support two level menus");
-                            }
-                        }
-                        select.addElement(optGroup);
-                    }
-                } else if (menuOption instanceof SimpleMenuOption) {
-                    Option portalOption = createPortalOption((SimpleMenuOption) menuOption);
-                    select.addElement(portalOption);
-                }
-            }
+            
+            // generate portal drop down
+            SelectMenuConfiguration selectMenuConfiguration = new SelectMenuConfiguration();
+    		selectMenuConfiguration.setMenuBase(portalLinks);
+    		selectMenuConfiguration.setHeaderKey("yukon.web.menu.locationSelect");
+    		SelectMenuOptionRenderer selectMenuOptionRenderer = new SelectMenuOptionRenderer();
+    		Select select = selectMenuOptionRenderer.generateSelect(selectMenuConfiguration, messageSource, userContext);
+            
             right.addElement(select);
         }
 
@@ -324,14 +294,6 @@ public class StandardMenuRenderer implements MenuRenderer {
         return right;
     }
 
-    private Option createPortalOption(SimpleMenuOption subMenuOption) {
-        SimpleMenuOption simpleMenuOption = (SimpleMenuOption) subMenuOption;
-        Option portalOption = new Option(buildUrl(simpleMenuOption.getUrl()));
-        String linkName = messageSource.getMessage(simpleMenuOption.getMenuText());
-        portalOption.addElement(e(linkName));
-        return portalOption;
-    }
-    
     private Div buildBottomBar() {
         Div wrapper = new Div();
         wrapper.setPrettyPrint(true);

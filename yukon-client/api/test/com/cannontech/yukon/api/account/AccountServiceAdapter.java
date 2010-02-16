@@ -1,12 +1,12 @@
 package com.cannontech.yukon.api.account;
 
-import com.cannontech.common.bulk.field.impl.AccountDto;
-import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
+import com.cannontech.stars.dr.account.model.AccountDto;
+import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 
 public class AccountServiceAdapter implements AccountService {
@@ -35,6 +35,11 @@ public class AccountServiceAdapter implements AccountService {
 	public void deleteAccount(String accountNumber, LiteStarsEnergyCompany ec) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
+	
+	@Override
+	public void deleteAccount(int accountId, int energyCompanyId) {
+		throw new UnsupportedOperationException("Not Implemented");
+	}
 
 	@Override
 	public AccountDto getAccountDto(String accountNumber,
@@ -60,4 +65,8 @@ public class AccountServiceAdapter implements AccountService {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 
+	@Override
+	public AccountDto getAccountDto(int accountId, int energyCompanyId) {
+		throw new UnsupportedOperationException("Not Implemented");
+	}
 }

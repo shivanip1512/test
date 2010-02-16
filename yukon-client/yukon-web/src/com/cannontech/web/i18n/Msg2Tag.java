@@ -45,6 +45,8 @@ public class Msg2Tag extends YukonTagSupport {
         Validate.notNull(info, "Must be called from within the scope of a StandardPageTag.");
         Object[] resolvedArguments = resolveArguments(arguments);
 
+        key = key == null ? "" : key;
+        
         MessageSourceResolvable resolvable;
         if (key instanceof String) {
             String baseCode = (String) key;

@@ -111,7 +111,31 @@
         <property name="description" value="the id of a Yukon user"/>
         <property name="required" value="true"/>
     </bean>
-
+    
+    <bean id="widgetInput.operatorAccountSearchSearchByDefinitionId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="searchByDefinitionId"/>
+        <property name="description" value="yukonListEntry definition id for search type. See com.cannontech.stars.dr.general.model.OperatorAccountSearchBy"/>
+        <property name="required" value="false"/>
+    </bean>
+    
+    <bean id="widgetInput.operatorAccountSearchSearchValue" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="searchValue"/>
+        <property name="description" value="value to search for"/>
+        <property name="required" value="false"/>
+    </bean>
+    
+    <bean id="widgetInput.accountId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="accountId"/>
+        <property name="description" value="stars account id"/>
+        <property name="required" value="true"/>
+    </bean>
+    
+    <bean id="widgetInput.energyCompanyId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="widgetInput.energyCompanyId"/>
+        <property name="description" value="stars widgetInput.energyCompany id"/>
+        <property name="required" value="true"/>
+    </bean>
+    
     <bean id="meterSearchWidget"
     	class="com.cannontech.web.widget.MeterSearchWidget">
     	<property name="title" value="Meter Search" />
@@ -523,6 +547,36 @@
     
     <bean id="systemActionsMenuWidget" class="com.cannontech.web.widget.SystemActionsMenuWidget">
         <property name="title" value="Actions"/>
+    </bean>
+    
+    <bean id="operatorAccountSearchWidget" class="com.cannontech.web.widget.OperatorAccountSearchWidget">
+    	<property name="title" value="Account Search"/>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="CONSUMER_INFO"/>
+            </bean>
+	   	</property>
+	   	<property name="inputs">
+           <set>
+              <ref local="widgetInput.operatorAccountSearchSearchByDefinitionId"/>
+              <ref local="widgetInput.operatorAccountSearchSearchValue"/>
+           </set>
+        </property>
+    </bean>
+    
+    <bean id="operatorAccountInformationWidget" class="com.cannontech.web.widget.OperatorAccountInformationWidget">
+    	<property name="title" value="Account Information"/>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="CONSUMER_INFO"/>
+            </bean>
+	   	</property>
+	   	<property name="inputs">
+           <set>
+              <ref local="widgetInput.accountId"/>
+              <ref local="widgetInput.energyCompanyId"/>
+           </set>
+        </property>
     </bean>
     
     <!-- Update Service -->
@@ -991,6 +1045,10 @@
         <property name="yukonUserDao" ref="yukonUserDao"/>
     </bean>
     
+    <bean id="yukonListEntryListTagPrototype" class="com.cannontech.web.taglib.YukonListEntryListTag">
+    	<property name="ecMappingDao" ref="ecMappingDao"/>
+    </bean>
+    
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">
         
@@ -1208,6 +1266,9 @@
     <bean id="deviceReconfigService" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigServiceImpl"/>
     <bean id="deviceReconfigLoadGroupSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigLoadGroupSelectionTypeHandler"/>
     <bean id="deviceReconfigProgramSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigProgramSelectionTypeHandler"/>
+    
+    <!-- OPERATOR -->
+    <bean id="operatorGeneralService" class="com.cannontech.web.stars.dr.operator.general.service.impl.OperatorGeneralServiceImpl"/>
     
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 

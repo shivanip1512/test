@@ -1,10 +1,11 @@
-package com.cannontech.common.bulk.field.impl;
+package com.cannontech.stars.dr.account.model;
 
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
 
 public class AccountDto {
 
+	private String accountNumber; // used to change the accountNumber on an existing account
     private String lastName;
     private String firstName;
     private String companyName;
@@ -20,7 +21,20 @@ public class AccountDto {
     private String mapNumber; // This is the SiteNumber column in AccountSite table
     private String altTrackingNumber;
     private Boolean isCommercial;
+    private Integer commercialTypeEntryId;
+    private String customerNumber;
+    private Integer rateScheduleEntryId;
+    private String customerStatus;
+    private Boolean isCustAtHome;
 
+    public String getAccountNumber() {
+		return accountNumber;
+	}
+    
+    public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+    
     public String getLastName() {
         return lastName;
     }
@@ -140,5 +154,44 @@ public class AccountDto {
     public void setAltTrackingNumber(String altTrackingNumber) {
         this.altTrackingNumber = altTrackingNumber;
     }
+    
+    public Integer getCommercialTypeEntryId() {
+		return commercialTypeEntryId;
+	}
+    
+    public void setCommercialTypeEntryId(Integer commercialTypeEntryId) {
+		this.commercialTypeEntryId = commercialTypeEntryId;
+	}
+    
+    public String getCustomerNumber() {
+		return customerNumber;
+	}
+    
+    public void setCustomerNumber(String customerNumber) {
+		this.customerNumber = customerNumber;
+	}
+    
+    public Integer getRateScheduleEntryId() {
+		return rateScheduleEntryId;
+	}
+    
+    public void setRateScheduleEntryId(Integer rateScheduleEntryId) {
+		this.rateScheduleEntryId = rateScheduleEntryId;
+	}
+    
+    public String getCustomerStatus() {
+		return customerStatus;
+	}
+    public void setCustomerStatus(String customerStatus) {
+		this.customerStatus = customerStatus;
+	}
+    
+    public Boolean getIsCustAtHome() {
+		return isCustAtHome;
+	}
+    
+    public void setIsCustAtHome(Boolean isCustAtHome) {
+		this.isCustAtHome = isCustAtHome;
+	}
 
 }

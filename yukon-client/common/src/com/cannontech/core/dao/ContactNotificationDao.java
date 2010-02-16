@@ -7,14 +7,16 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 
 public interface ContactNotificationDao {
 
-    /**
-     * Returns the LiteContactNotification for contactNotifID.
-     */
+	/**
+	 * @deprecated Use {@link #getNotificationForContact(int, int)}
+	 */
     public LiteContactNotification getContactNotification(int contactNotifID);
+    
+    public LiteContactNotification getNotificationForContact(int contactId, int notificationId);
 
     /**
-     * Returns all contactNotifications.
-     */
+	 * @deprecated Use {@link #getNotificationsForContact(int)}
+	 */
     public List<LiteContactNotification> getAllContactNotifications();
 
     /**

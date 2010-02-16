@@ -1,4 +1,14 @@
 
+function yukonGeneral_setSelectToValue(selectId, selectedValue) {
+	
+	for (i = 0; i < $(selectId).options.length; i++) {
+		if ($(selectId).options[i].value == selectedValue) {
+			$(selectId).selectedIndex = i;
+			break;
+		}
+	}
+}
+
 function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 	
 	//this contains all the selected indexes

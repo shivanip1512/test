@@ -1,8 +1,8 @@
 package com.cannontech.stars.service;
 
-import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.account.model.UpdatableAccount;
 
 public interface UpdatableAccountConverter {
 

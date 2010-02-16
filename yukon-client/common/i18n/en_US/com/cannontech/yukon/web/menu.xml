@@ -289,4 +289,39 @@
 <entry key="yukon.web.menu.config.monitors.validation.review">Review</entry>
 <entry key="yukon.web.menu.config.monitors.validation.helper">Advanced</entry>
 
+<!-- Operator -->
+<entry key="yukon.web.menu.config.operator.general">Operator</entry>
+<entry key="yukon.web.menu.config.operator.general.accounts">Accounts</entry>
+<entry key="yukon.web.menu.config.operator.general.contacts">Contacts</entry>
+<entry key="yukon.web.menu.config.operator.general.residence">Residence</entry>
+<entry key="yukon.web.menu.config.operator.general.callTracking">Call Tracking</entry>
+<entry key="yukon.web.menu.config.operator.general.createCall">Create Call</entry>
+
+<entry key="yukon.web.menu.config.operator.metering">Metering</entry>
+<entry key="yukon.web.menu.config.operator.metering.intervalData">IntervalData</entry>
+<entry key="yukon.web.menu.config.operator.metering.new">New</entry>
+
+<entry key="yukon.web.menu.config.operator.programs">Programs</entry>
+<entry key="yukon.web.menu.config.operator.programs.controlHistory">Control History</entry>
+<entry key="yukon.web.menu.config.operator.programs.enrollment">Enrollment</entry>
+<entry key="yukon.web.menu.config.operator.programs.override">Override</entry>
+
+<entry key="yukon.web.menu.config.operator.appliances">Appliances</entry>
+<entry key="yukon.web.menu.config.operator.appliances.new">New</entry>
+
+<entry key="yukon.web.menu.config.operator.hardware">Hardware</entry>
+<entry key="yukon.web.menu.config.operator.hardware.new">New</entry>
+
+<entry key="yukon.web.menu.config.operator.workOrders">Work Orders</entry>
+<entry key="yukon.web.menu.config.operator.workOrders.serviceRequest">Service Request</entry>
+<entry key="yukon.web.menu.config.operator.workOrders.serviceHistory">Service History</entry>
+
+<entry key="yukon.web.menu.config.operator.administration">Administration</entry>
+<entry key="yukon.web.menu.config.operator.administration.changeLogin">Change Login</entry>
+<entry key="yukon.web.menu.config.operator.administration.faq">FAQ</entry>
+
+<entry key="yukon.web.menu.config.operator.eventLogging">Event Logging</entry>
+<entry key="yukon.web.menu.config.operator.eventLogging.accountLog">Account Log</entry>
+
+
 </properties>
