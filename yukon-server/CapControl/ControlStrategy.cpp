@@ -27,7 +27,8 @@ ControlStrategy::ControlStrategy() :
     _integrateFlag(false),
     _integratePeriod(0),
     _likeDayFallBack(false),
-    _endDaySettings("(none)")
+    _endDaySettings("(none)"),
+    _isPeakTime(false)
 {
     // empty!
 }
