@@ -226,11 +226,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public List<StoredDeviceGroup> getAllGroupsrUnderRoot() {
         StoredDeviceGroup rootGroup = getRootGroup();
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select dg.*");
-        sql.append("from DeviceGroup dg");
-        sql.append("where DeviceGroupId != ?");
+        sql.append("SELECT *");
+        sql.append("FROM DeviceGroup");
+        sql.append("WHERE DeviceGroupId").neq(rootGroup.getId());
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, rootGroup.getId());
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql, mapper);
         
         PartialGroupResolver resolver = new PartialGroupResolver(this, rootGroup);
         List<StoredDeviceGroup> resolvedPartials = resolver.resolvePartials(groups);
