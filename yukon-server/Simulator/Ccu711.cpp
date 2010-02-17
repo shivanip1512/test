@@ -1275,7 +1275,9 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                 completed_entry_buf.push_back(within_period >> 0);
 
                 //  ROUTE
-                completed_entry_buf.push_back(0);
+                //  The cart CCU has a route of 255, so set the simulator
+                //  route to 255 also to match.
+                completed_entry_buf.push_back(0xFF);
 
                 //  NFUNC
                 completed_entry_buf.push_back(1);
@@ -1302,7 +1304,9 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                     //  b6 = E word occurred
                     //  b7 = last request timed out
 
-                    completed_entry_buf.push_back(0x00);
+                    // Cart CCU shows TS value of 03 00, so set the 
+                    // TS values in the simulator to the same values
+                    completed_entry_buf.push_back(0x03);
                     completed_entry_buf.push_back(0x00);
 
                     //  D1
