@@ -6,12 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingSet;
@@ -34,7 +32,6 @@ import com.cannontech.core.dao.NotFoundException;
 public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     
     private DeviceGroupProviderDao mainDelegator;
-    protected DeviceGroupService deviceGroupService;
     
     public abstract Set<SimpleDevice> getChildDevices(DeviceGroup group);
     
@@ -196,11 +193,6 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
         this.mainDelegator = mainDelegator;
     }
     
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-
 	public DeviceGroupProviderDao getMainDelegator() {
 		return mainDelegator;
 	}

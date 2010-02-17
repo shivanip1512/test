@@ -26,7 +26,6 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
@@ -43,9 +42,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
             for (DeviceGroup group : groups) {
                 whereClauseList.add(deviceGroupDao.getDeviceGroupSqlWhereClause(group, identifier));
             }
-            SqlStatementBuilder whereClause = new SqlStatementBuilder();
-            whereClause.append("(", whereClauseList, ")");
-            return whereClause;
+            return whereClauseList;
         }
     }
     

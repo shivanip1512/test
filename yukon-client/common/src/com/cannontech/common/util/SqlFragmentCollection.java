@@ -20,7 +20,7 @@ public class SqlFragmentCollection implements SqlFragmentSource {
         return new SqlFragmentCollection(" OR ");
     }
     
-    private SqlFragmentCollection(String joiner) {
+    public SqlFragmentCollection(String joiner) {
         this.joiner = joiner;
     }
 
@@ -36,6 +36,9 @@ public class SqlFragmentCollection implements SqlFragmentSource {
     @Override
     public String getSql() {
         String result = StringUtils.join(sql, joiner);
+        if (sql.size() > 1) {
+            result = "(" + result + ")";
+        }
         return result;
     }
     

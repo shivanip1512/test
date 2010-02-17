@@ -20,6 +20,7 @@ import com.cannontech.common.device.groups.model.DeviceGroupComposedCompositionT
 import com.cannontech.common.device.groups.model.DeviceGroupComposedGroup;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SimpleSqlFragment;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
@@ -92,35 +93,18 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
     @Override
     public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         
-        CompositionTypeAndFragments compositionTypeAndFragments = getCompositionTypeAndFragmentsForGroup(group);
+        CompositionTypeAndFragments compositionTypeAndFragments = getCompositionTypeAndFragmentsForGroup(group, identifier);
         DeviceGroupComposedCompositionType compositionType = compositionTypeAndFragments.getCompositionType();
         List<SqlFragmentSource> compositionFragments = compositionTypeAndFragments.getSqlFragments();
         if (compositionFragments.size() == 0) {
             return new SimpleSqlFragment("0 = 1"); 
         }
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(identifier, " IN ( ");
-        sql.append("SELECT ypo.PAObjectID");
-        sql.append("FROM YukonPAObject ypo");
-        sql.append("JOIN Device d ON ypo.PAObjectID = d.DEVICEID");
-        sql.append("WHERE");
+        SqlFragmentCollection sql = new SqlFragmentCollection(" " + compositionType.getSqlFragmentCombiner() + " ");
         
-        boolean isFirst = true;
         for (SqlFragmentSource compositionFragment : compositionFragments) {
-            
-            if (!isFirst) {
-                sql.append(compositionType.getSqlFragmentCombiner());
-            } else {
-                isFirst = false;
-            }
-            
-            sql.append("(");
-            sql.appendFragment(compositionFragment);
-            sql.append(")");
+            sql.add(compositionFragment);
         }
-        
-        sql.append(")");
         
         return sql;
     }
@@ -165,7 +149,7 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
     
     
     // HELPERS
-    private CompositionTypeAndFragments getCompositionTypeAndFragmentsForGroup(DeviceGroup group) throws IllegalArgumentException {
+    private CompositionTypeAndFragments getCompositionTypeAndFragmentsForGroup(DeviceGroup group, String identifier) throws IllegalArgumentException {
         
         DeviceGroupComposed deviceGroupComposed = getDeviceGroupComposed(group);
         List<DeviceGroupComposedGroup> compositionGroups = deviceGroupComposedGroupDao.getComposedGroupsForId(deviceGroupComposed.getDeviceGroupComposedId());
@@ -177,7 +161,7 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
             
             SqlFragmentSource sqlFragmentSource;
             if (deviceGroup != null) {
-                sqlFragmentSource = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singletonList(deviceGroup), "ypo.PAObjectID");
+                sqlFragmentSource = getMainDelegator().getDeviceGroupSqlWhereClause(deviceGroup, identifier);
             } else {
                 sqlFragmentSource = new SimpleSqlFragment("1 = 0");
             }
@@ -186,9 +170,8 @@ public class ComposedGroupProvider extends DeviceGroupProviderSqlBase {
             if (isNot) {
                 
                 SqlStatementBuilder notSql = new SqlStatementBuilder();
-                notSql.append("(NOT (");
+                notSql.append("NOT ");
                 notSql.appendFragment(sqlFragmentSource);
-                notSql.append("))");
                 
                 sqlFragmentSource = notSql;
             }
