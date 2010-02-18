@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
@@ -22,6 +21,7 @@ import com.cannontech.esub.util.ImageExporter;
 import com.cannontech.esub.util.Util;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
@@ -70,33 +70,34 @@ public class Drawing implements Serializable {
 		 *  Fix up each element so they know who their drawing is.
 		 *  Create new versions of lines and rectangles and replace
 		 *  the old ones with the new ones in the graph component list.
+		 *  ORDER IS IMPORTANT: svg uses the painters algorithm so z index
+		 *  is determined by the order elements appear in.
 		 */
-		List<LxComponent> componentsToAdd = new ArrayList<LxComponent>();
-		List<LxComponent> componentsToRemove = new ArrayList<LxComponent>();
+		List<LxComponent> componentsList = Lists.newArrayList();
 		LxComponent[] comps = lxGraph.getComponents();
+		
 		for (LxComponent component : comps) {
 		    if(component instanceof LxLine) {
                 LineElement line = Util.convertToLineElement((LxLine)component);
                 ((DrawingElement) line).setDrawing(this);
-                componentsToAdd.add(line);
-                componentsToRemove.add(component);
-            } else 
-                if (component instanceof LxRectangle) {
+                componentsList.add(line);
+            } else if (component instanceof LxRectangle) {
                 RectangleElement rectangle = Util.convertToRectangleElement((LxRectangle)component);
                 ((DrawingElement) rectangle).setDrawing(this);
-                componentsToAdd.add(rectangle);
-                componentsToRemove.add(component);
-            }
-			if (component instanceof DrawingElement) {
+                componentsList.add(rectangle);
+            } else if (component instanceof DrawingElement) {
 			    ((DrawingElement) component).setDrawing(this);
-			}							
+			    componentsList.add(component);
+			} else {
+			    componentsList.add(component);
+			}
 		}
-		// Remove the old versions of these elements
-		for(LxComponent oldComp : componentsToRemove) {
+		// Remove the old list of elements
+		for(LxComponent oldComp : comps) {
 		    lxGraph.remove(oldComp);
 		}
-		// Add the old versions of these elements
-		for(LxComponent newComp : componentsToAdd) {
+		// Add the new list of elements
+		for(LxComponent newComp : componentsList) {
             lxGraph.add(newComp);
         }
 		
