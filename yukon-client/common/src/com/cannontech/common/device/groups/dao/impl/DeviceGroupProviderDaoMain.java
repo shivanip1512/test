@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -15,9 +16,9 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.CaseInsensitiveMap;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.predicate.Predicate;
+import com.google.common.collect.MapMaker;
 
 /**
  * This class serves as a delegation point between the DeviceGroupProviderDao
@@ -29,7 +30,7 @@ import com.cannontech.common.util.predicate.Predicate;
 public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     private Map<DeviceGroupType, DeviceGroupProvider> providers;
     private StaticDeviceGroupProvider staticProvider;
-    private Map<String, DeviceGroup> systemGroupCache = new CaseInsensitiveMap<DeviceGroup>();
+    private ConcurrentMap<String, DeviceGroup> systemGroupCache = new MapMaker().concurrencyLevel(10).makeMap();
 
 
     public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
@@ -78,7 +79,7 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getDeviceCount(group);
     }
     
-    public synchronized DeviceGroup getGroup(DeviceGroup base, String groupName) {
+    public DeviceGroup getGroup(DeviceGroup base, String groupName) {
         // check cache
         String presumedName = getGroupFullName(base, groupName);
         DeviceGroup deviceGroup = systemGroupCache.get(presumedName);
@@ -93,7 +94,10 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         if (group instanceof StoredDeviceGroup) {
             StoredDeviceGroup storedDeviceGroup = (StoredDeviceGroup) group;
             if (!storedDeviceGroup.isEditable()) {
-                systemGroupCache.put(storedDeviceGroup.getFullName(), storedDeviceGroup);
+                // cache using the "presumed" name instead of the actual name
+                // so that subsequent calls result in cache hits even if 
+                // the case of the actual group name is different
+                systemGroupCache.putIfAbsent(presumedName, storedDeviceGroup);
             }
         }
         return group;
