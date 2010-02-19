@@ -338,7 +338,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			Set<PointTemplate> allPointTemplates = paoDefinitionDao.getAllPointTemplates(deviceDefiniton);
 			for (PointIdentifier affectedPoint : affectedPointList) {
 				for (PointTemplate pointTemplate : allPointTemplates) {
-					if (affectedPoint.getPointType().getPointTypeId() == pointTemplate.getPointType().getPointTypeId() && affectedPoint.getOffset() == pointTemplate.getOffset()) {
+					if (affectedPoint.getPointType() == pointTemplate.getPointType() && affectedPoint.getOffset() == pointTemplate.getOffset()) {
 						pointNames.add(pointTemplate.getName());
 						break;
 					}
