@@ -81,10 +81,10 @@
         <data name="GeoId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
         <data name="SubstationId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
         <data name="FeederId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
-        <data name="ZipId" />
-        <data name="UserId" />
+        <data name="ZipId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
+        <data name="UserId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
         <data name="ProgramId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
-        <data name="SplinterId" />
+        <data name="SplinterId" tableRef="LMGroupExpressComAddress" refType="ONE_TO_ONE" />
         <data name="AddressUsage" />
         <data name="RelayUsage" />
         <data name="ProtocolPriority" />
