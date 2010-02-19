@@ -33,7 +33,6 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
-import com.google.common.collect.Maps;
 
 public class DeviceDefinitionViewerController extends AbstractController {
 
@@ -42,8 +41,6 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	private StateDao stateDao;
 	
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "Two Way LCR", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", ""};
-	
-	private Map<PaoDefinition, Set<PointTemplate>> initPointTemplatesMap = Maps.newHashMap();
 	
 	@Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -69,10 +66,6 @@ public class DeviceDefinitionViewerController extends AbstractController {
         
         // all
         for (PaoDefinition deviceDefiniton : allDefinitions) {
-        	
-        	// init points
-			Set<PointTemplate> initPointTemplates = paoDefinitionDao.getInitPointTemplates(deviceDefiniton);
-			initPointTemplatesMap.put(deviceDefiniton, initPointTemplates);
         	
         	// allDeviceTypes
         	String displayGroup = deviceDefiniton.getDisplayGroup();
@@ -289,7 +282,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 				LiteStateGroup liteStateGroup = stateDao.getLiteStateGroup(stateGroupId);
 				this.stateGroup = liteStateGroup.getStateGroupName();
 			}
-			this.init = initPointTemplatesMap.get(deviceDefiniton).contains(pointTemplate);
+			this.init = paoDefinitionDao.getInitPointTemplates(deviceDefiniton).contains(pointTemplate);
 		}
 
 		public PointTemplate getPointTemplate() {
@@ -345,7 +338,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			Set<PointTemplate> allPointTemplates = paoDefinitionDao.getAllPointTemplates(deviceDefiniton);
 			for (PointIdentifier affectedPoint : affectedPointList) {
 				for (PointTemplate pointTemplate : allPointTemplates) {
-					if (affectedPoint.getType() == pointTemplate.getType() && affectedPoint.getOffset() == pointTemplate.getOffset()) {
+					if (affectedPoint.getPointType().getPointTypeId() == pointTemplate.getPointType().getPointTypeId() && affectedPoint.getOffset() == pointTemplate.getOffset()) {
 						pointNames.add(pointTemplate.getName());
 						break;
 					}
