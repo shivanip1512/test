@@ -236,8 +236,8 @@ public interface LoadControlService {
      * Returns a list of ProgramControlHistory objects for the given programName, within the given
      * time period.
      * @param programName
-     * @param fromTime inclusive
-     * @param throughTime inclusive
+     * @param fromTime inclusive. required
+     * @param throughTime inclusive. optional (use null for "now")
      * @param user will be checked against user/group pao permission tables to validate access to program,
      * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * @return
@@ -252,8 +252,8 @@ public interface LoadControlService {
     /**
      * Returns a list of ProgramControlHistory objects  within the given time period.
      * Only programs visible to the user are included.
-     * @param fromTime
-     * @param throughTime
+     * @param fromTime. required
+     * @param throughTime. optional (use null for "now") 
      * @param user
      * @return
      */

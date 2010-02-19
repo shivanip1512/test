@@ -67,8 +67,8 @@ public interface LoadControlProgramDao {
     /**
      * Get a list of ProgramControlHistory.
      * Each ProgramControlHistory contains information about the program start/stop.
-     * @param startDateTime
-     * @param stopDateTime
+     * @param startDateTime required
+     * @param stopDateTime optional (use null for "now")
      * @return
      */
     public List<ProgramControlHistory> getAllProgramControlHistory(Date startDateTime, Date stopDateTime);
@@ -76,9 +76,9 @@ public interface LoadControlProgramDao {
     /**
      * Get a list of ProgramControlHistory for a given program id.
      * Each ProgramControlHistory contains information about the program start/stop.
-     * @param programId
-     * @param startDateTime
-     * @param stopDateTime
+     * @param programId optional (use null for all programs) Should use {@link#getAllProgramControlHistory(Date startDateTime, Date stopDateTime)} in this case though.
+     * @param startDateTime required
+     * @param stopDateTime optional (use null for "now")
      * @return
      */
     public List<ProgramControlHistory> getProgramControlHistoryByProgramId(int programId, Date startDateTime, Date stopDateTime);

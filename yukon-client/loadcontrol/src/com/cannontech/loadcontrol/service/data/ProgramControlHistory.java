@@ -9,6 +9,7 @@ public class ProgramControlHistory {
 	private Date startDateTime;
 	private Date stopDateTime;
 	private String gearName;
+	private boolean knownGoodStopDateTime;
 	
 	public ProgramControlHistory(int programId) {
 		this.programId = programId;
@@ -42,5 +43,28 @@ public class ProgramControlHistory {
 		this.gearName = gearName;
 	}
 	
+	/**
+	 * This boolean represents when it is known that the "Start" and "Stop" LMProgramGearHistory records that were found to create this ProgramControlHistory
+	 * share the same LMProgramGearHistory.LMProgramHistoryId.
+	 * If false, there is a good chance it is still valid, but if the duration between startDateTime and stopDateTime is suspiciously
+	 * long it may be that the LMProgramGearHistory identified as the "Stop" is not actually related.
+	 * Note: All BGE-Style gear changes will be false. This alone is NOT an indication that the stopDateTime is wrong.
+	 * @see com.cannontech.loadcontrol.dao.impl.LoadControlProgramDaoImpl#baseProgramControlHistory(Integer programId, Date startDateTime, Date stopDateTime)
+	 * @return
+	 */
+	public boolean isKnownGoodStopDateTime() {
+		return knownGoodStopDateTime;
+	}
 	
+	/**
+	 * This boolean should be set when it is known that the "Start" and "Stop" LMProgramGearHistory records that were found to create this ProgramControlHistory
+	 * share the same LMProgramGearHistory.LMProgramHistoryId.
+	 * If set to false, there is a good chance it is still valid, but if the duration between startDateTime and stopDateTime is suspiciously
+	 * long it may be that the LMProgramGearHistory identified as the "Stop" is not actually related.
+	 * @see com.cannontech.loadcontrol.dao.impl.LoadControlProgramDaoImpl#baseProgramControlHistory(Integer programId, Date startDateTime, Date stopDateTime)
+	 * @param knownGoodStopDateTime
+	 */
+	public void setKnownGoodStopDateTime(boolean knownGoodStopDateTime) {
+		this.knownGoodStopDateTime = knownGoodStopDateTime;
+	}
 }
