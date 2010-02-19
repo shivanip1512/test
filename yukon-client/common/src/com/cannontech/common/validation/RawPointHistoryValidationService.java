@@ -103,8 +103,11 @@ public class RawPointHistoryValidationService {
     public void init() throws InterruptedException {
         // wipe extraneous RphTags from database
         long lastChangeIdProcessed = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
-        lastChunkCommitted.set(lastChangeIdProcessed);
-        int tagsCleared = rphTagDao.clearTagsAfter(lastChangeIdProcessed, RphTag.getAllValidation());
+        int tagsCleared = 0;
+        if (lastChangeIdProcessed >= 0) {
+            lastChunkCommitted.set(lastChangeIdProcessed);
+            tagsCleared = rphTagDao.clearTagsAfter(lastChangeIdProcessed, RphTag.getAllValidation());
+        }
         validationEventLogService.validationEngineStartup(lastChangeIdProcessed, tagsCleared);
         
         // consider using global here
@@ -129,8 +132,9 @@ public class RawPointHistoryValidationService {
                             // maxRphChangeId = 0;
                         }
                         
-                        long lastChangeIdProcessed = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
-                        if (lastChangeIdProcessed > maxRphChangeId) {
+                        long lastChangeIdPersisted = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
+                        long lastChangeIdProcessed = lastChangeIdPersisted;
+                        if (lastChangeIdPersisted < 0 || lastChangeIdPersisted > maxRphChangeId) {
                             lastChangeIdProcessed = maxRphChangeId;
                         }
 

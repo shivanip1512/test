@@ -6,7 +6,7 @@ public interface PersistedSystemValueDao {
     /**
      * Sets the system value as specified.
      * 
-     * @param property an property
+     * @param property a property
      * @param value a value that is compatible with the property's type
      */
     public void setValue(PersistedSystemValueKey property, Object value);

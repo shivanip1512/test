@@ -4,7 +4,7 @@ import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.web.input.type.InputType;
 
 public enum PersistedSystemValueKey {
-    VALIDATION_ENGINE_LAST_CHANGE_ID(Long.MAX_VALUE, InputTypeFactory.longType()),
+    VALIDATION_ENGINE_LAST_CHANGE_ID(-1, InputTypeFactory.longType()),
     ;
     
     private final Object defaultValue;
