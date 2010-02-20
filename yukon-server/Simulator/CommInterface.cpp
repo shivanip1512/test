@@ -68,8 +68,9 @@ bool SocketComms::available(unsigned aCount)
     return bytes_read == aCount;
 }
 
-bool SocketComms::write(const bytes &buf)
+bool SocketComms::write(bytes &buf)
 {
+    _applicator.ProcessMessage(buf);
     boost::scoped_array<unsigned char> temp(new unsigned char[buf.size()]);
 
     copy(buf.begin(), buf.end(), temp.get());
@@ -81,6 +82,11 @@ bool SocketComms::write(const bytes &buf)
     commDelay(bytes_written);
 
     return bytes_written == buf.size();
+}
+
+void SocketComms::setBehavior(CommsBehavior* behavior)
+{
+    _applicator.setBehavior(behavior);
 }
 
 void SocketComms::clear()

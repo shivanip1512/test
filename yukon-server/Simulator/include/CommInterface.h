@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "ctinexus.h"
+#include "CommsBehaviorApplicator.h"
 
 #include <boost/utility.hpp>
 
@@ -20,11 +21,13 @@ public:
 class CommsOut : boost::noncopyable
 {
 public:
-    virtual bool write(const bytes &buf) = 0;
+    virtual bool write(bytes &buf) = 0;
 };
 
 class Comms : public CommsIn, virtual public CommsOut
 {
+protected:
+    CommsBehaviorApplicator _applicator;
 public:
     CommsIn  &asInput()  { return *(static_cast<CommsIn *> (this)); };
     CommsOut &asOutput() { return *(static_cast<CommsOut *>(this)); };
@@ -49,8 +52,9 @@ public:
 
     virtual bool available(unsigned aCount);
 
-    virtual bool write(const bytes &buf);
+    virtual bool write(bytes &buf);
 
+    void setBehavior(CommsBehavior* behavior);
     void clear();
 };
 

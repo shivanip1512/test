@@ -11,8 +11,9 @@
 #include "Ccu711.h"
 #include "PortLogger.h"
 #include "CommInterface.h"
-#include "MessageProcessor.h"
-#include "FilterImpl.h"
+#include "CommsBehaviorApplicator.h"
+#include "DelayBehavior.h"
+#include "cparms.h"
 
 #include "boostutil.h"
 
@@ -32,7 +33,7 @@ void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
 template<class CcuType>
-void handleRequests(MessageProcessor processor, SocketComms &socket_interface, int strategy, PortLogger &logger);
+void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger);
 
 }
 }
@@ -210,7 +211,24 @@ void CcuPort(int portNumber, int strategy)
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
 {
     SocketComms socket_interface(mySocket, 1200);
-    MessageProcessor processor;
+
+    switch( strategy )
+    {
+    case CommsBehavior::delayBehavior_enabled:
+        {
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << "********* DELAY FILTER ENABLED! *************" << endl;
+            }
+            int chance = gConfigParms.getValueAsInt("SIMULATOR_ERROR_DELAY_PERCENT");
+            DelayBehavior* d = new DelayBehavior();
+            d->setChance(chance);
+            socket_interface.setBehavior(d);
+            break;
+        }
+    default:
+        break;
+    }
 
     //  both the CCU-710 and CCU-711 have their address info in the first two bytes
     bytes peek_buf;
@@ -235,11 +253,11 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
             //    port as CCU-711s, though.
             if( peek_buf[0] == Ccu711::Hdlc_FramingFlag )
             {
-                handleRequests<Ccu711>(processor, socket_interface, strategy, logger);
+                handleRequests<Ccu711>(socket_interface, strategy, logger);
             }
             else
             {
-                handleRequests<Ccu710>(processor, socket_interface, strategy, logger);
+                handleRequests<Ccu710>(socket_interface, strategy, logger);
             }
         }
         catch(...)
@@ -251,7 +269,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
 
 
 template<class CcuType>
-void handleRequests(MessageProcessor processor, SocketComms &socket_interface, int strategy, PortLogger &logger)
+void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger)
 {
     std::map<int, CcuType *> ccu_list;
 
@@ -281,7 +299,7 @@ void handleRequests(MessageProcessor processor, SocketComms &socket_interface, i
             ccu_list.insert(make_pair(ccu_address, new CcuType(ccu_address, strategy)));
         }
 
-        if( !ccu_list[ccu_address]->handleRequest(processor, socket_interface, logger) )
+        if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
         {
             logger.log("Error while processing message, clearing socket");
 

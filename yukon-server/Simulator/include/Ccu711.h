@@ -4,7 +4,7 @@
 #include "ctitime.h"
 #include "fifo_multiset.h"
 #include "PlcTransmitter.h"
-#include "MessageProcessor.h"
+#include "CommsBehaviorApplicator.h"
 
 #include "CommInterface.h"
 #include "portlogger.h"
@@ -31,7 +31,7 @@ public:
         Hdlc_FramingFlag = 0x7e
     };
 
-    bool handleRequest(MessageProcessor processor, Comms &comms, PortLogger &logger);
+    bool handleRequest(Comms &comms, PortLogger &logger);
 
 private:
 
@@ -375,7 +375,7 @@ private:
     string describeGeneralReply  (const reply_info   &reply_info) const;
     string describeStatuses      (const status_info  &statuses)   const;
 
-    error_t sendReply(MessageProcessor processor, Comms &comms, idlc_reply &reply) const;
+    error_t sendReply(Comms &comms, idlc_reply &reply) const;
 
     error_t writeIdlcHeader (const idlc_header &header,  byte_appender &out_itr) const;
     error_t writeReplyInfo  (const reply_info  &info,    byte_appender &out_itr) const;
