@@ -697,9 +697,9 @@ table .perPageArea {
    font-weight: normal;
 }
 
-div.pagedBox .filterArea a,
-div.pagedBox .pagingArea a,
-div.pagedBox .perPageArea a {
+.filterArea a,
+.pagingArea a,
+.perPageArea a {
    color: #06C;
    text-decoration: none;
 }
