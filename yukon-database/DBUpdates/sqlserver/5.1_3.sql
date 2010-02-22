@@ -5,7 +5,7 @@
 /* Start YUK-8403 */
 ALTER TABLE ApplianceCategory ADD ConsumerSelectable CHAR(1);
 GO
-UPDATE ApplianceCategory SET ConsumerSelectable = ' ';
+UPDATE ApplianceCategory SET ConsumerSelectable = 'Y';
 GO
 ALTER TABLE ApplianceCategory ALTER COLUMN ConsumerSelectable CHAR(1) NOT NULL;
 GO
