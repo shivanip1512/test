@@ -2,7 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="consumer" page="general">
     <cti:standardMenu />
@@ -32,7 +33,7 @@
     <br>
     <div id="programs">
         <cti:msg key="yukon.dr.consumer.general.enrolledProgramsTitle" var="programsTitle" />
-        <ct:boxContainer title="${programsTitle}" hideEnabled="false">
+        <tags:boxContainer title="${programsTitle}" hideEnabled="false">
             <c:choose>
                 <c:when test="${isNotEnrolled}">
                     <span id="notEnrolledMessageSpan">
@@ -63,18 +64,25 @@
                                     
                                     <table>
                                         <c:forEach var="displayableControlHistory" items="${displayableProgram.displayableControlHistoryList}">
+                                            <c:set var="controlHistory" value="${displayableControlHistory.controlHistory}" />
                                             <tr>
                                                 <td></td>
                                                 <c:choose>
-                                                    
-                                                    <c:when test="${displayableControlHistory.controlStatusDisplay}">
-                                                        <td colspan="3"><cti:msg key="${displayableControlHistory.controlHistory.currentStatus}"/></td>
-                                                    </c:when>
-                                                    
-                                                    <c:when test="${displayableControlHistory.deviceLabelControlStatusDisplay}">
+                                                    <c:when test="${displayableControlHistory.controlStatusDisplay or
+                                                                    displayableControlHistory.deviceLabelControlStatusDisplay}">
                                                         <td><spring:escapeBody htmlEscape="true">${displayableControlHistory.controlHistory.displayName}</spring:escapeBody></td>
                                                         <td>-</td>
-                                                        <td><cti:msg key="${displayableControlHistory.controlHistory.currentStatus}"/></td>
+                                                        <td>
+															<c:choose>
+																<c:when test="${not empty controlHistory.lastControlHistoryEvent.endDate}">
+																	<cti:formatDate type="DATEHM" var="lastControledEndDate" value="${controlHistory.lastControlHistoryEvent.endDate}"/>
+																	<i18n:inline key="${controlHistory.currentStatus.formatKey}" arguments="${lastControledEndDate}" /> 
+																</c:when>
+																<c:otherwise>
+																	<i18n:inline key="${controlHistory.currentStatus.formatKey}" /> 
+																</c:otherwise>
+															</c:choose>
+                                                        </td>
                                                     </c:when>
                                                     
                                                 </c:choose>
@@ -88,12 +96,12 @@
                     </table>
                 </c:otherwise>
             </c:choose>
-        </ct:boxContainer>
+        </tags:boxContainer>
         <br>
         <br>
         <c:if test="${showNotification}">
 	        <cti:msg key="yukon.dr.consumer.general.oddsForControlTitle" var="oddsTitle" />
-	        <ct:boxContainer title="${oddsTitle}" hideEnabled="false">
+	        <tags:boxContainer title="${oddsTitle}" hideEnabled="false">
 	            <form action="/spring/stars/consumer/general/updateOddsForControlNotification" method="post" onsubmit="checkOddsForControlEmail()">
 	                <input id="oddsForControlNotification" type="checkbox" name="oddsForControlNotification" ${(emailEnabled)?'checked':''}/>
 	                <label for="oddsForControlNotification">
@@ -111,7 +119,7 @@
 	    		        <input type="submit" value="${oddsUpdate}"/>
 			        </center>
 	            </form>
-	        </ct:boxContainer>        
+	        </tags:boxContainer>        
 	        <br>
 	        <br>
 	    </c:if>

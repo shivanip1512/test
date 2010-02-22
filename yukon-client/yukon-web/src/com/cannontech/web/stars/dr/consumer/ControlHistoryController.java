@@ -14,10 +14,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
-import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
-import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.program.model.Program;
@@ -29,21 +27,20 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class ControlHistoryController extends AbstractConsumerController {
     private static final String viewName = "consumer/controlhistory/controlHistory.jsp";
     private ControlHistoryService controlHistoryService;
-    private ControlHistoryEventDao controlHistoryEventDao;
     
     @RequestMapping(value = "/consumer/controlhistory", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            YukonUserContext yukonUserContext, ModelMap map) {
+            YukonUserContext userContext, ModelMap map) {
         
         List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
-        List<Program> programs = programDao.getByAppliances(applianceList);
+        List<Program> programList = programDao.getByAppliances(applianceList);
         
         Map<Integer, List<ControlHistory>> controlHistoryMap = 
-            controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext);
+            controlHistoryDao.getControlHistory(customerAccount, applianceList, userContext, ControlPeriod.PAST_DAY);
 
-        programEnrollmentService.removeNonEnrolledPrograms(programs, controlHistoryMap);
+        programEnrollmentService.removeNonEnrolledPrograms(programList, controlHistoryMap);
 
-        boolean isNotEnrolled = programs.size() == 0;
+        boolean isNotEnrolled = programList.size() == 0;
         map.addAttribute("isNotEnrolled", isNotEnrolled);
         
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
@@ -53,7 +50,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         map.addAttribute("totalDurationMap", totalDurationMap);
         
         List<DisplayableProgram> displayablePrograms = 
-            displayableProgramDao.getAllDisplayablePrograms(customerAccount, yukonUserContext);
+            displayableProgramDao.getAllDisplayablePrograms(customerAccount, userContext, ControlPeriod.PAST_DAY);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
         return viewName;
@@ -70,9 +67,9 @@ public class ControlHistoryController extends AbstractConsumerController {
 
         Program program = programDao.getByProgramId(programId);
         map.addAttribute("program", program);
-        
+
         Map<Integer, List<ControlHistory>> controlHistoryMap = 
-            controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext);
+            controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext, ControlPeriod.PAST_DAY);
         
         List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
         
@@ -89,15 +86,13 @@ public class ControlHistoryController extends AbstractConsumerController {
         
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkProgram(user, programId);
+        Program program = programDao.getByProgramId(programId);
         
         ControlPeriod controlPeriodEnum = ControlPeriod.valueOf(controlPeriod);
         
-        Map<String, List<ControlHistoryEvent>> controlHistoryEventMap = 
-            controlHistoryEventDao.getEventsByProgram(customerAccount.getAccountId(),
-                                                      programId,
-                                                      controlPeriodEnum,
-                                                      yukonUserContext);
-        map.addAttribute("controlHistoryEventMap", controlHistoryEventMap);
+        DisplayableProgram displayableProgram = 
+            displayableProgramDao.getDisplayableProgram(customerAccount, yukonUserContext, program, controlPeriodEnum);
+        map.addAttribute("displayableControlHistoryMap", displayableProgram.getDisplayableControlHistoryList());
         
         return "consumer/controlhistory/innerCompleteControlHistory.jsp";
     }
@@ -106,12 +101,6 @@ public class ControlHistoryController extends AbstractConsumerController {
     public void setControlHistoryService(
             ControlHistoryService controlHistoryService) {
         this.controlHistoryService = controlHistoryService;
-    }
-    
-    @Autowired
-    public void setControlHistoryEventDao(
-            ControlHistoryEventDao controlHistoryEventDao) {
-        this.controlHistoryEventDao = controlHistoryEventDao;
     }
     
 }

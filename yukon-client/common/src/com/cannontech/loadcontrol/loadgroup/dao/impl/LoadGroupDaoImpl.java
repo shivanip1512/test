@@ -124,6 +124,18 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         return isUsed;
     }
     
+    public List<LoadGroup> getByStarsProgramId(int programId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(loadGroupSQLHeader);
+        sql.append("JOIN LMProgramDirectGroup LMPDG ON LMPDG.LMGroupDeviceId = PAO.PAObjectId");
+        sql.append("JOIN LMProgramWebPublishing LMPWP ON LMPDG.DeviceId = LMPWP.DeviceId");
+        sql.append("WHERE LMPWP.ProgramId = ?");
+        
+        List<LoadGroup> loadGroupList = simpleJdbcTemplate.query(sql.getSql(), loadGroupDatabaseResultRowMapper(), programId);
+        return loadGroupList;
+    }
+    
     /*
      * This method retrieves all the program ids that are associated with the 
      * loadGroup provided.

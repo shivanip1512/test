@@ -1,9 +1,9 @@
 package com.cannontech.stars.dr.controlhistory.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
 
@@ -26,19 +26,22 @@ public interface ControlHistoryEventDao {
         }
     }
     
+
+    public StarsLMControlHistory getEventsByGroup(int customerAccountId, int lmGroupId, int inventoryId,
+                                                  ControlPeriod period, YukonUserContext yukonUserContext);
+
+    public ControlHistoryEvent getLastControlHistoryEntry(int customerAccountId,
+                                                          Program program,
+                                                          int inventoryId,
+                                                          YukonUserContext yukonUserContext);
+    
     /**
+     * This method takes in an old stars control history object and generates the
+     * a list of the ControlHistoryEvents, which we use in newer stars code.
      * 
-     * @param customerAccountId
-     * @param programId
-     * @param period
-     * @param yukonUserContext
-     * @return - a Map of String (DisplayName) to List of ControlHistoryEvent's  
      */
-    public Map<String, List<ControlHistoryEvent>> getEventsByProgram(int customerAccountId, int programId,
-        ControlPeriod period, YukonUserContext yukonUserContext);
-    
     public List<ControlHistoryEvent> toEventList(StarsLMControlHistory controlHistory);
-    
+ 
     /**
      * This method removes any invalid control history in regards to enrollment.
      * 

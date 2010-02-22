@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- PROGRAM -->
+	
+	<!-- controlHistory -->
+    <entry key="yukon.web.modules.operator.controlHistory.header">Programs - Control History</entry>
+    <entry key="yukon.web.modules.operator.controlHistory.enrolledPrograms">Enrolled Programs</entry>
+    <entry key="yukon.web.modules.operator.controlHistory.todaysControlHistory">Today's Control History</entry>
+    <entry key="yukon.web.modules.operator.controlHistory.controlHistorySummary">Control History Summary</entry>
+    <entry key="yukon.web.modules.operator.controlHistory.completeControlHistory">Complete Control History</entry>
+    
+	<entry key="yukon.web.modules.operator.controlHistory.noPastControl">The device, {0}, has never been controlled for this program.</entry>
+	<entry key="yukon.web.modules.operator.controlHistory.mostRecentPastControlEntry">The device, {0}, was last controlled from {1} to {2} for a total of {3}</entry>
+	
+	<!-- CompleteControlHistory.jsp -->
+	<entry key="yukon.web.modules.operator.completeControlHistory.header">Program - Complete Control History</entry>
+	<entry key="yukon.web.modules.operator.completeControlHistory.viewTitle">View:</entry>
+	<entry key="yukon.web.modules.operator.completeControlHistory.pastDay">Past Day</entry>
+	<entry key="yukon.web.modules.operator.completeControlHistory.pastWeek">Past Week</entry>
+	<entry key="yukon.web.modules.operator.completeControlHistory.pastYear">Past Year</entry>
+	<entry key="yukon.web.modules.operator.completeControlHistory.all">All</entry>
+	<entry key="yukon.web.modules.operator.completeControlHistory.controlEventsTitle">Control Events</entry>
+	
+	<!-- optOut -->
+	<!-- Program Opt Out -->
+	<entry key="yukon.web.modules.operator.optOut.allOptedOut">All devices have already been opted out.</entry>
+	<entry key="yukon.web.modules.operator.optOut.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
+	<entry key="yukon.web.modules.operator.optOut.header">Programs - Opt Out</entry>
+	<entry key="yukon.web.modules.operator.optOut.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
+	<entry key="yukon.web.modules.operator.optOut.startDate">Start Date</entry>
+	<entry key="yukon.web.modules.operator.optOut.duration">Duration</entry>
+	<entry key="yukon.web.modules.operator.optOut.day">Day</entry>
+	<entry key="yukon.web.modules.operator.optOut.days">Days</entry>
+	<entry key="yukon.web.modules.operator.optOut.optOut">Opt Out</entry>
+
+	<!-- Current Opt Outs -->
+	<entry key="yukon.web.modules.operator.optOut.currentOptOuts">Current Opt Outs</entry>
+	<entry key="yukon.web.modules.operator.optOut.device">Device</entry>
+	<entry key="yukon.web.modules.operator.optOut.program">Program(s)</entry>
+	<entry key="yukon.web.modules.operator.optOut.status">Status</entry>
+	<entry key="yukon.web.modules.operator.optOut.dateActive">Active Date</entry>
+	<entry key="yukon.web.modules.operator.optOut.actions">Actions</entry>
+	<entry key="yukon.web.modules.operator.optOut.allowOneIcon">/WebConfig/yukon/Icons/add.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.cancelOptOutIcon">/WebConfig/yukon/Icons/cancel.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.resendOptOutIcon">/WebConfig/yukon/Icons/picture_go.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.noCurrentOptOuts">There are no Active or Scheduled Opt Outs.</entry>
+	
+    <!-- Opt Out Limits -->
+    <entry key="yukon.web.modules.operator.optOut.optOutLimits">Opt Out Limits</entry>
+	<entry key="yukon.web.modules.operator.optOut.used">Used</entry>
+	<entry key="yukon.web.modules.operator.optOut.allowAdditional">Allow Another Opt Out</entry>
+	<entry key="yukon.web.modules.operator.optOut.remaining">Consumer Opt Outs Remaining</entry>
+	<entry key="yukon.web.modules.operator.optOut.reset">Reset</entry>
+	<entry key="yukon.web.modules.operator.optOut.allowAnother">Allow 1</entry>
+	<entry key="yukon.web.modules.operator.optOut.unlimitedRemaining">unlimited</entry>
+	<entry key="yukon.web.modules.operator.optOut.atLimit">Remaining opt outs at opt out limit</entry>
+	<entry key="yukon.web.modules.operator.optOut.clear">Clear</entry>
+    
+    <!-- Opt Out History -->
+	<entry key="yukon.web.modules.operator.optOut.optOutHistory">Opt Out History</entry>
+	<entry key="yukon.web.modules.operator.optOut.dateScheduled">Date Scheduled</entry>
+	<entry key="yukon.web.modules.operator.optOut.durationHeader">Duration</entry>
+    <entry key="yukon.web.modules.operator.optOut.canceled">Cancel</entry>
+    <entry key="yukon.web.modules.operator.optOut.noPreviousOptOuts">There are no previous Opt Outs.</entry>
+    
+</properties>

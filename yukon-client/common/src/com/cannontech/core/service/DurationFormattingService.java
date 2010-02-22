@@ -22,6 +22,7 @@ public interface DurationFormattingService {
         HM,
         H,
         M,
+        HM_ABBR,
         HM_SHORT;
         
         private static final String keyPrefix = "yukon.common.durationFormatting.pattern.";

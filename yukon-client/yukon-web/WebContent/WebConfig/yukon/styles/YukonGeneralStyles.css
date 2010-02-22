@@ -248,6 +248,10 @@ table.miniResultsTable td {
   border: 1px solid #ccc;
 }
 
+table.miniResultsTable td.tdHeader {
+	font-weight: bold;
+}
+
 /* Data results table styles */
 table.miniResultsTableLeft {
 	width: 95%;	
@@ -694,9 +698,9 @@ table .perPageArea {
    font-weight: normal;
 }
 
-.filterArea a,
-.pagingArea a,
-.perPageArea a {
+div.pagedBox .filterArea a,
+div.pagedBox .pagingArea a,
+div.pagedBox .perPageArea a {
    color: #06C;
    text-decoration: none;
 }

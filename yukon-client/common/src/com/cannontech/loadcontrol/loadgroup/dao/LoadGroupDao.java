@@ -25,9 +25,19 @@ public interface LoadGroupDao {
     /**
      * Returns a list of YukonPao's which are the macro groups
      * the provide load group is in.
+     * 
      * @param pao
      * @return
      */
     public List<PaoIdentifier> getParentMacroGroups(YukonPao pao);
+
+    /**
+     * This method returns a list of loadGroups that are attached to 
+     * a stars program.
+     * 
+     * @param programId
+     * @return
+     */
+    public List<LoadGroup> getByStarsProgramId(int programId);
 
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
+import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
@@ -22,15 +23,17 @@ import com.cannontech.user.YukonUserContext;
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
     
     @Override
-    public List<DisplayableProgram> getDisplayablePrograms(
-            final CustomerAccount customerAccount, final YukonUserContext yukonUserContext) {
-        return doAction(customerAccount, yukonUserContext, true);
+    public List<DisplayableProgram> getDisplayablePrograms(final CustomerAccount customerAccount, 
+                                                           final YukonUserContext yukonUserContext,
+                                                           final ControlPeriod controlPeriod) {
+        return doAction(customerAccount, yukonUserContext, controlPeriod, true);
     }
 
     @Override
-    public List<DisplayableProgram> getAllDisplayablePrograms(
-            final CustomerAccount customerAccount, final YukonUserContext yukonUserContext) {
-        return doAction(customerAccount, yukonUserContext, false);
+    public List<DisplayableProgram> getAllDisplayablePrograms(final CustomerAccount customerAccount, 
+                                                              final YukonUserContext yukonUserContext,
+                                                              final ControlPeriod controlPeriod) {
+        return doAction(customerAccount, yukonUserContext, controlPeriod, false);
     }
 
     /**
@@ -43,9 +46,13 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
      * @param controlHistoryList
      * @return - a DisplayableProgram used while rendering the view.
      */
+    
+    
     @Override
     public DisplayableProgram getDisplayableProgram(Program program,
-            final List<ControlHistory> controlHistoryList, final boolean applyFilters) {
+                                                    final List<ControlHistory> controlHistoryList,
+                                                    ControlPeriod controlPeriod,
+                                                    final boolean applyFilters) {
         // Filter Rule #1
         if (applyFilters && controlHistoryList.isEmpty()) return null;
         
@@ -74,27 +81,60 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
     }
     
     private List<DisplayableProgram> doAction(CustomerAccount customerAccount, 
-             YukonUserContext yukonUserContext, boolean applyFilters) {
+                                              YukonUserContext yukonUserContext,
+                                              ControlPeriod controlPeriod,
+                                              boolean applyFilters) {
                                          
-        List<Appliance> appliances = applianceDao.getByAccountId(customerAccount.getAccountId());
-        List<Program> programs = programDao.getByAppliances(appliances);
+        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
+        List<Program> programList = programDao.getByAppliances(applianceList);
 
+        return doAction(customerAccount, yukonUserContext, controlPeriod, applyFilters, applianceList, programList);
+    }
+
+    /**
+     * @param customerAccount
+     * @param yukonUserContext
+     * @param applyFilters
+     * @param applianceList
+     * @param programList
+     * @return
+     */
+    private List<DisplayableProgram> doAction(CustomerAccount customerAccount,
+                                              YukonUserContext yukonUserContext,
+                                              ControlPeriod controlPeriod,
+                                              boolean applyFilters,
+                                              List<Appliance> applianceList,
+                                              List<Program> programList) {
         Map<Integer,List<ControlHistory>> controlHistoryMap = 
-            controlHistoryDao.getControlHistory(customerAccount, appliances, yukonUserContext);
+            controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext, controlPeriod);
 
-        final List<DisplayableProgram> displayableProgramList = new ArrayList<DisplayableProgram>(programs.size());
+        final List<DisplayableProgram> displayableProgramList = new ArrayList<DisplayableProgram>(programList.size());
 
-        for (final Program program : programs) {
+        for (final Program program : programList) {
             Integer programId = program.getProgramId();
 
             List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
             if (controlHistoryList == null) controlHistoryList = Collections.emptyList();
 
-            DisplayableProgram displayableProgram = getDisplayableProgram(program, controlHistoryList, applyFilters);
+            DisplayableProgram displayableProgram = getDisplayableProgram(program, controlHistoryList, controlPeriod, applyFilters);
             if (displayableProgram != null) displayableProgramList.add(displayableProgram);
         }
 
         return displayableProgramList;
+    }
+    
+    public DisplayableProgram getDisplayableProgram(CustomerAccount customerAccount, 
+                                                    YukonUserContext yukonUserContext,
+                                                    Program program,
+                                                    ControlPeriod controlPeriod){
+
+        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
+        List<Program> programList = Collections.singletonList(program);
+
+        List<DisplayableProgram> displayableProgramList = 
+            doAction(customerAccount, yukonUserContext, controlPeriod, true, applianceList, programList);
+        
+        return displayableProgramList.get(0);
     }
     
 }

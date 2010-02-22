@@ -93,6 +93,70 @@ table.enrolledPrograms tr td.viewBordered {
     border-bottom: 1px solid #ccc;  
 }
 
+table.controlHistory {
+    border-collapse: collapse;
+}	
+
+table.controlHistory tr th {
+    color: #0066CC;
+    border-bottom: 1px solid #ccc;
+}
+
+/*
+table.controlHistory tr td.logo {
+	border-right: 1px solid #ccc;
+}
+*/
+table.controlHistory tr td.logoBorder {
+	border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+table.controlHistory tr td.logoBorderedAllSidesButBottom {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+table.controlHistory tr td.logoBorderedAllSidesButTop {
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+table.controlHistory tr td.bordered {
+	border-bottom: 1px solid #ccc;
+}
+
+table.controlHistory tr td.view {
+    white-space: nowrap;
+    font-size: .8em;
+    border-left: 1px solid #ccc;
+}
+
+table.controlHistory td.images {
+    white-space: nowrap;
+}
+
+table.controlHistory tr td.viewBordered {
+    white-space: nowrap;
+    font-size: .8em;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;  
+}
+
+table.controlHistory tr td.controlHistorySummaryBorderLeft {
+	border-left: 1px solid #ccc;
+}
+
+table.controlHistory tr td.controlHistorySummaryBorderTop {
+    border-top: 1px solid #ccc;
+}
+
+table.controlHistory tr td.controlHistorySummaryBorderRight {
+	border-right: 1px solid #ccc;
+}
+
 .temperature {
     text-align: center;
     font-size: 2em;

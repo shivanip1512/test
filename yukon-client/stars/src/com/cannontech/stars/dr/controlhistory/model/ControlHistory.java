@@ -8,6 +8,9 @@ public class ControlHistory {
     private String displayName;
     private InventoryBase inventory;
     private ControlHistoryStatus currentStatus;
+    private ControlHistorySummary controlHistorySummary;
+    private ControlHistorySummary programControlHistorySummary;
+    private ControlHistoryEvent lastControlHistoryEvent;
     private List<ControlHistoryEvent> currentHistory;
     
     public ControlHistory() {
@@ -38,6 +41,31 @@ public class ControlHistory {
         this.displayName = displayName;
     }
 
+    public ControlHistorySummary getControlHistorySummary() {
+        return controlHistorySummary;
+    }
+
+    public void setControlHistorySummary(ControlHistorySummary controlHistorySummary) {
+        this.controlHistorySummary = controlHistorySummary;
+    }
+
+    
+    public ControlHistorySummary getProgramControlHistorySummary() {
+        return programControlHistorySummary;
+    }
+
+    public void setProgramControlHistorySummary(ControlHistorySummary programControlHistorySummary) {
+        this.programControlHistorySummary = programControlHistorySummary;
+    }
+
+    public ControlHistoryEvent getLastControlHistoryEvent() {
+        return lastControlHistoryEvent;
+    }
+    
+    public void setLastControlHistoryEvent(ControlHistoryEvent lastControlHistoryEvent) {
+        this.lastControlHistoryEvent = lastControlHistoryEvent;
+    }
+    
     public List<ControlHistoryEvent> getCurrentHistory() {
         return currentHistory;
     }

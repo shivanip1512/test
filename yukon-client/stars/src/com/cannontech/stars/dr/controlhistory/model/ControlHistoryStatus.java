@@ -5,6 +5,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum ControlHistoryStatus implements DisplayableEnum {
     NOT_ENROLLED,
     OPTED_OUT,
+    CONTROLLED_PREVIOUSLY,
     CONTROLLED_TODAY,
     CONTROLLED_CURRENT,
     CONTROLLED_NONE;

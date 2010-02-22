@@ -248,6 +248,8 @@
 
     <bean id="controlHistoryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistoryServiceImpl"/>
     
+    <bean id="controlHistorySummaryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistorySummaryServiceImpl"/>
+    
     <!-- Device Reconfig -->
     <bean id="deviceReconfigDao" class="com.cannontech.stars.dr.deviceReconfig.dao.impl.DeviceReconfigDaoImpl"/>
     

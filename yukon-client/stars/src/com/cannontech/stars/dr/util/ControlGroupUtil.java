@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 
@@ -42,6 +43,15 @@ public final class ControlGroupUtil {
         
     }
     
+    public static final boolean hasEverBeenControlled(ControlHistoryEvent lastControlHistoryEvent) {
+
+        if (lastControlHistoryEvent != null){
+            return true;
+        }
+
+        return false;
+    } 
+
     public static final boolean isControlledToday(final List<LMHardwareControlGroup> controlGroupList, 
             final Map<Integer, StarsLMControlHistory> controlHistoryMap) {
         

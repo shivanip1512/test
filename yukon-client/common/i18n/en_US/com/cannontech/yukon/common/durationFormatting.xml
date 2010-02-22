@@ -9,5 +9,6 @@
     <entry key="yukon.common.durationFormatting.pattern.HM">{0} {0,choice,0#hours|1#hour|1&lt;hours} {1} {1,choice,0#minutes|1#minute|1&lt;minutes}</entry>
     <entry key="yukon.common.durationFormatting.pattern.H">{0} {0,choice,0#hours|1#hour|1&lt;hours}</entry>
     <entry key="yukon.common.durationFormatting.pattern.M">{0} {0,choice,0#minutes|1#minute|1&lt;minutes}</entry>
+    <entry key="yukon.common.durationFormatting.pattern.HM_ABBR">{0}h {1}m</entry>
     <entry key="yukon.common.durationFormatting.pattern.HM_SHORT">{0,choice,9#0{0}|9&lt;{0}}:{1,choice,9#0{1}|9&lt;{1}}</entry>
 </properties>

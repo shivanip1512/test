@@ -51,6 +51,7 @@
     <entry key="yukon.dr.consumer.contacts.invalidNotification">Contact {0} for {1} contains invalid characters</entry>    
     
     <!-- controlHistory.jsp -->
+    <entry key="yukon.web.modules.consumer.controlHistory.header">Programs - Control History</entry>
     <entry key="yukon.dr.consumer.controlhistory.header">Programs - Control History</entry>
     <entry key="yukon.dr.consumer.controlhistory.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.controlhistory.enrolledProgramsTitle">Your Enrolled Programs</entry>
@@ -62,7 +63,7 @@
     <entry key="yukon.dr.consumer.controlhistory.todaysProgramControl">Today''s Program Control: {0}</entry>
     <entry key="yukon.dr.consumer.controlhistory.noProgramControl">No Program Control</entry>
     <entry key="yukon.dr.consumer.controlhistory.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
-    <entry key="yukon.dr.consumer.controlhistory.viewCompleteHistory">View Complete History</entry>
+    <entry key="yukon.dr.consumer.controlhistory.details">details</entry>
     <entry key="yukon.dr.consumer.completecontrolhistory.back">Back</entry>
     
     <!-- completeControlHistory.jsp -->

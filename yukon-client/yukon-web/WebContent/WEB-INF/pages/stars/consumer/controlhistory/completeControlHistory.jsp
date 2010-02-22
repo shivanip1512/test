@@ -1,46 +1,20 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:url var="controlHistoryView" value="/spring/stars/consumer/controlhistory"/>
 <cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
-<cti:standardPage module="consumer" page="completecontrolhistory">
+<cti:standardPage module="consumer" page="completeControlHistory">
     <cti:standardMenu />
     
-    <h3><cti:msg key="yukon.dr.consumer.completecontrolhistory.header" /></h3>
+    <h3><i18n:inline key="yukon.dr.consumer.completecontrolhistory.header" /></h3>
     <table width="100%">
-        <tr>
-            <td>
-                <table class="programTitle">
-                    <tr>
-                        <td rowspan="2">
-                            <img src="../../../../WebConfig/${program.applianceCategoryLogo}"></img>
-                        </td>
-                        <td>
-                            <b><cti:msg key="${program.displayName}"></cti:msg></b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <c:choose>
-                                <c:when test="${totalDuration > 0}">
-                                    <cti:formatDuration var="formattedDuration" type="HM" value="${totalDuration}"/>
-                                    <cti:msg key="yukon.dr.consumer.completecontrolhistory.todaysProgramControl" argument="${formattedDuration}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:msg key="yukon.dr.consumer.completecontrolhistory.noProgramControl"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
         <tr>
             <td align="right">
                 <br>
-                <cti:msg key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
+                <i18n:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
                 <select onchange="javascript:updateControlEvents(this.options[this.options.selectedIndex].value)">
                     <option value="PAST_DAY"><cti:msg key="yukon.dr.consumer.completecontrolhistory.view.pastDay"/></option>
                     <option value="PAST_WEEK"><cti:msg key="yukon.dr.consumer.completecontrolhistory.view.pastWeek"/></option>
@@ -52,9 +26,10 @@
         <tr>
             <td>
                 <cti:msg key="yukon.dr.consumer.completecontrolhistory.controlEventsTitle" var="controlEventsTitle" />
-                <ct:boxContainer title="${controlEventsTitle}" hideEnabled="false">
+                <cti:msg key="${program.displayName}" var="controlEventsTitle" />
+                <tags:boxContainer title="${controlEventsTitle}" hideEnabled="false">
                     <div id="controlEventsDiv"></div>
-                </ct:boxContainer>
+                </tags:boxContainer>
             </td>
         </tr>
         <tr>

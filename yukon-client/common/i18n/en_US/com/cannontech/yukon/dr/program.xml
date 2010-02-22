@@ -8,8 +8,9 @@
     
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.NOT_ENROLLED">Not Enrolled</entry>
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.OPTED_OUT">Opted Out</entry>
+	<entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_PREVIOUSLY">Last controlled: {0}</entry>
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_TODAY">Controlled today</entry>
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_CURRENT">Currently controlling</entry>
-    <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_NONE">You have not been controlled today</entry>
+    <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_NONE">You have not been controlled</entry>
     
 </properties>    

@@ -20,6 +20,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.program.model.ChanceOfControl;
@@ -38,7 +39,7 @@ public class GeneralController extends AbstractConsumerController {
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
         
-        List<DisplayableProgram> displayablePrograms = displayableProgramDao.getDisplayablePrograms(customerAccount, yukonUserContext);
+        List<DisplayableProgram> displayablePrograms = displayableProgramDao.getDisplayablePrograms(customerAccount, yukonUserContext,ControlPeriod.PAST_DAY);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
         boolean isNotEnrolled = displayablePrograms.size() == 0;
@@ -122,8 +123,7 @@ public class GeneralController extends AbstractConsumerController {
 	}
     
     @Autowired
-    public void setContactNotificationDao(
-			ContactNotificationDao contactNotificationDao) {
+    public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
 		this.contactNotificationDao = contactNotificationDao;
 	}
     
