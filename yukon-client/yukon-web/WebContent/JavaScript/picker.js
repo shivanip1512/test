@@ -143,6 +143,11 @@ Picker.prototype = {
 	 * and does the initial search.
 	 */
 	show: function() {
+		if (this.immediateSelectMode && this.multiSelectMode) {
+			alert('immediateSelectMode cannot be used with multiSelectMode; ' + 
+				'turning multiSelectMode off');
+			this.multiSelectMode = false;
+		}
 		this.reset(false);
 		var pickerThis = this;
 		var doShow = function(transport, json) {
