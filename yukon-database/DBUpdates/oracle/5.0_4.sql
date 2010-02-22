@@ -52,9 +52,9 @@ WHERE ValidationMonitorName = 'Default All Meters';
 /* End YUK-8140 */
 
 /* Start YUK-8401 */
-DELETE FROM DeviceConfiguration;
 DELETE FROM DeviceConfigurationDeviceMap;
 DELETE FROM DeviceConfigurationItem; 
+DELETE FROM DeviceConfiguration;
 /* End YUK-8401 */
 
 /**************************************************************/ 
