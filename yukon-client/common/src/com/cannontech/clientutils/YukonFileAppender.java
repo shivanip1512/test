@@ -90,6 +90,8 @@ public class YukonFileAppender extends AppenderSkeleton {
         dailyRollingFileAppender = new DatedFileAppender(directory, nameOfApp + "_", ".log");
         dailyRollingFileAppender.setName("dailyRollingFileAppender");
         dailyRollingFileAppender.setFile(fileName);
+        dailyRollingFileAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
+        dailyRollingFileAppender.setMaxFileSize(maxFileSize);
         
         //The layout for the log file:
         Layout layout = new PatternLayout(conversionPattern);

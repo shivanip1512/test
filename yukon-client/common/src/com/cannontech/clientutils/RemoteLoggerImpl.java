@@ -8,6 +8,8 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Implements the logging for remote clients.
  * The creation of specific appenders for each
@@ -20,6 +22,9 @@ public class RemoteLoggerImpl implements RemoteLogger {
     
     // Use a DatedFileAppender to do the actual appending of messages
     private DatedFileAppender dailyRollingFileAppender;
+    
+    //Maximum log file size before logging stops
+    private static long maxFileSize = 1073741824;
     
     //A map to hold client applicationName+ids (key) and file appenders (value)
     private Map<String, DatedFileAppender> appenderIPAddresses = new HashMap<String, DatedFileAppender>();
@@ -77,6 +82,8 @@ public class RemoteLoggerImpl implements RemoteLogger {
             //Use DatedFileAppender to take over the actual appending, rollover, and timing issues
             dailyRollingFileAppender = new DatedFileAppender(directory, fileName, ".log");
             dailyRollingFileAppender.setName(fileName + "-appender");
+            dailyRollingFileAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
+            dailyRollingFileAppender.setMaxFileSize(maxFileSize);
             
             //The layout for the log file:
             Layout layout = new PatternLayout(conversionPattern);

@@ -3,7 +3,9 @@ package com.cannontech.clientutils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.spi.LoggingEvent;
@@ -191,7 +193,23 @@ public class DatedFileAppender extends FileAppender {
      * time).
      */
     private long m_tomorrow = 0L;
-
+    
+    /**
+     * String describing the process being logged and the current system configuration
+     */
+    private String systemInfoString = "";
+    
+    /**
+     * The maximum log file size.  If this is exceeded, logging will stop for the
+     * rest of the day.  Default is 1G.
+     */
+    private long maxFileSize = 1073741824L;
+    
+    /**
+     * String representation of the date and time this log was started.
+     */
+    private String startDate = "";
+    
     // ----------------------------------------------------------- Constructors
 
     /**
@@ -217,7 +235,7 @@ public class DatedFileAppender extends FileAppender {
         m_directory = directory;
         m_prefix = prefix;
         m_suffix = suffix;
-
+        setStartDate();
         activateOptions();
     }
 
@@ -268,6 +286,25 @@ public class DatedFileAppender extends FileAppender {
         m_suffix = suffix;
     }
 
+    /**
+     * Set the system information string, which identifies the
+     * program being logged, and information about the machine.
+     * @param systemInfoString The new system information string
+     */
+    public void setSystemInfoString(String systemInfoString){
+        this.systemInfoString = systemInfoString;
+    }
+    
+    /**
+     * Set the maximum file size.  If the log file grows beyond
+     * this size, logging will cease for the remainder of the day.
+     * @param maxFileSize The file size where logging should
+     * be halted.
+     */
+    public void setMaxFileSize(long maxFileSize){
+        this.maxFileSize = maxFileSize;
+    }
+    
     // --------------------------------------- Public Methods
 
     /**
@@ -297,7 +334,6 @@ public class DatedFileAppender extends FileAppender {
      */
     public void append(LoggingEvent event) {
         File newFile = null;
-        StringBuilder sb = null;
         String datestamp = null;
         if (this.layout == null) {
             errorHandler.error("No layout set for the appender named [" + name + "].");
@@ -323,8 +359,8 @@ public class DatedFileAppender extends FileAppender {
 
             //time in millis when tomorrow starts
             m_tomorrow = m_calendar.getTimeInMillis(); 
-            sb = new StringBuilder(m_prefix + datestamp + m_suffix);
-            newFile = new File(m_path, sb.toString());
+            String child = m_prefix + datestamp + m_suffix;
+            newFile = new File(m_path, child);
 
             // if the file has a timestamp that is earlier than the beginning of
             // today, then it must be last months file, so delete its contents 
@@ -340,6 +376,17 @@ public class DatedFileAppender extends FileAppender {
             this.fileName = newFile.getAbsolutePath();
 
             super.activateOptions(); // close current file and open new file
+            
+            //append a header including version info at the start of the new log file
+            try{
+                FileWriter fwriter = new FileWriter(new File(fileName), true);
+                String header = "LOG CONTINUES (Running since " + startDate + ")\n"
+                                + systemInfoString + "\n";
+                fwriter.write(header);
+                fwriter.close();
+            } catch(IOException e){
+                errorHandler.error("Unable to write header to new log file.");
+            }
         } // end outer if
 
         if (this.qw == null) { // should never happen
@@ -348,7 +395,7 @@ public class DatedFileAppender extends FileAppender {
         }
 
         File tempFile = new File(fileName);
-        if (tempFile.canRead() && (tempFile.length() > YukonFileAppender.getMaxFileSize()) && !isMaxFileSizeReached) {
+        if (tempFile.canRead() && (tempFile.length() > maxFileSize) && !isMaxFileSizeReached) {
             //if the max file size is reached, append an error message to the file
             // (and possibly give some kind of alarm later)
             // also set isMaxSizeReached = true so no more logging occurs for the
@@ -357,9 +404,10 @@ public class DatedFileAppender extends FileAppender {
            
             try {
                 FileWriter fw = new FileWriter(tempFile, true);
-                sb = new StringBuilder("The maximum file size of " + YukonFileAppender.getMaxFileSize() + " bytes has been reached, logging has been turned off for today.\n");
+                String output = "The maximum file size of " + maxFileSize 
+                                + " bytes has been reached, logging has been turned off for today.\n";
                 fw.write("\n");
-                fw.write(sb.toString());
+                fw.write(output);
                 fw.close();
             } catch (IOException e) {
                 errorHandler.error("Unable to write to log file--max file size exceeded for the day.");
@@ -411,4 +459,9 @@ public class DatedFileAppender extends FileAppender {
         calendar.set(year, month, day); // set tomorrow's date
     }
 
+    private void setStartDate(){
+        Date currentDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        startDate = formatter.format(currentDate);
+    }
 }
