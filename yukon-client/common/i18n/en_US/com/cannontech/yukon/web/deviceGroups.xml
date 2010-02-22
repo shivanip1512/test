@@ -124,7 +124,7 @@ Group names may not be blank or contain slashes.
 		<li>&nbsp;&bull; <i><b>At Least One</b></i>: For a device to be included in the Composed Device Group, it must match at least one of the rules.</li>
 		<li>&nbsp;&bull; <i><b>Every One</b></i>: For a device to be included in the Composed Device Group, it must match at every rule.</li>
 		<br>
-		<li>For more control over which devices are included, a Composed Device Group may include other other Composed Device Groups.</li>
+		<li>For more control over which devices are included, a Composed Device Group may include other Composed Device Groups.</li>
 	</ul>
 ]]></entry>
 <entry key="yukon.web.deviceGroups.composedGroup.matchSentence.prefix">Match</entry>
