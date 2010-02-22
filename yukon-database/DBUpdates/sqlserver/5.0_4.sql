@@ -57,6 +57,12 @@ SET EvaluatorStatus = 'DISABLED'
 WHERE ValidationMonitorName = 'Default All Meters';
 /* End YUK-8140 */
 
+/* Start YUK-8401 */
+DELETE FROM DeviceConfiguration;
+DELETE FROM DeviceConfigurationDeviceMap;
+DELETE FROM DeviceConfigurationItem; 
+/* End YUK-8401 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
