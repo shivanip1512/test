@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/5/2010 3:02:22 PM                          */
+/* Created on:     2/22/2010 12:50:46 PM                        */
 /*==============================================================*/
 
 
@@ -1169,6 +1169,7 @@ create table ApplianceCategory  (
    Description          VARCHAR2(40),
    CategoryID           NUMBER,
    WebConfigurationID   NUMBER,
+   ConsumerSelectable   CHAR(1)                         not null,
    constraint PK_APPLIANCECATEGORY primary key (ApplianceCategoryID)
 );
 
