@@ -3,6 +3,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
 <%@ attribute name="title" required="false" type="java.lang.String"%>
+<%@ attribute name="titleIcon" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="helpText" required="false" type="java.lang.String"%>
@@ -16,6 +17,9 @@
     
     <div class="titleBar sectionContainer_titleBar">
         <div class="titleBar sectionContainer_title">
+            <c:if test="${not empty pageScope.titleIcon}">
+              <img src="${pageScope.titleIcon}" style="height: 32px; width: 32px;" />
+            </c:if>
             ${pageScope.title} 
             
             <c:if test="${not empty pageScope.helpText}">
