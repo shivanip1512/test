@@ -36,7 +36,7 @@
 </script>
 <span id="picker_${pageScope.id}_inputArea"></span>
 
-<div class="pickerLink ${styleClass}">
+<span class="pickerLink ${styleClass}">
     <c:if test="${!pageScope.asButton}">
     <a href="javascript:${pageScope.id}.show()"><jsp:doBody/></a>
     </c:if>
@@ -44,4 +44,4 @@
         <input type="button" value="<jsp:doBody/>"
             onclick="javascript:${pageScope.id}.show()"/>
     </c:if>
-</div>
+</span>
