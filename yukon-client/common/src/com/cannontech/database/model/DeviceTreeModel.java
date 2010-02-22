@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
@@ -17,7 +18,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class DeviceTreeModel extends DBTreeModel 
+public abstract class DeviceTreeModel extends DBTreeModel 
 {
 	//the number of device we will put in the tree before painting the tree
 	//protected static final int REFRESH_ITEM_COUNT = 1000;
@@ -33,26 +34,11 @@ public class DeviceTreeModel extends DBTreeModel
 					new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0 );
 /**
  * DeviceTreeModel constructor comment.
- * @param root javax.swing.tree.TreeNode
- */
-public DeviceTreeModel() {
-	this( true );
-}
-/**
- * DeviceTreeModel constructor comment.
  * @param rootNode_ DBTreeNode
  */
 public DeviceTreeModel( DBTreeNode rootNode_ ) 
 {
 	this( true, rootNode_ );
-}
-/**
- * DeviceTreeModel constructor comment.
- * @param root javax.swing.tree.TreeNode
- */
-public DeviceTreeModel( boolean showPointNodes )
-{
-	this( showPointNodes, new DBTreeNode("Devices") );
 }
 
 /**
@@ -237,6 +223,9 @@ public boolean insertTreeObject( LiteBase lb )
 		com.cannontech.database.data.lite.LiteYukonPAObject pao =
 				DaoFactory.getPaoDao().getLiteYukonPAO( devID );
 
+		//in order to find our lite object we need to first populate our TreeModel
+		updateIfNothingHasBeenLoaded();
+		
 		rootNode = findLiteObject( null, pao );
 
 		if( rootNode != null )
@@ -248,6 +237,7 @@ public boolean insertTreeObject( LiteBase lb )
 			treePathWillExpand( rootPath );
 
 			updateTreeNodeStructure( rootNode );
+			reload();
 			return true;
 		}
 
@@ -262,14 +252,13 @@ public boolean insertTreeObject( LiteBase lb )
 			DBTreeNode node = getNewNode(lb);
 			node.setWillHaveChildren(true);
 			//add all new tree nodes to the top, for now
-			int[] ind = { 0 };
+			int[] indexes = { 0 };
 			
-			rootNode.insert( node, ind[0] );
+			rootNode.insert( node, indexes[0] );
 			
-			nodesWereInserted(
-				rootNode,
-				ind );
-
+			nodesWereInserted(rootNode, indexes );
+			reload();
+			
 			return true;
 		}
 
@@ -280,15 +269,18 @@ public boolean insertTreeObject( LiteBase lb )
 
 @Override
 public boolean isTreePrimaryForObject(LiteBase lb) {
+    PaoType paoType = null;
     if (lb instanceof LiteYukonPAObject) {
-        PaoType paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
-        return isDeviceValid(paoType.getPaoCategory().getCategoryId(), paoType.getPaoClass().getPaoClassId(), paoType.getDeviceTypeId());
+        paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
+    } else if (lb instanceof LitePoint) {
+        int paobjectID = ( (LitePoint) lb).getPaobjectID();
+        YukonPao yukonPao = DaoFactory.getPaoDao().getYukonPao( paobjectID );
+        paoType = yukonPao.getPaoIdentifier().getPaoType();
+    } else {
+        return false;
     }
-    
-    if (lb instanceof LitePoint) {
-        return true;
-    }
-    return false;
+
+    return isDeviceValid(paoType.getPaoCategory().getCategoryId(), paoType.getPaoClass().getPaoClassId(), paoType.getDeviceTypeId());
 }
 
 /**

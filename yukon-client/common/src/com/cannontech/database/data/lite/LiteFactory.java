@@ -12,6 +12,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
@@ -284,9 +285,21 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}
 	else if( val instanceof com.cannontech.database.data.point.PointBase )
 	{
-		returnLite = new LitePoint(
-			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointID().intValue(),
-			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointName() );
+	    if ( ((com.cannontech.database.data.point.PointBase)val).getPoint().getPaoID() == null || 
+	         ((com.cannontech.database.data.point.PointBase)val).getPoint().getPaoID() == 0 ) {
+    		returnLite = new LitePoint(
+    			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointID().intValue(),
+    			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointName() );
+	    } 
+	    else {
+    	    returnLite = new LitePoint(
+    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPointID().intValue(),
+    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPointName(),
+    	                               PointType.getForString(((com.cannontech.database.data.point.PointBase)val).getPoint().getPointType()).getPointTypeId(),
+    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPaoID(),
+    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPointOffset(),
+    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getStateGroupID());
+	    }
 			
 	}
 	else if( val instanceof com.cannontech.database.data.state.GroupState )

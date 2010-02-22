@@ -76,6 +76,7 @@ import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.database.model.DbBackgroundTreeModel;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.database.model.FrameAware;
 import com.cannontech.database.model.ModelFactory;
@@ -375,7 +376,11 @@ public void viewMenuRefreshAction() {
     	treeViewPanel.refresh();
     	if(holder != null && holder instanceof LiteBase)
     	{
-    	    treeViewPanel.selectLiteObject((LiteBase)holder);
+    	    //if we tried to refresh a tree that extends DbBackgroundTreeModel (CICustomer, Login, Contact)
+    	    //then we are doing the select after the update and not right here
+    	    if (! ( treeViewPanel.getCurrentTreeModel() instanceof DbBackgroundTreeModel ) ) {
+    	        treeViewPanel.selectLiteObject((LiteBase)holder);
+    	    }
     	}
     	
     	if( getConnToDispatch().isValid() )

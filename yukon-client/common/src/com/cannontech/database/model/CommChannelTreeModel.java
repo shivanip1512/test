@@ -5,7 +5,6 @@ package com.cannontech.database.model;
  */
 import javax.swing.tree.TreePath;
 
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -14,12 +13,26 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ImmutableSet;
 //This models has the following:
 //		1st Level = Ports YukonPAOBjects
 //		2nd Level = Devices YukonPAOBjects
 
 public class CommChannelTreeModel extends DBTreeModel 
 {
+    private static final ImmutableSet<Integer> validPortTypes = 
+        ImmutableSet.of(com.cannontech.database.data.pao.PortTypes.LOCAL_DIRECT,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_SHARED,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_RADIO,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_DIALUP,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_DIRECT,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_SHARED,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_RADIO,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_DIALUP,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_DIALBACK,
+                        com.cannontech.database.data.pao.PortTypes.DIALOUT_POOL,
+                        com.cannontech.database.data.pao.PortTypes.TCPPORT,
+                        com.cannontech.database.data.pao.PortTypes.UDPPORT);
 	
 	//a mutable lite point used for comparisons
 	private static final LiteYukonPAObject DUMMY_LITE_PAO = 
@@ -48,11 +61,24 @@ public boolean isLiteTypeSupported( int liteType )
 
 @Override
 public boolean isTreePrimaryForObject(LiteBase lb) {
+    PaoType paoType = null;
     if (lb instanceof LiteYukonPAObject) {
-        PaoType paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
-        return paoType.getPaoCategory() == PaoCategory.PORT;
+        paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
+    } else {
+        return false;
     }
-    return false;
+    
+    if( paoType == null ) {
+        return false;
+    }
+    
+    boolean isDeviceValid = isDeviceValid(paoType.getPaoCategory().getCategoryId(), paoType.getPaoClass().getPaoClassId(), paoType.getDeviceTypeId());
+    boolean isCoreDevice = com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass( paoType.getPaoClass().getPaoClassId() );
+    boolean isCommChannPort = isValidPortType(paoType.getDeviceTypeId());
+    if( isCommChannPort ) {
+        return true;
+    }
+    return (isDeviceValid && !isCoreDevice);
 }
 
 /**
@@ -143,7 +169,6 @@ public boolean insertTreeObject( LiteBase lb )
 			treePathWillExpand( rootPath );
 
 			updateTreeNodeStructure( rootNode );
-			update();
 			return true;
 		}
 	}
@@ -151,19 +176,16 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		LiteYukonPAObject liteYuk = (LiteYukonPAObject)lb;
 
-		if( isDeviceValid(liteYuk.getCategory(), liteYuk.getPaoClass(), liteYuk.getType() ) )
+		if( isValidPortType( liteYuk.getType() ) )
 		{
 			DBTreeNode node = new DBTreeNode(lb);
 
 			//add all new tree nodes to the top, for now
-			int[] ind = { 0 };
+			int[] indexes = { 0 };
 			
-			rootNode.insert( node, ind[0] );
+			rootNode.insert( node, indexes[0] );
 			
-			nodesWereInserted(
-				rootNode,
-				ind );
-            update();
+			nodesWereInserted(rootNode,indexes );
 			return true;
 		}
 
@@ -190,6 +212,10 @@ public boolean isDeviceValid( int category_, int deviceClass, int type_ )
 
 }
 
+public boolean isValidPortType( int portType )
+{
+    return validPortTypes.contains(portType);
+}
 
 /**
  * Insert the method's description here.

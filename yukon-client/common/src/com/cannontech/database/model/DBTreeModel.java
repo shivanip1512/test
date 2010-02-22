@@ -64,14 +64,13 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
     	DBTreeNode node = new DBTreeNode(liteBase);
     
     	//add all new tree nodes to the top, for now
-    	int[] ind = { 0 };
+    	int[] indexes = { 0 };
     	
-    	rootNode.insert( node, ind[0] );
+    	rootNode.insert( node, indexes[0] );
     	
-    	nodesWereInserted(
-    		rootNode,
-    		ind );
-    
+    	nodesWereInserted(rootNode,indexes );
+    	reload();
+    	
     	return true;	
     }
     
@@ -85,7 +84,7 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
         //Just remove the liteBase object as it exists.
     	DBTreeNode node = findLiteObject( null, lb);
     	
-    	CTILogger.info("*** REMOVE Took " +
+    	CTILogger.debug("*** REMOVE Took " +
     	               (new java.util.Date().getTime() - s.getTime()) * .001 +
     	               " seconds to find node in DBtreeModel, node = " + node );
     
@@ -106,6 +105,24 @@ public abstract class DBTreeModel extends javax.swing.tree.DefaultTreeModel impl
     	}
     
     	return false;
+    }
+    
+    /**
+     * If there are zero or one objects in our model... then we probably haven't loaded it yet.
+     * If this is the case, then this method will call update() on the model.
+     */
+    public void updateIfNothingHasBeenLoaded() {
+        if( isUpdateNeeded() ) {
+            update();
+        }
+    }
+    
+    public boolean isUpdateNeeded() {
+        DBTreeNode root = (DBTreeNode) getRoot();
+        if( root != null && ( root.getChildCount() == 0 || root.getChildCount() == 1 ) ) {
+            return true;
+        }
+        return false;
     }
     
     public void sortChildNodes(DBTreeNode parentNode, int sortType) {

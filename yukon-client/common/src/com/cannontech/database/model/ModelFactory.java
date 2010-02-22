@@ -91,7 +91,7 @@ public final class ModelFactory
 	//the following array
 	private static Class[] typeToClassMap =
 	{
-		DeviceTreeModel.class,
+		ActualDeviceTreeModel.class,
 		IEDTreeModel.class,
 		MCTTreeModel.class,
 		MeterTreeModel.class,

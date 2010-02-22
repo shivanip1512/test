@@ -21,6 +21,10 @@ public interface LiteBaseTreeModel extends TreeModel
      */
     boolean isTreePrimaryForObject(LiteBase lb);
     
+    public void updateIfNothingHasBeenLoaded();
+    
+    public boolean isUpdateNeeded();
+    
     boolean removeTreeObject(LiteBase lb);
     
     void treePathWillExpand(TreePath path);

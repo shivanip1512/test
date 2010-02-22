@@ -4,7 +4,6 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.LiteBase;
 
 public class MeterTreeModel extends DeviceTreeModel 
 {
@@ -15,11 +14,6 @@ public class MeterTreeModel extends DeviceTreeModel
 public MeterTreeModel() {
 	super( new DBTreeNode("Meters") );
 }
-
-@Override
-    public boolean isTreePrimaryForObject(LiteBase lb) {
-        return false;
-    }
 
 /**
  * Insert the method's description here.

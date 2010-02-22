@@ -4,7 +4,6 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.pao.PAOGroups;
 
 public class IEDTreeModel extends DeviceTreeModel 
@@ -17,11 +16,6 @@ public IEDTreeModel()
 {
 	super( new DBTreeNode("IEDs") );
 }
-
-@Override
-    public boolean isTreePrimaryForObject(LiteBase lb) {
-        return false;
-    }
 
 /**
  * Insert the method's description here.

@@ -33,8 +33,9 @@ import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.model.DBTreeModel;
+import com.cannontech.database.model.DbBackgroundTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -95,7 +96,7 @@ protected void fireItemEvent(ItemEvent e) {
 		((ItemListener) itemListeners.elementAt(i)).itemStateChanged(e);
 } 
 
-private LiteBaseTreeModel getCurrentTreeModel() 
+public LiteBaseTreeModel getCurrentTreeModel() 
 {
 	return (LiteBaseTreeModel)getTree().getModel();
 }
@@ -111,6 +112,11 @@ public Object getSelectedItem() {
 	else
 		return null;
 	
+}
+
+public boolean isItemSelected() {
+    Object selectedObject = getSelectedItem();
+    return (selectedObject != null);
 }
 
 public DefaultMutableTreeNode getSelectedNode() {
@@ -399,7 +405,14 @@ public void itemStateChanged(ItemEvent event) {
 
 public void refresh() 
 {
-	getCurrentTreeModel().update();
+    //logic to avoid calling update twice on refresh when model extends DbBackgroundTreeModel
+    if ( getCurrentTreeModel() instanceof DbBackgroundTreeModel && isItemSelected() ) {
+        final LiteBaseTreeModel model = getCurrentTreeModel();
+        final LiteBase liteBase = (LiteBase) getSelectedItem();
+        selectLiteObjectAndUpdate( model, liteBase );
+    } else {
+        getCurrentTreeModel().update();
+    }
 }
 
 public void removeItemListener(ItemListener l)  {
@@ -468,7 +481,7 @@ public boolean selectByString(String str)
 	return false;	
 }
 
-public boolean selectLiteBase(TreeModel model, final LiteBase lBase ) {
+public boolean selectLiteBase(final LiteBaseTreeModel model, final LiteBase lBase ) {
     TreePath foundPath = findMatchingPath(model, lBase);
 
     if (foundPath != null) {
@@ -533,40 +546,51 @@ public void selectLiteObject(final LiteBase liteBase) {
     if (selectLiteBase(getCurrentTreeModel(), liteBase)) {
         return;
     }
-
-    for (int i = 0; i < getSortByComboBox().getModel().getSize(); i++) {
-        final DBTreeModel model = (DBTreeModel) getSortByComboBox().getItemAt(i);
-        final int sortByIndex = i;
-
-        // see if this is the appropriate tree for this object
-        // the first model that passes this test will be used (note return statement inside for loop)
-        if (!model.isTreePrimaryForObject(liteBase)) continue;
-
-        TreePath matchingPath = findMatchingPath(model, liteBase);
-        if (matchingPath != null) {
+    
+    final LiteBaseTreeModel model = getTreePrimaryForObject( liteBase );
+    
+    TreePath matchingPath = null;
+    
+    if ( model != null ) {
+        matchingPath = findMatchingPath(model, liteBase);
+    }
+    
+    if ( matchingPath != null )  {
+        //If we found a path, but the only path is to the node we inserted, then
+        //we probably need to do an update to load up the rest of the tree.
+        //Also make sure our liteBase isn't a LitePoint b/c if it is we already called update
+        //in DeviceTreeModel and don't want to call it again
+        if ( model.isUpdateNeeded() && !( liteBase instanceof LitePoint ) ) {
+            selectLiteObjectAndUpdate(model, liteBase);
+        } else {
             selectPath(model, matchingPath);
-            getSortByComboBox().setSelectedIndex(sortByIndex);
+            getSortByComboBox().setSelectedIndex(getTreeIndex( liteBase ));
             invalidate();
             repaint();
-            return;
         }
-
-        // try reloading model
-        model.update(new Runnable() {
-            public void run() {
-                TreePath matchingPath = findMatchingPath(model, liteBase);
-
-                if (matchingPath != null) {
-                    selectPath(model, matchingPath);
-                    getSortByComboBox().setSelectedIndex(sortByIndex);
-                    invalidate();
-                    repaint();
-                }
-            }
-        });
-        return;
     }
+    else {
+        // reload the model
+        selectLiteObjectAndUpdate(model, liteBase);
+    }
+}
 
+public void selectLiteObjectAndUpdate(final LiteBaseTreeModel model, final LiteBase liteBase) {
+    model.update(new Runnable() {
+        public void run() {
+            TreePath matchingPath = null;
+            if ( model != null ) {
+                matchingPath = findMatchingPath(model, liteBase);
+            }
+
+            if (matchingPath != null) {
+                selectPath(model, matchingPath);
+                getSortByComboBox().setSelectedIndex(getTreeIndex( liteBase ));
+                invalidate();
+                repaint();
+            }
+        }
+    });
 }
 
 /**
@@ -659,7 +683,54 @@ public boolean treeObjectInsert( LiteBase lb )
 	if( lb == null )
 		return false;
 	
-	return getCurrentTreeModel().insertTreeObject( lb );
+	LiteBaseTreeModel treePrimaryForObject = getTreePrimaryForObject( lb );
+	
+	if( treePrimaryForObject == null ) {
+	    return false;
+	}
+	
+    return treePrimaryForObject.insertTreeObject( lb );
+}
+
+public LiteBaseTreeModel getTreePrimaryForObject( LiteBase lb )
+{    
+    if( getCurrentTreeModel().isTreePrimaryForObject( lb ) ) {
+        return getCurrentTreeModel();
+    }
+    
+    LiteBaseTreeModel model = null;
+    
+    for (int i = 0; i < getSortByComboBox().getModel().getSize(); i++) {
+        model = (LiteBaseTreeModel) getSortByComboBox().getItemAt(i);
+
+        // see if this is the appropriate tree for this object
+        // the first model that passes this test will be used (note return statement inside for loop)
+        if (model.isTreePrimaryForObject(lb)) {
+            return model;
+        }
+    }
+    
+    return null;
+}
+
+public int getTreeIndex( LiteBase lb )
+{
+    LiteBaseTreeModel primaryTreeModel = getTreePrimaryForObject( lb );
+    
+    if( primaryTreeModel != null ) {
+        
+        LiteBaseTreeModel tempModel = null;
+        for (int i = 0; i < getSortByComboBox().getModel().getSize(); i++) {
+            tempModel = (LiteBaseTreeModel) getSortByComboBox().getItemAt(i);
+
+            //find the primaryTreeModel and return that index
+            if ( tempModel == primaryTreeModel ) {
+                return i;
+            }
+        }
+    }
+    
+    return 0;
 }
 
 public void treeObjectUpdated( LiteBase lb )

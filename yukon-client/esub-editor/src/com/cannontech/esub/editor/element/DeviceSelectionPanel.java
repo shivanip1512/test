@@ -22,7 +22,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public class DeviceSelectionPanel extends JPanel implements TreeWillExpandListener {
     private JTree ivjDevicePointTree = null;
     private JScrollPane ivjJScrollPane1 = null;
-    private com.cannontech.database.model.DeviceTreeModel ivjDeviceTreeModel = null;
+    private com.cannontech.database.model.ActualDeviceTreeModel ivjActualDeviceTreeModel = null;
     
     /**
      * PointSelectionPanel constructor comment.
@@ -77,15 +77,15 @@ public class DeviceSelectionPanel extends JPanel implements TreeWillExpandListen
      * Return the DeviceTreeModel property value.
      * @return com.cannontech.database.model.DeviceTreeModel
      */
-    private com.cannontech.database.model.DeviceTreeModel getDeviceTreeModel() {
-        if (ivjDeviceTreeModel == null) {
+    private com.cannontech.database.model.ActualDeviceTreeModel getDeviceTreeModel() {
+        if (ivjActualDeviceTreeModel == null) {
             try {
-                ivjDeviceTreeModel = new com.cannontech.database.model.DeviceTreeModel(false);
+                ivjActualDeviceTreeModel = new com.cannontech.database.model.ActualDeviceTreeModel(false);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjDeviceTreeModel;
+        return ivjActualDeviceTreeModel;
     }
     
     /**

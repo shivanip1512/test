@@ -77,20 +77,18 @@ public boolean insertTreeObject( LiteBase lb )
 	}
 	else if ( lb instanceof LiteCICustomer )
 	{
-		LiteCICustomer liteCst = (LiteCICustomer)lb;
-
 		DBTreeNode node = new DBTreeNode(lb);
 
 		//add all new tree nodes to the top, for now
-		int[] ind = { 0 };
+		int[] indexes = { 0 };
 		
-		rootNode.insert( node, ind[0] );
+		rootNode.insert( node, indexes[0] );
 		
-		nodesWereInserted(
-			rootNode,
-			ind );
+		nodesWereInserted(rootNode,indexes );
 
 		node.setWillHaveChildren(true);
+		
+		reload();
 
 		return true;
 	}
