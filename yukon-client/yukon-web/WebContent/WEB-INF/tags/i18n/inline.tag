@@ -3,10 +3,11 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
 <%@ attribute name="key" required="true" type="java.lang.String"%>
+<%@ attribute name="arguments" required="false" type="java.lang.String"%>
 
 <cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
 	<span class="i18nInline">
-		<cti:msg2 key="${key}" debug="true" fallback="true"/>
+		<cti:msg2 key="${key}" arguments="${arguments}" debug="true" fallback="true"/>
 		<span class="i18nInlineDebug">
 			<c:forEach items="${msg2TagDebugMap}" var="entry">
 				${entry.key}=${entry.value}<br>
