@@ -46,7 +46,7 @@ public class ItronXmlBuilderImpl implements ItronXmlBuilder{
     
     private Element createImportExportParametersElement() {
         final Element element = new Element("ImportExportParameters");
-        element.setAttribute("CreateResubmitFile", "false");
+        element.setAttribute("CreateResubmitFile", "true");
         element.setAttribute("CreateReadingGroupForRegisterReads", "false");
         element.addContent(createDataFormatElement());
         return element;
@@ -105,7 +105,7 @@ public class ItronXmlBuilderImpl implements ItronXmlBuilder{
     
     private Element createStatusElement() {
         Element element = new Element("ReadingStatus");
-        element.addContent(new Element("UnencodedStatus").setAttribute("SourceValidation", "Passed"));
+        element.addContent(new Element("UnencodedStatus").setAttribute("SourceValidation", "NV"));
         return element;
     }
     
